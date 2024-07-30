@@ -89,12 +89,12 @@ def TranslateCustomEndTimeArg(args):
     if try_date_only_parse:
       try:
         # try to parse the date string in the format of YYYY-MM-DD
-        date_time_us = datetime.datetime.strptime(
+        midnight_date_time_mtv = datetime.datetime.strptime(
             args.custom_end_time, DATE_ONLY_FORMAT
-        ).astimezone(pytz.timezone('US/Pacific'))
-        offset = date_time_us.utcoffset()
-        date_time_utc = date_time_us - offset
-        final_date_time = date_time_utc.strftime('%Y-%m-%dT%H:%M:%SZ')
+        ).replace(tzinfo=pytz.timezone('US/Mountain'))
+        final_date_time = midnight_date_time_mtv.astimezone(pytz.utc).strftime(
+            RFC3339_FORMAT
+        )
       except ValueError:
         # Swallow the exception and throw canonical one.
         pass

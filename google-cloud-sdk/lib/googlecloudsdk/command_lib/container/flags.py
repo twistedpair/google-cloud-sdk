@@ -1945,6 +1945,22 @@ def AddQueuedProvisioningFlag(parser, hidden=False):
   )
 
 
+def AddMaxRunDurationFlag(parser, hidden=False):
+  """Adds a --max-run-duration flag to parser."""
+  parser.add_argument(
+      '--max-run-duration',
+      default=None,
+      type=str,
+      help=textwrap.dedent("""\
+        Limit the runtime of each node in the node pool to the specified
+        duration.
+
+          $ {command} node-pool-1 --cluster=example-cluster --max-run-duration=3600s
+        """),
+      hidden=hidden,
+  )
+
+
 def AddMaintenanceIntervalFlag(parser, for_node_pool=False, hidden=True):
   """Adds a --maintenance-interval flag to the given parser."""
   type_validator = arg_parsers.RegexpValidator(
@@ -6219,11 +6235,11 @@ def AddAdditionalPodNetworkFlag(parser):
   )
 
 
-def AddEnableDNSEndpoint(parser):
-  """Adds the --enable-dns-endpoint flag to parser."""
+def AddEnableDNSAccessFlag(parser):
+  """Adds the --enable-dns-access flag to parser."""
   help_text = ' '
   parser.add_argument(
-      '--enable-dns-endpoint',
+      '--enable-dns-access',
       default=None,
       hidden=True,
       action='store_true',
@@ -6716,3 +6732,16 @@ Remove additional subnetwork named "my-subnet", including all the pod ipv4 range
       action='append',
       help=help_text,
   )
+
+
+def AddClusterEnablePrivateNodesFlag(parser, hidden=True):
+  """Adds a --enable-private-nodes to the given cluster parser."""
+  help_text = ' '
+  parser.add_argument(
+      '--enable-private-nodes',
+      default=None,
+      action='store_true',
+      help=help_text,
+      hidden=hidden,
+  )
+

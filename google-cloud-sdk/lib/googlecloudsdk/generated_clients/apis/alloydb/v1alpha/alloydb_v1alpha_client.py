@@ -709,6 +709,33 @@ class AlloydbV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Export(self, request, global_params=None):
+      r"""Exports data from the cluster. Imperative only.
+
+      Args:
+        request: (AlloydbProjectsLocationsClustersExportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Export')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:export',
+        http_method='POST',
+        method_id='alloydb.projects.locations.clusters.export',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:export',
+        request_field='exportClusterRequest',
+        request_type_name='AlloydbProjectsLocationsClustersExportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single Cluster.
 

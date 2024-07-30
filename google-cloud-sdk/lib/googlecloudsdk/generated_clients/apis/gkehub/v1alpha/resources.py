@@ -162,18 +162,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_SCOPES_NAMESPACES_RESOURCEQUOTAS = (
-      'projects.locations.scopes.namespaces.resourcequotas',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/scopes/'
-              '{scopesId}/namespaces/{namespacesId}/resourcequotas/'
-              '{resourcequotasId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_SCOPES_RBACROLEBINDINGS = (
       'projects.locations.scopes.rbacrolebindings',
       '{+name}',

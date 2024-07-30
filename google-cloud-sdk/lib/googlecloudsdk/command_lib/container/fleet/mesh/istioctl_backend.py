@@ -81,6 +81,7 @@ class IstioctlWrapper(binary_operations.StreamingBinaryBackedOperation):
       pod_name_namespace,
       context,
       output_format,
+      fqdn,
       **kwargs
   ):
     del kwargs
@@ -93,6 +94,8 @@ class IstioctlWrapper(binary_operations.StreamingBinaryBackedOperation):
     ]
     if output_format:
       exec_args.extend(['-o', output_format])
+    if fqdn:
+      exec_args.extend(['--fqdn', fqdn])
     return exec_args
 
   def _ParseProxyStatusArgs(

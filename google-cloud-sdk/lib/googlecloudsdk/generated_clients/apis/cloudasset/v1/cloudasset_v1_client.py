@@ -792,33 +792,6 @@ class CloudassetV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def AnalyzeOrgPolicyGovernedResources(self, request, global_params=None):
-      r"""Analyzes organization policies governed resources under a scope. This RPC only returns resources of types [supported by search APIs](https://cloud.google.com/asset-inventory/docs/supported-asset-types).
-
-      Args:
-        request: (CloudassetAnalyzeOrgPolicyGovernedResourcesRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (AnalyzeOrgPolicyGovernedResourcesResponse) The response message.
-      """
-      config = self.GetMethodConfig('AnalyzeOrgPolicyGovernedResources')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    AnalyzeOrgPolicyGovernedResources.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/{v1Id}/{v1Id1}:analyzeOrgPolicyGovernedResources',
-        http_method='GET',
-        method_id='cloudasset.analyzeOrgPolicyGovernedResources',
-        ordered_params=['scope'],
-        path_params=['scope'],
-        query_params=['constraint', 'filter', 'pageSize', 'pageToken'],
-        relative_path='v1/{+scope}:analyzeOrgPolicyGovernedResources',
-        request_field='',
-        request_type_name='CloudassetAnalyzeOrgPolicyGovernedResourcesRequest',
-        response_type_name='AnalyzeOrgPolicyGovernedResourcesResponse',
-        supports_download=False,
-    )
-
     def BatchGetAssetsHistory(self, request, global_params=None):
       r"""Batch gets the update history of assets that overlap a time window. For IAM_POLICY content, this API outputs history when the asset and its attached IAM POLICY both exist. This can create gaps in the output history. Otherwise, this API outputs history with asset in both non-delete or deleted status. If a specified asset does not exist, this API returns an INVALID_ARGUMENT error.
 

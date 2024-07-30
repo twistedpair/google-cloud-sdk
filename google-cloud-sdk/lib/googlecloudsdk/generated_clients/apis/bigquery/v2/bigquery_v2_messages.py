@@ -3660,6 +3660,45 @@ class HparamTuningTrial(_messages.Message):
   trialId = _messages.IntegerField(10)
 
 
+class IdentityColumnInfo(_messages.Message):
+  r"""Metadata for value generation for an identity column.
+
+  Enums:
+    GeneratedModeValueValuesEnum: Optional. Dictates when system generated
+      values are used to populate the field.
+
+  Fields:
+    generatedMode: Optional. Dictates when system generated values are used to
+      populate the field.
+    increment: Optional. The minimum difference between two successive
+      generated values. Should be INTEGER compatible. Can be negative or
+      positive but not 0. The default value is 1 if the field is not
+      specified.
+    start: Optional. The first generated value. Should be INTEGER compatible.
+      The default value is 1 if the field is not specified.
+  """
+
+  class GeneratedModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Dictates when system generated values are used to populate
+    the field.
+
+    Values:
+      GENERATED_MODE_UNSPECIFIED: Unspecified GeneratedMode will default to
+        GENERATED_ALWAYS.
+      GENERATED_ALWAYS: Field can only have system generated values. Users
+        cannot manually insert values into the field.
+      GENERATED_BY_DEFAULT: Use system generated values only if the user does
+        not explicitly provide a value.
+    """
+    GENERATED_MODE_UNSPECIFIED = 0
+    GENERATED_ALWAYS = 1
+    GENERATED_BY_DEFAULT = 2
+
+  generatedMode = _messages.EnumField('GeneratedModeValueValuesEnum', 1)
+  increment = _messages.StringField(2)
+  start = _messages.StringField(3)
+
+
 class IndexUnusedReason(_messages.Message):
   r"""Reason about why no search index was used in the search query (or sub-
   query).
@@ -4728,6 +4767,10 @@ class JobReference(_messages.Message):
 class JobStatistics(_messages.Message):
   r"""Statistics for a single job execution.
 
+  Enums:
+    EditionValueValuesEnum: Output only. Name of edition corresponding to the
+      reservation for this job at the time of this update.
+
   Messages:
     ReservationUsageValueListEntry: Job resource usage breakdown by
       reservation.
@@ -4740,6 +4783,8 @@ class JobStatistics(_messages.Message):
       since the epoch. This field will be present on all jobs.
     dataMaskingStatistics: Output only. Statistics for data-masking. Present
       only for query and extract jobs.
+    edition: Output only. Name of edition corresponding to the reservation for
+      this job at the time of this update.
     endTime: Output only. End time of this job, in milliseconds since the
       epoch. This field will be present whenever a job is in the DONE state.
     extract: Output only. Statistics for an extract job.
@@ -4776,6 +4821,22 @@ class JobStatistics(_messages.Message):
       part of the transaction started in the script.
   """
 
+  class EditionValueValuesEnum(_messages.Enum):
+    r"""Output only. Name of edition corresponding to the reservation for this
+    job at the time of this update.
+
+    Values:
+      RESERVATION_EDITION_UNSPECIFIED: Default value, which will be treated as
+        ENTERPRISE.
+      STANDARD: Standard edition.
+      ENTERPRISE: Enterprise edition.
+      ENTERPRISE_PLUS: Enterprise plus edition.
+    """
+    RESERVATION_EDITION_UNSPECIFIED = 0
+    STANDARD = 1
+    ENTERPRISE = 2
+    ENTERPRISE_PLUS = 3
+
   class ReservationUsageValueListEntry(_messages.Message):
     r"""Job resource usage breakdown by reservation.
 
@@ -4793,23 +4854,24 @@ class JobStatistics(_messages.Message):
   copy = _messages.MessageField('JobStatistics5', 2)
   creationTime = _messages.IntegerField(3)
   dataMaskingStatistics = _messages.MessageField('DataMaskingStatistics', 4)
-  endTime = _messages.IntegerField(5)
-  extract = _messages.MessageField('JobStatistics4', 6)
-  finalExecutionDurationMs = _messages.IntegerField(7)
-  load = _messages.MessageField('JobStatistics3', 8)
-  numChildJobs = _messages.IntegerField(9)
-  parentJobId = _messages.StringField(10)
-  query = _messages.MessageField('JobStatistics2', 11)
-  quotaDeferments = _messages.StringField(12, repeated=True)
-  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 13, repeated=True)
-  reservation_id = _messages.StringField(14)
-  rowLevelSecurityStatistics = _messages.MessageField('RowLevelSecurityStatistics', 15)
-  scriptStatistics = _messages.MessageField('ScriptStatistics', 16)
-  sessionInfo = _messages.MessageField('SessionInfo', 17)
-  startTime = _messages.IntegerField(18)
-  totalBytesProcessed = _messages.IntegerField(19)
-  totalSlotMs = _messages.IntegerField(20)
-  transactionInfo = _messages.MessageField('TransactionInfo', 21)
+  edition = _messages.EnumField('EditionValueValuesEnum', 5)
+  endTime = _messages.IntegerField(6)
+  extract = _messages.MessageField('JobStatistics4', 7)
+  finalExecutionDurationMs = _messages.IntegerField(8)
+  load = _messages.MessageField('JobStatistics3', 9)
+  numChildJobs = _messages.IntegerField(10)
+  parentJobId = _messages.StringField(11)
+  query = _messages.MessageField('JobStatistics2', 12)
+  quotaDeferments = _messages.StringField(13, repeated=True)
+  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 14, repeated=True)
+  reservation_id = _messages.StringField(15)
+  rowLevelSecurityStatistics = _messages.MessageField('RowLevelSecurityStatistics', 16)
+  scriptStatistics = _messages.MessageField('ScriptStatistics', 17)
+  sessionInfo = _messages.MessageField('SessionInfo', 18)
+  startTime = _messages.IntegerField(19)
+  totalBytesProcessed = _messages.IntegerField(20)
+  totalSlotMs = _messages.IntegerField(21)
+  transactionInfo = _messages.MessageField('TransactionInfo', 22)
 
 
 class JobStatistics2(_messages.Message):
@@ -8255,6 +8317,10 @@ class TableFieldSchema(_messages.Message):
     foreignTypeDefinition: Optional. Definition of the foreign data type. Only
       valid for top-level schema fields (not nested fields). If the type is
       FOREIGN, this field is required.
+    identityColumnInfo: Optional. Definition of how values are generated for
+      the field. Setting this option means that the field is an identity
+      column. Only valid for top-level schema INTEGER fields (not nested
+      fields).
     maxLength: Optional. Maximum length of values of this field for STRINGS or
       BYTES. If max_length is not specified, no maximum length constraint is
       imposed on this field. If type = "STRING", then max_length represents
@@ -8355,15 +8421,16 @@ class TableFieldSchema(_messages.Message):
   description = _messages.StringField(4)
   fields = _messages.MessageField('TableFieldSchema', 5, repeated=True)
   foreignTypeDefinition = _messages.StringField(6)
-  maxLength = _messages.IntegerField(7)
-  mode = _messages.StringField(8)
-  name = _messages.StringField(9)
-  policyTags = _messages.MessageField('PolicyTagsValue', 10)
-  precision = _messages.IntegerField(11)
-  rangeElementType = _messages.MessageField('RangeElementTypeValue', 12)
-  roundingMode = _messages.EnumField('RoundingModeValueValuesEnum', 13)
-  scale = _messages.IntegerField(14)
-  type = _messages.StringField(15)
+  identityColumnInfo = _messages.MessageField('IdentityColumnInfo', 7)
+  maxLength = _messages.IntegerField(8)
+  mode = _messages.StringField(9)
+  name = _messages.StringField(10)
+  policyTags = _messages.MessageField('PolicyTagsValue', 11)
+  precision = _messages.IntegerField(12)
+  rangeElementType = _messages.MessageField('RangeElementTypeValue', 13)
+  roundingMode = _messages.EnumField('RoundingModeValueValuesEnum', 14)
+  scale = _messages.IntegerField(15)
+  type = _messages.StringField(16)
 
 
 class TableList(_messages.Message):

@@ -865,7 +865,7 @@ class DatastreamV1(base_api.BaseApiClient):
     )
 
     def Run(self, request, global_params=None):
-      r"""Use this method to start, resume or recover a stream with a non default CDC strategy. NOTE: This feature is currently experimental.
+      r"""Use this method to start, resume or recover a stream with a non default CDC strategy.
 
       Args:
         request: (DatastreamProjectsLocationsStreamsRunRequest) input message

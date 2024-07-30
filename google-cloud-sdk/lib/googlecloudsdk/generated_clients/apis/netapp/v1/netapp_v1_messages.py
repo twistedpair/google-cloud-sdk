@@ -461,6 +461,24 @@ class EncryptVolumesRequest(_messages.Message):
 
 
 
+class EstablishPeeringRequest(_messages.Message):
+  r"""EstablishPeeringRequest establishes cluster and svm peerings between the
+  source and the destination replications.
+
+  Fields:
+    peerClusterName: Required. Name of the user's local source cluster to be
+      peered with the destination cluster.
+    peerIpAddresses: Optional. List of IPv4 ip addresses to be used for
+      peering.
+    peerSvmName: Required. Name of the user's local source vserver svm to be
+      peered with the destination vserver svm.
+  """
+
+  peerClusterName = _messages.StringField(1)
+  peerIpAddresses = _messages.StringField(2, repeated=True)
+  peerSvmName = _messages.StringField(3)
+
+
 class ExportPolicy(_messages.Message):
   r"""Defines the export policy for the volume.
 
@@ -1683,6 +1701,22 @@ class NetappProjectsLocationsVolumesReplicationsDeleteRequest(_messages.Message)
   name = _messages.StringField(1, required=True)
 
 
+class NetappProjectsLocationsVolumesReplicationsEstablishPeeringRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesReplicationsEstablishPeeringRequest
+  object.
+
+  Fields:
+    establishPeeringRequest: A EstablishPeeringRequest resource to be passed
+      as the request body.
+    name: Required. The resource name of the replication, in the format of pro
+      jects/{project_id}/locations/{location}/volumes/{volume_id}/replications
+      /{replication_id}.
+  """
+
+  establishPeeringRequest = _messages.MessageField('EstablishPeeringRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class NetappProjectsLocationsVolumesReplicationsGetRequest(_messages.Message):
   r"""A NetappProjectsLocationsVolumesReplicationsGetRequest object.
 
@@ -1778,6 +1812,21 @@ class NetappProjectsLocationsVolumesReplicationsStopRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   stopReplicationRequest = _messages.MessageField('StopReplicationRequest', 2)
+
+
+class NetappProjectsLocationsVolumesReplicationsSyncRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesReplicationsSyncRequest object.
+
+  Fields:
+    name: Required. The resource name of the replication, in the format of pro
+      jects/{project_id}/locations/{location}/volumes/{volume_id}/replications
+      /{replication_id}.
+    syncReplicationRequest: A SyncReplicationRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  syncReplicationRequest = _messages.MessageField('SyncReplicationRequest', 2)
 
 
 class NetappProjectsLocationsVolumesRevertRequest(_messages.Message):
@@ -2013,6 +2062,8 @@ class Replication(_messages.Message):
   region replication relationship between 2 volumes in different regions.
 
   Enums:
+    HybridReplicationTypeValueValuesEnum: Output only. Type of the hybrid
+      replication.
     MirrorStateValueValuesEnum: Output only. Indicates the state of mirroring.
     ReplicationScheduleValueValuesEnum: Required. Indicates the schedule for
       replication.
@@ -2024,6 +2075,7 @@ class Replication(_messages.Message):
     LabelsValue: Resource labels to represent user provided metadata.
 
   Fields:
+    clusterLocation: Optional. Location of the user cluster.
     createTime: Output only. Replication create time.
     description: A description about this replication relationship.
     destinationVolume: Output only. Full name of destination volume resource.
@@ -2036,6 +2088,7 @@ class Replication(_messages.Message):
       relationship is not healthy. It has missed the most recent scheduled
       transfer.
     hybridPeeringDetails: Output only. Hybrid peering details.
+    hybridReplicationType: Output only. Type of the hybrid replication.
     labels: Resource labels to represent user provided metadata.
     mirrorState: Output only. Indicates the state of mirroring.
     name: Identifier. The resource name of the Replication. Format: `projects/
@@ -2050,6 +2103,20 @@ class Replication(_messages.Message):
     transferStats: Output only. Replication transfer statistics.
   """
 
+  class HybridReplicationTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of the hybrid replication.
+
+    Values:
+      HYBRID_REPLICATION_TYPE_UNSPECIFIED: Unspecified hybrid replication
+        type.
+      MIGRATION: Hybrid replication type for migration.
+      CONTINUOUS_REPLICATION: Hybrid replication type for continuous
+        replication.
+    """
+    HYBRID_REPLICATION_TYPE_UNSPECIFIED = 0
+    MIGRATION = 1
+    CONTINUOUS_REPLICATION = 2
+
   class MirrorStateValueValuesEnum(_messages.Enum):
     r"""Output only. Indicates the state of mirroring.
 
@@ -2059,13 +2126,17 @@ class Replication(_messages.Message):
       MIRRORED: Destination volume has been initialized and is ready to
         receive replication transfers.
       STOPPED: Destination volume is not receiving replication transfers.
-      TRANSFERRING: Replication is in progress.
+      TRANSFERRING: Incremental replication is in progress.
+      BASELINE_TRANSFERRING: Baseline replication is in progress.
+      ABORTED: Replication is aborted.
     """
     MIRROR_STATE_UNSPECIFIED = 0
     PREPARING = 1
     MIRRORED = 2
     STOPPED = 3
     TRANSFERRING = 4
+    BASELINE_TRANSFERRING = 5
+    ABORTED = 6
 
   class ReplicationScheduleValueValuesEnum(_messages.Enum):
     r"""Required. Indicates the schedule for replication.
@@ -2141,21 +2212,23 @@ class Replication(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  destinationVolume = _messages.StringField(3)
-  destinationVolumeParameters = _messages.MessageField('DestinationVolumeParameters', 4)
-  healthy = _messages.BooleanField(5)
-  hybridPeeringDetails = _messages.MessageField('HybridPeeringDetails', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  mirrorState = _messages.EnumField('MirrorStateValueValuesEnum', 8)
-  name = _messages.StringField(9)
-  replicationSchedule = _messages.EnumField('ReplicationScheduleValueValuesEnum', 10)
-  role = _messages.EnumField('RoleValueValuesEnum', 11)
-  sourceVolume = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  stateDetails = _messages.StringField(14)
-  transferStats = _messages.MessageField('TransferStats', 15)
+  clusterLocation = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  destinationVolume = _messages.StringField(4)
+  destinationVolumeParameters = _messages.MessageField('DestinationVolumeParameters', 5)
+  healthy = _messages.BooleanField(6)
+  hybridPeeringDetails = _messages.MessageField('HybridPeeringDetails', 7)
+  hybridReplicationType = _messages.EnumField('HybridReplicationTypeValueValuesEnum', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  mirrorState = _messages.EnumField('MirrorStateValueValuesEnum', 10)
+  name = _messages.StringField(11)
+  replicationSchedule = _messages.EnumField('ReplicationScheduleValueValuesEnum', 12)
+  role = _messages.EnumField('RoleValueValuesEnum', 13)
+  sourceVolume = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  stateDetails = _messages.StringField(16)
+  transferStats = _messages.MessageField('TransferStats', 17)
 
 
 class RestoreParameters(_messages.Message):
@@ -2497,6 +2570,9 @@ class StoragePool(_messages.Message):
   Fields:
     activeDirectory: Optional. Specifies the Active Directory to be used for
       creating a SMB volume.
+    allowAutoTiering: Optional. True if the storage pool supports Auto Tiering
+      enabled volumes. Default is false. Auto-tiering can be enabled after
+      storage pool creation but it can't be disabled once enabled.
     capacityGib: Required. Capacity in GIB of the pool
     createTime: Output only. Create time of the storage pool
     description: Optional. Description of the storage pool
@@ -2601,24 +2677,31 @@ class StoragePool(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   activeDirectory = _messages.StringField(1)
-  capacityGib = _messages.IntegerField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 5)
-  globalAccessAllowed = _messages.BooleanField(6)
-  kmsConfig = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  ldapEnabled = _messages.BooleanField(9)
-  name = _messages.StringField(10)
-  network = _messages.StringField(11)
-  psaRange = _messages.StringField(12)
-  replicaZone = _messages.StringField(13)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  stateDetails = _messages.StringField(16)
-  volumeCapacityGib = _messages.IntegerField(17)
-  volumeCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(19)
+  allowAutoTiering = _messages.BooleanField(2)
+  capacityGib = _messages.IntegerField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 6)
+  globalAccessAllowed = _messages.BooleanField(7)
+  kmsConfig = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  ldapEnabled = _messages.BooleanField(10)
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  psaRange = _messages.StringField(13)
+  replicaZone = _messages.StringField(14)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  stateDetails = _messages.StringField(17)
+  volumeCapacityGib = _messages.IntegerField(18)
+  volumeCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(20)
+
+
+class SyncReplicationRequest(_messages.Message):
+  r"""SyncReplicationRequest syncs the replication from source to destination.
+  """
+
 
 
 class TieringPolicy(_messages.Message):
@@ -2737,9 +2820,14 @@ class Volume(_messages.Message):
     kmsConfig: Output only. Specifies the KMS config to be used for volume
       encryption.
     labels: Optional. Labels as key value pairs
+    largeCapacity: Optional. Flag indicating if the volume will be a large
+      capacity volume or a regular volume.
     ldapEnabled: Output only. Flag indicating if the volume is NFS LDAP
       enabled or not.
     mountOptions: Output only. Mount options of this volume
+    multipleEndpoints: Optional. Flag indicating if the volume will have an IP
+      address per node for volumes supporting multiple IP endpoints. Only the
+      volume with large_capacity will be allowed to have multiple endpoints.
     name: Identifier. Name of the volume
     network: Output only. VPC Network name. Format:
       projects/{project}/global/networks/{network}
@@ -2877,6 +2965,11 @@ class Volume(_messages.Message):
       RESTORING: Volume State is Restoring
       DISABLED: Volume State is Disabled
       ERROR: Volume State is Error
+      PREPARING: Volume State is Preparing. Note that this is different from
+        CREATING where CREATING means the volume is being created, while
+        PREPARING means the volume is created and now being prepared for the
+        replication.
+      READ_ONLY: Volume State is Read Only
     """
     STATE_UNSPECIFIED = 0
     READY = 1
@@ -2886,6 +2979,8 @@ class Volume(_messages.Message):
     RESTORING = 5
     DISABLED = 6
     ERROR = 7
+    PREPARING = 8
+    READ_ONLY = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2923,29 +3018,31 @@ class Volume(_messages.Message):
   kerberosEnabled = _messages.BooleanField(10)
   kmsConfig = _messages.StringField(11)
   labels = _messages.MessageField('LabelsValue', 12)
-  ldapEnabled = _messages.BooleanField(13)
-  mountOptions = _messages.MessageField('MountOption', 14, repeated=True)
-  name = _messages.StringField(15)
-  network = _messages.StringField(16)
-  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 17, repeated=True)
-  psaRange = _messages.StringField(18)
-  replicaZone = _messages.StringField(19)
-  restoreParameters = _messages.MessageField('RestoreParameters', 20)
-  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 21, repeated=True)
-  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 22)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 23)
-  shareName = _messages.StringField(24)
-  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 25, repeated=True)
-  snapReserve = _messages.FloatField(26)
-  snapshotDirectory = _messages.BooleanField(27)
-  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 28)
-  state = _messages.EnumField('StateValueValuesEnum', 29)
-  stateDetails = _messages.StringField(30)
-  storagePool = _messages.StringField(31)
-  tieringPolicy = _messages.MessageField('TieringPolicy', 32)
-  unixPermissions = _messages.StringField(33)
-  usedGib = _messages.IntegerField(34)
-  zone = _messages.StringField(35)
+  largeCapacity = _messages.BooleanField(13)
+  ldapEnabled = _messages.BooleanField(14)
+  mountOptions = _messages.MessageField('MountOption', 15, repeated=True)
+  multipleEndpoints = _messages.BooleanField(16)
+  name = _messages.StringField(17)
+  network = _messages.StringField(18)
+  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 19, repeated=True)
+  psaRange = _messages.StringField(20)
+  replicaZone = _messages.StringField(21)
+  restoreParameters = _messages.MessageField('RestoreParameters', 22)
+  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 23, repeated=True)
+  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 24)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 25)
+  shareName = _messages.StringField(26)
+  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 27, repeated=True)
+  snapReserve = _messages.FloatField(28)
+  snapshotDirectory = _messages.BooleanField(29)
+  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 30)
+  state = _messages.EnumField('StateValueValuesEnum', 31)
+  stateDetails = _messages.StringField(32)
+  storagePool = _messages.StringField(33)
+  tieringPolicy = _messages.MessageField('TieringPolicy', 34)
+  unixPermissions = _messages.StringField(35)
+  usedGib = _messages.IntegerField(36)
+  zone = _messages.StringField(37)
 
 
 class WeeklySchedule(_messages.Message):

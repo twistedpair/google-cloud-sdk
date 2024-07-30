@@ -864,6 +864,9 @@ class Instance(_messages.Message):
       '=' is not allowed to be used within the labels.
     OptionsValue: Map of additional options used to configure the behavior of
       Data Fusion instance.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     accelerators: Output only. List of accelerators enabled for this CDF
@@ -916,6 +919,9 @@ class Instance(_messages.Message):
     state: Output only. The current state of this Data Fusion instance.
     stateMessage: Output only. Additional information about the current state
       of this Data Fusion instance if available.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     tenantProjectId: Output only. The name of the tenant project.
     type: Required. Instance type.
     updateTime: Output only. The time the instance was last updated.
@@ -1038,6 +1044,32 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   accelerators = _messages.MessageField('Accelerator', 1, repeated=True)
   apiEndpoint = _messages.StringField(2)
   availableVersion = _messages.MessageField('Version', 3, repeated=True)
@@ -1067,12 +1099,13 @@ class Instance(_messages.Message):
   serviceEndpoint = _messages.StringField(27)
   state = _messages.EnumField('StateValueValuesEnum', 28)
   stateMessage = _messages.StringField(29)
-  tenantProjectId = _messages.StringField(30)
-  type = _messages.EnumField('TypeValueValuesEnum', 31)
-  updateTime = _messages.StringField(32)
-  version = _messages.StringField(33)
-  workforceIdentityServiceEndpoint = _messages.StringField(34)
-  zone = _messages.StringField(35)
+  tags = _messages.MessageField('TagsValue', 30)
+  tenantProjectId = _messages.StringField(31)
+  type = _messages.EnumField('TypeValueValuesEnum', 32)
+  updateTime = _messages.StringField(33)
+  version = _messages.StringField(34)
+  workforceIdentityServiceEndpoint = _messages.StringField(35)
+  zone = _messages.StringField(36)
 
 
 class IsolationExpectations(_messages.Message):
@@ -1092,6 +1125,9 @@ class IsolationExpectations(_messages.Message):
     ZsRegionStateValueValuesEnum:
 
   Fields:
+    requirementOverride: Explicit overrides for ZI and ZS requirements to be
+      used for resources that should be excluded from ZI/ZS verification
+      logic.
     ziOrgPolicy: A ZiOrgPolicyValueValuesEnum attribute.
     ziRegionPolicy: A ZiRegionPolicyValueValuesEnum attribute.
     ziRegionState: A ZiRegionStateValueValuesEnum attribute.
@@ -1212,13 +1248,14 @@ class IsolationExpectations(_messages.Message):
     ZS_REGION_NOT_ENABLED = 2
     ZS_REGION_ENABLED = 3
 
-  ziOrgPolicy = _messages.EnumField('ZiOrgPolicyValueValuesEnum', 1)
-  ziRegionPolicy = _messages.EnumField('ZiRegionPolicyValueValuesEnum', 2)
-  ziRegionState = _messages.EnumField('ZiRegionStateValueValuesEnum', 3)
-  zoneIsolation = _messages.EnumField('ZoneIsolationValueValuesEnum', 4)
-  zoneSeparation = _messages.EnumField('ZoneSeparationValueValuesEnum', 5)
-  zsOrgPolicy = _messages.EnumField('ZsOrgPolicyValueValuesEnum', 6)
-  zsRegionState = _messages.EnumField('ZsRegionStateValueValuesEnum', 7)
+  requirementOverride = _messages.MessageField('RequirementOverride', 1)
+  ziOrgPolicy = _messages.EnumField('ZiOrgPolicyValueValuesEnum', 2)
+  ziRegionPolicy = _messages.EnumField('ZiRegionPolicyValueValuesEnum', 3)
+  ziRegionState = _messages.EnumField('ZiRegionStateValueValuesEnum', 4)
+  zoneIsolation = _messages.EnumField('ZoneIsolationValueValuesEnum', 5)
+  zoneSeparation = _messages.EnumField('ZoneSeparationValueValuesEnum', 6)
+  zsOrgPolicy = _messages.EnumField('ZsOrgPolicyValueValuesEnum', 7)
+  zsRegionState = _messages.EnumField('ZsRegionStateValueValuesEnum', 8)
 
 
 class ListAvailableVersionsResponse(_messages.Message):
@@ -1872,6 +1909,52 @@ class RemoveIamPolicyRequest(_messages.Message):
 
 class RemoveIamPolicyResponse(_messages.Message):
   r"""Response message for RemoveIamPolicy method."""
+
+
+class RequirementOverride(_messages.Message):
+  r"""A RequirementOverride object.
+
+  Enums:
+    ZiOverrideValueValuesEnum:
+    ZsOverrideValueValuesEnum:
+
+  Fields:
+    ziOverride: A ZiOverrideValueValuesEnum attribute.
+    zsOverride: A ZsOverrideValueValuesEnum attribute.
+  """
+
+  class ZiOverrideValueValuesEnum(_messages.Enum):
+    r"""ZiOverrideValueValuesEnum enum type.
+
+    Values:
+      ZI_UNSPECIFIED: <no description>
+      ZI_UNKNOWN: To be used if tracking is not available
+      ZI_NOT_REQUIRED: <no description>
+      ZI_PREFERRED: <no description>
+      ZI_REQUIRED: <no description>
+    """
+    ZI_UNSPECIFIED = 0
+    ZI_UNKNOWN = 1
+    ZI_NOT_REQUIRED = 2
+    ZI_PREFERRED = 3
+    ZI_REQUIRED = 4
+
+  class ZsOverrideValueValuesEnum(_messages.Enum):
+    r"""ZsOverrideValueValuesEnum enum type.
+
+    Values:
+      ZS_UNSPECIFIED: <no description>
+      ZS_UNKNOWN: To be used if tracking is not available
+      ZS_NOT_REQUIRED: <no description>
+      ZS_REQUIRED: <no description>
+    """
+    ZS_UNSPECIFIED = 0
+    ZS_UNKNOWN = 1
+    ZS_NOT_REQUIRED = 2
+    ZS_REQUIRED = 3
+
+  ziOverride = _messages.EnumField('ZiOverrideValueValuesEnum', 1)
+  zsOverride = _messages.EnumField('ZsOverrideValueValuesEnum', 2)
 
 
 class RestartInstanceRequest(_messages.Message):

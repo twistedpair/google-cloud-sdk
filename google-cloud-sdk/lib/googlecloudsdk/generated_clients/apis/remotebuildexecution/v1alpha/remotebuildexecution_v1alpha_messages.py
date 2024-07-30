@@ -1019,6 +1019,8 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
     inputCacheMissFiles: The input cache miss rate as a fraction of the number
       of input files.
     inputMountType: Indicates how the input tree was mounted for the action.
+    inputTreeStats: Contains stats about the action input metadata tree that
+      was fetched to determine the action's inputs.
     numErrors: The number of errors reported.
     numWarnings: The number of warnings reported.
     outputLocation: Indicates whether output files and/or output directories
@@ -1112,10 +1114,11 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
   inputCacheMissBytes = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
   inputCacheMissFiles = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
   inputMountType = _messages.EnumField('InputMountTypeValueValuesEnum', 6)
-  numErrors = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  numWarnings = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  outputLocation = _messages.EnumField('OutputLocationValueValuesEnum', 9)
-  usedAsyncContainer = _messages.BooleanField(10)
+  inputTreeStats = _messages.MessageField('GoogleDevtoolsRemotebuildbotInputTreeStats', 7)
+  numErrors = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  numWarnings = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  outputLocation = _messages.EnumField('OutputLocationValueValuesEnum', 10)
+  usedAsyncContainer = _messages.BooleanField(11)
 
 
 class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
@@ -1279,6 +1282,26 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
+
+
+class GoogleDevtoolsRemotebuildbotInputTreeStats(_messages.Message):
+  r"""A GoogleDevtoolsRemotebuildbotInputTreeStats object.
+
+  Fields:
+    maxDepth: Tree depth.
+    processingTimeMillis: Time spent retrieving and processing the tree.
+    totalFiles: Overall number of files in the tree.
+    totalNodes: Overall number of nodes in the tree.
+    totalSize: Total size in bytes of all files in the tree.
+    totalSymlinks: Overall number of symlinks in the tree.
+  """
+
+  maxDepth = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  processingTimeMillis = _messages.IntegerField(2)
+  totalFiles = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  totalNodes = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  totalSize = _messages.IntegerField(5)
+  totalSymlinks = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class GoogleDevtoolsRemotebuildbotResourceUsage(_messages.Message):
@@ -1827,11 +1850,22 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
   Enums:
     StateValueValuesEnum: Output only. State of the instance.
 
+  Messages:
+    CasRelationResultValue: The map stores the validation results of
+      `cas_parents`, `cas_children`, where the key is the instance number and
+      the value is `google.rpc.Status` type. Each map stores whether the
+      instance (i.e. the key) is a valid parent or child of the requestor
+      (i.e. `this` Instance).
+
   Fields:
     backendProperties: Output only. Describes the instance's backend project
       configuration. Currently, this includes the list of user-managed IAM
       bindings applied to the backend project, which will always be empty for
       instances not in one of the ENABLE_BE_IAM_BINDING_* feature allowlists.
+    casRelationResult: The map stores the validation results of `cas_parents`,
+      `cas_children`, where the key is the instance number and the value is
+      `google.rpc.Status` type. Each map stores whether the instance (i.e. the
+      key) is a valid parent or child of the requestor (i.e. `this` Instance).
     featurePolicy: The policy to define whether or not RBE features can be
       used or how they can be used.
     location: The location is a GCP region. Currently only `us-central1` is
@@ -1866,13 +1900,43 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
     RUNNING = 2
     INACTIVE = 3
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CasRelationResultValue(_messages.Message):
+    r"""The map stores the validation results of `cas_parents`,
+    `cas_children`, where the key is the instance number and the value is
+    `google.rpc.Status` type. Each map stores whether the instance (i.e. the
+    key) is a valid parent or child of the requestor (i.e. `this` Instance).
+
+    Messages:
+      AdditionalProperty: An additional property for a CasRelationResultValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        CasRelationResultValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CasRelationResultValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleRpcStatus attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleRpcStatus', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   backendProperties = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaBackendProperties', 1)
-  featurePolicy = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy', 2)
-  location = _messages.StringField(3)
-  loggingEnabled = _messages.BooleanField(4)
-  name = _messages.StringField(5)
-  schedulerNotificationConfig = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaSchedulerNotificationConfig', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
+  casRelationResult = _messages.MessageField('CasRelationResultValue', 2)
+  featurePolicy = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy', 3)
+  location = _messages.StringField(4)
+  loggingEnabled = _messages.BooleanField(5)
+  name = _messages.StringField(6)
+  schedulerNotificationConfig = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaSchedulerNotificationConfig', 7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesRequest(_messages.Message):

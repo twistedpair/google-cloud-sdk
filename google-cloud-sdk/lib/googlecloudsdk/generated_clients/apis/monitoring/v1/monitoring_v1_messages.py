@@ -617,14 +617,28 @@ class DashboardFilter(_messages.Message):
 
   Enums:
     FilterTypeValueValuesEnum: The specified filter type
+    ValueTypeValueValuesEnum: The type of the filter value. If value_type is
+      not provided, it will be inferred from the default_value. If neither
+      value_type nor default_value is provided, value_type will be set to
+      STRING by default.
 
   Fields:
     filterType: The specified filter type
-    labelKey: Required. The key for the label
-    stringValue: A variable-length string value.
+    labelKey: Optional. The key for the label. This must be omitted if the
+      filter_type is VALUE_ONLY but is required otherwise.
+    stringArray: A list of possible string values for the filter
+    stringArrayValue: An array of variable-length string values. If this field
+      is set, value_type must be set to STRING_ARRAY or VALUE_TYPE_UNSPECIFIED
+    stringValue: A variable-length string value. If this field is set,
+      value_type must be set to STRING or VALUE_TYPE_UNSPECIFIED
     templateVariable: The placeholder text that can be referenced in a filter
       string or MQL query. If omitted, the dashboard filter will be applied to
       all relevant widgets in the dashboard.
+    timeSeriesQuery: A query to run to fetch possible values for the filter.
+      Only OpsAnalyticsQueries are supported
+    valueType: The type of the filter value. If value_type is not provided, it
+      will be inferred from the default_value. If neither value_type nor
+      default_value is provided, value_type will be set to STRING by default.
   """
 
   class FilterTypeValueValuesEnum(_messages.Enum):
@@ -638,6 +652,8 @@ class DashboardFilter(_messages.Message):
       USER_METADATA_LABEL: Filter on a user metadata label value
       SYSTEM_METADATA_LABEL: Filter on a system metadata label value
       GROUP: Filter on a group id
+      VALUE_ONLY: Filter that only contains a value. The label_key field must
+        be unset for filters of this type.
     """
     FILTER_TYPE_UNSPECIFIED = 0
     RESOURCE_LABEL = 1
@@ -645,11 +661,30 @@ class DashboardFilter(_messages.Message):
     USER_METADATA_LABEL = 3
     SYSTEM_METADATA_LABEL = 4
     GROUP = 5
+    VALUE_ONLY = 6
+
+  class ValueTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the filter value. If value_type is not provided, it will
+    be inferred from the default_value. If neither value_type nor
+    default_value is provided, value_type will be set to STRING by default.
+
+    Values:
+      VALUE_TYPE_UNSPECIFIED: Value type is unspecified
+      STRING: String type
+      STRING_ARRAY: String array type
+    """
+    VALUE_TYPE_UNSPECIFIED = 0
+    STRING = 1
+    STRING_ARRAY = 2
 
   filterType = _messages.EnumField('FilterTypeValueValuesEnum', 1)
   labelKey = _messages.StringField(2)
-  stringValue = _messages.StringField(3)
-  templateVariable = _messages.StringField(4)
+  stringArray = _messages.MessageField('StringArray', 3)
+  stringArrayValue = _messages.MessageField('StringArray', 4)
+  stringValue = _messages.StringField(5)
+  templateVariable = _messages.StringField(6)
+  timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 7)
+  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 8)
 
 
 class DataSet(_messages.Message):
@@ -2408,6 +2443,16 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StringArray(_messages.Message):
+  r"""An array of strings
+
+  Fields:
+    values: The values of the array
+  """
+
+  values = _messages.StringField(1, repeated=True)
 
 
 class TableDataSet(_messages.Message):

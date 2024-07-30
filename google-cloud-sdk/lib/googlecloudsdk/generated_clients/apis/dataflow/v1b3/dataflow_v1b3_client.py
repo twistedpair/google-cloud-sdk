@@ -1353,7 +1353,7 @@ class DataflowV1b3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a Cloud Dataflow job from a template. Do not enter confidential information when you supply string values using the API.
+      r"""Creates a Cloud Dataflow job from a template. Do not enter confidential information when you supply string values using the API. To create a job, we recommend using `projects.locations.templates.create` with a [regional endpoint] (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using `projects.templates.create` is not recommended, because your job will always start in `us-central1`.
 
       Args:
         request: (DataflowProjectsLocationsTemplatesCreateRequest) input message
@@ -1379,7 +1379,7 @@ class DataflowV1b3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get the template associated with a template.
+      r"""Get the template associated with a template. To get the template, we recommend using `projects.locations.templates.get` with a [regional endpoint] (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using `projects.templates.get` is not recommended, because only templates that are running in `us-central1` are retrieved.
 
       Args:
         request: (DataflowProjectsLocationsTemplatesGetRequest) input message
@@ -1405,7 +1405,7 @@ class DataflowV1b3(base_api.BaseApiClient):
     )
 
     def Launch(self, request, global_params=None):
-      r"""Launch a template.
+      r"""Launches a template. To launch a template, we recommend using `projects.locations.templates.launch` with a [regional endpoint] (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using `projects.templates.launch` is not recommended, because jobs launched from the template will always start in `us-central1`.
 
       Args:
         request: (DataflowProjectsLocationsTemplatesLaunchRequest) input message
@@ -1576,7 +1576,7 @@ class DataflowV1b3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a Cloud Dataflow job from a template. Do not enter confidential information when you supply string values using the API.
+      r"""Creates a Cloud Dataflow job from a template. Do not enter confidential information when you supply string values using the API. To create a job, we recommend using `projects.locations.templates.create` with a [regional endpoint] (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using `projects.templates.create` is not recommended, because your job will always start in `us-central1`.
 
       Args:
         request: (DataflowProjectsTemplatesCreateRequest) input message
@@ -1602,7 +1602,7 @@ class DataflowV1b3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get the template associated with a template.
+      r"""Get the template associated with a template. To get the template, we recommend using `projects.locations.templates.get` with a [regional endpoint] (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using `projects.templates.get` is not recommended, because only templates that are running in `us-central1` are retrieved.
 
       Args:
         request: (DataflowProjectsTemplatesGetRequest) input message
@@ -1628,7 +1628,7 @@ class DataflowV1b3(base_api.BaseApiClient):
     )
 
     def Launch(self, request, global_params=None):
-      r"""Launch a template.
+      r"""Launches a template. To launch a template, we recommend using `projects.locations.templates.launch` with a [regional endpoint] (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using `projects.templates.launch` is not recommended, because jobs launched from the template will always start in `us-central1`.
 
       Args:
         request: (DataflowProjectsTemplatesLaunchRequest) input message

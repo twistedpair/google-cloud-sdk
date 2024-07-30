@@ -382,36 +382,18 @@ class Compliance(_messages.Message):
 
 
 class CustomMetadataData(_messages.Message):
-  r"""Any custom metadata associated with the resource. i.e. A spanner
+  r"""Any custom metadata associated with the resource. e.g. A spanner
   instance can have multiple databases with its own unique metadata.
   Information for these individual databases can be captured in custom
   metadata data
 
   Fields:
-    databaseMetadata: A DatabaseMetadata attribute.
+    internalResourceMetadata: Metadata for individual internal resources in an
+      instance. e.g. spanner instance can have multiple databases with unique
+      configuration.
   """
 
-  databaseMetadata = _messages.MessageField('DatabaseMetadata', 1, repeated=True)
-
-
-class DatabaseMetadata(_messages.Message):
-  r"""Metadata for individual databases created in an instance. i.e. spanner
-  instance can have multiple databases with unique configuration settings.
-
-  Fields:
-    backupConfiguration: Backup configuration for this database
-    backupRun: Information about the last backup attempt for this database
-    product: A Product attribute.
-    resourceId: A DatabaseResourceId attribute.
-    resourceName: Required. Database name. Resource name to follow CAIS
-      resource_name format as noted here go/condor-common-datamodel
-  """
-
-  backupConfiguration = _messages.MessageField('BackupConfiguration', 1)
-  backupRun = _messages.MessageField('BackupRun', 2)
-  product = _messages.MessageField('Product', 3)
-  resourceId = _messages.MessageField('DatabaseResourceId', 4)
-  resourceName = _messages.StringField(5)
+  internalResourceMetadata = _messages.MessageField('InternalResourceMetadata', 1, repeated=True)
 
 
 class DatabaseResourceFeed(_messages.Message):
@@ -893,8 +875,8 @@ class DatabaseResourceId(_messages.Message):
     resourceType: Required. The type of resource this ID is identifying. Ex
       redis.googleapis.com/Instance, redis.googleapis.com/Cluster,
       alloydb.googleapis.com/Cluster, alloydb.googleapis.com/Instance,
-      spanner.googleapis.com/Instance REQUIRED Please refer go/condor-common-
-      datamodel
+      spanner.googleapis.com/Instance, firestore.googleapis.com/Database,
+      REQUIRED Please refer go/condor-common-datamodel
     uniqueId: Required. A service-local token that distinguishes this resource
       from other resources within the same service.
   """
@@ -2002,6 +1984,28 @@ class InstanceAuthString(_messages.Message):
   authString = _messages.StringField(1)
 
 
+class InternalResourceMetadata(_messages.Message):
+  r"""Metadata for individual internal resources in an instance. e.g. spanner
+  instance can have multiple databases with unique configuration settings.
+  Similarly bigtable can have multiple clusters within same bigtable instance.
+
+  Fields:
+    backupConfiguration: Backup configuration for this database
+    backupRun: Information about the last backup attempt for this database
+    product: A Product attribute.
+    resourceId: A DatabaseResourceId attribute.
+    resourceName: Required. internal resource name for spanner this will be
+      database name e.g."spanner.googleapis.com/projects/123/abc/instances/ins
+      t1/databases/db1"
+  """
+
+  backupConfiguration = _messages.MessageField('BackupConfiguration', 1)
+  backupRun = _messages.MessageField('BackupRun', 2)
+  product = _messages.MessageField('Product', 3)
+  resourceId = _messages.MessageField('DatabaseResourceId', 4)
+  resourceName = _messages.StringField(5)
+
+
 class ListClustersResponse(_messages.Message):
   r"""Response for ListClusters.
 
@@ -2614,6 +2618,8 @@ class Product(_messages.Message):
         dialect.
       ENGINE_OTHER: Other refers to rest of other database engine. This is to
         be when engine is known, but it is not present in this enum.
+      ENGINE_FIRESTORE_WITH_NATIVE_MODE: Firestore with native mode.
+      ENGINE_FIRESTORE_WITH_DATASTORE_MODE: Firestore with datastore mode.
     """
     ENGINE_UNSPECIFIED = 0
     ENGINE_MYSQL = 1
@@ -2629,6 +2635,8 @@ class Product(_messages.Message):
     ENGINE_MEMORYSTORE_FOR_REDIS = 11
     ENGINE_MEMORYSTORE_FOR_REDIS_CLUSTER = 12
     ENGINE_OTHER = 13
+    ENGINE_FIRESTORE_WITH_NATIVE_MODE = 14
+    ENGINE_FIRESTORE_WITH_DATASTORE_MODE = 15
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of specific database product. It could be CloudSQL, AlloyDB etc..
@@ -2647,6 +2655,7 @@ class Product(_messages.Message):
       PRODUCT_TYPE_BIGTABLE: Bigtable product area in GCP
       PRODUCT_TYPE_OTHER: Other refers to rest of other product type. This is
         to be when product type is known, but it is not present in this enum.
+      PRODUCT_TYPE_FIRESTORE: Firestore product area in GCP.
     """
     PRODUCT_TYPE_UNSPECIFIED = 0
     PRODUCT_TYPE_CLOUD_SQL = 1
@@ -2659,6 +2668,7 @@ class Product(_messages.Message):
     PRODUCT_TYPE_MEMORYSTORE = 8
     PRODUCT_TYPE_BIGTABLE = 9
     PRODUCT_TYPE_OTHER = 10
+    PRODUCT_TYPE_FIRESTORE = 11
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

@@ -118,6 +118,9 @@ def _GetBalancingModes():
           `--max-connections`, `--max-connections-per-instance`.
           For valid combinations, see `--max-utilization`.
           """).format(per_connection_flags),
+      'CUSTOM_METRICS': """
+          Spreads load based on custom defined and reported metrics.
+          """,
   }
   return balancing_modes
 
@@ -322,6 +325,65 @@ def AddPreference(parser):
       choices=_GetPreference(),
       type=lambda x: x.upper(),
       help=help_text)
+
+
+def AddCustomMetrics(parser, add_clear_argument=False):
+  """Adds a --custom-metrics flag to the given parser."""
+  group = parser.add_mutually_exclusive_group()
+  help_text = """\
+  List of custom metrics that are used for CUSTOM_METRICS BalancingMode and
+  WEIGHTED_ROUND_ROBIN BackendService locality_lb_policy.
+
+  Example:
+
+    $ {command} --custom-metrics='name=my-signal,maxUtilization=0.8,dryRun=true'
+    $ {command} --custom-metrics='name=my-signal,maxUtilization=0.8,dryRun=true' --custom-metrics='name=my-signal2,maxUtilization=0.2'
+    $ {command} --custom-metrics='[{"name" : "my-signal", "maxUtilization" : 0.8, "dryRun" : true}, {"name" : "my-signal2", "maxUtilization" : 0.1}]'"""
+  group.add_argument(
+      '--custom-metrics',
+      metavar='CUSTOM_METRICS',
+      type=arg_parsers.ArgObject(
+          spec={
+              'name': str,
+              'maxUtilization': float,
+              'dryRun': bool,
+          },
+          required_keys=['name', 'maxUtilization'],
+          repeated=True,
+      ),
+      action=arg_parsers.FlattenAction(),
+      help=help_text,
+  )
+  help_text_file = """\
+  File path to json file with custom metrics that are used for CUSTOM_METRICS BalancingMode and
+  WEIGHTED_ROUND_ROBIN BackendService locality_lb_policy.
+
+  Example:
+
+    $ {command} --custom-metrics-file='customMetric.json'"""
+  group.add_argument(
+      '--custom-metrics-file',
+      metavar='CUSTOM_METRICS',
+      type=arg_parsers.ArgObject(
+          spec={
+              'name': str,
+              'maxUtilization': float,
+              'dryRun': bool,
+          },
+          required_keys=['name', 'maxUtilization'],
+          repeated=True,
+      ),
+      action=arg_parsers.FlattenAction(),
+      help=help_text_file,
+  )
+  if add_clear_argument:
+    group.add_argument(
+        '--clear-custom-metrics',
+        required=False,
+        action='store_true',
+        default=None,
+        help='Clears current list of CUSTOM_METRICS.',
+    )
 
 
 def _JoinTypes(types):

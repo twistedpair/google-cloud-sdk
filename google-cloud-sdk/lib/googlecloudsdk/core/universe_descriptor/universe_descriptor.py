@@ -156,6 +156,62 @@ def _GetAllConfigUniverseDomains() -> Set[str]:
 class UniverseDescriptor:
   """Manages the universe descriptor file fetching and caches the retrieved JSON files."""
 
+  def Get(
+      self, universe_domain: str = None, fetch_if_not_cached: bool = True
+  ) -> universe_descriptor_data_pb2.UniverseDescriptorData:
+    """Gets the universe descriptor as a proto message from the config cache.
+
+    Args:
+      universe_domain: The universe domain to query the config cache table for.
+      fetch_if_not_cached: Whether to fetch the descriptor if it is not cached.
+
+    Returns:
+      The universe descriptor message for the given universe_domain.
+    """
+    descriptor_json = self._GetJson(universe_domain, fetch_if_not_cached)
+    if not descriptor_json:
+      return universe_descriptor_data_pb2.UniverseDescriptorData()
+    return _GetValidatedDescriptorData(descriptor_json, universe_domain)
+
+  def _GetJson(
+      self, universe_domain: str = None, fetch_if_not_cached: bool = True
+  ) -> Dict[str, Any]:
+    """Gets the universe descriptor JSON from the config cache.
+
+    All descriptors which have been previously cached will be accessible
+    through this method. If a descriptor is not cached already, it will attempt
+    to fetch it. A sample descriptor JSON would look like:
+
+    {
+      "version": "v1",
+      "universeDomain": "universe.goog",
+      "universeShortName": "google-universe-testing-environment",
+      "projectPrefix": "google-testing-environment",
+      "authenticationDomain": "auth.cloud.universe.goog",
+      "cloudWebDomain": "cloud.universe.goog",
+    }
+
+    Args:
+      universe_domain: The universe domain to query the config cache table for.
+      fetch_if_not_cached: Whether to fetch the descriptor if it is not cached.
+
+    Returns:
+      The JSON object of the universe descriptor data for the given
+      universe_domain. An example descriptor JSON file can seen in
+      googlecloudsdk/core/universe_descriptor/default-universe-descriptor.json
+    """
+    query_universe_domain = (
+        universe_domain or properties.VALUES.core.universe_domain.Get()
+    )
+    config_store = config.GetConfigStore(
+        CONFIG_CACHE_DESCRIPTOR_DATA_TABLE_NAME
+    )
+    json_data = config_store.GetJSON(query_universe_domain)
+    if not json_data and fetch_if_not_cached:
+      self.UpdateDescriptorFromUniverseDomain(universe_domain)
+      json_data = config_store.GetJSON(query_universe_domain)
+    return json_data or {}
+
   def UpdateAllDescriptors(self) -> None:
     """Refreshes all descriptors according to config universe domains."""
     all_config_universe_domains = _GetAllConfigUniverseDomains()
@@ -185,6 +241,21 @@ class UniverseDescriptor:
       descriptor_data = self._GetDescriptorFileFromBucket(universe_domain)
     _GetValidatedDescriptorData(descriptor_data, universe_domain)
     self._StoreInConfigCache(descriptor_data)
+
+  def DeleteDescriptorFromUniverseDomain(self, universe_domain: str) -> bool:
+    """Deletes a descriptor in the config cache with the given universe domain.
+
+    Args:
+      universe_domain: The universe domain of the descriptor to delete in the
+        config cache.
+
+    Returns:
+      True if the descriptor was successfully deleted, False otherwise.
+    """
+    config_store = config.GetConfigStore(
+        CONFIG_CACHE_DESCRIPTOR_DATA_TABLE_NAME
+    )
+    return config_store.Remove(universe_domain)
 
   def _StoreInConfigCache(self, descriptor_data: Dict[str, Any]):
     """Stores the descriptor data in the config cache.

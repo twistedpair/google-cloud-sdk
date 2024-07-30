@@ -2040,6 +2040,8 @@ class Feature(_messages.Message):
     spec: Optional. Hub-wide Feature configuration. If this Feature does not
       support any Hub-wide configuration, this field may be unused.
     state: Output only. The Hub-wide Feature state.
+    unreachable: Output only. List of locations that could not be reached
+      while fetching this feature.
     updateTime: Output only. When the Feature resource was last updated.
   """
 
@@ -2210,7 +2212,8 @@ class Feature(_messages.Message):
   scopeStates = _messages.MessageField('ScopeStatesValue', 11)
   spec = _messages.MessageField('CommonFeatureSpec', 12)
   state = _messages.MessageField('CommonFeatureState', 13)
-  updateTime = _messages.StringField(14)
+  unreachable = _messages.StringField(14, repeated=True)
+  updateTime = _messages.StringField(15)
 
 
 class FeatureResourceState(_messages.Message):
@@ -2688,9 +2691,14 @@ class GkehubProjectsLocationsFeaturesGetRequest(_messages.Message):
   Fields:
     name: Required. The Feature resource name in the format
       `projects/*/locations/*/features/*`
+    returnPartialSuccess: Optional. If set to true, the response will return
+      partial results when some regions are unreachable and the unreachable
+      field in Feature proto will be populated. If set to false, the request
+      will fail when some regions are unreachable.
   """
 
   name = _messages.StringField(1, required=True)
+  returnPartialSuccess = _messages.BooleanField(2)
 
 
 class GkehubProjectsLocationsFeaturesListRequest(_messages.Message):
@@ -2713,6 +2721,10 @@ class GkehubProjectsLocationsFeaturesListRequest(_messages.Message):
       resources.
     parent: Required. The parent (project and location) where the Features
       will be listed. Specified in the format `projects/*/locations/*`.
+    returnPartialSuccess: Optional. If set to true, the response will return
+      partial results when some regions are unreachable and the unreachable
+      field in Feature proto will be populated. If set to false, the request
+      will fail when some regions are unreachable.
   """
 
   filter = _messages.StringField(1)
@@ -2720,6 +2732,7 @@ class GkehubProjectsLocationsFeaturesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class GkehubProjectsLocationsFeaturesPatchRequest(_messages.Message):

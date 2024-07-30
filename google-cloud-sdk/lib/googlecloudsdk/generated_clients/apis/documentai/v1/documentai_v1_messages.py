@@ -3501,6 +3501,8 @@ class GoogleCloudDocumentaiV1ProcessorVersion(_messages.Message):
       this version.
     displayName: The display name of the processor version.
     documentSchema: The schema of the processor version. Describes the output.
+    genAiModelInfo: Output only. Information about Generative AI model-based
+      processor versions.
     googleManaged: Output only. Denotes that this `ProcessorVersion` is
       managed by Google.
     kmsKeyName: The KMS key name used for encryption.
@@ -3559,15 +3561,16 @@ class GoogleCloudDocumentaiV1ProcessorVersion(_messages.Message):
   deprecationInfo = _messages.MessageField('GoogleCloudDocumentaiV1ProcessorVersionDeprecationInfo', 2)
   displayName = _messages.StringField(3)
   documentSchema = _messages.MessageField('GoogleCloudDocumentaiV1DocumentSchema', 4)
-  googleManaged = _messages.BooleanField(5)
-  kmsKeyName = _messages.StringField(6)
-  kmsKeyVersionName = _messages.StringField(7)
-  latestEvaluation = _messages.MessageField('GoogleCloudDocumentaiV1EvaluationReference', 8)
-  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 9)
-  name = _messages.StringField(10)
-  satisfiesPzi = _messages.BooleanField(11)
-  satisfiesPzs = _messages.BooleanField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
+  genAiModelInfo = _messages.MessageField('GoogleCloudDocumentaiV1ProcessorVersionGenAiModelInfo', 5)
+  googleManaged = _messages.BooleanField(6)
+  kmsKeyName = _messages.StringField(7)
+  kmsKeyVersionName = _messages.StringField(8)
+  latestEvaluation = _messages.MessageField('GoogleCloudDocumentaiV1EvaluationReference', 9)
+  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 10)
+  name = _messages.StringField(11)
+  satisfiesPzi = _messages.BooleanField(12)
+  satisfiesPzs = _messages.BooleanField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
 
 
 class GoogleCloudDocumentaiV1ProcessorVersionAlias(_messages.Message):
@@ -3594,6 +3597,65 @@ class GoogleCloudDocumentaiV1ProcessorVersionDeprecationInfo(_messages.Message):
 
   deprecationTime = _messages.StringField(1)
   replacementProcessorVersion = _messages.StringField(2)
+
+
+class GoogleCloudDocumentaiV1ProcessorVersionGenAiModelInfo(_messages.Message):
+  r"""Information about Generative AI model-based processor versions.
+
+  Fields:
+    customGenAiModelInfo: Information for a custom Generative AI model created
+      by the user.
+    foundationGenAiModelInfo: Information for a pretrained Google-managed
+      foundation model.
+  """
+
+  customGenAiModelInfo = _messages.MessageField('GoogleCloudDocumentaiV1ProcessorVersionGenAiModelInfoCustomGenAiModelInfo', 1)
+  foundationGenAiModelInfo = _messages.MessageField('GoogleCloudDocumentaiV1ProcessorVersionGenAiModelInfoFoundationGenAiModelInfo', 2)
+
+
+class GoogleCloudDocumentaiV1ProcessorVersionGenAiModelInfoCustomGenAiModelInfo(_messages.Message):
+  r"""Information for a custom Generative AI model created by the user. These
+  are created with `Create New Version` in either the `Call foundation model`
+  or `Fine tuning` tabs.
+
+  Enums:
+    CustomModelTypeValueValuesEnum: The type of custom model created by the
+      user.
+
+  Fields:
+    baseProcessorVersionId: The base processor version ID for the custom
+      model.
+    customModelType: The type of custom model created by the user.
+  """
+
+  class CustomModelTypeValueValuesEnum(_messages.Enum):
+    r"""The type of custom model created by the user.
+
+    Values:
+      CUSTOM_MODEL_TYPE_UNSPECIFIED: The model type is unspecified.
+      VERSIONED_FOUNDATION: The model is a versioned foundation model.
+      FINE_TUNED: The model is a finetuned foundation model.
+    """
+    CUSTOM_MODEL_TYPE_UNSPECIFIED = 0
+    VERSIONED_FOUNDATION = 1
+    FINE_TUNED = 2
+
+  baseProcessorVersionId = _messages.StringField(1)
+  customModelType = _messages.EnumField('CustomModelTypeValueValuesEnum', 2)
+
+
+class GoogleCloudDocumentaiV1ProcessorVersionGenAiModelInfoFoundationGenAiModelInfo(_messages.Message):
+  r"""Information for a pretrained Google-managed foundation model.
+
+  Fields:
+    finetuningAllowed: Whether finetuning is allowed for this base processor
+      version.
+    minTrainLabeledDocuments: The minimum number of labeled documents in the
+      training dataset required for finetuning.
+  """
+
+  finetuningAllowed = _messages.BooleanField(1)
+  minTrainLabeledDocuments = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudDocumentaiV1RawDocument(_messages.Message):

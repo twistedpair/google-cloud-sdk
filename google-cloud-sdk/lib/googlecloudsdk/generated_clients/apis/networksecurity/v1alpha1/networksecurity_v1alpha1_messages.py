@@ -247,6 +247,401 @@ class AuthorizationPolicy(_messages.Message):
   updateTime = _messages.StringField(7)
 
 
+class AuthzPolicy(_messages.Message):
+  r"""`AuthzPolicy` is a resource that allows to forward traffic to a callout
+  backend designed to scan the traffic for security purposes.
+
+  Enums:
+    ActionValueValuesEnum: Required. Can be one of ALLOW, DENY, CUSTOM. When
+      the action is CUSTOM, customProvider must be specified. When the action
+      is ALLOW, only requests matching the policy will be allowed. When the
+      action is DENY, only requests matching the policy will be denied. When a
+      request arrives, the policies are evaluated in the following order: 1.
+      If there is a CUSTOM policy that matches the request, the CUSTOM policy
+      is evaluated using the custom authorization providers and the request is
+      denied if the provider rejects the request. 2. If there are any DENY
+      policies that match the request, the request is denied. 3. If there are
+      no ALLOW policies for the resource or if any of the ALLOW policies match
+      the request, the request is allowed. 4. Else the request is denied by
+      default if none of the configured AuthzPolicies with ALLOW action match
+      the request.
+
+  Messages:
+    LabelsValue: Optional. Set of labels associated with the `AuthzPolicy`
+      resource. The format must comply with [the following
+      requirements](/compute/docs/labeling-resources#requirements).
+
+  Fields:
+    action: Required. Can be one of ALLOW, DENY, CUSTOM. When the action is
+      CUSTOM, customProvider must be specified. When the action is ALLOW, only
+      requests matching the policy will be allowed. When the action is DENY,
+      only requests matching the policy will be denied. When a request
+      arrives, the policies are evaluated in the following order: 1. If there
+      is a CUSTOM policy that matches the request, the CUSTOM policy is
+      evaluated using the custom authorization providers and the request is
+      denied if the provider rejects the request. 2. If there are any DENY
+      policies that match the request, the request is denied. 3. If there are
+      no ALLOW policies for the resource or if any of the ALLOW policies match
+      the request, the request is allowed. 4. Else the request is denied by
+      default if none of the configured AuthzPolicies with ALLOW action match
+      the request.
+    createTime: Output only. The timestamp when the resource was created.
+    customProvider: Optional. Required if the action is CUSTOM. Allows
+      delegating authorization decisions to Cloud IAP or to Service
+      Extensions. One of cloudIap or authzExtension must be specified.
+    description: Optional. A human-readable description of the resource.
+    httpRules: Optional. A list of authorization HTTP rules to match against
+      the incoming request. A policy match occurs when at least one HTTP rule
+      matches the request or when no HTTP rules are specified in the policy.
+      At least one HTTP Rule is required for Allow or Deny Action.
+    labels: Optional. Set of labels associated with the `AuthzPolicy`
+      resource. The format must comply with [the following
+      requirements](/compute/docs/labeling-resources#requirements).
+    name: Required. Identifier. Name of the `AuthzPolicy` resource in the
+      following format:
+      `projects/{project}/locations/{location}/authzPolicies/{authz_policy}`.
+    target: Required. Specifies the set of resources to which this policy
+      should be applied to.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Required. Can be one of ALLOW, DENY, CUSTOM. When the action is
+    CUSTOM, customProvider must be specified. When the action is ALLOW, only
+    requests matching the policy will be allowed. When the action is DENY,
+    only requests matching the policy will be denied. When a request arrives,
+    the policies are evaluated in the following order: 1. If there is a CUSTOM
+    policy that matches the request, the CUSTOM policy is evaluated using the
+    custom authorization providers and the request is denied if the provider
+    rejects the request. 2. If there are any DENY policies that match the
+    request, the request is denied. 3. If there are no ALLOW policies for the
+    resource or if any of the ALLOW policies match the request, the request is
+    allowed. 4. Else the request is denied by default if none of the
+    configured AuthzPolicies with ALLOW action match the request.
+
+    Values:
+      AUTHZ_ACTION_UNSPECIFIED: Unspecified action.
+      ALLOW: Allow request to pass through to the backend.
+      DENY: Deny the request and return a HTTP 404 to the client.
+      CUSTOM: Delegate the authorization decision to an external authorization
+        engine.
+    """
+    AUTHZ_ACTION_UNSPECIFIED = 0
+    ALLOW = 1
+    DENY = 2
+    CUSTOM = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of labels associated with the `AuthzPolicy` resource.
+    The format must comply with [the following
+    requirements](/compute/docs/labeling-resources#requirements).
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  createTime = _messages.StringField(2)
+  customProvider = _messages.MessageField('AuthzPolicyCustomProvider', 3)
+  description = _messages.StringField(4)
+  httpRules = _messages.MessageField('AuthzPolicyAuthzRule', 5, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  target = _messages.MessageField('AuthzPolicyTarget', 8)
+  updateTime = _messages.StringField(9)
+
+
+class AuthzPolicyAuthzRule(_messages.Message):
+  r"""Conditions to match against the incoming request.
+
+  Fields:
+    from_: Optional. Describes properties of one or more sources of a request.
+    to: Optional. Describes properties of one or more targets of a request.
+    when: Optional. CEL expression that describes the conditions to be
+      satisfied for the action. The result of the CEL expression is ANDed with
+      the from and to. Refer to the CEL language reference for a list of
+      available attributes.
+  """
+
+  from_ = _messages.MessageField('AuthzPolicyAuthzRuleFrom', 1)
+  to = _messages.MessageField('AuthzPolicyAuthzRuleTo', 2)
+  when = _messages.StringField(3)
+
+
+class AuthzPolicyAuthzRuleFrom(_messages.Message):
+  r"""Describes properties of one or more sources of a request.
+
+  Fields:
+    notSources: Optional. Describes the negated properties of request sources.
+      Matches requests from sources that do not match the criteria specified
+      in this field. At least one of sources or notSources must be specified.
+    sources: Optional. Describes the properties of a request's sources. At
+      least one of sources or notSources must be specified. Limited to 10
+      sources. A match occurs when ANY source (in sources or notSources)
+      matches the request. Within a single source, the match follows AND
+      semantics across fields and OR semantics within a single field, i.e. a
+      match occurs when ANY principal matches AND ANY ipBlocks match.
+  """
+
+  notSources = _messages.MessageField('AuthzPolicyAuthzRuleFromRequestSource', 1, repeated=True)
+  sources = _messages.MessageField('AuthzPolicyAuthzRuleFromRequestSource', 2, repeated=True)
+
+
+class AuthzPolicyAuthzRuleFromRequestSource(_messages.Message):
+  r"""Describes the properties of a single source.
+
+  Fields:
+    principals: Optional. A list of identities derived from the client's
+      certificate. This field will not match on a request unless mutual TLS is
+      enabled for the Forwarding rule or Gateway. Each identity is a string
+      whose value is matched against the URI SAN, or DNS SAN or the subject
+      field in the client's certificate. The match can be exact, prefix,
+      suffix or a substring match. One of exact, prefix, suffix or contains
+      must be specified. Limited to 10 principals.
+    resources: Optional. A list of resources to match against the resource of
+      the source VM of a request. Limited to 10 resources.
+  """
+
+  principals = _messages.MessageField('AuthzPolicyAuthzRuleStringMatch', 1, repeated=True)
+  resources = _messages.MessageField('AuthzPolicyAuthzRuleRequestResource', 2, repeated=True)
+
+
+class AuthzPolicyAuthzRuleHeaderMatch(_messages.Message):
+  r"""Determines how a HTTP header should be matched.
+
+  Fields:
+    name: Optional. Specifies the name of the header in the request.
+    value: Optional. Specifies how the header match will be performed.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.MessageField('AuthzPolicyAuthzRuleStringMatch', 2)
+
+
+class AuthzPolicyAuthzRuleRequestResource(_messages.Message):
+  r"""Describes the properties of a client VM resource accessing the internal
+  application load balancers.
+
+  Fields:
+    iamServiceAccount: Optional. An IAM service account to match against the
+      source service account of the VM sending the request.
+    tagValueIdSet: Optional. A list of resource tag value permanent IDs to
+      match against the resource manager tags value associated with the source
+      VM of a request.
+  """
+
+  iamServiceAccount = _messages.MessageField('AuthzPolicyAuthzRuleStringMatch', 1)
+  tagValueIdSet = _messages.MessageField('AuthzPolicyAuthzRuleRequestResourceTagValueIdSet', 2)
+
+
+class AuthzPolicyAuthzRuleRequestResourceTagValueIdSet(_messages.Message):
+  r"""Describes a set of resource tag value permanent IDs to match against the
+  resource manager tags value associated with the source VM of a request.
+
+  Fields:
+    ids: Required. A list of resource tag value permanent IDs to match against
+      the resource manager tags value associated with the source VM of a
+      request. The match follows AND semantics which means all the ids must
+      match. Limited to 10 matches.
+  """
+
+  ids = _messages.IntegerField(1, repeated=True)
+
+
+class AuthzPolicyAuthzRuleStringMatch(_messages.Message):
+  r"""Determines how a string value should be matched.
+
+  Fields:
+    contains: The input string must have the substring specified here. Note:
+      empty contains match is not allowed, please use regex instead. Examples:
+      * ``abc`` matches the value ``xyz.abc.def``
+    exact: The input string must match exactly the string specified here.
+      Examples: * ``abc`` only matches the value ``abc``.
+    ignoreCase: If true, indicates the exact/prefix/suffix/contains matching
+      should be case insensitive. For example, the matcher ``data`` will match
+      both input string ``Data`` and ``data`` if set to true.
+    prefix: The input string must have the prefix specified here. Note: empty
+      prefix is not allowed, please use regex instead. Examples: * ``abc``
+      matches the value ``abc.xyz``
+    suffix: The input string must have the suffix specified here. Note: empty
+      prefix is not allowed, please use regex instead. Examples: * ``abc``
+      matches the value ``xyz.abc``
+  """
+
+  contains = _messages.StringField(1)
+  exact = _messages.StringField(2)
+  ignoreCase = _messages.BooleanField(3)
+  prefix = _messages.StringField(4)
+  suffix = _messages.StringField(5)
+
+
+class AuthzPolicyAuthzRuleTo(_messages.Message):
+  r"""Describes properties of one or more targets of a request.
+
+  Fields:
+    notOperations: Optional. Describes the negated properties of the targets
+      of a request. Matches requests for operations that do not match the
+      criteria specified in this field. At least one of operations or
+      notOperations must be specified.
+    operations: Optional. Describes properties of one or more targets of a
+      request. At least one of operations or notOperations must be specified.
+      Limited to 10 operations. A match occurs when ANY operation (in
+      operations or notOperations) matches. Within an operation, the match
+      follows AND semantics across fields and OR semantics within a field,
+      i.e. a match occurs when ANY path matches AND ANY header matches and ANY
+      method matches.
+  """
+
+  notOperations = _messages.MessageField('AuthzPolicyAuthzRuleToRequestOperation', 1, repeated=True)
+  operations = _messages.MessageField('AuthzPolicyAuthzRuleToRequestOperation', 2, repeated=True)
+
+
+class AuthzPolicyAuthzRuleToRequestOperation(_messages.Message):
+  r"""Describes properties of one or more targets of a request.
+
+  Fields:
+    headerSet: Optional. A list of headers to match against in http header.
+    hosts: Optional. A list of HTTP Hosts to match against. The match can be
+      one of exact, prefix, suffix, or contains (substring match). Matches are
+      always case sensitive unless the ignoreCase is set. Limited to 10
+      matches.
+    methods: Optional. A list of HTTP methods to match against. Each entry
+      must be a valid HTTP method name (GET, PUT, POST, HEAD, PATCH, DELETE,
+      OPTIONS). It only allows exact match and is always case sensitive.
+    paths: Optional. A list of paths to match against. The match can be one of
+      exact, prefix, suffix, or contains (substring match). Matches are always
+      case sensitive unless the ignoreCase is set. Limited to 10 matches. Note
+      that this path match includes the query parameters. For gRPC services,
+      this should be a fully-qualified name of the form
+      /package.service/method.
+  """
+
+  headerSet = _messages.MessageField('AuthzPolicyAuthzRuleToRequestOperationHeaderSet', 1)
+  hosts = _messages.MessageField('AuthzPolicyAuthzRuleStringMatch', 2, repeated=True)
+  methods = _messages.StringField(3, repeated=True)
+  paths = _messages.MessageField('AuthzPolicyAuthzRuleStringMatch', 4, repeated=True)
+
+
+class AuthzPolicyAuthzRuleToRequestOperationHeaderSet(_messages.Message):
+  r"""Describes a set of HTTP headers to match against.
+
+  Fields:
+    headers: Required. A list of headers to match against in http header. The
+      match can be one of exact, prefix, suffix, or contains (substring
+      match). The match follows AND semantics which means all the headers must
+      match. Matches are always case sensitive unless the ignoreCase is set.
+      Limited to 10 matches.
+  """
+
+  headers = _messages.MessageField('AuthzPolicyAuthzRuleHeaderMatch', 1, repeated=True)
+
+
+class AuthzPolicyCustomProvider(_messages.Message):
+  r"""Allows delegating authorization decisions to Cloud IAP or to Service
+  Extensions.
+
+  Fields:
+    authzExtension: Optional. Delegate authorization decision to user authored
+      Service Extension. Only one of cloudIap or authzExtension can be
+      specified.
+    cloudIap: Optional. Delegates authorization decisions to Cloud IAP.
+      Applicable only for managed load balancers. Enabling Cloud IAP at the
+      AuthzPolicy level is not compatible with Cloud IAP settings in the
+      BackendService. Enabling IAP in both places will result in request
+      failure. Ensure that IAP is enabled in either the AuthzPolicy or the
+      BackendService but not in both places.
+  """
+
+  authzExtension = _messages.MessageField('AuthzPolicyCustomProviderAuthzExtension', 1)
+  cloudIap = _messages.MessageField('AuthzPolicyCustomProviderCloudIap', 2)
+
+
+class AuthzPolicyCustomProviderAuthzExtension(_messages.Message):
+  r"""Optional. Delegate authorization decision to user authored extension.
+  Only one of cloudIap or authzExtension can be specified.
+
+  Fields:
+    resources: Required. A list of references to authorization extensions that
+      will be invoked for requests matching this policy. Limited to 1 custom
+      provider.
+  """
+
+  resources = _messages.StringField(1, repeated=True)
+
+
+class AuthzPolicyCustomProviderCloudIap(_messages.Message):
+  r"""Optional. Delegates authorization decisions to Cloud IAP. Applicable
+  only for managed load balancers. Enabling Cloud IAP at the AuthzPolicy level
+  is not compatible with Cloud IAP settings in the BackendService. Enabling
+  IAP in both places will result in request failure. Ensure that IAP is
+  enabled in either the AuthzPolicy or the BackendService but not in both
+  places.
+  """
+
+
+
+class AuthzPolicyTarget(_messages.Message):
+  r"""Specifies the set of targets to which this policy should be applied to.
+
+  Enums:
+    LoadBalancingSchemeValueValuesEnum: Required. All gateways and forwarding
+      rules referenced by this policy and extensions must share the same load
+      balancing scheme. Supported values: `INTERNAL_MANAGED` and
+      `EXTERNAL_MANAGED`. For more information, refer to [Choosing a load
+      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+
+  Fields:
+    loadBalancingScheme: Required. All gateways and forwarding rules
+      referenced by this policy and extensions must share the same load
+      balancing scheme. Supported values: `INTERNAL_MANAGED` and
+      `EXTERNAL_MANAGED`. For more information, refer to [Choosing a load
+      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+    resources: Required. A list of references to the Forwarding Rules on which
+      this policy will be applied.
+  """
+
+  class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
+    r"""Required. All gateways and forwarding rules referenced by this policy
+    and extensions must share the same load balancing scheme. Supported
+    values: `INTERNAL_MANAGED` and `EXTERNAL_MANAGED`. For more information,
+    refer to [Choosing a load balancer](https://cloud.google.com/load-
+    balancing/docs/backend-service).
+
+    Values:
+      LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Do not use.
+      INTERNAL_MANAGED: Signifies that this is used for Regional internal or
+        Cross-region internal Application Load Balancing.
+      EXTERNAL_MANAGED: Signifies that this is used for Global external or
+        Regional external Application Load Balancing.
+      INTERNAL_SELF_MANAGED: Signifies that this is used for Cloud Service
+        Mesh.
+    """
+    LOAD_BALANCING_SCHEME_UNSPECIFIED = 0
+    INTERNAL_MANAGED = 1
+    EXTERNAL_MANAGED = 2
+    INTERNAL_SELF_MANAGED = 3
+
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 1)
+  resources = _messages.StringField(2, repeated=True)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -1545,6 +1940,21 @@ class ListAuthorizationPoliciesResponse(_messages.Message):
 
   authorizationPolicies = _messages.MessageField('AuthorizationPolicy', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListAuthzPoliciesResponse(_messages.Message):
+  r"""Message for response to listing `AuthzPolicy` resources.
+
+  Fields:
+    authzPolicies: The list of `AuthzPolicy` resources.
+    nextPageToken: A token identifying a page of results that the server
+      returns.
+    unreachable: Locations that could not be reached.
+  """
+
+  authzPolicies = _messages.MessageField('AuthzPolicy', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListClientTlsPoliciesResponse(_messages.Message):
@@ -3373,6 +3783,125 @@ class NetworksecurityProjectsLocationsAuthorizationPoliciesTestIamPermissionsReq
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
   resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsAuthzPoliciesCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAuthzPoliciesCreateRequest object.
+
+  Fields:
+    authzPolicy: A AuthzPolicy resource to be passed as the request body.
+    authzPolicyId: Required. User-provided ID of the `AuthzPolicy` resource to
+      be created.
+    parent: Required. The parent resource of the `AuthzPolicy` resource. Must
+      be in the format `projects/{project}/locations/{location}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  authzPolicy = _messages.MessageField('AuthzPolicy', 1)
+  authzPolicyId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsAuthzPoliciesDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAuthzPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the `AuthzPolicy` resource to delete. Must be
+      in the format
+      `projects/{project}/locations/{location}/authzPolicies/{authz_policy}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsAuthzPoliciesGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAuthzPoliciesGetRequest object.
+
+  Fields:
+    name: Required. A name of the `AuthzPolicy` resource to get. Must be in
+      the format
+      `projects/{project}/locations/{location}/authzPolicies/{authz_policy}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsAuthzPoliciesListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAuthzPoliciesListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
+    pageSize: Optional. Requested page size. The server might return fewer
+      items than requested. If unspecified, the server picks an appropriate
+      default.
+    pageToken: Optional. A token identifying a page of results that the server
+      returns.
+    parent: Required. The project and location from which the `AuthzPolicy`
+      resources are listed, specified in the following format:
+      `projects/{project}/locations/{location}`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsAuthzPoliciesPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAuthzPoliciesPatchRequest object.
+
+  Fields:
+    authzPolicy: A AuthzPolicy resource to be passed as the request body.
+    name: Required. Identifier. Name of the `AuthzPolicy` resource in the
+      following format:
+      `projects/{project}/locations/{location}/authzPolicies/{authz_policy}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Used to specify the fields to be overwritten in the
+      `AuthzPolicy` resource by the update. The fields specified in the
+      update_mask are relative to the resource, not the full request. A field
+      is overwritten if it is in the mask. If the user does not specify a
+      mask, then all fields are overwritten.
+  """
+
+  authzPolicy = _messages.MessageField('AuthzPolicy', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class NetworksecurityProjectsLocationsClientTlsPoliciesCreateRequest(_messages.Message):
@@ -6370,12 +6899,18 @@ class PartnerSSEEnvironmentSymantecEnvironmentOptions(_messages.Message):
 
   Fields:
     apiEndpoint: Optional. URL to use for calling the Symantec Locations API.
+    testOnlyStandaloneMode: Optional. If true, calls to api_endpoint are
+      skipped or mocked. Partner Gateways in this environment will need to be
+      manually connected to the Symantec backend. If false (the default), the
+      Google backend will call api_endpoint to provision resources for Partner
+      Gateways created in this environment.
     useNccgwFlow: Optional. If true, only SAC Realms can reference this
       environment; if false, only SSE Realms can reference this environment.
   """
 
   apiEndpoint = _messages.StringField(1)
-  useNccgwFlow = _messages.BooleanField(2)
+  testOnlyStandaloneMode = _messages.BooleanField(2)
+  useNccgwFlow = _messages.BooleanField(3)
 
 
 class PartnerSSEGateway(_messages.Message):
@@ -7863,6 +8398,8 @@ class ValidationCA(_messages.Message):
   grpcEndpoint = _messages.MessageField('GoogleCloudNetworksecurityV1alpha1GrpcEndpoint', 3)
 
 
+encoding.AddCustomJsonFieldMapping(
+    AuthzPolicyAuthzRule, 'from_', 'from')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

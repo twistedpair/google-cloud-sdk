@@ -495,6 +495,27 @@ class CertificatemanagerProjectsLocationsCertificateIssuanceConfigsListRequest(_
   parent = _messages.StringField(5, required=True)
 
 
+class CertificatemanagerProjectsLocationsCertificateIssuanceConfigsPatchRequest(_messages.Message):
+  r"""A
+  CertificatemanagerProjectsLocationsCertificateIssuanceConfigsPatchRequest
+  object.
+
+  Fields:
+    certificateIssuanceConfig: A CertificateIssuanceConfig resource to be
+      passed as the request body.
+    name: A user-defined name of the certificate issuance config.
+      CertificateIssuanceConfig names must be unique globally and match
+      pattern `projects/*/locations/*/certificateIssuanceConfigs/*`.
+    updateMask: Required. The update mask applies to the resource. For the
+      `FieldMask` definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask.
+  """
+
+  certificateIssuanceConfig = _messages.MessageField('CertificateIssuanceConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class CertificatemanagerProjectsLocationsCertificateMapsCertificateMapEntriesCreateRequest(_messages.Message):
   r"""A CertificatemanagerProjectsLocationsCertificateMapsCertificateMapEntrie
   sCreateRequest object.
@@ -1004,7 +1025,7 @@ class DnsAuthorization(_messages.Message):
   Enums:
     TypeValueValuesEnum: Immutable. Type of DnsAuthorization. If unset during
       resource creation the following default will be used: - in location
-      global: FIXED_RECORD.
+      `global`: FIXED_RECORD, - in other locations: PER_PROJECT_RECORD.
 
   Messages:
     LabelsValue: Set of labels associated with a DnsAuthorization.
@@ -1024,14 +1045,15 @@ class DnsAuthorization(_messages.Message):
       must be unique globally and match pattern
       `projects/*/locations/*/dnsAuthorizations/*`.
     type: Immutable. Type of DnsAuthorization. If unset during resource
-      creation the following default will be used: - in location global:
-      FIXED_RECORD.
+      creation the following default will be used: - in location `global`:
+      FIXED_RECORD, - in other locations: PER_PROJECT_RECORD.
     updateTime: Output only. The last update timestamp of a DnsAuthorization.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Immutable. Type of DnsAuthorization. If unset during resource creation
-    the following default will be used: - in location global: FIXED_RECORD.
+    the following default will be used: - in location `global`: FIXED_RECORD,
+    - in other locations: PER_PROJECT_RECORD.
 
     Values:
       TYPE_UNSPECIFIED: Type is unspecified.

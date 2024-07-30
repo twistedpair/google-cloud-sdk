@@ -1080,7 +1080,7 @@ class SecurityHealthAnalyticsCustomModule(_messages.Message):
       which the custom module is inherited. If empty, indicates that the
       custom module was created in the organization, folder, or project in
       which you are viewing the custom module.
-    customConfig: Optional. The user specified custom configuration for the
+    customConfig: Optional. The user-specified custom configuration for the
       module.
     displayName: Optional. The display name of the Security Health Analytics
       custom module. This display name becomes the finding category for all

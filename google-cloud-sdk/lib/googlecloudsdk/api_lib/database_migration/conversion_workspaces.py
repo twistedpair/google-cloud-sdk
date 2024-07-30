@@ -748,6 +748,13 @@ class ConversionWorkspacesClient(object):
 
     return converted
 
+  def WriteAuditContent(self, audit_file, audit_content):
+    with files.FileWriter(
+        audit_file,
+        append=True,
+    ) as f:
+      f.write(audit_content)
+
   def ConvertApplicationCode(self, name, args=None):
     """Converts application code.
 
@@ -766,6 +773,13 @@ class ConversionWorkspacesClient(object):
       )
       return None
     else:
+      if not os.path.isdir(args.source_folder):
+        raise exceptions.BadArgumentException(
+            '--source-folder',
+            'specified source folder [{}] is not a directory.'.format(
+                args.source_folder
+            ),
+        )
       if args.target_path and not os.path.isdir(args.target_path):
         raise exceptions.BadArgumentException(
             '--target-path',
@@ -778,17 +792,50 @@ class ConversionWorkspacesClient(object):
 
       total_files = 0
       converted_files = 0
-      for file in os.listdir(args.source_folder):
-        total_files += 1
+
+      audit_file = os.path.join(args.source_folder, 'Conversion-Audit.txt')
+      self.WriteAuditContent(audit_file, '--------\n')
+
+      source_files = [
+          f
+          for f in os.listdir(args.source_folder)
+          if os.path.isfile(os.path.join(args.source_folder, f))
+      ]
+      for file in sorted(source_files):
+        if file == 'Conversion-Audit.txt':
+          continue
         if file.endswith('.java'):
+          total_files += 1
           if self.ConvertApplicationCodeSingleFile(
               name, os.path.join(args.source_folder, file), args.target_path
           ):
+            audit_content = (
+                datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                + ': File '
+                + file
+                + ' converted\n'
+            )
+            self.WriteAuditContent(audit_file, audit_content)
             converted_files += 1
+          else:
+            audit_content = (
+                datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                + ': File '
+                + file
+                + ' not converted\n'
+            )
+            self.WriteAuditContent(audit_file, audit_content)
         else:
           log.status.Print(
               'Skipping file ' + file + ' since it is not a java file'
           )
+
+      if total_files == 0:
+        audit_content = (
+            datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            + ': No files found eligible for conversion\n'
+        )
+        self.WriteAuditContent(audit_file, audit_content)
 
       log.status.Print(
           'Sent '

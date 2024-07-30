@@ -346,14 +346,22 @@ def AddLocalityLbPolicy(parser):
   parser.add_argument(
       '--locality-lb-policy',
       choices=[
-          'INVALID_LB_POLICY', 'ROUND_ROBIN', 'LEAST_REQUEST', 'RING_HASH',
-          'RANDOM', 'ORIGINAL_DESTINATION', 'MAGLEV', 'WEIGHTED_MAGLEV'
+          'INVALID_LB_POLICY',
+          'ROUND_ROBIN',
+          'LEAST_REQUEST',
+          'RING_HASH',
+          'RANDOM',
+          'ORIGINAL_DESTINATION',
+          'MAGLEV',
+          'WEIGHTED_MAGLEV',
+          'WEIGHTED_ROUND_ROBIN',
       ],
       type=lambda x: x.replace('-', '_').upper(),
       default=None,
       help="""\
       The load balancing algorithm used within the scope of the locality.
-      """)
+      """,
+  )
 
 
 def AddConnectionTrackingPolicy(parser):
@@ -764,14 +772,18 @@ def AddIap(parser, help=None):  # pylint: disable=redefined-builtin
       help=help or 'Specifies a list of settings for IAP service.')
 
 
-def AddSessionAffinity(parser,
-                       target_pools=False,
-                       hidden=False,
-                       support_client_only=False):
+def AddSessionAffinity(
+    parser,
+    support_stateful_affinity=False,
+    target_pools=False,
+    hidden=False,
+    support_client_only=False,
+):
   """Adds session affinity flag to the argparse.
 
   Args:
     parser: An argparse.ArgumentParser instance.
+    support_stateful_affinity: Whether STRONG_COOKIE_AFFINITY is a valid choice.
     target_pools: Indicates if the backend pool is target pool.
     hidden: if hidden=True, retains help but does not display it.
     support_client_only: Indicates if CLIENT_IP_NO_DESTINATION is valid choice.
@@ -808,39 +820,57 @@ def AddSessionAffinity(parser,
             ' endpoints in a NEG, based on the contents of a cookie set by '
             ' Traffic Director. This session affinity is only valid if the '
             ' load balancing locality policy is either `RING_HASH` or '
-            ' `MAGLEV`.'),
-        'CLIENT_IP_PROTO':
-            ('(Applicable if `--load-balancing-scheme` is `INTERNAL`) '
-             'Connections from the same client IP with the same IP '
-             'protocol will go to the same backend VM while that VM remains'
-             ' healthy.'),
+            ' `MAGLEV`.'
+        ),
+        'CLIENT_IP_PROTO': (
+            '(Applicable if `--load-balancing-scheme` is `INTERNAL`) '
+            'Connections from the same client IP with the same IP '
+            'protocol will go to the same backend VM while that VM remains'
+            ' healthy.'
+        ),
         'CLIENT_IP_PORT_PROTO': (
             '(Applicable if `--load-balancing-scheme` is `INTERNAL`) '
             'Connections from the same client IP with the same IP protocol and '
             'port will go to the same backend VM while that VM remains '
-            'healthy.'),
+            'healthy.'
+        ),
         'HTTP_COOKIE': (
             '(Applicable if `--load-balancing-scheme` is `INTERNAL_MANAGED`, '
             '`EXTERNAL_MANAGED` or `INTERNAL_SELF_MANAGED`) Route requests to '
-            ' backend VMs or '
-            ' endpoints in a NEG, based on an HTTP cookie named in the '
-            ' `HTTP_COOKIE` flag (with the optional `--affinity-cookie-ttl` '
-            ' flag). If the client has not provided the cookie, '
-            ' the proxy generates the cookie and returns it to the client in a '
-            ' `Set-Cookie` header. This session affinity is only valid if the '
-            ' load balancing locality policy is either `RING_HASH` or `MAGLEV` '
-            ' and the backend service\'s consistent hash specifies the HTTP '
-            ' cookie.'),
-        'HEADER_FIELD':
-            ('(Applicable if `--load-balancing-scheme` is `INTERNAL_MANAGED`, '
-             '`EXTERNAL_MANAGED`, or `INTERNAL_SELF_MANAGED`) Route requests '
-             ' to backend VMs or '
-             ' endpoints in a NEG based on the value of the HTTP header named '
-             ' in the `--custom-request-header` flag. This session '
-             ' affinity is only valid if the load balancing locality policy '
-             ' is either `RING_HASH` or `MAGLEV` and the backend service\'s '
-             ' consistent hash specifies the name of the HTTP header.'),
+            ' backend VMs or endpoints in a NEG, based on an HTTP cookie '
+            ' in the `--affinity-cookie-name` flag (with the optional '
+            ' `--affinity-cookie-ttl` flag). If the client has not provided '
+            ' the cookie, the proxy generates the cookie and returns it to the '
+            ' client in a `Set-Cookie` header. This session affinity is only '
+            ' valid if the load balancing locality policy is either '
+            " `RING_HASH` or `MAGLEV` and the backend service's consistent "
+            ' hash specifies the HTTP cookie.'
+        ),
+        'HEADER_FIELD': (
+            '(Applicable if `--load-balancing-scheme` is `INTERNAL_MANAGED`, '
+            '`EXTERNAL_MANAGED`, or `INTERNAL_SELF_MANAGED`) Route requests '
+            ' to backend VMs or '
+            ' endpoints in a NEG based on the value of the HTTP header named '
+            ' in the `--custom-request-header` flag. This session '
+            ' affinity is only valid if the load balancing locality policy '
+            " is either `RING_HASH` or `MAGLEV` and the backend service's "
+            ' consistent hash specifies the name of the HTTP header.'
+        ),
     })
+    if support_stateful_affinity:
+      choices.update({
+          'STRONG_COOKIE_AFFINITY': (
+              '(Applicable if `--load-balancing-scheme` is `INTERNAL_MANAGED` '
+              ' or `EXTERNAL_MANAGED`) '
+              ' Strong cookie-based affinity, based on an HTTP cookie named in '
+              ' the `--affinity-cookie-name` flag (with the optional '
+              ' `--affinity-cookie-ttl` flag). Connections bearing the same '
+              ' cookie will be served by the same backend VM while that VM '
+              ' remains healthy, as long as the cookie has not expired. If '
+              ' the `--affinity-cookie-ttl` flag is set to 0, the cookie will '
+              ' be treated as a session cookie.'
+          ),
+      })
     if support_client_only:
       choices.update({
           'CLIENT_IP_NO_DESTINATION':
@@ -861,14 +891,38 @@ def AddSessionAffinity(parser,
       help=help_str)
 
 
-def AddAffinityCookieTtl(parser, hidden=False):
-  """Adds affinity cookie Ttl flag to the argparse."""
-  affinity_cookie_ttl_help = """\
-      If session-affinity is set to "generated_cookie", this flag sets
-      the TTL, in seconds, of the resulting cookie.  A setting of 0
-      indicates that the cookie should be transient.
-      See $ gcloud topic datetimes for information on duration formats.
-      """
+def AddAffinityCookie(parser, support_stateful_affinity=False, hidden=False):
+  """Adds affinity cookie flags to the argparse."""
+  if support_stateful_affinity:
+    affinity_cookie_name_help = """\
+        If `--session-affinity` is set to `HTTP_COOKIE` or
+        `STRONG_COOKIE_AFFINITY`, this flag sets the name of the cookie.
+        """
+    affinity_cookie_ttl_help = """\
+        If `--session-affinity` is set to `GENERATED_COOKIE`, `HTTP_COOKIE`, or
+        `STRONG_COOKIE_AFFINITY`, this flag sets the TTL, in seconds, of the
+        resulting cookie.  A setting of 0 indicates that the cookie should be
+        a session cookie.  See $ gcloud topic datetimes for information on
+        duration formats.
+        """
+  else:
+    affinity_cookie_name_help = """\
+        If `--session-affinity` is set to `HTTP_COOKIE`, this flag sets the name
+        of the cookie.
+        """
+    affinity_cookie_ttl_help = """\
+        If `--session-affinity` is set to `GENERATED_COOKIE` or `HTTP_COOKIE`,
+        this flag sets the TTL, in seconds, of the resulting cookie.  A setting
+        of 0 indicates that the cookie should be a session cookie.  See
+        $ gcloud topic datetimes for information on duration formats.
+        """
+
+  parser.add_argument(
+      '--affinity-cookie-name',
+      help=affinity_cookie_name_help,
+      hidden=hidden,
+  )
+
   parser.add_argument(
       '--affinity-cookie-ttl',
       type=arg_parsers.Duration(),

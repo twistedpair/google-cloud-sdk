@@ -171,13 +171,17 @@ class Diagnostic(abc.ABC):
     result[key] = t1 - t0
 
   def _create_test_files(
-      self, object_sizes: List[int], file_prefix: string
+      self,
+      object_sizes: List[int],
+      file_prefix: string,
+      chunk_size: int = 1024 * 1024,
   ) -> bool:
     """Creates test files in a temporary directory.
 
     Args:
       object_sizes: The size of each object to create.
       file_prefix: The prefix to use for the file names.
+      chunk_size: The size of each chunk to write to the file.
 
     Returns:
       True if the files were created successfully, False otherwise.
@@ -199,7 +203,11 @@ class Diagnostic(abc.ABC):
             mode='w+t',
             encoding='utf-8',
         ) as f:
-          f.write(self._generate_random_string(object_sizes[i]))
+          bytes_remaining = object_sizes[i]
+          while bytes_remaining > 0:
+            current_chunk_size = min(bytes_remaining, chunk_size)
+            f.write(self._generate_random_string(current_chunk_size))
+            bytes_remaining -= current_chunk_size
         self._files.append(f.name)
 
       log.status.Print(
@@ -268,7 +276,6 @@ class Diagnostic(abc.ABC):
         source_url,
         destination_url,
         '--verbosity=debug',
-        '--log-http',
     ]
     output, err = self._run_gcloud(args, in_str=in_str)
     del output  # unused
@@ -277,6 +284,21 @@ class Diagnostic(abc.ABC):
           'Failed to copy objects from source {} to {} : {}'.format(
               source_url, destination_url, err
           )
+      )
+
+  def _clean_up_objects(self, bucket_url: str, object_prefix: str) -> None:
+    """Cleans up objects in the given bucket with the given prefix."""
+    args = [
+        'storage',
+        'rm',
+        f'{bucket_url}{object_prefix}*',
+    ]
+    output, err = self._run_gcloud(args)
+    del output  # unused
+    if err:
+      log.warning(
+          f'Failed to clean up objects in {bucket_url} with prefix'
+          f' {object_prefix} : {err}'
       )
 
   def _set_parallelism_env_vars(self):

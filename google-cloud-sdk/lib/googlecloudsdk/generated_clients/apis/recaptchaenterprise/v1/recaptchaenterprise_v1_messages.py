@@ -112,6 +112,20 @@ class GoogleCloudRecaptchaenterpriseV1AccountVerificationInfo(_messages.Message)
   username = _messages.StringField(4)
 
 
+class GoogleCloudRecaptchaenterpriseV1AddIpOverrideRequest(_messages.Message):
+  r"""The AddIpOverride request message.
+
+  Fields:
+    ipOverrideData: Required. IP override added to the key.
+  """
+
+  ipOverrideData = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1IpOverrideData', 1)
+
+
+class GoogleCloudRecaptchaenterpriseV1AddIpOverrideResponse(_messages.Message):
+  r"""Response for AddIpOverride."""
+
+
 class GoogleCloudRecaptchaenterpriseV1AndroidKeySettings(_messages.Message):
   r"""Settings specific to keys that can be used by Android apps.
 
@@ -713,6 +727,37 @@ class GoogleCloudRecaptchaenterpriseV1IOSKeySettings(_messages.Message):
   allowAllBundleIds = _messages.BooleanField(1)
   allowedBundleIds = _messages.StringField(2, repeated=True)
   appleDeveloperId = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1AppleDeveloperId', 3)
+
+
+class GoogleCloudRecaptchaenterpriseV1IpOverrideData(_messages.Message):
+  r"""Information about the IP or IP range override.
+
+  Enums:
+    OverrideTypeValueValuesEnum: Required. Describes the type of IP override.
+
+  Fields:
+    ip: Required. The IP address to override (can be IPv4, IPv6 or CIDR). The
+      IP override must be a valid IPv4 or IPv6 address, or a CIDR range. The
+      IP override must be a public IP address. Example of IPv4: 168.192.5.6
+      Example of IPv6: 2001:0000:130F:0000:0000:09C0:876A:130B Example of IPv4
+      with CIDR: 168.192.5.0/24 Example of IPv6 with CIDR: 2001:0DB8:1234::/48
+    overrideType: Required. Describes the type of IP override.
+  """
+
+  class OverrideTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Describes the type of IP override.
+
+    Values:
+      OVERRIDE_TYPE_UNSPECIFIED: Default override type that indicates this
+        enum hasn't been specified.
+      ALLOW: Allowlist the IP address; i.e. give a `risk_analysis.score` of
+        0.9 for all valid assessments.
+    """
+    OVERRIDE_TYPE_UNSPECIFIED = 0
+    ALLOW = 1
+
+  ip = _messages.StringField(1)
+  overrideType = _messages.EnumField('OverrideTypeValueValuesEnum', 2)
 
 
 class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
@@ -1854,6 +1899,21 @@ class RecaptchaenterpriseProjectsFirewallpoliciesReorderRequest(_messages.Messag
 
   googleCloudRecaptchaenterpriseV1ReorderFirewallPoliciesRequest = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ReorderFirewallPoliciesRequest', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class RecaptchaenterpriseProjectsKeysAddIpOverrideRequest(_messages.Message):
+  r"""A RecaptchaenterpriseProjectsKeysAddIpOverrideRequest object.
+
+  Fields:
+    googleCloudRecaptchaenterpriseV1AddIpOverrideRequest: A
+      GoogleCloudRecaptchaenterpriseV1AddIpOverrideRequest resource to be
+      passed as the request body.
+    name: Required. The name of the key to which the IP override is added, in
+      the format `projects/{project}/keys/{key}`.
+  """
+
+  googleCloudRecaptchaenterpriseV1AddIpOverrideRequest = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1AddIpOverrideRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class RecaptchaenterpriseProjectsKeysCreateRequest(_messages.Message):

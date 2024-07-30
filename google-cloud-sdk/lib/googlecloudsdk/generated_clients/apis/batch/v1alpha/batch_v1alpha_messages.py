@@ -178,7 +178,8 @@ class AttachedDisk(_messages.Message):
 
 
 class Barrier(_messages.Message):
-  r"""Barrier runnable blocks until all tasks in a taskgroup reach it.
+  r"""A barrier runnable automatically blocks the execution of subsequent
+  runnables until all the tasks in the task group reach the barrier.
 
   Fields:
     name: Barriers are identified by their index in runnable list. Names are
@@ -690,9 +691,10 @@ class Container(_messages.Message):
       container will be blocked, containers that are with
       block_external_network as true can still communicate with each other,
       network cannot be specified in the `container.options` field.
-    commands: Overrides the `CMD` specified in the container. If there is an
-      ENTRYPOINT (either in the container image or with the entrypoint field
-      below) then commands are appended as arguments to the ENTRYPOINT.
+    commands: Required for some container images. Overrides the `CMD`
+      specified in the container. If there is an `ENTRYPOINT` (either in the
+      container image or with the `entrypoint` field below) then these
+      commands are appended as arguments to the `ENTRYPOINT`.
     enableImageStreaming: Optional. If set to true, this container runnable
       uses Image streaming. Use Image streaming to allow the runnable to
       initialize without waiting for the entire container image to download,
@@ -706,10 +708,13 @@ class Container(_messages.Message):
       the [`image-streaming` sample on
       GitHub](https://github.com/GoogleCloudPlatform/batch-
       samples/tree/main/api-samples/image-streaming).
-    entrypoint: Overrides the `ENTRYPOINT` specified in the container.
-    imageUri: The URI to pull the container image from.
-    options: Arbitrary additional options to include in the "docker run"
-      command when running this container, e.g. "--network host".
+    entrypoint: Required for some container images. Overrides the `ENTRYPOINT`
+      specified in the container.
+    imageUri: Required. The URI to pull the container image from.
+    options: Required for some container images. Arbitrary additional options
+      to include in the `docker run` command when running this container-for
+      example, `--network host`. For the `--volume` option, use the `volumes`
+      field for the container.
     password: Required if the container image is from a private Docker
       registry. The password to login to the Docker registry that contains the
       image. For security, it is strongly recommended to specify an encrypted
@@ -734,15 +739,15 @@ class Container(_messages.Message):
       Secret Manager with Batch](https://cloud.google.com/batch/docs/create-
       run-job-secret-manager).
     volumes: Volumes to mount (bind mount) from the host machine files or
-      directories into the container, formatted to match docker run's --volume
-      option, e.g. /foo:/bar, or /foo:/bar:ro If the `TaskSpec.Volumes` field
-      is specified but this field is not, Batch will mount each volume from
-      the host machine to the container with the same mount path by default.
-      In this case, the default mount option for containers will be read-only
-      (ro) for existing persistent disks and read-write (rw) for other volume
-      types, regardless of the original mount options specified in
-      `TaskSpec.Volumes`. If you need different mount settings, you can
-      explicitly configure them in this field.
+      directories into the container, formatted to match `--volume` option for
+      the `docker run` command-for example, `/foo:/bar` or `/foo:/bar:ro`. If
+      the `TaskSpec.Volumes` field is specified but this field is not, Batch
+      will mount each volume from the host machine to the container with the
+      same mount path by default. In this case, the default mount option for
+      containers will be read-only (`ro`) for existing persistent disks and
+      read-write (`rw`) for other volume types, regardless of the original
+      mount options specified in `TaskSpec.Volumes`. If you need different
+      mount settings, you can explicitly configure them in this field.
   """
 
   blockExternalNetwork = _messages.BooleanField(1)
@@ -776,9 +781,8 @@ class Disk(_messages.Message):
       projects/{project}/global/images/{image_version} You can also use Batch
       customized image in short names. The following image values are
       supported for a boot disk: * `batch-debian`: use Batch Debian images. *
-      `batch-centos`: use Batch CentOS images. * `batch-cos`: use Batch
-      Container-Optimized images. * `batch-hpc-centos`: use Batch HPC CentOS
-      images. * `batch-hpc-rocky`: use Batch HPC Rocky Linux images.
+      `batch-cos`: use Batch Container-Optimized images. * `batch-hpc-rocky`:
+      use Batch HPC Rocky Linux images.
     sizeGb: Disk size in GB. **Non-Boot Disk**: If the `type` specifies a
       persistent disk, this field is ignored if `data_source` is set as
       `image` or `snapshot`. If the `type` specifies a local SSD, this field
@@ -2131,19 +2135,21 @@ class Script(_messages.Message):
   r"""Script runnable.
 
   Fields:
-    path: Script file path on the host VM. To specify an interpreter, please
-      add a `#!`(also known as [shebang
-      line](https://en.wikipedia.org/wiki/Shebang_(Unix))) as the first line
-      of the file.(For example, to execute the script using bash,
-      `#!/bin/bash` should be the first line of the file. To execute the
-      script using`Python3`, `#!/usr/bin/env python3` should be the first line
-      of the file.) Otherwise, the file will by default be executed by
-      `/bin/sh`.
-    text: Shell script text. To specify an interpreter, please add a `#!\n` at
-      the beginning of the text.(For example, to execute the script using
-      bash, `#!/bin/bash\n` should be added. To execute the script
-      using`Python3`, `#!/usr/bin/env python3\n` should be added.) Otherwise,
-      the script will by default be executed by `/bin/sh`.
+    path: The path to a script file that is accessible from the host VM(s).
+      Unless the script file supports the default `#!/bin/sh` shell
+      interpreter, you must specify an interpreter by including a [shebang
+      line](https://en.wikipedia.org/wiki/Shebang_(Unix) as the first line of
+      the file. For example, to execute the script using bash, include
+      `#!/bin/bash` as the first line of the file. Alternatively, to execute
+      the script using Python3, include `#!/usr/bin/env python3` as the first
+      line of the file.
+    text: The text for a script. Unless the script text supports the default
+      `#!/bin/sh` shell interpreter, you must specify an interpreter by
+      including a [shebang line](https://en.wikipedia.org/wiki/Shebang_(Unix)
+      at the beginning of the text. For example, to execute the script using
+      bash, include `#!/bin/bash\n` at the beginning of the text.
+      Alternatively, to execute the script using Python3, include
+      `#!/usr/bin/env python3\n` at the beginning of the text.
   """
 
   path = _messages.StringField(1)
@@ -2560,15 +2566,16 @@ class TaskSpec(_messages.Message):
       however, the actual maximum run time for a job will be limited to the
       maximum run time for a job listed at
       https://cloud.google.com/batch/quotas#max-job-duration.
-    runnables: The sequence of scripts or containers to run for this Task.
-      Each Task using this TaskSpec executes its list of runnables in order.
-      The Task succeeds if all of its runnables either exit with a zero status
-      or any that exit with a non-zero status have the ignore_exit_status
-      flag. Background runnables are killed automatically (if they have not
-      already exited) a short time after all foreground runnables have
-      completed. Even though this is likely to result in a non-zero exit
-      status for the background runnable, these automatic kills are not
-      treated as Task failures.
+    runnables: Required. The sequence of one or more runnables (executable
+      scripts, executable containers, and/or barriers) for each task in this
+      task group to run. Each task runs this list of runnables in order. For a
+      task to succeed, all of its script and container runnables each must
+      either exit with a zero status or enable the `ignore_exit_status`
+      subfield and exit with any status. Background runnables are killed
+      automatically (if they have not already exited) a short time after all
+      foreground runnables have completed. Even though this is likely to
+      result in a non-zero exit status for the background runnable, these
+      automatic kills are not treated as Task failures.
     volumes: Volumes to mount before running Tasks using this TaskSpec.
   """
 

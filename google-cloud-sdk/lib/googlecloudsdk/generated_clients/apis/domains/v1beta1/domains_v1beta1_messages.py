@@ -1157,11 +1157,15 @@ class HealthCheckTargets(_messages.Message):
   the response.
 
   Fields:
+    externalEndpoints: The Internet IP addresses to be health checked. The
+      format matches the format of ResourceRecordSet.rrdata as defined in RFC
+      1035 (section 5) and RFC 1034 (section 3.6.1)
     internalLoadBalancer: Configuration for internal load balancers to be
       health checked.
   """
 
-  internalLoadBalancer = _messages.MessageField('LoadBalancerTarget', 1, repeated=True)
+  externalEndpoints = _messages.StringField(1, repeated=True)
+  internalLoadBalancer = _messages.MessageField('LoadBalancerTarget', 2, repeated=True)
 
 
 class ImportDomainRequest(_messages.Message):
@@ -1926,6 +1930,9 @@ class RRSetRoutingPolicy(_messages.Message):
   Fields:
     geo: A GeoPolicy attribute.
     geoPolicy: A GeoPolicy attribute.
+    healthCheck: The selfLink attribute of the HealthCheck resource to use for
+      this RRSetRoutingPolicy.
+      https://cloud.google.com/compute/docs/reference/rest/v1/healthChecks
     primaryBackup: A PrimaryBackupPolicy attribute.
     wrr: A WrrPolicy attribute.
     wrrPolicy: A WrrPolicy attribute.
@@ -1933,9 +1940,10 @@ class RRSetRoutingPolicy(_messages.Message):
 
   geo = _messages.MessageField('GeoPolicy', 1)
   geoPolicy = _messages.MessageField('GeoPolicy', 2)
-  primaryBackup = _messages.MessageField('PrimaryBackupPolicy', 3)
-  wrr = _messages.MessageField('WrrPolicy', 4)
-  wrrPolicy = _messages.MessageField('WrrPolicy', 5)
+  healthCheck = _messages.StringField(3)
+  primaryBackup = _messages.MessageField('PrimaryBackupPolicy', 4)
+  wrr = _messages.MessageField('WrrPolicy', 5)
+  wrrPolicy = _messages.MessageField('WrrPolicy', 6)
 
 
 class RegisterDomainRequest(_messages.Message):

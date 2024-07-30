@@ -188,11 +188,11 @@ class BoostConfig(_messages.Message):
       GB.
     enableNestedVirtualization: Optional. Whether to enable nested
       virtualization on boosted Cloud Workstations VMs running using this
-      boost configuration. Nested virtualization lets you run virtual machine
-      (VM) instances inside your workstation. Before enabling nested
-      virtualization, consider the following important considerations. Cloud
-      Workstations instances are subject to the [same restrictions as Compute
-      Engine
+      boost configuration. Defaults to false. Nested virtualization lets you
+      run virtual machine (VM) instances inside your workstation. Before
+      enabling nested virtualization, consider the following important
+      considerations. Cloud Workstations instances are subject to the [same
+      restrictions as Compute Engine
       instances](https://cloud.google.com/compute/docs/instances/nested-
       virtualization/overview#restrictions): * **Organization policy**:
       projects, folders, or organizations may be restricted from creating
@@ -207,15 +207,7 @@ class BoostConfig(_messages.Message):
       than a 10% decrease for workloads that are input/output bound. *
       **Machine Type**: nested virtualization can only be enabled on boost
       configurations that specify a machine_type in the N1 or N2 machine
-      series. * **GPUs**: nested virtualization may not be enabled on boost
-      configurations with accelerators. * **Operating System**: Because
-      [Container-Optimized
-      OS](https://cloud.google.com/compute/docs/images/os-details#container-
-      optimized_os_cos) does not support nested virtualization, when nested
-      virtualization is enabled, the underlying Compute Engine VM instances
-      boot from an [Ubuntu
-      LTS](https://cloud.google.com/compute/docs/images/os-details#ubuntu_lts)
-      image. Defaults to false.
+      series.
     id: Optional. Required. The id to be used for the boost config.
     machineType: Optional. The type of machine that boosted VM instances will
       use-for example, `e2-standard-4`. For more information about machine
@@ -400,10 +392,10 @@ class GceInstance(_messages.Message):
 
   Messages:
     VmTagsValue: Optional. Resource manager tags to be bound to this instance.
-      Tag keys and values have the same definition as
-      https://cloud.google.com/resource-manager/docs/tags/tags-overview Keys
-      must be in the format `tagKeys/{tag_key_id}`, and values are in the
-      format `tagValues/456`.
+      Tag keys and values have the same definition as [resource manager
+      tags](https://cloud.google.com/resource-manager/docs/tags/tags-
+      overview). Keys must be in the format `tagKeys/{tag_key_id}`, and values
+      are in the format `tagValues/456`.
 
   Fields:
     accelerators: Optional. A list of the type and count of accelerator cards
@@ -426,11 +418,11 @@ class GceInstance(_messages.Message):
     disableSsh: Optional. Whether to disable SSH access to the VM.
     enableNestedVirtualization: Optional. Whether to enable nested
       virtualization on Cloud Workstations VMs created using this workstation
-      configuration. Nested virtualization lets you run virtual machine (VM)
-      instances inside your workstation. Before enabling nested
-      virtualization, consider the following important considerations. Cloud
-      Workstations instances are subject to the [same restrictions as Compute
-      Engine
+      configuration. Defaults to false. Nested virtualization lets you run
+      virtual machine (VM) instances inside your workstation. Before enabling
+      nested virtualization, consider the following important considerations.
+      Cloud Workstations instances are subject to the [same restrictions as
+      Compute Engine
       instances](https://cloud.google.com/compute/docs/instances/nested-
       virtualization/overview#restrictions): * **Organization policy**:
       projects, folders, or organizations may be restricted from creating
@@ -445,15 +437,7 @@ class GceInstance(_messages.Message):
       than a 10% decrease for workloads that are input/output bound. *
       **Machine Type**: nested virtualization can only be enabled on
       workstation configurations that specify a machine_type in the N1 or N2
-      machine series. * **GPUs**: nested virtualization may not be enabled on
-      workstation configurations with accelerators. * **Operating System**:
-      because [Container-Optimized
-      OS](https://cloud.google.com/compute/docs/images/os-details#container-
-      optimized_os_cos) does not support nested virtualization, when nested
-      virtualization is enabled, the underlying Compute Engine VM instances
-      boot from an [Ubuntu
-      LTS](https://cloud.google.com/compute/docs/images/os-details#ubuntu_lts)
-      image.
+      machine series.
     machineType: Optional. The type of machine to use for VM instances-for
       example, `"e2-standard-4"`. For more information about machine types
       that Cloud Workstations supports, see the list of [available machine
@@ -492,18 +476,19 @@ class GceInstance(_messages.Message):
       rules](https://cloud.google.com/workstations/docs/configure-firewall-
       rules).
     vmTags: Optional. Resource manager tags to be bound to this instance. Tag
-      keys and values have the same definition as
-      https://cloud.google.com/resource-manager/docs/tags/tags-overview Keys
-      must be in the format `tagKeys/{tag_key_id}`, and values are in the
-      format `tagValues/456`.
+      keys and values have the same definition as [resource manager
+      tags](https://cloud.google.com/resource-manager/docs/tags/tags-
+      overview). Keys must be in the format `tagKeys/{tag_key_id}`, and values
+      are in the format `tagValues/456`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class VmTagsValue(_messages.Message):
     r"""Optional. Resource manager tags to be bound to this instance. Tag keys
-    and values have the same definition as https://cloud.google.com/resource-
-    manager/docs/tags/tags-overview Keys must be in the format
-    `tagKeys/{tag_key_id}`, and values are in the format `tagValues/456`.
+    and values have the same definition as [resource manager
+    tags](https://cloud.google.com/resource-manager/docs/tags/tags-overview).
+    Keys must be in the format `tagKeys/{tag_key_id}`, and values are in the
+    format `tagValues/456`.
 
     Messages:
       AdditionalProperty: An additional property for a VmTagsValue object.
@@ -693,7 +678,7 @@ class Host(_messages.Message):
 
 
 class HttpOptions(_messages.Message):
-  r"""Http options for the running workstations.
+  r"""HTTP options for the running workstations.
 
   Fields:
     allowedUnauthenticatedCorsPreflightRequests: Optional. By default, the
@@ -1027,7 +1012,9 @@ class PortRange(_messages.Message):
 
   Fields:
     first: Required. Starting port number for the current range of ports.
-    last: Required. Ending port number for the current range of ports.
+      Valid ports are 22, 80, and ports within the range 1024-65535.
+    last: Required. Ending port number for the current range of ports. Valid
+      ports are 22, 80, and ports within the range 1024-65535.
   """
 
   first = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1279,6 +1266,8 @@ class Workstation(_messages.Message):
 
   Fields:
     annotations: Optional. Client-specified annotations.
+    boostConfigs: Output only. List of available boost configuration ids that
+      this workstation can be boosted up to
     createTime: Output only. Time when this workstation was created.
     deleteTime: Output only. Time when this workstation was soft-deleted.
     displayName: Optional. Human-readable name for this workstation.
@@ -1303,8 +1292,10 @@ class Workstation(_messages.Message):
     name: Identifier. Full name of this workstation.
     reconciling: Output only. Indicates whether this workstation is currently
       being updated to match its intended state.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     sourceWorkstation: Optional. The source workstation from which this
-      workstations persistent directories were cloned on creation.
+      workstation's persistent directories were cloned on creation.
     startTime: Output only. Time when this workstation was most recently
       successfully started, regardless of the workstation's initial state.
     state: Output only. Current state of the workstation.
@@ -1409,21 +1400,35 @@ class Workstation(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  deleteTime = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  env = _messages.MessageField('EnvValue', 5)
-  etag = _messages.StringField(6)
-  host = _messages.StringField(7)
-  kmsKey = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  reconciling = _messages.BooleanField(11)
-  sourceWorkstation = _messages.StringField(12)
-  startTime = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  boostConfigs = _messages.MessageField('WorkstationBoostConfig', 2, repeated=True)
+  createTime = _messages.StringField(3)
+  deleteTime = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  env = _messages.MessageField('EnvValue', 6)
+  etag = _messages.StringField(7)
+  host = _messages.StringField(8)
+  kmsKey = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  reconciling = _messages.BooleanField(12)
+  satisfiesPzi = _messages.BooleanField(13)
+  satisfiesPzs = _messages.BooleanField(14)
+  sourceWorkstation = _messages.StringField(15)
+  startTime = _messages.StringField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+
+
+class WorkstationBoostConfig(_messages.Message):
+  r"""Boost config for this workstation. This object is populated from the
+  parent workstation config.
+
+  Fields:
+    id: Output only. Boost config id.
+  """
+
+  id = _messages.StringField(1)
 
 
 class WorkstationCluster(_messages.Message):
@@ -1468,6 +1473,8 @@ class WorkstationCluster(_messages.Message):
       cluster.
     reconciling: Output only. Indicates whether this workstation cluster is
       currently being updated to match its intended state.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     subnetwork: Immutable. Name of the Compute Engine subnetwork in which
       instances associated with this workstation cluster will be created. Must
       be part of the subnetwork specified for this workstation cluster.
@@ -1542,9 +1549,11 @@ class WorkstationCluster(_messages.Message):
   network = _messages.StringField(12)
   privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 13)
   reconciling = _messages.BooleanField(14)
-  subnetwork = _messages.StringField(15)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
+  satisfiesPzi = _messages.BooleanField(15)
+  satisfiesPzs = _messages.BooleanField(16)
+  subnetwork = _messages.StringField(17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
 
 
 class WorkstationConfig(_messages.Message):
@@ -1565,9 +1574,10 @@ class WorkstationConfig(_messages.Message):
       propagated to the underlying Compute Engine resources.
 
   Fields:
-    allowedPorts: Optional. A Single or Range of ports externally accessible
-      in the workstation. If not specified defaults to ports 22, 80 and ports
-      1024-65535.
+    allowedPorts: Optional. A list of PortRanges specifying single ports or
+      ranges of ports that are externally accessible in the workstation.
+      Allowed ports must be one of 22, 80, or within range 1024-65535. If not
+      specified defaults to ports 22, 80, and ports 1024-65535.
     annotations: Optional. Client-specified annotations.
     conditions: Output only. Status conditions describing the current resource
       state.
@@ -1589,10 +1599,14 @@ class WorkstationConfig(_messages.Message):
     displayName: Optional. Human-readable name for this workstation
       configuration.
     enableAuditAgent: Optional. Whether to enable Linux `auditd` logging on
-      the workstation. When enabled, a service account must also be specified
-      that has `logging.buckets.write` permission on the project. Operating
-      system audit logging is distinct from [Cloud Audit
-      Logs](https://cloud.google.com/workstations/docs/audit-logging).
+      the workstation. When enabled, a service_account must also be specified
+      that has `roles/logging.logWriter` and `roles/monitoring.metricWriter`
+      on the project. Operating system audit logging is distinct from [Cloud
+      Audit Logs](https://cloud.google.com/workstations/docs/audit-logging)
+      and [Container output logging](http://cloud/workstations/docs/container-
+      output-logging#overview). Operating system audit logs are available in
+      the [Cloud Logging](https://cloud.google.com/logging/docs) console by
+      querying: resource.type="gce_instance" log_name:"/logs/linux-auditd"
     encryptionKey: Immutable. Encrypts resources of this workstation
       configuration using a customer-managed encryption key (CMEK). If
       specified, the boot disk of the Compute Engine instance and the
@@ -1612,8 +1626,8 @@ class WorkstationConfig(_messages.Message):
       delete requests to make sure that the client has an up-to-date value
       before proceeding.
     host: Optional. Runtime host for the workstation.
-    httpOptions: Optional. Http options that customize the behavior of the
-      workstation service's http proxy.
+    httpOptions: Optional. HTTP options that customize the behavior of the
+      workstation service's HTTP proxy.
     idleTimeout: Optional. Number of seconds to wait before automatically
       stopping a workstation after it last received user traffic. A value of
       `"0s"` indicates that Cloud Workstations VMs created with this
@@ -1655,6 +1669,8 @@ class WorkstationConfig(_messages.Message):
       that Cloud Workstations VMs created with this configuration have no
       maximum running time. This is strongly discouraged because you incur
       costs and will not pick up security updates.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     uid: Output only. A system-assigned unique identifier for this workstation
       configuration.
     updateTime: Output only. Time when this workstation configuration was most
@@ -1735,8 +1751,10 @@ class WorkstationConfig(_messages.Message):
   reconciling = _messages.BooleanField(21)
   replicaZones = _messages.StringField(22, repeated=True)
   runningTimeout = _messages.StringField(23)
-  uid = _messages.StringField(24)
-  updateTime = _messages.StringField(25)
+  satisfiesPzi = _messages.BooleanField(24)
+  satisfiesPzs = _messages.BooleanField(25)
+  uid = _messages.StringField(26)
+  updateTime = _messages.StringField(27)
 
 
 class WorkstationsProjectsLocationsOperationsCancelRequest(_messages.Message):

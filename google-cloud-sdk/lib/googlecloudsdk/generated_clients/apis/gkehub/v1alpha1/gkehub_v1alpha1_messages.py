@@ -1530,6 +1530,8 @@ class Feature(_messages.Message):
       Binding Actuation.
     servicedirectoryFeatureSpec: The specification for Service Directory.
     servicemeshFeatureSpec: The specification for the Service Mesh Feature.
+    unreachable: Output only. List of locations that could not be reached
+      while fetching this feature.
     updateTime: Output only. When the Feature was last updated.
     workloadcertificateFeatureSpec: The specification for Workload
       Certificate.
@@ -1584,8 +1586,9 @@ class Feature(_messages.Message):
   rbacrolebindingactuationFeatureSpec = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 23)
   servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 24)
   servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 25)
-  updateTime = _messages.StringField(26)
-  workloadcertificateFeatureSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 27)
+  unreachable = _messages.StringField(26, repeated=True)
+  updateTime = _messages.StringField(27)
+  workloadcertificateFeatureSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 28)
 
 
 class FeatureError(_messages.Message):
@@ -2174,9 +2177,14 @@ class GkehubProjectsLocationsGlobalFeaturesGetRequest(_messages.Message):
   Fields:
     name: Required. The Feature resource name in the format
       `projects/*/locations/global/features/*`
+    returnPartialSuccess: Optional. If set to true, the response will return
+      partial results when some regions are unreachable and the unreachable
+      field in Feature proto will be populated. If set to false, the request
+      will fail when some regions are unreachable.
   """
 
   name = _messages.StringField(1, required=True)
+  returnPartialSuccess = _messages.BooleanField(2)
 
 
 class GkehubProjectsLocationsGlobalFeaturesListRequest(_messages.Message):
@@ -2200,6 +2208,10 @@ class GkehubProjectsLocationsGlobalFeaturesListRequest(_messages.Message):
       resources.
     parent: Required. The parent (project and location) where the Features
       will be listed. Specified in the format `projects/*/locations/global`.
+    returnPartialSuccess: Optional. If set to true, the response will return
+      partial results when some regions are unreachable and the unreachable
+      field in Feature proto will be populated. If set to false, the request
+      will fail when some regions are unreachable.
   """
 
   filter = _messages.StringField(1)
@@ -2207,6 +2219,7 @@ class GkehubProjectsLocationsGlobalFeaturesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class GkehubProjectsLocationsGlobalFeaturesPatchRequest(_messages.Message):

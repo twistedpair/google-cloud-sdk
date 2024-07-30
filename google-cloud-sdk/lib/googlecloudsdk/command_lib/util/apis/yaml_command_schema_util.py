@@ -345,9 +345,7 @@ class FileContents(TypeGenerator, arg_utils.FileType):
     return cls()
 
   def GenerateType(self, field):
-    if not field:
-      return arg_parsers.FileContents(binary=False)
-    if field.variant == apitools_messages.Variant.STRING:
+    if not field or field.variant == apitools_messages.Variant.STRING:
       return arg_parsers.FileContents(binary=False)
     if field.variant == apitools_messages.Variant.BYTES:
       return arg_parsers.FileContents(binary=True)

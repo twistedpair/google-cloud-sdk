@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.bigtable import util
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core.util import times
 
@@ -41,6 +42,14 @@ def ParseExpireTime(expiration_value):
   return parsed_datetime
 
 
+def FormatDatetime(datetime_value: str) -> str:
+  """Parse a string datetime value into a formatted string."""
+  parsed_time = arg_parsers.Datetime.ParseUtcTime(datetime_value)
+  return parsed_time.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+
+# TODO: b/353357876 - We can replace both of these flags since we can represent
+# both formats using gcloud's arg_parser.
 def GetExpireTime(args):
   """Parse flags for expire time."""
   if args.expiration_date:
@@ -49,12 +58,30 @@ def GetExpireTime(args):
     return ParseExpireTime(args.retention_period)
 
 
+def GetHotToStandardTime(args):
+  """Parse flags for hot to standard time."""
+  if not args.hot_to_standard_time:
+    return args.hot_to_standard_time
+
+  return FormatDatetime(args.hot_to_standard_time)
+
+
 # Create Command Utils
 def ModifyCreateRequest(backup_ref, args, req):
   """Parse argument and construct create backup request."""
   req.backup.sourceTable = f'projects/{backup_ref.projectsId}/instances/{backup_ref.instancesId}/tables/{args.table}'
 
   req.backup.expireTime = GetExpireTime(args)
+  # TODO: b/337328220 - Remove this try block after GA.
+  #
+  # We need this try block because `hot_to_standard_time` is only present in the
+  # Alpha track.
+  try:
+    hot_to_standard_time = GetHotToStandardTime(args)
+  except AttributeError:
+    pass
+  else:
+    req.backup.hotToStandardTime = hot_to_standard_time
   req.backupId = args.backup
   req.parent = backup_ref.Parent().RelativeName()
   return req
@@ -88,7 +115,7 @@ def AddBackupFieldsToUpdateMask(unused_backup_ref, args, req):
   # We need this try block because `hot_to_standard_time` is only present in the
   # Alpha track.
   try:
-    hot_to_standard_time = args.hot_to_standard_time
+    hot_to_standard_time = GetHotToStandardTime(args)
   except AttributeError:
     pass
   else:

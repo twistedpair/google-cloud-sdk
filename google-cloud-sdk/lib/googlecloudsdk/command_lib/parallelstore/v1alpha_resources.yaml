@@ -23,7 +23,7 @@ project:
   - &project
     parameter_name: projectsId
     attribute_name: project
-    help: projects TBD
+    help: The project id of the {resource} resource.
     property: core/project
   disable_auto_completers: true
 project_network:
@@ -35,7 +35,18 @@ project_network:
   - &network
     parameter_name: networksId
     attribute_name: network
-    help: networks TBD
+    help: The network id of the {resource} resource.
+  disable_auto_completers: true
+project_service_account:
+  name: serviceAccount
+  plural_name: serviceAccounts
+  collection: parallelstore.projects.serviceAccounts
+  attributes:
+  - *project
+  - &serviceAccount
+    parameter_name: serviceAccountsId
+    attribute_name: service_account
+    help: The serviceAccount id of the {resource} resource.
   disable_auto_completers: true
 project_region:
   name: region
@@ -46,7 +57,7 @@ project_region:
   - &region
     parameter_name: regionsId
     attribute_name: region
-    help: regions TBD
+    help: The region id of the {resource} resource.
   disable_auto_completers: true
 project_location:
   name: location
@@ -57,7 +68,7 @@ project_location:
   - &location
     parameter_name: locationsId
     attribute_name: location
-    help: locations TBD
+    help: The location id of the {resource} resource.
   disable_auto_completers: true
 project_region_address:
   name: address
@@ -69,7 +80,7 @@ project_region_address:
   - &address
     parameter_name: addressesId
     attribute_name: address
-    help: addresses TBD
+    help: The address id of the {resource} resource.
   disable_auto_completers: true
 project_location_instance:
   name: instance
@@ -81,5 +92,5 @@ project_location_instance:
   - &instance
     parameter_name: instancesId
     attribute_name: instance
-    help: instances TBD
+    help: The instance id of the {resource} resource.
   disable_auto_completers: false

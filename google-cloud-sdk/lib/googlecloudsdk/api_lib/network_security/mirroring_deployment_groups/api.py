@@ -119,6 +119,31 @@ class Client:
     )
     return self._deployment_group_client.Delete(delete_request)
 
+  def UpdateDeploymentGroup(
+      self,
+      name,
+      update_fields,
+  ):
+    """Calls the UpdateDeploymentGroup API.
+
+    Args:
+      name: str, the name of the mirroring deployment group.
+      update_fields: A dictionary of fields to update mapped to their new
+        values.
+
+    Returns:
+      Operation ref to track the long-running process.
+    """
+    dg = self.messages.MirroringDeploymentGroup(
+        labels=update_fields.get('labels', None),
+    )
+    update_request = self.messages.NetworksecurityProjectsLocationsMirroringDeploymentGroupsPatchRequest(
+        name=name,
+        mirroringDeploymentGroup=dg,
+        updateMask=','.join(update_fields.keys()),
+    )
+    return self._deployment_group_client.Patch(update_request)
+
   def DescribeDeploymentGroup(self, name):
     """Calls the GetDeploymentGroup API.
 

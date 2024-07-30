@@ -1324,6 +1324,7 @@ class Environment(_messages.Message):
       "projects/{projectId}/locations/{locationId}/environments/{environmentId
       }" EnvironmentId must start with a lowercase letter followed by up to 63
       lowercase letters, numbers, or hyphens, and cannot end with a hyphen.
+    satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     state: The current state of the environment.
     storageConfig: Optional. Storage configuration for this environment.
@@ -1387,11 +1388,12 @@ class Environment(_messages.Message):
   createTime = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  satisfiesPzs = _messages.BooleanField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  storageConfig = _messages.MessageField('StorageConfig', 7)
-  updateTime = _messages.StringField(8)
-  uuid = _messages.StringField(9)
+  satisfiesPzi = _messages.BooleanField(5)
+  satisfiesPzs = _messages.BooleanField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  storageConfig = _messages.MessageField('StorageConfig', 8)
+  updateTime = _messages.StringField(9)
+  uuid = _messages.StringField(10)
 
 
 class EnvironmentConfig(_messages.Message):
@@ -2990,6 +2992,9 @@ class TaskInstance(_messages.Message):
     priorityWeight: Priority weight of this task against other tasks.
     queue: Which queue to target when running this task.
     queuedDttm: Timestamp when the task was queued.
+    renderedMapIndex: Named mapping - a rendered map index template for this
+      task instance. If task doesn't have a template specified or
+      is_dynamically_mapped is set to false, this field is empty.
     startDate: Timestamp when the task instance started execution.
     state: Task instance state.
     taskId: The task instance ID. It is the same as the task ID in the DAG.
@@ -3050,11 +3055,12 @@ class TaskInstance(_messages.Message):
   priorityWeight = _messages.IntegerField(13, variant=_messages.Variant.INT32)
   queue = _messages.StringField(14)
   queuedDttm = _messages.StringField(15)
-  startDate = _messages.StringField(16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  taskId = _messages.StringField(18)
-  taskType = _messages.StringField(19)
-  tryNumber = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  renderedMapIndex = _messages.StringField(16)
+  startDate = _messages.StringField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  taskId = _messages.StringField(19)
+  taskType = _messages.StringField(20)
+  tryNumber = _messages.IntegerField(21, variant=_messages.Variant.INT32)
 
 
 class TaskLogsRetentionConfig(_messages.Message):

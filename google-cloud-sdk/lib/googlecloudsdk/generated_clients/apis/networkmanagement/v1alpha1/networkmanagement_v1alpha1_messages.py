@@ -1151,6 +1151,9 @@ class DropInfo(_messages.Message):
       DROPPED_INSIDE_GOOGLE_MANAGED_SERVICE: Packet is dropped due to an
         unspecified reason inside a Google-managed service. Used only for
         return traces.
+      LOAD_BALANCER_BACKEND_INVALID_NETWORK: Packet is dropped due to a load
+        balancer backend instance not having a network interface in the
+        network expected by the load balancer.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -1217,6 +1220,7 @@ class DropInfo(_messages.Message):
     CLOUD_NAT_NO_ADDRESSES = 62
     ROUTING_LOOP = 63
     DROPPED_INSIDE_GOOGLE_MANAGED_SERVICE = 64
+    LOAD_BALANCER_BACKEND_INVALID_NETWORK = 65
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationIp = _messages.StringField(2)
@@ -1681,6 +1685,8 @@ class InstanceInfo(_messages.Message):
     internalIp: Internal IP address of the network interface.
     networkTags: Network tags configured on the instance.
     networkUri: URI of a Compute Engine network.
+    pscNetworkAttachmentUri: URI of the PSC network attachment the NIC is
+      attached to (if relevant).
     serviceAccount: Service account authorized for the instance.
     uri: URI of a Compute Engine instance.
   """
@@ -1691,8 +1697,9 @@ class InstanceInfo(_messages.Message):
   internalIp = _messages.StringField(4)
   networkTags = _messages.StringField(5, repeated=True)
   networkUri = _messages.StringField(6)
-  serviceAccount = _messages.StringField(7)
-  uri = _messages.StringField(8)
+  pscNetworkAttachmentUri = _messages.StringField(7)
+  serviceAccount = _messages.StringField(8)
+  uri = _messages.StringField(9)
 
 
 class ListAppliancesResponse(_messages.Message):

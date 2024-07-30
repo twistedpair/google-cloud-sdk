@@ -4543,12 +4543,17 @@ class GoogleCloudDialogflowCxV3AdvancedSettingsLoggingSettings(_messages.Message
   r"""Define behaviors on logging.
 
   Fields:
+    enableConsentBasedRedaction: Enables consent-based end-user input
+      redaction, if true, a pre-defined session parameter
+      `$session.params.conversation-redaction` will be used to determine if
+      the utterance should be redacted.
     enableInteractionLogging: Enables DF Interaction logging.
-    enableStackdriverLogging: Enables StackDriver logging.
+    enableStackdriverLogging: Enables Google Cloud Logging.
   """
 
-  enableInteractionLogging = _messages.BooleanField(1)
-  enableStackdriverLogging = _messages.BooleanField(2)
+  enableConsentBasedRedaction = _messages.BooleanField(1)
+  enableInteractionLogging = _messages.BooleanField(2)
+  enableStackdriverLogging = _messages.BooleanField(3)
 
 
 class GoogleCloudDialogflowCxV3AdvancedSettingsSpeechSettings(_messages.Message):
@@ -4956,7 +4961,7 @@ class GoogleCloudDialogflowCxV3DeployFlowResponse(_messages.Message):
 
   Fields:
     deployment: The name of the flow version Deployment. Format:
-      `projects//locations//agents// environments//deployments/`.
+      `projects//locations//agents//environments//deployments/`.
     environment: The updated environment where the flow is deployed.
   """
 
@@ -5022,8 +5027,8 @@ class GoogleCloudDialogflowCxV3EnvironmentTestCasesConfig(_messages.Message):
       TestCasesConfig.test_cases before deploying a flow version to the
       environment. Default false.
     testCases: A list of test case names to run. They should be under the same
-      agent. Format of each test case name: `projects//locations/
-      /agents//testCases/`
+      agent. Format of each test case name:
+      `projects//locations//agents//testCases/`
   """
 
   enableContinuousRun = _messages.BooleanField(1)
@@ -6493,7 +6498,7 @@ class GoogleCloudDialogflowCxV3TestCase(_messages.Message):
     lastTestResult: The latest test result.
     name: The unique identifier of the test case. TestCases.CreateTestCase
       will populate the name automatically. Otherwise use format:
-      `projects//locations//agents/ /testCases/`.
+      `projects//locations//agents//testCases/`.
     notes: Additional freeform notes about the test case. Limit of 400
       characters.
     tags: Tags are short descriptions that users may apply to test cases for
@@ -6541,7 +6546,7 @@ class GoogleCloudDialogflowCxV3TestCaseResult(_messages.Message):
     environment: Environment where the test was run. If not set, it indicates
       the draft environment.
     name: The resource name for the test case result. Format:
-      `projects//locations//agents//testCases/ /results/`.
+      `projects//locations//agents//testCases//results/`.
     testResult: Whether the test case passed in the agent environment.
     testTime: The time that the test was run.
   """
@@ -7316,12 +7321,17 @@ class GoogleCloudDialogflowCxV3beta1AdvancedSettingsLoggingSettings(_messages.Me
   r"""Define behaviors on logging.
 
   Fields:
+    enableConsentBasedRedaction: Enables consent-based end-user input
+      redaction, if true, a pre-defined session parameter
+      `$session.params.conversation-redaction` will be used to determine if
+      the utterance should be redacted.
     enableInteractionLogging: Enables DF Interaction logging.
-    enableStackdriverLogging: Enables StackDriver logging.
+    enableStackdriverLogging: Enables Google Cloud Logging.
   """
 
-  enableInteractionLogging = _messages.BooleanField(1)
-  enableStackdriverLogging = _messages.BooleanField(2)
+  enableConsentBasedRedaction = _messages.BooleanField(1)
+  enableInteractionLogging = _messages.BooleanField(2)
+  enableStackdriverLogging = _messages.BooleanField(3)
 
 
 class GoogleCloudDialogflowCxV3beta1AdvancedSettingsSpeechSettings(_messages.Message):
@@ -7729,7 +7739,7 @@ class GoogleCloudDialogflowCxV3beta1DeployFlowResponse(_messages.Message):
 
   Fields:
     deployment: The name of the flow version deployment. Format:
-      `projects//locations//agents// environments//deployments/`.
+      `projects//locations//agents//environments//deployments/`.
     environment: The updated environment where the flow is deployed.
   """
 
@@ -7795,8 +7805,8 @@ class GoogleCloudDialogflowCxV3beta1EnvironmentTestCasesConfig(_messages.Message
       TestCasesConfig.test_cases before deploying a flow version to the
       environment. Default false.
     testCases: A list of test case names to run. They should be under the same
-      agent. Format of each test case name: `projects//locations/
-      /agents//testCases/`
+      agent. Format of each test case name:
+      `projects//locations//agents//testCases/`
   """
 
   enableContinuousRun = _messages.BooleanField(1)
@@ -9251,7 +9261,7 @@ class GoogleCloudDialogflowCxV3beta1TestCase(_messages.Message):
     lastTestResult: The latest test result.
     name: The unique identifier of the test case. TestCases.CreateTestCase
       will populate the name automatically. Otherwise use format:
-      `projects//locations//agents/ /testCases/`.
+      `projects//locations//agents//testCases/`.
     notes: Additional freeform notes about the test case. Limit of 400
       characters.
     tags: Tags are short descriptions that users may apply to test cases for
@@ -9299,7 +9309,7 @@ class GoogleCloudDialogflowCxV3beta1TestCaseResult(_messages.Message):
     environment: Environment where the test was run. If not set, it indicates
       the draft environment.
     name: The resource name for the test case result. Format:
-      `projects//locations//agents//testCases/ /results/`.
+      `projects//locations//agents//testCases//results/`.
     testResult: Whether the test case passed in the agent environment.
     testTime: The time that the test was run.
   """
@@ -15984,12 +15994,6 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
       language does not exist, then it would emit an error.
 
   Fields:
-    alternativeLanguageCodes: Defines the list of other language codes in
-      addition to the one provided by the conversation profile that may be
-      detected as the language code for the utterances over the conversation.
-      See [Language
-      Support](https://cloud.google.com/dialogflow/docs/reference/language)
-      for a list of the currently supported language codes.
     audioEncoding: Audio encoding of the audio content to process.
     enableWordInfo: If `true`, Dialogflow returns SpeechWordInfo in
       StreamingRecognitionResult with information about the recognized speech
@@ -16108,14 +16112,13 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
     USE_STANDARD = 2
     USE_ENHANCED = 3
 
-  alternativeLanguageCodes = _messages.StringField(1, repeated=True)
-  audioEncoding = _messages.EnumField('AudioEncodingValueValuesEnum', 2)
-  enableWordInfo = _messages.BooleanField(3)
-  languageCode = _messages.StringField(4)
-  model = _messages.StringField(5)
-  sampleRateHertz = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  speechModelVariant = _messages.EnumField('SpeechModelVariantValueValuesEnum', 7)
-  useTimeoutBasedEndpointing = _messages.BooleanField(8)
+  audioEncoding = _messages.EnumField('AudioEncodingValueValuesEnum', 1)
+  enableWordInfo = _messages.BooleanField(2)
+  languageCode = _messages.StringField(3)
+  model = _messages.StringField(4)
+  sampleRateHertz = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  speechModelVariant = _messages.EnumField('SpeechModelVariantValueValuesEnum', 6)
+  useTimeoutBasedEndpointing = _messages.BooleanField(7)
 
 
 class GoogleCloudDialogflowV2SuggestArticlesRequest(_messages.Message):

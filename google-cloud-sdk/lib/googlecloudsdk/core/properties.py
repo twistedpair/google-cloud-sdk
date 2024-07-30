@@ -1286,6 +1286,8 @@ class _SectionApiEndpointOverrides(_Section):
         'marketplacesolutions', command='gcloud mps')
     self.mediaasset = self._Add('mediaasset', command='gcloud media')
     self.memcache = self._Add('memcache', command='gcloud memcache')
+    self.memorystore = self._Add(
+        'memorystore', command='gcloud memorystore', hidden=True)
     self.messagestreams = self._Add(
         'messagestreams', command='gcloud messagestreams', hidden=True)
     self.metastore = self._Add('metastore', command='gcloud metastore')

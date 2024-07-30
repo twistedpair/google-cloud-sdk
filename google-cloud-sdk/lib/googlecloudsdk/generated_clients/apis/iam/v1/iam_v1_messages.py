@@ -1027,8 +1027,8 @@ class IamLocationsWorkforcePoolsInstalledAppsListRequest(_messages.Message):
   Fields:
     pageSize: Optional. The maximum number of workforce pool installed apps to
       return. If unspecified, at most 50 workforce pool installed apps will be
-      returned. The maximum value is 1000; values above 1000 are truncated to
-      1000.
+      returned. The maximum value is 100; values above 100 are truncated to
+      100.
     pageToken: Optional. A page token, received from a previous
       `ListWorkforcePoolInstalledApps` call. Provide this to retrieve the
       subsequent page.
@@ -4735,7 +4735,7 @@ class QueryGrantableRolesRequest(_messages.Message):
       format. For example, a Cloud Platform project with id `my-project` will
       be named `//cloudresourcemanager.googleapis.com/projects/my-project`.
     pageSize: Optional limit on the number of roles to include in the
-      response. The default is 300, and the maximum is 1,000.
+      response. The default is 300, and the maximum is 2,000.
     pageToken: Optional pagination token returned in an earlier
       QueryGrantableRolesResponse.
     view: A ViewValueValuesEnum attribute.

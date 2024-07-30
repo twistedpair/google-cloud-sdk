@@ -1,0 +1,35 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: privilegedaccessmanager v1 AccessControlEntry export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  principals:
+    description: |-
+      Users who are allowed for the operation. Each entry should be a valid v1
+      IAM principal identifier. The format for these is documented at:
+      https://cloud.google.com/iam/docs/principal- identifiers#v1
+    type: array
+    items:
+      type: string

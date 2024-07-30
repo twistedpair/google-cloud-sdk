@@ -43,6 +43,7 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
     self.projects_locations_registryBooks_historicalEvents = self.ProjectsLocationsRegistryBooksHistoricalEventsService(self)
     self.projects_locations_registryBooks_nodeEvents = self.ProjectsLocationsRegistryBooksNodeEventsService(self)
     self.projects_locations_registryBooks_registryNodes = self.ProjectsLocationsRegistryBooksRegistryNodesService(self)
+    self.projects_locations_registryBooks_resourceImports = self.ProjectsLocationsRegistryBooksResourceImportsService(self)
     self.projects_locations_registryBooks = self.ProjectsLocationsRegistryBooksService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -408,6 +409,151 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudnumberregistryProjectsLocationsRegistryBooksRegistryNodesSearchRequest',
         response_type_name='SearchRegistryNodesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRegistryBooksResourceImportsService(base_api.BaseApiService):
+    """Service class for the projects_locations_registryBooks_resourceImports resource."""
+
+    _NAME = 'projects_locations_registryBooks_resourceImports'
+
+    def __init__(self, client):
+      super(CloudnumberregistryV1alpha.ProjectsLocationsRegistryBooksResourceImportsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an resource import to import data from a source.
+
+      Args:
+        request: (CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/registryBooks/{registryBooksId}/resourceImports',
+        http_method='POST',
+        method_id='cloudnumberregistry.projects.locations.registryBooks.resourceImports.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'resourceImportId'],
+        relative_path='v1alpha/{+parent}/resourceImports',
+        request_field='resourceImport',
+        request_type_name='CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single ResourceImport.
+
+      Args:
+        request: (CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/registryBooks/{registryBooksId}/resourceImports/{resourceImportsId}',
+        http_method='DELETE',
+        method_id='cloudnumberregistry.projects.locations.registryBooks.resourceImports.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single ResourceImport.
+
+      Args:
+        request: (CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ResourceImport) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/registryBooks/{registryBooksId}/resourceImports/{resourceImportsId}',
+        http_method='GET',
+        method_id='cloudnumberregistry.projects.locations.registryBooks.resourceImports.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsGetRequest',
+        response_type_name='ResourceImport',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists ResourceImports in a given project and location.
+
+      Args:
+        request: (CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListResourceImportsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/registryBooks/{registryBooksId}/resourceImports',
+        http_method='GET',
+        method_id='cloudnumberregistry.projects.locations.registryBooks.resourceImports.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/resourceImports',
+        request_field='',
+        request_type_name='CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsListRequest',
+        response_type_name='ListResourceImportsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single ResourceImport.
+
+      Args:
+        request: (CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/registryBooks/{registryBooksId}/resourceImports/{resourceImportsId}',
+        http_method='PATCH',
+        method_id='cloudnumberregistry.projects.locations.registryBooks.resourceImports.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='resourceImport',
+        request_type_name='CloudnumberregistryProjectsLocationsRegistryBooksResourceImportsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

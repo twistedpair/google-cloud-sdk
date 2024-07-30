@@ -4000,9 +4000,11 @@ class BackendService(_messages.Message):
       HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to
       INTERNAL_MANAGED. - A global backend service with the
       load_balancing_scheme set to INTERNAL_SELF_MANAGED, INTERNAL_MANAGED, or
-      EXTERNAL_MANAGED. If sessionAffinity is not NONE, and this field is not
-      set to MAGLEV or RING_HASH, session affinity settings will not take
-      effect. Only ROUND_ROBIN and RING_HASH are supported when the backend
+      EXTERNAL_MANAGED. If sessionAffinity is not configured-that is, if
+      session affinity remains at the default value of NONE-then the default
+      value for localityLbPolicy is ROUND_ROBIN. If session affinity is set to
+      a value other than NONE, then the default value for localityLbPolicy is
+      MAGLEV. Only ROUND_ROBIN and RING_HASH are supported when the backend
       service is referenced by a URL map that is bound to target gRPC proxy
       that has validateForProxyless field set to true.
     ProtocolValueValuesEnum: The protocol this BackendService uses to
@@ -4129,9 +4131,11 @@ class BackendService(_messages.Message):
       HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to
       INTERNAL_MANAGED. - A global backend service with the
       load_balancing_scheme set to INTERNAL_SELF_MANAGED, INTERNAL_MANAGED, or
-      EXTERNAL_MANAGED. If sessionAffinity is not NONE, and this field is not
-      set to MAGLEV or RING_HASH, session affinity settings will not take
-      effect. Only ROUND_ROBIN and RING_HASH are supported when the backend
+      EXTERNAL_MANAGED. If sessionAffinity is not configured-that is, if
+      session affinity remains at the default value of NONE-then the default
+      value for localityLbPolicy is ROUND_ROBIN. If session affinity is set to
+      a value other than NONE, then the default value for localityLbPolicy is
+      MAGLEV. Only ROUND_ROBIN and RING_HASH are supported when the backend
       service is referenced by a URL map that is bound to target gRPC proxy
       that has validateForProxyless field set to true.
     logConfig: This field denotes the logging options for the load balancer
@@ -4295,11 +4299,13 @@ class BackendService(_messages.Message):
     HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED.
     - A global backend service with the load_balancing_scheme set to
     INTERNAL_SELF_MANAGED, INTERNAL_MANAGED, or EXTERNAL_MANAGED. If
-    sessionAffinity is not NONE, and this field is not set to MAGLEV or
-    RING_HASH, session affinity settings will not take effect. Only
-    ROUND_ROBIN and RING_HASH are supported when the backend service is
-    referenced by a URL map that is bound to target gRPC proxy that has
-    validateForProxyless field set to true.
+    sessionAffinity is not configured-that is, if session affinity remains at
+    the default value of NONE-then the default value for localityLbPolicy is
+    ROUND_ROBIN. If session affinity is set to a value other than NONE, then
+    the default value for localityLbPolicy is MAGLEV. Only ROUND_ROBIN and
+    RING_HASH are supported when the backend service is referenced by a URL
+    map that is bound to target gRPC proxy that has validateForProxyless field
+    set to true.
 
     Values:
       INVALID_LB_POLICY: <no description>
@@ -11028,7 +11034,8 @@ class ComputeGlobalOperationsDeleteRequest(_messages.Message):
   r"""A ComputeGlobalOperationsDeleteRequest object.
 
   Fields:
-    operation: Name of the Operations resource to delete.
+    operation: Name of the Operations resource to delete, or its unique
+      numeric identifier.
     project: Project ID for this request.
   """
 
@@ -11044,7 +11051,8 @@ class ComputeGlobalOperationsGetRequest(_messages.Message):
   r"""A ComputeGlobalOperationsGetRequest object.
 
   Fields:
-    operation: Name of the Operations resource to return.
+    operation: Name of the Operations resource to return, or its unique
+      numeric identifier.
     project: Project ID for this request.
   """
 
@@ -11125,7 +11133,8 @@ class ComputeGlobalOperationsWaitRequest(_messages.Message):
   r"""A ComputeGlobalOperationsWaitRequest object.
 
   Fields:
-    operation: Name of the Operations resource to return.
+    operation: Name of the Operations resource to return, or its unique
+      numeric identifier.
     project: Project ID for this request.
   """
 
@@ -11137,7 +11146,8 @@ class ComputeGlobalOrganizationOperationsDeleteRequest(_messages.Message):
   r"""A ComputeGlobalOrganizationOperationsDeleteRequest object.
 
   Fields:
-    operation: Name of the Operations resource to delete.
+    operation: Name of the Operations resource to delete, or its unique
+      numeric identifier.
     parentId: Parent ID for this request.
   """
 
@@ -11153,7 +11163,8 @@ class ComputeGlobalOrganizationOperationsGetRequest(_messages.Message):
   r"""A ComputeGlobalOrganizationOperationsGetRequest object.
 
   Fields:
-    operation: Name of the Operations resource to return.
+    operation: Name of the Operations resource to return, or its unique
+      numeric identifier.
     parentId: Parent ID for this request.
   """
 
@@ -24366,7 +24377,8 @@ class ComputeRegionOperationsDeleteRequest(_messages.Message):
   r"""A ComputeRegionOperationsDeleteRequest object.
 
   Fields:
-    operation: Name of the Operations resource to delete.
+    operation: Name of the Operations resource to delete, or its unique
+      numeric identifier.
     project: Project ID for this request.
     region: Name of the region for this request.
   """
@@ -24384,7 +24396,8 @@ class ComputeRegionOperationsGetRequest(_messages.Message):
   r"""A ComputeRegionOperationsGetRequest object.
 
   Fields:
-    operation: Name of the Operations resource to return.
+    operation: Name of the Operations resource to return, or its unique
+      numeric identifier.
     project: Project ID for this request.
     region: Name of the region for this request.
   """
@@ -24469,7 +24482,8 @@ class ComputeRegionOperationsWaitRequest(_messages.Message):
   r"""A ComputeRegionOperationsWaitRequest object.
 
   Fields:
-    operation: Name of the Operations resource to return.
+    operation: Name of the Operations resource to return, or its unique
+      numeric identifier.
     project: Project ID for this request.
     region: Name of the region for this request.
   """
@@ -32521,7 +32535,8 @@ class ComputeZoneOperationsDeleteRequest(_messages.Message):
   r"""A ComputeZoneOperationsDeleteRequest object.
 
   Fields:
-    operation: Name of the Operations resource to delete.
+    operation: Name of the Operations resource to delete, or its unique
+      numeric identifier.
     project: Project ID for this request.
     zone: Name of the zone for this request.
   """
@@ -32539,7 +32554,8 @@ class ComputeZoneOperationsGetRequest(_messages.Message):
   r"""A ComputeZoneOperationsGetRequest object.
 
   Fields:
-    operation: Name of the Operations resource to return.
+    operation: Name of the Operations resource to return, or its unique
+      numeric identifier.
     project: Project ID for this request.
     zone: Name of the zone for this request.
   """
@@ -32624,7 +32640,8 @@ class ComputeZoneOperationsWaitRequest(_messages.Message):
   r"""A ComputeZoneOperationsWaitRequest object.
 
   Fields:
-    operation: Name of the Operations resource to return.
+    operation: Name of the Operations resource to return, or its unique
+      numeric identifier.
     project: Project ID for this request.
     zone: Name of the zone for this request.
   """
@@ -63693,11 +63710,26 @@ class ResourceStatus(_messages.Message):
   Fields:
     physicalHost: [Output Only] An opaque ID of the host on which the VM is
       running.
+    scheduling: A ResourceStatusScheduling attribute.
     upcomingMaintenance: A UpcomingMaintenance attribute.
   """
 
   physicalHost = _messages.StringField(1)
-  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 2)
+  scheduling = _messages.MessageField('ResourceStatusScheduling', 2)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 3)
+
+
+class ResourceStatusScheduling(_messages.Message):
+  r"""A ResourceStatusScheduling object.
+
+  Fields:
+    availabilityDomain: Specifies the availability domain to place the
+      instance in. The value must be a number between 1 and the number of
+      availability domains specified in the spread placement policy attached
+      to the instance.
+  """
+
+  availabilityDomain = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class Route(_messages.Message):
@@ -78406,12 +78438,13 @@ class UrlMap(_messages.Message):
       defaultRouteAction is also specified, advanced routing actions, such as
       URL rewrites, take effect before sending the request to the backend.
       However, if defaultService is specified, defaultRouteAction cannot
-      contain any weightedBackendServices. Conversely, if routeAction
-      specifies any weightedBackendServices, service must not be specified. If
-      defaultService is specified, then set either defaultUrlRedirect , or
-      defaultRouteAction.weightedBackendService Don't set both. defaultService
-      has no effect when the URL map is bound to a target gRPC proxy that has
-      the validateForProxyless field set to true.
+      contain any defaultRouteAction.weightedBackendServices. Conversely, if
+      defaultRouteAction specifies any
+      defaultRouteAction.weightedBackendServices, defaultService must not be
+      specified. If defaultService is specified, then set either
+      defaultUrlRedirect , or defaultRouteAction.weightedBackendService Don't
+      set both. defaultService has no effect when the URL map is bound to a
+      target gRPC proxy that has the validateForProxyless field set to true.
     defaultUrlRedirect: When none of the specified hostRules match, the
       request is redirected to a URL specified by defaultUrlRedirect. If
       defaultUrlRedirect is specified, defaultService or defaultRouteAction

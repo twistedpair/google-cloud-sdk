@@ -935,7 +935,7 @@ class ReauthSettings(_messages.Message):
   r"""Configuration for IAP reauthentication policies.
 
   Enums:
-    MethodValueValuesEnum: Reauth method requested.
+    MethodValueValuesEnum: Optional. Reauth method requested.
     PolicyTypeValueValuesEnum: Optional. How IAP determines the effective
       policy in cases of hierarchical policies. Policies are merged from
       higher in the hierarchy to lower in the hierarchy.
@@ -943,14 +943,14 @@ class ReauthSettings(_messages.Message):
   Fields:
     maxAge: Optional. Reauth session lifetime, how long before a user has to
       reauthenticate again.
-    method: Reauth method requested.
+    method: Optional. Reauth method requested.
     policyType: Optional. How IAP determines the effective policy in cases of
       hierarchical policies. Policies are merged from higher in the hierarchy
       to lower in the hierarchy.
   """
 
   class MethodValueValuesEnum(_messages.Enum):
-    r"""Reauth method requested.
+    r"""Optional. Reauth method requested.
 
     Values:
       METHOD_UNSPECIFIED: Reauthentication disabled.

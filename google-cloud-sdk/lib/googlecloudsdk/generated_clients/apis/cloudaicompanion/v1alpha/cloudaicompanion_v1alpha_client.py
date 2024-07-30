@@ -41,6 +41,7 @@ class CloudaicompanionV1alpha(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_codeRepositoryIndexes_repositoryGroups = self.ProjectsLocationsCodeRepositoryIndexesRepositoryGroupsService(self)
     self.projects_locations_codeRepositoryIndexes = self.ProjectsLocationsCodeRepositoryIndexesService(self)
+    self.projects_locations_enablements = self.ProjectsLocationsEnablementsService(self)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -137,6 +138,33 @@ class CloudaicompanionV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (CloudaicompanionProjectsLocationsCodeRepositoryIndexesRepositoryGroupsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/codeRepositoryIndexes/{codeRepositoryIndexesId}/repositoryGroups/{repositoryGroupsId}:getIamPolicy',
+        http_method='GET',
+        method_id='cloudaicompanion.projects.locations.codeRepositoryIndexes.repositoryGroups.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='CloudaicompanionProjectsLocationsCodeRepositoryIndexesRepositoryGroupsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists RepositoryGroups in a given project and location.
 
@@ -188,6 +216,60 @@ class CloudaicompanionV1alpha(base_api.BaseApiClient):
         request_field='repositoryGroup',
         request_type_name='CloudaicompanionProjectsLocationsCodeRepositoryIndexesRepositoryGroupsPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (CloudaicompanionProjectsLocationsCodeRepositoryIndexesRepositoryGroupsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/codeRepositoryIndexes/{codeRepositoryIndexesId}/repositoryGroups/{repositoryGroupsId}:setIamPolicy',
+        http_method='POST',
+        method_id='cloudaicompanion.projects.locations.codeRepositoryIndexes.repositoryGroups.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='CloudaicompanionProjectsLocationsCodeRepositoryIndexesRepositoryGroupsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (CloudaicompanionProjectsLocationsCodeRepositoryIndexesRepositoryGroupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/codeRepositoryIndexes/{codeRepositoryIndexesId}/repositoryGroups/{repositoryGroupsId}:testIamPermissions',
+        http_method='POST',
+        method_id='cloudaicompanion.projects.locations.codeRepositoryIndexes.repositoryGroups.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='CloudaicompanionProjectsLocationsCodeRepositoryIndexesRepositoryGroupsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -333,6 +415,178 @@ class CloudaicompanionV1alpha(base_api.BaseApiClient):
         request_field='codeRepositoryIndex',
         request_type_name='CloudaicompanionProjectsLocationsCodeRepositoryIndexesPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsEnablementsService(base_api.BaseApiService):
+    """Service class for the projects_locations_enablements resource."""
+
+    _NAME = 'projects_locations_enablements'
+
+    def __init__(self, client):
+      super(CloudaicompanionV1alpha.ProjectsLocationsEnablementsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new enablement.
+
+      Args:
+        request: (CloudaicompanionProjectsLocationsEnablementsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Enablement) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/enablements',
+        http_method='POST',
+        method_id='cloudaicompanion.projects.locations.enablements.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['enablementId'],
+        relative_path='v1alpha/{+parent}/enablements',
+        request_field='enablement',
+        request_type_name='CloudaicompanionProjectsLocationsEnablementsCreateRequest',
+        response_type_name='Enablement',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an enablement. See https://google.aip.dev/164 for reference.
+
+      Args:
+        request: (CloudaicompanionProjectsLocationsEnablementsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Enablement) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/enablements/{enablementsId}',
+        http_method='DELETE',
+        method_id='cloudaicompanion.projects.locations.enablements.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='CloudaicompanionProjectsLocationsEnablementsDeleteRequest',
+        response_type_name='Enablement',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an enablement.
+
+      Args:
+        request: (CloudaicompanionProjectsLocationsEnablementsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Enablement) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/enablements/{enablementsId}',
+        http_method='GET',
+        method_id='cloudaicompanion.projects.locations.enablements.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='CloudaicompanionProjectsLocationsEnablementsGetRequest',
+        response_type_name='Enablement',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists enablements.
+
+      Args:
+        request: (CloudaicompanionProjectsLocationsEnablementsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListEnablementsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/enablements',
+        http_method='GET',
+        method_id='cloudaicompanion.projects.locations.enablements.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'showDeleted'],
+        relative_path='v1alpha/{+parent}/enablements',
+        request_field='',
+        request_type_name='CloudaicompanionProjectsLocationsEnablementsListRequest',
+        response_type_name='ListEnablementsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an enablement.
+
+      Args:
+        request: (CloudaicompanionProjectsLocationsEnablementsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Enablement) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/enablements/{enablementsId}',
+        http_method='PATCH',
+        method_id='cloudaicompanion.projects.locations.enablements.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='enablement',
+        request_type_name='CloudaicompanionProjectsLocationsEnablementsPatchRequest',
+        response_type_name='Enablement',
+        supports_download=False,
+    )
+
+    def Undelete(self, request, global_params=None):
+      r"""Undeletes an enablement. See https://google.aip.dev/164 for reference.
+
+      Args:
+        request: (CloudaicompanionProjectsLocationsEnablementsUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Enablement) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/enablements/{enablementsId}:undelete',
+        http_method='POST',
+        method_id='cloudaicompanion.projects.locations.enablements.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:undelete',
+        request_field='undeleteEnablementRequest',
+        request_type_name='CloudaicompanionProjectsLocationsEnablementsUndeleteRequest',
+        response_type_name='Enablement',
         supports_download=False,
     )
 

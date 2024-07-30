@@ -171,6 +171,8 @@ class Cluster(_messages.Message):
     AuthorizationModeValueValuesEnum: Optional. The authorization mode of the
       Redis cluster. If not provided, auth feature is disabled for the
       cluster.
+    ClusterModeValueValuesEnum: Optional. The cluster mode config for the
+      cluster.
     NodeTypeValueValuesEnum: Optional. The type of a redis node in the
       cluster. NodeType determines the underlying machine-type of a redis
       node.
@@ -187,8 +189,10 @@ class Cluster(_messages.Message):
   Fields:
     authorizationMode: Optional. The authorization mode of the Redis cluster.
       If not provided, auth feature is disabled for the cluster.
+    clusterMode: Optional. The cluster mode config for the cluster.
     createTime: Output only. The timestamp associated with the cluster
       creation request.
+    crossClusterReplicationConfig: Optional. Cross cluster replication config.
     deletionProtectionEnabled: Optional. The delete operation will fail when
       the value is set to true.
     discoveryEndpoints: Output only. Endpoints created on each given network,
@@ -244,6 +248,18 @@ class Cluster(_messages.Message):
     AUTH_MODE_UNSPECIFIED = 0
     AUTH_MODE_IAM_AUTH = 1
     AUTH_MODE_DISABLED = 2
+
+  class ClusterModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The cluster mode config for the cluster.
+
+    Values:
+      CLUSTER_MODE_UNSPECIFIED: Cluster mode is not specified.
+      ENABLED: Cluster mode is enabled.
+      DISABLED: Cluster mode is disabled.
+    """
+    CLUSTER_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
 
   class NodeTypeValueValuesEnum(_messages.Enum):
     r"""Optional. The type of a redis node in the cluster. NodeType determines
@@ -320,28 +336,30 @@ class Cluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 1)
-  createTime = _messages.StringField(2)
-  deletionProtectionEnabled = _messages.BooleanField(3)
-  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 4, repeated=True)
-  maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 5)
-  maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 6)
-  name = _messages.StringField(7)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 8)
-  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 9)
-  preciseSizeGb = _messages.FloatField(10)
-  pscConfigs = _messages.MessageField('PscConfig', 11, repeated=True)
-  pscConnections = _messages.MessageField('PscConnection', 12, repeated=True)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 13)
-  replicaCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  satisfiesPzi = _messages.BooleanField(15)
-  satisfiesPzs = _messages.BooleanField(16)
-  shardCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  sizeGb = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  stateInfo = _messages.MessageField('StateInfo', 20)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 21)
-  uid = _messages.StringField(22)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 23)
+  clusterMode = _messages.EnumField('ClusterModeValueValuesEnum', 2)
+  createTime = _messages.StringField(3)
+  crossClusterReplicationConfig = _messages.MessageField('CrossClusterReplicationConfig', 4)
+  deletionProtectionEnabled = _messages.BooleanField(5)
+  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 6, repeated=True)
+  maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 7)
+  maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 8)
+  name = _messages.StringField(9)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 10)
+  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 11)
+  preciseSizeGb = _messages.FloatField(12)
+  pscConfigs = _messages.MessageField('PscConfig', 13, repeated=True)
+  pscConnections = _messages.MessageField('PscConnection', 14, repeated=True)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 15)
+  replicaCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  satisfiesPzi = _messages.BooleanField(17)
+  satisfiesPzs = _messages.BooleanField(18)
+  shardCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  stateInfo = _messages.MessageField('StateInfo', 22)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 23)
+  uid = _messages.StringField(24)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 25)
 
 
 class ClusterDenyMaintenancePeriod(_messages.Message):
@@ -490,37 +508,73 @@ class Compliance(_messages.Message):
   version = _messages.StringField(2)
 
 
+class CrossClusterReplicationConfig(_messages.Message):
+  r"""Cross cluster replication config.
+
+  Enums:
+    ClusterRoleValueValuesEnum: The role of the cluster in cross cluster
+      replication.
+
+  Fields:
+    clusterRole: The role of the cluster in cross cluster replication.
+    memberClusters: Output only. An output only view of all the member
+      clusters participating in the cross cluster replication. This view will
+      be provided by every member cluster irrespective of its cluster
+      role(primary or secondary). A primary cluster can provide information
+      about all the secondary clusters replicating from it. However, a
+      secondary cluster only knows about the primary cluster from which it is
+      replicating. However, for scenarios, where the primary cluster is
+      unavailable(e.g. regional outage), a GetCluster request can be sent to
+      any other member cluster and this field will list all the member
+      clusters participating in cross cluster replication.
+    primaryCluster: Details of the primary cluster that is used as the
+      replication source for this secondary cluster. This field is only set
+      for a secondary cluster.
+    secondaryClusters: List of secondary clusters that are replicating from
+      this primary cluster. This field is only set for a primary cluster.
+    updateTime: Output only. The last time cross cluster replication config
+      was updated.
+  """
+
+  class ClusterRoleValueValuesEnum(_messages.Enum):
+    r"""The role of the cluster in cross cluster replication.
+
+    Values:
+      CLUSTER_ROLE_UNSPECIFIED: Cluster role is not set. The behavior is
+        equivalent to NONE.
+      NONE: This cluster does not participate in cross cluster replication. It
+        is an independent cluster and does not replicate to or from any other
+        clusters.
+      PRIMARY: A cluster that allows both reads and writes. Any data written
+        to this cluster is also replicated to the attached secondary clusters.
+      SECONDARY: A cluster that allows only reads and replicates data from a
+        primary cluster.
+    """
+    CLUSTER_ROLE_UNSPECIFIED = 0
+    NONE = 1
+    PRIMARY = 2
+    SECONDARY = 3
+
+  clusterRole = _messages.EnumField('ClusterRoleValueValuesEnum', 1)
+  memberClusters = _messages.MessageField('MemberClusters', 2)
+  primaryCluster = _messages.MessageField('RemoteCluster', 3)
+  secondaryClusters = _messages.MessageField('RemoteCluster', 4, repeated=True)
+  updateTime = _messages.StringField(5)
+
+
 class CustomMetadataData(_messages.Message):
-  r"""Any custom metadata associated with the resource. i.e. A spanner
+  r"""Any custom metadata associated with the resource. e.g. A spanner
   instance can have multiple databases with its own unique metadata.
   Information for these individual databases can be captured in custom
   metadata data
 
   Fields:
-    databaseMetadata: A DatabaseMetadata attribute.
+    internalResourceMetadata: Metadata for individual internal resources in an
+      instance. e.g. spanner instance can have multiple databases with unique
+      configuration.
   """
 
-  databaseMetadata = _messages.MessageField('DatabaseMetadata', 1, repeated=True)
-
-
-class DatabaseMetadata(_messages.Message):
-  r"""Metadata for individual databases created in an instance. i.e. spanner
-  instance can have multiple databases with unique configuration settings.
-
-  Fields:
-    backupConfiguration: Backup configuration for this database
-    backupRun: Information about the last backup attempt for this database
-    product: A Product attribute.
-    resourceId: A DatabaseResourceId attribute.
-    resourceName: Required. Database name. Resource name to follow CAIS
-      resource_name format as noted here go/condor-common-datamodel
-  """
-
-  backupConfiguration = _messages.MessageField('BackupConfiguration', 1)
-  backupRun = _messages.MessageField('BackupRun', 2)
-  product = _messages.MessageField('Product', 3)
-  resourceId = _messages.MessageField('DatabaseResourceId', 4)
-  resourceName = _messages.StringField(5)
+  internalResourceMetadata = _messages.MessageField('InternalResourceMetadata', 1, repeated=True)
 
 
 class DatabaseResourceFeed(_messages.Message):
@@ -1002,8 +1056,8 @@ class DatabaseResourceId(_messages.Message):
     resourceType: Required. The type of resource this ID is identifying. Ex
       redis.googleapis.com/Instance, redis.googleapis.com/Cluster,
       alloydb.googleapis.com/Cluster, alloydb.googleapis.com/Instance,
-      spanner.googleapis.com/Instance REQUIRED Please refer go/condor-common-
-      datamodel
+      spanner.googleapis.com/Instance, firestore.googleapis.com/Database,
+      REQUIRED Please refer go/condor-common-datamodel
     uniqueId: Required. A service-local token that distinguishes this resource
       from other resources within the same service.
   """
@@ -2140,6 +2194,28 @@ class InstanceAuthString(_messages.Message):
   authString = _messages.StringField(1)
 
 
+class InternalResourceMetadata(_messages.Message):
+  r"""Metadata for individual internal resources in an instance. e.g. spanner
+  instance can have multiple databases with unique configuration settings.
+  Similarly bigtable can have multiple clusters within same bigtable instance.
+
+  Fields:
+    backupConfiguration: Backup configuration for this database
+    backupRun: Information about the last backup attempt for this database
+    product: A Product attribute.
+    resourceId: A DatabaseResourceId attribute.
+    resourceName: Required. internal resource name for spanner this will be
+      database name e.g."spanner.googleapis.com/projects/123/abc/instances/ins
+      t1/databases/db1"
+  """
+
+  backupConfiguration = _messages.MessageField('BackupConfiguration', 1)
+  backupRun = _messages.MessageField('BackupRun', 2)
+  product = _messages.MessageField('Product', 3)
+  resourceId = _messages.MessageField('DatabaseResourceId', 4)
+  resourceName = _messages.StringField(5)
+
+
 class ListClustersResponse(_messages.Message):
   r"""Response for ListClusters.
 
@@ -2383,6 +2459,21 @@ class ManagedCertificateAuthority(_messages.Message):
   """
 
   caCerts = _messages.MessageField('CertChain', 1, repeated=True)
+
+
+class MemberClusters(_messages.Message):
+  r"""An output only view of all the member cluster participating in the cross
+  cluster replication.
+
+  Fields:
+    primaryCluster: Output only. The primary cluster that acts as the source
+      of replication for the secondary clusters.
+    secondaryClusters: Output only. The list of secondary clusters replicating
+      from the primary cluster.
+  """
+
+  primaryCluster = _messages.MessageField('RemoteCluster', 1)
+  secondaryClusters = _messages.MessageField('RemoteCluster', 2, repeated=True)
 
 
 class NodeInfo(_messages.Message):
@@ -2777,6 +2868,8 @@ class Product(_messages.Message):
         dialect.
       ENGINE_OTHER: Other refers to rest of other database engine. This is to
         be when engine is known, but it is not present in this enum.
+      ENGINE_FIRESTORE_WITH_NATIVE_MODE: Firestore with native mode.
+      ENGINE_FIRESTORE_WITH_DATASTORE_MODE: Firestore with datastore mode.
     """
     ENGINE_UNSPECIFIED = 0
     ENGINE_MYSQL = 1
@@ -2792,6 +2885,8 @@ class Product(_messages.Message):
     ENGINE_MEMORYSTORE_FOR_REDIS = 11
     ENGINE_MEMORYSTORE_FOR_REDIS_CLUSTER = 12
     ENGINE_OTHER = 13
+    ENGINE_FIRESTORE_WITH_NATIVE_MODE = 14
+    ENGINE_FIRESTORE_WITH_DATASTORE_MODE = 15
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of specific database product. It could be CloudSQL, AlloyDB etc..
@@ -2810,6 +2905,7 @@ class Product(_messages.Message):
       PRODUCT_TYPE_BIGTABLE: Bigtable product area in GCP
       PRODUCT_TYPE_OTHER: Other refers to rest of other product type. This is
         to be when product type is known, but it is not present in this enum.
+      PRODUCT_TYPE_FIRESTORE: Firestore product area in GCP.
     """
     PRODUCT_TYPE_UNSPECIFIED = 0
     PRODUCT_TYPE_CLOUD_SQL = 1
@@ -2822,6 +2918,7 @@ class Product(_messages.Message):
     PRODUCT_TYPE_MEMORYSTORE = 8
     PRODUCT_TYPE_BIGTABLE = 9
     PRODUCT_TYPE_OTHER = 10
+    PRODUCT_TYPE_FIRESTORE = 11
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -3297,6 +3394,20 @@ class RedisProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class RemoteCluster(_messages.Message):
+  r"""Details of the remote cluster associated with this cluster in a cross
+  cluster replication setup.
+
+  Fields:
+    cluster: The full resource path of the remote cluster in the format:
+      projects//locations//clusters/
+    uid: Output only. The unique identifier of the remote cluster.
+  """
+
+  cluster = _messages.StringField(1)
+  uid = _messages.StringField(2)
 
 
 class RescheduleClusterMaintenanceRequest(_messages.Message):

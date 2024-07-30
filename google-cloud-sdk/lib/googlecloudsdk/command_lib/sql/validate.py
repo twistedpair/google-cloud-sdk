@@ -44,3 +44,23 @@ def InstanceNameRegexpValidator():
     return value
 
   return Parse
+
+
+def IsProjectLevelBackupRequest(backup_id):
+  """Checks if the backup request is project level.
+
+  Project level requests will have backup_id in string format whearas they will
+  be integer values for instance level backup requests.
+
+  Args:
+    backup_id: The id of the requested backup.
+
+  Returns:
+    True if is a project level backup request.
+  """
+  try:
+    int(backup_id)
+  except ValueError:
+    return True
+  else:
+    return False

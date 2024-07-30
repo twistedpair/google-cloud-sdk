@@ -265,10 +265,15 @@ def GetNestedUsageHelpText(field_name, arg_type, required=False):
   Returns:
     string help text for specific attribute
   """
-  if isinstance(arg_type, ArgTypeUsage):
-    usage = arg_type.GetUsageHelpText(field_name, required=required)
+  default_usage = FormatHelpText(field_name, required)
+
+  if isinstance(arg_type, ArgTypeUsage) and arg_type.hidden:
+    usage = None
+  elif isinstance(arg_type, ArgTypeUsage) and not arg_type.hidden:
+    usage = (arg_type.GetUsageHelpText(field_name, required=required)
+             or default_usage)
   else:
-    usage = FormatHelpText(field_name=field_name, required=required)
+    usage = default_usage
 
   # Shift (indent) nested content over to the right by one
   if usage:

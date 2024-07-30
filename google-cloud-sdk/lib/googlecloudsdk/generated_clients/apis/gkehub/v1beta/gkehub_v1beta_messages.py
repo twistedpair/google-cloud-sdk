@@ -2127,6 +2127,8 @@ class Feature(_messages.Message):
     spec: Optional. Hub-wide Feature configuration. If this Feature does not
       support any Hub-wide configuration, this field may be unused.
     state: Output only. The Hub-wide Feature state.
+    unreachable: Output only. List of locations that could not be reached
+      while fetching this feature.
     updateTime: Output only. When the Feature resource was last updated.
   """
 
@@ -2297,7 +2299,8 @@ class Feature(_messages.Message):
   scopeStates = _messages.MessageField('ScopeStatesValue', 11)
   spec = _messages.MessageField('CommonFeatureSpec', 12)
   state = _messages.MessageField('CommonFeatureState', 13)
-  updateTime = _messages.StringField(14)
+  unreachable = _messages.StringField(14, repeated=True)
+  updateTime = _messages.StringField(15)
 
 
 class FeatureResourceState(_messages.Message):
@@ -2775,9 +2778,14 @@ class GkehubProjectsLocationsFeaturesGetRequest(_messages.Message):
   Fields:
     name: Required. The Feature resource name in the format
       `projects/*/locations/*/features/*`
+    returnPartialSuccess: Optional. If set to true, the response will return
+      partial results when some regions are unreachable and the unreachable
+      field in Feature proto will be populated. If set to false, the request
+      will fail when some regions are unreachable.
   """
 
   name = _messages.StringField(1, required=True)
+  returnPartialSuccess = _messages.BooleanField(2)
 
 
 class GkehubProjectsLocationsFeaturesListRequest(_messages.Message):
@@ -2800,6 +2808,10 @@ class GkehubProjectsLocationsFeaturesListRequest(_messages.Message):
       resources.
     parent: Required. The parent (project and location) where the Features
       will be listed. Specified in the format `projects/*/locations/*`.
+    returnPartialSuccess: Optional. If set to true, the response will return
+      partial results when some regions are unreachable and the unreachable
+      field in Feature proto will be populated. If set to false, the request
+      will fail when some regions are unreachable.
   """
 
   filter = _messages.StringField(1)
@@ -2807,6 +2819,7 @@ class GkehubProjectsLocationsFeaturesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class GkehubProjectsLocationsFeaturesPatchRequest(_messages.Message):
@@ -3804,90 +3817,6 @@ class GkehubProjectsLocationsScopesNamespacesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
-class GkehubProjectsLocationsScopesNamespacesResourcequotasCreateRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsScopesNamespacesResourcequotasCreateRequest
-  object.
-
-  Fields:
-    parent: Required. The parent (project and location) where the
-      ResourceQuota will be created. Specified in the format
-      `projects/*/locations/*/scopes/*/namespaces/*`.
-    resourceQuota: A ResourceQuota resource to be passed as the request body.
-    resourceQuotaId: Required. Client chosen ID for the ResourceQuota.
-      `resource_quota_id` must be a valid RFC 1123 compliant DNS label: 1. At
-      most 63 characters in length 2. It must consist of lower case
-      alphanumeric characters or `-` 3. It must start and end with an
-      alphanumeric character Which can be expressed as the regex:
-      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  resourceQuota = _messages.MessageField('ResourceQuota', 2)
-  resourceQuotaId = _messages.StringField(3)
-
-
-class GkehubProjectsLocationsScopesNamespacesResourcequotasDeleteRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsScopesNamespacesResourcequotasDeleteRequest
-  object.
-
-  Fields:
-    name: Required. The ResourceQuota resource name in the format
-      `projects/*/locations/*/scopes/*/namespaces/*/resourcequotas/*`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class GkehubProjectsLocationsScopesNamespacesResourcequotasGetRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsScopesNamespacesResourcequotasGetRequest
-  object.
-
-  Fields:
-    name: Required. The ResourceQuota resource name in the format
-      `projects/*/locations/*/scopes/*/namespaces/*/resourcequotas`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class GkehubProjectsLocationsScopesNamespacesResourcequotasListRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsScopesNamespacesResourcequotasListRequest
-  object.
-
-  Fields:
-    pageSize: Optional. When requesting a 'page' of resources, `page_size`
-      specifies number of resources to return. If unspecified or set to 0, all
-      resources will be returned.
-    pageToken: Optional. Token returned by previous call to `ListFeatures`
-      which specifies the position in the list from where to continue listing
-      the resources.
-    parent: Required. The parent (project and location) where the Features
-      will be listed. Specified in the format
-      `projects/*/locations/*/scopes/*/namespaces/*`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class GkehubProjectsLocationsScopesNamespacesResourcequotasPatchRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsScopesNamespacesResourcequotasPatchRequest
-  object.
-
-  Fields:
-    name: The resource name for the resourcequota itself `projects/{project}/l
-      ocations/{location}/scopes/{scope}/namespaces/{namespace}/resourcequotas
-      /{resourcequota}`
-    resourceQuota: A ResourceQuota resource to be passed as the request body.
-    updateMask: Required. The fields to be updated.
-  """
-
-  name = _messages.StringField(1, required=True)
-  resourceQuota = _messages.MessageField('ResourceQuota', 2)
-  updateMask = _messages.StringField(3)
-
-
 class GkehubProjectsLocationsScopesPatchRequest(_messages.Message):
   r"""A GkehubProjectsLocationsScopesPatchRequest object.
 
@@ -4854,20 +4783,6 @@ class ListReferencesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   references = _messages.MessageField('Reference', 2, repeated=True)
-
-
-class ListResourceQuotasResponse(_messages.Message):
-  r"""List of fleet namespaces.
-
-  Fields:
-    nextPageToken: A token to request the next page of resources from the
-      `ListNamespaces` method. The value of an empty string means that there
-      are no more resources to return.
-    resourceQuotas: The list of fleet namespaces
-  """
-
-  nextPageToken = _messages.StringField(1)
-  resourceQuotas = _messages.MessageField('ResourceQuota', 2, repeated=True)
 
 
 class ListScopeNamespacesResponse(_messages.Message):
@@ -6604,69 +6519,6 @@ class ResourceOptions(_messages.Message):
   connectVersion = _messages.StringField(1)
   k8sVersion = _messages.StringField(2)
   v1beta1Crd = _messages.BooleanField(3)
-
-
-class ResourceQuota(_messages.Message):
-  r"""ResourceQuota is a subresource of Namespace, representing quotas that
-  can be applied to all instances of the Namespace in relevant clusters.
-
-  Fields:
-    createTime: Output only. When the resource was created.
-    deleteTime: Output only. When the resource was deleted.
-    limitsCpu: A string attribute.
-    limitsMemory: A string attribute.
-    name: The resource name for the resourcequota itself `projects/{project}/l
-      ocations/{location}/scopes/{scope}/namespaces/{namespace}/resourcequotas
-      /{resourcequota}`
-    requestsCpu: https://kubernetes.io/docs/concepts/policy/resource-
-      quotas/#compute-resource-quota
-    requestsMemory: A string attribute.
-    state: Output only. State of the resource.
-    uid: Output only. Google-generated UUID for this resource.
-    updateTime: Output only. When the resource was last updated.
-  """
-
-  createTime = _messages.StringField(1)
-  deleteTime = _messages.StringField(2)
-  limitsCpu = _messages.StringField(3)
-  limitsMemory = _messages.StringField(4)
-  name = _messages.StringField(5)
-  requestsCpu = _messages.StringField(6)
-  requestsMemory = _messages.StringField(7)
-  state = _messages.MessageField('ResourceQuotaLifecycleState', 8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
-
-
-class ResourceQuotaLifecycleState(_messages.Message):
-  r"""ResourceQuotaLifecycleState represents lifecycle state for
-  ResourceQuota.
-
-  Enums:
-    CodeValueValuesEnum: Output only. The current state of the ResourceQuota
-      resource.
-
-  Fields:
-    code: Output only. The current state of the ResourceQuota resource.
-  """
-
-  class CodeValueValuesEnum(_messages.Enum):
-    r"""Output only. The current state of the ResourceQuota resource.
-
-    Values:
-      CODE_UNSPECIFIED: The code is not set.
-      CREATING: The resourcequota is being created.
-      READY: The resourcequota active.
-      DELETING: The resourcequota is being deleted.
-      UPDATING: The resourcequota is being updated.
-    """
-    CODE_UNSPECIFIED = 0
-    CREATING = 1
-    READY = 2
-    DELETING = 3
-    UPDATING = 4
-
-  code = _messages.EnumField('CodeValueValuesEnum', 1)
 
 
 class Role(_messages.Message):

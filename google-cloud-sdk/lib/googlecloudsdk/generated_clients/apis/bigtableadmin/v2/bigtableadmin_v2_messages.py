@@ -2438,9 +2438,11 @@ class GoogleBigtableAdminV2TypeStringEncoding(_messages.Message):
 
   Fields:
     utf8Bytes: Use `Utf8Bytes` encoding.
+    utf8Raw: Deprecated: if set, converts to an empty `utf8_bytes`.
   """
 
   utf8Bytes = _messages.MessageField('GoogleBigtableAdminV2TypeStringEncodingUtf8Bytes', 1)
+  utf8Raw = _messages.MessageField('GoogleBigtableAdminV2TypeStringEncodingUtf8Raw', 2)
 
 
 class GoogleBigtableAdminV2TypeStringEncodingUtf8Bytes(_messages.Message):
@@ -2449,6 +2451,10 @@ class GoogleBigtableAdminV2TypeStringEncodingUtf8Bytes(_messages.Message):
   HBase `Bytes.toBytes` - Java `String#getBytes(StandardCharsets.UTF_8)`
   """
 
+
+
+class GoogleBigtableAdminV2TypeStringEncodingUtf8Raw(_messages.Message):
+  r"""Deprecated: prefer the equivalent `Utf8Bytes`."""
 
 
 class GoogleBigtableAdminV2TypeStruct(_messages.Message):

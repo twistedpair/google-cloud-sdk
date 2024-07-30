@@ -198,9 +198,10 @@ class AttachedDisk(_messages.Message):
   Enums:
     DiskInterfaceValueValuesEnum: Optional. Specifies the disk interface to
       use for attaching this disk.
-    DiskTypeValueValuesEnum: Optional. Specifies the type of the disk.
+    DiskTypeDeprecatedValueValuesEnum: Specifies the type of the disk.
     ModeValueValuesEnum: Optional. The mode in which to attach this disk.
     SavedStateValueValuesEnum: Optional. Output only. The state of the disk.
+    TypeValueValuesEnum: Optional. Specifies the type of the disk.
 
   Fields:
     autoDelete: Optional. Specifies whether the disk will be auto-deleted when
@@ -216,9 +217,9 @@ class AttachedDisk(_messages.Message):
     diskInterface: Optional. Specifies the disk interface to use for attaching
       this disk.
     diskSizeGb: Optional. The size of the disk in GB.
-    diskType: Optional. Specifies the type of the disk.
-    diskTypeUri: Optional. Output only. The URI of the disk type resource. For
+    diskType: Optional. Output only. The URI of the disk type resource. For
       example: projects/project/zones/zone/diskTypes/pd-standard or pd-ssd
+    diskTypeDeprecated: Specifies the type of the disk.
     guestOsFeature: Optional. A list of features to enable on the guest
       operating system. Applicable only for bootable images.
     index: Optional. A zero-based index to this disk, where 0 is reserved for
@@ -231,6 +232,7 @@ class AttachedDisk(_messages.Message):
     savedState: Optional. Output only. The state of the disk.
     source: Optional. Specifies a valid partial or full URL to an existing
       Persistent Disk resource.
+    type: Optional. Specifies the type of the disk.
   """
 
   class DiskInterfaceValueValuesEnum(_messages.Enum):
@@ -249,8 +251,8 @@ class AttachedDisk(_messages.Message):
     NVDIMM = 3
     ISCSI = 4
 
-  class DiskTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. Specifies the type of the disk.
+  class DiskTypeDeprecatedValueValuesEnum(_messages.Enum):
+    r"""Specifies the type of the disk.
 
     Values:
       DISK_TYPE_UNSPECIFIED: Default value, which is unused.
@@ -289,14 +291,26 @@ class AttachedDisk(_messages.Message):
     DISK_SAVED_STATE_UNSPECIFIED = 0
     PRESERVED = 1
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the type of the disk.
+
+    Values:
+      DISK_TYPE_UNSPECIFIED: Default value, which is unused.
+      SCRATCH: A scratch disk type.
+      PERSISTENT: A persistent disk type.
+    """
+    DISK_TYPE_UNSPECIFIED = 0
+    SCRATCH = 1
+    PERSISTENT = 2
+
   autoDelete = _messages.BooleanField(1)
   boot = _messages.BooleanField(2)
   deviceName = _messages.StringField(3)
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 4)
   diskInterface = _messages.EnumField('DiskInterfaceValueValuesEnum', 5)
   diskSizeGb = _messages.IntegerField(6)
-  diskType = _messages.EnumField('DiskTypeValueValuesEnum', 7)
-  diskTypeUri = _messages.StringField(8)
+  diskType = _messages.StringField(7)
+  diskTypeDeprecated = _messages.EnumField('DiskTypeDeprecatedValueValuesEnum', 8)
   guestOsFeature = _messages.MessageField('GuestOsFeature', 9, repeated=True)
   index = _messages.IntegerField(10)
   initializeParams = _messages.MessageField('InitializeParams', 11)
@@ -305,6 +319,7 @@ class AttachedDisk(_messages.Message):
   mode = _messages.EnumField('ModeValueValuesEnum', 14)
   savedState = _messages.EnumField('SavedStateValueValuesEnum', 15)
   source = _messages.StringField(16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
 
 
 class AuditConfig(_messages.Message):
@@ -374,7 +389,8 @@ class Backup(_messages.Message):
   r"""Message describing a Backup object.
 
   Enums:
-    BackupTypeValueValuesEnum:
+    BackupTypeValueValuesEnum: Output only. Type of the backup, unspecified,
+      scheduled or ondemand.
     StateValueValuesEnum: Output only. The Backup resource instance state.
 
   Messages:
@@ -382,13 +398,14 @@ class Backup(_messages.Message):
       metadata. No labels currently defined.
 
   Fields:
-    backupApplianceBackupProperties: A BackupApplianceBackupProperties
-      attribute.
+    backupApplianceBackupProperties: Output only. Backup Appliance specific
+      backup properties.
     backupApplianceLocks: Optional. The list of BackupLocks taken by the
       accessor Backup Appliance.
-    backupType: A BackupTypeValueValuesEnum attribute.
-    computeInstanceBackupProperties: A ComputeInstanceBackupProperties
-      attribute.
+    backupType: Output only. Type of the backup, unspecified, scheduled or
+      ondemand.
+    computeInstanceBackupProperties: Output only. Compute Engine specific
+      backup properties.
     consistencyTime: Output only. The point in time when this backup was
       captured from the source.
     createTime: Output only. The time when the instance was created.
@@ -402,7 +419,7 @@ class Backup(_messages.Message):
     gcpBackupPlanInfo: Output only. Configuration for a Google Cloud resource.
     labels: Optional. Resource labels to represent user provided metadata. No
       labels currently defined.
-    name: Output only. Name of the resource.
+    name: Output only. Identifier. Name of the resource.
     resourceSizeBytes: Output only. source resource size in bytes at the time
       of the backup.
     serviceLocks: Output only. The list of BackupLocks taken by the service to
@@ -412,12 +429,12 @@ class Backup(_messages.Message):
   """
 
   class BackupTypeValueValuesEnum(_messages.Enum):
-    r"""BackupTypeValueValuesEnum enum type.
+    r"""Output only. Type of the backup, unspecified, scheduled or ondemand.
 
     Values:
-      BACKUP_TYPE_UNSPECIFIED: <no description>
-      SCHEDULED: <no description>
-      ON_DEMAND: <no description>
+      BACKUP_TYPE_UNSPECIFIED: Backup type is unspecified.
+      SCHEDULED: Scheduled backup.
+      ON_DEMAND: On demand backup.
     """
     BACKUP_TYPE_UNSPECIFIED = 0
     SCHEDULED = 1
@@ -631,14 +648,12 @@ class BackupPlan(_messages.Message):
   Fields:
     backupRules: Required. The backup rules for this `BackupPlan`. There must
       be at least one `BackupRule` message.
-    backupVault: Optional. Required. Resource name of backup vault which will
-      be used as storage location for backups. Format:
+    backupVault: Required. Resource name of backup vault which will be used as
+      storage location for backups. Format:
       projects/{project}/locations/{location}/backupVaults/{backupvault}
     backupVaultServiceAccount: Output only. The Google Cloud Platform Service
       Account to be used by the BackupVault for taking backups. Specify the
-      email address of the Backup Vault Service Account. (precedent: https://s
-      ource.corp.google.com/piper///depot/google3/google/container/v1/cluster_
-      service.proto;l=1014-1019)
+      email address of the Backup Vault Service Account.
     createTime: Output only. When the `BackupPlan` was created.
     description: Optional. The description of the `BackupPlan` resource. The
       description allows for additional details about `BackupPlan` and its use
@@ -650,7 +665,8 @@ class BackupPlan(_messages.Message):
       prevent stale resources.
     labels: Optional. This collection of key/value pairs allows for custom
       labels to be supplied by the user. Example, {"tag": "Weekly"}.
-    name: Output only. The resource name of the `BackupPlan`. Format:
+    name: Output only. Identifier. The resource name of the `BackupPlan`.
+      Format:
       `projects/{project}/locations/{location}/backupPlans/{backup_plan}`
     resourceType: Required. The resource type to which the `BackupPlan` will
       be applied. Examples include, "compute.googleapis.com/Instance" and
@@ -730,9 +746,9 @@ class BackupPlanAssociation(_messages.Message):
       will be used as storage location for backups taken. Format : projects/{p
       roject}/locations/{location}/backupVaults/{backupvault}/dataSources/{dat
       asource}
-    name: Output only. The resource name of BackupPlanAssociation in below
-      format Format : projects/{project}/locations/{location}/backupPlanAssoci
-      ations/{backupPlanAssociationId}
+    name: Output only. Identifier. The resource name of BackupPlanAssociation
+      in below format Format : projects/{project}/locations/{location}/backupP
+      lanAssociations/{backupPlanAssociationId}
     resource: Required. Immutable. Resource name of workload on which
       backupplan is applied
     resourceType: Output only. Output Only. Resource type of workload on which
@@ -785,9 +801,7 @@ class BackupRule(_messages.Message):
       deprecated BV and Datasource field form BP and BPA once UI removed all
       dependencies on them Output only. The Google Cloud Platform Service
       Account to be used by the BackupVault for taking backups. Specify the
-      email address of the Backup Vault Service Account. (precedent: https://s
-      ource.corp.google.com/piper///depot/google3/google/container/v1/cluster_
-      service.proto;l=1014-1019)
+      email address of the Backup Vault Service Account.
     ruleId: Required. Immutable. The unique id of this `BackupRule`. The
       `rule_id` is unique per `BackupPlan`.The `rule_id` must start with a
       lowercase letter followed by up to 62 lowercase letters, numbers, or
@@ -838,7 +852,7 @@ class BackupVault(_messages.Message):
       prevent simultaneous updates from overwiting each other.
     labels: Optional. Resource labels to represent user provided metadata. No
       labels currently defined:
-    name: Output only. The resource name.
+    name: Output only. Identifier. The resource name.
     serviceAccount: Output only. Service account used by the BackupVault
       Service for this BackupVault. The user should grant this account
       permissions in their workload project to enable the service to run
@@ -1270,7 +1284,7 @@ class BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsPatchRequest(_messa
 
   Fields:
     backup: A Backup resource to be passed as the request body.
-    name: Output only. Name of the resource.
+    name: Output only. Identifier. Name of the resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -1400,7 +1414,7 @@ class BackupdrProjectsLocationsBackupVaultsDataSourcesPatchRequest(_messages.Mes
   Fields:
     allowMissing: Optional. Enable upsert.
     dataSource: A DataSource resource to be passed as the request body.
-    name: Output only. The resource name.
+    name: Output only. Identifier. The resource name.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -1558,8 +1572,8 @@ class BackupdrProjectsLocationsBackupVaultsPatchRequest(_messages.Message):
   Fields:
     backupVault: A BackupVault resource to be passed as the request body.
     force: Optional. If set to true, will not check plan duration against
-      backup vault enforcement duration. Non-standard field.
-    name: Output only. The resource name.
+      backup vault enforcement duration.
+    name: Output only. Identifier. The resource name.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2092,8 +2106,6 @@ class ComputeInstanceRestoreProperties(_messages.Message):
     serviceAccounts: Optional. A list of service accounts, with their
       specified scopes, authorized for this instance. Only one service account
       per VM instance is supported.
-    shieldedInstanceConfig: Optional. Controls Shielded compute options on the
-      instance.
     tags: Optional. Tags to apply to this instance. Tags are used to identify
       valid sources or targets for network firewalls and are specified by the
       client during instance creation.
@@ -2183,8 +2195,7 @@ class ComputeInstanceRestoreProperties(_messages.Message):
   resourcePolicies = _messages.StringField(22, repeated=True)
   scheduling = _messages.MessageField('Scheduling', 23)
   serviceAccounts = _messages.MessageField('ServiceAccount', 24, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 25)
-  tags = _messages.MessageField('Tags', 26)
+  tags = _messages.MessageField('Tags', 25)
 
 
 class ComputeInstanceTargetEnvironment(_messages.Message):
@@ -2236,7 +2247,7 @@ class DataSource(_messages.Message):
   represent Datasource details for both admin and basic view.
 
   Enums:
-    ConfigStateValueValuesEnum: The backup configuration state.
+    ConfigStateValueValuesEnum: Output only. The backup configuration state.
     StateValueValuesEnum: Output only. The DataSource resource instance state.
 
   Messages:
@@ -2247,7 +2258,7 @@ class DataSource(_messages.Message):
     backupConfigInfo: Output only. Details of how the resource is configured
       for backup.
     backupCount: Number of backups in the data source.
-    configState: The backup configuration state.
+    configState: Output only. The backup configuration state.
     createTime: Output only. The time when the instance was created.
     dataSourceBackupApplianceApplication: The backed up resource is a backup
       appliance application.
@@ -2259,7 +2270,7 @@ class DataSource(_messages.Message):
       simultaneous updates from overwiting each other.
     labels: Optional. Resource labels to represent user provided metadata. No
       labels currently defined:
-    name: Output only. The resource name.
+    name: Output only. Identifier. The resource name.
     state: Output only. The DataSource resource instance state.
     totalStoredBytes: The number of bytes (metadata and data) stored in this
       datasource.
@@ -2267,7 +2278,7 @@ class DataSource(_messages.Message):
   """
 
   class ConfigStateValueValuesEnum(_messages.Enum):
-    r"""The backup configuration state.
+    r"""Output only. The backup configuration state.
 
     Values:
       BACKUP_CONFIG_STATE_UNSPECIFIED: The possible states of backup
@@ -3775,12 +3786,12 @@ class SetInternalStatusRequest(_messages.Message):
   r"""Request message for SetStatusInternal method.
 
   Enums:
-    BackupConfigStateValueValuesEnum: Required. The new BackupConfigState to
-      set for the DataSource.
+    BackupConfigStateValueValuesEnum: Required. Output only. The new
+      BackupConfigState to set for the DataSource.
 
   Fields:
-    backupConfigState: Required. The new BackupConfigState to set for the
-      DataSource.
+    backupConfigState: Required. Output only. The new BackupConfigState to set
+      for the DataSource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -3796,7 +3807,8 @@ class SetInternalStatusRequest(_messages.Message):
   """
 
   class BackupConfigStateValueValuesEnum(_messages.Enum):
-    r"""Required. The new BackupConfigState to set for the DataSource.
+    r"""Required. Output only. The new BackupConfigState to set for the
+    DataSource.
 
     Values:
       BACKUP_CONFIG_STATE_UNSPECIFIED: The possible states of backup
@@ -3813,21 +3825,6 @@ class SetInternalStatusRequest(_messages.Message):
   backupConfigState = _messages.EnumField('BackupConfigStateValueValuesEnum', 1)
   requestId = _messages.StringField(2)
   value = _messages.BytesField(3)
-
-
-class ShieldedInstanceConfig(_messages.Message):
-  r"""A set of Shielded Instance options.
-
-  Fields:
-    enableIntegrityMonitoring: Optional. Whether to enable integrity
-      monitoring.
-    enableSecureBoot: Optional. Whether to enable secure boot.
-    enableVtpm: Optional. Whether to enable VTPM.
-  """
-
-  enableIntegrityMonitoring = _messages.BooleanField(1)
-  enableSecureBoot = _messages.BooleanField(2)
-  enableVtpm = _messages.BooleanField(3)
 
 
 class StandardQueryParameters(_messages.Message):

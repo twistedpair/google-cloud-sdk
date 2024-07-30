@@ -201,21 +201,6 @@ class AnalyzeOrgPolicyGovernedContainersResponse(_messages.Message):
   nextPageToken = _messages.StringField(3)
 
 
-class AnalyzeOrgPolicyGovernedResourcesResponse(_messages.Message):
-  r"""The response message for AssetService.AnalyzeOrgPolicyGovernedResources.
-
-  Fields:
-    constraint: The definition of the constraint in the request.
-    governedResources: The list of the analyzed governed resources.
-    nextPageToken: The page token to fetch the next page for
-      AnalyzeOrgPolicyGovernedResourcesResponse.governed_resources.
-  """
-
-  constraint = _messages.MessageField('AnalyzerOrgPolicyConstraint', 1)
-  governedResources = _messages.MessageField('GoogleCloudAssetV1GovernedResource', 2, repeated=True)
-  nextPageToken = _messages.StringField(3)
-
-
 class AnalyzerOrgPolicy(_messages.Message):
   r"""This organization policy message is a modified version of the one
   defined in the Organization Policy system. This message contains several
@@ -932,39 +917,6 @@ class CloudassetAnalyzeOrgPolicyGovernedContainersRequest(_messages.Message):
     pageToken: The pagination token to retrieve the next page.
     scope: Required. The organization to scope the request. Only organization
       policies within the scope will be analyzed. The output containers will
-      also be limited to the ones governed by those in-scope organization
-      policies. * organizations/{ORGANIZATION_NUMBER} (e.g.,
-      "organizations/123456")
-  """
-
-  constraint = _messages.StringField(1)
-  filter = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  scope = _messages.StringField(5, required=True)
-
-
-class CloudassetAnalyzeOrgPolicyGovernedResourcesRequest(_messages.Message):
-  r"""A CloudassetAnalyzeOrgPolicyGovernedResourcesRequest object.
-
-  Fields:
-    constraint: Required. The name of the constraint to analyze governed
-      resources for. The analysis only contains analyzed organization policies
-      for the provided constraint.
-    filter: The expression to filter
-      AnalyzeOrgPolicyGovernedResourcesResponse.governed_resources. Filtering
-      is currently available for bare literal values and the following fields:
-      * project * folders * consolidated_policy.rules.enforce When filtering
-      by a specific field, the only supported operator is `=`. For example,
-      filtering by project="projects/12345678" will return all the governed
-      resources under "projects/12345678", including the project itself, if
-      applicable.
-    pageSize: The maximum number of items to return per page. If unspecified,
-      AnalyzeOrgPolicyGovernedResourcesResponse.governed_resources will
-      contain 100 items with a maximum of 200.
-    pageToken: The pagination token to retrieve the next page.
-    scope: Required. The organization to scope the request. Only organization
-      policies within the scope will be analyzed. The output resources will
       also be limited to the ones governed by those in-scope organization
       policies. * organizations/{ORGANIZATION_NUMBER} (e.g.,
       "organizations/123456")
@@ -2857,46 +2809,6 @@ class GoogleCloudAssetV1GovernedContainer(_messages.Message):
   project = _messages.StringField(8)
 
 
-class GoogleCloudAssetV1GovernedResource(_messages.Message):
-  r"""The Google Cloud resources governed by the organization policies of the
-  AnalyzeOrgPolicyGovernedResourcesRequest.constraint.
-
-  Fields:
-    consolidatedPolicy: The consolidated policy for the analyzed resource. The
-      consolidated policy is computed by merging and evaluating AnalyzeOrgPoli
-      cyGovernedResourcesResponse.GovernedResource.policy_bundle. The
-      evaluation will respect the organization policy [hierarchy
-      rules](https://cloud.google.com/resource-manager/docs/organization-
-      policy/understanding-hierarchy).
-    folders: The folder(s) that this resource belongs to, in the format of
-      folders/{FOLDER_NUMBER}. This field is available when the resource
-      belongs (directly or cascadingly) to one or more folders.
-    fullResourceName: The [full resource name]
-      (https://cloud.google.com/asset-inventory/docs/resource-name-format) of
-      the Google Cloud resource.
-    organization: The organization that this resource belongs to, in the
-      format of organizations/{ORGANIZATION_NUMBER}. This field is available
-      when the resource belongs (directly or cascadingly) to an organization.
-    parent: The [full resource name] (https://cloud.google.com/asset-
-      inventory/docs/resource-name-format) of the parent of AnalyzeOrgPolicyGo
-      vernedContainersResponse.GovernedContainer.full_resource_name.
-    policyBundle: The ordered list of all organization policies from the Analy
-      zeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resou
-      rce. to the scope specified in the request.
-    project: The project that this resource belongs to, in the format of
-      projects/{PROJECT_NUMBER}. This field is available when the resource
-      belongs to a project.
-  """
-
-  consolidatedPolicy = _messages.MessageField('AnalyzerOrgPolicy', 1)
-  folders = _messages.StringField(2, repeated=True)
-  fullResourceName = _messages.StringField(3)
-  organization = _messages.StringField(4)
-  parent = _messages.StringField(5)
-  policyBundle = _messages.MessageField('AnalyzerOrgPolicy', 6, repeated=True)
-  project = _messages.StringField(7)
-
-
 class GoogleCloudAssetV1Identity(_messages.Message):
   r"""An identity under analysis.
 
@@ -3819,9 +3731,7 @@ class GoogleIdentityAccesscontextmanagerV1EgressFrom(_messages.Message):
       must be set to `SOURCE_RESTRICTION_ENABLED`.
     sources: Sources that this EgressPolicy authorizes access from. If this
       field is not empty, then `source_restriction` must be set to
-      `SOURCE_RESTRICTION_ENABLED`. TODO (b/332744441): annotate this field
-      with custom_org_policy_accessibility when cl/640698580 will be rolled
-      out.
+      `SOURCE_RESTRICTION_ENABLED`.
   """
 
   class IdentityTypeValueValuesEnum(_messages.Enum):
@@ -3905,8 +3815,6 @@ class GoogleIdentityAccesscontextmanagerV1EgressSource(_messages.Message):
       origins within the perimeter. Example:
       `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If a single `*` is
       specified for `access_level`, then all EgressSources will be allowed.
-      TODO (b/332744441): annotate this field with
-      custom_org_policy_accessibility when cl/640698580 will be rolled out.
   """
 
   accessLevel = _messages.StringField(1)
@@ -4261,9 +4169,7 @@ class GoogleIdentityAccesscontextmanagerV1VpcNetworkSource(_messages.Message):
   r"""The originating network source in Google Cloud.
 
   Fields:
-    vpcSubnetwork: Sub-segment ranges of a VPC network. TODO (b/332744441):
-      annotate this field with custom_org_policy_accessibility when
-      cl/640698580 will be rolled out.
+    vpcSubnetwork: Sub-segment ranges of a VPC network.
   """
 
   vpcSubnetwork = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1VpcSubNetwork', 1)

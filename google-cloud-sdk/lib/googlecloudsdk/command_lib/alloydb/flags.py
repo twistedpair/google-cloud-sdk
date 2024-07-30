@@ -1681,3 +1681,52 @@ def AddNodeIds(parser):
           ' `--node-ids=node-1,node-2,node-3`)'
       ),
   )
+
+
+def AddDatabase(parser, required=True):
+  """Adds a --database flag to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+    required: Whether or not --database is required.
+  """
+  parser.add_argument(
+      '--database',
+      required=required,
+      type=str,
+      help='Database name from which export has to be done.',
+  )
+
+
+def AddGCSUri(parser, required=True):
+  """Adds a --gcs-uri flag to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+    required: Whether or not --gcs-uri is required.
+  """
+  parser.add_argument(
+      '--gcs-uri',
+      required=required,
+      type=str,
+      help=(
+          'Path to the destination source file to which export has to be done.'
+      ),
+  )
+
+
+def AddSelectQuery(parser, required=True):
+  """Adds a --select-query flag to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+    required: Whether or not --select-query is required.
+  """
+  parser.add_argument(
+      '--select-query',
+      required=required,
+      type=str,
+      help=(
+          'Query specifying the data to be exported.'
+      ),
+  )

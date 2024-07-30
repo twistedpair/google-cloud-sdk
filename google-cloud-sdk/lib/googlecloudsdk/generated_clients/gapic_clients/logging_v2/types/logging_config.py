@@ -189,7 +189,7 @@ class IndexConfig(proto.Message):
 
             Note that some paths are automatically indexed, and other
             paths are not eligible for indexing. See `indexing
-            documentation <https://cloud.google.com/logging/docs/view/advanced-queries#indexed-fields>`__
+            documentation <https://cloud.google.com/logging/docs/analyze/custom-index>`__
             for details.
 
             For example: ``jsonPayload.request.status``

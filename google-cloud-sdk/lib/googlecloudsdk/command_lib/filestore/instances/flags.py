@@ -538,6 +538,78 @@ instance-zone will be used.
     )
 
 
+def AddPerformanceArg(parser):
+  """Adds a --performance flag to the given parser.
+
+  Args:
+    parser: argparse parser.
+  """
+  performance_help = """\
+        Performance configuration for the instance. This flag is used
+        to configure the read IOPS provisioned for the instance. The
+        instance's write IOPS and read/write throughputs will be derived from the
+        configured read IOPS. For more information about the derived performance
+        limits see https://cloud.google.com/filestore/docs/performance.
+        Must be one of:
+
+          iops-by-capacity
+            Default configuration. Automatically provisions the instance IOPS
+            based on its capacity. If the user changes the instance capacity,
+            IOPS will be automatically adjusted accordingly. The available IOPS
+            for a given capacity can be found here: https://cloud.google.com/filestore/docs/performance.
+
+          max-read-iops
+            The number of IOPS to provision for the instance.
+            MAX-READ-IOPS must be in multiple of 1000 and in the supported IOPS
+            range for the current capacity of the instance.
+            For more details, see: https://cloud.google.com/filestore/docs/performance.
+
+          max-read-iops-per-gb
+            Is used for setting the max IOPS of the instance by
+            specifying the IOPS per GB. When this parameter is used, the
+            max IOPS are derived from the instance capacity:
+            The instance max IOPS will be calculated by multiplying the
+            capacity of the instance (GB) by MAX-READ-IOPS-PER-GB, and rounding
+            to the nearest 1000. The max IOPS will be changed
+            dynamically based on the instance capacity.
+            MAX-READ-IOPS-PER-GB must be in the supported range of the instance.
+            For more details, see: https://cloud.google.com/filestore/docs/performance.
+
+
+        Examples:
+
+        Configure an instance implicitly with `iops_by_capacity` performance:
+
+          $ {command} example-cluster
+
+        Configure an instance explicitly with `iops_by_capacity` performance:
+
+          $ {command} example-cluster --performance=iops_by_capacity
+
+        Configure an instance with `max-read-iops` performance:
+
+          $ {command} example-cluster --performance=max-read-iops=1000
+
+        Configure an instance with `max-read-iops-per-gb` performance:
+
+          $ {command} example-cluster --performance=max-read-iops-per-gb=5
+  """
+
+  performance_arg_spec = {
+      'max-read-iops': arg_parsers.BoundedInt(1),
+      'max-read-iops-per-gb': arg_parsers.BoundedInt(1),
+      'iops-by-capacity': None,
+  }
+
+  parser.add_argument(
+      '--performance',
+      type=arg_parsers.ArgDict(
+          spec=performance_arg_spec, allow_key_only=True, max_length=1
+      ),
+      help=performance_help,
+  )
+
+
 def AddInstanceCreateArgs(parser, api_version):
   """Add args for creating an instance."""
   concept_parsers.ConceptParser(
@@ -554,6 +626,7 @@ def AddInstanceCreateArgs(parser, api_version):
   if api_version == filestore_client.BETA_API_VERSION:
     GetProtocolArg(messages).choice_arg.AddToParser(parser)
     AddConnectManagedActiveDirectoryArg(parser)
+    AddPerformanceArg(parser)
   AddFileShareArg(
       parser,
       api_version,
@@ -578,6 +651,7 @@ def AddInstanceUpdateArgs(parser, api_version):
   labels_util.AddUpdateLabelsFlags(parser)
   if api_version == filestore_client.BETA_API_VERSION:
     AddManagedActiveDirectoryConnectionArgs(parser)
+    AddPerformanceArg(parser)
   AddFileShareArg(
       parser,
       api_version,

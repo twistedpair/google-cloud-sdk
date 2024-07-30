@@ -3146,8 +3146,8 @@ class Service(_messages.Message):
     generatedCustomerMetadata: Additional Google Generated Customer Metadata,
       this field won't be provided by default and can be requested by setting
       the IncludeExtraData field in GetServiceRequest
-    id: Relative name of the service within the application. Example:
-      default.@OutputOnly
+    id: Output only. Relative name of the service within the application.
+      Example: default.@OutputOnly
     labels: A set of labels to apply to this service. Labels are key/value
       pairs that describe the service and all resources that belong to it
       (e.g., versions). The labels can be used to search and group resources,
@@ -3158,7 +3158,7 @@ class Service(_messages.Message):
       lowercase letters, numeric characters, underscores, dashes, and
       international characters. Label keys must start with a lowercase letter
       or an international character. Each service can have at most 32 labels.
-    name: Full path to the Service resource in the API. Example:
+    name: Output only. Full path to the Service resource in the API. Example:
       apps/myapp/services/default.@OutputOnly
     networkSettings: Ingress settings for this service. Will apply to all
       versions.
@@ -3754,7 +3754,8 @@ class Version(_messages.Message):
     buildEnvVariables: Environment variables available to the build
       environment.Only returned in GET requests if view=FULL is set.
     createTime: Time that this version was created.@OutputOnly
-    createdBy: Email address of the user who created this version.@OutputOnly
+    createdBy: Output only. Email address of the user who created this
+      version.@OutputOnly
     defaultExpiration: Duration that static files should be cached by web
       proxies and browsers. Only applicable if the corresponding
       StaticFilesHandler (https://cloud.google.com/appengine/docs/admin-
@@ -3763,8 +3764,9 @@ class Version(_messages.Message):
       if view=FULL is set.
     deployment: Code and application artifacts that make up this version.Only
       returned in GET requests if view=FULL is set.
-    diskUsageBytes: Total size in bytes of all the files that are included in
-      this version and currently hosted on the App Engine disk.@OutputOnly
+    diskUsageBytes: Output only. Total size in bytes of all the files that are
+      included in this version and currently hosted on the App Engine
+      disk.@OutputOnly
     endpointsApiService: Cloud Endpoints configuration.If
       endpoints_api_service is set, the Cloud Endpoints Extensible Service
       Proxy will be provided to serve the API implemented by the app.
@@ -3804,7 +3806,7 @@ class Version(_messages.Message):
       you to perform complex initialization and rely on the state of its
       memory over time. Manually scaled versions are sometimes referred to as
       "backends".
-    name: Full path to the Version resource in the API. Example:
+    name: Output only. Full path to the Version resource in the API. Example:
       apps/myapp/services/default/versions/v1.@OutputOnly
     network: Extra network settings. Only applicable in the App Engine
       flexible environment.
@@ -3831,8 +3833,8 @@ class Version(_messages.Message):
       SERVING.
     threadsafe: Whether multiple requests can be dispatched to this version at
       once.
-    versionUrl: Serving URL for this version. Example: "https://myversion-dot-
-      myservice-dot-myapp.appspot.com"@OutputOnly
+    versionUrl: Output only. Serving URL for this version. Example:
+      "https://myversion-dot-myservice-dot-myapp.appspot.com"@OutputOnly
     vm: Whether to deploy this version in a container on a virtual machine.
     vpcAccessConnector: Enables VPC connectivity for standard apps.
     zones: The Google Compute Engine zones that are supported by this version

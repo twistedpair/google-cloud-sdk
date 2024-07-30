@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.accesscontextmanager import util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -38,7 +40,8 @@ def AddUpdateMask(ref, args, req):
 
   if not update_mask:
     raise calliope_exceptions.MinimumArgumentException(
-        ['--level', '--dry_run_level'])
+        ['--level', '--dry_run_level']
+    )
 
   req.updateMask = ','.join(update_mask)
   return req
@@ -81,12 +84,15 @@ def ProcessOrganization(ref, args, req):
   org = properties.VALUES.access_context_manager.organization.Get()
   if org is None:
     raise calliope_exceptions.RequiredArgumentException(
-        '--organization', 'The attribute can be set in the following ways: \n' +
-        '- provide the argument `--organization` on the command line \n' +
-        '- set the property `access_context_manager/organization`')
+        '--organization',
+        'The attribute can be set in the following ways: \n'
+        + '- provide the argument `--organization` on the command line \n'
+        + '- set the property `access_context_manager/organization`',
+    )
 
   org_ref = resources.REGISTRY.Parse(
-      org, collection='accesscontextmanager.organizations')
+      org, collection='accesscontextmanager.organizations'
+  )
   req.parent = org_ref.RelativeName()
   return req
 
@@ -205,12 +211,14 @@ def _ParseLevelRefs(req, param, is_dry_run):
       level_ref = resources.REGISTRY.Parse(
           level_input,
           params=param,
-          collection='accesscontextmanager.accessPolicies.accessLevels')
+          collection='accesscontextmanager.accessPolicies.accessLevels',
+      )
     except:
       raise calliope_exceptions.InvalidArgumentException(
           '--{}'.format(arg_name),
           'The input must be the full identifier for the access level, '
-          'such as `accessPolicies/123/accessLevels/abc`.')
+          'such as `accessPolicies/123/accessLevels/abc`.',
+      )
     level_refs.append(level_ref)
   return level_refs
 
@@ -226,22 +234,28 @@ def ProcessLevels(ref, args, req):
     try:
       policy_ref = resources.REGISTRY.Parse(
           args.GetValue('policy'),
-          collection='accesscontextmanager.accessPolicies')
+          collection='accesscontextmanager.accessPolicies',
+      )
     except:
       raise calliope_exceptions.InvalidArgumentException(
           '--policy',
           'The input must be the full identifier for the access policy, '
-          'such as `123` or `accessPolicies/123.')
+          'such as `123` or `accessPolicies/123.',
+      )
     param = {'accessPoliciesId': policy_ref.Name()}
     policies_to_check['--policy'] = policy_ref.RelativeName()
 
   # Parse level and dry run level
-  level_refs = _ParseLevelRefs(
-      req, param,
-      is_dry_run=False) if args.IsKnownAndSpecified('level') else []
-  dry_run_level_refs = _ParseLevelRefs(
-      req, param,
-      is_dry_run=True) if args.IsKnownAndSpecified('dry_run_level') else []
+  level_refs = (
+      _ParseLevelRefs(req, param, is_dry_run=False)
+      if args.IsKnownAndSpecified('level')
+      else []
+  )
+  dry_run_level_refs = (
+      _ParseLevelRefs(req, param, is_dry_run=True)
+      if args.IsKnownAndSpecified('dry_run_level')
+      else []
+  )
 
   # Validate all refs in each level ref belong to the same policy
   level_parents = [x.Parent() for x in level_refs]
@@ -256,7 +270,8 @@ def ProcessLevels(ref, args, req):
     policies_to_check['--level'] = level_parents[0].RelativeName()
   if dry_run_level_parents:
     policies_to_check['--dry-run-level'] = dry_run_level_parents[
-        0].RelativeName()
+        0
+    ].RelativeName()
   flags_to_complain = list(policies_to_check.keys())
   flags_to_complain.sort()  # Sort for test purpose.
   policies_values = list(policies_to_check.values())
@@ -344,11 +359,29 @@ def ProcessReauthSettings(unused_ref, args, req):
   return req
 
 
+def _CamelCase2SnakeCase(name):
+  s1 = re.compile('([a-z0-9])([A-Z])').sub(r'\1_\2', name)
+  return re.sub('_[A-Z]+', lambda m: m.group(0).lower(), s1)
+
+
+def ProcessFilter(unused_ref, args, req):
+  """Hook to process filter. Covert camel case to snake case."""
+  del unused_ref
+  if args.IsKnownAndSpecified('filter'):
+    # Only pass filter to handler if it contains principal
+    if 'principal' in args.filter:
+      filter_str = _CamelCase2SnakeCase(args.filter)
+      req.filter = filter_str
+  return req
+
+
 class ConflictPolicyException(core_exceptions.Error):
   """For conflict policies from inputs."""
 
   def __init__(self, parameter_names):
     super(ConflictPolicyException, self).__init__(
         'Invalid value for [{0}]: Please make sure {0} resources are '
-        'all from the same policy.'.format(', '.join(
-            ['{0}'.format(p) for p in parameter_names])))
+        'all from the same policy.'.format(
+            ', '.join(['{0}'.format(p) for p in parameter_names])
+        )
+    )

@@ -374,6 +374,26 @@ class DlpOrganizationsLocationsConnectionsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class DlpOrganizationsLocationsConnectionsListRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsConnectionsListRequest object.
+
+  Fields:
+    filter: Optional. Supported field/value: `state` - MISSING|AVAILABLE|ERROR
+    pageSize: Optional. Number of results per page, max 1000.
+    pageToken: Optional. Page token from a previous page to return the next
+      set of results. If set, all other request fields must match the original
+      request.
+    parent: Required. Resource name of the organization or project, for
+      example `organizations/433245324/locations/europe` or `projects/project-
+      id/locations/asia`.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class DlpOrganizationsLocationsConnectionsPatchRequest(_messages.Message):
   r"""A DlpOrganizationsLocationsConnectionsPatchRequest object.
 
@@ -399,8 +419,9 @@ class DlpOrganizationsLocationsConnectionsSearchRequest(_messages.Message):
     pageToken: Optional. Page token from a previous page to return the next
       set of results. If set, all other request fields must match the original
       request.
-    parent: Required. Parent name, typically an organization, without
-      location. For example: `organizations/12345678`.
+    parent: Required. Resource name of the organization or project with a
+      wildcard location, for example `organizations/433245324/locations/-` or
+      `projects/project-id/locations/-`.
   """
 
   filter = _messages.StringField(1)
@@ -1999,8 +2020,9 @@ class DlpProjectsLocationsConnectionsListRequest(_messages.Message):
     pageToken: Optional. Page token from a previous page to return the next
       set of results. If set, all other request fields must match the original
       request.
-    parent: Required. Parent name, for example: `projects/project-
-      id/locations/global`.
+    parent: Required. Resource name of the organization or project, for
+      example `organizations/433245324/locations/europe` or `projects/project-
+      id/locations/asia`.
   """
 
   filter = _messages.StringField(1)
@@ -2034,8 +2056,9 @@ class DlpProjectsLocationsConnectionsSearchRequest(_messages.Message):
     pageToken: Optional. Page token from a previous page to return the next
       set of results. If set, all other request fields must match the original
       request.
-    parent: Required. Parent name, typically an organization, without
-      location. For example: `organizations/12345678`.
+    parent: Required. Resource name of the organization or project with a
+      wildcard location, for example `organizations/433245324/locations/-` or
+      `projects/project-id/locations/-`.
   """
 
   filter = _messages.StringField(1)
@@ -5863,19 +5886,44 @@ class GooglePrivacyDlpV2DiscoveryGenerationCadence(_messages.Message):
   should occur. New tables are scanned as quickly as possible depending on
   system capacity.
 
+  Enums:
+    RefreshFrequencyValueValuesEnum: Frequency to update profiles regardless
+      of whether the underlying resource has changed. Defaults to never.
+
   Fields:
     inspectTemplateModifiedCadence: Governs when to update data profiles when
       the inspection rules defined by the `InspectTemplate` change. If not
       set, changing the template will not cause a data profile to update.
+    refreshFrequency: Frequency to update profiles regardless of whether the
+      underlying resource has changed. Defaults to never.
     schemaModifiedCadence: Governs when to update data profiles when a schema
       is modified.
     tableModifiedCadence: Governs when to update data profiles when a table is
       modified.
   """
 
+  class RefreshFrequencyValueValuesEnum(_messages.Enum):
+    r"""Frequency to update profiles regardless of whether the underlying
+    resource has changed. Defaults to never.
+
+    Values:
+      UPDATE_FREQUENCY_UNSPECIFIED: Unspecified.
+      UPDATE_FREQUENCY_NEVER: After the data profile is created, it will never
+        be updated.
+      UPDATE_FREQUENCY_DAILY: The data profile can be updated up to once every
+        24 hours.
+      UPDATE_FREQUENCY_MONTHLY: The data profile can be updated up to once
+        every 30 days. Default.
+    """
+    UPDATE_FREQUENCY_UNSPECIFIED = 0
+    UPDATE_FREQUENCY_NEVER = 1
+    UPDATE_FREQUENCY_DAILY = 2
+    UPDATE_FREQUENCY_MONTHLY = 3
+
   inspectTemplateModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoveryInspectTemplateModifiedCadence', 1)
-  schemaModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoverySchemaModifiedCadence', 2)
-  tableModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoveryTableModifiedCadence', 3)
+  refreshFrequency = _messages.EnumField('RefreshFrequencyValueValuesEnum', 2)
+  schemaModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoverySchemaModifiedCadence', 3)
+  tableModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoveryTableModifiedCadence', 4)
 
 
 class GooglePrivacyDlpV2DiscoveryInspectTemplateModifiedCadence(_messages.Message):

@@ -3234,7 +3234,9 @@ def GetRegion(args, prompt=False, region_label=None):
       return region
 
 
-def GetAllowUnauthenticated(args, client=None, service_ref=None, prompt=False):
+def GetAllowUnauthenticated(
+    args, client=None, service_ref=None, prompt=False, region_override=None
+):
   """Return bool for the explicit intent to allow unauth invocations or None.
 
   If --[no-]allow-unauthenticated is set, return that value. If not set,
@@ -3247,6 +3249,7 @@ def GetAllowUnauthenticated(args, client=None, service_ref=None, prompt=False):
       serverless_operations.ServerlessOperations object
     service_ref: service resource reference (e.g. args.CONCEPTS.service.Parse())
     prompt: bool, whether to attempt to prompt.
+    region_override: If present, will use instead of currently selected region.
 
   Returns:
     bool indicating whether to allow/unallow unauthenticated or None if N/A
@@ -3262,7 +3265,9 @@ def GetAllowUnauthenticated(args, client=None, service_ref=None, prompt=False):
   if prompt:
     # Need to check if the user has permissions before we prompt
     assert client is not None and service_ref is not None
-    if client.CanSetIamPolicyBinding(service_ref):
+    if client.CanSetIamPolicyBinding(
+        service_ref, region_override=region_override
+    ):
       return console_io.PromptContinue(
           prompt_string='Allow unauthenticated invocations to [{}]'.format(
               service_ref.servicesId

@@ -45,6 +45,8 @@ RUN_FUNCTIONS_BUILD_ENV_VARS_ANNOTATION = 'run.googleapis.com/build-environment-
 RUN_FUNCTIONS_FUNCTION_TARGET_ANNOTATION = 'run.googleapis.com/function-target'
 RUN_FUNCTIONS_BUILD_WORKER_POOL_ANNOTATION = 'run.googleapis.com/build-worker-pool'
 RUN_FUNCTIONS_BUILD_SERVICE_ACCOUNT_ANNOTATION = 'run.googleapis.com/build-service-account'
+RUN_FUNCTIONS_IMAGE_URI_ANNOTATION = 'run.googleapis.com/image-uri'
+RUN_FUNCTIONS_BUILD_NAME_ANNOTATION = 'run.googleapis.com/build-name'
 
 
 class Service(k8s_object.KubernetesObject):

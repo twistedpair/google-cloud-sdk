@@ -23,7 +23,7 @@ project:
   - &project
     parameter_name: projectsId
     attribute_name: project
-    help: projects TBD
+    help: The project id of the {resource} resource.
     property: core/project
   disable_auto_completers: true
 project_secret:
@@ -35,7 +35,7 @@ project_secret:
   - &secret
     parameter_name: secretsId
     attribute_name: secret
-    help: secrets TBD
+    help: The secret id of the {resource} resource.
   disable_auto_completers: true
 project_location:
   name: location
@@ -46,7 +46,7 @@ project_location:
   - &location
     parameter_name: locationsId
     attribute_name: location
-    help: locations TBD
+    help: The location id of the {resource} resource.
   disable_auto_completers: true
 project_secret_secret_version:
   name: secretVersion
@@ -58,7 +58,7 @@ project_secret_secret_version:
   - &secretVersion
     parameter_name: versionsId
     attribute_name: secret_version
-    help: versions TBD
+    help: The secretVersion id of the {resource} resource.
   disable_auto_completers: true
 project_location_connection:
   name: connection
@@ -70,7 +70,7 @@ project_location_connection:
   - &connection
     parameter_name: connectionsId
     attribute_name: connection
-    help: connections TBD
+    help: The connection id of the {resource} resource.
   disable_auto_completers: false
 project_location_connection_git_repository_link:
   name: gitRepositoryLink
@@ -83,5 +83,5 @@ project_location_connection_git_repository_link:
   - &gitRepositoryLink
     parameter_name: gitRepositoryLinksId
     attribute_name: git_repository_link
-    help: gitRepositoryLinks TBD
+    help: The gitRepositoryLink id of the {resource} resource.
   disable_auto_completers: false

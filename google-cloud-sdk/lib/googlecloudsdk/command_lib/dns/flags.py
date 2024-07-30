@@ -28,10 +28,19 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 import ipaddr
 
 
-def IsIPv4(ip):
+def IsIPv4(ip: str):
   """Returns True if ip is an IPv4."""
   try:
     ipaddr.IPv4Address(ip)
+    return True
+  except ValueError:
+    return False
+
+
+def IsIPv6(ip: str):
+  """Returns True if ip is an IPv6."""
+  try:
+    ipaddr.IPv6Address(ip)
     return True
   except ValueError:
     return False
@@ -382,7 +391,9 @@ def GetResourceRecordSetsRrdatasArg(required=False):
       'on the type and class of the resource record.')
 
 
-def GetResourceRecordSetsRrdatasArgGroup(use_deprecated_names=False):
+def GetResourceRecordSetsRrdatasArgGroup(
+    use_deprecated_names=False, enable_internet_health_checks=False
+):
   """Returns arg group for rrdatas flags.
 
   Args:
@@ -427,6 +438,8 @@ def GetResourceRecordSetsRrdatasArgGroup(use_deprecated_names=False):
       GetResourceRecordSetsEnableFencingArg(required=False))
   policy_group.AddArgument(
       GetResourceRecordSetsEnableHealthChecking(required=False))
+  if enable_internet_health_checks:
+    policy_group.AddArgument(GetHealthCheckArg(required=False))
   policy_group.AddArgument(policy_data_group)
 
   rrdatas_group = base.ArgumentGroup(
@@ -508,9 +521,9 @@ def GetResourceRecordSetsRoutingPolicyPrimaryDataArg(required=False):
 
     Returns:
       A list of forwarding configs in the following format:
-
-    [ 'config1@region1', 'config2@region2',
-    'config3' ]
+        ['config1@region1', 'config2@region2', 'config3' ]
+      OR a list of IP addresses in the following format:
+        ['1.1.1.1', '2.2.2.2', '3.3.3.3']
     """
 
     # Grab each policy data item by splitting on ','
@@ -545,12 +558,14 @@ def GetResourceRecordSetsRoutingPolicyBackupDataArg(required=False):
         {
           'key': <location1>,
           'rrdatas': <IP address list>,
-          'forwarding_configs': <List of configs to be health checked>
+          'forwarding_configs': <List of configs to be health checked>,
+          'external_endpoints': <List of external endpoints> (empty for now)
         },
         {
           'key': <location2>,
           'rrdatas': <IP address list>,
-          'forwarding_configs': <List of configs to be health checked>
+          'forwarding_configs': <List of configs to be health checked>,
+          'external_endpoints': <List of external endpoints> (empty for now)
         },
         ...
     ]
@@ -576,7 +591,7 @@ def GetResourceRecordSetsRoutingPolicyBackupDataArg(required=False):
       for val in value.split(','):
         if len(val.split('@')) == 2:
           forwarding_configs.append(val)
-        elif len(val.split('@')) == 1 and IsIPv4(val):
+        elif len(val.split('@')) == 1 and (IsIPv4(val) or IsIPv6(val)):
           ips.append(val)
         elif len(val.split('@')) == 1:
           forwarding_configs.append(val)
@@ -587,7 +602,8 @@ def GetResourceRecordSetsRoutingPolicyBackupDataArg(required=False):
       backup_data.append({
           'key': key,
           'rrdatas': ips,
-          'forwarding_configs': forwarding_configs
+          'forwarding_configs': forwarding_configs,
+          'external_endpoints': [],
       })
 
     return backup_data
@@ -620,12 +636,14 @@ def GetResourceRecordSetsRoutingPolicyDataArg(required=False,
         {
           'key': <routing_policy_data_key1>,
           'rrdatas': <IP address list>,
-          'forwarding_configs': <List of configs to be health checked>
+          'forwarding_configs': <List of configs to be health checked>,
+          'external_endpoints': <List of external endpoints> (empty for now)
         },
         {
           'key': <routing_policy_data_key2>,
           'rrdatas': <IP address list>,
-          'forwarding_configs': <List of configs to be health checked>
+          'forwarding_configs': <List of configs to be health checked>,
+          'external_endpoints': <List of external endpoints> (empty for now)
         },
         ...
     ]
@@ -657,7 +675,7 @@ def GetResourceRecordSetsRoutingPolicyDataArg(required=False,
       for val in value.split(','):
         if len(val.split('@')) == 2:
           forwarding_configs.append(val)
-        elif len(val.split('@')) == 1 and IsIPv4(val):
+        elif len(val.split('@')) == 1 and (IsIPv4(val) or IsIPv6(val)):
           ips.append(val)
         elif len(val.split('@')) == 1:
           forwarding_configs.append(val)
@@ -668,7 +686,8 @@ def GetResourceRecordSetsRoutingPolicyDataArg(required=False,
       routing_policy_data.append({
           'key': key,
           'rrdatas': ips,
-          'forwarding_configs': forwarding_configs
+          'forwarding_configs': forwarding_configs,
+          'external_endpoints': [],
       })
     return routing_policy_data
 
@@ -732,9 +751,18 @@ def _FormatRrdata(routing_policy_item):
   if 'rrdatas' in routing_policy_item:
     rrdata = rrdata + routing_policy_item['rrdatas']
   if 'healthCheckedTargets' in routing_policy_item:
-    rrdata = rrdata + ['"{}"'.format(_FormatHealthCheckTarget(target))
-                       for target in routing_policy_item['healthCheckedTargets']
-                       ['internalLoadBalancers']]
+    rrdata = (
+        rrdata
+        + [
+            '"{}"'.format(_FormatHealthCheckTarget(target))
+            for target in routing_policy_item['healthCheckedTargets'].get(
+                'internalLoadBalancers', []
+            )
+        ]
+        + routing_policy_item['healthCheckedTargets'].get(
+            'externalEndpoints', []
+        )
+    )
   return ','.join(rrdata)
 
 
@@ -744,24 +772,37 @@ def _FormatResourceRecordSet(rrdatas_or_routing_policy):
     items = []
     for item in rrdatas_or_routing_policy['wrr']['items']:
       items.append('{}: {}'.format(item['weight'], _FormatRrdata(item)))
-    return '; '.join(items)
+    data = '; '.join(items)
   elif 'geo' in rrdatas_or_routing_policy:
     items = []
     for item in rrdatas_or_routing_policy['geo']['items']:
       items.append('{}: {}'.format(item['location'], _FormatRrdata(item)))
-    return '; '.join(items)
+    data = '; '.join(items)
   elif 'primaryBackup' in rrdatas_or_routing_policy:
     items = []
     for item in rrdatas_or_routing_policy['primaryBackup']['backupGeoTargets'][
         'items']:
       items.append('{}: {}'.format(item['location'], _FormatRrdata(item)))
     backup = ';'.join(items)
-    primary = ','.join('"{}"'.format(_FormatHealthCheckTarget(target))
-                       for target in rrdatas_or_routing_policy['primaryBackup']
-                       ['primaryTargets']['internalLoadBalancers'])
-    return 'Primary: {} Backup: {}'.format(primary, backup)
+    primary = ','.join(
+        list(
+            '"{}"'.format(_FormatHealthCheckTarget(target))
+            for target in rrdatas_or_routing_policy['primaryBackup'][
+                'primaryTargets'
+            ].get('internalLoadBalancers', [])
+        )
+        + rrdatas_or_routing_policy['primaryBackup']['primaryTargets'].get(
+            'externalEndpoints', []
+        )
+    )
+    data = 'Primary: {} Backup: {}'.format(primary, backup)
   else:
-    return ','.join(rrdatas_or_routing_policy)
+    data = ','.join(rrdatas_or_routing_policy)
+  if 'healthCheck' in rrdatas_or_routing_policy:
+    data = data + ' Health Check: {}'.format(
+        rrdatas_or_routing_policy['healthCheck']
+    )
+  return data
 
 
 RESOURCERECORDSETS_TRANSFORMS = {
@@ -888,3 +929,16 @@ def GetLocationArg():
       help='Specifies the desired service location the request is sent to. '
       'Defaults to Cloud DNS global service. Use --location=global if you want '
       'to target the global service.')
+
+
+def GetHealthCheckArg(required=False):
+  return base.Argument(
+      '--health-check',
+      type=str,
+      required=required,
+      help=(
+          'Specifies the health check to be used for public IP health checking.'
+          ' Either the health check name or full resource path should be'
+          ' provided.'
+      ),
+  )

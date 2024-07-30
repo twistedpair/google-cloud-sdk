@@ -485,10 +485,7 @@ class DocumentChange(_messages.Message):
   r"""A Document has changed. May be the result of multiple writes, including
   deletes, that ultimately resulted in a new value for the Document. Multiple
   DocumentChange messages may be returned for the same logical change, if
-  multiple targets are affected. For PipelineQueryTargets, `document` will be
-  in the new pipeline format, For a Listen stream with both QueryTargets and
-  PipelineQueryTargets present, if a document matches both types of queries,
-  then a separate DocumentChange messages will be sent out one for each set.
+  multiple targets are affected.
 
   Fields:
     document: The new state of the Document. If `mask` is set, contains only
@@ -870,7 +867,10 @@ class Filter(_messages.Message):
 
 
 class FindNearest(_messages.Message):
-  r"""Nearest Neighbors search config.
+  r"""Nearest Neighbors search config. The ordering provided by FindNearest
+  supersedes the order_by stage. If multiple documents have the same vector
+  distance, the returned document order is not guaranteed to be stable between
+  queries.
 
   Enums:
     DistanceMeasureValueValuesEnum: Required. The distance measure to use,
@@ -894,17 +894,20 @@ class FindNearest(_messages.Message):
       DISTANCE_MEASURE_UNSPECIFIED: Should not be set.
       EUCLIDEAN: Measures the EUCLIDEAN distance between the vectors. See
         [Euclidean](https://en.wikipedia.org/wiki/Euclidean_distance) to learn
-        more
-      COSINE: Compares vectors based on the angle between them, which allows
-        you to measure similarity that isn't based on the vectors magnitude.
-        We recommend using DOT_PRODUCT with unit normalized vectors instead of
-        COSINE distance, which is mathematically equivalent with better
-        performance. See [Cosine
+        more. The resulting distance decreases the more similar two vectors
+        are.
+      COSINE: COSINE distance compares vectors based on the angle between
+        them, which allows you to measure similarity that isn't based on the
+        vectors magnitude. We recommend using DOT_PRODUCT with unit normalized
+        vectors instead of COSINE distance, which is mathematically equivalent
+        with better performance. See [Cosine
         Similarity](https://en.wikipedia.org/wiki/Cosine_similarity) to learn
-        more.
+        more about COSINE similarity and COSINE distance. The resulting COSINE
+        distance decreases the more similar two vectors are.
       DOT_PRODUCT: Similar to cosine but is affected by the magnitude of the
         vectors. See [Dot Product](https://en.wikipedia.org/wiki/Dot_product)
-        to learn more.
+        to learn more. The resulting distance increases the more similar two
+        vectors are.
     """
     DISTANCE_MEASURE_UNSPECIFIED = 0
     EUCLIDEAN = 1
@@ -1773,7 +1776,7 @@ class GoogleFirestoreAdminV1BackupSchedule(_messages.Message):
       ules/{backup_schedule}`
     retention: At what relative time in the future, compared to its creation
       time, the backup should be deleted, e.g. keep backups for 7 days. The
-      maximum supported retention is 14 weeks.
+      maximum supported retention period is 14 weeks.
     updateTime: Output only. The timestamp at which this backup schedule was
       most recently updated. When a backup schedule is first created, this is
       the same as create_time.

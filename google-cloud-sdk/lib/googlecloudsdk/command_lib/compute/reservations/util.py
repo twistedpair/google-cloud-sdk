@@ -64,6 +64,7 @@ def MakeReservationMessageFromArgs(messages, args, reservation_ref, resources):
       reservation_ref.zone,
       getattr(args, 'delete_at_time', None),
       getattr(args, 'delete_after_duration', None),
+      getattr(args, 'reservation_sharing_policy', None),
   )
 
 
@@ -261,12 +262,18 @@ def MakeSpecificSKUReservationMessage(
         count=vm_count, instanceProperties=instance_properties)
 
 
-def MakeReservationMessage(messages, reservation_name, share_settings,
-                           specific_reservation, resource_policies,
-                           require_specific_reservation,
-                           reservation_zone,
-                           delete_at_time=None,
-                           delete_after_duration=None):
+def MakeReservationMessage(
+    messages,
+    reservation_name,
+    share_settings,
+    specific_reservation,
+    resource_policies,
+    require_specific_reservation,
+    reservation_zone,
+    delete_at_time=None,
+    delete_after_duration=None,
+    reservation_sharing_policy=None,
+):
   """Constructs a single reservations message object."""
   reservation_message = messages.Reservation(
       name=reservation_name,
@@ -286,7 +293,27 @@ def MakeReservationMessage(messages, reservation_name, share_settings,
         seconds=delete_after_duration
     )
 
+  if reservation_sharing_policy:
+    reservation_message.reservationSharingPolicy = (
+        MakeReservationSharingPolicyMessage(
+            messages, reservation_sharing_policy
+        )
+    )
+
   return reservation_message
+
+
+def MakeReservationSharingPolicyMessage(messages, reservation_sharing_policy):
+  if reservation_sharing_policy == 'disallow_all':
+    return messages.AllocationReservationSharingPolicy(
+        serviceShareType=messages.AllocationReservationSharingPolicy.ServiceShareTypeValueValuesEnum.DISALLOW_ALL
+    )
+  elif reservation_sharing_policy == 'allow_all':
+    return messages.AllocationReservationSharingPolicy(
+        serviceShareType=messages.AllocationReservationSharingPolicy.ServiceShareTypeValueValuesEnum.ALLOW_ALL
+    )
+  else:
+    return None
 
 
 def MakeProjectMapFromProjectList(messages, projects):

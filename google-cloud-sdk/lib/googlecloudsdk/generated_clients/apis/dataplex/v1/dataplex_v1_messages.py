@@ -14,6 +14,66 @@ from apitools.base.py import extra_types
 package = 'dataplex'
 
 
+class DataplexOrganizationsLocationsEncryptionConfigsGetIamPolicyRequest(_messages.Message):
+  r"""A DataplexOrganizationsLocationsEncryptionConfigsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy.Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected.Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset.The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1.To learn which resources support conditions in
+      their IAM policies, see the IAM documentation
+      (https://cloud.google.com/iam/help/conditions/resource-policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexOrganizationsLocationsEncryptionConfigsSetIamPolicyRequest(_messages.Message):
+  r"""A DataplexOrganizationsLocationsEncryptionConfigsSetIamPolicyRequest
+  object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexOrganizationsLocationsEncryptionConfigsTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  DataplexOrganizationsLocationsEncryptionConfigsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See Resource names
+      (https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class DataplexProjectsLocationsAspectTypesCreateRequest(_messages.Message):
   r"""A DataplexProjectsLocationsAspectTypesCreateRequest object.
 
@@ -1095,9 +1155,9 @@ class DataplexProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Message)
       that weren't provided in the request.
     googleCloudDataplexV1Entry: A GoogleCloudDataplexV1Entry resource to be
       passed as the request body.
-    name: Identifier. The relative resource name of the Entry, of the form: pr
-      ojects/{project}/locations/{location}/entryGroups/{entry_group}/entries/
-      {entry}.
+    name: Identifier. The relative resource name of the entry, in the format p
+      rojects/{project_id_or_number}/locations/{location_id}/entryGroups/{entr
+      y_group_id}/entries/{entry_id}.
     updateMask: Optional. Mask of fields to update. To update Aspects, the
       update_mask must contain the value "aspects".If the update_mask is
       empty, the service will update all modifiable fields present in the
@@ -1179,9 +1239,9 @@ class DataplexProjectsLocationsEntryGroupsPatchRequest(_messages.Message):
   Fields:
     googleCloudDataplexV1EntryGroup: A GoogleCloudDataplexV1EntryGroup
       resource to be passed as the request body.
-    name: Output only. The relative resource name of the EntryGroup, of the
-      form: projects/{project_number}/locations/{location_id}/entryGroups/{ent
-      ry_group_id}.
+    name: Output only. The relative resource name of the EntryGroup, in the
+      format projects/{project_id_or_number}/locations/{location_id}/entryGrou
+      ps/{entry_group_id}.
     updateMask: Required. Mask of fields to update.
     validateOnly: Optional. The service validates the request, without
       performing any mutations. The default is false.
@@ -1385,6 +1445,62 @@ class DataplexProjectsLocationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsGlossariesGetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy.Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected.Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset.The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1.To learn which resources support conditions in
+      their IAM policies, see the IAM documentation
+      (https://cloud.google.com/iam/help/conditions/resource-policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsGlossariesSetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsGlossariesTestIamPermissionsRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesTestIamPermissionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See Resource names
+      (https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class DataplexProjectsLocationsGovernanceRulesGetIamPolicyRequest(_messages.Message):
@@ -2938,6 +3054,78 @@ class DataplexProjectsLocationsLookupEntryRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
+class DataplexProjectsLocationsMetadataJobsCancelRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsMetadataJobsCancelRequest object.
+
+  Fields:
+    googleCloudDataplexV1CancelMetadataJobRequest: A
+      GoogleCloudDataplexV1CancelMetadataJobRequest resource to be passed as
+      the request body.
+    name: Required. The resource name of the job, in the format projects/{proj
+      ect_id_or_number}/locations/{location_id}/metadataJobs/{metadata_job_id}
+  """
+
+  googleCloudDataplexV1CancelMetadataJobRequest = _messages.MessageField('GoogleCloudDataplexV1CancelMetadataJobRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsMetadataJobsCreateRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsMetadataJobsCreateRequest object.
+
+  Fields:
+    googleCloudDataplexV1MetadataJob: A GoogleCloudDataplexV1MetadataJob
+      resource to be passed as the request body.
+    metadataJobId: Optional. The metadata job ID. If not provided, a unique ID
+      is generated with the prefix metadata-job-.
+    parent: Required. The resource name of the parent location, in the format
+      projects/{project_id_or_number}/locations/{location_id}
+  """
+
+  googleCloudDataplexV1MetadataJob = _messages.MessageField('GoogleCloudDataplexV1MetadataJob', 1)
+  metadataJobId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DataplexProjectsLocationsMetadataJobsGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsMetadataJobsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the metadata job, in the format proje
+      cts/{project_id_or_number}/locations/{location_id}/metadataJobs/{metadat
+      a_job_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsMetadataJobsListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsMetadataJobsListRequest object.
+
+  Fields:
+    filter: Optional. Filter request. Filters are case-sensitive. The service
+      supports the following formats: labels.key1 = "value1" labels:key1 name
+      = "value"You can combine filters with AND, OR, and NOT operators.
+    orderBy: Optional. The field to sort the results by, either name or
+      create_time. If not specified, the ordering is undefined.
+    pageSize: Optional. The maximum number of metadata jobs to return. The
+      service might return fewer jobs than this value. If unspecified, at most
+      10 jobs are returned. The maximum value is 1,000.
+    pageToken: Optional. The page token received from a previous
+      ListMetadataJobs call. Provide this token to retrieve the subsequent
+      page of results. When paginating, all other parameters that are provided
+      to the ListMetadataJobs request must match the call that provided the
+      page token.
+    parent: Required. The resource name of the parent location, in the format
+      projects/{project_id_or_number}/locations/{location_id}
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class DataplexProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A DataplexProjectsLocationsOperationsCancelRequest object.
 
@@ -3232,7 +3420,8 @@ class GoogleCloudDataplexV1Aspect(_messages.Message):
       type schema. The maximum size of the field is 120KB (encoded as UTF-8).
 
   Fields:
-    aspectSource: A GoogleCloudDataplexV1AspectSource attribute.
+    aspectSource: Optional. Information related to the source system of the
+      aspect.
     aspectType: Output only. The resource name of the type used to create this
       Aspect.
     createTime: Output only. The time when the Aspect was created.
@@ -3277,12 +3466,11 @@ class GoogleCloudDataplexV1Aspect(_messages.Message):
 
 
 class GoogleCloudDataplexV1AspectSource(_messages.Message):
-  r"""AspectSource contains information related to the source system of the
-  Aspect.
+  r"""Information related to the source system of the aspect.
 
   Fields:
-    createTime: The create time of the aspect in the source system.
-    updateTime: The update time of the aspect in the source system.
+    createTime: The time the aspect was created in the source system.
+    updateTime: The time the aspect was last updated in the source system.
   """
 
   createTime = _messages.StringField(1)
@@ -3828,6 +4016,10 @@ class GoogleCloudDataplexV1CancelJobRequest(_messages.Message):
   r"""Cancel task jobs."""
 
 
+class GoogleCloudDataplexV1CancelMetadataJobRequest(_messages.Message):
+  r"""Cancel metadata job request."""
+
+
 class GoogleCloudDataplexV1Content(_messages.Message):
   r"""Content represents a user-visible notebook or a sql script
 
@@ -4220,8 +4412,9 @@ class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfo(_messages.Me
 
   Fields:
     distinctRatio: Ratio of rows with distinct values against total scanned
-      rows. Not available for complex non-groupable field type RECORD and
-      fields with REPEATABLE mode.
+      rows. Not available for complex non-groupable field type, including
+      RECORD, ARRAY, GEOGRAPHY, and JSON, as well as fields with REPEATABLE
+      mode.
     doubleProfile: Double type field information.
     integerProfile: Integer type field information.
     nullRatio: Ratio of rows with null value against total scanned rows.
@@ -4229,7 +4422,8 @@ class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfo(_messages.Me
     topNValues: The list of top N non-null values, frequency and ratio with
       which they occur in the scanned data. N is 10 or equal to the number of
       distinct values in the field, whichever is smaller. Not available for
-      complex non-groupable field type RECORD and fields with REPEATABLE mode.
+      complex non-groupable field type, including RECORD, ARRAY, GEOGRAPHY,
+      and JSON, as well as fields with REPEATABLE mode.
   """
 
   distinctRatio = _messages.FloatField(1)
@@ -4549,6 +4743,8 @@ class GoogleCloudDataplexV1DataQualityRule(_messages.Message):
       for the provided statement. If any rows are returned, this rule fails.
     statisticRangeExpectation: Aggregate rule which evaluates whether the
       column aggregate statistic lies between a specified range.
+    suspended: Optional. Whether the Rule is active or suspended. Default is
+      false.
     tableConditionExpectation: Aggregate rule which evaluates whether the
       provided expression is true for a table.
     threshold: Optional. The minimum ratio of passing_rows / total_rows
@@ -4570,9 +4766,10 @@ class GoogleCloudDataplexV1DataQualityRule(_messages.Message):
   setExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleSetExpectation', 10)
   sqlAssertion = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleSqlAssertion', 11)
   statisticRangeExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleStatisticRangeExpectation', 12)
-  tableConditionExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleTableConditionExpectation', 13)
-  threshold = _messages.FloatField(14)
-  uniquenessExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleUniquenessExpectation', 15)
+  suspended = _messages.BooleanField(13)
+  tableConditionExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleTableConditionExpectation', 14)
+  threshold = _messages.FloatField(15)
+  uniquenessExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleUniquenessExpectation', 16)
 
 
 class GoogleCloudDataplexV1DataQualityRuleNonNullExpectation(_messages.Message):
@@ -5848,43 +6045,49 @@ class GoogleCloudDataplexV1EntityCompatibilityStatusCompatibility(_messages.Mess
 
 
 class GoogleCloudDataplexV1Entry(_messages.Message):
-  r"""An entry is a representation of a data asset which can be described by
+  r"""An entry is a representation of a data resource that can be described by
   various metadata.
 
   Messages:
-    AspectsValue: Optional. The Aspects attached to the Entry. The format for
-      the key can be one of the following:
-      {projectId}.{locationId}.{aspectTypeId} (if the aspect is attached
-      directly to the entry) {projectId}.{locationId}.{aspectTypeId}@{path}
-      (if the aspect is attached to an entry's path)
+    AspectsValue: Optional. The aspects that are attached to the entry.
+      Depending on how the aspect is attached to the entry, the format of the
+      aspect key can be one of the following: If the aspect is attached
+      directly to the entry:
+      {project_id_or_number}.{location_id}.{aspect_type_id} If the aspect is
+      attached to an entry's path:
+      {project_id_or_number}.{location_id}.{aspect_type_id}@{path}
 
   Fields:
-    aspects: Optional. The Aspects attached to the Entry. The format for the
-      key can be one of the following: {projectId}.{locationId}.{aspectTypeId}
-      (if the aspect is attached directly to the entry)
-      {projectId}.{locationId}.{aspectTypeId}@{path} (if the aspect is
-      attached to an entry's path)
-    createTime: Output only. The time when the Entry was created.
-    entrySource: Optional. Information related to the source system for an
-      entry.
-    entryType: Required. Immutable. The resource name of the EntryType used to
-      create this Entry.
-    fullyQualifiedName: Optional. A name for the entry that can reference it
-      in an external system. The maximum size of the field is 4000 characters.
-    name: Identifier. The relative resource name of the Entry, of the form: pr
-      ojects/{project}/locations/{location}/entryGroups/{entry_group}/entries/
-      {entry}.
+    aspects: Optional. The aspects that are attached to the entry. Depending
+      on how the aspect is attached to the entry, the format of the aspect key
+      can be one of the following: If the aspect is attached directly to the
+      entry: {project_id_or_number}.{location_id}.{aspect_type_id} If the
+      aspect is attached to an entry's path:
+      {project_id_or_number}.{location_id}.{aspect_type_id}@{path}
+    createTime: Output only. The time when the entry was created in Dataplex.
+    entrySource: Optional. Information related to the source system of the
+      data resource that is represented by the entry.
+    entryType: Required. Immutable. The relative resource name of the entry
+      type that was used to create this entry, in the format projects/{project
+      _id_or_number}/locations/{location_id}/entryTypes/{entry_type_id}.
+    fullyQualifiedName: Optional. A name for the entry that can be referenced
+      by an external system. The maximum size of the field is 4000 characters.
+    name: Identifier. The relative resource name of the entry, in the format p
+      rojects/{project_id_or_number}/locations/{location_id}/entryGroups/{entr
+      y_group_id}/entries/{entry_id}.
     parentEntry: Optional. Immutable. The resource name of the parent entry.
-    updateTime: Output only. The time when the Entry was last updated.
+    updateTime: Output only. The time when the entry was last updated in
+      Dataplex.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AspectsValue(_messages.Message):
-    r"""Optional. The Aspects attached to the Entry. The format for the key
-    can be one of the following: {projectId}.{locationId}.{aspectTypeId} (if
-    the aspect is attached directly to the entry)
-    {projectId}.{locationId}.{aspectTypeId}@{path} (if the aspect is attached
-    to an entry's path)
+    r"""Optional. The aspects that are attached to the entry. Depending on how
+    the aspect is attached to the entry, the format of the aspect key can be
+    one of the following: If the aspect is attached directly to the entry:
+    {project_id_or_number}.{location_id}.{aspect_type_id} If the aspect is
+    attached to an entry's path:
+    {project_id_or_number}.{location_id}.{aspect_type_id}@{path}
 
     Messages:
       AdditionalProperty: An additional property for a AspectsValue object.
@@ -5930,9 +6133,9 @@ class GoogleCloudDataplexV1EntryGroup(_messages.Message):
       update and delete requests to ensure the client has an up-to-date value
       before proceeding.
     labels: Optional. User-defined labels for the EntryGroup.
-    name: Output only. The relative resource name of the EntryGroup, of the
-      form: projects/{project_number}/locations/{location_id}/entryGroups/{ent
-      ry_group_id}.
+    name: Output only. The relative resource name of the EntryGroup, in the
+      format projects/{project_id_or_number}/locations/{location_id}/entryGrou
+      ps/{entry_group_id}.
     uid: Output only. System generated globally unique ID for the EntryGroup.
       If you delete and recreate the EntryGroup with the same name, this ID
       will be different.
@@ -5974,33 +6177,36 @@ class GoogleCloudDataplexV1EntryGroup(_messages.Message):
 
 
 class GoogleCloudDataplexV1EntrySource(_messages.Message):
-  r"""EntrySource contains information related to the source system of the
-  Entry.
+  r"""Information related to the source system of the data resource that is
+  represented by the entry.
 
   Messages:
     LabelsValue: User-defined labels. The maximum size of keys and values is
       128 characters each.
 
   Fields:
-    ancestors: Immutable. The ancestors of the Entry in the source system.
-    createTime: The create time of the resource in the source system.
-    description: Description of the Entry. The maximum size of the field is
-      2000 characters.
-    displayName: User friendly display name. The maximum size of the field is
-      500 characters.
+    ancestors: Immutable. The entries representing the ancestors of the data
+      resource in the source system.
+    createTime: The time when the resource was created in the source system.
+    description: A description of the data resource. Maximum length is 2,000
+      characters.
+    displayName: A user-friendly display name. Maximum length is 500
+      characters.
     labels: User-defined labels. The maximum size of keys and values is 128
       characters each.
     location: Output only. Location of the resource in the source system. You
-      can search the Entry by this location. By default, this should match the
-      location of the EntryGroup containing this entry. A different value
+      can search the entry by this location. By default, this should match the
+      location of the entry group containing this entry. A different value
       allows capturing the source location for data external to Google Cloud.
-    platform: The platform containing the source system. The maximum size of
-      the field is 64 characters.
-    resource: The name of the resource in the source system. The maximum size
-      of the field is 4000 characters.
-    system: The name of the source system. The maximum size of the field is 64
+    platform: The platform containing the source system. Maximum length is 64
       characters.
-    updateTime: The update time of the resource in the source system.
+    resource: The name of the resource in the source system. Maximum length is
+      4,000 characters.
+    system: The name of the source system. Maximum length is 64 characters.
+    updateTime: The time when the resource was last updated in the source
+      system. If the entry exists in the system and its EntrySource has
+      update_time populated, further updates to the EntrySource of the entry
+      must provide incremental updates to its update_time.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -6041,8 +6247,8 @@ class GoogleCloudDataplexV1EntrySource(_messages.Message):
 
 
 class GoogleCloudDataplexV1EntrySourceAncestor(_messages.Message):
-  r"""Ancestor contains information about individual items in the hierarchy of
-  an Entry.
+  r"""Information about individual items in the hierarchy that is associated
+  with the data resource.
 
   Fields:
     name: Optional. The name of the ancestor resource.
@@ -6460,6 +6666,50 @@ class GoogleCloudDataplexV1GovernanceEventEntity(_messages.Message):
 
   entity = _messages.StringField(1)
   entityType = _messages.EnumField('EntityTypeValueValuesEnum', 2)
+
+
+class GoogleCloudDataplexV1ImportItem(_messages.Message):
+  r"""An object that describes the values that you want to set for an entry
+  and its attached aspects when you import metadata. Used when you run a
+  metadata import job. See CreateMetadataJob.You provide a collection of
+  import items in a metadata import file. For more information about how to
+  create a metadata import file, see Metadata import file
+  (https://cloud.google.com/dataplex/docs/import-metadata#metadata-import-
+  file).
+
+  Fields:
+    aspectKeys: The aspects to modify. Supports the following syntaxes:
+      {aspect_type_reference}: matches aspects that belong to the specified
+      aspect type and are attached directly to the entry.
+      {aspect_type_reference}@{path}: matches aspects that belong to the
+      specified aspect type and path. {aspect_type_reference}@*: matches
+      aspects that belong to the specified aspect type for all paths.Replace
+      {aspect_type_reference} with a reference to the aspect type, in the
+      format {project_id_or_number}.{location_id}.{aspect_type_id}.If you
+      leave this field empty, it is treated as specifying exactly those
+      aspects that are present within the specified entry.In FULL entry sync
+      mode, Dataplex implicitly adds the keys for all of the required aspects
+      of an entry.
+    entry: Information about an entry and its attached aspects.
+    updateMask: The fields to update, in paths that are relative to the Entry
+      resource. Separate each field with a comma.In FULL entry sync mode,
+      Dataplex includes the paths of all of the fields for an entry that can
+      be modified, including aspects. This means that Dataplex replaces the
+      existing entry with the entry in the metadata import file. All
+      modifiable fields are updated, regardless of the fields that are listed
+      in the update mask, and regardless of whether a field is present in the
+      entry object.The update_mask field is ignored when an entry is created
+      or re-created.Dataplex also determines which entries and aspects to
+      modify by comparing the values and timestamps that you provide in the
+      metadata import file with the values and timestamps that exist in your
+      project. For more information, see Comparison logic
+      (https://cloud.google.com/dataplex/docs/import-metadata#data-
+      modification-logic).
+  """
+
+  aspectKeys = _messages.StringField(1, repeated=True)
+  entry = _messages.MessageField('GoogleCloudDataplexV1Entry', 2)
+  updateMask = _messages.StringField(3)
 
 
 class GoogleCloudDataplexV1Job(_messages.Message):
@@ -7025,6 +7275,21 @@ class GoogleCloudDataplexV1ListLakesResponse(_messages.Message):
   unreachableLocations = _messages.StringField(3, repeated=True)
 
 
+class GoogleCloudDataplexV1ListMetadataJobsResponse(_messages.Message):
+  r"""List metadata jobs response.
+
+  Fields:
+    metadataJobs: Metadata jobs under the specified parent location.
+    nextPageToken: A token to retrieve the next page of results. If there are
+      no more results in the list, the value is empty.
+    unreachableLocations: Locations that the service couldn't reach.
+  """
+
+  metadataJobs = _messages.MessageField('GoogleCloudDataplexV1MetadataJob', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachableLocations = _messages.StringField(3, repeated=True)
+
+
 class GoogleCloudDataplexV1ListPartitionsResponse(_messages.Message):
   r"""List metadata partitions response.
 
@@ -7077,6 +7342,303 @@ class GoogleCloudDataplexV1ListZonesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   zones = _messages.MessageField('GoogleCloudDataplexV1Zone', 2, repeated=True)
+
+
+class GoogleCloudDataplexV1MetadataJob(_messages.Message):
+  r"""A metadata job resource.
+
+  Enums:
+    TypeValueValuesEnum:
+
+  Messages:
+    LabelsValue: Optional. User-defined labels.
+
+  Fields:
+    createTime: Output only. The time when the metadata job was created.
+    importResult: Output only. Import job result.
+    importSpec: Import job specification.
+    labels: Optional. User-defined labels.
+    name: Output only. The name of the resource that the configuration is
+      applied to, in the format projects/{project_number}/locations/{location_
+      id}/metadataJobs/{metadata_job_id}.
+    status: A GoogleCloudDataplexV1MetadataJobStatus attribute.
+    type: A TypeValueValuesEnum attribute.
+    uid: Output only. A system-generated, globally unique ID for the metadata
+      job. If the metadata job is deleted and then re-created with the same
+      name, this ID is different.
+    updateTime: Output only. The time when the metadata job was updated.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""TypeValueValuesEnum enum type.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified.
+      IMPORT: Import job.
+    """
+    TYPE_UNSPECIFIED = 0
+    IMPORT = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User-defined labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  importResult = _messages.MessageField('GoogleCloudDataplexV1MetadataJobImportJobResult', 2)
+  importSpec = _messages.MessageField('GoogleCloudDataplexV1MetadataJobImportJobSpec', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  status = _messages.MessageField('GoogleCloudDataplexV1MetadataJobStatus', 6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+
+
+class GoogleCloudDataplexV1MetadataJobImportJobResult(_messages.Message):
+  r"""Results from a metadata import job.
+
+  Fields:
+    createdEntries: Output only. The total number of entries that were
+      created.
+    deletedEntries: Output only. The total number of entries that were
+      deleted.
+    recreatedEntries: Output only. The total number of entries that were
+      recreated.
+    unchangedEntries: Output only. The total number of entries that were
+      unchanged.
+    updateTime: Output only. The time when the status was updated.
+    updatedEntries: Output only. The total number of entries that were
+      updated.
+  """
+
+  createdEntries = _messages.IntegerField(1)
+  deletedEntries = _messages.IntegerField(2)
+  recreatedEntries = _messages.IntegerField(3)
+  unchangedEntries = _messages.IntegerField(4)
+  updateTime = _messages.StringField(5)
+  updatedEntries = _messages.IntegerField(6)
+
+
+class GoogleCloudDataplexV1MetadataJobImportJobSpec(_messages.Message):
+  r"""Job specification for a metadata import job
+
+  Enums:
+    AspectSyncModeValueValuesEnum: Required. The sync mode for aspects. Only
+      INCREMENTAL mode is supported for aspects. An aspect is modified only if
+      the metadata import file includes a reference to the aspect in the
+      update_mask field and the aspect_keys field.
+    EntrySyncModeValueValuesEnum: Required. The sync mode for entries. Only
+      FULL mode is supported for entries. All entries in the job's scope are
+      modified. If an entry exists in Dataplex but isn't included in the
+      metadata import file, the entry is deleted when you run the metadata
+      job.
+    LogLevelValueValuesEnum: Optional. The level of logs to write to Cloud
+      Logging for this job.Debug-level logs provide highly-detailed
+      information for troubleshooting, but their increased verbosity could
+      incur additional costs (https://cloud.google.com/stackdriver/pricing)
+      that might not be merited for all jobs.If unspecified, defaults to INFO.
+
+  Fields:
+    aspectSyncMode: Required. The sync mode for aspects. Only INCREMENTAL mode
+      is supported for aspects. An aspect is modified only if the metadata
+      import file includes a reference to the aspect in the update_mask field
+      and the aspect_keys field.
+    entrySyncMode: Required. The sync mode for entries. Only FULL mode is
+      supported for entries. All entries in the job's scope are modified. If
+      an entry exists in Dataplex but isn't included in the metadata import
+      file, the entry is deleted when you run the metadata job.
+    logLevel: Optional. The level of logs to write to Cloud Logging for this
+      job.Debug-level logs provide highly-detailed information for
+      troubleshooting, but their increased verbosity could incur additional
+      costs (https://cloud.google.com/stackdriver/pricing) that might not be
+      merited for all jobs.If unspecified, defaults to INFO.
+    scope: Required. A boundary on the scope of impact that the metadata
+      import job can have.
+    sourceCreateTime: Optional. The time when the process that created the
+      metadata import files began.
+    sourceStorageUri: Optional. The URI of a Cloud Storage bucket or folder
+      (beginning with gs:// and ending with /) that contains the metadata
+      import files for this job.A metadata import file defines the values to
+      set for each of the entries and aspects in a metadata job. For more
+      information about how to create a metadata import file and the file
+      requirements, see Metadata import file
+      (https://cloud.google.com/dataplex/docs/import-metadata#metadata-import-
+      file).You can provide multiple metadata import files in the same
+      metadata job. The bucket or folder must contain at least one metadata
+      import file, in JSON Lines format (either .json or .jsonl file
+      extension).In FULL entry sync mode, don't save the metadata import file
+      in a folder named SOURCE_STORAGE_URI/deletions/.Caution: If the metadata
+      import file contains no data, all entries and aspects that belong to the
+      job's scope are deleted.
+  """
+
+  class AspectSyncModeValueValuesEnum(_messages.Enum):
+    r"""Required. The sync mode for aspects. Only INCREMENTAL mode is
+    supported for aspects. An aspect is modified only if the metadata import
+    file includes a reference to the aspect in the update_mask field and the
+    aspect_keys field.
+
+    Values:
+      SYNC_MODE_UNSPECIFIED: Sync mode unspecified.
+      FULL: All resources in the job's scope are modified. If a resource
+        exists in Dataplex but isn't included in the metadata import file, the
+        resource is deleted when you run the metadata job. Use this mode to
+        perform a full sync of the set of entries in the job scope.
+      INCREMENTAL: Only the entries and aspects that are explicitly included
+        in the metadata import file are modified. Use this mode to modify a
+        subset of resources while leaving unreferenced resources unchanged.
+    """
+    SYNC_MODE_UNSPECIFIED = 0
+    FULL = 1
+    INCREMENTAL = 2
+
+  class EntrySyncModeValueValuesEnum(_messages.Enum):
+    r"""Required. The sync mode for entries. Only FULL mode is supported for
+    entries. All entries in the job's scope are modified. If an entry exists
+    in Dataplex but isn't included in the metadata import file, the entry is
+    deleted when you run the metadata job.
+
+    Values:
+      SYNC_MODE_UNSPECIFIED: Sync mode unspecified.
+      FULL: All resources in the job's scope are modified. If a resource
+        exists in Dataplex but isn't included in the metadata import file, the
+        resource is deleted when you run the metadata job. Use this mode to
+        perform a full sync of the set of entries in the job scope.
+      INCREMENTAL: Only the entries and aspects that are explicitly included
+        in the metadata import file are modified. Use this mode to modify a
+        subset of resources while leaving unreferenced resources unchanged.
+    """
+    SYNC_MODE_UNSPECIFIED = 0
+    FULL = 1
+    INCREMENTAL = 2
+
+  class LogLevelValueValuesEnum(_messages.Enum):
+    r"""Optional. The level of logs to write to Cloud Logging for this
+    job.Debug-level logs provide highly-detailed information for
+    troubleshooting, but their increased verbosity could incur additional
+    costs (https://cloud.google.com/stackdriver/pricing) that might not be
+    merited for all jobs.If unspecified, defaults to INFO.
+
+    Values:
+      LOG_LEVEL_UNSPECIFIED: Log level unspecified.
+      DEBUG: Debug-level logging. Captures detailed logs for each import item.
+        Use debug-level logging to troubleshoot issues with specific import
+        items. For example, use debug-level logging to identify resources that
+        are missing from the job scope, entries or aspects that don't conform
+        to the associated entry type or aspect type, or other
+        misconfigurations with the metadata import file.Depending on the size
+        of your metadata job and the number of logs that are generated, debug-
+        level logging might incur additional costs
+        (https://cloud.google.com/stackdriver/pricing).
+      INFO: Info-level logging. Captures logs at the overall job level.
+        Includes aggregate logs about import items, but doesn't specify which
+        import item has an error.
+    """
+    LOG_LEVEL_UNSPECIFIED = 0
+    DEBUG = 1
+    INFO = 2
+
+  aspectSyncMode = _messages.EnumField('AspectSyncModeValueValuesEnum', 1)
+  entrySyncMode = _messages.EnumField('EntrySyncModeValueValuesEnum', 2)
+  logLevel = _messages.EnumField('LogLevelValueValuesEnum', 3)
+  scope = _messages.MessageField('GoogleCloudDataplexV1MetadataJobImportJobSpecImportJobScope', 4)
+  sourceCreateTime = _messages.StringField(5)
+  sourceStorageUri = _messages.StringField(6)
+
+
+class GoogleCloudDataplexV1MetadataJobImportJobSpecImportJobScope(_messages.Message):
+  r"""A boundary on the scope of impact that the metadata import job can have.
+
+  Fields:
+    aspectTypes: Optional. The aspect types that are in scope for the import
+      job, specified as relative resource names in the format projects/{projec
+      t_number_or_id}/locations/{location_id}/aspectTypes/{aspect_type_id}.
+      The job modifies only the aspects that belong to these aspect types.If
+      the metadata import file attempts to modify an aspect whose type isn't
+      included in this list, the import job is halted before modifying any
+      entries or aspects.The location of an aspect type must either match the
+      location of the job, or the aspect type must be global.
+    entryGroups: Required. The entry group that is in scope for the import
+      job, specified as a relative resource name in the format projects/{proje
+      ct_number_or_id}/locations/{location_id}/entryGroups/{entry_group_id}.
+      Only entries that belong to the specified entry group are affected by
+      the job.Must contain exactly one element. The entry group and the job
+      must be in the same location.
+    entryTypes: Required. The entry types that are in scope for the import
+      job, specified as relative resource names in the format projects/{projec
+      t_number_or_id}/locations/{location_id}/entryTypes/{entry_type_id}. The
+      job modifies only the entries that belong to these entry types.If the
+      metadata import file attempts to modify an entry whose type isn't
+      included in this list, the import job is halted before modifying any
+      entries or aspects.The location of an entry type must either match the
+      location of the job, or the entry type must be global.
+  """
+
+  aspectTypes = _messages.StringField(1, repeated=True)
+  entryGroups = _messages.StringField(2, repeated=True)
+  entryTypes = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudDataplexV1MetadataJobStatus(_messages.Message):
+  r"""Metadata job status.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the metadata job.
+
+  Fields:
+    completionPercent: Output only. Progress tracking.
+    message: Output only. Message relating to the progression of a metadata
+      job.
+    state: Output only. State of the metadata job.
+    updateTime: Output only. The time when the status was updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the metadata job.
+
+    Values:
+      STATE_UNSPECIFIED: State unspecified.
+      QUEUED: The job is queued.
+      RUNNING: The job is running.
+      CANCELING: The job is being canceled.
+      CANCELED: The job is canceled.
+      SUCCEEDED: The job succeeded.
+      FAILED: The job failed.
+      SUCCEEDED_WITH_ERRORS: The job completed with some errors.
+    """
+    STATE_UNSPECIFIED = 0
+    QUEUED = 1
+    RUNNING = 2
+    CANCELING = 3
+    CANCELED = 4
+    SUCCEEDED = 5
+    FAILED = 6
+    SUCCEEDED_WITH_ERRORS = 7
+
+  completionPercent = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  message = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  updateTime = _messages.StringField(4)
 
 
 class GoogleCloudDataplexV1OperationMetadata(_messages.Message):
@@ -9063,6 +9625,8 @@ encoding.AddCustomJsonEnumMapping(
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
 encoding.AddCustomJsonFieldMapping(
+    DataplexOrganizationsLocationsEncryptionConfigsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
     DataplexProjectsLocationsAspectTypesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     DataplexProjectsLocationsDataAttributeBindingsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
@@ -9076,6 +9640,8 @@ encoding.AddCustomJsonFieldMapping(
     DataplexProjectsLocationsEntryGroupsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     DataplexProjectsLocationsEntryTypesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    DataplexProjectsLocationsGlossariesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     DataplexProjectsLocationsGovernanceRulesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(

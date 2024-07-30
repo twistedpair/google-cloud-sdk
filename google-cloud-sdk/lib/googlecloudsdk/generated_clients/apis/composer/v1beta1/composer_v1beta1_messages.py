@@ -950,6 +950,7 @@ class Environment(_messages.Message):
       "projects/{projectId}/locations/{locationId}/environments/{environmentId
       }" EnvironmentId must start with a lowercase letter followed by up to 63
       lowercase letters, numbers, or hyphens, and cannot end with a hyphen.
+    satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     state: The current state of the environment.
     storageConfig: Optional. Storage configuration for this environment.
@@ -1013,11 +1014,12 @@ class Environment(_messages.Message):
   createTime = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  satisfiesPzs = _messages.BooleanField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  storageConfig = _messages.MessageField('StorageConfig', 7)
-  updateTime = _messages.StringField(8)
-  uuid = _messages.StringField(9)
+  satisfiesPzi = _messages.BooleanField(5)
+  satisfiesPzs = _messages.BooleanField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  storageConfig = _messages.MessageField('StorageConfig', 8)
+  updateTime = _messages.StringField(9)
+  uuid = _messages.StringField(10)
 
 
 class EnvironmentConfig(_messages.Message):

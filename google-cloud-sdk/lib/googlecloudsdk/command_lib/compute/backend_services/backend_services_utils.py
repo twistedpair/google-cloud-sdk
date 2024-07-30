@@ -395,6 +395,68 @@ def ApplyIpAddressSelectionPolicyArgs(client, args, backend_service):
     )
 
 
+def ApplyAffinityCookieArgs(client, args, backend_service):
+  """Applies the --affinity-cookie-name and --affinity-cookie-ttl arguments to the backend service.
+
+  The values are written into the backend_service message as follows:
+
+  - HTTP_COOKIE: name copied into backend_service.hashPolicy.httpCookie.name,
+    TTL copied into backendService.affinityCookieTtlSec.
+  - GENERATED_COOKIE: TTL copied into backendService.affinityCookieTtlSec.
+  - STRONG_COOKIE_AFFINITY: name copied into
+    backendService.strongSessionAffinityCookie.name, TTL copied into
+    backendService.strongSessionAffinityCookie.ttl. (STRONG_COOKIE_AFFINITY
+    does not fall back to affinityCookieTtlSec the same way HTTP_COOKIE does.)
+
+  Args:
+    client: The client used by gcloud.
+    args: The arguments passed to the gcloud command.
+    backend_service: The backend service object.
+  """
+  if args.affinity_cookie_name is not None:
+    if args.session_affinity == 'STRONG_COOKIE_AFFINITY':
+      if backend_service.strongSessionAffinityCookie is None:
+        backend_service.strongSessionAffinityCookie = (
+            client.messages.BackendServiceHttpCookie()
+        )
+      backend_service.strongSessionAffinityCookie.name = (
+          args.affinity_cookie_name
+      )
+    elif args.session_affinity == 'HTTP_COOKIE':
+      if backend_service.consistentHash is None:
+        backend_service.consistentHash = (
+            client.messages.ConsistentHashLoadBalancerSettings()
+        )
+      if backend_service.consistentHash.httpCookie is None:
+        backend_service.consistentHash.httpCookie = (
+            client.messages.ConsistentHashLoadBalancerSettingsHttpCookie()
+        )
+      backend_service.consistentHash.httpCookie.name = args.affinity_cookie_name
+  if args.affinity_cookie_ttl is not None:
+    # TTL for a cookie is specified within strongSessionAffinityCookie if
+    # using STRONG_COOKIE_AFFINITY, in affinityCookieTtlSec if using
+    # GENERATED_COOKIE, and in *either* of consistentHash.httpCookie.ttl *or*
+    # affinityCookieTtlSec if using HTTP_COOKIE. Since gcloud historically
+    # used affinityCookieTtlSec for HTTP_COOKIE, we use the HttpCookie message
+    # to store the TTL if using STRONG_COOKIE_AFFINITY, and continue to use
+    # affinityCookieTtlSec for everything else. This avoids needing to have
+    # two flags that do confusingly similar things.
+    if args.session_affinity == 'STRONG_COOKIE_AFFINITY':
+      if backend_service.strongSessionAffinityCookie is None:
+        backend_service.strongSessionAffinityCookie = (
+            client.messages.BackendServiceHttpCookie()
+        )
+      if backend_service.strongSessionAffinityCookie.ttl is None:
+        backend_service.strongSessionAffinityCookie.ttl = (
+            client.messages.Duration()
+        )
+      backend_service.strongSessionAffinityCookie.ttl.seconds = (
+          args.affinity_cookie_ttl
+      )
+    else:
+      backend_service.affinityCookieTtlSec = args.affinity_cookie_ttl
+
+
 def GetNegativeCachingPolicy(client, args, backend_service):
   """Returns the negative caching policy.
 

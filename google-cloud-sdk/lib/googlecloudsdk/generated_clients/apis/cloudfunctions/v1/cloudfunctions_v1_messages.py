@@ -232,8 +232,9 @@ class CloudFunction(_messages.Message):
       deployment of the function.
     buildName: Output only. The Cloud Build Name of the function deployment.
       `projects//locations//builds/`.
-    buildServiceAccount: Optional. A service account the user provides for use
-      with Cloud Build.
+    buildServiceAccount: A service account the user provides for use with
+      Cloud Build. The format of this field is
+      `projects/{projectId}/serviceAccounts/{serviceAccountEmail}`.
     buildWorkerPool: Name of the Cloud Build Custom Worker Pool that should be
       used to build the function. The format of this field is
       `projects/{project}/locations/{region}/workerPools/{workerPool}` where
@@ -951,6 +952,8 @@ class GoogleCloudFunctionsV2OperationMetadata(_messages.Message):
 
   Fields:
     apiVersion: API version used to start the operation.
+    buildName: The build name of the function for create and update
+      operations.
     cancelRequested: Identifies whether the user has requested cancellation of
       the operation. Operations that have successfully been cancelled have
       google.longrunning.Operation.error value with a google.rpc.Status.code
@@ -1018,16 +1021,17 @@ class GoogleCloudFunctionsV2OperationMetadata(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
-  cancelRequested = _messages.BooleanField(2)
-  createTime = _messages.StringField(3)
-  endTime = _messages.StringField(4)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
-  requestResource = _messages.MessageField('RequestResourceValue', 6)
-  sourceToken = _messages.StringField(7)
-  stages = _messages.MessageField('GoogleCloudFunctionsV2Stage', 8, repeated=True)
-  statusDetail = _messages.StringField(9)
-  target = _messages.StringField(10)
-  verb = _messages.StringField(11)
+  buildName = _messages.StringField(2)
+  cancelRequested = _messages.BooleanField(3)
+  createTime = _messages.StringField(4)
+  endTime = _messages.StringField(5)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 6)
+  requestResource = _messages.MessageField('RequestResourceValue', 7)
+  sourceToken = _messages.StringField(8)
+  stages = _messages.MessageField('GoogleCloudFunctionsV2Stage', 9, repeated=True)
+  statusDetail = _messages.StringField(10)
+  target = _messages.StringField(11)
+  verb = _messages.StringField(12)
 
 
 class GoogleCloudFunctionsV2Stage(_messages.Message):
@@ -1157,6 +1161,8 @@ class GoogleCloudFunctionsV2alphaOperationMetadata(_messages.Message):
 
   Fields:
     apiVersion: API version used to start the operation.
+    buildName: The build name of the function for create and update
+      operations.
     cancelRequested: Identifies whether the user has requested cancellation of
       the operation. Operations that have successfully been cancelled have
       google.longrunning.Operation.error value with a google.rpc.Status.code
@@ -1224,16 +1230,17 @@ class GoogleCloudFunctionsV2alphaOperationMetadata(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
-  cancelRequested = _messages.BooleanField(2)
-  createTime = _messages.StringField(3)
-  endTime = _messages.StringField(4)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
-  requestResource = _messages.MessageField('RequestResourceValue', 6)
-  sourceToken = _messages.StringField(7)
-  stages = _messages.MessageField('GoogleCloudFunctionsV2alphaStage', 8, repeated=True)
-  statusDetail = _messages.StringField(9)
-  target = _messages.StringField(10)
-  verb = _messages.StringField(11)
+  buildName = _messages.StringField(2)
+  cancelRequested = _messages.BooleanField(3)
+  createTime = _messages.StringField(4)
+  endTime = _messages.StringField(5)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 6)
+  requestResource = _messages.MessageField('RequestResourceValue', 7)
+  sourceToken = _messages.StringField(8)
+  stages = _messages.MessageField('GoogleCloudFunctionsV2alphaStage', 9, repeated=True)
+  statusDetail = _messages.StringField(10)
+  target = _messages.StringField(11)
+  verb = _messages.StringField(12)
 
 
 class GoogleCloudFunctionsV2alphaStage(_messages.Message):
@@ -1363,6 +1370,8 @@ class GoogleCloudFunctionsV2betaOperationMetadata(_messages.Message):
 
   Fields:
     apiVersion: API version used to start the operation.
+    buildName: The build name of the function for create and update
+      operations.
     cancelRequested: Identifies whether the user has requested cancellation of
       the operation. Operations that have successfully been cancelled have
       google.longrunning.Operation.error value with a google.rpc.Status.code
@@ -1430,16 +1439,17 @@ class GoogleCloudFunctionsV2betaOperationMetadata(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
-  cancelRequested = _messages.BooleanField(2)
-  createTime = _messages.StringField(3)
-  endTime = _messages.StringField(4)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
-  requestResource = _messages.MessageField('RequestResourceValue', 6)
-  sourceToken = _messages.StringField(7)
-  stages = _messages.MessageField('GoogleCloudFunctionsV2betaStage', 8, repeated=True)
-  statusDetail = _messages.StringField(9)
-  target = _messages.StringField(10)
-  verb = _messages.StringField(11)
+  buildName = _messages.StringField(2)
+  cancelRequested = _messages.BooleanField(3)
+  createTime = _messages.StringField(4)
+  endTime = _messages.StringField(5)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 6)
+  requestResource = _messages.MessageField('RequestResourceValue', 7)
+  sourceToken = _messages.StringField(8)
+  stages = _messages.MessageField('GoogleCloudFunctionsV2betaStage', 9, repeated=True)
+  statusDetail = _messages.StringField(10)
+  target = _messages.StringField(11)
+  verb = _messages.StringField(12)
 
 
 class GoogleCloudFunctionsV2betaStage(_messages.Message):

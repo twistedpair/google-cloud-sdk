@@ -95,6 +95,185 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AuthzExtension(_messages.Message):
+  r"""`AuthzExtension` is a resource that allows traffic forwarding to a
+  callout backend to make an authorization decision.
+
+  Enums:
+    LoadBalancingSchemeValueValuesEnum: Required. All backend services and
+      forwarding rules referenced by this extension must share the same load
+      balancing scheme. Supported values: `INTERNAL_MANAGED`,
+      `EXTERNAL_MANAGED`. For more information, refer to [Choosing a load
+      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+    WireFormatValueValuesEnum: Optional. The format of communication supported
+      by the callout extension. If not specified, the default is
+      `EXT_PROC_GRPC`.
+
+  Messages:
+    LabelsValue: Optional. Set of labels associated with the `AuthzExtension`
+      resource. The format must comply with [the requirements for
+      labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+      resources.
+    MetadataValue: Optional. The metadata provided here is included as part of
+      the `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      is available under the namespace `com.google.authz_extension.`. The
+      following variables are supported in the metadata Struct:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name.
+
+  Fields:
+    authority: Required. The `:authority` header in the gRPC request sent from
+      Envoy to the extension service.
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A human-readable description of the resource.
+    failOpen: Optional. Determines how the proxy behaves if the call to the
+      extension fails or times out. When set to `TRUE`, request or response
+      processing continues without error. Any subsequent extensions in the
+      extension chain are also executed. When set to `FALSE` or the default
+      setting of `FALSE` is used, one of the following happens: * If response
+      headers have not been delivered to the downstream client, a generic 500
+      error is returned to the client. The error response can be tailored by
+      configuring a custom error response in the load balancer. * If response
+      headers have been delivered, then the HTTP stream to the downstream
+      client is reset.
+    forwardHeaders: Optional. List of the HTTP headers to forward to the
+      extension (from the client). If omitted, all headers are sent. Each
+      element is a string indicating the header name.
+    labels: Optional. Set of labels associated with the `AuthzExtension`
+      resource. The format must comply with [the requirements for
+      labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+      resources.
+    loadBalancingScheme: Required. All backend services and forwarding rules
+      referenced by this extension must share the same load balancing scheme.
+      Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
+      information, refer to [Choosing a load
+      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+    metadata: Optional. The metadata provided here is included as part of the
+      `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      is available under the namespace `com.google.authz_extension.`. The
+      following variables are supported in the metadata Struct:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name.
+    name: Required. Identifier. Name of the `AuthzExtension` resource in the
+      following format: `projects/{project}/locations/{location}/authzExtensio
+      ns/{authz_extension}`.
+    service: Required. The reference to the service that runs the extension.
+      Currently only callout extensions are supported here. To configure a
+      callout extension, `service` must be a fully-qualified reference to a
+      [backend service](https://cloud.google.com/compute/docs/reference/rest/v
+      1/backendServices) in the format: `https://www.googleapis.com/compute/v1
+      /projects/{project}/regions/{region}/backendServices/{backendService}`
+      or `https://www.googleapis.com/compute/v1/projects/{project}/global/back
+      endServices/{backendService}`.
+    timeout: Required. Specifies the timeout for each individual message on
+      the stream. The timeout must be between 10-10000 milliseconds.
+    updateTime: Output only. The timestamp when the resource was updated.
+    wireFormat: Optional. The format of communication supported by the callout
+      extension. If not specified, the default is `EXT_PROC_GRPC`.
+  """
+
+  class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
+    r"""Required. All backend services and forwarding rules referenced by this
+    extension must share the same load balancing scheme. Supported values:
+    `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more information, refer to
+    [Choosing a load balancer](https://cloud.google.com/load-
+    balancing/docs/backend-service).
+
+    Values:
+      LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Do not use.
+      INTERNAL_MANAGED: Signifies that this is used for Internal HTTP(S) Load
+        Balancing.
+      EXTERNAL_MANAGED: Signifies that this is used for External Managed
+        HTTP(S) Load Balancing.
+    """
+    LOAD_BALANCING_SCHEME_UNSPECIFIED = 0
+    INTERNAL_MANAGED = 1
+    EXTERNAL_MANAGED = 2
+
+  class WireFormatValueValuesEnum(_messages.Enum):
+    r"""Optional. The format of communication supported by the callout
+    extension. If not specified, the default is `EXT_PROC_GRPC`.
+
+    Values:
+      WIRE_FORMAT_UNSPECIFIED: Not specified.
+      EXT_PROC_GRPC: The extension service uses ExtProc GRPC API.
+    """
+    WIRE_FORMAT_UNSPECIFIED = 0
+    EXT_PROC_GRPC = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of labels associated with the `AuthzExtension` resource.
+    The format must comply with [the requirements for
+    labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+    resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Optional. The metadata provided here is included as part of the
+    `metadata_context` (of type `google.protobuf.Struct`) in the
+    `ProcessingRequest` message sent to the extension server. The metadata is
+    available under the namespace `com.google.authz_extension.`. The following
+    variables are supported in the metadata Struct: `{forwarding_rule_id}` -
+    substituted with the forwarding rule's fully qualified resource name.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  authority = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  failOpen = _messages.BooleanField(4)
+  forwardHeaders = _messages.StringField(5, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 6)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 7)
+  metadata = _messages.MessageField('MetadataValue', 8)
+  name = _messages.StringField(9)
+  service = _messages.StringField(10)
+  timeout = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+  wireFormat = _messages.EnumField('WireFormatValueValuesEnum', 13)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -1075,7 +1254,7 @@ class EndpointPolicy(_messages.Message):
       Applicable only when EndpointPolicyType is SIDECAR_PROXY.
     labels: Optional. Set of label tags associated with the EndpointPolicy
       resource.
-    name: Required. Name of the EndpointPolicy resource. It matches pattern
+    name: Identifier. Name of the EndpointPolicy resource. It matches pattern
       `projects/{project}/locations/global/endpointPolicies/{endpoint_policy}`
       .
     securityPolicy: Optional. A URL referring to a SecurityPolicy resource.
@@ -1348,7 +1527,7 @@ class Gateway(_messages.Message):
     ipVersion: Optional. The IP Version that will be used by this gateway.
       Valid options are IPV4 or IPV6. Default is IPV4.
     labels: Optional. Set of label tags associated with the Gateway resource.
-    name: Required. Name of the Gateway resource. It matches pattern
+    name: Identifier. Name of the Gateway resource. It matches pattern
       `projects/*/locations/*/gateways/`.
     network: Optional. The relative resource name identifying the VPC network
       that is using this configuration. For example:
@@ -1538,7 +1717,7 @@ class GrpcRoute(_messages.Message):
       attached to, as one of the routing rules to route the requests served by
       the mesh. Each mesh reference should match the pattern:
       `projects/*/locations/global/meshes/`
-    name: Required. Name of the GrpcRoute resource. It matches pattern
+    name: Identifier. Name of the GrpcRoute resource. It matches pattern
       `projects/*/locations/global/grpcRoutes/`
     rules: Required. A list of detailed rules defining how to route traffic.
       Within a single GrpcRoute, the GrpcRoute.RouteAction associated with the
@@ -2076,7 +2255,7 @@ class HttpRoute(_messages.Message):
       the mesh. Each mesh reference should match the pattern:
       `projects/*/locations/global/meshes/` The attached Mesh should be of a
       type SIDECAR
-    name: Required. Name of the HttpRoute resource. It matches pattern
+    name: Identifier. Name of the HttpRoute resource. It matches pattern
       `projects/*/locations/global/httpRoutes/http_route_name>`.
     rules: Required. Rules that define how traffic is routed and handled.
       Rules will be matched sequentially based on the RouteMatch specified for
@@ -3158,6 +3337,21 @@ class LbTrafficExtension(_messages.Message):
   updateTime = _messages.StringField(9)
 
 
+class ListAuthzExtensionsResponse(_messages.Message):
+  r"""Message for response to listing `AuthzExtension` resources.
+
+  Fields:
+    authzExtensions: The list of `AuthzExtension` resources.
+    nextPageToken: A token identifying a page of results that the server
+      returns.
+    unreachable: Locations that could not be reached.
+  """
+
+  authzExtensions = _messages.MessageField('AuthzExtension', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListEdgeCacheKeysetsResponse(_messages.Message):
   r"""The response returned by the `ListEdgeCacheKeysets` method.
 
@@ -3457,6 +3651,22 @@ class ListMulticastGroupDefinitionsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListMulticastGroupProducerActivationsResponse(_messages.Message):
+  r"""Response message for ListMulticastGroupProducerActivations.
+
+  Fields:
+    multicastGroupProducerActivations: The list of multicast group producer
+      activations.
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastGroupProducerActivations = _messages.MessageField('MulticastGroupProducerActivation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListMulticastGroupsResponse(_messages.Message):
   r"""Response message for ListMulticastGroups.
 
@@ -3468,6 +3678,22 @@ class ListMulticastGroupsResponse(_messages.Message):
   """
 
   multicastGroups = _messages.MessageField('MulticastGroup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMulticastProducerAssociationsResponse(_messages.Message):
+  r"""Response message for ListMulticastProducerAssociations.
+
+  Fields:
+    multicastProducerAssociations: The list of multicast producer
+      associations.
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastProducerAssociations = _messages.MessageField('MulticastProducerAssociation', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -3774,7 +4000,7 @@ class Mesh(_messages.Message):
       unset, a port '15001' is used as the interception port. This is
       applicable only for sidecar proxy deployments.
     labels: Optional. Set of label tags associated with the Mesh resource.
-    name: Required. Name of the Mesh resource. It matches pattern
+    name: Identifier. Name of the Mesh resource. It matches pattern
       `projects/*/locations/global/meshes/`.
     selfLink: Output only. Server-defined URL of this resource
     updateTime: Output only. The timestamp when the resource was updated.
@@ -4162,6 +4388,9 @@ class MulticastGroup(_messages.Message):
       domain activation that is in the same zone as this multicast group. Use
       the following format:
       `projects/*/locations/*/multicastDomainActivations/*`
+    multicastGroupConsumerActivations: Output only. The resource names of
+      associated multicast group consumer activations. Use the following
+      format: `projects/*/locations/*/multicastGroupConsumerActivations/*`.
     multicastGroupDefinition: Optional. The resource name of the global
       multicast group definition for the group. Use the following format:
       `projects/*/locations/global/multicastGroupDefinitions/*`
@@ -4202,9 +4431,10 @@ class MulticastGroup(_messages.Message):
   ipCidrRange = _messages.StringField(5)
   labels = _messages.MessageField('LabelsValue', 6)
   multicastDomainActivation = _messages.StringField(7)
-  multicastGroupDefinition = _messages.StringField(8)
-  name = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  multicastGroupConsumerActivations = _messages.StringField(8, repeated=True)
+  multicastGroupDefinition = _messages.StringField(9)
+  name = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class MulticastGroupConsumerActivation(_messages.Message):
@@ -4228,7 +4458,7 @@ class MulticastGroupConsumerActivation(_messages.Message):
       consumer activation. Use the following format:
       `projects/*/locations/*/multicastConsumerAssociations/*`.
     multicastGroup: Required. The resource name of the multicast group created
-      by the producer in the same zone as this multicast group consumer
+      by the admin in the same zone as this multicast group consumer
       activation. Use the following format: //
       `projects/*/locations/*/multicastGroups/*`.
     name: Identifier. The resource name of the multicast group consumer
@@ -4310,7 +4540,9 @@ class MulticastGroupDefinition(_messages.Message):
       following format:
       `projects/*/locations/global/multicastGroupDefinitions/*`.
     reservedInternalRange: Required. The resource name of the internal range
-      reserved for this multicast group definition. Use the following format:
+      reserved for this multicast group definition. The internal range must be
+      a Class D address (224.0.0.0 to 239.255.255.255) and have a prefix
+      length >= 23. Use the following format:
       `projects/*/locations/global/internalRanges/*`.
     updateTime: Output only. [Output only] The timestamp whenthe multicast
       group definition was most recently updated.
@@ -4348,6 +4580,246 @@ class MulticastGroupDefinition(_messages.Message):
   name = _messages.StringField(6)
   reservedInternalRange = _messages.StringField(7)
   updateTime = _messages.StringField(8)
+
+
+class MulticastGroupProducerActivation(_messages.Message):
+  r"""Multicast group producer activation resource.
+
+  Messages:
+    LabelsValue: Optional. Labels as key-value pairs
+
+  Fields:
+    createTime: Output only. [Output only] The timestamp when the multicast
+      group producer activation was created.
+    description: Optional. An optional text description of the multicast group
+      producer activation.
+    labels: Optional. Labels as key-value pairs
+    multicastGroup: Required. The resource name of the multicast group created
+      by the admin in the same zone as this multicast group producer
+      activation. Use the following format: //
+      `projects/*/locations/*/multicastGroups/*`.
+    multicastProducerAssociation: Required. The resource name of the multicast
+      producer association that is in the same zone as this multicast group
+      producer activation. Use the following format:
+      `projects/*/locations/*/multicastProducerAssociations/*`.
+    name: Identifier. The resource name of the multicast group producer
+      activation. Use the following format:
+      `projects/*/locations/*/multicastGroupProducerActivations/*`.
+    updateTime: Output only. [Output only] The timestamp when the multicast
+      group producer activation was most recently updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key-value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  multicastGroup = _messages.StringField(4)
+  multicastProducerAssociation = _messages.StringField(5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+
+
+class MulticastProducerAssociation(_messages.Message):
+  r"""Multicast producer association resource.
+
+  Messages:
+    LabelsValue: Optional. Labels as key-value pairs
+
+  Fields:
+    createTime: Output only. [Output only] The timestamp when the multicast
+      producer association was created.
+    description: Optional. An optional text description of the multicast
+      producer association.
+    labels: Optional. Labels as key-value pairs
+    multicastDomainActivation: Optional. The resource name of the multicast
+      domain activation that is in the same zone as this multicast producer
+      association. Use the following format: //
+      `projects/*/locations/*/multicastProducerAssociations/*`.
+    name: Identifier. The resource name of the multicast producer association.
+      Use the following format:
+      `projects/*/locations/*/multicastProducerAssociations/*`.
+    network: Required. The resource name of the multicast producer VPC
+      network. Use following format:
+      `projects/{project}/locations/global/networks/{network}`.
+    updateTime: Output only. [Output only] The timestamp when the Multicast
+      Producer Association was most recently updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key-value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  multicastDomainActivation = _messages.StringField(4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+
+
+class NetworkservicesProjectsLocationsAuthzExtensionsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsAuthzExtensionsCreateRequest object.
+
+  Fields:
+    authzExtension: A AuthzExtension resource to be passed as the request
+      body.
+    authzExtensionId: Required. User-provided ID of the `AuthzExtension`
+      resource to be created.
+    parent: Required. The parent resource of the `AuthzExtension` resource.
+      Must be in the format `projects/{project}/locations/{location}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  authzExtension = _messages.MessageField('AuthzExtension', 1)
+  authzExtensionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsAuthzExtensionsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsAuthzExtensionsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the `AuthzExtension` resource to delete. Must
+      be in the format `projects/{project}/locations/{location}/authzExtension
+      s/{authz_extension}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsAuthzExtensionsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsAuthzExtensionsGetRequest object.
+
+  Fields:
+    name: Required. A name of the `AuthzExtension` resource to get. Must be in
+      the format `projects/{project}/locations/{location}/authzExtensions/{aut
+      hz_extension}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsAuthzExtensionsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsAuthzExtensionsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
+    pageSize: Optional. Requested page size. The server might return fewer
+      items than requested. If unspecified, the server picks an appropriate
+      default.
+    pageToken: Optional. A token identifying a page of results that the server
+      returns.
+    parent: Required. The project and location from which the `AuthzExtension`
+      resources are listed, specified in the following format:
+      `projects/{project}/locations/{location}`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsAuthzExtensionsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsAuthzExtensionsPatchRequest object.
+
+  Fields:
+    authzExtension: A AuthzExtension resource to be passed as the request
+      body.
+    name: Required. Identifier. Name of the `AuthzExtension` resource in the
+      following format: `projects/{project}/locations/{location}/authzExtensio
+      ns/{authz_extension}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Used to specify the fields to be overwritten in the
+      `AuthzExtension` resource by the update. The fields specified in the
+      update_mask are relative to the resource, not the full request. A field
+      is overwritten if it is in the mask. If the user does not specify a
+      mask, then all fields are overwritten.
+  """
+
+  authzExtension = _messages.MessageField('AuthzExtension', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class NetworkservicesProjectsLocationsEdgeCacheKeysetsCreateRequest(_messages.Message):
@@ -4823,33 +5295,6 @@ class NetworkservicesProjectsLocationsEndpointPoliciesDeleteRequest(_messages.Me
   name = _messages.StringField(1, required=True)
 
 
-class NetworkservicesProjectsLocationsEndpointPoliciesGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsEndpointPoliciesGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
 class NetworkservicesProjectsLocationsEndpointPoliciesGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsEndpointPoliciesGetRequest object.
 
@@ -4884,7 +5329,7 @@ class NetworkservicesProjectsLocationsEndpointPoliciesPatchRequest(_messages.Mes
   Fields:
     endpointPolicy: A EndpointPolicy resource to be passed as the request
       body.
-    name: Required. Name of the EndpointPolicy resource. It matches pattern
+    name: Identifier. Name of the EndpointPolicy resource. It matches pattern
       `projects/{project}/locations/global/endpointPolicies/{endpoint_policy}`
       .
     updateMask: Optional. Field mask is used to specify the fields to be
@@ -4897,41 +5342,6 @@ class NetworkservicesProjectsLocationsEndpointPoliciesPatchRequest(_messages.Mes
   endpointPolicy = _messages.MessageField('EndpointPolicy', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class NetworkservicesProjectsLocationsEndpointPoliciesSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsEndpointPoliciesSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsEndpointPoliciesTestIamPermissionsRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsEndpointPoliciesTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsGatewaysCreateRequest(_messages.Message):
@@ -4958,32 +5368,6 @@ class NetworkservicesProjectsLocationsGatewaysDeleteRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class NetworkservicesProjectsLocationsGatewaysGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsGatewaysGetIamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
 
 
 class NetworkservicesProjectsLocationsGatewaysGetRequest(_messages.Message):
@@ -5019,7 +5403,7 @@ class NetworkservicesProjectsLocationsGatewaysPatchRequest(_messages.Message):
 
   Fields:
     gateway: A Gateway resource to be passed as the request body.
-    name: Required. Name of the Gateway resource. It matches pattern
+    name: Identifier. Name of the Gateway resource. It matches pattern
       `projects/*/locations/*/gateways/`.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Gateway resource by the update. The fields specified
@@ -5062,39 +5446,6 @@ class NetworkservicesProjectsLocationsGatewaysRouteViewsListRequest(_messages.Me
   parent = _messages.StringField(3, required=True)
 
 
-class NetworkservicesProjectsLocationsGatewaysSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsGatewaysSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsGatewaysTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsGatewaysTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
 class NetworkservicesProjectsLocationsGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsGetRequest object.
 
@@ -5115,69 +5466,6 @@ class NetworkservicesProjectsLocationsGlobalGetServiceObserverRequest(_messages.
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class NetworkservicesProjectsLocationsGlobalServiceObserverGetIamPolicyRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsGlobalServiceObserverGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkservicesProjectsLocationsGlobalServiceObserverSetIamPolicyRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsGlobalServiceObserverSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsGlobalServiceObserverTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsGlobalServiceObserverTestIamPermission
-  sRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsGlobalUpdateServiceObserverRequest(_messages.Message):
@@ -5228,32 +5516,6 @@ class NetworkservicesProjectsLocationsGrpcRoutesDeleteRequest(_messages.Message)
   name = _messages.StringField(1, required=True)
 
 
-class NetworkservicesProjectsLocationsGrpcRoutesGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsGrpcRoutesGetIamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
 class NetworkservicesProjectsLocationsGrpcRoutesGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsGrpcRoutesGetRequest object.
 
@@ -5287,7 +5549,7 @@ class NetworkservicesProjectsLocationsGrpcRoutesPatchRequest(_messages.Message):
 
   Fields:
     grpcRoute: A GrpcRoute resource to be passed as the request body.
-    name: Required. Name of the GrpcRoute resource. It matches pattern
+    name: Identifier. Name of the GrpcRoute resource. It matches pattern
       `projects/*/locations/global/grpcRoutes/`
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the GrpcRoute resource by the update. The fields
@@ -5299,39 +5561,6 @@ class NetworkservicesProjectsLocationsGrpcRoutesPatchRequest(_messages.Message):
   grpcRoute = _messages.MessageField('GrpcRoute', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class NetworkservicesProjectsLocationsGrpcRoutesSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsGrpcRoutesSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsGrpcRoutesTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsGrpcRoutesTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsHttpFiltersCreateRequest(_messages.Message):
@@ -5359,32 +5588,6 @@ class NetworkservicesProjectsLocationsHttpFiltersDeleteRequest(_messages.Message
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class NetworkservicesProjectsLocationsHttpFiltersGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsHttpFiltersGetIamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
 
 
 class NetworkservicesProjectsLocationsHttpFiltersGetRequest(_messages.Message):
@@ -5434,39 +5637,6 @@ class NetworkservicesProjectsLocationsHttpFiltersPatchRequest(_messages.Message)
   updateMask = _messages.StringField(3)
 
 
-class NetworkservicesProjectsLocationsHttpFiltersSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsHttpFiltersSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsHttpFiltersTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsHttpFiltersTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
 class NetworkservicesProjectsLocationsHttpRoutesCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsHttpRoutesCreateRequest object.
 
@@ -5491,32 +5661,6 @@ class NetworkservicesProjectsLocationsHttpRoutesDeleteRequest(_messages.Message)
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class NetworkservicesProjectsLocationsHttpRoutesGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsHttpRoutesGetIamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
 
 
 class NetworkservicesProjectsLocationsHttpRoutesGetRequest(_messages.Message):
@@ -5552,7 +5696,7 @@ class NetworkservicesProjectsLocationsHttpRoutesPatchRequest(_messages.Message):
 
   Fields:
     httpRoute: A HttpRoute resource to be passed as the request body.
-    name: Required. Name of the HttpRoute resource. It matches pattern
+    name: Identifier. Name of the HttpRoute resource. It matches pattern
       `projects/*/locations/global/httpRoutes/http_route_name>`.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the HttpRoute resource by the update. The fields
@@ -5564,39 +5708,6 @@ class NetworkservicesProjectsLocationsHttpRoutesPatchRequest(_messages.Message):
   httpRoute = _messages.MessageField('HttpRoute', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class NetworkservicesProjectsLocationsHttpRoutesSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsHttpRoutesSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsHttpRoutesTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsHttpRoutesTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsLbObservabilityExtensionsCreateRequest(_messages.Message):
@@ -6018,32 +6129,6 @@ class NetworkservicesProjectsLocationsMeshesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class NetworkservicesProjectsLocationsMeshesGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMeshesGetIamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
 class NetworkservicesProjectsLocationsMeshesGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsMeshesGetRequest object.
 
@@ -6077,7 +6162,7 @@ class NetworkservicesProjectsLocationsMeshesPatchRequest(_messages.Message):
 
   Fields:
     mesh: A Mesh resource to be passed as the request body.
-    name: Required. Name of the Mesh resource. It matches pattern
+    name: Identifier. Name of the Mesh resource. It matches pattern
       `projects/*/locations/global/meshes/`.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Mesh resource by the update. The fields specified in
@@ -6118,39 +6203,6 @@ class NetworkservicesProjectsLocationsMeshesRouteViewsListRequest(_messages.Mess
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-
-
-class NetworkservicesProjectsLocationsMeshesSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMeshesSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsMeshesTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMeshesTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsMulticastConsumerAssociationsCreateRequest(_messages.Message):
@@ -6232,19 +6284,19 @@ class NetworkservicesProjectsLocationsMulticastConsumerAssociationsListRequest(_
   object.
 
   Fields:
-    filter: A filter expression that filters the resources listed in the
-      response. The expression must be of the form ` ` where operators: `<`,
-      `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents a
-      HAS operator which is roughly synonymous with equality). can refer to a
-      proto or JSON field, or a synthetic field. Field names can be camelCase
-      or snake_case. Examples: * Filter by name: name = "RESOURCE_NAME" *
-      Filter by labels: * Resources that have a key named `foo` labels.foo:* *
-      Resources that have a key named `foo` whose value is `bar` labels.foo =
-      bar
-    orderBy: A field used to sort the results by a certain order.
-    pageSize: The maximum number of multicast consumer associations to return
-      per call.
-    pageToken: A page token from an earlier query, as returned in
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of multicast consumer associations
+      to return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
       `next_page_token`.
     parent: Required. The parent resource for which to list multicast consumer
       associations. Use the following format: `projects/*/locations/*`.
@@ -6369,19 +6421,19 @@ class NetworkservicesProjectsLocationsMulticastDomainActivationsListRequest(_mes
   object.
 
   Fields:
-    filter: A filter expression that filters the resources listed in the
-      response. The expression must be of the form ` ` where operators: `<`,
-      `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents a
-      HAS operator which is roughly synonymous with equality). can refer to a
-      proto or JSON field, or a synthetic field. Field names can be camelCase
-      or snake_case. Examples: * Filter by name: name = "RESOURCE_NAME" *
-      Filter by labels: * Resources that have a key named `foo` labels.foo:* *
-      Resources that have a key named `foo` whose value is `bar` labels.foo =
-      bar
-    orderBy: A field used to sort the results by a certain order.
-    pageSize: The maximum number of multicast domain activations to return per
-      call.
-    pageToken: A page token from an earlier query, as returned in
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of multicast domain activations to
+      return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
       `next_page_token`.
     parent: Required. The parent resource for which to list multicast domain
       activations. Use the following format: `projects/*/locations/*`.
@@ -6496,18 +6548,19 @@ class NetworkservicesProjectsLocationsMulticastDomainsListRequest(_messages.Mess
   r"""A NetworkservicesProjectsLocationsMulticastDomainsListRequest object.
 
   Fields:
-    filter: A filter expression that filters the resources listed in the
-      response. The expression must be of the form ` ` where operators: `<`,
-      `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents a
-      HAS operator which is roughly synonymous with equality). can refer to a
-      proto or JSON field, or a synthetic field. Field names can be camelCase
-      or snake_case. Examples: * Filter by name: name = "RESOURCE_NAME" *
-      Filter by labels: * Resources that have a key named `foo` labels.foo:* *
-      Resources that have a key named `foo` whose value is `bar` labels.foo =
-      bar
-    orderBy: A field used to sort the results by a certain order.
-    pageSize: The maximum number of multicast domains to return per call.
-    pageToken: A page token from an earlier query, as returned in
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of multicast domains to return per
+      call.
+    pageToken: Optional. A page token from an earlier query, as returned in
       `next_page_token`.
     parent: Required. The parent resource for which to list multicast domains.
       Use the following format: `projects/*/locations/global`.
@@ -6764,19 +6817,19 @@ class NetworkservicesProjectsLocationsMulticastGroupDefinitionsListRequest(_mess
   object.
 
   Fields:
-    filter: A filter expression that filters the resources listed in the
-      response. The expression must be of the form ` ` where operators: `<`,
-      `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents a
-      HAS operator which is roughly synonymous with equality). can refer to a
-      proto or JSON field, or a synthetic field. Field names can be camelCase
-      or snake_case. Examples: * Filter by name: name = "RESOURCE_NAME" *
-      Filter by labels: * Resources that have a key named `foo` labels.foo:* *
-      Resources that have a key named `foo` whose value is `bar` labels.foo =
-      bar
-    orderBy: A field used to sort the results by a certain order.
-    pageSize: The maximum number of multicast group definitions to return per
-      call.
-    pageToken: A page token from an earlier query, as returned in
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of multicast group definitions to
+      return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
       `next_page_token`.
     parent: Required. The parent resource for which to list multicast group
       definitions. Use the following format: `projects/*/locations/global`.
@@ -6818,6 +6871,143 @@ class NetworkservicesProjectsLocationsMulticastGroupDefinitionsPatchRequest(_mes
   """
 
   multicastGroupDefinition = _messages.MessageField('MulticastGroupDefinition', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupProducerActivationsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupProducerActivationsCreat
+  eRequest object.
+
+  Fields:
+    multicastGroupProducerActivation: A MulticastGroupProducerActivation
+      resource to be passed as the request body.
+    multicastGroupProducerActivationId: Required. A unique name for the
+      multicast group producer activation. The name is restricted to letters,
+      numbers, and hyphen, with the first character a letter, and the last a
+      letter or a number. The name must not exceed 48 characters.
+    parent: Required. The parent resource of the multicast group producer
+      activation. Use the following format: `projects/*/locations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastGroupProducerActivation = _messages.MessageField('MulticastGroupProducerActivation', 1)
+  multicastGroupProducerActivationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupProducerActivationsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupProducerActivationsDelet
+  eRequest object.
+
+  Fields:
+    name: Required. The resource name of the multicast group producer
+      activation to delete. Use the following format:
+      `projects/*/locations/*/multicastGroupProducerActivations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupProducerActivationsGetRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastGroupProducerActivationsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the multicast group producer
+      activation to get. Use the following format:
+      `projects/*/locations/*/multicastGroupProducerActivations/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupProducerActivationsListRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastGroupProducerActivationsListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of multicast group producer
+      activations to return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast group
+      producer activations. Use the following format:
+      `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupProducerActivationsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupProducerActivationsPatch
+  Request object.
+
+  Fields:
+    multicastGroupProducerActivation: A MulticastGroupProducerActivation
+      resource to be passed as the request body.
+    name: Identifier. The resource name of the multicast group producer
+      activation. Use the following format:
+      `projects/*/locations/*/multicastGroupProducerActivations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. The field mask specifies the fields to overwrite in
+      the MulticastGroupProducerActivationresource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. If a field is in the mask, then it is overwritten. If the
+      you do not provide a mask, then all fields are overwritten
+  """
+
+  multicastGroupProducerActivation = _messages.MessageField('MulticastGroupProducerActivation', 1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
@@ -6892,18 +7082,19 @@ class NetworkservicesProjectsLocationsMulticastGroupsListRequest(_messages.Messa
   r"""A NetworkservicesProjectsLocationsMulticastGroupsListRequest object.
 
   Fields:
-    filter: A filter expression that filters the resources listed in the
-      response. The expression must be of the form ` ` where operators: `<`,
-      `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents a
-      HAS operator which is roughly synonymous with equality). can refer to a
-      proto or JSON field, or a synthetic field. Field names can be camelCase
-      or snake_case. Examples: * Filter by name: name = "RESOURCE_NAME" *
-      Filter by labels: * Resources that have a key named `foo` labels.foo:* *
-      Resources that have a key named `foo` whose value is `bar` labels.foo =
-      bar
-    orderBy: A field used to sort the results by a certain order.
-    pageSize: The maximum number of multicast groups to return per call.
-    pageToken: A page token from an earlier query, as returned in
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of multicast groups to return per
+      call.
+    pageToken: Optional. A page token from an earlier query, as returned in
       `next_page_token`.
     parent: Required. The parent resource for which to list multicast groups.
       Use the following format: `projects/*/locations/*`.
@@ -6948,6 +7139,145 @@ class NetworkservicesProjectsLocationsMulticastGroupsPatchRequest(_messages.Mess
   updateMask = _messages.StringField(4)
 
 
+class NetworkservicesProjectsLocationsMulticastProducerAssociationsCreateRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastProducerAssociationsCreateRequest
+  object.
+
+  Fields:
+    multicastProducerAssociation: A MulticastProducerAssociation resource to
+      be passed as the request body.
+    multicastProducerAssociationId: Required. A unique name for the multicast
+      producer association. The name is restricted to letters, numbers, and
+      hyphen, with the first character a letter, and the last a letter or a
+      number. The name must not exceed 48 characters.
+    parent: Required. The parent resource of the multicast producer
+      association. Use the following format: `projects/*/locations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastProducerAssociation = _messages.MessageField('MulticastProducerAssociation', 1)
+  multicastProducerAssociationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastProducerAssociationsDeleteRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastProducerAssociationsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the multicast producer association to
+      delete. Use the following format:
+      `projects/*/locations/*/multicastProducerAssociations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastProducerAssociationsGetRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastProducerAssociationsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the multicast producer association to
+      get. Use the following format:
+      `projects/*/locations/*/multicastProducerAssociations/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastProducerAssociationsListRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastProducerAssociationsListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of multicast producer associations
+      to return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast producer
+      associations. Use the following format: `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastProducerAssociationsPatchRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastProducerAssociationsPatchRequest
+  object.
+
+  Fields:
+    multicastProducerAssociation: A MulticastProducerAssociation resource to
+      be passed as the request body.
+    name: Identifier. The resource name of the multicast producer association.
+      Use the following format:
+      `projects/*/locations/*/multicastProducerAssociations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. The field mask specifies the fields to overwrite in
+      the MulticastProducerAssociation resource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. If a field is in the mask, then it is overwritten. If the
+      you do not provide a mask, then all fields are overwritten
+  """
+
+  multicastProducerAssociation = _messages.MessageField('MulticastProducerAssociation', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class NetworkservicesProjectsLocationsObservabilityPoliciesCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsObservabilityPoliciesCreateRequest
   object.
@@ -6976,34 +7306,6 @@ class NetworkservicesProjectsLocationsObservabilityPoliciesDeleteRequest(_messag
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class NetworkservicesProjectsLocationsObservabilityPoliciesGetIamPolicyRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsObservabilityPoliciesGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
 
 
 class NetworkservicesProjectsLocationsObservabilityPoliciesGetRequest(_messages.Message):
@@ -7057,41 +7359,6 @@ class NetworkservicesProjectsLocationsObservabilityPoliciesPatchRequest(_message
   name = _messages.StringField(1, required=True)
   observabilityPolicy = _messages.MessageField('ObservabilityPolicy', 2)
   updateMask = _messages.StringField(3)
-
-
-class NetworkservicesProjectsLocationsObservabilityPoliciesSetIamPolicyRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsObservabilityPoliciesSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsObservabilityPoliciesTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsObservabilityPoliciesTestIamPermission
-  sRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -7171,33 +7438,6 @@ class NetworkservicesProjectsLocationsServiceBindingsDeleteRequest(_messages.Mes
   name = _messages.StringField(1, required=True)
 
 
-class NetworkservicesProjectsLocationsServiceBindingsGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsServiceBindingsGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
 class NetworkservicesProjectsLocationsServiceBindingsGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsServiceBindingsGetRequest object.
 
@@ -7224,41 +7464,6 @@ class NetworkservicesProjectsLocationsServiceBindingsListRequest(_messages.Messa
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-
-
-class NetworkservicesProjectsLocationsServiceBindingsSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsServiceBindingsSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsServiceBindingsTestIamPermissionsRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsServiceBindingsTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsServiceLbPoliciesCreateRequest(_messages.Message):
@@ -7429,32 +7634,6 @@ class NetworkservicesProjectsLocationsTcpRoutesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class NetworkservicesProjectsLocationsTcpRoutesGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsTcpRoutesGetIamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
 class NetworkservicesProjectsLocationsTcpRoutesGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsTcpRoutesGetRequest object.
 
@@ -7487,7 +7666,7 @@ class NetworkservicesProjectsLocationsTcpRoutesPatchRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsTcpRoutesPatchRequest object.
 
   Fields:
-    name: Required. Name of the TcpRoute resource. It matches pattern
+    name: Identifier. Name of the TcpRoute resource. It matches pattern
       `projects/*/locations/global/tcpRoutes/tcp_route_name>`.
     tcpRoute: A TcpRoute resource to be passed as the request body.
     updateMask: Optional. Field mask is used to specify the fields to be
@@ -7500,39 +7679,6 @@ class NetworkservicesProjectsLocationsTcpRoutesPatchRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
   tcpRoute = _messages.MessageField('TcpRoute', 2)
   updateMask = _messages.StringField(3)
-
-
-class NetworkservicesProjectsLocationsTcpRoutesSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsTcpRoutesSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsTcpRoutesTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsTcpRoutesTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsTlsRoutesCreateRequest(_messages.Message):
@@ -7593,7 +7739,7 @@ class NetworkservicesProjectsLocationsTlsRoutesPatchRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsTlsRoutesPatchRequest object.
 
   Fields:
-    name: Required. Name of the TlsRoute resource. It matches pattern
+    name: Identifier. Name of the TlsRoute resource. It matches pattern
       `projects/*/locations/global/tlsRoutes/tls_route_name>`.
     tlsRoute: A TlsRoute resource to be passed as the request body.
     updateMask: Optional. Field mask is used to specify the fields to be
@@ -7606,23 +7752,6 @@ class NetworkservicesProjectsLocationsTlsRoutesPatchRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
   tlsRoute = _messages.MessageField('TlsRoute', 2)
   updateMask = _messages.StringField(3)
-
-
-class NetworkservicesProjectsLocationsTlsRoutesTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsTlsRoutesTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsWasmActionsCreateRequest(_messages.Message):
@@ -8406,7 +8535,7 @@ class ServiceBinding(_messages.Message):
       1024 characters.
     labels: Optional. Set of label tags associated with the ServiceBinding
       resource.
-    name: Required. Name of the ServiceBinding resource. It matches pattern
+    name: Identifier. Name of the ServiceBinding resource. It matches pattern
       `projects/*/locations/global/serviceBindings/service_binding_name`.
     service: Required. The full Service Directory Service name of the format
       projects/*/locations/*/namespaces/*/services/*
@@ -8810,7 +8939,7 @@ class TcpRoute(_messages.Message):
       the mesh. Each mesh reference should match the pattern:
       `projects/*/locations/global/meshes/` The attached Mesh should be of a
       type SIDECAR
-    name: Required. Name of the TcpRoute resource. It matches pattern
+    name: Identifier. Name of the TcpRoute resource. It matches pattern
       `projects/*/locations/global/tcpRoutes/tcp_route_name>`.
     rules: Required. Rules that define how traffic is routed and handled. At
       least one RouteRule must be supplied. If there are multiple rules then
@@ -9022,7 +9151,7 @@ class TlsRoute(_messages.Message):
       the mesh. Each mesh reference should match the pattern:
       `projects/*/locations/global/meshes/` The attached Mesh should be of a
       type SIDECAR
-    name: Required. Name of the TlsRoute resource. It matches pattern
+    name: Identifier. Name of the TlsRoute resource. It matches pattern
       `projects/*/locations/global/tlsRoutes/tls_route_name>`.
     rules: Required. Rules that define how traffic is routed and handled. At
       least one RouteRule must be supplied. If there are multiple rules then
@@ -9636,24 +9765,4 @@ encoding.AddCustomJsonFieldMapping(
 encoding.AddCustomJsonFieldMapping(
     NetworkservicesProjectsLocationsEdgeCacheServicesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
-    NetworkservicesProjectsLocationsEndpointPoliciesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
-    NetworkservicesProjectsLocationsGatewaysGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
-    NetworkservicesProjectsLocationsGlobalServiceObserverGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
-    NetworkservicesProjectsLocationsGrpcRoutesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
-    NetworkservicesProjectsLocationsHttpFiltersGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
-    NetworkservicesProjectsLocationsHttpRoutesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
-    NetworkservicesProjectsLocationsMeshesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
-    NetworkservicesProjectsLocationsObservabilityPoliciesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
-    NetworkservicesProjectsLocationsServiceBindingsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
     NetworkservicesProjectsLocationsServiceLbPoliciesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
-    NetworkservicesProjectsLocationsTcpRoutesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

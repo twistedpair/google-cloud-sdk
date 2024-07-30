@@ -18,15 +18,7 @@ import os
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import exceptions
 
-PUBLIC_ALLOWED_LOCATIONS = (
-    'us',
-    'eu',
-    'global',
-    'us-central1',
-    'northamerica-northeast1',
-    'australia-southeast1',
-    'europe-west2',
-)
+
 EXPLICIT_ENCODING_OPTIONS = ('LINEAR16', 'MULAW', 'ALAW')
 ENCODING_OPTIONS = frozenset(EXPLICIT_ENCODING_OPTIONS) | {'AUTO'}
 
@@ -40,18 +32,6 @@ def ValidateSpeakerDiarization(args):
         '--max-speaker-count',
         '[--max-speaker-count] must be equal to or larger than'
         ' min-speaker-count.',
-    )
-
-
-# TODO(b/272527653) Change errors to Actionable Error response type.
-def ValidateLocation(args):
-  """Validates location flag input."""
-  if args.location not in PUBLIC_ALLOWED_LOCATIONS:
-    raise exceptions.InvalidArgumentException(
-        '--location',
-        '[--location] must be set to one of '
-        + ', '.join(PUBLIC_ALLOWED_LOCATIONS)
-        + '.',
     )
 
 
@@ -78,13 +58,24 @@ def ValidateAudioSource(args, batch=False):
 
 def ValidateDecodingConfig(args):
   """Validates encoding flag input."""
-  if args.encoding is not None and args.encoding not in ENCODING_OPTIONS:
+  if args.encoding is None:
+    return
+  if args.encoding not in ENCODING_OPTIONS:
     raise exceptions.InvalidArgumentException(
         '--encoding',
         '[--encoding] must be set to one of '
         + ', '.join(sorted(ENCODING_OPTIONS)),
     )
-  if args.encoding is not None and args.encoding != 'AUTO':
+  if args.encoding == 'AUTO':
+    if args.sample_rate is not None or args.audio_channel_count is not None:
+      raise exceptions.InvalidArgumentException(
+          '--sample-rate'
+          if args.sample_rate is not None
+          else '--audio-channel-count',
+          'AUTO encoding does not support setting sample rate or audio'
+          ' channel count.',
+      )
+  else:
     if args.sample_rate is None:
       raise exceptions.InvalidArgumentException(
           '--sample-rate',
@@ -102,3 +93,4 @@ def ValidateDecodingConfig(args):
               + ', '.join(sorted(EXPLICIT_ENCODING_OPTIONS))
           ),
       )
+

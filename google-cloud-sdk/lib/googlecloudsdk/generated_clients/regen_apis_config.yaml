@@ -1017,6 +1017,10 @@ apis:
     v1:
       discovery_doc: memcache_v1.json
       default: true
+  memorystore:
+    v1alpha:
+      discovery_doc: memorystore_v1alpha.json
+      default: true
   metastore:
     v1alpha:
       discovery_doc: metastore_v1alpha.json
@@ -2023,6 +2027,10 @@ canonical_surfaces:
   memcache:
     name: memcache
     command: memcache
+  memorystore:
+    name: memorystore
+    command: memorystore
+    hidden: true
   messagestreams:
     name: messagestreams
     command: messagestreams

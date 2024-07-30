@@ -776,8 +776,8 @@ class PrivilegedaccessmanagerFoldersLocationsEntitlementsCreateRequest(_messages
       ID, the server can check if original operation with the same request ID
       was received, and if so, ignores the second request and returns the
       previous operation's response. This prevents clients from accidentally
-      creating duplicate commitments. The request ID must be a valid UUID with
-      the exception that zero UUID is not supported
+      creating duplicate entitlements. The request ID must be a valid UUID
+      with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -803,9 +803,8 @@ class PrivilegedaccessmanagerFoldersLocationsEntitlementsDeleteRequest(_messages
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      was received, and if so, ignores the second request. The request ID must
+      be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -855,8 +854,8 @@ class PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsCreateRequest(_me
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      clients from accidentally creating duplicate grants. The request ID must
+      be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -1168,8 +1167,8 @@ class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsCreateRequest(_me
       ID, the server can check if original operation with the same request ID
       was received, and if so, ignores the second request and returns the
       previous operation's response. This prevents clients from accidentally
-      creating duplicate commitments. The request ID must be a valid UUID with
-      the exception that zero UUID is not supported
+      creating duplicate entitlements. The request ID must be a valid UUID
+      with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -1195,9 +1194,8 @@ class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsDeleteRequest(_me
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      was received, and if so, ignores the second request. The request ID must
+      be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -1248,8 +1246,8 @@ class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsCreateReque
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      clients from accidentally creating duplicate grants. The request ID must
+      be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -1569,8 +1567,8 @@ class PrivilegedaccessmanagerProjectsLocationsEntitlementsCreateRequest(_message
       ID, the server can check if original operation with the same request ID
       was received, and if so, ignores the second request and returns the
       previous operation's response. This prevents clients from accidentally
-      creating duplicate commitments. The request ID must be a valid UUID with
-      the exception that zero UUID is not supported
+      creating duplicate entitlements. The request ID must be a valid UUID
+      with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -1596,9 +1594,8 @@ class PrivilegedaccessmanagerProjectsLocationsEntitlementsDeleteRequest(_message
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
-      was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      was received, and if so, ignores the second request. The request ID must
+      be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -1649,8 +1646,8 @@ class PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsCreateRequest(_m
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      clients from accidentally creating duplicate grants. The request ID must
+      be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 

@@ -3356,6 +3356,7 @@ class LoggingComponentConfig(_messages.Message):
       SCHEDULER: kube-scheduler
       CONTROLLER_MANAGER: kube-controller-manager
       ADDON_MANAGER: kube-addon-manager
+      KCP_SSHD: kcp-sshd
     """
     COMPONENT_UNSPECIFIED = 0
     SYSTEM_COMPONENTS = 1
@@ -3364,6 +3365,7 @@ class LoggingComponentConfig(_messages.Message):
     SCHEDULER = 4
     CONTROLLER_MANAGER = 5
     ADDON_MANAGER = 6
+    KCP_SSHD = 7
 
   enableComponents = _messages.EnumField('EnableComponentsValueListEntryValuesEnum', 1, repeated=True)
 

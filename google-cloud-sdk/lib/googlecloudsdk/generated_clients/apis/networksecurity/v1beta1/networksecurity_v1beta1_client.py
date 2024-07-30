@@ -48,6 +48,7 @@ class NetworksecurityV1beta1(base_api.BaseApiClient):
     self.organizations = self.OrganizationsService(self)
     self.projects_locations_addressGroups = self.ProjectsLocationsAddressGroupsService(self)
     self.projects_locations_authorizationPolicies = self.ProjectsLocationsAuthorizationPoliciesService(self)
+    self.projects_locations_authzPolicies = self.ProjectsLocationsAuthzPoliciesService(self)
     self.projects_locations_clientTlsPolicies = self.ProjectsLocationsClientTlsPoliciesService(self)
     self.projects_locations_firewallEndpointAssociations = self.ProjectsLocationsFirewallEndpointAssociationsService(self)
     self.projects_locations_gatewaySecurityPolicies_rules = self.ProjectsLocationsGatewaySecurityPoliciesRulesService(self)
@@ -1442,6 +1443,151 @@ class NetworksecurityV1beta1(base_api.BaseApiClient):
         request_field='googleIamV1TestIamPermissionsRequest',
         request_type_name='NetworksecurityProjectsLocationsAuthorizationPoliciesTestIamPermissionsRequest',
         response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsAuthzPoliciesService(base_api.BaseApiService):
+    """Service class for the projects_locations_authzPolicies resource."""
+
+    _NAME = 'projects_locations_authzPolicies'
+
+    def __init__(self, client):
+      super(NetworksecurityV1beta1.ProjectsLocationsAuthzPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new AuthzPolicy in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsAuthzPoliciesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/authzPolicies',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.authzPolicies.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['authzPolicyId', 'requestId'],
+        relative_path='v1beta1/{+parent}/authzPolicies',
+        request_field='authzPolicy',
+        request_type_name='NetworksecurityProjectsLocationsAuthzPoliciesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single AuthzPolicy.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsAuthzPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/authzPolicies/{authzPoliciesId}',
+        http_method='DELETE',
+        method_id='networksecurity.projects.locations.authzPolicies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsAuthzPoliciesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single AuthzPolicy.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsAuthzPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AuthzPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/authzPolicies/{authzPoliciesId}',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.authzPolicies.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsAuthzPoliciesGetRequest',
+        response_type_name='AuthzPolicy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists AuthzPolicies in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsAuthzPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAuthzPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/authzPolicies',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.authzPolicies.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/authzPolicies',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsAuthzPoliciesListRequest',
+        response_type_name='ListAuthzPoliciesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single AuthzPolicy.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsAuthzPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/authzPolicies/{authzPoliciesId}',
+        http_method='PATCH',
+        method_id='networksecurity.projects.locations.authzPolicies.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='authzPolicy',
+        request_type_name='NetworksecurityProjectsLocationsAuthzPoliciesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

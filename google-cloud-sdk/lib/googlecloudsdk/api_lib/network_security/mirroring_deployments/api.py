@@ -115,6 +115,31 @@ class Client:
     )
     return self._deployments_client.Delete(delete_request)
 
+  def UpdateDeployment(
+      self,
+      name,
+      update_fields,
+  ):
+    """Calls the UpdateMirroringDeployment API.
+
+    Args:
+      name: The name of the deployment.
+      update_fields: A dictionary of the fields to update mapped to their new
+        values.
+
+    Returns:
+      Operation ref to track the long-running process.
+    """
+    deployment = self.messages.MirroringDeployment(
+        labels=update_fields.get('labels', None),
+    )
+    update_request = self.messages.NetworksecurityProjectsLocationsMirroringDeploymentsPatchRequest(
+        name=name,
+        mirroringDeployment=deployment,
+        updateMask=','.join(update_fields.keys())
+    )
+    return self._deployments_client.Patch(update_request)
+
   def DescribeDeployment(self, name):
     """Calls the GetMirroringDeployment API."""
     get_request = self.messages.NetworksecurityProjectsLocationsMirroringDeploymentsGetRequest(

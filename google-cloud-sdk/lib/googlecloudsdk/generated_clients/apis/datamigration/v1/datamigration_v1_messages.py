@@ -5294,6 +5294,7 @@ class SqlServerConnectionProfile(_messages.Message):
       Cloud SQL for SQL Server.
     cloudSqlId: If the source is a Cloud SQL database, use this field to
       provide the Cloud SQL instance ID of the source.
+    database: Required. The name of the specific database within the host.
     forwardSshConnectivity: Forward SSH tunnel connectivity.
     host: Required. The IP or hostname of the source SQL Server database.
     password: Required. Input only. The password for the user that Database
@@ -5316,16 +5317,17 @@ class SqlServerConnectionProfile(_messages.Message):
 
   backups = _messages.MessageField('SqlServerBackups', 1)
   cloudSqlId = _messages.StringField(2)
-  forwardSshConnectivity = _messages.MessageField('ForwardSshTunnelConnectivity', 3)
-  host = _messages.StringField(4)
-  password = _messages.StringField(5)
-  passwordSet = _messages.BooleanField(6)
-  port = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  privateConnectivity = _messages.MessageField('PrivateConnectivity', 8)
-  privateServiceConnectConnectivity = _messages.MessageField('PrivateServiceConnectConnectivity', 9)
-  ssl = _messages.MessageField('SslConfig', 10)
-  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 11)
-  username = _messages.StringField(12)
+  database = _messages.StringField(3)
+  forwardSshConnectivity = _messages.MessageField('ForwardSshTunnelConnectivity', 4)
+  host = _messages.StringField(5)
+  password = _messages.StringField(6)
+  passwordSet = _messages.BooleanField(7)
+  port = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  privateConnectivity = _messages.MessageField('PrivateConnectivity', 9)
+  privateServiceConnectConnectivity = _messages.MessageField('PrivateServiceConnectConnectivity', 10)
+  ssl = _messages.MessageField('SslConfig', 11)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 12)
+  username = _messages.StringField(13)
 
 
 class SqlServerDatabaseBackup(_messages.Message):
@@ -5403,6 +5405,7 @@ class SqlServerHomogeneousMigrationJobConfig(_messages.Message):
       (?.*)\.(?\d*).trn
     databaseBackups: Required. Backup details per database in Cloud Storage.
     databaseDetails: Optional. Backup details per database in Cloud Storage.
+    promoteWhenReady: Optional. Promote databases when ready.
     useDiffBackup: Optional. Enable differential backups.
   """
 
@@ -5434,7 +5437,8 @@ class SqlServerHomogeneousMigrationJobConfig(_messages.Message):
   backupFilePattern = _messages.StringField(1)
   databaseBackups = _messages.MessageField('SqlServerDatabaseBackup', 2, repeated=True)
   databaseDetails = _messages.MessageField('DatabaseDetailsValue', 3)
-  useDiffBackup = _messages.BooleanField(4)
+  promoteWhenReady = _messages.BooleanField(4)
+  useDiffBackup = _messages.BooleanField(5)
 
 
 class SshScript(_messages.Message):

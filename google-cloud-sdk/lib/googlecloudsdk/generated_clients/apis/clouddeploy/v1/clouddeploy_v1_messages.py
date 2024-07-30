@@ -871,7 +871,7 @@ class ClouddeployProjectsLocationsCustomTargetTypesCreateRequest(_messages.Messa
       body.
     customTargetTypeId: Required. ID of the `CustomTargetType`.
     parent: Required. The parent collection in which the `CustomTargetType`
-      should be created. Format should be
+      must be created. The format is
       `projects/{project_id}/locations/{location_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server knows to
@@ -1019,7 +1019,7 @@ class ClouddeployProjectsLocationsCustomTargetTypesPatchRequest(_messages.Messag
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the `CustomTargetType` resource by the update. The fields
+      overwritten by the update in the `CustomTargetType` resource. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it's in the mask. If the user
       doesn't provide a mask then all fields are overwritten.
@@ -1116,9 +1116,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesAutomationsCreateRequest(_mes
   Fields:
     automation: A Automation resource to be passed as the request body.
     automationId: Required. ID of the `Automation`.
-    parent: Required. The parent collection in which the `Automation` should
-      be created. Format should be `projects/{project_id}/locations/{location_
-      name}/deliveryPipelines/{pipeline_name}`.
+    parent: Required. The parent collection in which the `Automation` must be
+      created. The format is `projects/{project_id}/locations/{location_name}/
+      deliveryPipelines/{pipeline_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server knows to
       ignore the request if it has already been completed. The server
@@ -1152,9 +1152,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesAutomationsDeleteRequest(_mes
       the server based on the value of other fields, and may be sent on update
       and delete requests to ensure the client has an up-to-date value before
       proceeding.
-    name: Required. The name of the `Automation` to delete. Format should be `
-      projects/{project_id}/locations/{location_name}/deliveryPipelines/{pipel
-      ine_name}/automations/{automation_name}`.
+    name: Required. The name of the `Automation` to delete. The format is `pro
+      jects/{project_id}/locations/{location_name}/deliveryPipelines/{pipeline
+      _name}/automations/{automation_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server knows to
       ignore the request if it has already been completed. The server
@@ -1240,7 +1240,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesAutomationsPatchRequest(_mess
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the `Automation` resource by the update. The fields
+      overwritten by the update in the `Automation` resource. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it's in the mask. If the user
       doesn't provide a mask then all fields are overwritten.
@@ -1264,7 +1264,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesCreateRequest(_messages.Messa
       body.
     deliveryPipelineId: Required. ID of the `DeliveryPipeline`.
     parent: Required. The parent collection in which the `DeliveryPipeline`
-      should be created. Format should be
+      must be created. The format is
       `projects/{project_id}/locations/{location_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server knows to
@@ -1300,9 +1300,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesDeleteRequest(_messages.Messa
     force: Optional. If set to true, all child resources under this pipeline
       will also be deleted. Otherwise, the request will only work if the
       pipeline has no child resources.
-    name: Required. The name of the `DeliveryPipeline` to delete. Format
-      should be `projects/{project_id}/locations/{location_name}/deliveryPipel
-      ines/{pipeline_name}`.
+    name: Required. The name of the `DeliveryPipeline` to delete. The format
+      is `projects/{project_id}/locations/{location_name}/deliveryPipelines/{p
+      ipeline_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server knows to
       ignore the request if it has already been completed. The server
@@ -1415,7 +1415,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesPatchRequest(_messages.Messag
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the `DeliveryPipeline` resource by the update. The fields
+      overwritten by the update in the `DeliveryPipeline` resource. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it's in the mask. If the user
       doesn't provide a mask then all fields are overwritten.
@@ -1453,9 +1453,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesCreateRequest(_messag
   Fields:
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
       `projects/{project}/locations/{location}/deployPolicies/{deployPolicy}`.
-    parent: Required. The parent collection in which the `Release` should be
-      created. Format should be `projects/{project_id}/locations/{location_nam
-      e}/deliveryPipelines/{pipeline_name}`.
+    parent: Required. The parent collection in which the `Release` is created.
+      The format is `projects/{project_id}/locations/{location_name}/deliveryP
+      ipelines/{pipeline_name}`.
     release: A Release resource to be passed as the request body.
     releaseId: Required. ID of the `Release`.
     requestId: Optional. A request ID to identify requests. Specify a unique
@@ -1580,9 +1580,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest
   Fields:
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
       `projects/{project}/locations/{location}/deployPolicies/{deployPolicy}`.
-    parent: Required. The parent collection in which the `Rollout` should be
-      created. Format should be `projects/{project_id}/locations/{location_nam
-      e}/deliveryPipelines/{pipeline_name}/releases/{release_name}`.
+    parent: Required. The parent collection in which the `Rollout` must be
+      created. The format is `projects/{project_id}/locations/{location_name}/
+      deliveryPipelines/{pipeline_name}/releases/{release_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server knows to
       ignore the request if it has already been completed. The server
@@ -1748,8 +1748,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesRollbackTargetRequest(_messag
 
   Fields:
     name: Required. The `DeliveryPipeline` for which the rollback `Rollout`
-      should be created. Format should be `projects/{project_id}/locations/{lo
-      cation_name}/deliveryPipelines/{pipeline_name}`.
+      must be created. The format is `projects/{project_id}/locations/{locatio
+      n_name}/deliveryPipelines/{pipeline_name}`.
     rollbackTargetRequest: A RollbackTargetRequest resource to be passed as
       the request body.
   """
@@ -1798,8 +1798,8 @@ class ClouddeployProjectsLocationsDeployPoliciesCreateRequest(_messages.Message)
   Fields:
     deployPolicy: A DeployPolicy resource to be passed as the request body.
     deployPolicyId: Required. ID of the `DeployPolicy`.
-    parent: Required. The parent collection in which the `DeployPolicy` should
-      be created. Format should be
+    parent: Required. The parent collection in which the `DeployPolicy` must
+      be created. The format is
       `projects/{project_id}/locations/{location_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server knows to
@@ -1832,9 +1832,9 @@ class ClouddeployProjectsLocationsDeployPoliciesDeleteRequest(_messages.Message)
     etag: Optional. This checksum is computed by the server based on the value
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
-    name: Required. The name of the `DeployPolicy` to delete. Format should be
-      `projects/{project_id}/locations/{location_name}/deployPolicies/{deploy_
-      policy_name}`.
+    name: Required. The name of the `DeployPolicy` to delete. The format is `p
+      rojects/{project_id}/locations/{location_name}/deployPolicies/{deploy_po
+      licy_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server knows to
       ignore the request if it has already been completed. The server
@@ -1919,7 +1919,7 @@ class ClouddeployProjectsLocationsDeployPoliciesPatchRequest(_messages.Message):
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the `DeployPolicy` resource by the update. The fields
+      overwritten by the update in the `DeployPolicy` resource. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it's in the mask. If the user
       doesn't provide a mask then all fields are overwritten.
@@ -2028,8 +2028,8 @@ class ClouddeployProjectsLocationsTargetsCreateRequest(_messages.Message):
   r"""A ClouddeployProjectsLocationsTargetsCreateRequest object.
 
   Fields:
-    parent: Required. The parent collection in which the `Target` should be
-      created. Format should be
+    parent: Required. The parent collection in which the `Target` must be
+      created. The format is
       `projects/{project_id}/locations/{location_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server knows to
@@ -2064,7 +2064,7 @@ class ClouddeployProjectsLocationsTargetsDeleteRequest(_messages.Message):
     etag: Optional. This checksum is computed by the server based on the value
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
-    name: Required. The name of the `Target` to delete. Format should be
+    name: Required. The name of the `Target` to delete. The format is
       `projects/{project_id}/locations/{location_name}/targets/{target_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server knows to
@@ -2173,7 +2173,7 @@ class ClouddeployProjectsLocationsTargetsPatchRequest(_messages.Message):
       (00000000-0000-0000-0000-000000000000).
     target: A Target resource to be passed as the request body.
     updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the Target resource by the update. The fields specified
+      overwritten by the update in the `Target` resource. The fields specified
       in the update_mask are relative to the resource, not the full request. A
       field will be overwritten if it's in the mask. If the user doesn't
       provide a mask then all fields are overwritten.
@@ -2471,6 +2471,55 @@ class CustomTargetType(_messages.Message):
   name = _messages.StringField(8)
   uid = _messages.StringField(9)
   updateTime = _messages.StringField(10)
+
+
+class CustomTargetTypeNotificationEvent(_messages.Message):
+  r"""Payload proto for
+  "clouddeploy.googleapis.com/customtargettype_notification" Platform Log
+  event that describes the failure to send a custom target type status change
+  Pub/Sub notification.
+
+  Enums:
+    TypeValueValuesEnum: Type of this notification, e.g. for a Pub/Sub
+      failure.
+
+  Fields:
+    customTargetType: The name of the `CustomTargetType`.
+    customTargetTypeUid: Unique identifier of the `CustomTargetType`.
+    message: Debug message for when a notification fails to send.
+    type: Type of this notification, e.g. for a Pub/Sub failure.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of this notification, e.g. for a Pub/Sub failure.
+
+    Values:
+      TYPE_UNSPECIFIED: Type is unspecified.
+      TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
+        sent.
+      TYPE_RESOURCE_STATE_CHANGE: Resource state changed.
+      TYPE_PROCESS_ABORTED: A process aborted.
+      TYPE_RESTRICTION_VIOLATED: Restriction check failed.
+      TYPE_RESOURCE_DELETED: Resource deleted.
+      TYPE_ROLLOUT_UPDATE: Rollout updated.
+      TYPE_DEPLOY_POLICY_EVALUATION: Deploy Policy evaluation.
+      TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
+        release_render log type instead.
+    """
+    TYPE_UNSPECIFIED = 0
+    TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
+    TYPE_RESOURCE_STATE_CHANGE = 2
+    TYPE_PROCESS_ABORTED = 3
+    TYPE_RESTRICTION_VIOLATED = 4
+    TYPE_RESOURCE_DELETED = 5
+    TYPE_ROLLOUT_UPDATE = 6
+    TYPE_DEPLOY_POLICY_EVALUATION = 7
+    TYPE_RENDER_STATUES_CHANGE = 8
+
+  customTargetType = _messages.StringField(1)
+  customTargetTypeUid = _messages.StringField(2)
+  message = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class Date(_messages.Message):
@@ -3046,12 +3095,148 @@ class DeployPolicy(_messages.Message):
   updateTime = _messages.StringField(11)
 
 
+class DeployPolicyEvaluationEvent(_messages.Message):
+  r"""Payload proto for "clouddeploy.googleapis.com/deploypolicy_evaluation"
+  Platform Log event that describes the deploy policy evaluation event.
+
+  Enums:
+    InvokerValueValuesEnum: What invoked the action (e.g. a user or
+      automation).
+    OverridesValueListEntryValuesEnum:
+    VerdictValueValuesEnum: The policy verdict of the request.
+
+  Fields:
+    allowed: Whether the request is allowed. Allowed is set as true if: (1)
+      the request complies with the policy; or (2) the request doesn't comply
+      with the policy but the policy was overridden; or (3) the request
+      doesn't comply with the policy but the policy was suspended
+    deliveryPipeline: The name of the `Delivery Pipeline`.
+    deployPolicy: The name of the `DeployPolicy`.
+    deployPolicyUid: Unique identifier of the `DeployPolicy`.
+    invoker: What invoked the action (e.g. a user or automation).
+    message: Debug message for when a deploy policy event occurs.
+    overrides: Things that could have overridden the policy verdict. Overrides
+      together with verdict decide whether the request is allowed.
+    pipelineUid: Unique identifier of the `Delivery Pipeline`.
+    rule: Rule id.
+    ruleType: Rule type (e.g. Restrict Rollouts).
+    target: The name of the `Target`. This is an optional field, as a `Target`
+      may not always be applicable to a policy.
+    targetUid: Unique identifier of the `Target`. This is an optional field,
+      as a `Target` may not always be applicable to a policy.
+    verdict: The policy verdict of the request.
+  """
+
+  class InvokerValueValuesEnum(_messages.Enum):
+    r"""What invoked the action (e.g. a user or automation).
+
+    Values:
+      INVOKER_UNSPECIFIED: Unspecified.
+      USER: The action is user-driven. For example, creating a rollout
+        manually via a gcloud create command.
+      DEPLOY_AUTOMATION: Automated action by Cloud Deploy.
+    """
+    INVOKER_UNSPECIFIED = 0
+    USER = 1
+    DEPLOY_AUTOMATION = 2
+
+  class OverridesValueListEntryValuesEnum(_messages.Enum):
+    r"""OverridesValueListEntryValuesEnum enum type.
+
+    Values:
+      POLICY_VERDICT_OVERRIDE_UNSPECIFIED: This should never happen.
+      POLICY_OVERRIDDEN: The policy was overridden.
+      POLICY_SUSPENDED: The policy was suspended.
+    """
+    POLICY_VERDICT_OVERRIDE_UNSPECIFIED = 0
+    POLICY_OVERRIDDEN = 1
+    POLICY_SUSPENDED = 2
+
+  class VerdictValueValuesEnum(_messages.Enum):
+    r"""The policy verdict of the request.
+
+    Values:
+      POLICY_VERDICT_UNSPECIFIED: This should never happen.
+      ALLOWED_BY_POLICY: Allowed by policy. This enum value is not currently
+        used but may be used in the future. Currently logs are only generated
+        when a request is denied by policy.
+      DENIED_BY_POLICY: Denied by policy.
+    """
+    POLICY_VERDICT_UNSPECIFIED = 0
+    ALLOWED_BY_POLICY = 1
+    DENIED_BY_POLICY = 2
+
+  allowed = _messages.BooleanField(1)
+  deliveryPipeline = _messages.StringField(2)
+  deployPolicy = _messages.StringField(3)
+  deployPolicyUid = _messages.StringField(4)
+  invoker = _messages.EnumField('InvokerValueValuesEnum', 5)
+  message = _messages.StringField(6)
+  overrides = _messages.EnumField('OverridesValueListEntryValuesEnum', 7, repeated=True)
+  pipelineUid = _messages.StringField(8)
+  rule = _messages.StringField(9)
+  ruleType = _messages.StringField(10)
+  target = _messages.StringField(11)
+  targetUid = _messages.StringField(12)
+  verdict = _messages.EnumField('VerdictValueValuesEnum', 13)
+
+
+class DeployPolicyNotificationEvent(_messages.Message):
+  r"""Payload proto for
+  "clouddeploy.googleapis.com/deploypolicy_notification". Platform Log event
+  that describes the failure to send a pub/sub notification when there is a
+  DeployPolicy status change.
+
+  Enums:
+    TypeValueValuesEnum: Type of this notification, e.g. for a Pub/Sub
+      failure.
+
+  Fields:
+    deployPolicy: The name of the `DeployPolicy`.
+    deployPolicyUid: Unique identifier of the deploy policy.
+    message: Debug message for when a deploy policy fails to send a pub/sub
+      notification.
+    type: Type of this notification, e.g. for a Pub/Sub failure.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of this notification, e.g. for a Pub/Sub failure.
+
+    Values:
+      TYPE_UNSPECIFIED: Type is unspecified.
+      TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
+        sent.
+      TYPE_RESOURCE_STATE_CHANGE: Resource state changed.
+      TYPE_PROCESS_ABORTED: A process aborted.
+      TYPE_RESTRICTION_VIOLATED: Restriction check failed.
+      TYPE_RESOURCE_DELETED: Resource deleted.
+      TYPE_ROLLOUT_UPDATE: Rollout updated.
+      TYPE_DEPLOY_POLICY_EVALUATION: Deploy Policy evaluation.
+      TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
+        release_render log type instead.
+    """
+    TYPE_UNSPECIFIED = 0
+    TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
+    TYPE_RESOURCE_STATE_CHANGE = 2
+    TYPE_PROCESS_ABORTED = 3
+    TYPE_RESTRICTION_VIOLATED = 4
+    TYPE_RESOURCE_DELETED = 5
+    TYPE_ROLLOUT_UPDATE = 6
+    TYPE_DEPLOY_POLICY_EVALUATION = 7
+    TYPE_RENDER_STATUES_CHANGE = 8
+
+  deployPolicy = _messages.StringField(1)
+  deployPolicyUid = _messages.StringField(2)
+  message = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+
+
 class DeployPolicyResourceSelector(_messages.Message):
   r"""Contains information on the resources to select for a deploy policy.
   Attributes provided must all match the resource in order for policy
-  restrictions to apply. E.g. if delivery pipelines attributes given are an id
-  "prod" and labels "foo: bar", a delivery pipeline resource must match both
-  that id and have that label in order to be subject to the policy.
+  restrictions to apply. For example, if delivery pipelines attributes given
+  are an id "prod" and labels "foo: bar", a delivery pipeline resource must
+  match both that id and have that label in order to be subject to the policy.
 
   Fields:
     deliveryPipeline: Optional. Contains attributes about a delivery pipeline.
@@ -4270,7 +4455,7 @@ class PromoteReleaseOperation(_messages.Message):
 
 
 class PromoteReleaseRule(_messages.Message):
-  r"""`PromoteRelease` rule will automatically promote a release from the
+  r"""The `PromoteRelease` rule will automatically promote a release from the
   current target to a specified target.
 
   Enums:
@@ -4895,7 +5080,7 @@ class RestrictRollout(_messages.Message):
       DeployPolicy. The format is `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`.
     invokers: Optional. What invoked the action. If left empty, all invoker
       types will be restricted.
-    timeWindow: Required. Time Window within which actions are restricted.
+    timeWindow: Required. Time window within which actions are restricted.
   """
 
   class ActionsValueListEntryValuesEnum(_messages.Enum):
@@ -4927,8 +5112,8 @@ class RestrictRollout(_messages.Message):
 
     Values:
       INVOKER_UNSPECIFIED: Unspecified.
-      USER: The action is user-driven (e.g. creating a rollout manually via a
-        gcloud create command).
+      USER: The action is user-driven. For example, creating a rollout
+        manually via a gcloud create command.
       DEPLOY_AUTOMATION: Automated action by Cloud Deploy.
     """
     INVOKER_UNSPECIFIED = 0
@@ -6399,7 +6584,7 @@ class TimeOfDay(_messages.Message):
 
 
 class TimeWindow(_messages.Message):
-  r"""Time Window within which actions are restricted.
+  r"""Time window within which actions are restricted.
 
   Fields:
     ranges: Required. Range within which actions are restricted.

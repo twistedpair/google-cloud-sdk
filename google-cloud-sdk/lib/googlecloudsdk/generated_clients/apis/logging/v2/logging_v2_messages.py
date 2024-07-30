@@ -1073,8 +1073,8 @@ class IndexConfig(_messages.Message):
     fieldPath: Required. The LogEntry field path to index.Note that some paths
       are automatically indexed, and other paths are not eligible for
       indexing. See indexing documentation(
-      https://cloud.google.com/logging/docs/view/advanced-queries#indexed-
-      fields) for details.For example: jsonPayload.request.status
+      https://cloud.google.com/logging/docs/analyze/custom-index) for
+      details.For example: jsonPayload.request.status
     type: Required. The type of data in this index.
   """
 
@@ -1099,7 +1099,7 @@ class IntegerArrayValue(_messages.Message):
   r"""An array of integers within a parameter.
 
   Fields:
-    values: Required. The values of the array.
+    values: Optional. The values of the array.
   """
 
   values = _messages.IntegerField(1, repeated=True)
@@ -9325,7 +9325,7 @@ class StringArrayValue(_messages.Message):
   r"""An array of strings within a parameter.
 
   Fields:
-    values: Required. The values of the array.
+    values: Optional. The values of the array.
   """
 
   values = _messages.StringField(1, repeated=True)
@@ -9390,10 +9390,11 @@ class TableFieldSchema(_messages.Message):
     mode: Optional. The field mode. Possible values include NULLABLE, REQUIRED
       and REPEATED. The default value is NULLABLE.
     name: Required. The field name corresponding to fields in the LogEntry.
-    type: Required. The field data type. Possible values include: STRING
-      INTEGER (or INT64) FLOAT (or FLOAT64) BOOLEAN (or BOOL) TIMESTAMP RECORD
-      (or STRUCT)Use of RECORD/STRUCT indicates that the field contains a
-      nested schema.
+    type: Required. The field data type. Possible values include: STRING BYTES
+      INTEGER (or INT64) FLOAT (or FLOAT64) BOOLEAN (or BOOL) TIMESTAMP DATE
+      TIME DATETIME GEOGRAPHY NUMERIC BIGNUMERIC JSON RECORD (or STRUCT) RANGE
+      (Preview)Use of RECORD/STRUCT indicates that the field contains a nested
+      schema.
   """
 
   description = _messages.StringField(1)

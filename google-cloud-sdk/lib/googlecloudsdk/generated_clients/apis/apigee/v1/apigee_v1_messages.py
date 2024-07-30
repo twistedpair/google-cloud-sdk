@@ -209,6 +209,11 @@ class ApigeeOrganizationsApiproductsListRequest(_messages.Message):
     pageToken: The starting index record for listing the developers.
     parent: Required. Name of the organization. Use the following structure in
       your request: `organizations/{org}`
+    space: Optional. The Space to list API products for. When none provided,
+      all the spaces the user has list access, will be used implicitly, and
+      the same following rules will apply. Can be used in conjunction with
+      start_key, expand and count for paginated response. Composite queries
+      with attributename and attributevalue are not supported yet.
     startKey: Gets a list of API products starting with a specific API product
       in the list. For example, if you're returning 50 API products at a time
       (using the `count` query parameter), you can view products 50-99 by
@@ -224,7 +229,23 @@ class ApigeeOrganizationsApiproductsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(7)
   parent = _messages.StringField(8, required=True)
-  startKey = _messages.StringField(9)
+  space = _messages.StringField(9)
+  startKey = _messages.StringField(10)
+
+
+class ApigeeOrganizationsApiproductsMoveRequest(_messages.Message):
+  r"""A ApigeeOrganizationsApiproductsMoveRequest object.
+
+  Fields:
+    googleCloudApigeeV1MoveApiProductRequest: A
+      GoogleCloudApigeeV1MoveApiProductRequest resource to be passed as the
+      request body.
+    name: Required. API product to move in the following format:
+      `organizations/{org}/apiproducts/{apiproduct}
+  """
+
+  googleCloudApigeeV1MoveApiProductRequest = _messages.MessageField('GoogleCloudApigeeV1MoveApiProductRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ApigeeOrganizationsApiproductsRateplansCreateRequest(_messages.Message):
@@ -9652,6 +9673,17 @@ class GoogleCloudApigeeV1MonetizationConfig(_messages.Message):
 
   enabled = _messages.BooleanField(1)
   expiresAt = _messages.IntegerField(2)
+
+
+class GoogleCloudApigeeV1MoveApiProductRequest(_messages.Message):
+  r"""Moves API product to a different space.
+
+  Fields:
+    space: Optional. Resource ID of the space to move the API product to. If
+      unspecified, the API product will be moved to the organization level.
+  """
+
+  space = _messages.StringField(1)
 
 
 class GoogleCloudApigeeV1MoveApiProxyRequest(_messages.Message):

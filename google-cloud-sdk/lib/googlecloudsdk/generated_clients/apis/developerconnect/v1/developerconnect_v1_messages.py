@@ -40,6 +40,9 @@ class Connection(_messages.Message):
     githubConfig: Configuration for connections to github.com.
     githubEnterpriseConfig: Configuration for connections to an instance of
       GitHub Enterprise.
+    gitlabConfig: Configuration for connections to gitlab.com.
+    gitlabEnterpriseConfig: Configuration for connections to an instance of
+      GitLab Enterprise.
     installationState: Output only. Installation state of the Connection.
     labels: Optional. Labels as key value pairs
     name: Identifier. The resource name of the connection, in the format
@@ -107,12 +110,14 @@ class Connection(_messages.Message):
   etag = _messages.StringField(5)
   githubConfig = _messages.MessageField('GitHubConfig', 6)
   githubEnterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 7)
-  installationState = _messages.MessageField('InstallationState', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  reconciling = _messages.BooleanField(11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  gitlabConfig = _messages.MessageField('GitLabConfig', 8)
+  gitlabEnterpriseConfig = _messages.MessageField('GitLabEnterpriseConfig', 9)
+  installationState = _messages.MessageField('InstallationState', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  reconciling = _messages.BooleanField(13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class DeveloperconnectProjectsLocationsConnectionsCreateRequest(_messages.Message):
@@ -684,6 +689,66 @@ class GitHubEnterpriseConfig(_messages.Message):
   webhookSecretSecretVersion = _messages.StringField(10)
 
 
+class GitLabConfig(_messages.Message):
+  r"""Configuration for connections to gitlab.com.
+
+  Fields:
+    authorizerCredential: Required. A GitLab personal access token with the
+      minimum `api` scope access and a minimum role of `maintainer`. The
+      GitLab Projects visible to this Personal Access Token will control which
+      Projects Developer Connect has access to.
+    readAuthorizerCredential: Required. A GitLab personal access token with
+      the minimum `read_api` scope access and a minimum role of `reporter`.
+      The GitLab Projects visible to this Personal Access Token will control
+      which Projects Developer Connect has access to.
+    webhookSecretSecretVersion: Required. Immutable. SecretManager resource
+      containing the webhook secret of a GitLab project, formatted as
+      `projects/*/secrets/*/versions/*`. This is used to validate webhooks.
+  """
+
+  authorizerCredential = _messages.MessageField('UserCredential', 1)
+  readAuthorizerCredential = _messages.MessageField('UserCredential', 2)
+  webhookSecretSecretVersion = _messages.StringField(3)
+
+
+class GitLabEnterpriseConfig(_messages.Message):
+  r"""Configuration for connections to an instance of GitLab Enterprise.
+
+  Fields:
+    authorizerCredential: Required. A GitLab personal access token with the
+      minimum `api` scope access and a minimum role of `maintainer`. The
+      GitLab Projects visible to this Personal Access Token will control which
+      Projects Developer Connect has access to.
+    hostUri: Required. The URI of the GitLab Enterprise host this connection
+      is for.
+    readAuthorizerCredential: Required. A GitLab personal access token with
+      the minimum `read_api` scope access and a minimum role of `reporter`.
+      The GitLab Projects visible to this Personal Access Token will control
+      which Projects Developer Connect has access to.
+    serverVersion: Output only. Version of the GitLab Enterprise server
+      running on the `host_uri`.
+    serviceDirectoryConfig: Optional. Configuration for using Service
+      Directory to privately connect to a GitLab Enterprise instance. This
+      should only be set if the GitLab Enterprise server is hosted on-premises
+      and not reachable by public internet. If this field is left empty, calls
+      to the GitLab Enterprise server will be made over the public internet.
+    sslCaCertSercretVersion: Optional. SecretManager resource containing SSL
+      certificate to use for requests to GitLab Enterprise instance. Format:
+      `projects/*/secrets/*/versions/*`.
+    webhookSecretSecretVersion: Required. Immutable. SecretManager resource
+      containing the webhook secret of a GitLab project, formatted as
+      `projects/*/secrets/*/versions/*`. This is used to validate webhooks.
+  """
+
+  authorizerCredential = _messages.MessageField('UserCredential', 1)
+  hostUri = _messages.StringField(2)
+  readAuthorizerCredential = _messages.MessageField('UserCredential', 3)
+  serverVersion = _messages.StringField(4)
+  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 5)
+  sslCaCertSercretVersion = _messages.StringField(6)
+  webhookSecretSecretVersion = _messages.StringField(7)
+
+
 class GitRepositoryLink(_messages.Message):
   r"""Message describing the GitRepositoryLink object
 
@@ -1249,6 +1314,21 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class UserCredential(_messages.Message):
+  r"""Represents a personal access token that authorized the Connection, and
+  associated metadata.
+
+  Fields:
+    userTokenSecretVersion: Required. A SecretManager resource containing the
+      user token that authorizes the Developer Connect connection. Format:
+      `projects/*/secrets/*/versions/*`.
+    username: Output only. The username associated with this token.
+  """
+
+  userTokenSecretVersion = _messages.StringField(1)
+  username = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

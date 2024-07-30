@@ -168,8 +168,9 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
 
     if self._download_type == DownloadType.STREAMING:
       log.status.Print(
-          f'Starting Downloading {self._object_count} objects to path :'
-          f' {_STREAMING_DOWNLOAD_DESTINATION}'
+          f'Starting download of {self._object_count} objects to path :'
+          f' {_STREAMING_DOWNLOAD_DESTINATION} with download type: '
+          f' {self._download_type.value}'
       )
       with self._time_recorder(_DOWNLOAD_THROUGHPUT_RESULT_KEY, self._result):
         self._run_cp(
@@ -182,8 +183,9 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
     ):
       self._download_dir = file_utils.TemporaryDirectory()
       log.status.Print(
-          f'Starting Downloading {self._object_count} objects to path :'
-          f' {self._download_dir.path}'
+          f'Starting download of {self._object_count} objects to path :'
+          f' {self._download_dir.path} with download type'
+          f' {self._download_type.value}'
       )
       with self._time_recorder(_DOWNLOAD_THROUGHPUT_RESULT_KEY, self._result):
         self._run_cp(
@@ -214,6 +216,7 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
         log.warning(
             f'{self.name} : Failed to clean up temp downloaded files. {e}'
         )
+    self._clean_up_objects(self.bucket_url.url_string, self.object_prefix)
 
   @property
   def result(self) -> diagnostic.DiagnosticResult | None:

@@ -2079,6 +2079,11 @@ def CopyImagesFromGCR(
           break
     except requests.exceptions.ReadTimeout:
       continue
+    except docker_http.V2DiagnosticException as e:
+      # Gateway Timeout
+      if e.status == 504:
+        continue
+      raise
   results["manifestsCopied"] += tags_payload.get("manifestsCopied", 0)
   results["tagsCopied"] += tags_payload.get("tagsCopied", 0)
   results["manifestsFailed"] += tags_payload.get("manifestsFailed", 0)

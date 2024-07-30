@@ -2414,10 +2414,10 @@ class TerraformBlueprint(_messages.Message):
     InputValuesValue: Input variable values for the Terraform blueprint.
 
   Fields:
-    gcsSource: Required. URI of an object in Google Cloud Storage. Format:
+    gcsSource: URI of an object in Google Cloud Storage. Format:
       `gs://{bucket}/{object}` URI may also specify an object version for
       zipped objects. Format: `gs://{bucket}/{object}#{version}`
-    gitSource: Required. URI of a public Git repo.
+    gitSource: URI of a public Git repo.
     inputValues: Input variable values for the Terraform blueprint.
   """
 

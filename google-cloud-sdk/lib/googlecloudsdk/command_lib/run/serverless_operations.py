@@ -68,10 +68,6 @@ DEFAULT_ENDPOINT_VERSION = 'v1'
 
 _NONCE_LENGTH = 10
 
-# Wait 11 mins for each deployment. This is longer than the server timeout,
-# making it more likely to get a useful error message from the server.
-MAX_WAIT_MS = 660000
-
 ALLOW_UNAUTH_POLICY_BINDING_MEMBER = 'allUsers'
 ALLOW_UNAUTH_POLICY_BINDING_ROLE = 'roles/run.invoker'
 
@@ -760,6 +756,7 @@ class ServerlessOperations(object):
       tracker=None,
       asyn=False,
       allow_unauthenticated=None,
+      allow_unauth_regions=None,
       for_replace=False,
       prefetch=False,
       build_image=None,
@@ -791,6 +788,8 @@ class ServerlessOperations(object):
         which should also have its IAM policy set to allow unauthenticated
         access. False if removing the IAM policy to allow unauthenticated access
         from a service.
+      allow_unauth_regions: str, For multi-region services, the regions in which
+        we will allow unauthenticated access.
       for_replace: bool, If the change is for a replacing the service from a
         YAML specification.
       prefetch: the service, pre-fetched for ReleaseService. `False` indicates
@@ -836,7 +835,8 @@ class ServerlessOperations(object):
           image_digest,
           base_image_from_build,
           build_id,
-          uploaded_source
+          uploaded_source,
+          build_name
       ) = deployer.CreateImage(
           tracker,
           build_image,
@@ -862,7 +862,9 @@ class ServerlessOperations(object):
           worker_pool=build_worker_pool,
           build_env_vars=build_env_vars,
           build_pack=build_pack,
-          build_id=build_id)
+          build_id=build_id,
+          build_image=build_image,
+          build_name=build_name)
       config_changes.append(_AddDigestToImageChange(image_digest))
       if base_image_from_build:
         self._ReplaceBaseImage(
@@ -907,6 +909,41 @@ class ServerlessOperations(object):
         service_ref, config_changes, with_image, serv, dry_run
     )
 
+    # Handle SetIamPolicy call(s).
+    self._HandleAllowUnauthenticated(
+        service_ref, allow_unauthenticated, allow_unauth_regions, tracker
+    )
+
+    if not asyn and not dry_run:
+      if updated_service.conditions.IsReady():
+        return updated_service
+
+      getter = (
+          functools.partial(self.GetService, service_ref)
+          if updated_service.operation_id is None
+          else functools.partial(self.WaitService, updated_service.operation_id)
+      )
+      poller = op_pollers.ServiceConditionPoller(
+          getter,
+          tracker,
+          dependencies=stages.ServiceDependencies(),
+          serv=updated_service,
+      )
+      self.WaitForCondition(poller)
+      for msg in run_condition.GetNonTerminalMessages(poller.GetConditions()):
+        tracker.AddWarning(msg)
+      updated_service = poller.GetResource()
+
+    return updated_service
+
+  def _HandleAllowUnauthenticated(
+      self, service_ref, allow_unauthenticated, allow_unauth_regions, tracker
+  ):
+    """Handle SetIamPolicy call(s)."""
+    if allow_unauthenticated is not None and allow_unauth_regions is not None:
+      return self._HandleMultiRegionAllowUnauthenticated(
+          service_ref, allow_unauthenticated, allow_unauth_regions, tracker
+      )
     if allow_unauthenticated is not None:
       try:
         tracker.StartStage(stages.SERVICE_IAM_POLICY_SET)
@@ -932,27 +969,45 @@ class ServerlessOperations(object):
             stages.SERVICE_IAM_POLICY_SET, warning_message=warning_message
         )
 
-    if not asyn and not dry_run:
-      if updated_service.conditions.IsReady():
-        return updated_service
-
-      getter = (
-          functools.partial(self.GetService, service_ref)
-          if updated_service.operation_id is None
-          else functools.partial(self.WaitService, updated_service.operation_id)
+  def _HandleMultiRegionAllowUnauthenticated(
+      self, service_ref, allow_unauthenticated, allow_unauth_regions, tracker
+  ):
+    """Handle SetIamPolicy calls for Multi-Region Services."""
+    tracker.StartStage(stages.SERVICE_IAM_POLICY_SET)
+    warning_message = None
+    for region in allow_unauth_regions:
+      try:
+        tracker.UpdateStage(
+            stages.SERVICE_IAM_POLICY_SET,
+            'Setting IAM policy for region {}'.format(region),
+        )
+        self.AddOrRemoveIamPolicyBinding(
+            service_ref,
+            allow_unauthenticated,
+            ALLOW_UNAUTH_POLICY_BINDING_MEMBER,
+            ALLOW_UNAUTH_POLICY_BINDING_ROLE,
+            region_override=region,
+        )
+      except api_exceptions.HttpError:
+        if not warning_message:
+          warning_message = (
+              'Setting IAM policy failed, try "gcloud beta run services '
+              '{}-iam-policy-binding --region=[region] --member=allUsers '
+              '--role=roles/run.invoker {service}" for regions: {region}'
+              .format(
+                  'add' if allow_unauthenticated else 'remove',
+                  region=region,
+                  service=service_ref.servicesId,
+              )
+          )
+        else:
+          warning_message += region
+    if not warning_message:
+      tracker.CompleteStage(stages.SERVICE_IAM_POLICY_SET)
+    else:
+      tracker.CompleteStageWithWarning(
+          stages.SERVICE_IAM_POLICY_SET, warning_message=warning_message
       )
-      poller = op_pollers.ServiceConditionPoller(
-          getter,
-          tracker,
-          dependencies=stages.ServiceDependencies(),
-          serv=updated_service,
-      )
-      self.WaitForCondition(poller)
-      for msg in run_condition.GetNonTerminalMessages(poller.GetConditions()):
-        tracker.AddWarning(msg)
-      updated_service = poller.GetResource()
-
-    return updated_service
 
   # TODO(b/322180968): Once Worker API is ready, factor out worker related
   # operations wired up to the API in a separate file.
@@ -1379,7 +1434,7 @@ class ServerlessOperations(object):
       )
 
     if build_source is not None:
-      image_digest, _, _, _ = deployer.CreateImage(
+      image_digest, _, _, _, _ = deployer.CreateImage(
           tracker,
           build_image,
           build_source,
@@ -1685,7 +1740,12 @@ class ServerlessOperations(object):
     return response
 
   def AddOrRemoveIamPolicyBinding(
-      self, service_ref, add_binding=True, member=None, role=None
+      self,
+      service_ref,
+      add_binding=True,
+      member=None,
+      role=None,
+      region_override=None,
   ):
     """Add or remove the given IAM policy binding to the provided service.
 
@@ -1698,13 +1758,15 @@ class ServerlessOperations(object):
       add_binding: bool, Whether to add to or remove from the IAM policy.
       member: str, One of the users for which the binding applies.
       role: str, The role to grant the provided members.
+      region_override: str, The region to use instead of the configured region.
 
     Returns:
       A google.iam.v1.TestIamPermissionsResponse.
     """
     messages = self.messages_module
+    region = region_override or self._region
     oneplatform_service = resource_name_conversion.K8sToOnePlatform(
-        service_ref, self._region
+        service_ref, region
     )
     policy = self._GetIamPolicy(oneplatform_service)
     # Don't modify bindings if not member or roles provided
@@ -1720,11 +1782,12 @@ class ServerlessOperations(object):
     result = self._op_client.projects_locations_services.SetIamPolicy(request)
     return result
 
-  def CanSetIamPolicyBinding(self, service_ref):
+  def CanSetIamPolicyBinding(self, service_ref, region_override=None):
     """Check if user has permission to set the iam policy on the service."""
     messages = self.messages_module
+    region = region_override or self._region
     oneplatform_service = resource_name_conversion.K8sToOnePlatform(
-        service_ref, self._region
+        service_ref, region
     )
     request = messages.RunProjectsLocationsServicesTestIamPermissionsRequest(
         resource=six.text_type(oneplatform_service),
@@ -1749,7 +1812,8 @@ class ServerlessOperations(object):
 
   def _AddRunFunctionsAnnotations(
       self, config_changes, uploaded_source, service_account, worker_pool,
-      build_env_vars, build_pack, build_id):
+      build_env_vars, build_pack, build_id, build_image, build_name
+  ):
     """Add run functions annotations to the service."""
     build_env_vars_str = json.dumps(build_env_vars) if build_env_vars else None
     function_target = self._GetFunctionTargetFromBuildPack(build_pack)
@@ -1758,6 +1822,7 @@ class ServerlessOperations(object):
       source_path = f'gs://{uploaded_source.bucket}/{uploaded_source.name}'
       if uploaded_source.generation is not None:
         source_path += f'#{uploaded_source.generation}'
+    image_uri = build_pack[0].get('image') if build_pack else build_image
 
     annotations_map = {
         service.RUN_FUNCTIONS_SOURCE_LOCATION_ANNOTATION: source_path,
@@ -1766,12 +1831,15 @@ class ServerlessOperations(object):
         service.RUN_FUNCTIONS_BUILD_ENV_VARS_ANNOTATION: build_env_vars_str,
         service.RUN_FUNCTIONS_FUNCTION_TARGET_ANNOTATION: function_target,
         service.RUN_FUNCTIONS_BUILD_ID_ANNOTATION: build_id,
+        service.RUN_FUNCTIONS_IMAGE_URI_ANNOTATION: image_uri,
+        service.RUN_FUNCTIONS_BUILD_NAME_ANNOTATION: build_name,
     }
 
-    for annotation, value in annotations_map.items():
-      if value:
-        config_changes.append(
-            config_changes_mod.SetAnnotationChange(annotation, value))
+    config_changes.extend(
+        config_changes_mod.SetAnnotationChange(k, v)
+        for k, v in annotations_map.items()
+        if v is not None
+    )
 
   def ValidateConfigOverrides(self, job_ref, config_overrides):
     """Apply config changes to Job resource to validate.

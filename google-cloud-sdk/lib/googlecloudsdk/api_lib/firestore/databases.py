@@ -17,8 +17,9 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
-
+from typing import Optional
 from googlecloudsdk.api_lib.firestore import api_utils
+from googlecloudsdk.calliope import exceptions as ex
 
 
 def _GetDatabaseService():
@@ -126,24 +127,74 @@ def ListDatabases(project, show_deleted):
   )
 
 
-def RestoreDatabase(project, source_backup, destination_database):
+def RestoreDatabase(
+    project,
+    source_backup,
+    destination_database,
+    encryption_type: Optional[str],
+    kms_key_name: Optional[str],
+):
   """Restores a Firestore database from a backup.
 
   Args:
     project: the project ID to list databases, a string.
     source_backup: the backup to restore from, a string.
     destination_database: the database to restore to, a string.
+    encryption_type: the encryption type of the destination database, a string.
+    kms_key_name: the kms key name of the destination database, a string.
 
   Returns:
     an Operation.
   """
   messages = api_utils.GetMessages()
+  restore_request = messages.GoogleFirestoreAdminV1RestoreDatabaseRequest(
+      backup=source_backup, databaseId=destination_database
+  )
+
+  encryption_type = _NormalizeString(encryption_type)
+  if encryption_type == 'google-default-encryption':
+    _ThrowIfKmsKeyNameSet(kms_key_name)
+    restore_request.useGoogleDefaultEncryption = {}
+  elif encryption_type == 'backup-encryption':
+    _ThrowIfKmsKeyNameSet(kms_key_name)
+    restore_request.useBackupEncryption = {}
+  elif encryption_type == 'customer-managed-encryption':
+    _ThrowIfKmsKeyNameNotSet(kms_key_name)
+    restore_request.kmsKeyName = kms_key_name
+  elif encryption_type is not None:
+    raise ex.InvalidArgumentException(
+        'Invalid encryption type: {}'.format(encryption_type),
+        'encryption-type',
+    )
+
   return _GetDatabaseService().Restore(
       messages.FirestoreProjectsDatabasesRestoreRequest(
           parent='projects/{}'.format(project),
-          googleFirestoreAdminV1RestoreDatabaseRequest=messages.GoogleFirestoreAdminV1RestoreDatabaseRequest(
-              backup=source_backup,
-              databaseId=destination_database,
-          ),
+          googleFirestoreAdminV1RestoreDatabaseRequest=restore_request,
       )
   )
+
+
+def _NormalizeString(value: Optional[str]):
+  if not value:
+    return None
+  return value.casefold()
+
+
+def _ThrowIfKmsKeyNameSet(kms_key_name: Optional[str]):
+  if kms_key_name is not None:
+    raise ex.ConflictingArgumentsException(
+        '--kms-key-name',
+        'A KMS Key cannot be set when using an --encryption-type of'
+        ' google-default-encryption or backup-encryption.',
+    )
+
+
+def _ThrowIfKmsKeyNameNotSet(kms_key_name: Optional[str]):
+  if kms_key_name is None:
+    raise ex.RequiredArgumentException(
+        '--kms-key-name',
+        'The KMS Key Name is required'
+        ' when using customer-managed encryption (CMEK), please use'
+        ' --kms-key-name to specify this value',
+    )

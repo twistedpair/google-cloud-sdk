@@ -17,7 +17,7 @@
 from __future__ import annotations
 
 import abc
-from collections.abc import MutableSequence, Sequence
+from collections.abc import Mapping, MutableSequence, Sequence
 import contextlib
 import ctypes
 import dataclasses
@@ -45,6 +45,9 @@ _TOTAL_MEMORY_METRIC_NAME = 'Total Memory'
 _TOTAL_MEMORY_METRIC_DESCRIPTION = 'Total memory in the system'
 _SYSTEM_DIAGNOSTIC_NAME = 'System Info'
 _DISK_IO_DIAGNOSTIC_NAME = 'Disk IO Stats Delta'
+_DISK_TRANSFER_COUNT_METRIC_NAME = 'Disk Transfer Count'
+_DISK_TRANSFER_SIZE_METRIC_NAME = 'Disk Transfer Size'
+_DISK_AVERAGE_TRANSFER_SIZE_METRIC_NAME = 'Disk Average Transfer Size'
 _T = TypeVar('_T')
 
 
@@ -357,7 +360,7 @@ class OsxSystemInfoProvider(SystemInfoProvider):
           f'Failed to fetch disk I/O stats. {err.getvalue()}'
       )
 
-    disks_line, header_line, stats_line = out.getvalue().split('\n')
+    disks_line, header_line, stats_line, *_ = out.getvalue().split('\n')
 
     # The iostat command returns disk stats in columnar format:
     # https://ss64.com/mac/iostat.html.
@@ -367,9 +370,9 @@ class OsxSystemInfoProvider(SystemInfoProvider):
     # disk0               disk1
     #   KB/t  xfrs   MB   KB/t  xfrs   MB
     #   0.00   0.00   0.00    0.00    0.00    0.00
-    disks = re.split(r'\s+', disks_line)
-    headers = re.split(r'\s+', header_line)
-    stats = re.split(r'\s+', stats_line)
+    disks = disks_line.split()
+    headers = header_line.split()
+    stats = stats_line.split()
 
     metric_count_per_disk = 3
 
@@ -469,6 +472,38 @@ def get_system_info_diagnostic_result(
   )
 
 
+def _format_disk_io_stats(
+    disk_stat: DiskIOStats,
+) -> Mapping[str, str]:
+  """Formats the disk I/O stat metrics to a human readable format.
+
+  Args:
+    disk_stat: The disk I/O stats object.
+
+  Returns:
+    A mapping of metric name to the formatted metric value.
+  """
+  formatted_transfer_count = f'{disk_stat.transfer_count:.1f}'
+
+  formatted_total_transfer_size = None
+  if disk_stat.total_transfer_size:
+    formatted_total_transfer_size = scaled_integer.FormatBinaryNumber(
+        disk_stat.total_transfer_size, decimal_places=1
+    )
+
+  formatted_average_transfer_size = None
+  if disk_stat.average_transfer_size:
+    formatted_average_transfer_size = scaled_integer.FormatBinaryNumber(
+        disk_stat.average_transfer_size, decimal_places=1
+    )
+
+  return {
+      _DISK_TRANSFER_COUNT_METRIC_NAME: formatted_transfer_count,
+      _DISK_TRANSFER_SIZE_METRIC_NAME: formatted_total_transfer_size,
+      _DISK_AVERAGE_TRANSFER_SIZE_METRIC_NAME: formatted_average_transfer_size,
+  }
+
+
 @contextlib.contextmanager
 def get_disk_io_stats_delta_diagnostic_result(
     provider: SystemInfoProvider,
@@ -517,6 +552,7 @@ def get_disk_io_stats_delta_diagnostic_result(
     # Calculating delta for the average metric does not make sense so use the
     # final value.
     average_transfer_size = disk_stat.average_transfer_size
+
     transfer_count_delta = (
         disk_stat.transfer_count - initial_disk_stat.transfer_count
     )
@@ -533,7 +569,7 @@ def get_disk_io_stats_delta_diagnostic_result(
 
     diagnostic_operation_results.append(
         diagnostic.DiagnosticOperationResult(
-            name=disk_stat.name, result=disk_stat_delta
+            name=disk_stat.name, result=_format_disk_io_stats(disk_stat_delta)
         )
     )
 

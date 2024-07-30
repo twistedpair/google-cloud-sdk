@@ -698,14 +698,7 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesTagsListRequest(_mess
       `version` An example of using a filter: *
       `version="projects/p1/locations/us-
       central1/repositories/repo1/packages/pkg1/versions/1.0"` --> Tags that
-      are applied to the version `1.0` in package `pkg1`. *
-      `name="projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/tags/a%2Fb%2F*"` --> tags with
-      an ID starting with "a/b/". * `name="projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/tags/*%2Fb%2Fc"` --> tags with
-      an ID ending with "/b/c". * `name="projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/tags/*%2Fb%2F*"` --> tags with
-      an ID containing "/b/".
+      are applied to the version `1.0` in package `pkg1`.
     pageSize: The maximum number of tags to return. Maximum page size is
       1,000.
     pageToken: The next_page_token value returned from a previous list
@@ -1121,6 +1114,10 @@ class Attachment(_messages.Message):
       central1/repositories/repo1/files/sha:".
     name: The name of the attachment. E.g.
       "projects/p1/locations/us/repositories/repo/attachments/sbom".
+    ociVersionName: Output only. The name of the OCI version that this
+      attachment created. Only populated for Docker attachments. E.g.
+      "projects/p1/locations/us-
+      central1/repositories/repo1/packages/p1/versions/v1".
     target: Required. The target the attachment is for, can be a Version,
       Package or Repository. E.g. "projects/p1/locations/us-
       central1/repositories/repo1/packages/p1/versions/v1".
@@ -1161,9 +1158,10 @@ class Attachment(_messages.Message):
   createTime = _messages.StringField(3)
   files = _messages.StringField(4, repeated=True)
   name = _messages.StringField(5)
-  target = _messages.StringField(6)
-  type = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  ociVersionName = _messages.StringField(6)
+  target = _messages.StringField(7)
+  type = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class BatchDeleteVersionsMetadata(_messages.Message):
@@ -2739,7 +2737,8 @@ class ProjectSettings(_messages.Message):
     name: The name of the project's settings. Always of the form:
       projects/{project-id}/projectSettings In update request: never set In
       response: always set
-    pullPercent: A integer attribute.
+    pullPercent: The percentage of pull traffic to redirect from GCR to AR
+      when using partial redirection.
   """
 
   class LegacyRedirectionStateValueValuesEnum(_messages.Enum):
@@ -2768,6 +2767,10 @@ class ProjectSettings(_messages.Message):
   legacyRedirectionState = _messages.EnumField('LegacyRedirectionStateValueValuesEnum', 1)
   name = _messages.StringField(2)
   pullPercent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class PromoteArtifactMetadata(_messages.Message):
+  r"""The metadata for promote artifact long running operation."""
 
 
 class PythonPackage(_messages.Message):

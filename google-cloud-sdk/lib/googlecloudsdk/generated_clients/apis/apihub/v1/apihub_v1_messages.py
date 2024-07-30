@@ -120,16 +120,31 @@ class ApihubProjectsLocationsApisListRequest(_messages.Message):
       of the ApiResource. Allowed comparison operators: `=`. *
       `target_user.enum_values.values.id` - The allowed value id of the target
       users attribute associated with the ApiResource. Allowed comparison
-      operator is `:`. * `team.enum_values.values.id` - The allowed value id
-      of the team attribute associated with the ApiResource. Allowed
-      comparison operator is `:`. * `business_unit.enum_values.values.id` -
-      The allowed value id of the business unit attribute associated with the
+      operator is `:`. * `target_user.enum_values.values.display_name` - The
+      allowed value display name of the target users attribute associated with
+      the ApiResource. Allowed comparison operator is `:`. *
+      `team.enum_values.values.id` - The allowed value id of the team
+      attribute associated with the ApiResource. Allowed comparison operator
+      is `:`. * `team.enum_values.values.display_name` - The allowed value
+      display name of the team attribute associated with the ApiResource.
+      Allowed comparison operator is `:`. *
+      `business_unit.enum_values.values.id` - The allowed value id of the
+      business unit attribute associated with the ApiResource. Allowed
+      comparison operator is `:`. *
+      `business_unit.enum_values.values.display_name` - The allowed value
+      display name of the business unit attribute associated with the
       ApiResource. Allowed comparison operator is `:`. *
       `maturity_level.enum_values.values.id` - The allowed value id of the
       maturity level attribute associated with the ApiResource. Allowed
-      comparison operator is `:`. * `api_style.enum_values.values.id` - The
-      allowed value id of the api style attribute associated with the
-      ApiResource. Allowed comparison operator is `:`. Expressions are
+      comparison operator is `:`. *
+      `maturity_level.enum_values.values.display_name` - The allowed value
+      display name of the maturity level attribute associated with the
+      ApiResource. Allowed comparison operator is `:`. *
+      `api_style.enum_values.values.id` - The allowed value id of the api
+      style attribute associated with the ApiResource. Allowed comparison
+      operator is `:`. * `api_style.enum_values.values.display_name` - The
+      allowed value display name of the api style attribute associated with
+      the ApiResource. Allowed comparison operator is `:`. Expressions are
       combined with either `AND` logic operator or `OR` logical operator but
       not both of them together i.e. only one of the `AND` or `OR` operator
       can be used throughout the filter string and both the operators cannot
@@ -145,7 +160,11 @@ class ApihubProjectsLocationsApisListRequest(_messages.Message):
       \"apihub@google.com\" OR team.enum_values.values.id: apihub-team-id` -
       The filter string specifies the APIs where the owner team email is
       _apihub@google.com_ or the id of the allowed value associated with the
-      team attribute is _apihub-team-id_.
+      team attribute is _apihub-team-id_. * `owner.email =
+      \"apihub@google.com\" OR team.enum_values.values.display_name: ApiHub
+      Team` - The filter string specifies the APIs where the owner team email
+      is _apihub@google.com_ or the display name of the allowed value
+      associated with the team attribute is `ApiHub Team`.
     pageSize: Optional. The maximum number of API resources to return. The
       service may return fewer than this value. If unspecified, at most 50
       Apis will be returned. The maximum value is 1000; values above 1000 will
@@ -256,13 +275,21 @@ class ApihubProjectsLocationsApisVersionsListRequest(_messages.Message):
       comparison operators: `>` and `<`. * `lifecycle.enum_values.values.id` -
       The allowed value id of the lifecycle attribute associated with the
       Version. Allowed comparison operators: `:`. *
-      `compliance.enum_values.values.id` - The allowed value id of the
-      compliances attribute associated with the Version. Allowed comparison
-      operators: `:`. * `accreditation.enum_values.values.id` - The allowed
-      value id of the accreditations attribute associated with the Version.
-      Allowed comparison operators: `:`. Expressions are combined with either
-      `AND` logic operator or `OR` logical operator but not both of them
-      together i.e. only one of the `AND` or `OR` operator can be used
+      `lifecycle.enum_values.values.display_name` - The allowed value display
+      name of the lifecycle attribute associated with the Version. Allowed
+      comparison operators: `:`. * `compliance.enum_values.values.id` - The
+      allowed value id of the compliances attribute associated with the
+      Version. Allowed comparison operators: `:`. *
+      `compliance.enum_values.values.display_name` - The allowed value display
+      name of the compliances attribute associated with the Version. Allowed
+      comparison operators: `:`. * `accreditation.enum_values.values.id` - The
+      allowed value id of the accreditations attribute associated with the
+      Version. Allowed comparison operators: `:`. *
+      `accreditation.enum_values.values.display_name` - The allowed value
+      display name of the accreditations attribute associated with the
+      Version. Allowed comparison operators: `:`. Expressions are combined
+      with either `AND` logic operator or `OR` logical operator but not both
+      of them together i.e. only one of the `AND` or `OR` operator can be used
       throughout the filter string and both the operators cannot be used
       together. No other logical operators are supported. At most three filter
       fields are allowed in the filter string and if provided more than that
@@ -270,12 +297,15 @@ class ApihubProjectsLocationsApisVersionsListRequest(_messages.Message):
       examples: * `lifecycle.enum_values.values.id: preview-id` - The filter
       string specifies that the id of the allowed value associated with the
       lifecycle attribute of the Version is _preview-id_. *
-      `lifecycle.enum_values.values.id: preview-id AND create_time <
-      \"2021-08-15T14:50:00Z\" AND create_time > \"2021-08-10T12:00:00Z\"` -
-      The id of the allowed value associated with the lifecycle attribute of
-      the Version is _preview-id_ and it was created before _2021-08-15
-      14:50:00 UTC_ and after _2021-08-10 12:00:00 UTC_. *
-      `compliance.enum_values.values.id: gdpr-id OR
+      `lifecycle.enum_values.values.display_name: \"Preview Display Name\"` -
+      The filter string specifies that the display name of the allowed value
+      associated with the lifecycle attribute of the Version is `Preview
+      Display Name`. * `lifecycle.enum_values.values.id: preview-id AND
+      create_time < \"2021-08-15T14:50:00Z\" AND create_time >
+      \"2021-08-10T12:00:00Z\"` - The id of the allowed value associated with
+      the lifecycle attribute of the Version is _preview-id_ and it was
+      created before _2021-08-15 14:50:00 UTC_ and after _2021-08-10 12:00:00
+      UTC_. * `compliance.enum_values.values.id: gdpr-id OR
       compliance.enum_values.values.id: pci-dss-id` - The id of the allowed
       value associated with the compliance attribute is _gdpr-id_ or _pci-dss-
       id_.
@@ -464,18 +494,24 @@ class ApihubProjectsLocationsApisVersionsSpecsListRequest(_messages.Message):
       comparison operators: `>` and `<`. * `spec_type.enum_values.values.id` -
       The allowed value id of the spec_type attribute associated with the
       Spec. Allowed comparison operators: `:`. *
-      `lint_response.json_values.values` - The json value of the lint_response
-      attribute associated with the Spec. Allowed comparison operators: `:`. *
-      `mime_type` - The MIME type of the Spec. Allowed comparison operators:
-      `=`. Expressions are combined with either `AND` logic operator or `OR`
-      logical operator but not both of them together i.e. only one of the
-      `AND` or `OR` operator can be used throughout the filter string and both
-      the operators cannot be used together. No other logical operators are
-      supported. At most three filter fields are allowed in the filter string
-      and if provided more than that then `INVALID_ARGUMENT` error is returned
-      by the API. Here are a few examples: * `spec_type.enum_values.values.id:
-      rest-id` - The filter string specifies that the id of the allowed value
-      associated with the spec_type attribute is _rest-id_. *
+      `spec_type.enum_values.values.display_name` - The allowed value display
+      name of the spec_type attribute associated with the Spec. Allowed
+      comparison operators: `:`. * `lint_response.json_values.values` - The
+      json value of the lint_response attribute associated with the Spec.
+      Allowed comparison operators: `:`. * `mime_type` - The MIME type of the
+      Spec. Allowed comparison operators: `=`. Expressions are combined with
+      either `AND` logic operator or `OR` logical operator but not both of
+      them together i.e. only one of the `AND` or `OR` operator can be used
+      throughout the filter string and both the operators cannot be used
+      together. No other logical operators are supported. At most three filter
+      fields are allowed in the filter string and if provided more than that
+      then `INVALID_ARGUMENT` error is returned by the API. Here are a few
+      examples: * `spec_type.enum_values.values.id: rest-id` - The filter
+      string specifies that the id of the allowed value associated with the
+      spec_type attribute is _rest-id_. *
+      `spec_type.enum_values.values.display_name: \"Rest Display Name\"` - The
+      filter string specifies that the display name of the allowed value
+      associated with the spec_type attribute is `Rest Display Name`. *
       `spec_type.enum_values.values.id: grpc-id AND create_time <
       \"2021-08-15T14:50:00Z\" AND create_time > \"2021-08-10T12:00:00Z\"` -
       The id of the allowed value associated with the spec_type attribute is
@@ -801,21 +837,30 @@ class ApihubProjectsLocationsDeploymentsListRequest(_messages.Message):
       operators: `:`. * `deployment_type.enum_values.values.id` - The allowed
       value id of the deployment_type attribute associated with the
       Deployment. Allowed comparison operators: `:`. *
+      `deployment_type.enum_values.values.display_name` - The allowed value
+      display name of the deployment_type attribute associated with the
+      Deployment. Allowed comparison operators: `:`. *
       `slo.string_values.values` -The allowed string value of the slo
       attribute associated with the deployment. Allowed comparison operators:
       `:`. * `environment.enum_values.values.id` - The allowed value id of the
       environment attribute associated with the deployment. Allowed comparison
-      operators: `:`. Expressions are combined with either `AND` logic
-      operator or `OR` logical operator but not both of them together i.e.
-      only one of the `AND` or `OR` operator can be used throughout the filter
-      string and both the operators cannot be used together. No other logical
-      operators are supported. At most three filter fields are allowed in the
-      filter string and if provided more than that then `INVALID_ARGUMENT`
-      error is returned by the API. Here are a few examples: *
-      `environment.enum_values.values.id: staging-id` - The allowed value id
-      of the environment attribute associated with the Deployment is _staging-
-      id_. * `environment.enum_values.values.id: production-id AND create_time
-      < \"2021-08-15T14:50:00Z\" AND create_time > \"2021-08-10T12:00:00Z\"` -
+      operators: `:`. * `environment.enum_values.values.display_name` - The
+      allowed value display name of the environment attribute associated with
+      the deployment. Allowed comparison operators: `:`. Expressions are
+      combined with either `AND` logic operator or `OR` logical operator but
+      not both of them together i.e. only one of the `AND` or `OR` operator
+      can be used throughout the filter string and both the operators cannot
+      be used together. No other logical operators are supported. At most
+      three filter fields are allowed in the filter string and if provided
+      more than that then `INVALID_ARGUMENT` error is returned by the API.
+      Here are a few examples: * `environment.enum_values.values.id: staging-
+      id` - The allowed value id of the environment attribute associated with
+      the Deployment is _staging-id_. *
+      `environment.enum_values.values.display_name: \"Staging Deployment\"` -
+      The allowed value display name of the environment attribute associated
+      with the Deployment is `Staging Deployment`. *
+      `environment.enum_values.values.id: production-id AND create_time <
+      \"2021-08-15T14:50:00Z\" AND create_time > \"2021-08-10T12:00:00Z\"` -
       The allowed value id of the environment attribute associated with the
       Deployment is _production-id_ and Deployment was created before
       _2021-08-15 14:50:00 UTC_ and after _2021-08-10 12:00:00 UTC_. *
@@ -2393,11 +2438,7 @@ class GoogleCloudApihubV1ListDeploymentsResponse(_messages.Message):
   r"""The ListDeployments method's response.
 
   Fields:
-    deployments: The deployment resources present in the API hub. Only
-      following field will be populated in the response: name, display_name,
-      documentation.external_uri, deployment_type.enum_values.values.id,
-      environment.enum_values.values.id, slo.string_values.values and
-      resource_uri.
+    deployments: The deployment resources present in the API hub.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
   """
@@ -2468,9 +2509,7 @@ class GoogleCloudApihubV1ListVersionsResponse(_messages.Message):
   Fields:
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
-    versions: The versions corresponding to an API. Only following field will
-      be populated in the response: name, display_name,
-      lifecycle.enum_values.values.id and specs.
+    versions: The versions corresponding to an API.
   """
 
   nextPageToken = _messages.StringField(1)

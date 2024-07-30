@@ -293,6 +293,33 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AddIpOverride(self, request, global_params=None):
+      r"""Adds an IP override to a key. The following restrictions hold: * The maximum number of IP overrides per key is 100. * For any conflict (such as IP already exists or IP part of an existing IP range), an error will be returned.
+
+      Args:
+        request: (RecaptchaenterpriseProjectsKeysAddIpOverrideRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecaptchaenterpriseV1AddIpOverrideResponse) The response message.
+      """
+      config = self.GetMethodConfig('AddIpOverride')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddIpOverride.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/keys/{keysId}:addIpOverride',
+        http_method='POST',
+        method_id='recaptchaenterprise.projects.keys.addIpOverride',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:addIpOverride',
+        request_field='googleCloudRecaptchaenterpriseV1AddIpOverrideRequest',
+        request_type_name='RecaptchaenterpriseProjectsKeysAddIpOverrideRequest',
+        response_type_name='GoogleCloudRecaptchaenterpriseV1AddIpOverrideResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a new reCAPTCHA Enterprise key.
 

@@ -1270,31 +1270,31 @@ class MTLSPolicy(_messages.Message):
     ClientValidationModeValueValuesEnum: When the client presents an invalid
       certificate or no certificate to the load balancer, the
       `client_validation_mode` specifies how the client connection is handled.
-      Required if the policy is to be used with the external HTTPS load
-      balancing. For Traffic Director it must be empty.
+      Required if the policy is to be used with the Application Load
+      Balancers. For Traffic Director it must be empty.
 
   Fields:
     clientValidationCa: Required if the policy is to be used with Traffic
-      Director. For external HTTPS load balancers it must be empty. Defines
-      the mechanism to obtain the Certificate Authority certificate to
-      validate the client certificate.
+      Director. For Application Load Balancers it must be empty. Defines the
+      mechanism to obtain the Certificate Authority certificate to validate
+      the client certificate.
     clientValidationMode: When the client presents an invalid certificate or
       no certificate to the load balancer, the `client_validation_mode`
       specifies how the client connection is handled. Required if the policy
-      is to be used with the external HTTPS load balancing. For Traffic
-      Director it must be empty.
+      is to be used with the Application Load Balancers. For Traffic Director
+      it must be empty.
     clientValidationTrustConfig: Reference to the TrustConfig from
       certificatemanager.googleapis.com namespace. If specified, the chain
       validation will be performed against certificates configured in the
       given TrustConfig. Allowed only if the policy is to be used with
-      external HTTPS load balancers.
+      Application Load Balancers.
   """
 
   class ClientValidationModeValueValuesEnum(_messages.Enum):
     r"""When the client presents an invalid certificate or no certificate to
     the load balancer, the `client_validation_mode` specifies how the client
     connection is handled. Required if the policy is to be used with the
-    external HTTPS load balancing. For Traffic Director it must be empty.
+    Application Load Balancers. For Traffic Director it must be empty.
 
     Values:
       CLIENT_VALIDATION_MODE_UNSPECIFIED: Not allowed.
@@ -3261,7 +3261,7 @@ class Rule(_messages.Message):
 
 class SecurityProfile(_messages.Message):
   r"""SecurityProfile is a resource that defines the behavior for one of many
-  ProfileTypes. Next ID: 10
+  ProfileTypes. Next ID: 11
 
   Enums:
     TypeValueValuesEnum: Immutable. The single ProfileType that the
@@ -3335,7 +3335,7 @@ class SecurityProfile(_messages.Message):
 
 class SecurityProfileGroup(_messages.Message):
   r"""SecurityProfileGroup is a resource that defines the behavior for various
-  ProfileTypes. Next ID: 9
+  ProfileTypes. Next ID: 10
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs.
@@ -3393,42 +3393,42 @@ class ServerTlsPolicy(_messages.Message):
   r"""ServerTlsPolicy is a resource that specifies how a server should
   authenticate incoming requests. This resource itself does not affect
   configuration unless it is attached to a target HTTPS proxy or endpoint
-  config selector resource. ServerTlsPolicy in the form accepted by external
-  HTTPS load balancers can be attached only to TargetHttpsProxy with an
-  `EXTERNAL` or `EXTERNAL_MANAGED` load balancing scheme. Traffic Director
-  compatible ServerTlsPolicies can be attached to EndpointPolicy and
-  TargetHttpsProxy with Traffic Director `INTERNAL_SELF_MANAGED` load
-  balancing scheme.
+  config selector resource. ServerTlsPolicy in the form accepted by
+  Application Load Balancers can be attached only to TargetHttpsProxy with an
+  `EXTERNAL`, `EXTERNAL_MANAGED` or `INTERNAL_MANAGED` load balancing scheme.
+  Traffic Director compatible ServerTlsPolicies can be attached to
+  EndpointPolicy and TargetHttpsProxy with Traffic Director
+  `INTERNAL_SELF_MANAGED` load balancing scheme.
 
   Messages:
     LabelsValue: Set of label tags associated with the resource.
 
   Fields:
     allowOpen: This field applies only for Traffic Director policies. It is
-      must be set to false for external HTTPS load balancer policies.
-      Determines if server allows plaintext connections. If set to true,
-      server allows plain text connections. By default, it is set to false.
-      This setting is not exclusive of other encryption modes. For example, if
-      `allow_open` and `mtls_policy` are set, server allows both plain text
-      and mTLS connections. See documentation of other encryption modes to
-      confirm compatibility. Consider using it if you wish to upgrade in place
-      your deployment to TLS while having mixed TLS and non-TLS traffic
-      reaching port :80.
+      must be set to false for Application Load Balancer policies. Determines
+      if server allows plaintext connections. If set to true, server allows
+      plain text connections. By default, it is set to false. This setting is
+      not exclusive of other encryption modes. For example, if `allow_open`
+      and `mtls_policy` are set, server allows both plain text and mTLS
+      connections. See documentation of other encryption modes to confirm
+      compatibility. Consider using it if you wish to upgrade in place your
+      deployment to TLS while having mixed TLS and non-TLS traffic reaching
+      port :80.
     createTime: Output only. The timestamp when the resource was created.
     description: Free-text description of the resource.
     labels: Set of label tags associated with the resource.
-    mtlsPolicy: This field is required if the policy is used with external
-      HTTPS load balancers. This field can be empty for Traffic Director.
-      Defines a mechanism to provision peer validation certificates for peer
-      to peer authentication (Mutual TLS - mTLS). If not specified, client
-      certificate will not be requested. The connection is treated as TLS and
-      not mTLS. If `allow_open` and `mtls_policy` are set, server allows both
-      plain text and mTLS connections.
+    mtlsPolicy: This field is required if the policy is used with Application
+      Load Balancers. This field can be empty for Traffic Director. Defines a
+      mechanism to provision peer validation certificates for peer to peer
+      authentication (Mutual TLS - mTLS). If not specified, client certificate
+      will not be requested. The connection is treated as TLS and not mTLS. If
+      `allow_open` and `mtls_policy` are set, server allows both plain text
+      and mTLS connections.
     name: Required. Name of the ServerTlsPolicy resource. It matches the
       pattern
       `projects/*/locations/{location}/serverTlsPolicies/{server_tls_policy}`
     serverCertificate: Optional if policy is to be used with Traffic Director.
-      For external HTTPS load balancer must be empty. Defines a mechanism to
+      For Application Load Balancers must be empty. Defines a mechanism to
       provision server identity (public and private keys). Cannot be combined
       with `allow_open` as a permissive mode that allows both plain text and
       TLS is not supported.

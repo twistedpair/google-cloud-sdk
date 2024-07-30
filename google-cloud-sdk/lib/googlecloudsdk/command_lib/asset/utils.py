@@ -46,7 +46,7 @@ def SetDefaultScopeIfEmpty(unused_ref, args, request):
 
 def GetDefaultScopeIfEmpty(args):
   """Return the request scope and fall back to core project if not specified."""
-  if args.IsSpecified('scope'):
+  if args.scope:
     VerifyScopeForSearch(args.scope)
     return args.scope
   else:

@@ -700,14 +700,15 @@ class ContainerThreatDetectionSettings(_messages.Message):
   Messages:
     ModulesValue: The configurations including the state of enablement for the
       service's different modules. The absence of a module in the map implies
-      its configuration is inherited from its parent's.
+      its configuration is inherited from its parent's configuration.
 
   Fields:
     modules: The configurations including the state of enablement for the
       service's different modules. The absence of a module in the map implies
-      its configuration is inherited from its parent's.
-    name: The resource name of the ContainerThreatDetectionSettings. Formats:
-      * organizations/{organization}/containerThreatDetectionSettings *
+      its configuration is inherited from its parent's configuration.
+    name: Identifier. The resource name of the
+      ContainerThreatDetectionSettings. Formats: *
+      organizations/{organization}/containerThreatDetectionSettings *
       folders/{folder}/containerThreatDetectionSettings *
       projects/{project}/containerThreatDetectionSettings * projects/{project}
       /locations/{location}/clusters/{cluster}/containerThreatDetectionSetting
@@ -741,7 +742,7 @@ class ContainerThreatDetectionSettings(_messages.Message):
   class ModulesValue(_messages.Message):
     r"""The configurations including the state of enablement for the service's
     different modules. The absence of a module in the map implies its
-    configuration is inherited from its parent's.
+    configuration is inherited from its parent's configuration.
 
     Messages:
       AdditionalProperty: An additional property for a ModulesValue object.
@@ -1184,14 +1185,14 @@ class EventThreatDetectionSettings(_messages.Message):
   Messages:
     ModulesValue: The configurations including the state of enablement for the
       service's different modules. The absence of a module in the map implies
-      its configuration is inherited from its parent's.
+      its configuration is inherited from its parent's configuration.
 
   Fields:
     modules: The configurations including the state of enablement for the
       service's different modules. The absence of a module in the map implies
-      its configuration is inherited from its parent's.
-    name: The resource name of the EventThreatDetectionSettings. Formats: *
-      organizations/{organization}/eventThreatDetectionSettings *
+      its configuration is inherited from its parent's configuration.
+    name: Identifier. The resource name of the EventThreatDetectionSettings.
+      Formats: * organizations/{organization}/eventThreatDetectionSettings *
       folders/{folder}/eventThreatDetectionSettings *
       projects/{project}/eventThreatDetectionSettings
     serviceEnablementState: The state of enablement for the service at its
@@ -1220,7 +1221,7 @@ class EventThreatDetectionSettings(_messages.Message):
   class ModulesValue(_messages.Message):
     r"""The configurations including the state of enablement for the service's
     different modules. The absence of a module in the map implies its
-    configuration is inherited from its parent's.
+    configuration is inherited from its parent's configuration.
 
     Messages:
       AdditionalProperty: An additional property for a ModulesValue object.
@@ -6835,13 +6836,14 @@ class SecurityHealthAnalyticsSettings(_messages.Message):
   Messages:
     ModulesValue: The configurations including the state of enablement for the
       service's different modules. The absence of a module in the map implies
-      its configuration is inherited from its parent's.
+      its configuration is inherited from its parent's configuration.
 
   Fields:
     modules: The configurations including the state of enablement for the
       service's different modules. The absence of a module in the map implies
-      its configuration is inherited from its parent's.
-    name: The resource name of the SecurityHealthAnalyticsSettings. Formats: *
+      its configuration is inherited from its parent's configuration.
+    name: Identifier. The resource name of the
+      SecurityHealthAnalyticsSettings. Formats: *
       organizations/{organization}/securityHealthAnalyticsSettings *
       folders/{folder}/securityHealthAnalyticsSettings *
       projects/{project}/securityHealthAnalyticsSettings
@@ -6873,7 +6875,7 @@ class SecurityHealthAnalyticsSettings(_messages.Message):
   class ModulesValue(_messages.Message):
     r"""The configurations including the state of enablement for the service's
     different modules. The absence of a module in the map implies its
-    configuration is inherited from its parent's.
+    configuration is inherited from its parent's configuration.
 
     Messages:
       AdditionalProperty: An additional property for a ModulesValue object.
@@ -7193,8 +7195,9 @@ class SecuritycenterFoldersUpdateContainerThreatDetectionSettingsRequest(_messag
   Fields:
     containerThreatDetectionSettings: A ContainerThreatDetectionSettings
       resource to be passed as the request body.
-    name: The resource name of the ContainerThreatDetectionSettings. Formats:
-      * organizations/{organization}/containerThreatDetectionSettings *
+    name: Identifier. The resource name of the
+      ContainerThreatDetectionSettings. Formats: *
+      organizations/{organization}/containerThreatDetectionSettings *
       folders/{folder}/containerThreatDetectionSettings *
       projects/{project}/containerThreatDetectionSettings * projects/{project}
       /locations/{location}/clusters/{cluster}/containerThreatDetectionSetting
@@ -7213,8 +7216,8 @@ class SecuritycenterFoldersUpdateEventThreatDetectionSettingsRequest(_messages.M
   Fields:
     eventThreatDetectionSettings: A EventThreatDetectionSettings resource to
       be passed as the request body.
-    name: The resource name of the EventThreatDetectionSettings. Formats: *
-      organizations/{organization}/eventThreatDetectionSettings *
+    name: Identifier. The resource name of the EventThreatDetectionSettings.
+      Formats: * organizations/{organization}/eventThreatDetectionSettings *
       folders/{folder}/eventThreatDetectionSettings *
       projects/{project}/eventThreatDetectionSettings
     updateMask: The list of fields to be updated.
@@ -7250,7 +7253,8 @@ class SecuritycenterFoldersUpdateSecurityHealthAnalyticsSettingsRequest(_message
   object.
 
   Fields:
-    name: The resource name of the SecurityHealthAnalyticsSettings. Formats: *
+    name: Identifier. The resource name of the
+      SecurityHealthAnalyticsSettings. Formats: *
       organizations/{organization}/securityHealthAnalyticsSettings *
       folders/{folder}/securityHealthAnalyticsSettings *
       projects/{project}/securityHealthAnalyticsSettings
@@ -7270,8 +7274,8 @@ class SecuritycenterFoldersUpdateVirtualMachineThreatDetectionSettingsRequest(_m
   object.
 
   Fields:
-    name: The resource name of the VirtualMachineThreatDetectionSettings.
-      Formats: *
+    name: Identifier. The resource name of the
+      VirtualMachineThreatDetectionSettings. Formats: *
       organizations/{organization}/virtualMachineThreatDetectionSettings *
       folders/{folder}/virtualMachineThreatDetectionSettings *
       projects/{project}/virtualMachineThreatDetectionSettings
@@ -7290,8 +7294,8 @@ class SecuritycenterFoldersUpdateWebSecurityScannerSettingsRequest(_messages.Mes
   r"""A SecuritycenterFoldersUpdateWebSecurityScannerSettingsRequest object.
 
   Fields:
-    name: The resource name of the WebSecurityScannerSettings. Formats: *
-      organizations/{organization}/webSecurityScannerSettings *
+    name: Identifier. The resource name of the WebSecurityScannerSettings.
+      Formats: * organizations/{organization}/webSecurityScannerSettings *
       folders/{folder}/webSecurityScannerSettings *
       projects/{project}/webSecurityScannerSettings
     updateMask: The list of fields to be updated.
@@ -7522,8 +7526,9 @@ class SecuritycenterOrganizationsUpdateContainerThreatDetectionSettingsRequest(_
   Fields:
     containerThreatDetectionSettings: A ContainerThreatDetectionSettings
       resource to be passed as the request body.
-    name: The resource name of the ContainerThreatDetectionSettings. Formats:
-      * organizations/{organization}/containerThreatDetectionSettings *
+    name: Identifier. The resource name of the
+      ContainerThreatDetectionSettings. Formats: *
+      organizations/{organization}/containerThreatDetectionSettings *
       folders/{folder}/containerThreatDetectionSettings *
       projects/{project}/containerThreatDetectionSettings * projects/{project}
       /locations/{location}/clusters/{cluster}/containerThreatDetectionSetting
@@ -7543,8 +7548,8 @@ class SecuritycenterOrganizationsUpdateEventThreatDetectionSettingsRequest(_mess
   Fields:
     eventThreatDetectionSettings: A EventThreatDetectionSettings resource to
       be passed as the request body.
-    name: The resource name of the EventThreatDetectionSettings. Formats: *
-      organizations/{organization}/eventThreatDetectionSettings *
+    name: Identifier. The resource name of the EventThreatDetectionSettings.
+      Formats: * organizations/{organization}/eventThreatDetectionSettings *
       folders/{folder}/eventThreatDetectionSettings *
       projects/{project}/eventThreatDetectionSettings
     updateMask: The list of fields to be updated.
@@ -7582,7 +7587,8 @@ class SecuritycenterOrganizationsUpdateSecurityHealthAnalyticsSettingsRequest(_m
   object.
 
   Fields:
-    name: The resource name of the SecurityHealthAnalyticsSettings. Formats: *
+    name: Identifier. The resource name of the
+      SecurityHealthAnalyticsSettings. Formats: *
       organizations/{organization}/securityHealthAnalyticsSettings *
       folders/{folder}/securityHealthAnalyticsSettings *
       projects/{project}/securityHealthAnalyticsSettings
@@ -7601,8 +7607,8 @@ class SecuritycenterOrganizationsUpdateVirtualMachineThreatDetectionSettingsRequ
   Request object.
 
   Fields:
-    name: The resource name of the VirtualMachineThreatDetectionSettings.
-      Formats: *
+    name: Identifier. The resource name of the
+      VirtualMachineThreatDetectionSettings. Formats: *
       organizations/{organization}/virtualMachineThreatDetectionSettings *
       folders/{folder}/virtualMachineThreatDetectionSettings *
       projects/{project}/virtualMachineThreatDetectionSettings
@@ -7622,8 +7628,8 @@ class SecuritycenterOrganizationsUpdateWebSecurityScannerSettingsRequest(_messag
   object.
 
   Fields:
-    name: The resource name of the WebSecurityScannerSettings. Formats: *
-      organizations/{organization}/webSecurityScannerSettings *
+    name: Identifier. The resource name of the WebSecurityScannerSettings.
+      Formats: * organizations/{organization}/webSecurityScannerSettings *
       folders/{folder}/webSecurityScannerSettings *
       projects/{project}/webSecurityScannerSettings
     updateMask: The list of fields to be updated.
@@ -7838,8 +7844,9 @@ class SecuritycenterProjectsLocationsClustersUpdateContainerThreatDetectionSetti
   Fields:
     containerThreatDetectionSettings: A ContainerThreatDetectionSettings
       resource to be passed as the request body.
-    name: The resource name of the ContainerThreatDetectionSettings. Formats:
-      * organizations/{organization}/containerThreatDetectionSettings *
+    name: Identifier. The resource name of the
+      ContainerThreatDetectionSettings. Formats: *
+      organizations/{organization}/containerThreatDetectionSettings *
       folders/{folder}/containerThreatDetectionSettings *
       projects/{project}/containerThreatDetectionSettings * projects/{project}
       /locations/{location}/clusters/{cluster}/containerThreatDetectionSetting
@@ -7890,8 +7897,9 @@ class SecuritycenterProjectsUpdateContainerThreatDetectionSettingsRequest(_messa
   Fields:
     containerThreatDetectionSettings: A ContainerThreatDetectionSettings
       resource to be passed as the request body.
-    name: The resource name of the ContainerThreatDetectionSettings. Formats:
-      * organizations/{organization}/containerThreatDetectionSettings *
+    name: Identifier. The resource name of the
+      ContainerThreatDetectionSettings. Formats: *
+      organizations/{organization}/containerThreatDetectionSettings *
       folders/{folder}/containerThreatDetectionSettings *
       projects/{project}/containerThreatDetectionSettings * projects/{project}
       /locations/{location}/clusters/{cluster}/containerThreatDetectionSetting
@@ -7911,8 +7919,8 @@ class SecuritycenterProjectsUpdateEventThreatDetectionSettingsRequest(_messages.
   Fields:
     eventThreatDetectionSettings: A EventThreatDetectionSettings resource to
       be passed as the request body.
-    name: The resource name of the EventThreatDetectionSettings. Formats: *
-      organizations/{organization}/eventThreatDetectionSettings *
+    name: Identifier. The resource name of the EventThreatDetectionSettings.
+      Formats: * organizations/{organization}/eventThreatDetectionSettings *
       folders/{folder}/eventThreatDetectionSettings *
       projects/{project}/eventThreatDetectionSettings
     updateMask: The list of fields to be updated.
@@ -7948,7 +7956,8 @@ class SecuritycenterProjectsUpdateSecurityHealthAnalyticsSettingsRequest(_messag
   object.
 
   Fields:
-    name: The resource name of the SecurityHealthAnalyticsSettings. Formats: *
+    name: Identifier. The resource name of the
+      SecurityHealthAnalyticsSettings. Formats: *
       organizations/{organization}/securityHealthAnalyticsSettings *
       folders/{folder}/securityHealthAnalyticsSettings *
       projects/{project}/securityHealthAnalyticsSettings
@@ -7968,8 +7977,8 @@ class SecuritycenterProjectsUpdateVirtualMachineThreatDetectionSettingsRequest(_
   object.
 
   Fields:
-    name: The resource name of the VirtualMachineThreatDetectionSettings.
-      Formats: *
+    name: Identifier. The resource name of the
+      VirtualMachineThreatDetectionSettings. Formats: *
       organizations/{organization}/virtualMachineThreatDetectionSettings *
       folders/{folder}/virtualMachineThreatDetectionSettings *
       projects/{project}/virtualMachineThreatDetectionSettings
@@ -7988,8 +7997,8 @@ class SecuritycenterProjectsUpdateWebSecurityScannerSettingsRequest(_messages.Me
   r"""A SecuritycenterProjectsUpdateWebSecurityScannerSettingsRequest object.
 
   Fields:
-    name: The resource name of the WebSecurityScannerSettings. Formats: *
-      organizations/{organization}/webSecurityScannerSettings *
+    name: Identifier. The resource name of the WebSecurityScannerSettings.
+      Formats: * organizations/{organization}/webSecurityScannerSettings *
       folders/{folder}/webSecurityScannerSettings *
       projects/{project}/webSecurityScannerSettings
     updateMask: The list of fields to be updated.
@@ -8236,14 +8245,14 @@ class VirtualMachineThreatDetectionSettings(_messages.Message):
   Messages:
     ModulesValue: The configurations including the state of enablement for the
       service's different modules. The absence of a module in the map implies
-      its configuration is inherited from its parent's.
+      its configuration is inherited from its parent's configuration.
 
   Fields:
     modules: The configurations including the state of enablement for the
       service's different modules. The absence of a module in the map implies
-      its configuration is inherited from its parent's.
-    name: The resource name of the VirtualMachineThreatDetectionSettings.
-      Formats: *
+      its configuration is inherited from its parent's configuration.
+    name: Identifier. The resource name of the
+      VirtualMachineThreatDetectionSettings. Formats: *
       organizations/{organization}/virtualMachineThreatDetectionSettings *
       folders/{folder}/virtualMachineThreatDetectionSettings *
       projects/{project}/virtualMachineThreatDetectionSettings
@@ -8275,7 +8284,7 @@ class VirtualMachineThreatDetectionSettings(_messages.Message):
   class ModulesValue(_messages.Message):
     r"""The configurations including the state of enablement for the service's
     different modules. The absence of a module in the map implies its
-    configuration is inherited from its parent's.
+    configuration is inherited from its parent's configuration.
 
     Messages:
       AdditionalProperty: An additional property for a ModulesValue object.
@@ -8407,14 +8416,14 @@ class WebSecurityScannerSettings(_messages.Message):
   Messages:
     ModulesValue: The configurations including the state of enablement for the
       service's different modules. The absence of a module in the map implies
-      its configuration is inherited from its parent's.
+      its configuration is inherited from its parent's configuration.
 
   Fields:
     modules: The configurations including the state of enablement for the
       service's different modules. The absence of a module in the map implies
-      its configuration is inherited from its parent's.
-    name: The resource name of the WebSecurityScannerSettings. Formats: *
-      organizations/{organization}/webSecurityScannerSettings *
+      its configuration is inherited from its parent's configuration.
+    name: Identifier. The resource name of the WebSecurityScannerSettings.
+      Formats: * organizations/{organization}/webSecurityScannerSettings *
       folders/{folder}/webSecurityScannerSettings *
       projects/{project}/webSecurityScannerSettings
     serviceEnablementState: The state of enablement for the service at its
@@ -8443,7 +8452,7 @@ class WebSecurityScannerSettings(_messages.Message):
   class ModulesValue(_messages.Message):
     r"""The configurations including the state of enablement for the service's
     different modules. The absence of a module in the map implies its
-    configuration is inherited from its parent's.
+    configuration is inherited from its parent's configuration.
 
     Messages:
       AdditionalProperty: An additional property for a ModulesValue object.

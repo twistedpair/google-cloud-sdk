@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_AUTHZEXTENSIONS = (
+      'projects.locations.authzExtensions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/authzExtensions/'
+              '{authzExtensionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_EDGECACHEKEYSETS = (
       'projects.locations.edgeCacheKeysets',
       '{+name}',
@@ -252,6 +263,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_MULTICASTGROUPPRODUCERACTIVATIONS = (
+      'projects.locations.multicastGroupProducerActivations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'multicastGroupProducerActivations/'
+              '{multicastGroupProducerActivationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MULTICASTGROUPS = (
       'projects.locations.multicastGroups',
       '{+name}',
@@ -259,6 +282,18 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/multicastGroups/'
               '{multicastGroupsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MULTICASTPRODUCERASSOCIATIONS = (
+      'projects.locations.multicastProducerAssociations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'multicastProducerAssociations/'
+              '{multicastProducerAssociationsId}',
       },
       ['name'],
       True

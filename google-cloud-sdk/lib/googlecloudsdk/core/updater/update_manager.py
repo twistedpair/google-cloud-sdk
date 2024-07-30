@@ -350,10 +350,15 @@ class UpdateManager(object):
 
     if not url:
       url = properties.VALUES.component_manager.snapshot_url.Get()
-    if url:
-      if warn:
-        log.warning('You are using an overridden snapshot URL: [%s]', url)
-    else:
+
+    if url and warn:
+      log.warning('You are using an overridden snapshot URL: [%s]', url)
+
+    universe_domain = properties.GetUniverseDomain()
+    if not url and not properties.IsDefaultUniverse():
+      url = self.GetUniverseSnapshotURL(universe_domain)
+
+    if not url:
       url = properties.VALUES.component_manager.original_snapshot_url.Get()
     if not url:
       raise MissingUpdateURLError()
@@ -371,6 +376,11 @@ class UpdateManager(object):
     fixed_version = properties.VALUES.component_manager.fixed_sdk_version.Get()
     self.__fixed_version = fixed_version
     self.__skip_compile_python = skip_compile_python
+
+  def GetUniverseSnapshotURL(self, universe_domain):
+    """Get the snapshot URL based on the current universe domain."""
+    address = 'https://storage.googleapis.com/cloud-cli-release/release/components-2.json'
+    return address.replace('googleapis.com', universe_domain)
 
   def _EnableFallback(self):
     # pylint: disable=line-too-long

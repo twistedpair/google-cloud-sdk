@@ -3108,7 +3108,7 @@ class SecretVolumeSource(_messages.Message):
 
   Fields:
     secretName: Name of the secret referenced by the WorkspaceBinding.
-    secretVersion: Output only. Resource name of the SecretVersion. In format:
+    secretVersion: Optional. Resource name of the SecretVersion. In format:
       projects/*/secrets/*/versions/*
   """
 

@@ -975,162 +975,38 @@ class SanitizeUserPromptResponse(_messages.Message):
   sanitizationResult = _messages.MessageField('SanitizationResult', 1)
 
 
-class SdpAdvancedConfig(_messages.Message):
-  r"""SDP Advanced configuration.
-
-  Fields:
-    deidentifyTemplate: Optional. Optional SDP Deidentify template resource
-      name. If provided then DeidentifyContent action is performed during
-      Sanitization using this template and inspect template. The De-identified
-      data will be returned in SdpDeidentifyResult. Note that if only
-      Deidentify template is provided then SDP will perform identification
-      using all SDP built-in info types. e.g. `organizations/{organization}/de
-      identifyTemplates/{deidentify_template}`,
-      `projects/{project}/deidentifyTemplates/{deidentify_template}` `organiza
-      tions/{organization}/locations/{location}/deidentifyTemplates/{deidentif
-      y_template}` `projects/{project}/locations/{location}/deidentifyTemplate
-      s/{deidentify_template}`
-    inspectTemplate: Optional. SDP inspect template resource name If only
-      inspect template is provided (de-identify template not provided), then
-      SDP InspectContent action is performed during Sanitization. All DLP
-      findings identified during inspection will be returned as SdpFinding in
-      SdpInsepctionResult e.g.
-      `organizations/{organization}/inspectTemplates/{inspect_template}`,
-      `projects/{project}/inspectTemplates/{inspect_template}` `organizations/
-      {organization}/locations/{location}/inspectTemplates/{inspect_template}`
-      `projects/{project}/locations/{location}/inspectTemplates/{inspect_templ
-      ate}`
-  """
-
-  deidentifyTemplate = _messages.StringField(1)
-  inspectTemplate = _messages.StringField(2)
-
-
 class SdpBasicConfig(_messages.Message):
   r"""SDP Basic configuration.
 
-  Enums:
-    DefaultMinLikelihoodValueValuesEnum: Optional. A common minimum finding
-      likelihood for SDP info types. Only returns findings of likelihood equal
-      to or above this threshold.
-
   Fields:
-    defaultMinLikelihood: Optional. A common minimum finding likelihood for
-      SDP info types. Only returns findings of likelihood equal to or above
-      this threshold.
     sdpInfoTypes: Required. List of SDP information types enabled for
-      template. Note that the caller can specify at max 15 info types in the
-      below list. Any info types beyond 15 length will get truncated.
+      template. For each request, maximum 150 info types can be specified.
   """
 
-  class DefaultMinLikelihoodValueValuesEnum(_messages.Enum):
-    r"""Optional. A common minimum finding likelihood for SDP info types. Only
-    returns findings of likelihood equal to or above this threshold.
-
-    Values:
-      SDP_FINDING_LIKELIHOOD_UNSPECIFIED: Default value; same as POSSIBLE.
-      VERY_UNLIKELY: Highest chance of a false positive.
-      UNLIKELY: High chance of a false positive.
-      POSSIBLE: Some matching signals. The default value.
-      LIKELY: Low chance of a false positive.
-      VERY_LIKELY: Confidence level is high. Lowest chance of a false
-        positive.
-    """
-    SDP_FINDING_LIKELIHOOD_UNSPECIFIED = 0
-    VERY_UNLIKELY = 1
-    UNLIKELY = 2
-    POSSIBLE = 3
-    LIKELY = 4
-    VERY_LIKELY = 5
-
-  defaultMinLikelihood = _messages.EnumField('DefaultMinLikelihoodValueValuesEnum', 1)
-  sdpInfoTypes = _messages.MessageField('SdpInfoType', 2, repeated=True)
-
-
-class SdpDeidentifyResult(_messages.Message):
-  r"""SDP Deidentification Result.
-
-  Enums:
-    ExecutionStateValueValuesEnum: Output only. Reports whether SDP
-      deidentification was successfully executed or not.
-    MatchStateValueValuesEnum: Output only. Match state for SDP
-      Deidentification. Value is MATCH_FOUND if content is de-identified.
-
-  Fields:
-    data: De-identified data.
-    executionState: Output only. Reports whether SDP deidentification was
-      successfully executed or not.
-    matchState: Output only. Match state for SDP Deidentification. Value is
-      MATCH_FOUND if content is de-identified.
-    messageItems: Optional messages corresponding to the result. A message can
-      provide warnings or error details. For example, if execution state is
-      skipped then this field provides related reason/explanation.
-    transformedBytes: Total size in bytes that were transformed during
-      deidentification.
-  """
-
-  class ExecutionStateValueValuesEnum(_messages.Enum):
-    r"""Output only. Reports whether SDP deidentification was successfully
-    executed or not.
-
-    Values:
-      FILTER_EXECUTION_STATE_UNSPECIFIED: Unused
-      EXECUTION_SUCCESS: Filter executed successfully
-      EXECUTION_SKIPPED: Filter execution was skipped. This can happen due to
-        server-side error or permission issue.
-    """
-    FILTER_EXECUTION_STATE_UNSPECIFIED = 0
-    EXECUTION_SUCCESS = 1
-    EXECUTION_SKIPPED = 2
-
-  class MatchStateValueValuesEnum(_messages.Enum):
-    r"""Output only. Match state for SDP Deidentification. Value is
-    MATCH_FOUND if content is de-identified.
-
-    Values:
-      FILTER_MATCH_STATE_UNSPECIFIED: Unused
-      NO_MATCH_FOUND: Matching criteria is not achieved for filters.
-      MATCH_FOUND: Matching criteria is achieved for the filter.
-    """
-    FILTER_MATCH_STATE_UNSPECIFIED = 0
-    NO_MATCH_FOUND = 1
-    MATCH_FOUND = 2
-
-  data = _messages.MessageField('DataItem', 1)
-  executionState = _messages.EnumField('ExecutionStateValueValuesEnum', 2)
-  matchState = _messages.EnumField('MatchStateValueValuesEnum', 3)
-  messageItems = _messages.MessageField('MessageItem', 4, repeated=True)
-  transformedBytes = _messages.IntegerField(5)
+  sdpInfoTypes = _messages.MessageField('SdpInfoType', 1, repeated=True)
 
 
 class SdpFilterResult(_messages.Message):
   r"""SDP Filter Result.
 
   Fields:
-    deidentifyResult: SDP Deidentification result if deidentification is
-      performed.
     inspectResult: SDP Inspection result if inspection is performed.
   """
 
-  deidentifyResult = _messages.MessageField('SdpDeidentifyResult', 1)
-  inspectResult = _messages.MessageField('SdpInspectResult', 2)
+  inspectResult = _messages.MessageField('SdpInspectResult', 1)
 
 
 class SdpFilterSettings(_messages.Message):
   r"""Sensitive Data protection settings.
 
   Fields:
-    advancedConfig: Optional. Advanced SDP configuration which enables use of
-      SDP templates. Supports both SDP inspection and de-identification
-      operations.
     basicConfig: Optional. Basic SDP configuration which directly stores
       infotype settings. SDP templates cannot be used with basic
       configuration. Currently only SDP inspection operation is supported with
       basic configuration.
   """
 
-  advancedConfig = _messages.MessageField('SdpAdvancedConfig', 1)
-  basicConfig = _messages.MessageField('SdpBasicConfig', 2)
+  basicConfig = _messages.MessageField('SdpBasicConfig', 1)
 
 
 class SdpFinding(_messages.Message):
@@ -1193,8 +1069,7 @@ class SdpInfoType(_messages.Message):
   Enums:
     MinLikelihoodValueValuesEnum: Optional. Minimum finding likelihood
       override per SDP info type. Only returns findings if likelihood equal to
-      or above this threshold. If this value is 0 (Unspecified) then
-      `default_min_likelihood` is used.
+      or above this threshold.
 
   Fields:
     infoType: Required. SDP info type names are listed at
@@ -1202,14 +1077,12 @@ class SdpInfoType(_messages.Message):
       reference The name should conform to the pattern `[A-Za-z0-9$_-]{1,64}`.
     minLikelihood: Optional. Minimum finding likelihood override per SDP info
       type. Only returns findings if likelihood equal to or above this
-      threshold. If this value is 0 (Unspecified) then
-      `default_min_likelihood` is used.
+      threshold.
   """
 
   class MinLikelihoodValueValuesEnum(_messages.Enum):
     r"""Optional. Minimum finding likelihood override per SDP info type. Only
-    returns findings if likelihood equal to or above this threshold. If this
-    value is 0 (Unspecified) then `default_min_likelihood` is used.
+    returns findings if likelihood equal to or above this threshold.
 
     Values:
       SDP_FINDING_LIKELIHOOD_UNSPECIFIED: Default value; same as POSSIBLE.

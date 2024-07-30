@@ -1052,6 +1052,8 @@ class Cluster(_messages.Message):
       Instances. Note that Dataproc may set default values, and values may
       change when clusters are updated.Exactly one of ClusterConfig or
       VirtualClusterConfig must be specified.
+    creator: Output only. The email address of the user who created the
+      cluster.
     labels: Optional. The labels to associate with this cluster. Label keys
       must contain 1 to 63 characters, and must conform to RFC 1035
       (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
@@ -1107,12 +1109,42 @@ class Cluster(_messages.Message):
   clusterName = _messages.StringField(1)
   clusterUuid = _messages.StringField(2)
   config = _messages.MessageField('ClusterConfig', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  metrics = _messages.MessageField('ClusterMetrics', 5)
-  projectId = _messages.StringField(6)
-  status = _messages.MessageField('ClusterStatus', 7)
-  statusHistory = _messages.MessageField('ClusterStatus', 8, repeated=True)
-  virtualClusterConfig = _messages.MessageField('VirtualClusterConfig', 9)
+  creator = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  metrics = _messages.MessageField('ClusterMetrics', 6)
+  projectId = _messages.StringField(7)
+  status = _messages.MessageField('ClusterStatus', 8)
+  statusHistory = _messages.MessageField('ClusterStatus', 9, repeated=True)
+  virtualClusterConfig = _messages.MessageField('VirtualClusterConfig', 10)
+
+
+class ClusterAuthenticationConfig(_messages.Message):
+  r"""Cluster user workload credential configuration.
+
+  Enums:
+    UserWorkloadAuthenticationTypeValueValuesEnum: Optional. Authentication
+      type for the user workload running in containers.
+
+  Fields:
+    userWorkloadAuthenticationType: Optional. Authentication type for the user
+      workload running in containers.
+  """
+
+  class UserWorkloadAuthenticationTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Authentication type for the user workload running in
+    containers.
+
+    Values:
+      AUTHENTICATION_TYPE_UNSPECIFIED: Authentication type is not specified.
+      SYSTEM_SERVICE_ACCOUNT: Use the system service account credentials for
+        authenticating to other services.
+      END_USER_CREDENTIALS: use the end user credential for authentication.
+    """
+    AUTHENTICATION_TYPE_UNSPECIFIED = 0
+    SYSTEM_SERVICE_ACCOUNT = 1
+    END_USER_CREDENTIALS = 2
+
+  userWorkloadAuthenticationType = _messages.EnumField('UserWorkloadAuthenticationTypeValueValuesEnum', 1)
 
 
 class ClusterConfig(_messages.Message):
@@ -8980,13 +9012,16 @@ class SecurityConfig(_messages.Message):
   r"""Security related configuration, including encryption, Kerberos, etc.
 
   Fields:
+    authenticationConfig: Optional. User workload credential configuration.
+      This is mutually exclusive with the identity_config field.
     identityConfig: Optional. Identity related configuration, including
       service account based secure multi-tenancy user mappings.
     kerberosConfig: Optional. Kerberos related configuration.
   """
 
-  identityConfig = _messages.MessageField('IdentityConfig', 1)
-  kerberosConfig = _messages.MessageField('KerberosConfig', 2)
+  authenticationConfig = _messages.MessageField('ClusterAuthenticationConfig', 1)
+  identityConfig = _messages.MessageField('IdentityConfig', 2)
+  kerberosConfig = _messages.MessageField('KerberosConfig', 3)
 
 
 class Session(_messages.Message):
@@ -9514,7 +9549,7 @@ class SoftwareConfig(_messages.Message):
     imageVersion: Optional. The version of software inside the cluster. It
       must be one of the supported Dataproc Versions
       (https://cloud.google.com/dataproc/docs/concepts/versioning/dataproc-
-      versions#supported_dataproc_versions), such as "1.2" (including a
+      versions#supported-dataproc-image-versions), such as "1.2" (including a
       subminor version, such as "1.2.29"), or the "preview" version
       (https://cloud.google.com/dataproc/docs/concepts/versioning/dataproc-
       versions#other_versions). If unspecified, it defaults to the latest
@@ -9537,9 +9572,12 @@ class SoftwareConfig(_messages.Message):
     Values:
       COMPONENT_UNSPECIFIED: Unspecified component. Specifying this will cause
         Cluster creation to fail.
-      ANACONDA: The Anaconda python distribution. The Anaconda component is
-        not supported in the Dataproc 2.0 image. The 2.0 image is pre-
-        installed with Miniconda.
+      ANACONDA: The Anaconda component is no longer supported or applicable to
+        supported Dataproc on Compute Engine image versions
+        (https://cloud.google.com/dataproc/docs/concepts/versioning/dataproc-
+        version-clusters#supported-dataproc-image-versions). It cannot be
+        activated on clusters created with supported Dataproc on Compute
+        Engine image versions.
       DOCKER: Docker
       DRUID: The Druid query engine. (alpha)
       FLINK: Flink

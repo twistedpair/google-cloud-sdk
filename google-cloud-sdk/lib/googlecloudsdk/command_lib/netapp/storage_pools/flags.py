@@ -171,13 +171,14 @@ def AddStoragePoolEnableLdapArg(parser):
   )
 
 
-def AddStoragePoolAllowAutoTieringArg(parser):
+def AddStoragePoolAllowAutoTieringArg(parser, hidden=True):
   """Adds the --allow-auto-tiering arg to the given parser."""
   parser.add_argument(
       '--allow-auto-tiering',
       type=arg_parsers.ArgBoolean(
           truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey),
-      help="""Boolean flag indicating whether Storage Pool is allowed to use auto-tiering"""
+      help="""Boolean flag indicating whether Storage Pool is allowed to use auto-tiering""",
+      hidden=hidden
   )
 
 
@@ -218,11 +219,14 @@ def AddStoragePoolCreateArgs(parser, release_track):
   AddStoragePoolActiveDirectoryArg(parser)
   AddStoragePoolKmsConfigArg(parser)
   AddStoragePoolEnableLdapArg(parser)
+  # TODO(b/354772678):Remove the release track condition when auto tiering GA.
   if (release_track == base.ReleaseTrack.ALPHA or
       release_track == base.ReleaseTrack.BETA):
-    AddStoragePoolAllowAutoTieringArg(parser)
+    AddStoragePoolAllowAutoTieringArg(parser, False)
     AddStoragePoolZoneArg(parser)
     AddStoragePoolReplicaZoneArg(parser)
+  else:
+    AddStoragePoolAllowAutoTieringArg(parser, True)
 
 
 def AddStoragePoolDeleteArgs(parser):
@@ -243,11 +247,14 @@ def AddStoragePoolUpdateArgs(parser, release_track):
   flags.AddResourceCapacityArg(parser, 'Storage Pool', required=False)
   labels_util.AddUpdateLabelsFlags(parser)
   AddStoragePoolActiveDirectoryArg(parser)
+  # TODO(b/354772678):Remove the release track condition when auto tiering GA.
   if (release_track == base.ReleaseTrack.ALPHA or
       release_track == base.ReleaseTrack.BETA):
-    AddStoragePoolAllowAutoTieringArg(parser)
+    AddStoragePoolAllowAutoTieringArg(parser, False)
     AddStoragePoolZoneArg(parser)
     AddStoragePoolReplicaZoneArg(parser)
+  else:
+    AddStoragePoolAllowAutoTieringArg(parser, True)
 
 
 def AddStoragePoolSwitchArg(parser):

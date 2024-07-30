@@ -1476,6 +1476,81 @@ class Cluster(_messages.Message):
   updateTime = _messages.StringField(32)
 
 
+class ClusterUpgradeDetails(_messages.Message):
+  r"""Upgrade details of a cluster. This cluster can be primary or secondary.
+
+  Enums:
+    ClusterTypeValueValuesEnum: Cluster type which can either be primary or
+      secondary.
+    DatabaseVersionValueValuesEnum: Database version of the cluster after the
+      upgrade operation. This will be the target version if the upgrade was
+      successful otherwise it remains the same as that before the upgrade
+      operation.
+    UpgradeStatusValueValuesEnum: Upgrade status of the cluster.
+
+  Fields:
+    clusterType: Cluster type which can either be primary or secondary.
+    databaseVersion: Database version of the cluster after the upgrade
+      operation. This will be the target version if the upgrade was successful
+      otherwise it remains the same as that before the upgrade operation.
+    instanceUpgradeDetails: Upgrade details of the instances directly
+      associated with this cluster.
+    name: Normalized name of the cluster
+    stageInfo: Array containing stage info associated with this cluster.
+    upgradeStatus: Upgrade status of the cluster.
+  """
+
+  class ClusterTypeValueValuesEnum(_messages.Enum):
+    r"""Cluster type which can either be primary or secondary.
+
+    Values:
+      CLUSTER_TYPE_UNSPECIFIED: The type of the cluster is unknown.
+      PRIMARY: Primary cluster that support read and write operations.
+      SECONDARY: Secondary cluster that is replicating from another region.
+        This only supports read.
+    """
+    CLUSTER_TYPE_UNSPECIFIED = 0
+    PRIMARY = 1
+    SECONDARY = 2
+
+  class DatabaseVersionValueValuesEnum(_messages.Enum):
+    r"""Database version of the cluster after the upgrade operation. This will
+    be the target version if the upgrade was successful otherwise it remains
+    the same as that before the upgrade operation.
+
+    Values:
+      DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
+      POSTGRES_13: DEPRECATED - The database version is Postgres 13.
+      POSTGRES_14: The database version is Postgres 14.
+      POSTGRES_15: The database version is Postgres 15.
+    """
+    DATABASE_VERSION_UNSPECIFIED = 0
+    POSTGRES_13 = 1
+    POSTGRES_14 = 2
+    POSTGRES_15 = 3
+
+  class UpgradeStatusValueValuesEnum(_messages.Enum):
+    r"""Upgrade status of the cluster.
+
+    Values:
+      STATUS_UNSPECIFIED: Unspecified status.
+      SUCCESS: Operation succeeded.
+      FAILED: Operation failed.
+      PARTIAL_SUCCESS: Operation partially succeeded.
+    """
+    STATUS_UNSPECIFIED = 0
+    SUCCESS = 1
+    FAILED = 2
+    PARTIAL_SUCCESS = 3
+
+  clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 1)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
+  instanceUpgradeDetails = _messages.MessageField('InstanceUpgradeDetails', 3, repeated=True)
+  name = _messages.StringField(4)
+  stageInfo = _messages.MessageField('StageInfo', 5, repeated=True)
+  upgradeStatus = _messages.EnumField('UpgradeStatusValueValuesEnum', 6)
+
+
 class ConnectionInfo(_messages.Message):
   r"""ConnectionInfo singleton resource. https://google.aip.dev/156
 
@@ -2107,6 +2182,57 @@ class InstanceNetworkConfig(_messages.Message):
 
   authorizedExternalNetworks = _messages.MessageField('AuthorizedNetwork', 1, repeated=True)
   enablePublicIp = _messages.BooleanField(2)
+
+
+class InstanceUpgradeDetails(_messages.Message):
+  r"""Details regarding the upgrade of instaces associated with a cluster.
+
+  Enums:
+    InstanceTypeValueValuesEnum: Instance type.
+    UpgradeStatusValueValuesEnum: Upgrade status of the instance.
+
+  Fields:
+    instanceType: Instance type.
+    name: Normalized name of the instance.
+    upgradeStatus: Upgrade status of the instance.
+  """
+
+  class InstanceTypeValueValuesEnum(_messages.Enum):
+    r"""Instance type.
+
+    Values:
+      INSTANCE_TYPE_UNSPECIFIED: The type of the instance is unknown.
+      PRIMARY: PRIMARY instances support read and write operations.
+      READ_POOL: READ POOL instances support read operations only. Each read
+        pool instance consists of one or more homogeneous nodes. * Read pool
+        of size 1 can only have zonal availability. * Read pools with node
+        count of 2 or more can have regional availability (nodes are present
+        in 2 or more zones in a region).
+      SECONDARY: SECONDARY instances support read operations only. SECONDARY
+        instance is a cross-region read replica
+    """
+    INSTANCE_TYPE_UNSPECIFIED = 0
+    PRIMARY = 1
+    READ_POOL = 2
+    SECONDARY = 3
+
+  class UpgradeStatusValueValuesEnum(_messages.Enum):
+    r"""Upgrade status of the instance.
+
+    Values:
+      STATUS_UNSPECIFIED: Unspecified status.
+      SUCCESS: Operation succeeded.
+      FAILED: Operation failed.
+      PARTIAL_SUCCESS: Operation partially succeeded.
+    """
+    STATUS_UNSPECIFIED = 0
+    SUCCESS = 1
+    FAILED = 2
+    PARTIAL_SUCCESS = 3
+
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  upgradeStatus = _messages.EnumField('UpgradeStatusValueValuesEnum', 3)
 
 
 class IntegerRestrictions(_messages.Message):
@@ -2756,6 +2882,58 @@ class SslConfig(_messages.Message):
   sslMode = _messages.EnumField('SslModeValueValuesEnum', 2)
 
 
+class StageInfo(_messages.Message):
+  r"""Stage information for different stages in the upgrade process.
+
+  Enums:
+    StageValueValuesEnum: The stage.
+    StatusValueValuesEnum: Status of the stage.
+
+  Fields:
+    logsUrl: logs_url is the URL for the logs associated with a stage if that
+      stage has logs. Right now, only three stages have logs:
+      ALLOYDB_PRECHECK, PG_UPGRADE_CHECK, PRIMARY_INSTANCE_UPGRADE.
+    stage: The stage.
+    status: Status of the stage.
+  """
+
+  class StageValueValuesEnum(_messages.Enum):
+    r"""The stage.
+
+    Values:
+      STAGE_UNSPECIFIED: Unspecified stage.
+      ALLOYDB_PRECHECK: This stage is for the custom checks done before
+        upgrade.
+      PG_UPGRADE_CHECK: This stage is for `pg_upgrade --check` run before
+        upgrade.
+      PRIMARY_INSTANCE_UPGRADE: This stage is primary upgrade.
+      READ_POOL_UPGRADE: This stage is read pool upgrade.
+    """
+    STAGE_UNSPECIFIED = 0
+    ALLOYDB_PRECHECK = 1
+    PG_UPGRADE_CHECK = 2
+    PRIMARY_INSTANCE_UPGRADE = 3
+    READ_POOL_UPGRADE = 4
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Status of the stage.
+
+    Values:
+      STATUS_UNSPECIFIED: Unspecified status.
+      SUCCESS: Operation succeeded.
+      FAILED: Operation failed.
+      PARTIAL_SUCCESS: Operation partially succeeded.
+    """
+    STATUS_UNSPECIFIED = 0
+    SUCCESS = 1
+    FAILED = 2
+    PARTIAL_SUCCESS = 3
+
+  logsUrl = _messages.StringField(1)
+  stage = _messages.EnumField('StageValueValuesEnum', 2)
+  status = _messages.EnumField('StatusValueValuesEnum', 3)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -2980,38 +3158,18 @@ class StorageDatabasecenterPartnerapiV1mainCompliance(_messages.Message):
 
 
 class StorageDatabasecenterPartnerapiV1mainCustomMetadataData(_messages.Message):
-  r"""Any custom metadata associated with the resource. i.e. A spanner
+  r"""Any custom metadata associated with the resource. e.g. A spanner
   instance can have multiple databases with its own unique metadata.
   Information for these individual databases can be captured in custom
   metadata data
 
   Fields:
-    databaseMetadata: A StorageDatabasecenterPartnerapiV1mainDatabaseMetadata
-      attribute.
+    internalResourceMetadata: Metadata for individual internal resources in an
+      instance. e.g. spanner instance can have multiple databases with unique
+      configuration.
   """
 
-  databaseMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseMetadata', 1, repeated=True)
-
-
-class StorageDatabasecenterPartnerapiV1mainDatabaseMetadata(_messages.Message):
-  r"""Metadata for individual databases created in an instance. i.e. spanner
-  instance can have multiple databases with unique configuration settings.
-
-  Fields:
-    backupConfiguration: Backup configuration for this database
-    backupRun: Information about the last backup attempt for this database
-    product: A StorageDatabasecenterProtoCommonProduct attribute.
-    resourceId: A StorageDatabasecenterPartnerapiV1mainDatabaseResourceId
-      attribute.
-    resourceName: Required. Database name. Resource name to follow CAIS
-      resource_name format as noted here go/condor-common-datamodel
-  """
-
-  backupConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupConfiguration', 1)
-  backupRun = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupRun', 2)
-  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 3)
-  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 4)
-  resourceName = _messages.StringField(5)
+  internalResourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainInternalResourceMetadata', 1, repeated=True)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Message):
@@ -3497,8 +3655,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
     resourceType: Required. The type of resource this ID is identifying. Ex
       redis.googleapis.com/Instance, redis.googleapis.com/Cluster,
       alloydb.googleapis.com/Cluster, alloydb.googleapis.com/Instance,
-      spanner.googleapis.com/Instance REQUIRED Please refer go/condor-common-
-      datamodel
+      spanner.googleapis.com/Instance, firestore.googleapis.com/Database,
+      REQUIRED Please refer go/condor-common-datamodel
     uniqueId: Required. A service-local token that distinguishes this resource
       from other resources within the same service.
   """
@@ -4078,6 +4236,29 @@ class StorageDatabasecenterPartnerapiV1mainEntitlement(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
+class StorageDatabasecenterPartnerapiV1mainInternalResourceMetadata(_messages.Message):
+  r"""Metadata for individual internal resources in an instance. e.g. spanner
+  instance can have multiple databases with unique configuration settings.
+  Similarly bigtable can have multiple clusters within same bigtable instance.
+
+  Fields:
+    backupConfiguration: Backup configuration for this database
+    backupRun: Information about the last backup attempt for this database
+    product: A StorageDatabasecenterProtoCommonProduct attribute.
+    resourceId: A StorageDatabasecenterPartnerapiV1mainDatabaseResourceId
+      attribute.
+    resourceName: Required. internal resource name for spanner this will be
+      database name e.g."spanner.googleapis.com/projects/123/abc/instances/ins
+      t1/databases/db1"
+  """
+
+  backupConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupConfiguration', 1)
+  backupRun = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupRun', 2)
+  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 3)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 4)
+  resourceName = _messages.StringField(5)
+
+
 class StorageDatabasecenterPartnerapiV1mainMachineConfiguration(_messages.Message):
   r"""MachineConfiguration describes the configuration of a machine specific
   to Database Resource.
@@ -4312,6 +4493,8 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
         dialect.
       ENGINE_OTHER: Other refers to rest of other database engine. This is to
         be when engine is known, but it is not present in this enum.
+      ENGINE_FIRESTORE_WITH_NATIVE_MODE: Firestore with native mode.
+      ENGINE_FIRESTORE_WITH_DATASTORE_MODE: Firestore with datastore mode.
     """
     ENGINE_UNSPECIFIED = 0
     ENGINE_MYSQL = 1
@@ -4327,6 +4510,8 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     ENGINE_MEMORYSTORE_FOR_REDIS = 11
     ENGINE_MEMORYSTORE_FOR_REDIS_CLUSTER = 12
     ENGINE_OTHER = 13
+    ENGINE_FIRESTORE_WITH_NATIVE_MODE = 14
+    ENGINE_FIRESTORE_WITH_DATASTORE_MODE = 15
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of specific database product. It could be CloudSQL, AlloyDB etc..
@@ -4345,6 +4530,7 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
       PRODUCT_TYPE_BIGTABLE: Bigtable product area in GCP
       PRODUCT_TYPE_OTHER: Other refers to rest of other product type. This is
         to be when product type is known, but it is not present in this enum.
+      PRODUCT_TYPE_FIRESTORE: Firestore product area in GCP.
     """
     PRODUCT_TYPE_UNSPECIFIED = 0
     PRODUCT_TYPE_CLOUD_SQL = 1
@@ -4357,6 +4543,7 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     PRODUCT_TYPE_MEMORYSTORE = 8
     PRODUCT_TYPE_BIGTABLE = 9
     PRODUCT_TYPE_OTHER = 10
+    PRODUCT_TYPE_FIRESTORE = 11
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -4510,6 +4697,40 @@ class TrialMetadata(_messages.Message):
   graceEndTime = _messages.StringField(2)
   startTime = _messages.StringField(3)
   upgradeTime = _messages.StringField(4)
+
+
+class UpgradeClusterResponse(_messages.Message):
+  r"""UpgradeClusterResponse contains the response for upgrade cluster
+  operation.
+
+  Enums:
+    StatusValueValuesEnum: Status of upgrade operation.
+
+  Fields:
+    clusterUpgradeDetails: Array of upgrade details for the current cluster
+      and all the secondary clusters associated with this cluster.
+    message: A user friendly message summarising the upgrade operation details
+      and the next steps for the user if there is any.
+    status: Status of upgrade operation.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Status of upgrade operation.
+
+    Values:
+      STATUS_UNSPECIFIED: Unspecified status.
+      SUCCESS: Operation succeeded.
+      FAILED: Operation failed.
+      PARTIAL_SUCCESS: Operation partially succeeded.
+    """
+    STATUS_UNSPECIFIED = 0
+    SUCCESS = 1
+    FAILED = 2
+    PARTIAL_SUCCESS = 3
+
+  clusterUpgradeDetails = _messages.MessageField('ClusterUpgradeDetails', 1, repeated=True)
+  message = _messages.StringField(2)
+  status = _messages.EnumField('StatusValueValuesEnum', 3)
 
 
 class User(_messages.Message):

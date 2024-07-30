@@ -252,6 +252,19 @@ class AlloydbProjectsLocationsClustersDeleteRequest(_messages.Message):
   validateOnly = _messages.BooleanField(5)
 
 
+class AlloydbProjectsLocationsClustersExportRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersExportRequest object.
+
+  Fields:
+    exportClusterRequest: A ExportClusterRequest resource to be passed as the
+      request body.
+    name: Required. The resource name of the cluster.
+  """
+
+  exportClusterRequest = _messages.MessageField('ExportClusterRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AlloydbProjectsLocationsClustersGetRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersGetRequest object.
 
@@ -986,6 +999,9 @@ class Backup(_messages.Message):
       of arbitrary data. This is distinct from labels.
       https://google.aip.dev/128
     LabelsValue: Labels as key value pairs
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: ``` "123/environment": "production",
+      "123/costCenter": "marketing" ```
 
   Fields:
     annotations: Annotations to allow client tools to store small amount of
@@ -1032,6 +1048,9 @@ class Backup(_messages.Message):
     satisfiesPzs: Output only. Reserved for future use.
     sizeBytes: Output only. The size of the backup in bytes.
     state: Output only. The current state of the backup.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: ``` "123/environment": "production",
+      "123/costCenter": "marketing" ```
     type: The backup type, which suggests the trigger for the backup.
     uid: Output only. The system-generated UID of the resource. The UID is
       assigned when the resource is created, and it is retained until it is
@@ -1140,6 +1159,32 @@ class Backup(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: ``` "123/environment": "production",
+    "123/costCenter": "marketing" ```
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   clusterName = _messages.StringField(2)
   clusterUid = _messages.StringField(3)
@@ -1161,9 +1206,10 @@ class Backup(_messages.Message):
   satisfiesPzs = _messages.BooleanField(19)
   sizeBytes = _messages.IntegerField(20)
   state = _messages.EnumField('StateValueValuesEnum', 21)
-  type = _messages.EnumField('TypeValueValuesEnum', 22)
-  uid = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
+  tags = _messages.MessageField('TagsValue', 22)
+  type = _messages.EnumField('TypeValueValuesEnum', 23)
+  uid = _messages.StringField(24)
+  updateTime = _messages.StringField(25)
 
 
 class BackupSource(_messages.Message):
@@ -1256,6 +1302,9 @@ class Cluster(_messages.Message):
       of arbitrary data. This is distinct from labels.
       https://google.aip.dev/128
     LabelsValue: Labels as key value pairs
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: ``` "123/environment": "production",
+      "123/costCenter": "marketing" ```
 
   Fields:
     annotations: Annotations to allow client tools to store small amount of
@@ -1331,6 +1380,9 @@ class Cluster(_messages.Message):
     sslConfig: SSL configuration for this AlloyDB cluster.
     state: Output only. The current serving state of the cluster.
     subscriptionType: Optional. Subscription type of the cluster.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: ``` "123/environment": "production",
+      "123/costCenter": "marketing" ```
     trialMetadata: Output only. Metadata for free trial clusters
     uid: Output only. The system-generated UID of the resource. The UID is
       assigned when the resource is created, and it is retained until it is
@@ -1471,6 +1523,32 @@ class Cluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: ``` "123/environment": "production",
+    "123/costCenter": "marketing" ```
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   automatedBackupPolicy = _messages.MessageField('AutomatedBackupPolicy', 2)
   backupSource = _messages.MessageField('BackupSource', 3)
@@ -1502,9 +1580,87 @@ class Cluster(_messages.Message):
   sslConfig = _messages.MessageField('SslConfig', 29)
   state = _messages.EnumField('StateValueValuesEnum', 30)
   subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 31)
-  trialMetadata = _messages.MessageField('TrialMetadata', 32)
-  uid = _messages.StringField(33)
-  updateTime = _messages.StringField(34)
+  tags = _messages.MessageField('TagsValue', 32)
+  trialMetadata = _messages.MessageField('TrialMetadata', 33)
+  uid = _messages.StringField(34)
+  updateTime = _messages.StringField(35)
+
+
+class ClusterUpgradeDetails(_messages.Message):
+  r"""Upgrade details of a cluster. This cluster can be primary or secondary.
+
+  Enums:
+    ClusterTypeValueValuesEnum: Cluster type which can either be primary or
+      secondary.
+    DatabaseVersionValueValuesEnum: Database version of the cluster after the
+      upgrade operation. This will be the target version if the upgrade was
+      successful otherwise it remains the same as that before the upgrade
+      operation.
+    UpgradeStatusValueValuesEnum: Upgrade status of the cluster.
+
+  Fields:
+    clusterType: Cluster type which can either be primary or secondary.
+    databaseVersion: Database version of the cluster after the upgrade
+      operation. This will be the target version if the upgrade was successful
+      otherwise it remains the same as that before the upgrade operation.
+    instanceUpgradeDetails: Upgrade details of the instances directly
+      associated with this cluster.
+    name: Normalized name of the cluster
+    stageInfo: Array containing stage info associated with this cluster.
+    upgradeStatus: Upgrade status of the cluster.
+  """
+
+  class ClusterTypeValueValuesEnum(_messages.Enum):
+    r"""Cluster type which can either be primary or secondary.
+
+    Values:
+      CLUSTER_TYPE_UNSPECIFIED: The type of the cluster is unknown.
+      PRIMARY: Primary cluster that support read and write operations.
+      SECONDARY: Secondary cluster that is replicating from another region.
+        This only supports read.
+    """
+    CLUSTER_TYPE_UNSPECIFIED = 0
+    PRIMARY = 1
+    SECONDARY = 2
+
+  class DatabaseVersionValueValuesEnum(_messages.Enum):
+    r"""Database version of the cluster after the upgrade operation. This will
+    be the target version if the upgrade was successful otherwise it remains
+    the same as that before the upgrade operation.
+
+    Values:
+      DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
+      POSTGRES_13: DEPRECATED - The database version is Postgres 13.
+      POSTGRES_14: The database version is Postgres 14.
+      POSTGRES_15: The database version is Postgres 15.
+      POSTGRES_16: The database version is Postgres 16.
+    """
+    DATABASE_VERSION_UNSPECIFIED = 0
+    POSTGRES_13 = 1
+    POSTGRES_14 = 2
+    POSTGRES_15 = 3
+    POSTGRES_16 = 4
+
+  class UpgradeStatusValueValuesEnum(_messages.Enum):
+    r"""Upgrade status of the cluster.
+
+    Values:
+      STATUS_UNSPECIFIED: Unspecified status.
+      SUCCESS: Operation succeeded.
+      FAILED: Operation failed.
+      PARTIAL_SUCCESS: Operation partially succeeded.
+    """
+    STATUS_UNSPECIFIED = 0
+    SUCCESS = 1
+    FAILED = 2
+    PARTIAL_SUCCESS = 3
+
+  clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 1)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
+  instanceUpgradeDetails = _messages.MessageField('InstanceUpgradeDetails', 3, repeated=True)
+  name = _messages.StringField(4)
+  stageInfo = _messages.MessageField('StageInfo', 5, repeated=True)
+  upgradeStatus = _messages.EnumField('UpgradeStatusValueValuesEnum', 6)
 
 
 class ConnectionInfo(_messages.Message):
@@ -1621,6 +1777,17 @@ class ContinuousBackupSource(_messages.Message):
   pointInTime = _messages.StringField(2)
 
 
+class CsvExportOptions(_messages.Message):
+  r"""Options for exporting data in CSV format. For now, we only support a
+  query to get the data that needs to be exported.
+
+  Fields:
+    selectQuery: Required. The select_query used to extract the data.
+  """
+
+  selectQuery = _messages.StringField(1)
+
+
 class DenyMaintenancePeriod(_messages.Message):
   r"""DenyMaintenancePeriod definition. Excepting emergencies, maintenance
   will not be scheduled to start within this deny period. The start_date must
@@ -1698,6 +1865,22 @@ class EncryptionInfo(_messages.Message):
   kmsKeyVersions = _messages.StringField(2, repeated=True)
 
 
+class ExportClusterRequest(_messages.Message):
+  r"""Export cluster request.
+
+  Fields:
+    csvExportOptions: Required. Options for exporting data in CSV format.
+    database: Required. Name of the database where the query will be executed.
+      Note - Value provided should be the same as expected from `SELECT
+      current_database();` and NOT as a resource reference.
+    gcsDestination: Required. Option to export data to cloud storage.
+  """
+
+  csvExportOptions = _messages.MessageField('CsvExportOptions', 1)
+  database = _messages.StringField(2)
+  gcsDestination = _messages.MessageField('GcsDestination', 3)
+
+
 class FailoverInstanceRequest(_messages.Message):
   r"""Message for triggering failover on an Instance
 
@@ -1720,6 +1903,19 @@ class FailoverInstanceRequest(_messages.Message):
 
   requestId = _messages.StringField(1)
   validateOnly = _messages.BooleanField(2)
+
+
+class GcsDestination(_messages.Message):
+  r"""Destination for Export. Export will be done to cloud storage.
+
+  Fields:
+    uri: Required. The path to the file in Google Cloud Storage where the
+      export will be stored. The URI is in the form
+      `gs://bucketName/fileName`. If the file already exists, the request
+      succeeds, but the operation fails.
+  """
+
+  uri = _messages.StringField(1)
 
 
 class GeminiClusterConfig(_messages.Message):
@@ -2253,6 +2449,57 @@ class InstanceNetworkConfig(_messages.Message):
   enablePublicIp = _messages.BooleanField(3)
 
 
+class InstanceUpgradeDetails(_messages.Message):
+  r"""Details regarding the upgrade of instaces associated with a cluster.
+
+  Enums:
+    InstanceTypeValueValuesEnum: Instance type.
+    UpgradeStatusValueValuesEnum: Upgrade status of the instance.
+
+  Fields:
+    instanceType: Instance type.
+    name: Normalized name of the instance.
+    upgradeStatus: Upgrade status of the instance.
+  """
+
+  class InstanceTypeValueValuesEnum(_messages.Enum):
+    r"""Instance type.
+
+    Values:
+      INSTANCE_TYPE_UNSPECIFIED: The type of the instance is unknown.
+      PRIMARY: PRIMARY instances support read and write operations.
+      READ_POOL: READ POOL instances support read operations only. Each read
+        pool instance consists of one or more homogeneous nodes. * Read pool
+        of size 1 can only have zonal availability. * Read pools with node
+        count of 2 or more can have regional availability (nodes are present
+        in 2 or more zones in a region).
+      SECONDARY: SECONDARY instances support read operations only. SECONDARY
+        instance is a cross-region read replica
+    """
+    INSTANCE_TYPE_UNSPECIFIED = 0
+    PRIMARY = 1
+    READ_POOL = 2
+    SECONDARY = 3
+
+  class UpgradeStatusValueValuesEnum(_messages.Enum):
+    r"""Upgrade status of the instance.
+
+    Values:
+      STATUS_UNSPECIFIED: Unspecified status.
+      SUCCESS: Operation succeeded.
+      FAILED: Operation failed.
+      PARTIAL_SUCCESS: Operation partially succeeded.
+    """
+    STATUS_UNSPECIFIED = 0
+    SUCCESS = 1
+    FAILED = 2
+    PARTIAL_SUCCESS = 3
+
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  upgradeStatus = _messages.EnumField('UpgradeStatusValueValuesEnum', 3)
+
+
 class IntegerRestrictions(_messages.Message):
   r"""Restrictions on INTEGER type values.
 
@@ -2518,6 +2765,8 @@ class ObservabilityInstanceConfig(_messages.Message):
       is turned "off" by default.
     trackActiveQueries: Track actively running queries on the instance. If not
       set, this flag is "off" by default.
+    trackClientAddress: Track client address for an instance. If not set,
+      default value is "off".
     trackWaitEventTypes: Output only. Track wait event types during query
       execution for an instance. This flag is turned "on" by default but
       tracking is enabled only after observability enabled flag is also turned
@@ -2533,8 +2782,9 @@ class ObservabilityInstanceConfig(_messages.Message):
   queryPlansPerMinute = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   recordApplicationTags = _messages.BooleanField(5)
   trackActiveQueries = _messages.BooleanField(6)
-  trackWaitEventTypes = _messages.BooleanField(7)
-  trackWaitEvents = _messages.BooleanField(8)
+  trackClientAddress = _messages.BooleanField(7)
+  trackWaitEventTypes = _messages.BooleanField(8)
+  trackWaitEvents = _messages.BooleanField(9)
 
 
 class Operation(_messages.Message):
@@ -2941,6 +3191,58 @@ class SslConfig(_messages.Message):
   sslMode = _messages.EnumField('SslModeValueValuesEnum', 2)
 
 
+class StageInfo(_messages.Message):
+  r"""Stage information for different stages in the upgrade process.
+
+  Enums:
+    StageValueValuesEnum: The stage.
+    StatusValueValuesEnum: Status of the stage.
+
+  Fields:
+    logsUrl: logs_url is the URL for the logs associated with a stage if that
+      stage has logs. Right now, only three stages have logs:
+      ALLOYDB_PRECHECK, PG_UPGRADE_CHECK, PRIMARY_INSTANCE_UPGRADE.
+    stage: The stage.
+    status: Status of the stage.
+  """
+
+  class StageValueValuesEnum(_messages.Enum):
+    r"""The stage.
+
+    Values:
+      STAGE_UNSPECIFIED: Unspecified stage.
+      ALLOYDB_PRECHECK: This stage is for the custom checks done before
+        upgrade.
+      PG_UPGRADE_CHECK: This stage is for `pg_upgrade --check` run before
+        upgrade.
+      PRIMARY_INSTANCE_UPGRADE: This stage is primary upgrade.
+      READ_POOL_UPGRADE: This stage is read pool upgrade.
+    """
+    STAGE_UNSPECIFIED = 0
+    ALLOYDB_PRECHECK = 1
+    PG_UPGRADE_CHECK = 2
+    PRIMARY_INSTANCE_UPGRADE = 3
+    READ_POOL_UPGRADE = 4
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Status of the stage.
+
+    Values:
+      STATUS_UNSPECIFIED: Unspecified status.
+      SUCCESS: Operation succeeded.
+      FAILED: Operation failed.
+      PARTIAL_SUCCESS: Operation partially succeeded.
+    """
+    STATUS_UNSPECIFIED = 0
+    SUCCESS = 1
+    FAILED = 2
+    PARTIAL_SUCCESS = 3
+
+  logsUrl = _messages.StringField(1)
+  stage = _messages.EnumField('StageValueValuesEnum', 2)
+  status = _messages.EnumField('StatusValueValuesEnum', 3)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -3165,38 +3467,18 @@ class StorageDatabasecenterPartnerapiV1mainCompliance(_messages.Message):
 
 
 class StorageDatabasecenterPartnerapiV1mainCustomMetadataData(_messages.Message):
-  r"""Any custom metadata associated with the resource. i.e. A spanner
+  r"""Any custom metadata associated with the resource. e.g. A spanner
   instance can have multiple databases with its own unique metadata.
   Information for these individual databases can be captured in custom
   metadata data
 
   Fields:
-    databaseMetadata: A StorageDatabasecenterPartnerapiV1mainDatabaseMetadata
-      attribute.
+    internalResourceMetadata: Metadata for individual internal resources in an
+      instance. e.g. spanner instance can have multiple databases with unique
+      configuration.
   """
 
-  databaseMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseMetadata', 1, repeated=True)
-
-
-class StorageDatabasecenterPartnerapiV1mainDatabaseMetadata(_messages.Message):
-  r"""Metadata for individual databases created in an instance. i.e. spanner
-  instance can have multiple databases with unique configuration settings.
-
-  Fields:
-    backupConfiguration: Backup configuration for this database
-    backupRun: Information about the last backup attempt for this database
-    product: A StorageDatabasecenterProtoCommonProduct attribute.
-    resourceId: A StorageDatabasecenterPartnerapiV1mainDatabaseResourceId
-      attribute.
-    resourceName: Required. Database name. Resource name to follow CAIS
-      resource_name format as noted here go/condor-common-datamodel
-  """
-
-  backupConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupConfiguration', 1)
-  backupRun = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupRun', 2)
-  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 3)
-  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 4)
-  resourceName = _messages.StringField(5)
+  internalResourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainInternalResourceMetadata', 1, repeated=True)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Message):
@@ -3682,8 +3964,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
     resourceType: Required. The type of resource this ID is identifying. Ex
       redis.googleapis.com/Instance, redis.googleapis.com/Cluster,
       alloydb.googleapis.com/Cluster, alloydb.googleapis.com/Instance,
-      spanner.googleapis.com/Instance REQUIRED Please refer go/condor-common-
-      datamodel
+      spanner.googleapis.com/Instance, firestore.googleapis.com/Database,
+      REQUIRED Please refer go/condor-common-datamodel
     uniqueId: Required. A service-local token that distinguishes this resource
       from other resources within the same service.
   """
@@ -4263,6 +4545,29 @@ class StorageDatabasecenterPartnerapiV1mainEntitlement(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
+class StorageDatabasecenterPartnerapiV1mainInternalResourceMetadata(_messages.Message):
+  r"""Metadata for individual internal resources in an instance. e.g. spanner
+  instance can have multiple databases with unique configuration settings.
+  Similarly bigtable can have multiple clusters within same bigtable instance.
+
+  Fields:
+    backupConfiguration: Backup configuration for this database
+    backupRun: Information about the last backup attempt for this database
+    product: A StorageDatabasecenterProtoCommonProduct attribute.
+    resourceId: A StorageDatabasecenterPartnerapiV1mainDatabaseResourceId
+      attribute.
+    resourceName: Required. internal resource name for spanner this will be
+      database name e.g."spanner.googleapis.com/projects/123/abc/instances/ins
+      t1/databases/db1"
+  """
+
+  backupConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupConfiguration', 1)
+  backupRun = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupRun', 2)
+  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 3)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 4)
+  resourceName = _messages.StringField(5)
+
+
 class StorageDatabasecenterPartnerapiV1mainMachineConfiguration(_messages.Message):
   r"""MachineConfiguration describes the configuration of a machine specific
   to Database Resource.
@@ -4497,6 +4802,8 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
         dialect.
       ENGINE_OTHER: Other refers to rest of other database engine. This is to
         be when engine is known, but it is not present in this enum.
+      ENGINE_FIRESTORE_WITH_NATIVE_MODE: Firestore with native mode.
+      ENGINE_FIRESTORE_WITH_DATASTORE_MODE: Firestore with datastore mode.
     """
     ENGINE_UNSPECIFIED = 0
     ENGINE_MYSQL = 1
@@ -4512,6 +4819,8 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     ENGINE_MEMORYSTORE_FOR_REDIS = 11
     ENGINE_MEMORYSTORE_FOR_REDIS_CLUSTER = 12
     ENGINE_OTHER = 13
+    ENGINE_FIRESTORE_WITH_NATIVE_MODE = 14
+    ENGINE_FIRESTORE_WITH_DATASTORE_MODE = 15
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of specific database product. It could be CloudSQL, AlloyDB etc..
@@ -4530,6 +4839,7 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
       PRODUCT_TYPE_BIGTABLE: Bigtable product area in GCP
       PRODUCT_TYPE_OTHER: Other refers to rest of other product type. This is
         to be when product type is known, but it is not present in this enum.
+      PRODUCT_TYPE_FIRESTORE: Firestore product area in GCP.
     """
     PRODUCT_TYPE_UNSPECIFIED = 0
     PRODUCT_TYPE_CLOUD_SQL = 1
@@ -4542,6 +4852,7 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     PRODUCT_TYPE_MEMORYSTORE = 8
     PRODUCT_TYPE_BIGTABLE = 9
     PRODUCT_TYPE_OTHER = 10
+    PRODUCT_TYPE_FIRESTORE = 11
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -4773,6 +5084,40 @@ class UpgradeClusterRequest(_messages.Message):
   requestId = _messages.StringField(2)
   validateOnly = _messages.BooleanField(3)
   version = _messages.EnumField('VersionValueValuesEnum', 4)
+
+
+class UpgradeClusterResponse(_messages.Message):
+  r"""UpgradeClusterResponse contains the response for upgrade cluster
+  operation.
+
+  Enums:
+    StatusValueValuesEnum: Status of upgrade operation.
+
+  Fields:
+    clusterUpgradeDetails: Array of upgrade details for the current cluster
+      and all the secondary clusters associated with this cluster.
+    message: A user friendly message summarising the upgrade operation details
+      and the next steps for the user if there is any.
+    status: Status of upgrade operation.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Status of upgrade operation.
+
+    Values:
+      STATUS_UNSPECIFIED: Unspecified status.
+      SUCCESS: Operation succeeded.
+      FAILED: Operation failed.
+      PARTIAL_SUCCESS: Operation partially succeeded.
+    """
+    STATUS_UNSPECIFIED = 0
+    SUCCESS = 1
+    FAILED = 2
+    PARTIAL_SUCCESS = 3
+
+  clusterUpgradeDetails = _messages.MessageField('ClusterUpgradeDetails', 1, repeated=True)
+  message = _messages.StringField(2)
+  status = _messages.EnumField('StatusValueValuesEnum', 3)
 
 
 class User(_messages.Message):

@@ -444,6 +444,21 @@ def AddShieldedIntegrityMonitoring(parser, use_default=True):
   )
 
 
+def AddSourceWorkstation(parser):
+  """Adds a --source-workstation flag to the given parser."""
+  help_text = """\
+  Source workstation from which this workstations persistent directories are
+  cloned on creation. When specified, the workstations service agent must have
+  `compute.disks.createSnapshot` and `compute.snapshots.useReadOnly` permissions
+  on the source workstation's host project.
+  """
+  parser.add_argument(
+      '--source-workstation',
+      type=str,
+      help=help_text,
+  )
+
+
 def AddEnableAuditAgent(parser, use_default=True):
   """Adds an --enable-audit-agent flag to the given parser."""
   help_text = """\

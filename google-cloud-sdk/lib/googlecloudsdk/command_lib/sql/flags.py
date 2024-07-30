@@ -2155,7 +2155,7 @@ def AddShowSqlNetworkArchitecture(parser):
 
 
 def AddShowTransactionalLogStorageState(
-    parser, show_negated_in_help=False, hidden=True
+    parser, show_negated_in_help=False, hidden=False
 ):
   """Adds the `--show-transactional-log-storage-state` flag to the parser."""
   kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
@@ -2704,7 +2704,7 @@ def AddServerCaMode(parser):
 
 
 def AddSwitchTransactionLogsToCloudStorage(
-    parser, show_negated_in_help=False, hidden=True
+    parser, show_negated_in_help=False, hidden=False
 ):
   """Adds '--switch-transaction-logs-to-cloud-storage' flag to the parser."""
   kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
@@ -2712,8 +2712,8 @@ def AddSwitchTransactionLogsToCloudStorage(
       '--switch-transaction-logs-to-cloud-storage',
       required=False,
       help=(
-          'Initiate switching transaction logs of the instance to cloud'
-          ' storage.'
+          'Switches the location of the transaction logs used for PITR from'
+          ' disk to Cloud Storage.'
       ),
       hidden=hidden,
       **kwargs

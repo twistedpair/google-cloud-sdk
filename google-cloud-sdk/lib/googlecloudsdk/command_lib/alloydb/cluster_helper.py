@@ -579,3 +579,17 @@ def ConstructCreatesecondaryRequestFromArgs(
           parent=cluster_ref.RelativeName(),
       )
   )
+
+
+def ConstructExportRequestFromArgsAlpha(alloydb_messages, cluster_ref, args):
+  """Returns the cluster export request for Alpha release track based on args."""
+  export_cluster_request = alloydb_messages.ExportClusterRequest()
+  export_cluster_request.database = args.database
+  export_cluster_request.csvExportOptions = alloydb_messages.CsvExportOptions()
+  export_cluster_request.csvExportOptions.selectQuery = args.select_query
+  export_cluster_request.gcsDestination = alloydb_messages.GcsDestination()
+  export_cluster_request.gcsDestination.uri = args.gcs_uri
+  return alloydb_messages.AlloydbProjectsLocationsClustersExportRequest(
+      name=cluster_ref.RelativeName(),
+      exportClusterRequest=export_cluster_request,
+  )

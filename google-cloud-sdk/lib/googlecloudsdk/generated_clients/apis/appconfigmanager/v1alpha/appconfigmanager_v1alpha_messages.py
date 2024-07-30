@@ -385,6 +385,45 @@ class AppconfigmanagerProjectsLocationsConfigsVersionsPatchRequest(_messages.Mes
   updateMask = _messages.StringField(4)
 
 
+class AppconfigmanagerProjectsLocationsConfigsVersionsRenderRequest(_messages.Message):
+  r"""A AppconfigmanagerProjectsLocationsConfigsVersionsRenderRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. View of the ConfigVersionRender. In the
+      default FULL view, all metadata & payload associated with the
+      ConfigVersionRender will be returned along with the rendered payload.
+
+  Fields:
+    name: Required. Name of the resource
+    view: Optional. View of the ConfigVersionRender. In the default FULL view,
+      all metadata & payload associated with the ConfigVersionRender will be
+      returned along with the rendered payload.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. View of the ConfigVersionRender. In the default FULL view,
+    all metadata & payload associated with the ConfigVersionRender will be
+    returned along with the rendered payload.
+
+    Values:
+      VIEW_UNSPECIFIED: The default / unset value. The API will default to the
+        BASIC view for LIST calls & FULL for GET calls..
+      BASIC: Include only the metadata for the resource. This is the default
+        view.
+      FULL: Include metadata & other relevant payload data as well. For a
+        ConfigVersion this implies that the response will hold the user
+        provided payload. For a ConfigVersionRender this implies that the
+        response will hold the user provided payload along with the rendered
+        payload data.
+    """
+    VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
 class AppconfigmanagerProjectsLocationsGetRequest(_messages.Message):
   r"""A AppconfigmanagerProjectsLocationsGetRequest object.
 
@@ -430,8 +469,7 @@ class Config(_messages.Message):
     labels: Optional. Labels as key value pairs
     name: Identifier. [Output only] The resource name of the Config in the
       format `projects/*locations/*/configs/*`.
-    policyMember: Output only. Output-only policy member strings of a Google
-      Cloud resource.
+    riPrincipal: Output only. [Output-only] Resource identity principal
     serviceAgentEmail: Output only. Per-resource service agent email
     updateTime: Output only. [Output only] Update time stamp
   """
@@ -479,7 +517,7 @@ class Config(_messages.Message):
   format = _messages.EnumField('FormatValueValuesEnum', 2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  policyMember = _messages.MessageField('ResourcePolicyMember', 5)
+  riPrincipal = _messages.StringField(5)
   serviceAgentEmail = _messages.StringField(6)
   updateTime = _messages.StringField(7)
 
@@ -770,7 +808,7 @@ class Location(_messages.Message):
 
 
 class RawPayload(_messages.Message):
-  r"""Message for storing a RAW ConfigType Config resource.
+  r"""Message for storing a ConfigVersion resource payload.
 
   Fields:
     data: Required. User provided content of a ConfigVersion. It can hold
@@ -780,26 +818,25 @@ class RawPayload(_messages.Message):
   data = _messages.BytesField(1)
 
 
-class ResourcePolicyMember(_messages.Message):
-  r"""Output-only policy member strings of a Google Cloud resource.
+class RenderConfigVersionResponse(_messages.Message):
+  r"""Message describing RenderConfigVersionResponse object
 
   Fields:
-    iamPolicyNamePrincipal: Output only. IAM policy binding member referring
-      to a Google Cloud resource by user-assigned name
-      (https://google.aip.dev/122). If a resource is deleted and recreated
-      with the same name, the binding will be applicable to the new resource.
-      Example: `principal://appconfigmanager.googleapis.com/projects/12345/nam
-      e/locations/us-central1-a/configs/my-config`
-    iamPolicyUidPrincipal: Output only. IAM policy binding member referring to
-      a Google Cloud resource by system-assigned unique identifier
-      (https://google.aip.dev/148#uid). If a resource is deleted and recreated
-      with the same name, the binding will not be applicable to the new
-      resource Example: `principal://appconfigmanager.googleapis.com/projects/
-      12345/uid/locations/us-central1-a/configs/a918fed5`
+    configVersion: Output only. Resource identifier to the corresponding
+      ConfigVersion resource.
+    payload: Payload content of a ConfigVersion resource. If the parent Config
+      has a RAW ConfigType the payload data must point to a RawPayload & if
+      the parent Config has a TEMPLATED ConfigType the payload data must point
+      to a TemplateValuesPayload. This is only returned when the Get/(List?)
+      request provides the View value of FULL.
+    renderedPayload: Output only. Server generated rendered version of the
+      user provided payload data (ConfigVersionPayload) which has all
+      references to a SecretManager version resource substitutions.
   """
 
-  iamPolicyNamePrincipal = _messages.StringField(1)
-  iamPolicyUidPrincipal = _messages.StringField(2)
+  configVersion = _messages.StringField(1)
+  payload = _messages.MessageField('ConfigVersionPayload', 2)
+  renderedPayload = _messages.BytesField(3)
 
 
 class StandardQueryParameters(_messages.Message):

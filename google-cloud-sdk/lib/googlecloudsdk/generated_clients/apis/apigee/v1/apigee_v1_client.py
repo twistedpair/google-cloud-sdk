@@ -763,11 +763,38 @@ class ApigeeV1(base_api.BaseApiClient):
         method_id='apigee.organizations.apiproducts.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['attributename', 'attributevalue', 'count', 'expand', 'filter', 'pageSize', 'pageToken', 'startKey'],
+        query_params=['attributename', 'attributevalue', 'count', 'expand', 'filter', 'pageSize', 'pageToken', 'space', 'startKey'],
         relative_path='v1/{+parent}/apiproducts',
         request_field='',
         request_type_name='ApigeeOrganizationsApiproductsListRequest',
         response_type_name='GoogleCloudApigeeV1ListApiProductsResponse',
+        supports_download=False,
+    )
+
+    def Move(self, request, global_params=None):
+      r"""Moves an API product to a different space.
+
+      Args:
+        request: (ApigeeOrganizationsApiproductsMoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ApiProduct) The response message.
+      """
+      config = self.GetMethodConfig('Move')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Move.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apiproducts/{apiproductsId}:move',
+        http_method='POST',
+        method_id='apigee.organizations.apiproducts.move',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:move',
+        request_field='googleCloudApigeeV1MoveApiProductRequest',
+        request_type_name='ApigeeOrganizationsApiproductsMoveRequest',
+        response_type_name='GoogleCloudApigeeV1ApiProduct',
         supports_download=False,
     )
 

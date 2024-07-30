@@ -546,6 +546,10 @@ class GceSetup(_messages.Message):
     machineType: Optional. The machine type of the VM instance.
       https://cloud.google.com/compute/docs/machine-resource
     metadata: Optional. Custom metadata to apply to this instance.
+    minCpuPlatform: Optional. The minimum CPU platform to use for this
+      instance. The list of valid values can be found in
+      https://cloud.google.com/compute/docs/instances/specify-min-cpu-
+      platform#availablezones
     networkInterfaces: Optional. The network interfaces for the VM. Supports
       only one interface.
     serviceAccounts: Optional. The service account that serves as an identity
@@ -594,11 +598,12 @@ class GceSetup(_messages.Message):
   gpuDriverConfig = _messages.MessageField('GPUDriverConfig', 7)
   machineType = _messages.StringField(8)
   metadata = _messages.MessageField('MetadataValue', 9)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 10, repeated=True)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 11, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 12)
-  tags = _messages.StringField(13, repeated=True)
-  vmImage = _messages.MessageField('VmImage', 14)
+  minCpuPlatform = _messages.StringField(10)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 11, repeated=True)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 12, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 13)
+  tags = _messages.StringField(14, repeated=True)
+  vmImage = _messages.MessageField('VmImage', 15)
 
 
 class ImageRelease(_messages.Message):

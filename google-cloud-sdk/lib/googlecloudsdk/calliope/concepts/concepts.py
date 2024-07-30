@@ -632,16 +632,17 @@ class ResourceParameterAttributeConfig(object):
         for param in completion_request_params_list
     }
 
+    if default_config := DEFAULT_RESOURCE_ATTRIBUTE_CONFIGS.get(attribute_name):
+      fallthroughs = default_config.fallthroughs.copy()
+    else:
+      fallthroughs = []
+
     # Add property fallthroughs.
-    fallthroughs = []
     prop = properties.FromString(data.get('property', ''))
-    if prop:
-      fallthroughs.append(deps_lib.PropertyFallthrough(prop))
-    default_config = DEFAULT_RESOURCE_ATTRIBUTE_CONFIGS.get(attribute_name)
-    if default_config:
-      fallthroughs += [
-          f for f in default_config.fallthroughs if f not in fallthroughs
-      ]
+    prop_fallthrough = prop and deps_lib.PropertyFallthrough(prop)
+    if prop_fallthrough and prop_fallthrough not in fallthroughs:
+      fallthroughs.append(prop_fallthrough)
+
     # Add fallthroughs from python hooks.
     fallthrough_data = data.get('fallthroughs', [])
     fallthroughs_from_hook = []

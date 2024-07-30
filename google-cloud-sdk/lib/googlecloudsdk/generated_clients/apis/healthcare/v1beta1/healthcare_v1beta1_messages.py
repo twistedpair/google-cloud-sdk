@@ -6703,6 +6703,21 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresPatchRequest(_messages.Messa
   updateMask = _messages.StringField(3)
 
 
+class HealthcareProjectsLocationsDatasetsHl7V2StoresRollbackRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresRollbackRequest object.
+
+  Fields:
+    name: Required. The name of the HL7v2 store to rollback, in the format of
+      "projects/{project_id}/locations/{location_id}/datasets/{dataset_id}
+      /hl7V2Stores/{hl7v2_store_id}".
+    rollbackHl7V2MessagesRequest: A RollbackHl7V2MessagesRequest resource to
+      be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rollbackHl7V2MessagesRequest = _messages.MessageField('RollbackHl7V2MessagesRequest', 2)
+
+
 class HealthcareProjectsLocationsDatasetsHl7V2StoresSetIamPolicyRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresSetIamPolicyRequest
   object.
@@ -8669,6 +8684,76 @@ class RollbackFhirResourcesResponse(_messages.Message):
   """
 
   fhirStore = _messages.StringField(1)
+
+
+class RollbackHL7MessagesFilteringFields(_messages.Message):
+  r"""Filtering fields for an HL7 rollback. Currently only supports a list of
+  operation ids to roll back.
+
+  Fields:
+    operationIds: Optional. A list of operation IDs to roll back.
+  """
+
+  operationIds = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.UINT64)
+
+
+class RollbackHl7V2MessagesRequest(_messages.Message):
+  r"""Point in time recovery rollback request.
+
+  Enums:
+    ChangeTypeValueValuesEnum: Optional. CREATE/UPDATE/DELETE/ALL for
+      reverting all txns of a certain type.
+
+  Fields:
+    changeType: Optional. CREATE/UPDATE/DELETE/ALL for reverting all txns of a
+      certain type.
+    excludeRollbacks: Optional. Specifies whether to exclude earlier
+      rollbacks.
+    filteringFields: Optional. Parameters for filtering.
+    force: Optional. When enabled, changes will be reverted without explicit
+      confirmation.
+    inputGcsObject: Optional. Cloud storage object containing list of
+      {resourceId} lines, identifying resources to be reverted
+    resultGcsBucket: Required. Bucket to deposit result
+    rollbackTime: Required. Times point to rollback to.
+  """
+
+  class ChangeTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. CREATE/UPDATE/DELETE/ALL for reverting all txns of a certain
+    type.
+
+    Values:
+      CHANGE_TYPE_UNSPECIFIED: When unspecified, revert all transactions
+      ALL: All transactions
+      CREATE: Revert only CREATE transactions
+      UPDATE: Revert only Update transactions
+      DELETE: Revert only Delete transactions
+    """
+    CHANGE_TYPE_UNSPECIFIED = 0
+    ALL = 1
+    CREATE = 2
+    UPDATE = 3
+    DELETE = 4
+
+  changeType = _messages.EnumField('ChangeTypeValueValuesEnum', 1)
+  excludeRollbacks = _messages.BooleanField(2)
+  filteringFields = _messages.MessageField('RollbackHL7MessagesFilteringFields', 3)
+  force = _messages.BooleanField(4)
+  inputGcsObject = _messages.StringField(5)
+  resultGcsBucket = _messages.StringField(6)
+  rollbackTime = _messages.StringField(7)
+
+
+class RollbackHl7V2MessagesResponse(_messages.Message):
+  r"""Final response of rollback FHIR resources request.
+
+  Fields:
+    hl7v2Store: The name of the HL7 store to rollback, in the format of
+      "projects/{project_id}/locations/{location_id}/datasets/{dataset_id}
+      /hl7v2Stores/{fhir_store_id}".
+  """
+
+  hl7v2Store = _messages.StringField(1)
 
 
 class SchemaConfig(_messages.Message):

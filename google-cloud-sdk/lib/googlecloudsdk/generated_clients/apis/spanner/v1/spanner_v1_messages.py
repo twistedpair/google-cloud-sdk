@@ -71,7 +71,7 @@ class AutoscalingTargets(_messages.Message):
 
 
 class Backup(_messages.Message):
-  r"""A backup of a Cloud Spanner database.
+  r""" A backup of a Cloud Spanner database.
 
   Enums:
     DatabaseDialectValueValuesEnum: Output only. The database dialect
@@ -469,15 +469,15 @@ class ChangeQuorumRequest(_messages.Message):
   r"""The request for ChangeQuorum.
 
   Fields:
-    etag: Optional. The etag is the hash of the QuorumInfo. The ChangeQuorum
-      operation will only be performed if the etag matches that of the
-      QuorumInfo in the current database resource. Otherwise the API will
-      return an `ABORTED` error. The etag is used for optimistic concurrency
+    etag: Optional. The etag is the hash of the `QuorumInfo`. The
+      `ChangeQuorum` operation is only performed if the etag matches that of
+      the `QuorumInfo` in the current database resource. Otherwise the API
+      returns an `ABORTED` error. The etag is used for optimistic concurrency
       control as a way to help prevent simultaneous change quorum requests
       that could create a race condition.
-    name: Required. Name of the database in which to apply the ChangeQuorum.
+    name: Required. Name of the database in which to apply `ChangeQuorum`.
       Values are of the form `projects//instances//databases/`.
-    quorumType: Required. The type of this Quorum.
+    quorumType: Required. The type of this quorum.
   """
 
   etag = _messages.StringField(1)
@@ -873,10 +873,10 @@ class CreateInstanceConfigRequest(_messages.Message):
   r"""The request for CreateInstanceConfigRequest.
 
   Fields:
-    instanceConfig: Required. The InstanceConfig proto of the configuration to
-      create. instance_config.name must be `/instanceConfigs/`.
-      instance_config.base_config must be a Google-managed configuration name,
-      e.g. /instanceConfigs/us-east1, /instanceConfigs/nam3.
+    instanceConfig: Required. The `InstanceConfig` proto of the configuration
+      to create. `instance_config.name` must be `/instanceConfigs/`.
+      `instance_config.base_config` must be a Google-managed configuration
+      name, e.g. /instanceConfigs/us-east1, /instanceConfigs/nam3.
     instanceConfigId: Required. The ID of the instance configuration to
       create. Valid identifiers are of the form `custom-[-a-z0-9]*[a-z0-9]`
       and must be between 2 and 64 characters in length. The `custom-` prefix
@@ -1066,7 +1066,7 @@ class Database(_messages.Message):
       `projects//instances//databases/`, where `` is as specified in the
       `CREATE DATABASE` statement. This name can be passed to other API
       methods to identify the database.
-    quorumInfo: Output only. Applicable only for databases that use dual
+    quorumInfo: Output only. Applicable only for databases that use dual-
       region instance configurations. Contains information about the quorum.
     reconciling: Output only. If true, the database is being updated. If
       false, there are no ongoing update operations for the database.
@@ -1866,7 +1866,7 @@ class Instance(_messages.Message):
   Enums:
     DefaultStorageTypeValueValuesEnum: The `StorageType` of the current
       instance. If unspecified, it will default to the first StorageType in
-      the list of allowed_storage_types in the InstanceConfig for this
+      the list of allowed_storage_types in the `InstanceConfig` for this
       instance.
     EditionValueValuesEnum: Optional. The `Edition` of the current instance.
     InstanceTypeValueValuesEnum: The `InstanceType` of the current instance.
@@ -1905,7 +1905,7 @@ class Instance(_messages.Message):
     createTime: Output only. The time at which the instance was created.
     defaultStorageType: The `StorageType` of the current instance. If
       unspecified, it will default to the first StorageType in the list of
-      allowed_storage_types in the InstanceConfig for this instance.
+      allowed_storage_types in the `InstanceConfig` for this instance.
     displayName: Required. The descriptive name for this instance as it
       appears in UIs. Must be unique per project and between 4 and 30
       characters in length.
@@ -1938,12 +1938,12 @@ class Instance(_messages.Message):
       be between 2 and 64 characters in length.
     nodeCount: The number of nodes allocated to this instance. At most, one of
       either `node_count` or `processing_units` should be present in the
-      message. Users can set the node_count field to specify the target number
-      of nodes allocated to the instance. If autoscaling is enabled,
-      node_count is treated as an OUTPUT_ONLY field and reflects the current
-      number of nodes allocated to the instance. This might be zero in API
-      responses for instances that are not yet in the `READY` state. For more
-      information, see [Compute capacity, nodes, and processing
+      message. Users can set the `node_count` field to specify the target
+      number of nodes allocated to the instance. If autoscaling is enabled,
+      `node_count` is treated as an `OUTPUT_ONLY` field and reflects the
+      current number of nodes allocated to the instance. This might be zero in
+      API responses for instances that are not yet in the `READY` state. For
+      more information, see [Compute capacity, nodes, and processing
       units](https://cloud.google.com/spanner/docs/compute-capacity).
     processingUnits: The number of processing units allocated to this
       instance. At most, one of either `processing_units` or `node_count`
@@ -1952,9 +1952,9 @@ class Instance(_messages.Message):
       instance. If autoscaling is enabled, `processing_units` is treated as an
       `OUTPUT_ONLY` field and reflects the current number of processing units
       allocated to the instance. This might be zero in API responses for
-      instances that are not yet in the `READY` state. See [the
-      documentation](https://cloud.google.com/spanner/docs/compute-capacity)
-      for more information about nodes and processing units.
+      instances that are not yet in the `READY` state. For more information,
+      see [Compute capacity, nodes and processing
+      units](https://cloud.google.com/spanner/docs/compute-capacity).
     ssdCache: Optional. The name of the SSD cache to be used with this
       `Instance`. SSD cache can reduce the instance's disk I/O requirements.
       Applicable only when `StorageType` is `HDD`. `SsdCache` should exist
@@ -1971,7 +1971,7 @@ class Instance(_messages.Message):
   class DefaultStorageTypeValueValuesEnum(_messages.Enum):
     r"""The `StorageType` of the current instance. If unspecified, it will
     default to the first StorageType in the list of allowed_storage_types in
-    the InstanceConfig for this instance.
+    the `InstanceConfig` for this instance.
 
     Values:
       STORAGE_TYPE_UNSPECIFIED: Storage type not specified.
@@ -2092,9 +2092,10 @@ class InstanceConfig(_messages.Message):
   Enums:
     AllowedStorageTypesValueListEntryValuesEnum:
     ConfigTypeValueValuesEnum: Output only. Whether this instance
-      configuration is a Google- or user-managed configuration.
+      configuration is a Google-managed or user-managed configuration.
     FreeInstanceAvailabilityValueValuesEnum: Output only. Describes whether
-      free instances are available to be created in this instance config.
+      free instances are available to be created in this instance
+      configuration.
     QuorumTypeValueValuesEnum: Output only. The `QuorumType` of the instance
       configuration.
     StateValueValuesEnum: Output only. The current instance configuration
@@ -2122,7 +2123,7 @@ class InstanceConfig(_messages.Message):
 
   Fields:
     allowedStorageTypes: Output only. The allowed storage types for this
-      config. The first storage type will be considered the default storage
+      configuration. The first storage type is considered the default storage
       type for any instance that has its default_storage_type field unset or
       set to STORAGE_TYPE_UNSPECIFIED.
     baseConfig: Base configuration name, e.g. projects//instanceConfigs/nam3,
@@ -2130,7 +2131,7 @@ class InstanceConfig(_messages.Message):
       configurations. `base_config` must refer to a configuration of type
       `GOOGLE_MANAGED` in the same project as this configuration.
     configType: Output only. Whether this instance configuration is a Google-
-      or user-managed configuration.
+      managed or user-managed configuration.
     displayName: The name of this instance configuration as it appears in UIs.
     etag: etag is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a instance configuration from
@@ -2144,7 +2145,7 @@ class InstanceConfig(_messages.Message):
       update the instance configuration, then the existing instance
       configuration is overwritten blindly.
     freeInstanceAvailability: Output only. Describes whether free instances
-      are available to be created in this instance config.
+      are available to be created in this instance configuration.
     labels: Cloud Labels are a flexible and lightweight mechanism for
       organizing cloud resources into groups that reflect a customer's
       organizational needs and deployment strategies. Cloud Labels can be used
@@ -2174,7 +2175,7 @@ class InstanceConfig(_messages.Message):
     quorumType: Output only. The `QuorumType` of the instance configuration.
     reconciling: Output only. If true, the instance configuration is being
       created or updated. If false, there are no ongoing operations for the
-      instance config.
+      instance configuration.
     replicas: The geographic placement of nodes in this instance configuration
       and their replication properties. To create user-managed configurations,
       input `replicas` must include all replicas in `replicas` of the
@@ -2199,8 +2200,8 @@ class InstanceConfig(_messages.Message):
     HDD = 2
 
   class ConfigTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. Whether this instance configuration is a Google- or user-
-    managed configuration.
+    r"""Output only. Whether this instance configuration is a Google-managed
+    or user-managed configuration.
 
     Values:
       TYPE_UNSPECIFIED: Unspecified.
@@ -2213,16 +2214,16 @@ class InstanceConfig(_messages.Message):
 
   class FreeInstanceAvailabilityValueValuesEnum(_messages.Enum):
     r"""Output only. Describes whether free instances are available to be
-    created in this instance config.
+    created in this instance configuration.
 
     Values:
       FREE_INSTANCE_AVAILABILITY_UNSPECIFIED: Not specified.
       AVAILABLE: Indicates that free instances are available to be created in
-        this instance config.
+        this instance configuration.
       UNSUPPORTED: Indicates that free instances are not supported in this
-        instance config.
+        instance configuration.
       DISABLED: Indicates that free instances are currently not available to
-        be created in this instance config.
+        be created in this instance configuration.
       QUOTA_EXCEEDED: Indicates that additional free instances cannot be
         created in this instance configuration because the project has reached
         its limit of free instances.
@@ -2237,16 +2238,16 @@ class InstanceConfig(_messages.Message):
     r"""Output only. The `QuorumType` of the instance configuration.
 
     Values:
-      QUORUM_TYPE_UNSPECIFIED: Not specified.
-      REGION: An instance configuration tagged with REGION quorum type forms a
-        write quorum in a single region.
-      DUAL_REGION: An instance configuration tagged with DUAL_REGION quorum
-        type forms a write quorums with exactly two read-write regions in a
-        multi-region configuration. This instance configurations requires
-        reconfiguration in the event of regional failures.
-      MULTI_REGION: An instance configuration tagged with MULTI_REGION quorum
-        type forms a write quorums from replicas are spread across more than
-        one region in a multi-region configuration.
+      QUORUM_TYPE_UNSPECIFIED: Quorum type not specified.
+      REGION: An instance configuration tagged with `REGION` quorum type forms
+        a write quorum in a single region.
+      DUAL_REGION: An instance configuration tagged with the `DUAL_REGION`
+        quorum type forms a write quorum with exactly two read-write regions
+        in a multi-region configuration. This instance configuration requires
+        failover in the event of regional failures.
+      MULTI_REGION: An instance configuration tagged with the `MULTI_REGION`
+        quorum type forms a write quorum from replicas that are spread across
+        more than one region in a multi-region configuration.
     """
     QUORUM_TYPE_UNSPECIFIED = 0
     REGION = 1
@@ -2653,9 +2654,9 @@ class ListInstanceConfigOperationsResponse(_messages.Message):
       ListInstanceConfigOperations call to fetch more of the matching
       metadata.
     operations: The list of matching instance configuration long-running
-      operations. Each operation's name will be prefixed by the instance
-      config's name. The operation's metadata field type `metadata.type_url`
-      describes the type of the metadata.
+      operations. Each operation's name will be prefixed by the name of the
+      instance configuration. The operation's metadata field type
+      `metadata.type_url` describes the type of the metadata.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -2978,8 +2979,8 @@ class MoveInstanceRequest(_messages.Message):
   r"""The request for MoveInstance.
 
   Fields:
-    targetConfig: Required. The target instance configuration for the instance
-      to move. Values are of the form `projects//instanceConfigs/`.
+    targetConfig: Required. The target instance configuration where to move
+      the instance. Values are of the form `projects//instanceConfigs/`.
   """
 
   targetConfig = _messages.StringField(1)
@@ -3723,17 +3724,17 @@ class QueryPlan(_messages.Message):
 
 
 class QuorumInfo(_messages.Message):
-  r"""Information about the dual region quorum.
+  r"""Information about the dual-region quorum.
 
   Enums:
-    InitiatorValueValuesEnum: Output only. Whether this ChangeQuorum is a
+    InitiatorValueValuesEnum: Output only. Whether this `ChangeQuorum` is
       Google or User initiated.
 
   Fields:
     etag: Output only. The etag is used for optimistic concurrency control as
-      a way to help prevent simultaneous ChangeQuorum requests that could
+      a way to help prevent simultaneous `ChangeQuorum` requests that might
       create a race condition.
-    initiator: Output only. Whether this ChangeQuorum is a Google or User
+    initiator: Output only. Whether this `ChangeQuorum` is Google or User
       initiated.
     quorumType: Output only. The type of this quorum. See QuorumType for more
       information about quorum type specifications.
@@ -3741,12 +3742,12 @@ class QuorumInfo(_messages.Message):
   """
 
   class InitiatorValueValuesEnum(_messages.Enum):
-    r"""Output only. Whether this ChangeQuorum is a Google or User initiated.
+    r"""Output only. Whether this `ChangeQuorum` is Google or User initiated.
 
     Values:
       INITIATOR_UNSPECIFIED: Unspecified.
-      GOOGLE: ChangeQuorum initiated by Google.
-      USER: ChangeQuorum initiated by User.
+      GOOGLE: `ChangeQuorum` initiated by Google.
+      USER: `ChangeQuorum` initiated by User.
     """
     INITIATOR_UNSPECIFIED = 0
     GOOGLE = 1
@@ -3759,12 +3760,12 @@ class QuorumInfo(_messages.Message):
 
 
 class QuorumType(_messages.Message):
-  r"""Information about the database quorum type. this applies only for dual
+  r"""Information about the database quorum type. This only applies to dual-
   region instance configs.
 
   Fields:
-    dualRegion: Dual region quorum type.
-    singleRegion: Single region quorum type.
+    dualRegion: Dual-region quorum type.
+    singleRegion: Single-region quorum type.
   """
 
   dualRegion = _messages.MessageField('DualRegionQuorum', 1)
@@ -4600,11 +4601,10 @@ class SingleRegionQuorum(_messages.Message):
 
   Fields:
     servingLocation: Required. The location of the serving region, e.g. "us-
-      central1". The location must be one of the regions within the dual
+      central1". The location must be one of the regions within the dual-
       region instance configuration of your database. The list of valid
-      locations is available via
-      [GetInstanceConfig[InstanceAdmin.GetInstanceConfig] API. This should
-      only be used if you plan to change quorum in single-region quorum type.
+      locations is available using the GetInstanceConfig API. This should only
+      be used if you plan to change quorum to the single-region quorum type.
   """
 
   servingLocation = _messages.StringField(1)
@@ -4662,7 +4662,7 @@ class SpannerProjectsInstanceConfigsCreateRequest(_messages.Message):
     createInstanceConfigRequest: A CreateInstanceConfigRequest resource to be
       passed as the request body.
     parent: Required. The name of the project in which to create the instance
-      config. Values are of the form `projects/`.
+      configuration. Values are of the form `projects/`.
   """
 
   createInstanceConfigRequest = _messages.MessageField('CreateInstanceConfigRequest', 1)
@@ -4677,8 +4677,9 @@ class SpannerProjectsInstanceConfigsDeleteRequest(_messages.Message):
       simultaneous deletes of an instance configuration from overwriting each
       other. If not empty, the API only deletes the instance configuration
       when the etag provided matches the current status of the requested
-      instance config. Otherwise, deletes the instance configuration without
-      checking the current status of the requested instance config.
+      instance configuration. Otherwise, deletes the instance configuration
+      without checking the current status of the requested instance
+      configuration.
     name: Required. The name of the instance configuration to be deleted.
       Values are of the form `projects//instanceConfigs/`
     validateOnly: An option to validate, but not actually execute, a request,

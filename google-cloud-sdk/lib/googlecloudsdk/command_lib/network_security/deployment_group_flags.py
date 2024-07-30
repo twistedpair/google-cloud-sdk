@@ -92,11 +92,14 @@ def LocationAttributeConfig(default="global"):
         deps.Fallthrough(
             lambda: default,
             "Location of the Mirroring Deployment Group. Defaults to {}".format(
-                default)))
+                default
+            ),
+        )
+    )
   return concepts.ResourceParameterAttributeConfig(
       name="location",
       help_text="Location of the {resource}.",
-      fallthroughs=fallthroughs
+      fallthroughs=fallthroughs,
   )
 
 
@@ -110,8 +113,9 @@ def GetLocationResourceSpec():
   )
 
 
-def AddLocationResourceArg(parser: parser_arguments.ArgumentInterceptor,
-                           help_text):
+def AddLocationResourceArg(
+    parser: parser_arguments.ArgumentInterceptor, help_text
+):
   """Adds a resource argument for Google Cloud location.
 
   Args:

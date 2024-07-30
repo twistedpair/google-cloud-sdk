@@ -99,6 +99,7 @@ class SupportedFeatures:
     self.support_specific_then_x_affinity = support_specific_then_x_affinity
     self.support_watchdog_timer = support_watchdog_timer
     self.support_turbo_mode = support_turbo_mode
+    self.support_replica_zones = True
 
 
 def _GetSourceInstanceTemplate(args, resources, instance_template_resource):
@@ -348,9 +349,11 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
         compute_client=compute_client,
         resource_parser=resource_parser,
         image_uri=image_uri,
+        holder=holder,
         create_boot_disk=create_boot_disk,
         boot_disk_size_gb=boot_disk_size_gb,
         support_kms=True,
+        support_replica_zones=supported_features.support_replica_zones,
         support_nvdimm=supported_features.support_nvdimm,
         support_source_snapshot_csek=supported_features
         .support_source_snapshot_csek,

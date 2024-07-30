@@ -375,7 +375,8 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
       IL5: Information protection as per DoD IL5 requirements.
       IL2: Information protection as per DoD IL2 requirements.
       JP_REGIONS_AND_SUPPORT: Assured Workloads for Japan Regions
-      KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS: KSA R5 Controls.
+      KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS: Assured Workloads
+        Sovereign Controls KSA
       REGIONAL_CONTROLS: Assured Workloads for Regional Controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
@@ -855,7 +856,8 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
       IL5: Information protection as per DoD IL5 requirements.
       IL2: Information protection as per DoD IL2 requirements.
       JP_REGIONS_AND_SUPPORT: Assured Workloads for Japan Regions
-      KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS: KSA R5 Controls.
+      KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS: Assured Workloads
+        Sovereign Controls KSA
       REGIONAL_CONTROLS: Assured Workloads for Regional Controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0

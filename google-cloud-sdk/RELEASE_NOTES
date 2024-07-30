@@ -5,6 +5,82 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 486.0.0 (2024-07-30)
+
+### Cloud DNS
+
+* Added alpha support for creating health-checked routing policies in public
+zones. Use `--health-check` to indicate that all IP addresses should be health
+checked.
+
+### Cloud Filestore
+
+* Added `--performance` flag to `gcloud beta filestore instances create` and
+`gcloud beta filestore instances update` to support performance configuration
+of filestore instances.
+
+### Cloud Functions
+
+* Added `--binary-authorization` and `--clear-binary-authorization` flags for
+  2nd gen function.
+
+### Cloud Pub/Sub
+
+*   Promoted `--cloud-storage-max-messages` flag of
+    `gcloud pubsub subscriptions create` to GA. Added the ability to batch
+    outputted Cloud Storage files by number of messages in Cloud Pub/Sub. For
+    more information, see
+    <https://cloud.google.com/pubsub/docs/create-cloudstorage-subscription#file_batch>.
+*   Promoted `--cloud-storage-max-messages` flag of
+    `gcloud pubsub subscriptions update` to GA. Added the ability to batch
+    outputted Cloud Storage files by number of messages in Cloud Pub/Sub. For
+    more information, see
+    <https://cloud.google.com/pubsub/docs/create-cloudstorage-subscription#file_batch>.
+
+### Cloud SQL
+
+* Added `--switch-transaction-logs-to-cloud-storage` flag to
+    `gcloud sql instances patch` to switch the transaction logs used for
+    PITR from disk to Cloud Storage.
+  Added `show-transactional-log-storage-state` flag to
+    `gcloud sql instances list` to display the transaction logs storage location
+    for all the instances under the project.
+
+### Cloud Workstations
+
+* Adding support for the source workstation flag in the `beta workstations create` command.
+
+### Compute Engine
+
+* Beta support for `STRONG_COOKIE_AFFINITY` sessionAffinity type.
+*   Promoted `--server-tls-policy` and `--clear-server-tls-policy` for  `gcloud compute target-https-proxies create` and `gcloud compute target-https-proxies update` to GA.
+
+### Compute Firewall Policy Mirroring Rules
+
+* Promoted `gcloud compute firewall-policies mirroring-rules` to beta.
+* Promoted `gcloud compute network-firewall-policies mirroring-rules` to beta.
+
+### GKE Hub
+
+* Promoted `gcloud container fleet memberships support-access` to GA.
+
+### Kubernetes Engine
+
+* Updated default kubectl from 1.27.15 to 1.28.12
+* Additional kubectl versions:
+  * kubectl.1.27 (1.27.16)
+  * kubectl.1.28 (1.28.12)
+  * kubectl.1.29 (1.29.7)
+  * kubectl.1.30 (1.30.3)
+
+### Privileged Access Manager
+
+* Promoted `gcloud pam` commands to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 485.0.0 (2024-07-23)
 
 ### Breaking Changes
@@ -1268,7 +1344,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Cloud Firestore Emulator
 
 * Release Cloud Firestore emulator v1.19.5
-  * Import and export entities now supported in gCloud CLI for Datastore Mode.
+  * Import and export entities now supported in gcloud CLI for Datastore Mode.
 
 ### Cloud Infrastructure Manager
 
@@ -3456,7 +3532,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Assured Workloads
 
 *   Added `--acknowledge-type` flag (optional) for `gcloud assured workloads
-violations acknowledge` to acknowledge violation with type through gCloud
+violations acknowledge` to acknowledge violation with type through gcloud
 command.
 
 ### Cloud Filestore
@@ -4653,7 +4729,7 @@ Note: Support for Python 3.5-3.7 will be deprecated on August 8th, 2023.
 
 ### Assured Workloads
 
-*   Added `--partner-permissions` flag (optional) for `gcloud assured workloads create` command to enable setting the partner permissions parameter for creation of partner workload (workload managed by local trusted partners) through gCloud command.
+*   Added `--partner-permissions` flag (optional) for `gcloud assured workloads create` command to enable setting the partner permissions parameter for creation of partner workload (workload managed by local trusted partners) through gcloud command.
 
 ### BigQuery
 
@@ -8100,7 +8176,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Assured Workloads
 
 *   Added ASSURED_WORKLOADS_FOR_PARTNERS as an option for `--compliance-regime` flag of `gcloud assured workloads create` command.
-*   Added `--partner` flag (optional) for `gcloud assured workloads create` command to enable creation of partner workload (workload managed by local trusted partners) through gCloud command.
+*   Added `--partner` flag (optional) for `gcloud assured workloads create` command to enable creation of partner workload (workload managed by local trusted partners) through gcloud command.
 
 ### Cloud DNS
 

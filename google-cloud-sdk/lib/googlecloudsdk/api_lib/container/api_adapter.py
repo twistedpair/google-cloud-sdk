@@ -597,6 +597,7 @@ class CreateClusterOptions(object):
       placement_type=None,
       placement_policy=None,
       enable_queued_provisioning=None,
+      max_run_duration=None,
       enable_autorepair=None,
       enable_autoupgrade=None,
       service_account=None,
@@ -744,7 +745,6 @@ class CreateClusterOptions(object):
       security_posture=None,
       workload_vulnerability_scanning=None,
       enable_runtime_vulnerability_insight=None,
-      enable_dns_endpoint=None,
       workload_policies=None,
       enable_fqdn_network_policy=None,
       host_maintenance_interval=None,
@@ -759,6 +759,7 @@ class CreateClusterOptions(object):
       enable_ray_cluster_monitoring=None,
       enable_insecure_binding_system_authenticated=None,
       enable_insecure_binding_system_unauthenticated=None,
+      enable_dns_access=None,
       cp_disk_encryption_key=None,
   ):
     self.node_machine_type = node_machine_type
@@ -813,6 +814,7 @@ class CreateClusterOptions(object):
     self.placement_type = placement_type
     self.placement_policy = placement_policy
     self.enable_queued_provisioning = enable_queued_provisioning
+    self.max_run_duration = max_run_duration
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.service_account = service_account
@@ -973,7 +975,6 @@ class CreateClusterOptions(object):
     self.enable_runtime_vulnerability_insight = (
         enable_runtime_vulnerability_insight
     )
-    self.enable_dns_endpoint = enable_dns_endpoint
     self.workload_policies = workload_policies
     self.enable_fqdn_network_policy = enable_fqdn_network_policy
     self.host_maintenance_interval = host_maintenance_interval
@@ -999,6 +1000,7 @@ class CreateClusterOptions(object):
     self.enable_insecure_binding_system_unauthenticated = (
         enable_insecure_binding_system_unauthenticated
     )
+    self.enable_dns_access = enable_dns_access
     self.cp_disk_encryption_key = cp_disk_encryption_key
 
 
@@ -1155,6 +1157,8 @@ class UpdateClusterOptions(object):
       enable_insecure_binding_system_unauthenticated=None,
       additional_ip_ranges=None,
       remove_additional_ip_ranges=None,
+      enable_private_nodes=None,
+      enable_dns_access=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1327,6 +1331,8 @@ class UpdateClusterOptions(object):
     )
     self.additional_ip_ranges = additional_ip_ranges
     self.remove_additional_ip_ranges = remove_additional_ip_ranges
+    self.enable_private_nodes = enable_private_nodes
+    self.enable_dns_access = enable_dns_access
 
 
 class SetMasterAuthOptions(object):
@@ -1385,6 +1391,7 @@ class CreateNodePoolOptions(object):
       placement_policy=None,
       tpu_topology=None,
       enable_queued_provisioning=None,
+      max_run_duration=None,
       enable_autorepair=None,
       enable_autoupgrade=None,
       service_account=None,
@@ -1472,6 +1479,7 @@ class CreateNodePoolOptions(object):
     self.placement_policy = placement_policy
     self.tpu_topology = tpu_topology
     self.enable_queued_provisioning = enable_queued_provisioning
+    self.max_run_duration = max_run_duration
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.service_account = service_account
@@ -1574,7 +1582,8 @@ class UpdateNodePoolOptions(object):
                machine_type=None,
                disk_type=None,
                disk_size_gb=None,
-               enable_queued_provisioning=None):
+               enable_queued_provisioning=None,
+               max_run_duration=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -1618,6 +1627,7 @@ class UpdateNodePoolOptions(object):
     self.disk_type = disk_type
     self.disk_size_gb = disk_size_gb
     self.enable_queued_provisioning = enable_queued_provisioning
+    self.max_run_duration = max_run_duration
     self.enable_insecure_kubelet_readonly_port = (
         enable_insecure_kubelet_readonly_port
     )
@@ -1660,7 +1670,8 @@ class UpdateNodePoolOptions(object):
             self.machine_type is not None or
             self.disk_type is not None or
             self.disk_size_gb is not None or
-            self.enable_queued_provisioning is not None)
+            self.enable_queued_provisioning is not None or
+            self.max_run_duration is not None)
 
 
 class APIAdapter(object):
@@ -2602,6 +2613,17 @@ class APIAdapter(object):
           options.enable_insecure_binding_system_unauthenticated
       )
 
+    if options.enable_dns_access is not None:
+      if cluster.controlPlaneEndpointsConfig is None:
+        cluster.controlPlaneEndpointsConfig = (
+            self.messages.ControlPlaneEndpointsConfig()
+        )
+      dns_endpoint_config = self.messages.DNSEndpointConfig(
+          allowExternalTraffic=options.enable_dns_access)
+      cluster.controlPlaneEndpointsConfig.dnsEndpointConfig = (
+          dns_endpoint_config
+      )
+
     if options.cp_disk_encryption_key is not None:
       if cluster.userManagedKeysConfig is None:
         cluster.userManagedKeysConfig = self.messages.UserManagedKeysConfig()
@@ -2705,6 +2727,9 @@ class APIAdapter(object):
     if options.gvnic is not None:
       gvnic = self.messages.VirtualNIC(enabled=options.gvnic)
       node_config.gvnic = gvnic
+
+    if options.max_run_duration is not None:
+      node_config.maxRunDuration = options.max_run_duration
 
     return node_config
 
@@ -4144,9 +4169,24 @@ class APIAdapter(object):
         )
       update = self.messages.ClusterUpdate(desiredRBACBindingConfig=confg)
 
+    if options.enable_private_nodes is not None:
+      update = self.messages.ClusterUpdate(
+          desiredDefaultEnablePrivateNodes=options.enable_private_nodes
+      )
+
+    if options.enable_dns_access is not None:
+      config = self.messages.ControlPlaneEndpointsConfig(
+          dnsEndpointConfig=self.messages.DNSEndpointConfig(
+              allowExternalTraffic=options.enable_dns_access
+          ),
+      )
+      update = self.messages.ClusterUpdate(
+          desiredControlPlaneEndpointsConfig=config
+      )
+
     if (
-        options.additional_ip_ranges is not None or
-        options.remove_additional_ip_ranges is not None
+        options.additional_ip_ranges is not None
+        or options.remove_additional_ip_ranges is not None
     ):
       cluster = self.GetCluster(cluster_ref)
       desired_ip_ranges = {}
@@ -4696,6 +4736,9 @@ class APIAdapter(object):
       gvnic = self.messages.VirtualNIC(enabled=options.gvnic)
       node_config.gvnic = gvnic
 
+    if options.max_run_duration is not None:
+      node_config.maxRunDuration = options.max_run_duration
+
     if options.enable_confidential_nodes:
       confidential_nodes = self.messages.ConfidentialNodes(
           enabled=options.enable_confidential_nodes)
@@ -5137,6 +5180,8 @@ class APIAdapter(object):
     elif options.gvnic is not None:
       gvnic = self.messages.VirtualNIC(enabled=options.gvnic)
       update_request.gvnic = gvnic
+    elif options.max_run_duration is not None:
+      update_request.maxRunDuration = options.max_run_duration
     elif options.enable_image_streaming is not None:
       gcfs_config = self.messages.GcfsConfig(
           enabled=options.enable_image_streaming)
@@ -6055,17 +6100,6 @@ class V1Beta1Adapter(V1Adapter):
       cluster.ipAllocationPolicy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
           self.messages).GetEnumForChoice(options.ipv6_access_type)
 
-    if options.enable_dns_endpoint is not None:
-      if cluster.controlPlaneEndpointsConfig is None:
-        cluster.controlPlaneEndpointsConfig = (
-            self.messages.ControlPlaneEndpointsConfig()
-        )
-      dns_endpoint_config = self.messages.DNSEndpointConfig(
-          enabled=options.enable_dns_endpoint)
-      cluster.controlPlaneEndpointsConfig.dnsEndpointConfig = (
-          dns_endpoint_config
-      )
-
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -6637,17 +6671,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       cluster.ipAllocationPolicy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
           self.messages).GetEnumForChoice(options.ipv6_access_type)
     cluster.master = _GetMasterForClusterCreate(options, self.messages)
-
-    if options.enable_dns_endpoint is not None:
-      if cluster.controlPlaneEndpointsConfig is None:
-        cluster.controlPlaneEndpointsConfig = (
-            self.messages.ControlPlaneEndpointsConfig()
-        )
-      dns_endpoint_config = self.messages.DNSEndpointConfig(
-          enabled=options.enable_dns_endpoint)
-      cluster.controlPlaneEndpointsConfig.dnsEndpointConfig = (
-          dns_endpoint_config
-      )
 
     cluster.kubernetesObjectsExportConfig = _GetKubernetesObjectsExportConfigForClusterCreate(
         options, self.messages)

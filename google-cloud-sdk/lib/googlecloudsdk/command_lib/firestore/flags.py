@@ -259,3 +259,36 @@ def AddRecurrenceFlag(parser):
       help=help_text,
       required=False,
   )
+
+
+def AddKmsKeyNameFlag(parser, additional_help_text=None):
+  """Adds flag for KMS Key Name to the given parser.
+
+  Args:
+    parser: The argparse parser.
+    additional_help_text: Additional help text to be added to the flag.
+  """
+
+  help_text = textwrap.dedent("""
+      The resource ID of a Cloud KMS key. If set, the database created will be a Customer-Managed Encryption Key (CMEK) database encrypted with this key.
+      This feature is allowlist only in initial launch.
+
+        Only a key in the same location as this database is allowed to be used for encryption.
+        For Firestore's nam5 multi-region, this corresponds to Cloud KMS location us.
+        For Firestore's eur3 multi-region, this corresponds to Cloud KMS location europe.
+        See https://cloud.google.com/kms/docs/locations.
+
+        This value should be the KMS key resource ID in the format of `projects/{project_id}/locations/{kms_location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}`.
+        How to retrieve this resource ID is listed at https://cloud.google.com/kms/docs/getting-resource-ids#getting_the_id_for_a_key_and_version.
+    """)
+  if additional_help_text:
+    help_text = help_text + '\n\n' + additional_help_text
+
+  parser.add_argument(
+      '--kms-key-name',
+      metavar='KMS_KEY_NAME',
+      type=str,
+      required=False,
+      default=None,
+      help=help_text,
+  )

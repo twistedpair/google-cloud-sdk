@@ -870,9 +870,14 @@ class BeyondcorpOrganizationsLocationsInsightsListRequest(_messages.Message):
   r"""A BeyondcorpOrganizationsLocationsInsightsListRequest object.
 
   Enums:
+    AggregationValueValuesEnum: Optional. Aggregation type. The default is
+      'DAILY'.
     ViewValueValuesEnum: Required. List only metadata or full data.
 
   Fields:
+    aggregation: Optional. Aggregation type. The default is 'DAILY'.
+    endTime: Optional. Ending time for the duration for which insights are to
+      be pulled. The default is the current time.
     filter: Optional. Filter expression to restrict the insights returned.
       Supported filter fields: * `type` * `category` * `subCategory` Examples:
       * "category = application AND type = count" * "category = application
@@ -894,8 +899,29 @@ class BeyondcorpOrganizationsLocationsInsightsListRequest(_messages.Message):
     parent: Required. The resource name of InsightMetadata using the form:
       `organizations/{organization_id}/locations/{location}`
       `projects/{project_id}/locations/{location_id}`
+    startTime: Optional. Starting time for the duration for which insights are
+      to be pulled. The default is 7 days before the current time.
     view: Required. List only metadata or full data.
   """
+
+  class AggregationValueValuesEnum(_messages.Enum):
+    r"""Optional. Aggregation type. The default is 'DAILY'.
+
+    Values:
+      AGGREGATION_UNSPECIFIED: Unspecified.
+      HOURLY: Insight should be aggregated at hourly level.
+      DAILY: Insight should be aggregated at daily level.
+      WEEKLY: Insight should be aggregated at weekly level.
+      MONTHLY: Insight should be aggregated at monthly level.
+      CUSTOM_DATE_RANGE: Insight should be aggregated at the custom date range
+        passed in as the start and end time in the request.
+    """
+    AGGREGATION_UNSPECIFIED = 0
+    HOURLY = 1
+    DAILY = 2
+    WEEKLY = 3
+    MONTHLY = 4
+    CUSTOM_DATE_RANGE = 5
 
   class ViewValueValuesEnum(_messages.Enum):
     r"""Required. List only metadata or full data.
@@ -912,12 +938,15 @@ class BeyondcorpOrganizationsLocationsInsightsListRequest(_messages.Message):
     BASIC = 1
     FULL = 2
 
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 6)
+  aggregation = _messages.EnumField('AggregationValueValuesEnum', 1)
+  endTime = _messages.StringField(2)
+  filter = _messages.StringField(3)
+  orderBy = _messages.StringField(4)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
+  parent = _messages.StringField(7, required=True)
+  startTime = _messages.StringField(8)
+  view = _messages.EnumField('ViewValueValuesEnum', 9)
 
 
 class BeyondcorpOrganizationsLocationsOperationsCancelRequest(_messages.Message):
@@ -2489,9 +2518,14 @@ class BeyondcorpProjectsLocationsInsightsListRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsInsightsListRequest object.
 
   Enums:
+    AggregationValueValuesEnum: Optional. Aggregation type. The default is
+      'DAILY'.
     ViewValueValuesEnum: Required. List only metadata or full data.
 
   Fields:
+    aggregation: Optional. Aggregation type. The default is 'DAILY'.
+    endTime: Optional. Ending time for the duration for which insights are to
+      be pulled. The default is the current time.
     filter: Optional. Filter expression to restrict the insights returned.
       Supported filter fields: * `type` * `category` * `subCategory` Examples:
       * "category = application AND type = count" * "category = application
@@ -2513,8 +2547,29 @@ class BeyondcorpProjectsLocationsInsightsListRequest(_messages.Message):
     parent: Required. The resource name of InsightMetadata using the form:
       `organizations/{organization_id}/locations/{location}`
       `projects/{project_id}/locations/{location_id}`
+    startTime: Optional. Starting time for the duration for which insights are
+      to be pulled. The default is 7 days before the current time.
     view: Required. List only metadata or full data.
   """
+
+  class AggregationValueValuesEnum(_messages.Enum):
+    r"""Optional. Aggregation type. The default is 'DAILY'.
+
+    Values:
+      AGGREGATION_UNSPECIFIED: Unspecified.
+      HOURLY: Insight should be aggregated at hourly level.
+      DAILY: Insight should be aggregated at daily level.
+      WEEKLY: Insight should be aggregated at weekly level.
+      MONTHLY: Insight should be aggregated at monthly level.
+      CUSTOM_DATE_RANGE: Insight should be aggregated at the custom date range
+        passed in as the start and end time in the request.
+    """
+    AGGREGATION_UNSPECIFIED = 0
+    HOURLY = 1
+    DAILY = 2
+    WEEKLY = 3
+    MONTHLY = 4
+    CUSTOM_DATE_RANGE = 5
 
   class ViewValueValuesEnum(_messages.Enum):
     r"""Required. List only metadata or full data.
@@ -2531,12 +2586,15 @@ class BeyondcorpProjectsLocationsInsightsListRequest(_messages.Message):
     BASIC = 1
     FULL = 2
 
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 6)
+  aggregation = _messages.EnumField('AggregationValueValuesEnum', 1)
+  endTime = _messages.StringField(2)
+  filter = _messages.StringField(3)
+  orderBy = _messages.StringField(4)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
+  parent = _messages.StringField(7, required=True)
+  startTime = _messages.StringField(8)
+  view = _messages.EnumField('ViewValueValuesEnum', 9)
 
 
 class BeyondcorpProjectsLocationsListRequest(_messages.Message):

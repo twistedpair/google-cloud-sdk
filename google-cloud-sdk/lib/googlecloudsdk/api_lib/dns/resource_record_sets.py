@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.dns import import_util
 from googlecloudsdk.api_lib.dns import record_types
 from googlecloudsdk.api_lib.dns import util
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
 
@@ -264,10 +265,22 @@ def GetLoadBalancerConfigFromUrl(
     )
 
 
-def CreateRecordSetFromArgs(args,
-                            project,
-                            api_version='v1',
-                            allow_extended_records=False):
+def GetHealthCheckSelfLink(health_check: str, project: str):
+  """Returns the self link for the given health check."""
+  return resources.REGISTRY.Parse(
+      health_check,
+      collection='compute.healthChecks',
+      params={'project': project},
+  ).SelfLink()
+
+
+def CreateRecordSetFromArgs(
+    args,
+    project,
+    api_version='v1',
+    allow_extended_records=False,
+    gcloud_version=base.ReleaseTrack.GA,
+):
   """Creates and returns a record-set from the given args.
 
   Args:
@@ -276,6 +289,8 @@ def CreateRecordSetFromArgs(args,
     api_version: [str], the api version to use for creating the RecordSet.
     allow_extended_records: [bool], enables extended records if true, otherwise
       throws an exception when given an extended record type.
+    gcloud_version: [base.ReleaseTrack], the gcloud version specified in the
+      command.
 
   Raises:
     UnsupportedRecordType: If given record-set type is not supported
@@ -290,6 +305,9 @@ def CreateRecordSetFromArgs(args,
   Returns:
     ResourceRecordSet, the record-set created from the given args.
   """
+  health_check = None
+  if gcloud_version != base.ReleaseTrack.GA:
+    health_check = args.health_check
   messages = apis.GetMessagesModule('dns', api_version)
   if allow_extended_records:
     if args.type in record_types.CLOUD_DNS_EXTENDED_TYPES:
@@ -328,31 +346,36 @@ def CreateRecordSetFromArgs(args,
         policy_item['rrdatas'] = [
             import_util.QuotedText(datum) for datum in policy_item['rrdatas']
         ]
-      if len(policy_item['forwarding_configs']
-            ) and not args.enable_health_checking:
-        raise ForwardingRuleWithoutHealthCheck(
-            'Specifying a forwarding rule enables health checking. '
-            'If this is intended, set --enable-health-checking.'
-        )
+      if health_check:
+        # For health-checked records in public zones, we will health check
+        # all IP addresses in the non-GA tracks.
+        policy_item['external_endpoints'] = policy_item['rrdatas']
+        policy_item['rrdatas'] = []
       if policy_item['forwarding_configs']:
+        if not args.enable_health_checking:
+          raise ForwardingRuleWithoutHealthCheck(
+              'Specifying a forwarding rule enables health checking. '
+              'If this is intended, set --enable-health-checking.'
+          )
         includes_forwarding_rules = True
       targets = [
           GetLoadBalancerTarget(config, api_version, project)
           for config in policy_item['forwarding_configs']
       ]
+      health_checked_targets = messages.RRSetRoutingPolicyHealthCheckTargets()
       if targets:
-        record_set.routingPolicy.wrr.items.append(
-            messages.RRSetRoutingPolicyWrrPolicyWrrPolicyItem(
-                weight=float(policy_item['key']),
-                rrdatas=policy_item['rrdatas'],
-                healthCheckedTargets=messages
-                .RRSetRoutingPolicyHealthCheckTargets(
-                    internalLoadBalancers=targets)))
-      else:
-        record_set.routingPolicy.wrr.items.append(
-            messages.RRSetRoutingPolicyWrrPolicyWrrPolicyItem(
-                weight=float(policy_item['key']),
-                rrdatas=policy_item['rrdatas']))
+        health_checked_targets.internalLoadBalancers = targets
+      if policy_item['external_endpoints']:
+        health_checked_targets.externalEndpoints = policy_item[
+            'external_endpoints'
+        ]
+      record_set.routingPolicy.wrr.items.append(
+          messages.RRSetRoutingPolicyWrrPolicyWrrPolicyItem(
+              weight=float(policy_item['key']),
+              rrdatas=policy_item['rrdatas'],
+              healthCheckedTargets=health_checked_targets,
+          )
+      )
 
   elif args.routing_policy_type == 'GEO':
     record_set.routingPolicy = messages.RRSetRoutingPolicy(
@@ -369,73 +392,98 @@ def CreateRecordSetFromArgs(args,
         policy_item['rrdatas'] = [
             import_util.QuotedText(datum) for datum in policy_item['rrdatas']
         ]
-      if len(policy_item['forwarding_configs']
-            ) and not args.enable_health_checking:
-        raise ForwardingRuleWithoutHealthCheck(
-            'Specifying a forwarding rule enables health checking. '
-            'If this is intended, set --enable-health-checking.'
-        )
+      if health_check:
+        # For health-checked records in public zones, we will health check
+        # all IP addresses in the non-GA tracks.
+        policy_item['external_endpoints'] = policy_item['rrdatas']
+        policy_item['rrdatas'] = []
       if policy_item['forwarding_configs']:
+        if not args.enable_health_checking:
+          raise ForwardingRuleWithoutHealthCheck(
+              'Specifying a forwarding rule enables health checking. '
+              'If this is intended, set --enable-health-checking.'
+          )
         includes_forwarding_rules = True
       targets = [
           GetLoadBalancerTarget(config, api_version, project)
           for config in policy_item['forwarding_configs']
       ]
+      health_checked_targets = messages.RRSetRoutingPolicyHealthCheckTargets()
       if targets:
-        record_set.routingPolicy.geo.items.append(
-            messages.RRSetRoutingPolicyGeoPolicyGeoPolicyItem(
-                location=policy_item['key'],
-                rrdatas=policy_item['rrdatas'],
-                healthCheckedTargets=messages
-                .RRSetRoutingPolicyHealthCheckTargets(
-                    internalLoadBalancers=targets)))
-      else:
-        record_set.routingPolicy.geo.items.append(
-            messages.RRSetRoutingPolicyGeoPolicyGeoPolicyItem(
-                location=policy_item['key'], rrdatas=policy_item['rrdatas']))
+        health_checked_targets.internalLoadBalancers = targets
+      if policy_item['external_endpoints']:
+        health_checked_targets.externalEndpoints = policy_item[
+            'external_endpoints'
+        ]
+      record_set.routingPolicy.geo.items.append(
+          messages.RRSetRoutingPolicyGeoPolicyGeoPolicyItem(
+              location=policy_item['key'],
+              rrdatas=policy_item['rrdatas'],
+              healthCheckedTargets=health_checked_targets,
+          )
+      )
   elif args.routing_policy_type == 'FAILOVER':
-    if not args.enable_health_checking:
+    if not args.enable_health_checking and not health_check:
+      health_check_flags = '--enable-health-checking'
+      if gcloud_version != base.ReleaseTrack.GA:
+        health_check_flags += ' or --health-check'
       raise ForwardingRuleWithoutHealthCheck(
           'Failover policy needs to have health checking enabled. '
-          'Set --enable-health-checking.'
+          f'Set {health_check_flags}.'
       )
     includes_forwarding_rules = True
     record_set.routingPolicy = messages.RRSetRoutingPolicy(
         primaryBackup=messages.RRSetRoutingPolicyPrimaryBackupPolicy(
-            primaryTargets=messages.RRSetRoutingPolicyHealthCheckTargets(
-                internalLoadBalancers=[]),
-            backupGeoTargets=messages.RRSetRoutingPolicyGeoPolicy(items=[])))
+            primaryTargets=messages.RRSetRoutingPolicyHealthCheckTargets(),
+            backupGeoTargets=messages.RRSetRoutingPolicyGeoPolicy(items=[]),
+        )
+    )
     if args.backup_data_trickle_ratio:
       record_set.routingPolicy.primaryBackup.trickleTraffic = (
           args.backup_data_trickle_ratio
       )
-    for target in args.routing_policy_primary_data:
-      record_set.routingPolicy.primaryBackup.primaryTargets.internalLoadBalancers.append(
-          GetLoadBalancerTarget(target, api_version, project))
+    if health_check:
+      for ip_address in args.routing_policy_primary_data:
+        record_set.routingPolicy.primaryBackup.primaryTargets.externalEndpoints.append(
+            ip_address
+        )
+    else:
+      for target in args.routing_policy_primary_data:
+        record_set.routingPolicy.primaryBackup.primaryTargets.internalLoadBalancers.append(
+            GetLoadBalancerTarget(target, api_version, project)
+        )
     if args.routing_policy_backup_data_type == 'GEO':
       if args.enable_geo_fencing:
         record_set.routingPolicy.primaryBackup.backupGeoTargets.enableFencing = (
             args.enable_geo_fencing
         )
       for policy_item in args.routing_policy_backup_data:
-        targets = [
-            GetLoadBalancerTarget(config, api_version, project)
-            for config in policy_item['forwarding_configs']
-        ]
-        if targets:
-          record_set.routingPolicy.primaryBackup.backupGeoTargets.items.append(
-              messages.RRSetRoutingPolicyGeoPolicyGeoPolicyItem(
-                  location=policy_item['key'],
-                  rrdatas=policy_item['rrdatas'],
-                  healthCheckedTargets=messages
-                  .RRSetRoutingPolicyHealthCheckTargets(
-                      internalLoadBalancers=targets)))
+        health_checked_targets = messages.RRSetRoutingPolicyHealthCheckTargets()
+        if health_check:
+          health_checked_targets.externalEndpoints = policy_item['rrdatas']
+          policy_item['rrdatas'] = []
         else:
-          record_set.routingPolicy.primaryBackup.backupGeoTargets.items.append(
-              messages.RRSetRoutingPolicyGeoPolicyGeoPolicyItem(
-                  location=policy_item['key'], rrdatas=policy_item['rrdatas']))
-  if not includes_forwarding_rules and hasattr(
-      args, 'enable_health_checking') and args.enable_health_checking:
+          health_checked_targets.internalLoadBalancers = [
+              GetLoadBalancerTarget(config, api_version, project)
+              for config in policy_item['forwarding_configs']
+          ]
+        record_set.routingPolicy.primaryBackup.backupGeoTargets.items.append(
+            messages.RRSetRoutingPolicyGeoPolicyGeoPolicyItem(
+                location=policy_item['key'],
+                rrdatas=policy_item['rrdatas'],
+                healthCheckedTargets=health_checked_targets,
+            )
+        )
+  if health_check:
+    record_set.routingPolicy.healthCheck = GetHealthCheckSelfLink(
+        health_check, project
+    )
+  if (
+      not health_check
+      and not includes_forwarding_rules
+      and hasattr(args, 'enable_health_checking')
+      and args.enable_health_checking
+  ):
     raise HealthCheckWithoutForwardingRule(
         '--enable-health-check is set, but no forwarding rules are provided. '
         'Either remove the --enable-health-check flag, or provide the '

@@ -534,22 +534,29 @@ class SqliteConfigStore(object):
     except OSError as e:
       logging.warning('Could not delete config from cache: %s', str(e))
 
-  def _DeleteAttribute(self, config_attr: str):
-    """Deletes a specified attribute from the config."""
+  def _DeleteAttribute(self, config_attr: str) -> bool:
+    """Deletes a specified attribute from the config.
+
+    Args:
+      config_attr: string, the primary key of the attribute to delete.
+
+    Returns:
+      Whether the attribute was successfully deleted.
+    """
     try:
       self._Execute(
           'DELETE FROM config WHERE config_attr = ?',
           (config_attr,),
       )
       # Check if deletion itself was successful
-      with self._cursor as cur:
-        if cur.RowCount() < 1:
-          logging.warning(
-              'Could not delete attribute [%s] from cache in config store'
-              ' [%s].',
-              config_attr,
-              self._config_name,
-          )
+      if self._cursor.RowCount() < 1:
+        logging.warning(
+            'Could not delete attribute [%s] from cache in config store [%s].',
+            config_attr,
+            self._config_name,
+        )
+        return False
+      return True
 
     except sqlite3.OperationalError as e:
       logging.warning(
@@ -557,10 +564,18 @@ class SqliteConfigStore(object):
           config_attr,
           str(e),
       )
+      return False
 
-  def Remove(self, config_attr):
-    """Removes an attribute from the config."""
-    self._DeleteAttribute(config_attr)
+  def Remove(self, config_attr: str) -> bool:
+    """Removes an attribute from the config.
+
+    Args:
+      config_attr: string, the primary key of the attribute to remove.
+
+    Returns:
+      Whether the attribute was successfully removed.
+    """
+    return self._DeleteAttribute(config_attr)
 
 
 def _GetSqliteStore(config_name) -> SqliteConfigStore:

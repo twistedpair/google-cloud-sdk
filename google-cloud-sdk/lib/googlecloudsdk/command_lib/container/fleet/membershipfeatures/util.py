@@ -17,7 +17,11 @@
 from googlecloudsdk.calliope import base
 
 
-MEMBERSHIP_FEATURE_PROJECT_ALLOWLIST = ('yufans-test')
+MEMBERSHIP_FEATURE_PROJECT_ALLOWLIST = (
+    'yufans-test',
+    'membershipfeature-project',
+    'membershipfeature-project-number',
+)
 
 
 def UseMembershipFeatureV2(project, release_track):

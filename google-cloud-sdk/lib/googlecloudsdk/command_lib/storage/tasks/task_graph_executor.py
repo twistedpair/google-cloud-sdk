@@ -24,10 +24,13 @@ from __future__ import unicode_literals
 import contextlib
 import functools
 import multiprocessing
+import re
 import signal as signal_lib
 import sys
+import tempfile
 import threading
 import traceback
+from typing import Dict, Iterator
 
 from googlecloudsdk.api_lib.storage.gcs_json import patch_apitools_messages
 from googlecloudsdk.command_lib import crash_handling
@@ -43,6 +46,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import creds_context_managers
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from six.moves import queue
 
@@ -128,6 +132,96 @@ _SHUTDOWN = 'SHUTDOWN'
 _CREATE_WORKER_PROCESS = 'CREATE_WORKER_PROCESS'
 
 
+def is_task_graph_debugging_enabled() -> bool:
+  """Whether task graph debugging is enabled.
+
+  Returns:
+      bool: True if task graph debugging is enabled else False.
+  """
+  return properties.VALUES.storage.enable_task_graph_debugging.GetBool()
+
+
+def yield_stack_traces() -> Iterator[str]:
+  """Retrieve stack traces for all the threads."""
+  # pylint:disable=protected-access
+  # There does not appear to be another way to collect the stack traces
+  # for all running threads.
+  for thread_id, stack in sys._current_frames().items():
+    yield f'\n# Traceback for thread: {thread_id}'
+    for filename, line_number, name, text in traceback.extract_stack(stack):
+      yield f'File: "{filename}", line {line_number}, in {name}'
+      if text:
+        yield f'  {text.strip()}'
+
+
+def _yield_management_thread_stack_traces(
+    name_to_thread: Dict[str, threading.Thread],
+    alive_thread_id_to_name: Dict[int, str],
+) -> Iterator[str]:
+  """Yields the stack traces of the alive management threads."""
+  for thread_name, thread in name_to_thread.items():
+    if thread.is_alive():
+      alive_thread_id_to_name[thread.ident] = thread_name
+
+  all_threads_stack_traces = yield_stack_traces()
+  current_thread_id = None
+
+  thread_id_pattern = re.compile(r'^\n# Traceback for thread:(.*)')
+  for line in all_threads_stack_traces:
+    if thread_id_match := thread_id_pattern.match(line):
+      current_thread_id = int(thread_id_match.group(1))
+    if (
+        current_thread_id in alive_thread_id_to_name
+    ):  # printing the stack traces of only the alive management threads.
+      if thread_id_match:
+        yield (
+            '\n# Traceback for'
+            f' thread:{alive_thread_id_to_name[current_thread_id]}'
+        )
+      yield line
+
+  for thread_name, thread in name_to_thread.items():
+    if thread.ident not in alive_thread_id_to_name:
+      yield (
+          f'\n# Thread {thread_name} is not running. Cannot get stack trace at'
+          ' the moment.'
+      )
+
+
+def print_management_thread_stacks(
+    management_threads_name_to_function: Dict[str, threading.Thread],
+):
+  """Prints stack traces of the management threads."""
+  log.status.Print(
+      'Initiating stack trace information of the management threads.'
+  )
+  alive_thread_id_to_name = {}
+  stack_traces = _yield_management_thread_stack_traces(
+      management_threads_name_to_function, alive_thread_id_to_name
+  )
+  for line in stack_traces:
+    log.status.Print(line)
+
+
+def print_worker_thread_stack_traces(stack_trace_file_path):
+  """Prints stack traces of the worker threads."""
+
+  try:
+    stack_traces = files.ReadFileContents(stack_trace_file_path)
+  except IOError as e:
+    log.error(f'Error reading stack trace file: {e}')
+    log.status.Print('No stack traces could be retrieved.')
+    return
+
+  if stack_traces:
+    log.status.Print('Printing stack traces for worker threads:')
+    # Split contents into lines and print each line.
+    for line in stack_traces.splitlines():
+      log.status.Print(line.strip())
+  else:
+    log.status.Print('No stack traces found. No worker threads running.')
+
+
 class _DebugSignalHandler:
   """Signal handler for collecting debug information."""
 
@@ -151,18 +245,7 @@ class _DebugSignalHandler:
     del signal_number, frame  # currently unused
     log.debug('Initiating crash debug information data collection.')
     stack_traces = []
-    # pylint:disable=protected-access, There does not appear to be another way
-    # to collect the stacktraces for all running threads.
-    for thread_id, stack in sys._current_frames().items():
-      stack_traces.append('\n# Traceback for thread: %s' % thread_id)
-      for frame in traceback.extract_stack(stack):
-        filename, line_number, name, text = frame
-        stack_traces.append(
-            'File: "%s", line %d, in %s' % (filename, line_number, name)
-        )
-        if text:
-          stack_traces.append('  %s' % (text.strip()))
-
+    stack_traces.extend(yield_stack_traces())
     for line in stack_traces:
       log.debug(line)
 
@@ -284,9 +367,37 @@ def _thread_worker(task_queue, task_output_queue, task_status_queue,
     idle_thread_count.release()
 
 
+def write_stack_traces_to_file(
+    stack_traces: Iterator[str], stack_trace_file_path: str
+):
+  """Writes stack traces to a file."""
+  if not stack_trace_file_path:
+    return
+
+  try:
+    stripped_stack_entries = []
+    for entry in stack_traces:
+      stripped_entry = entry.strip()
+      if stripped_entry:
+        stripped_stack_entries.append(stripped_entry)
+
+    content = '\n'.join(stripped_stack_entries)
+    files.WriteFileContents(stack_trace_file_path, content)
+
+  except Exception as e:  # pylint: disable=broad-except
+    log.error(f'An error occurred while writing stack trace file: {e}')
+
+
 @crash_handling.CrashManager
-def _process_worker(task_queue, task_output_queue, task_status_queue,
-                    thread_count, idle_thread_count, shared_process_context):
+def _process_worker(
+    task_queue,
+    task_output_queue,
+    task_status_queue,
+    thread_count,
+    idle_thread_count,
+    shared_process_context,
+    stack_trace_file_path
+):
   """Starts a consumer thread pool.
 
   Args:
@@ -299,25 +410,46 @@ def _process_worker(task_queue, task_output_queue, task_status_queue,
     idle_thread_count (multiprocessing.Semaphore): Passed on to worker threads.
     shared_process_context (SharedProcessContext): Holds values from global
       state that need to be replicated in child processes.
+    stack_trace_file_path (str): File path to write stack traces to.
   """
   threads = []
   with shared_process_context:
     for _ in range(thread_count):
       thread = threading.Thread(
           target=_thread_worker,
-          args=(task_queue, task_output_queue, task_status_queue,
-                idle_thread_count))
+          args=(
+              task_queue,
+              task_output_queue,
+              task_status_queue,
+              idle_thread_count,
+          ),
+      )
       thread.start()
       threads.append(thread)
+
+    # TODO: b/354829547 - Update the function to catch the updated stack traces
+    # of the already running worker threads while a new worker process
+    # is not created.
+
+    if is_task_graph_debugging_enabled():
+      stack_trace = yield_stack_traces()
+      write_stack_traces_to_file(stack_trace, stack_trace_file_path)
 
     for thread in threads:
       thread.join()
 
 
 @crash_handling.CrashManager
-def _process_factory(task_queue, task_output_queue, task_status_queue,
-                     thread_count, idle_thread_count, signal_queue,
-                     shared_process_context):
+def _process_factory(
+    task_queue,
+    task_output_queue,
+    task_status_queue,
+    thread_count,
+    idle_thread_count,
+    signal_queue,
+    shared_process_context,
+    stack_trace_file_path
+):
   """Create worker processes.
 
   This factory must run in a separate process to avoid deadlock issue,
@@ -337,6 +469,7 @@ def _process_factory(task_queue, task_output_queue, task_status_queue,
       signal when a new child worker process must be created.
     shared_process_context (SharedProcessContext): Holds values from global
       state that need to be replicated in child processes.
+    stack_trace_file_path (str): File path to write stack traces to.
   """
   processes = []
   while True:
@@ -353,8 +486,16 @@ def _process_factory(task_queue, task_output_queue, task_status_queue,
 
       process = multiprocessing_context.Process(
           target=_process_worker,
-          args=(task_queue, task_output_queue, task_status_queue,
-                thread_count, idle_thread_count, shared_process_context))
+          args=(
+              task_queue,
+              task_output_queue,
+              task_status_queue,
+              thread_count,
+              idle_thread_count,
+              shared_process_context,
+              stack_trace_file_path,
+          ),
+      )
       processes.append(process)
       log.debug('Adding 1 process with {} threads.'
                 ' Total processes: {}. Total threads: {}.'.format(
@@ -467,6 +608,16 @@ class TaskGraphExecutor:
     self._exit_code = 0
     self._debug_handler = _DebugSignalHandler()
 
+    self.stack_trace_file_path = None
+    if is_task_graph_debugging_enabled():
+      try:
+        with tempfile.NamedTemporaryFile(
+            prefix='stack_trace', suffix='.txt', delete=False
+        ) as f:
+          self.stack_trace_file_path = f.name
+      except IOError as e:
+        log.error('Error creating stack trace file: %s', e)
+
   def _add_worker_process(self):
     """Signal the worker process spawner to create a new process."""
     self._signal_queue.put(_CREATE_WORKER_PROCESS)
@@ -568,6 +719,7 @@ class TaskGraphExecutor:
             self._idle_thread_count,
             self._signal_queue,
             shared_process_context,
+            self.stack_trace_file_path
         ),
     )
     try:

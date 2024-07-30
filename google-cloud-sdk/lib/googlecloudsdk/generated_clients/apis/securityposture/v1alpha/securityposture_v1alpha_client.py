@@ -44,6 +44,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     self.organizations_locations_postureDeployments = self.OrganizationsLocationsPostureDeploymentsService(self)
     self.organizations_locations_postureTemplates = self.OrganizationsLocationsPostureTemplatesService(self)
     self.organizations_locations_postures = self.OrganizationsLocationsPosturesService(self)
+    self.organizations_locations_predictions = self.OrganizationsLocationsPredictionsService(self)
     self.organizations_locations_reports = self.OrganizationsLocationsReportsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
@@ -607,6 +608,43 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+name}',
         request_field='posture',
         request_type_name='SecuritypostureOrganizationsLocationsPosturesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsPredictionsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_predictions resource."""
+
+    _NAME = 'organizations_locations_predictions'
+
+    def __init__(self, client):
+      super(SecuritypostureV1alpha.OrganizationsLocationsPredictionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def CreatePrediction(self, request, global_params=None):
+      r"""Creates a AI generated prediction. Used to predict postures based on user provided intent and user's cloud environment.
+
+      Args:
+        request: (SecuritypostureOrganizationsLocationsPredictionsCreatePredictionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CreatePrediction')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreatePrediction.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/predictions:CreatePrediction',
+        http_method='POST',
+        method_id='securityposture.organizations.locations.predictions.createPrediction',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/predictions:CreatePrediction',
+        request_field='createPredictionRequest',
+        request_type_name='SecuritypostureOrganizationsLocationsPredictionsCreatePredictionRequest',
         response_type_name='Operation',
         supports_download=False,
     )

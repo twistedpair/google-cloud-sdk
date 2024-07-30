@@ -609,6 +609,33 @@ class DlpV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def List(self, request, global_params=None):
+      r"""Lists Connections in a parent. Use SearchConnections to see all connections within an organization.
+
+      Args:
+        request: (DlpOrganizationsLocationsConnectionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2ListConnectionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/connections',
+        http_method='GET',
+        method_id='dlp.organizations.locations.connections.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/connections',
+        request_field='',
+        request_type_name='DlpOrganizationsLocationsConnectionsListRequest',
+        response_type_name='GooglePrivacyDlpV2ListConnectionsResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Update a Connection.
 
@@ -2727,7 +2754,7 @@ class DlpV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Connections in a parent.
+      r"""Lists Connections in a parent. Use SearchConnections to see all connections within an organization.
 
       Args:
         request: (DlpProjectsLocationsConnectionsListRequest) input message

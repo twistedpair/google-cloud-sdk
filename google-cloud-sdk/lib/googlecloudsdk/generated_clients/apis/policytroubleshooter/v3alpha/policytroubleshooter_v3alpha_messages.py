@@ -1565,8 +1565,8 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedDenyResource(_messages.M
 
 
 class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABBindingAndPolicy(_messages.Message):
-  r"""Details about how a Principal Access Boundary binding and policy
-  contributes to the Principal Access Boundary explanation, with annotations
+  r"""Details about how a principal access boundary binding and policy
+  contributes to the principal access boundary explanation, with annotations
   to indicate how the binding and policy contribute to the overall access
   state.
 
@@ -1574,7 +1574,7 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABBindingAndPolicy(_mes
     BindingAndPolicyAccessStateValueValuesEnum: Output only. Indicates whether
       the principal is allowed to access the specified resource based on
       evaluating the binding and policy.
-    RelevanceValueValuesEnum: The relevance of this Principal Access Boundary
+    RelevanceValueValuesEnum: The relevance of this principal access boundary
       binding and policy to the overall access state.
 
   Fields:
@@ -1582,14 +1582,14 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABBindingAndPolicy(_mes
       is allowed to access the specified resource based on evaluating the
       binding and policy.
     explainedPolicy: Optional. Details about how this policy contributes to
-      the Principal Access Boundary explanation, with annotations to indicate
+      the principal access boundary explanation, with annotations to indicate
       how the policy contributes to the overall access state. If the caller
       doesn't have permission to view the policy in the binding, this field is
       omitted.
     explainedPolicyBinding: Details about how this binding contributes to the
-      Principal Access Boundary explanation, with annotations to indicate how
+      principal access boundary explanation, with annotations to indicate how
       the binding contributes to the overall access state.
-    relevance: The relevance of this Principal Access Boundary binding and
+    relevance: The relevance of this principal access boundary binding and
       policy to the overall access state.
   """
 
@@ -1604,10 +1604,13 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABBindingAndPolicy(_mes
       PAB_ACCESS_STATE_NOT_ALLOWED: The PAB component doesn't allow the
         principal's access to the specified resource.
       PAB_ACCESS_STATE_NOT_ENFORCED: The PAB component is not enforced on the
-        principal, or the specified resource. This state refers to 2 specific
-        scenarios: - The service that the specified resource belongs to is not
-        enforced by PAB at the policy version. - The binding doesn't apply to
-        the principal, hence the policy is not enforced as a result.
+        principal, or the specified resource. This state refers to the
+        following scenarios: - IAM doesn't enforce the specified permission at
+        the PAB policy's [enforcement
+        version](https://cloud.google.com/iam/help/pab/enforcement-versions),
+        so the PAB policy can't block access. - The binding doesn't apply to
+        the principal, so the policy is not enforced. - The PAB policy doesn't
+        have any rules
       PAB_ACCESS_STATE_UNKNOWN_INFO: The sender of the request does not have
         access to the PAB component, or the relevant data to explain the PAB
         component.
@@ -1619,7 +1622,7 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABBindingAndPolicy(_mes
     PAB_ACCESS_STATE_UNKNOWN_INFO = 4
 
   class RelevanceValueValuesEnum(_messages.Enum):
-    r"""The relevance of this Principal Access Boundary binding and policy to
+    r"""The relevance of this principal access boundary binding and policy to
     the overall access state.
 
     Values:
@@ -1642,7 +1645,7 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABBindingAndPolicy(_mes
 
 
 class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABPolicy(_messages.Message):
-  r"""Details about how a Principal Access Boundary policy contributes to the
+  r"""Details about how a principal access boundary policy contributes to the
   explanation, with annotations to indicate how the policy contributes to the
   overall access state.
 
@@ -1653,14 +1656,14 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABPolicy(_messages.Mess
       access state.
 
   Fields:
-    explainedRules: List of Principal Access Boundary rules that were
+    explainedRules: List of principal access boundary rules that were
       explained to check the principal's access to specified resource, with
       annotations to indicate how each rule contributes to the overall access
       state.
     policy: The policy that is explained.
     policyAccessState: Output only. Indicates whether the policy allows access
       to the specified resource.
-    policyVersion: Output only. Explanation of the Principal Access Boundary
+    policyVersion: Output only. Explanation of the principal access boundary
       policy's version.
     relevance: The relevance of this policy to the overall access state.
   """
@@ -1676,10 +1679,13 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABPolicy(_messages.Mess
       PAB_ACCESS_STATE_NOT_ALLOWED: The PAB component doesn't allow the
         principal's access to the specified resource.
       PAB_ACCESS_STATE_NOT_ENFORCED: The PAB component is not enforced on the
-        principal, or the specified resource. This state refers to 2 specific
-        scenarios: - The service that the specified resource belongs to is not
-        enforced by PAB at the policy version. - The binding doesn't apply to
-        the principal, hence the policy is not enforced as a result.
+        principal, or the specified resource. This state refers to the
+        following scenarios: - IAM doesn't enforce the specified permission at
+        the PAB policy's [enforcement
+        version](https://cloud.google.com/iam/help/pab/enforcement-versions),
+        so the PAB policy can't block access. - The binding doesn't apply to
+        the principal, so the policy is not enforced. - The PAB policy doesn't
+        have any rules
       PAB_ACCESS_STATE_UNKNOWN_INFO: The sender of the request does not have
         access to the PAB component, or the relevant data to explain the PAB
         component.
@@ -1714,7 +1720,7 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABPolicy(_messages.Mess
 
 
 class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABPolicyVersion(_messages.Message):
-  r"""Details about how a Principal Access Boundary policy's version
+  r"""Details about how a principal access boundary policy's version
   contributes to the policy's enforcement state.
 
   Enums:
@@ -1735,11 +1741,11 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABPolicyVersion(_messag
 
     Values:
       PAB_POLICY_ENFORCEMENT_STATE_UNSPECIFIED: An error occurred when
-        checking whether a Principal Access Boundary policy is enforced based
+        checking whether a principal access boundary policy is enforced based
         on its version.
-      PAB_POLICY_ENFORCEMENT_STATE_ENFORCED: The Principal Access Boundary
+      PAB_POLICY_ENFORCEMENT_STATE_ENFORCED: The principal access boundary
         policy is enforced based on its version.
-      PAB_POLICY_ENFORCEMENT_STATE_NOT_ENFORCED: The Principal Access Boundary
+      PAB_POLICY_ENFORCEMENT_STATE_NOT_ENFORCED: The principal access boundary
         policy is not enforced based on its version.
     """
     PAB_POLICY_ENFORCEMENT_STATE_UNSPECIFIED = 0
@@ -1751,7 +1757,7 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABPolicyVersion(_messag
 
 
 class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABRule(_messages.Message):
-  r"""Details about how a Principal Access Boundary rule contributes to the
+  r"""Details about how a principal access boundary rule contributes to the
   explanation, with annotations to indicate how the rule contributes to the
   overall access state.
 
@@ -1841,10 +1847,13 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABRule(_messages.Messag
       PAB_ACCESS_STATE_NOT_ALLOWED: The PAB component doesn't allow the
         principal's access to the specified resource.
       PAB_ACCESS_STATE_NOT_ENFORCED: The PAB component is not enforced on the
-        principal, or the specified resource. This state refers to 2 specific
-        scenarios: - The service that the specified resource belongs to is not
-        enforced by PAB at the policy version. - The binding doesn't apply to
-        the principal, hence the policy is not enforced as a result.
+        principal, or the specified resource. This state refers to the
+        following scenarios: - IAM doesn't enforce the specified permission at
+        the PAB policy's [enforcement
+        version](https://cloud.google.com/iam/help/pab/enforcement-versions),
+        so the PAB policy can't block access. - The binding doesn't apply to
+        the principal, so the policy is not enforced. - The PAB policy doesn't
+        have any rules
       PAB_ACCESS_STATE_UNKNOWN_INFO: The sender of the request does not have
         access to the PAB component, or the relevant data to explain the PAB
         component.
@@ -1985,33 +1994,33 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPolicyBinding(_messages.
 
 
 class GoogleCloudPolicytroubleshooterIamV3alphaPABPolicyExplanation(_messages.Message):
-  r"""Details about how the relevant Principal Access Boundary policies affect
+  r"""Details about how the relevant principal access boundary policies affect
   the overall access state.
 
   Enums:
     PrincipalAccessBoundaryAccessStateValueValuesEnum: Output only. Indicates
       whether the principal is allowed to access specified resource, based on
-      evaluating all applicable Principal Access Boundary bindings and
+      evaluating all applicable principal access boundary bindings and
       policies.
-    RelevanceValueValuesEnum: The relevance of the Principal Access Boundary
+    RelevanceValueValuesEnum: The relevance of the principal access boundary
       access state to the overall access state.
 
   Fields:
-    explainedBindingsAndPolicies: List of Principal Access Boundary policies
+    explainedBindingsAndPolicies: List of principal access boundary policies
       and bindings that are applicable to the principal's access state, with
       annotations to indicate how each binding and policy contributes to the
       overall access state.
     principalAccessBoundaryAccessState: Output only. Indicates whether the
       principal is allowed to access specified resource, based on evaluating
-      all applicable Principal Access Boundary bindings and policies.
-    relevance: The relevance of the Principal Access Boundary access state to
+      all applicable principal access boundary bindings and policies.
+    relevance: The relevance of the principal access boundary access state to
       the overall access state.
   """
 
   class PrincipalAccessBoundaryAccessStateValueValuesEnum(_messages.Enum):
     r"""Output only. Indicates whether the principal is allowed to access
-    specified resource, based on evaluating all applicable Principal Access
-    Boundary bindings and policies.
+    specified resource, based on evaluating all applicable principal access
+    boundary bindings and policies.
 
     Values:
       PAB_ACCESS_STATE_UNSPECIFIED: Not specified.
@@ -2020,10 +2029,13 @@ class GoogleCloudPolicytroubleshooterIamV3alphaPABPolicyExplanation(_messages.Me
       PAB_ACCESS_STATE_NOT_ALLOWED: The PAB component doesn't allow the
         principal's access to the specified resource.
       PAB_ACCESS_STATE_NOT_ENFORCED: The PAB component is not enforced on the
-        principal, or the specified resource. This state refers to 2 specific
-        scenarios: - The service that the specified resource belongs to is not
-        enforced by PAB at the policy version. - The binding doesn't apply to
-        the principal, hence the policy is not enforced as a result.
+        principal, or the specified resource. This state refers to the
+        following scenarios: - IAM doesn't enforce the specified permission at
+        the PAB policy's [enforcement
+        version](https://cloud.google.com/iam/help/pab/enforcement-versions),
+        so the PAB policy can't block access. - The binding doesn't apply to
+        the principal, so the policy is not enforced. - The PAB policy doesn't
+        have any rules
       PAB_ACCESS_STATE_UNKNOWN_INFO: The sender of the request does not have
         access to the PAB component, or the relevant data to explain the PAB
         component.
@@ -2035,7 +2047,7 @@ class GoogleCloudPolicytroubleshooterIamV3alphaPABPolicyExplanation(_messages.Me
     PAB_ACCESS_STATE_UNKNOWN_INFO = 4
 
   class RelevanceValueValuesEnum(_messages.Enum):
-    r"""The relevance of the Principal Access Boundary access state to the
+    r"""The relevance of the principal access boundary access state to the
     overall access state.
 
     Values:
@@ -2085,8 +2097,8 @@ class GoogleCloudPolicytroubleshooterIamV3alphaTroubleshootIamPolicyResponse(_me
     overallAccessState: Indicates whether the principal has the specified
       permission for the specified resource, based on evaluating all types of
       the applicable IAM policies.
-    pabPolicyExplanation: An explanation of how the applicable Principal
-      Access Boundary policies affect the final access state.
+    pabPolicyExplanation: An explanation of how the applicable principal
+      access boundary policies affect the final access state.
   """
 
   class OverallAccessStateValueValuesEnum(_messages.Enum):
@@ -2138,17 +2150,23 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaAccessPolicyExplanat
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaEgressPoliciesExplanation(_messages.Message):
-  r"""Explanation of egress policies NextTAG: 5
+  r"""Explanation of a pair of source and target resources evaluated against
+  all egress policies. NextTAG: 5
 
   Enums:
     EgressPolicyEvalStatesValueListEntryValuesEnum:
 
   Fields:
-    egressPolicyEvalStates: Details about the evaluation state of the egress
-      policy
-    egressPolicyExplanations: Explanations of egress policies
-    sourceResource: The source resource to egress from
-    targetResource: The target resource to egress to
+    egressPolicyEvalStates: Evaluation states for the pair of source and
+      target resources evaluated against all the egress policies in the
+      service perimeter
+    egressPolicyExplanations: Explanation details about how the pair of source
+      and target resources are evaluated against all the egress policies in
+      the service perimeter
+    sourceResource: The source resource that egress_from policies are
+      evaluated against
+    targetResource: The target resource that egress_to policies are evaluated
+      against
   """
 
   class EgressPolicyEvalStatesValueListEntryValuesEnum(_messages.Enum):
@@ -2625,11 +2643,16 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaServicePerimeterConf
         not applicable
       GRANTED: The service perimeter config grants the request
       DENIED: The service perimeter config denies the request
+      INHERITED_FROM_ACTIVE: The service perimeter dry run config is inherited
+        from the active service perimeter. The dry run evaluation state is the
+        same as the active service perimeter evaluation state. This should
+        only be set for dry run service perimeter config.
     """
     EVAL_STATE_UNSPECIFIED = 0
     NOT_APPLICABLE = 1
     GRANTED = 2
     DENIED = 3
+    INHERITED_FROM_ACTIVE = 4
 
   class OverallEgressPoliciesEvalStateValueValuesEnum(_messages.Enum):
     r"""Overall evaluation state of the egress policies
@@ -3011,15 +3034,23 @@ class GoogleIamV1Condition(_messages.Message):
         cloud region) - 'self:prod-region' (i.e., allow connections from
         clients that are in the same prod region) - 'guardians' (i.e., allow
         connections from its guardian realms. See go/security-realms-
-        glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e.,
-        allow connections from clients that are in the same security realm,
-        which is currently but not guaranteed to be campus-sized) - a realm
-        (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
-        see: go/realm-groups) A match is determined by a realm group
-        membership check performed by a RealmAclRep object (go/realm-acl-
-        howto). It is not permitted to grant access based on the *absence* of
-        a realm, so realm conditions can only be used in a "positive" context
-        (e.g., ALLOW/IN or DENY/NOT_IN).
+        glossary#guardian for more information.) - 'cryto_core_guardians'
+        (i.e., allow connections from its crypto core guardian realms. See
+        go/security-realms-glossary#guardian for more information.) Crypto
+        Core coverage is a super-set of Default coverage, containing
+        information about coverage between higher tier data centers (e.g.,
+        YAWNs). Most services should use Default coverage and only use Crypto
+        Core coverage if the service is involved in greenfield turnup of new
+        higher tier data centers (e.g., credential infrastructure, machine/job
+        management systems, etc.). - 'self' [DEPRECATED] (i.e., allow
+        connections from clients that are in the same security realm, which is
+        currently but not guaranteed to be campus-sized) - a realm (e.g.,
+        'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see:
+        go/realm-groups) A match is determined by a realm group membership
+        check performed by a RealmAclRep object (go/realm-acl-howto). It is
+        not permitted to grant access based on the *absence* of a realm, so
+        realm conditions can only be used in a "positive" context (e.g.,
+        ALLOW/IN or DENY/NOT_IN).
       APPROVER: An approver (distinct from the requester) that has authorized
         this request. When used with IN, the condition indicates that one of
         the approvers associated with the request matches the specified
@@ -3653,11 +3684,10 @@ class GoogleIamV3PolicyBinding(_messages.Message):
       `. The binding parent is the closest Resource Manager resource (i.e.,
       Project, Folder or Organization) to the binding target. Format: * `proje
       cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` // NOLINT * `projects/{project_number}/locations/{location}/policyBind
-      ings/{policy_binding_id}` // NOLINT * `folders/{folder_id}/locations/{lo
-      cation}/policyBindings/{policy_binding_id}` // NOLINT * `organizations/{
-      organization_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` // NOLINT
+      ` * `projects/{project_number}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` * `folders/{folder_id}/locations/{location}/policyBindin
+      gs/{policy_binding_id}` * `organizations/{organization_id}/locations/{lo
+      cation}/policyBindings/{policy_binding_id}`
     policy: Required. Immutable. The resource name of the policy to be bound.
       The binding parent and policy must belong to the same Organization (or
       Project).
@@ -3742,8 +3772,7 @@ class GoogleIamV3PolicyBindingTarget(_messages.Message):
       `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER` *
       `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID` * Workload
       Identity Pool: `//iam.googleapis.com/projects/PROJECT_NUMBER/locations/L
-      OCATION/workloadIdentityPools/WORKLOAD_POOL_ID` // NOLINT * Workforce
-      Identity:
+      OCATION/workloadIdentityPools/WORKLOAD_POOL_ID` * Workforce Identity:
       `//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID`
       * Workspace Identity:
       `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID`

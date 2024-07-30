@@ -2195,6 +2195,7 @@ class Quota(_messages.Message):
     gkeClustersPerPolicy: Maximum allowed number of GKE clusters per policy.
     gkeClustersPerResponsePolicy: Maximum allowed number of GKE clusters per
       response policy.
+    internetHealthChecksPerManagedZone: A integer attribute.
     itemsPerRoutingPolicy: Maximum allowed number of items per routing policy.
     kind: A string attribute.
     managedZones: Maximum allowed number of managed zones in the project.
@@ -2237,27 +2238,28 @@ class Quota(_messages.Message):
   gkeClustersPerManagedZone = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   gkeClustersPerPolicy = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   gkeClustersPerResponsePolicy = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  itemsPerRoutingPolicy = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  kind = _messages.StringField(6, default='dns#quota')
-  managedZones = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  managedZonesPerGkeCluster = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  managedZonesPerNetwork = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  nameserversPerDelegation = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  networksPerManagedZone = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  networksPerPolicy = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  networksPerResponsePolicy = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  peeringZonesPerTargetNetwork = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  policies = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  resourceRecordsPerRrset = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  responsePolicies = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  responsePolicyRulesPerResponsePolicy = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  rrsetAdditionsPerChange = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  rrsetDeletionsPerChange = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  rrsetsPerManagedZone = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  targetNameServersPerManagedZone = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  targetNameServersPerPolicy = _messages.IntegerField(23, variant=_messages.Variant.INT32)
-  totalRrdataSizePerChange = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  whitelistedKeySpecs = _messages.MessageField('DnsKeySpec', 25, repeated=True)
+  internetHealthChecksPerManagedZone = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  itemsPerRoutingPolicy = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  kind = _messages.StringField(7, default='dns#quota')
+  managedZones = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  managedZonesPerGkeCluster = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  managedZonesPerNetwork = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  nameserversPerDelegation = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  networksPerManagedZone = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  networksPerPolicy = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  networksPerResponsePolicy = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  peeringZonesPerTargetNetwork = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  policies = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  resourceRecordsPerRrset = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  responsePolicies = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  responsePolicyRulesPerResponsePolicy = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  rrsetAdditionsPerChange = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  rrsetDeletionsPerChange = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  rrsetsPerManagedZone = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  targetNameServersPerManagedZone = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  targetNameServersPerPolicy = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  totalRrdataSizePerChange = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  whitelistedKeySpecs = _messages.MessageField('DnsKeySpec', 26, repeated=True)
 
 
 class RRSetRoutingPolicy(_messages.Message):
@@ -2267,15 +2269,19 @@ class RRSetRoutingPolicy(_messages.Message):
 
   Fields:
     geo: A RRSetRoutingPolicyGeoPolicy attribute.
+    healthCheck: The selfLink attribute of the HealthCheck resource to use for
+      this RRSetRoutingPolicy.
+      https://cloud.google.com/compute/docs/reference/rest/v1/healthChecks
     kind: A string attribute.
     primaryBackup: A RRSetRoutingPolicyPrimaryBackupPolicy attribute.
     wrr: A RRSetRoutingPolicyWrrPolicy attribute.
   """
 
   geo = _messages.MessageField('RRSetRoutingPolicyGeoPolicy', 1)
-  kind = _messages.StringField(2, default='dns#rRSetRoutingPolicy')
-  primaryBackup = _messages.MessageField('RRSetRoutingPolicyPrimaryBackupPolicy', 3)
-  wrr = _messages.MessageField('RRSetRoutingPolicyWrrPolicy', 4)
+  healthCheck = _messages.StringField(2)
+  kind = _messages.StringField(3, default='dns#rRSetRoutingPolicy')
+  primaryBackup = _messages.MessageField('RRSetRoutingPolicyPrimaryBackupPolicy', 4)
+  wrr = _messages.MessageField('RRSetRoutingPolicyWrrPolicy', 5)
 
 
 class RRSetRoutingPolicyGeoPolicy(_messages.Message):
@@ -2330,11 +2336,15 @@ class RRSetRoutingPolicyHealthCheckTargets(_messages.Message):
   the response.
 
   Fields:
+    externalEndpoints: The Internet IP addresses to be health checked. The
+      format matches the format of ResourceRecordSet.rrdata as defined in RFC
+      1035 (section 5) and RFC 1034 (section 3.6.1)
     internalLoadBalancers: Configuration for internal load balancers to be
       health checked.
   """
 
-  internalLoadBalancers = _messages.MessageField('RRSetRoutingPolicyLoadBalancerTarget', 1, repeated=True)
+  externalEndpoints = _messages.StringField(1, repeated=True)
+  internalLoadBalancers = _messages.MessageField('RRSetRoutingPolicyLoadBalancerTarget', 2, repeated=True)
 
 
 class RRSetRoutingPolicyLoadBalancerTarget(_messages.Message):

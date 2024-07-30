@@ -267,14 +267,34 @@ def GetSourceInstanceTemplateFlag(custom_name=None):
   )
 
 
-def AddCreateFlags(parser,
-                   support_fleet=False,
-                   support_folder_share_setting=False,
-                   support_ssd_count=False,
-                   support_auto_delete=False):
+def GetReservationSharingPolicyFlag(custom_name=None):
+  """Gets the --reservation-sharing-policy flag."""
+  help_text = """\
+  The reservation sharing policy to use for this reservation. If set to
+  allow_all, the reservation can be shared with first party services. If this
+  flag is ommited, the default value will be disallow_all.
+  """
+  return base.Argument(
+      custom_name or '--reservation-sharing-policy',
+      choices=['allow_all', 'disallow_all'],
+      help=help_text,
+      hidden=True,
+  )
+
+
+def AddCreateFlags(
+    parser,
+    support_fleet=False,
+    support_folder_share_setting=False,
+    support_ssd_count=False,
+    support_auto_delete=False,
+    support_reservation_sharing_policy=False,
+):
   """Adds all flags needed for the create command."""
   GetDescriptionFlag().AddToParser(parser)
 
+  if support_reservation_sharing_policy:
+    GetReservationSharingPolicyFlag().AddToParser(parser)
   # create the group for all properties used in SpecificSkuReservations
   specific_sku_group = base.ArgumentGroup(
       'Manage the SpecificSKU reservation properties.', required=True)

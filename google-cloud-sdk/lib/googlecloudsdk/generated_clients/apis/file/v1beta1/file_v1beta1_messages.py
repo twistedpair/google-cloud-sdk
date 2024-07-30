@@ -752,8 +752,6 @@ class FileShareConfig(_messages.Message):
       start with a letter. Immutable.
     nfsExportOptions: Nfs Export Options. There is a limit of 10 export
       options per file share.
-    performanceConfig: Optional. Used to configure performance.
-    performanceLimits: Output only. Used for getting performance limits.
     sourceBackup: The resource name of the backup, in the format
       `projects/{project_id}/locations/{location_id}/backups/{backup_id}`,
       that this file share has been restored from.
@@ -762,13 +760,11 @@ class FileShareConfig(_messages.Message):
   capacityGb = _messages.IntegerField(1)
   name = _messages.StringField(2)
   nfsExportOptions = _messages.MessageField('NfsExportOptions', 3, repeated=True)
-  performanceConfig = _messages.MessageField('PerformanceConfig', 4)
-  performanceLimits = _messages.MessageField('PerformanceLimits', 5)
-  sourceBackup = _messages.StringField(6)
+  sourceBackup = _messages.StringField(4)
 
 
 class FixedIOPS(_messages.Message):
-  r"""Fixed IOPS parameters.
+  r"""Fixed IOPS (input/output operations per second) parameters.
 
   Fields:
     maxReadIops: Required. Maximum raw read IOPS.
@@ -1374,6 +1370,10 @@ class Instance(_messages.Message):
       bytes). This capacity can be increased up to `max_capacity_gb` GB in
       multipliers of `capacity_step_size_gb` GB.
     capacityStepSizeGb: Output only. The increase/decrease capacity step size.
+    configurablePerformanceEnabled: Output only. Indicates whether this
+      instance uses configurable performance. An instance with configurable
+      performance enabled can be configured by populating the instance's
+      `performance_config` field.
     createTime: Output only. The time when the instance was created.
     description: The description of the instance (2048 characters or less).
     directoryServices: Optional. Directory Services configuration for
@@ -1395,6 +1395,8 @@ class Instance(_messages.Message):
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
     networks: VPC networks to which the instance is connected. For this
       version, only a single network is supported.
+    performanceConfig: Optional. Used to configure performance.
+    performanceLimits: Output only. Used for getting performance limits.
     protocol: Immutable. The protocol indicates the access protocol for all
       shares in the instance. This field is immutable and it cannot be changed
       after the instance has been created. Default value: `NFS_V3`.
@@ -1557,27 +1559,30 @@ class Instance(_messages.Message):
 
   capacityGb = _messages.IntegerField(1)
   capacityStepSizeGb = _messages.IntegerField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  directoryServices = _messages.MessageField('DirectoryServicesConfig', 5)
-  etag = _messages.StringField(6)
-  fileShares = _messages.MessageField('FileShareConfig', 7, repeated=True)
-  kmsKeyName = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  maxCapacityGb = _messages.IntegerField(10)
-  maxShareCount = _messages.IntegerField(11)
-  multiShareEnabled = _messages.BooleanField(12)
-  name = _messages.StringField(13)
-  networks = _messages.MessageField('NetworkConfig', 14, repeated=True)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 15)
-  replication = _messages.MessageField('Replication', 16)
-  satisfiesPzi = _messages.BooleanField(17)
-  satisfiesPzs = _messages.BooleanField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  statusMessage = _messages.StringField(20)
-  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 21, repeated=True)
-  tags = _messages.MessageField('TagsValue', 22)
-  tier = _messages.EnumField('TierValueValuesEnum', 23)
+  configurablePerformanceEnabled = _messages.BooleanField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  directoryServices = _messages.MessageField('DirectoryServicesConfig', 6)
+  etag = _messages.StringField(7)
+  fileShares = _messages.MessageField('FileShareConfig', 8, repeated=True)
+  kmsKeyName = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  maxCapacityGb = _messages.IntegerField(11)
+  maxShareCount = _messages.IntegerField(12)
+  multiShareEnabled = _messages.BooleanField(13)
+  name = _messages.StringField(14)
+  networks = _messages.MessageField('NetworkConfig', 15, repeated=True)
+  performanceConfig = _messages.MessageField('PerformanceConfig', 16)
+  performanceLimits = _messages.MessageField('PerformanceLimits', 17)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 18)
+  replication = _messages.MessageField('Replication', 19)
+  satisfiesPzi = _messages.BooleanField(20)
+  satisfiesPzs = _messages.BooleanField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  statusMessage = _messages.StringField(23)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 24, repeated=True)
+  tags = _messages.MessageField('TagsValue', 25)
+  tier = _messages.EnumField('TierValueValuesEnum', 26)
 
 
 class ListBackupsResponse(_messages.Message):

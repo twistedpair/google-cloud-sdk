@@ -1158,6 +1158,33 @@ class NetappV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def EstablishPeering(self, request, global_params=None):
+      r"""Establish replication peering.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesReplicationsEstablishPeeringRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('EstablishPeering')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EstablishPeering.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}:establishPeering',
+        http_method='POST',
+        method_id='netapp.projects.locations.volumes.replications.establishPeering',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:establishPeering',
+        request_field='establishPeeringRequest',
+        request_type_name='NetappProjectsLocationsVolumesReplicationsEstablishPeeringRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Describe a replication for a volume.
 
@@ -1316,6 +1343,33 @@ class NetappV1(base_api.BaseApiClient):
         relative_path='v1/{+name}:stop',
         request_field='stopReplicationRequest',
         request_type_name='NetappProjectsLocationsVolumesReplicationsStopRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Sync(self, request, global_params=None):
+      r"""Syncs the replication. This will invoke one time volume data transfer from source to destination.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesReplicationsSyncRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Sync')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Sync.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}:sync',
+        http_method='POST',
+        method_id='netapp.projects.locations.volumes.replications.sync',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:sync',
+        request_field='syncReplicationRequest',
+        request_type_name='NetappProjectsLocationsVolumesReplicationsSyncRequest',
         response_type_name='Operation',
         supports_download=False,
     )

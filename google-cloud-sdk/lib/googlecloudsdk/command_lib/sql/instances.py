@@ -931,6 +931,11 @@ class _BaseInstances(object):
           sql_messages.DatabaseInstance.SqlNetworkArchitectureValueValuesEnum.NEW_NETWORK_ARCHITECTURE
       )
 
+    if args.IsKnownAndSpecified('switch_transaction_logs_to_cloud_storage'):
+      instance_resource.switchTransactionLogsToCloudStorageEnabled = (
+          args.switch_transaction_logs_to_cloud_storage
+      )
+
     if args.IsSpecified('simulate_maintenance_event'):
       instance_resource.maintenanceVersion = original.maintenanceVersion
       api_util.InstancesV1Beta4.PrintAndConfirmSimulatedMaintenanceEvent()
@@ -954,11 +959,6 @@ class _BaseInstances(object):
       if args.IsKnownAndSpecified('clear_failover_dr_replica_name'):
         if instance_resource.replicationCluster is not None:
           instance_resource.replicationCluster.ClearFailoverDrReplicaName()
-
-      if args.IsKnownAndSpecified('switch_transaction_logs_to_cloud_storage'):
-        instance_resource.switchTransactionLogsToCloudStorageEnabled = (
-            args.switch_transaction_logs_to_cloud_storage
-        )
       if args.IsKnownAndSpecified('include_replicas_for_major_version_upgrade'):
         instance_resource.includeReplicasForMajorVersionUpgrade = (
             args.include_replicas_for_major_version_upgrade

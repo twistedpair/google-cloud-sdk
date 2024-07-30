@@ -51,6 +51,9 @@ class AutonomousDatabase(_messages.Message):
     name: Identifier. The name of the Autonomous Database resource with the
       format: projects/{project}/locations/{region}/autonomousDatabases/{auton
       omous_database} https://google.aip.dev/122
+    network: Required. The name of the VPC network. Format:
+      projects/{project}/locations/global/networks/{network} or
+      projects/{project}/global/networks/{network} https://google.aip.dev/122
     properties: Optional. Various properties of the database.
     zone: Optional. Zone where the DB resides.
   """
@@ -85,8 +88,9 @@ class AutonomousDatabase(_messages.Message):
   entitlementId = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  properties = _messages.MessageField('AutonomousDatabaseProperties', 7)
-  zone = _messages.StringField(8)
+  network = _messages.StringField(7)
+  properties = _messages.MessageField('AutonomousDatabaseProperties', 8)
+  zone = _messages.StringField(9)
 
 
 class AutonomousDatabaseApex(_messages.Message):
@@ -956,6 +960,8 @@ class CloudVmCluster(_messages.Message):
     LabelsValue: Optional. labels or tags associated with the resource.
 
   Fields:
+    backupSubnetCidr: Required. CIDR range of the backup subnet.
+    cidr: Required. Network settings. CIDR to use for cluster IP allocation.
     createTime: Output only. The date and time that the VM cluster was
       created.
     displayName: Optional. User friendly name for this resource.
@@ -967,6 +973,9 @@ class CloudVmCluster(_messages.Message):
     name: Identifier. The name of the VM Cluster resource with the format:
       projects/{project}/locations/{region}/cloudVmClusters/{cloud_vm_cluster}
       https://google.aip.dev/122
+    network: Required. The name of the VPC network. Format:
+      projects/{project}/locations/global/networks/{network} or
+      projects/{project}/global/networks/{network} https://google.aip.dev/122
     properties: Optional. various properties of the VM Cluster.
     region: Output only. region of resource. It is same as
       ExadataInfrastructure region.
@@ -997,14 +1006,17 @@ class CloudVmCluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  exadataInfrastructure = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  properties = _messages.MessageField('CloudVmClusterProperties', 6)
-  region = _messages.StringField(7)
-  zone = _messages.StringField(8)
+  backupSubnetCidr = _messages.StringField(1)
+  cidr = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  exadataInfrastructure = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  properties = _messages.MessageField('CloudVmClusterProperties', 9)
+  region = _messages.StringField(10)
+  zone = _messages.StringField(11)
 
 
 class CloudVmClusterProperties(_messages.Message):
@@ -1438,36 +1450,36 @@ class DbSystemShape(_messages.Message):
   us/iaas/api/#/en/database/20160918/DbSystemShapeSummary/
 
   Fields:
+    availableCoreCountPerNode: Optional. Number of cores per node
+    availableDataStorageTb: Optional. Storage per storage server in TB
+    availableMemoryPerNodeGb: Optional. Memory per db server node in GB
     maxNodeCount: Optional. Maximum number of db servers
     maxStorageCount: Optional. Maximum number of storage servers
-    memoryPerDbServerGb: Optional. Memory per db server node in GB
     minCoreCountPerNode: Optional. Minimum core count per node
-    minMemoryPerDbServerGb: Optional. Minimum memory per db server in GB
-    minNodeCount: Optional. Minimum number of db servers
-    minNodeStoragePerServerGb: Optional. Minimum node storage per db server in
+    minDbNodeStoragePerNodeGb: Optional. Minimum node storage per db server in
       GB
+    minMemoryPerNodeGb: Optional. Minimum memory per node in GB
+    minNodeCount: Optional. Minimum number of db servers
     minStorageCount: Optional. Minimum number of storage servers
     name: Identifier. The name of the Db System Shape resource with the
       format:
       projects/{project}/locations/{region}/dbSystemShapes/{db_system_shape}
       https://google.aip.dev/122
-    ocpusPerDbServer: Optional. Number of cores per db server
     shape: Optional. shape
-    storagePerStorageServerGb: Optional. Storage per storage server in GB
   """
 
-  maxNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  maxStorageCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  memoryPerDbServerGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  minCoreCountPerNode = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  minMemoryPerDbServerGb = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  minNodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  minNodeStoragePerServerGb = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  minStorageCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  name = _messages.StringField(9)
-  ocpusPerDbServer = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  shape = _messages.StringField(11)
-  storagePerStorageServerGb = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  availableCoreCountPerNode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  availableDataStorageTb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  availableMemoryPerNodeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maxNodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  maxStorageCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  minCoreCountPerNode = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  minDbNodeStoragePerNodeGb = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  minMemoryPerNodeGb = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  minNodeCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  minStorageCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  name = _messages.StringField(11)
+  shape = _messages.StringField(12)
 
 
 class Empty(_messages.Message):

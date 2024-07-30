@@ -254,6 +254,33 @@ class AppconfigmanagerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Render(self, request, global_params=None):
+      r"""Gets rendered version of a Config Version.
+
+      Args:
+        request: (AppconfigmanagerProjectsLocationsConfigsVersionsRenderRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RenderConfigVersionResponse) The response message.
+      """
+      config = self.GetMethodConfig('Render')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Render.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/configs/{configsId}/versions/{versionsId}:render',
+        http_method='GET',
+        method_id='appconfigmanager.projects.locations.configs.versions.render',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1alpha/{+name}:render',
+        request_field='',
+        request_type_name='AppconfigmanagerProjectsLocationsConfigsVersionsRenderRequest',
+        response_type_name='RenderConfigVersionResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsConfigsService(base_api.BaseApiService):
     """Service class for the projects_locations_configs resource."""
 

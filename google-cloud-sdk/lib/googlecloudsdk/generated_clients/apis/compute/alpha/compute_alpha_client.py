@@ -869,6 +869,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListUsable(self, request, global_params=None):
+      r"""Retrieves a list of all usable backend buckets in the specified project.
+
+      Args:
+        request: (ComputeBackendBucketsListUsableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendBucketListUsable) The response message.
+      """
+      config = self.GetMethodConfig('ListUsable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListUsable.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.backendBuckets.listUsable',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/backendBuckets/listUsable',
+        request_field='',
+        request_type_name='ComputeBackendBucketsListUsableRequest',
+        response_type_name='BackendBucketListUsable',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates the specified BackendBucket resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 

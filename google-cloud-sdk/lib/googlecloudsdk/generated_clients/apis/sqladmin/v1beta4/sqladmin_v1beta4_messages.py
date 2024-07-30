@@ -141,6 +141,8 @@ class Backup(_messages.Message):
     kmsKeyVersion: Output only. Encryption status specific to a backup. KMS
       key version used to encrypt the Cloud SQL instance resource
     location: Storage Location of the backups. Can be a multi region.
+    maxChargeableBytes: Output only. The maximum chargeable bytes for the
+      backup.
     name: Output only. The resource name of the backup. Format:
       projects/{project}/backups/{backup}
     selfLink: Output only. The URI of this resource.
@@ -211,12 +213,13 @@ class Backup(_messages.Message):
   kmsKey = _messages.StringField(8)
   kmsKeyVersion = _messages.StringField(9)
   location = _messages.StringField(10)
-  name = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  timeZone = _messages.StringField(14)
-  ttlDays = _messages.IntegerField(15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
+  maxChargeableBytes = _messages.IntegerField(11)
+  name = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  timeZone = _messages.StringField(15)
+  ttlDays = _messages.IntegerField(16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
 
 
 class BackupConfiguration(_messages.Message):
@@ -386,6 +389,8 @@ class BackupRun(_messages.Message):
     instance: Name of the database instance.
     kind: This is always `sql#backupRun`.
     location: Location of the backups.
+    maxChargeableBytes: Output only. The maximum chargeable bytes for the
+      backup.
     selfLink: The URI of this resource.
     startTime: The time the backup operation actually started in UTC timezone
       in [RFC 3339](https://tools.ietf.org/html/rfc3339) format, for example
@@ -470,12 +475,13 @@ class BackupRun(_messages.Message):
   instance = _messages.StringField(10)
   kind = _messages.StringField(11)
   location = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  startTime = _messages.StringField(14)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  timeZone = _messages.StringField(16)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
-  windowStartTime = _messages.StringField(18)
+  maxChargeableBytes = _messages.IntegerField(13)
+  selfLink = _messages.StringField(14)
+  startTime = _messages.StringField(15)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  timeZone = _messages.StringField(17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  windowStartTime = _messages.StringField(19)
 
 
 class BackupRunsListResponse(_messages.Message):
@@ -921,6 +927,8 @@ class DatabaseInstance(_messages.Message):
       failure. Only applicable to MySQL.
     rootPassword: Initial root password. Use only on creation. You must set
       root passwords before you can connect to PostgreSQL instances.
+    satisfiesPzi: Output only. This status indicates whether the instance
+      satisfies PZI. The status is reserved for future use.
     satisfiesPzs: This status indicates whether the instance satisfies PZS.
       The status is reserved for future use.
     scheduledMaintenance: The start time of any upcoming scheduled maintenance
@@ -1327,19 +1335,20 @@ class DatabaseInstance(_messages.Message):
   replicaNames = _messages.StringField(33, repeated=True)
   replicationCluster = _messages.MessageField('ReplicationCluster', 34)
   rootPassword = _messages.StringField(35)
-  satisfiesPzs = _messages.BooleanField(36)
-  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 37)
-  secondaryGceZone = _messages.StringField(38)
-  selfLink = _messages.StringField(39)
-  serverCaCert = _messages.MessageField('SslCert', 40)
-  serviceAccountEmailAddress = _messages.StringField(41)
-  settings = _messages.MessageField('Settings', 42)
-  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 43)
-  state = _messages.EnumField('StateValueValuesEnum', 44)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 45, repeated=True)
-  switchTransactionLogsToCloudStorageEnabled = _messages.BooleanField(46)
-  upgradableDatabaseVersions = _messages.MessageField('AvailableDatabaseVersion', 47, repeated=True)
-  writeEndpoint = _messages.StringField(48)
+  satisfiesPzi = _messages.BooleanField(36)
+  satisfiesPzs = _messages.BooleanField(37)
+  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 38)
+  secondaryGceZone = _messages.StringField(39)
+  selfLink = _messages.StringField(40)
+  serverCaCert = _messages.MessageField('SslCert', 41)
+  serviceAccountEmailAddress = _messages.StringField(42)
+  settings = _messages.MessageField('Settings', 43)
+  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 44)
+  state = _messages.EnumField('StateValueValuesEnum', 45)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 46, repeated=True)
+  switchTransactionLogsToCloudStorageEnabled = _messages.BooleanField(47)
+  upgradableDatabaseVersions = _messages.MessageField('AvailableDatabaseVersion', 48, repeated=True)
+  writeEndpoint = _messages.StringField(49)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -1501,6 +1510,8 @@ class ExportContext(_messages.Message):
     CsvExportOptionsValue: Options for exporting data as CSV. `MySQL` and
       `PostgreSQL` instances only.
     SqlExportOptionsValue: Options for exporting data as SQL statements.
+    TdeExportOptionsValue: Optional. Export parameters specific to SQL Server
+      TDE certificates
 
   Fields:
     bakExportOptions: Options for exporting BAK files (SQL Server-only)
@@ -1520,6 +1531,8 @@ class ExportContext(_messages.Message):
     kind: This is always `sql#exportContext`.
     offload: Option for export offload.
     sqlExportOptions: Options for exporting data as SQL statements.
+    tdeExportOptions: Optional. Export parameters specific to SQL Server TDE
+      certificates
     uri: The path to the file in Google Cloud Storage where the export will be
       stored. The URI is in the form `gs://bucketName/fileName`. If the file
       already exists, the request succeeds, but the operation fails. If
@@ -1535,11 +1548,13 @@ class ExportContext(_messages.Message):
       SQL: File containing SQL statements.
       CSV: File in CSV format.
       BAK: <no description>
+      TDE: TDE certificate.
     """
     SQL_FILE_TYPE_UNSPECIFIED = 0
     SQL = 1
     CSV = 2
     BAK = 3
+    TDE = 4
 
   class BakExportOptionsValue(_messages.Message):
     r"""Options for exporting BAK files (SQL Server-only)
@@ -1674,6 +1689,26 @@ class ExportContext(_messages.Message):
     tables = _messages.StringField(5, repeated=True)
     threads = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
+  class TdeExportOptionsValue(_messages.Message):
+    r"""Optional. Export parameters specific to SQL Server TDE certificates
+
+    Fields:
+      certificatePath: Required. Path to the TDE certificate public key in the
+        form gs://bucketName/fileName. The instance must have write access to
+        the location. Applicable only for SQL Server instances.
+      name: Required. Certificate name. Applicable only for SQL Server
+        instances.
+      privateKeyPassword: Required. Password that encrypts the private key.
+      privateKeyPath: Required. Path to the TDE certificate private key in the
+        form gs://bucketName/fileName. The instance must have write access to
+        the location. Applicable only for SQL Server instances.
+    """
+
+    certificatePath = _messages.StringField(1)
+    name = _messages.StringField(2)
+    privateKeyPassword = _messages.StringField(3)
+    privateKeyPath = _messages.StringField(4)
+
   bakExportOptions = _messages.MessageField('BakExportOptionsValue', 1)
   csvExportOptions = _messages.MessageField('CsvExportOptionsValue', 2)
   databases = _messages.StringField(3, repeated=True)
@@ -1681,7 +1716,8 @@ class ExportContext(_messages.Message):
   kind = _messages.StringField(5)
   offload = _messages.BooleanField(6)
   sqlExportOptions = _messages.MessageField('SqlExportOptionsValue', 7)
-  uri = _messages.StringField(8)
+  tdeExportOptions = _messages.MessageField('TdeExportOptionsValue', 8)
+  uri = _messages.StringField(9)
 
 
 class FailoverContext(_messages.Message):
@@ -1964,6 +2000,8 @@ class ImportContext(_messages.Message):
     CsvImportOptionsValue: Options for importing data as CSV.
     SqlImportOptionsValue: Optional. Options for importing data from SQL
       statements.
+    TdeImportOptionsValue: Optional. Import parameters specific to SQL Server
+      .TDE files Import parameters specific to SQL Server TDE certificates
 
   Fields:
     bakImportOptions: Import parameters specific to SQL Server .BAK files
@@ -1980,6 +2018,8 @@ class ImportContext(_messages.Message):
     kind: This is always `sql#importContext`.
     sqlImportOptions: Optional. Options for importing data from SQL
       statements.
+    tdeImportOptions: Optional. Import parameters specific to SQL Server .TDE
+      files Import parameters specific to SQL Server TDE certificates
     uri: Path to the import file in Cloud Storage, in the form
       `gs://bucketName/fileName`. Compressed gzip files (.gz) are supported
       when `fileType` is `SQL`. The instance must have write permissions to
@@ -1996,11 +2036,13 @@ class ImportContext(_messages.Message):
       SQL: File containing SQL statements.
       CSV: File in CSV format.
       BAK: <no description>
+      TDE: TDE certificate.
     """
     SQL_FILE_TYPE_UNSPECIFIED = 0
     SQL = 1
     CSV = 2
     BAK = 3
+    TDE = 4
 
   class BakImportOptionsValue(_messages.Message):
     r"""Import parameters specific to SQL Server .BAK files
@@ -2130,6 +2172,27 @@ class ImportContext(_messages.Message):
     postgresImportOptions = _messages.MessageField('PostgresImportOptionsValue', 2)
     threads = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
+  class TdeImportOptionsValue(_messages.Message):
+    r"""Optional. Import parameters specific to SQL Server .TDE files Import
+    parameters specific to SQL Server TDE certificates
+
+    Fields:
+      certificatePath: Required. Path to the TDE certificate public key in the
+        form gs://bucketName/fileName. The instance must have read access to
+        the file. Applicable only for SQL Server instances.
+      name: Required. Certificate name. Applicable only for SQL Server
+        instances.
+      privateKeyPassword: Required. Password that encrypts the private key.
+      privateKeyPath: Required. Path to the TDE certificate private key in the
+        form gs://bucketName/fileName. The instance must have read access to
+        the file. Applicable only for SQL Server instances.
+    """
+
+    certificatePath = _messages.StringField(1)
+    name = _messages.StringField(2)
+    privateKeyPassword = _messages.StringField(3)
+    privateKeyPath = _messages.StringField(4)
+
   bakImportOptions = _messages.MessageField('BakImportOptionsValue', 1)
   csvImportOptions = _messages.MessageField('CsvImportOptionsValue', 2)
   database = _messages.StringField(3)
@@ -2137,7 +2200,8 @@ class ImportContext(_messages.Message):
   importUser = _messages.StringField(5)
   kind = _messages.StringField(6)
   sqlImportOptions = _messages.MessageField('SqlImportOptionsValue', 7)
-  uri = _messages.StringField(8)
+  tdeImportOptions = _messages.MessageField('TdeImportOptionsValue', 8)
+  uri = _messages.StringField(9)
 
 
 class InsightsConfig(_messages.Message):
@@ -2849,6 +2913,8 @@ class Operation(_messages.Message):
       SWITCHOVER_TO_REPLICA: Switches a primary instance to a replica. This
         operation runs as part of a switchover operation to the original
         primary instance.
+      MAJOR_VERSION_UPGRADE: Updates the major version of a Cloud SQL
+        instance.
     """
     SQL_OPERATION_TYPE_UNSPECIFIED = 0
     IMPORT = 1
@@ -2896,6 +2962,7 @@ class Operation(_messages.Message):
     CLUSTER_MAINTENANCE = 43
     SELF_SERVICE_MAINTENANCE = 44
     SWITCHOVER_TO_REPLICA = 45
+    MAJOR_VERSION_UPGRADE = 46
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of an operation.

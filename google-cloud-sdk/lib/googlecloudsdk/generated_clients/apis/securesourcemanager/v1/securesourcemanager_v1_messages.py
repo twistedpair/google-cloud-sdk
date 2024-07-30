@@ -846,6 +846,9 @@ class PrivateConfig(_messages.Message):
       is in the format of `projects/{project}/regions/{region}/serviceAttachme
       nts/{service_attachment}`.
     isPrivate: Required. Immutable. Indicate if it's private instance.
+    pscAllowedProjects: Optional. Additional allowed projects for setting up
+      PSC connections. Instance host project is automatically allowed and does
+      not need to be included in this list.
     sshServiceAttachment: Output only. Service Attachment for SSH, resource is
       in the format of `projects/{project}/regions/{region}/serviceAttachments
       /{service_attachment}`.
@@ -854,7 +857,8 @@ class PrivateConfig(_messages.Message):
   caPool = _messages.StringField(1)
   httpServiceAttachment = _messages.StringField(2)
   isPrivate = _messages.BooleanField(3)
-  sshServiceAttachment = _messages.StringField(4)
+  pscAllowedProjects = _messages.StringField(4, repeated=True)
+  sshServiceAttachment = _messages.StringField(5)
 
 
 class Repository(_messages.Message):

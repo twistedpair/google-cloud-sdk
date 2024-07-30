@@ -180,13 +180,13 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
     if self._upload_type == UploadType.STREAMING:
       with self._time_recorder(_UPLOAD_THROUGHPUT_RESULT_KEY, self._result):
         log.status.Print(
-            'Starting Streaming Upload of {} bytes to : {}'.format(
+            'Starting streaming upload of {} bytes to : {}'.format(
                 self.streaming_size, self.bucket_url
             )
         )
         self._run_cp(
             _STREAMING_UPLOAD_SOURCE,
-            self.bucket_url,
+            self.bucket_url.url_string + self.object_prefix,
             in_str=self._generate_random_string(self.streaming_size),
         )
     elif (
@@ -194,8 +194,8 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
         or self._upload_type == UploadType.FILE
     ):
       log.status.Print(
-          f'Starting Uploading {self._object_count} objects to :'
-          f' {self.bucket_url}'
+          f'Starting upload of {self._object_count} objects to :'
+          f' {self.bucket_url} with upload type: {self._upload_type.value}'
       )
       with self._time_recorder(_UPLOAD_THROUGHPUT_RESULT_KEY, self._result):
         self._run_cp(
@@ -218,6 +218,7 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
         log.status.Print('Cleaned up temp files.')
       except OSError as e:
         log.warning(f'{self.name} : Failed to clean up temp files. {e}')
+    self._clean_up_objects(self.bucket_url.url_string, self.object_prefix)
 
   @property
   def result(self) -> diagnostic.DiagnosticResult | None:

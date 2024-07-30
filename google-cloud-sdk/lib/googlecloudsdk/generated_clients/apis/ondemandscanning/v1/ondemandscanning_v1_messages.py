@@ -1813,6 +1813,7 @@ class PackageData(_messages.Message):
       RUBYGEMS: Ruby packges (from RubyGems package manager).
       RUST: Rust packages from Cargo (Github ecosystem is `RUST`).
       COMPOSER: PHP packages from Composer package manager.
+      SWIFT: Swift packages from Swift Package Manager (SwiftPM).
     """
     PACKAGE_TYPE_UNSPECIFIED = 0
     OS = 1
@@ -1825,6 +1826,7 @@ class PackageData(_messages.Message):
     RUBYGEMS = 8
     RUST = 9
     COMPOSER = 10
+    SWIFT = 11
 
   architecture = _messages.StringField(1)
   binarySourceInfo = _messages.MessageField('BinarySourceInfo', 2, repeated=True)

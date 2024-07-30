@@ -18,9 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.network_security.security_profiles.threat_prevention import sp_api
+from googlecloudsdk.api_lib.network_security.security_profiles import sp_api
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
@@ -102,3 +104,69 @@ def AddSecurityProfileResource(parser, release_track):
       group_help="Security Profile Name.",
   )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def MakeGetUriFunc(release_track):
+  return lambda x: sp_api.GetEffectiveApiEndpoint(release_track) + x.name
+
+
+def LocationAttributeConfig(default=None):
+  """Gets Google Cloud location resource attribute."""
+  default_keyword = default
+  if default == "-":
+    default_keyword = "a wildcard"
+
+  fallthroughs = []
+  if default:
+    fallthroughs.append(
+        deps.Fallthrough(
+            lambda: default,
+            "Location of the resource. Defaults to {}".format(default_keyword),
+        )
+    )
+
+  return concepts.ResourceParameterAttributeConfig(
+      name="location",
+      help_text="Location of the {resource}.",
+      fallthroughs=fallthroughs,
+  )
+
+
+def OrgAttributeConfig():
+  """Gets Google Cloud organization resource attribute."""
+  return concepts.ResourceParameterAttributeConfig(
+      name="organization",
+      help_text="Organization ID of the {resource}.",
+  )
+
+
+def GetLocationResourceSpec(default=None):
+  """Constructs and returns the Resource specification for Location."""
+  return concepts.ResourceSpec(
+      "networksecurity.organizations.locations",
+      resource_name="location",
+      locationsId=LocationAttributeConfig(default=default),
+      organizationsId=OrgAttributeConfig(),
+  )
+
+
+def AddLocationResourceArg(
+    parser: parser_arguments.ArgumentInterceptor,
+    help_text: str,
+    required: bool = False,
+    default=None,
+):
+  """Adds a resource argument for Google Cloud location.
+
+  Args:
+    parser: The argparse.parser to add the resource arg to.
+    help_text: str, the text of the help message.
+    required: bool, whether the argument is required.
+    default: Optional default value for the arg.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      name="--location",
+      resource_spec=GetLocationResourceSpec(default=default),
+      group_help=help_text,
+      required=required,
+  ).AddToParser(parser)

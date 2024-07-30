@@ -1096,6 +1096,21 @@ class Hub(_messages.Message):
   updateTime = _messages.StringField(14)
 
 
+class HubStatusEntry(_messages.Message):
+  r"""The hub status entry.
+
+  Fields:
+    count: The number of status. If group_by is not set in the request, the
+      default is 1.
+    groupBy: The same group_by field from the request.
+    pscPropagationStatus: The PSC propagation status.
+  """
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  groupBy = _messages.StringField(2)
+  pscPropagationStatus = _messages.MessageField('PscPropagationStatus', 3)
+
+
 class InterconnectAttachment(_messages.Message):
   r"""InterconnectAttachment that this route applies to.
 
@@ -1322,24 +1337,26 @@ class LinkedInterconnectAttachments(_messages.Message):
 
 
 class LinkedProducerVpcNetwork(_messages.Message):
-  r"""Next ID: 5
+  r"""Next ID: 6
 
   Fields:
     excludeExportRanges: Optional. IP ranges encompassing the subnets to be
       excluded from peering.
     includeExportRanges: Optional. IP ranges allowed to be included from
       peering.
-    network: Immutable. The URI of the home VPC that Private Services Access
-      is peered with.
-    peering: Immutable. The name of the VPC peering between the home VPC and
-      the Producer remote VPC (defined in the Tenant project) which is added
-      to the NCC hub. This peering must be in ACTIVE state.
+    network: Immutable. The URI of the Service Consumer VPC that the Producer
+      VPC is peered with.
+    peering: Immutable. The name of the VPC peering between the Service
+      Consumer VPC and the Producer VPC (defined in the Tenant project) which
+      is added to the NCC hub. This peering must be in ACTIVE state.
+    producerNetwork: Output only. The URI of the Producer VPC.
   """
 
   excludeExportRanges = _messages.StringField(1, repeated=True)
   includeExportRanges = _messages.StringField(2, repeated=True)
   network = _messages.StringField(3)
   peering = _messages.StringField(4)
+  producerNetwork = _messages.StringField(5)
 
 
 class LinkedRouterApplianceInstances(_messages.Message):
@@ -2074,6 +2091,47 @@ class NetworkconnectivityProjectsLocationsGlobalHubsPatchRequest(_messages.Messa
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsQueryStatusRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsQueryStatusRequest
+  object.
+
+  Fields:
+    filter: Optional. An expression that filters the list of results. The
+      filter can be used to filter the results by the following fields: *
+      psc_propagation_status.source_spoke *
+      psc_propagation_status.source_group *
+      psc_propagation_status.source_forwarding_rule *
+      psc_propagation_status.target_spoke *
+      psc_propagation_status.target_group * psc_propagation_status.code *
+      psc_propagation_status.message
+    groupBy: Optional. A field that counts are grouped by. A comma-separated
+      list of any of these fields: * psc_propagation_status.source_spoke *
+      psc_propagation_status.source_group *
+      psc_propagation_status.source_forwarding_rule *
+      psc_propagation_status.target_spoke *
+      psc_propagation_status.target_group * psc_propagation_status.code
+    name: Required. The name of the hub.
+    orderBy: Optional. Sort the results in the ascending order by specific
+      fields returned in the response. A comma-separated list of any of these
+      fields: * psc_propagation_status.source_spoke *
+      psc_propagation_status.source_group *
+      psc_propagation_status.source_forwarding_rule *
+      psc_propagation_status.target_spoke *
+      psc_propagation_status.target_group * psc_propagation_status.code If
+      `group_by` is set, the value of the `order_by` field must be the same as
+      or a subset of the `group_by` field.
+    pageSize: Optional. The maximum number of results to return per page.
+    pageToken: Optional. The page token.
+  """
+
+  filter = _messages.StringField(1)
+  groupBy = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  orderBy = _messages.StringField(4)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
 
 
 class NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeRequest(_messages.Message):
@@ -3868,6 +3926,79 @@ class PscConnection(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
+class PscPropagationStatus(_messages.Message):
+  r"""The PSC propagation status in a hub.
+
+  Enums:
+    CodeValueValuesEnum: The propagation status.
+
+  Fields:
+    code: The propagation status.
+    message: The human-readable summary of the PSC connection propagation
+      status.
+    sourceForwardingRule: The name of the forwarding rule exported to the hub.
+    sourceGroup: The name of the group that the source spoke belongs to.
+    sourceSpoke: The name of the spoke that the source forwarding rule belongs
+      to.
+    targetGroup: The name of the group that the target spoke belongs to.
+    targetSpoke: The name of the spoke that the source forwarding rule
+      propagates to.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""The propagation status.
+
+    Values:
+      CODE_UNSPECIFIED: The code is unspecified.
+      READY: The propagated PSC connection is ready.
+      PENDING: PSC connection propagation is pending. This is a transient
+        state.
+      ERROR_PRODUCER_PROPAGATED_CONNECTION_LIMIT_EXCEEDED: The PSC connection
+        propagation failed because the VPC network or the project of the
+        target spoke has exceeded the connection limit set by the producer.
+      ERROR_PRODUCER_NAT_IP_SPACE_EXHAUSTED: The PSC connection propagation
+        failed because the NAT IP subnet space has been exhausted. It is
+        equivalent to the `Needs attention` status of the PSC connection. See
+        https://cloud.google.com/vpc/docs/about-accessing-vpc-hosted-services-
+        endpoints#connection-statuses.
+      ERROR_PRODUCER_QUOTA_EXCEEDED: PSC connection propagation failed because
+        the `PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK` quota in
+        the producer VPC network has been exceeded.
+      ERROR_CONSUMER_QUOTA_EXCEEDED: The PSC connection propagation failed
+        because the `PSC_PROPAGATED_CONNECTIONS_PER_VPC_NETWORK` quota in the
+        consumer VPC network has been exceeded.
+    """
+    CODE_UNSPECIFIED = 0
+    READY = 1
+    PENDING = 2
+    ERROR_PRODUCER_PROPAGATED_CONNECTION_LIMIT_EXCEEDED = 3
+    ERROR_PRODUCER_NAT_IP_SPACE_EXHAUSTED = 4
+    ERROR_PRODUCER_QUOTA_EXCEEDED = 5
+    ERROR_CONSUMER_QUOTA_EXCEEDED = 6
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  message = _messages.StringField(2)
+  sourceForwardingRule = _messages.StringField(3)
+  sourceGroup = _messages.StringField(4)
+  sourceSpoke = _messages.StringField(5)
+  targetGroup = _messages.StringField(6)
+  targetSpoke = _messages.StringField(7)
+
+
+class QueryHubStatusResponse(_messages.Message):
+  r"""The response for HubService.QueryHubStatus.
+
+  Fields:
+    hubStatusEntries: The list of hub status.
+    nextPageToken: The token for the next page of the response. To see more
+      results, use this value as the page_token for your next request. If this
+      value is empty, there are no more results.
+  """
+
+  hubStatusEntries = _messages.MessageField('HubStatusEntry', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class RegionalEndpoint(_messages.Message):
   r"""The RegionalEndpoint resource.
 
@@ -4449,9 +4580,9 @@ class ServiceConnectionPolicy(_messages.Message):
     serviceClass: The service class identifier for which this
       ServiceConnectionPolicy is for. The service class identifier is a
       unique, symbolic representation of a ServiceClass. It is provided by the
-      Service Producer. Google services have a prefix of gcp. For example,
-      gcp-cloud-sql. 3rd party services do not. For example, test-
-      service-a3dfcx.
+      Service Producer. Google services have a prefix of gcp or google-cloud.
+      For example, gcp-memorystore-redis or google-cloud-sql. 3rd party
+      services do not. For example, test-service-a3dfcx.
     updateTime: Output only. Time when the ServiceConnectionMap was updated.
   """
 

@@ -121,7 +121,7 @@ def CreateImage(
             )
         ),
     )
-    return None, None, None, None  # Failed to create an image
+    return None, None, None, None, None  # Failed to create an image
   else:
     tracker.CompleteStage(stages.BUILD_READY)
     return (
@@ -129,6 +129,7 @@ def CreateImage(
         base_image_from_build,
         response_dict['id'],
         source,
+        response_dict['name'],
     )
 
 

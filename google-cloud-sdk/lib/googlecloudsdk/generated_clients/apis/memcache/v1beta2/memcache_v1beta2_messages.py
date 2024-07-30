@@ -821,6 +821,9 @@ class Instance(_messages.Message):
     LabelsValue: Resource labels to represent user-provided metadata. Refer to
       cloud documentation on labels for more details.
       https://cloud.google.com/compute/docs/labeling-resources
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: ``` "123/environment": "production",
+      "123/costCenter": "marketing" ```
 
   Fields:
     authorizedNetwork: The full name of the Google Compute Engine
@@ -866,6 +869,9 @@ class Instance(_messages.Message):
     satisfiesPzi: Optional. Output only. Reserved for future use.
     satisfiesPzs: Optional. Output only. Reserved for future use.
     state: Output only. The state of this Memcached instance.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: ``` "123/environment": "production",
+      "123/costCenter": "marketing" ```
     updateAvailable: Output only. Returns true if there is an update waiting
       to be applied
     updateTime: Output only. The time the instance was updated.
@@ -940,6 +946,32 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: ``` "123/environment": "production",
+    "123/costCenter": "marketing" ```
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   authorizedNetwork = _messages.StringField(1)
   createTime = _messages.StringField(2)
   discoveryEndpoint = _messages.StringField(3)
@@ -959,9 +991,10 @@ class Instance(_messages.Message):
   satisfiesPzi = _messages.BooleanField(17)
   satisfiesPzs = _messages.BooleanField(18)
   state = _messages.EnumField('StateValueValuesEnum', 19)
-  updateAvailable = _messages.BooleanField(20)
-  updateTime = _messages.StringField(21)
-  zones = _messages.StringField(22, repeated=True)
+  tags = _messages.MessageField('TagsValue', 20)
+  updateAvailable = _messages.BooleanField(21)
+  updateTime = _messages.StringField(22)
+  zones = _messages.StringField(23, repeated=True)
 
 
 class InstanceMessage(_messages.Message):

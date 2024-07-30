@@ -50,7 +50,6 @@ class GkehubV1beta(base_api.BaseApiClient):
     self.projects_locations_namespaces_rbacrolebindings = self.ProjectsLocationsNamespacesRbacrolebindingsService(self)
     self.projects_locations_namespaces = self.ProjectsLocationsNamespacesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
-    self.projects_locations_scopes_namespaces_resourcequotas = self.ProjectsLocationsScopesNamespacesResourcequotasService(self)
     self.projects_locations_scopes_namespaces = self.ProjectsLocationsScopesNamespacesService(self)
     self.projects_locations_scopes_rbacrolebindings = self.ProjectsLocationsScopesRbacrolebindingsService(self)
     self.projects_locations_scopes = self.ProjectsLocationsScopesService(self)
@@ -197,7 +196,7 @@ class GkehubV1beta(base_api.BaseApiClient):
         method_id='gkehub.projects.locations.features.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['returnPartialSuccess'],
         relative_path='v1beta/{+name}',
         request_field='',
         request_type_name='GkehubProjectsLocationsFeaturesGetRequest',
@@ -251,7 +250,7 @@ class GkehubV1beta(base_api.BaseApiClient):
         method_id='gkehub.projects.locations.features.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1beta/{+parent}/features',
         request_field='',
         request_type_name='GkehubProjectsLocationsFeaturesListRequest',
@@ -1460,151 +1459,6 @@ class GkehubV1beta(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkehubProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsScopesNamespacesResourcequotasService(base_api.BaseApiService):
-    """Service class for the projects_locations_scopes_namespaces_resourcequotas resource."""
-
-    _NAME = 'projects_locations_scopes_namespaces_resourcequotas'
-
-    def __init__(self, client):
-      super(GkehubV1beta.ProjectsLocationsScopesNamespacesResourcequotasService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a resource quota.
-
-      Args:
-        request: (GkehubProjectsLocationsScopesNamespacesResourcequotasCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}/namespaces/{namespacesId}/resourcequotas',
-        http_method='POST',
-        method_id='gkehub.projects.locations.scopes.namespaces.resourcequotas.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['resourceQuotaId'],
-        relative_path='v1beta/{+parent}/resourcequotas',
-        request_field='resourceQuota',
-        request_type_name='GkehubProjectsLocationsScopesNamespacesResourcequotasCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a resource quota.
-
-      Args:
-        request: (GkehubProjectsLocationsScopesNamespacesResourcequotasDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}/namespaces/{namespacesId}/resourcequotas/{resourcequotasId}',
-        http_method='DELETE',
-        method_id='gkehub.projects.locations.scopes.namespaces.resourcequotas.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta/{+name}',
-        request_field='',
-        request_type_name='GkehubProjectsLocationsScopesNamespacesResourcequotasDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Returns the details of a resource quota.
-
-      Args:
-        request: (GkehubProjectsLocationsScopesNamespacesResourcequotasGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ResourceQuota) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}/namespaces/{namespacesId}/resourcequotas/{resourcequotasId}',
-        http_method='GET',
-        method_id='gkehub.projects.locations.scopes.namespaces.resourcequotas.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta/{+name}',
-        request_field='',
-        request_type_name='GkehubProjectsLocationsScopesNamespacesResourcequotasGetRequest',
-        response_type_name='ResourceQuota',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists resource quotas.
-
-      Args:
-        request: (GkehubProjectsLocationsScopesNamespacesResourcequotasListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListResourceQuotasResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}/namespaces/{namespacesId}/resourcequotas',
-        http_method='GET',
-        method_id='gkehub.projects.locations.scopes.namespaces.resourcequotas.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v1beta/{+parent}/resourcequotas',
-        request_field='',
-        request_type_name='GkehubProjectsLocationsScopesNamespacesResourcequotasListRequest',
-        response_type_name='ListResourceQuotasResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates a resource quota.
-
-      Args:
-        request: (GkehubProjectsLocationsScopesNamespacesResourcequotasPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}/namespaces/{namespacesId}/resourcequotas/{resourcequotasId}',
-        http_method='PATCH',
-        method_id='gkehub.projects.locations.scopes.namespaces.resourcequotas.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask'],
-        relative_path='v1beta/{+name}',
-        request_field='resourceQuota',
-        request_type_name='GkehubProjectsLocationsScopesNamespacesResourcequotasPatchRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 

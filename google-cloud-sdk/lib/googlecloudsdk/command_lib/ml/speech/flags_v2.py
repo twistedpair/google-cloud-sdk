@@ -25,6 +25,16 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 
+SPEAKER_COUNT_MAX_VALUE = 6
+SPEAKER_COUNT_MIN_VALUE = 1
+ALTERNATIVES_MAX_VALUE = 30
+ALTERNATIVES_MIN_VALUE = 1
+AUDIO_CHANNEL_COUNT_MAX_VALUE = 8
+AUDIO_CHANNEL_COUNT_MIN_VALUE = 1
+SAMPLE_RATE_MAX_VALUE = 48000
+SAMPLE_RATE_MIN_VALUE = 8000
+
+
 def AddRecognizerArgToParser(parser):
   """Sets up an argument for the recognizer resource."""
   resource_data = yaml_data.ResourceYAMLData.FromPath('ml.speech.recognizer')
@@ -164,21 +174,31 @@ def AddDecodingConfigFlagsToParser(parser):
           configuration if present, else uses recognizer encoding.
           """,
   )
+  sample_rate_help = (
+      'Sample rate in Hertz of the audio data sent for recognition. '
+      'Required if --encoding flag is specified and is not AUTO. '
+      'Must be set to a value between {} and {}.'.format(
+          SAMPLE_RATE_MIN_VALUE, SAMPLE_RATE_MAX_VALUE
+      )
+  )
   decoding_config_group.add_argument(
       '--sample-rate',
-      type=arg_parsers.BoundedInt(8000, 48000),
-      help="""\
-          Sample rate in Hertz of the audio data sent for recognition.
-          Required if --encoding flag is specified and is not AUTO.
-          """,
+      type=arg_parsers.BoundedInt(SAMPLE_RATE_MIN_VALUE, SAMPLE_RATE_MAX_VALUE),
+      help=sample_rate_help,
+  )
+  audio_channel_count_help = (
+      'Number of channels present in the audio data sent for recognition. '
+      'Required if --encoding flag is specified and is not AUTO. '
+      'Must be set to a value between {} and {}.'.format(
+          AUDIO_CHANNEL_COUNT_MIN_VALUE, AUDIO_CHANNEL_COUNT_MAX_VALUE
+      )
   )
   decoding_config_group.add_argument(
       '--audio-channel-count',
-      type=arg_parsers.BoundedInt(1, 8),
-      help="""\
-          Number of channels present in the audio data sent for recognition.
-          Required if --encoding flag is specified and is not AUTO.
-          """,
+      type=arg_parsers.BoundedInt(
+          AUDIO_CHANNEL_COUNT_MIN_VALUE, AUDIO_CHANNEL_COUNT_MAX_VALUE
+      ),
+      help=audio_channel_count_help,
   )
 
 
@@ -194,7 +214,7 @@ def AddFeatureFlagsToParser(parser, use_store_true=False):
       if use_store_true
       else arg_parsers.StoreTrueFalseAction,
       help="""\
-      If true, the server will censor profanities.
+      If set, the server will censor profanities.
       """,
   )
   features_group.add_argument(
@@ -203,7 +223,7 @@ def AddFeatureFlagsToParser(parser, use_store_true=False):
       if use_store_true
       else arg_parsers.StoreTrueFalseAction,
       help="""\
-      If true, the top result includes a list of words and their timestamps.
+      If set, the top result includes a list of words and their timestamps.
       """,
   )
   features_group.add_argument(
@@ -212,7 +232,7 @@ def AddFeatureFlagsToParser(parser, use_store_true=False):
       if use_store_true
       else arg_parsers.StoreTrueFalseAction,
       help="""\
-      If true, the top result includes a list of words and the confidence for
+      If set, the top result includes a list of words and the confidence for
       those words.
       """,
   )
@@ -222,7 +242,7 @@ def AddFeatureFlagsToParser(parser, use_store_true=False):
       if use_store_true
       else arg_parsers.StoreTrueFalseAction,
       help="""\
-      If true, adds punctuation to recognition result hypotheses.
+      If set, adds punctuation to recognition result hypotheses.
       """,
   )
   features_group.add_argument(
@@ -231,7 +251,7 @@ def AddFeatureFlagsToParser(parser, use_store_true=False):
       if use_store_true
       else arg_parsers.StoreTrueFalseAction,
       help="""\
-      If true, replaces spoken punctuation with the corresponding symbols in the request.
+      If set, replaces spoken punctuation with the corresponding symbols in the request.
       """,
   )
   features_group.add_argument(
@@ -240,24 +260,34 @@ def AddFeatureFlagsToParser(parser, use_store_true=False):
       if use_store_true
       else arg_parsers.StoreTrueFalseAction,
       help="""\
-      If true, adds spoken emoji formatting.
+      If set, adds spoken emoji formatting.
       """,
+  )
+  min_speaker_count_help = (
+      'Minimum number of speakers in the conversation. Must be less than or'
+      ' equal to --max-speaker-count. Must be set to a value between {} and {}.'
+      .format(SPEAKER_COUNT_MIN_VALUE, SPEAKER_COUNT_MAX_VALUE)
+  )
+  max_speaker_count_help = (
+      'Maximum number of speakers in the conversation. Must be greater than or'
+      ' equal to --min-speaker-count. Must be set to a value between {} and {}.'
+      .format(SPEAKER_COUNT_MIN_VALUE, SPEAKER_COUNT_MAX_VALUE)
   )
   speaker_diarization_group.add_argument(
       '--min-speaker-count',
       required=True,
-      type=arg_parsers.BoundedInt(1, 6),
-      help="""\
-        Minimum number of speakers in the conversation.
-        """,
+      type=arg_parsers.BoundedInt(
+          SPEAKER_COUNT_MIN_VALUE, SPEAKER_COUNT_MAX_VALUE
+      ),
+      help=min_speaker_count_help,
   )
   speaker_diarization_group.add_argument(
       '--max-speaker-count',
       required=True,
-      type=arg_parsers.BoundedInt(1, 6),
-      help="""\
-        Maximum number of speakers in the conversation.
-        """,
+      type=arg_parsers.BoundedInt(
+          SPEAKER_COUNT_MIN_VALUE, SPEAKER_COUNT_MAX_VALUE
+      ),
+      help=max_speaker_count_help,
   )
   features_group.add_argument(
       '--separate-channel-recognition',
@@ -266,13 +296,19 @@ def AddFeatureFlagsToParser(parser, use_store_true=False):
       else arg_parsers.StoreTrueFalseAction,
       help="""\
         Mode for recognizing multi-channel audio using Separate Channel Recognition.
-        When set to `true`, the service will recognize each channel independently.
+        When set, the service will recognize each channel independently.
         """,
+  )
+  max_alternatives_help = (
+      'Maximum number of recognition hypotheses to be returned. Must be set to'
+      ' a value between {} and {}.'.format(
+          ALTERNATIVES_MIN_VALUE, ALTERNATIVES_MAX_VALUE
+      )
   )
   features_group.add_argument(
       '--max-alternatives',
-      type=arg_parsers.BoundedInt(1, 30),
-      help="""\
-        Maximum number of recognition hypotheses to be returned. Valid values are `1`-`30`.
-        """,
+      type=arg_parsers.BoundedInt(
+          ALTERNATIVES_MIN_VALUE, ALTERNATIVES_MAX_VALUE
+      ),
+      help=max_alternatives_help,
   )

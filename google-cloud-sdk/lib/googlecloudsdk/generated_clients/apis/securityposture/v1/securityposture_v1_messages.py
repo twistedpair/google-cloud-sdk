@@ -74,6 +74,35 @@ class CreateIaCValidationReportRequest(_messages.Message):
   iac = _messages.MessageField('IaC', 1)
 
 
+class CreatePredictionRequest(_messages.Message):
+  r"""Request message for creating a Prediction.
+
+  Enums:
+    PredictionTypeValueValuesEnum: Required. The type of prediction.
+
+  Fields:
+    environmentOptions: Optional. Environment options taken into account while
+      predicting a Security Posture.
+    intent: Optional. Intent, user provided intent for the prediction. Custom
+      posture predictions will require this input.
+    predictionType: Required. The type of prediction.
+  """
+
+  class PredictionTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of prediction.
+
+    Values:
+      PREDICTION_TYPE_UNSPECIFIED: Prediction type unspecified.
+      BASIC_POSTURE: Basic predefined posture prediction type.
+    """
+    PREDICTION_TYPE_UNSPECIFIED = 0
+    BASIC_POSTURE = 1
+
+  environmentOptions = _messages.MessageField('EnvironmentOptions', 1)
+  intent = _messages.StringField(2)
+  predictionType = _messages.EnumField('PredictionTypeValueValuesEnum', 3)
+
+
 class CustomConfig(_messages.Message):
   r"""Defines the properties in a custom module configuration for Security
   Health Analytics. Use the custom module configuration to create custom
@@ -149,6 +178,39 @@ class Empty(_messages.Message):
 
 
 
+class EnvironmentOptions(_messages.Message):
+  r"""Environment options taken into account while predicting a Security
+  Posture.
+
+  Enums:
+    CloudPlatformValueValuesEnum: Cloud platform being used by the customer.
+
+  Fields:
+    cloudLocation: A list of Cloud region standards supported.
+    cloudPlatform: Cloud platform being used by the customer.
+    customerIndustries: A list of customer industries supported.
+    industryStandards: A list of industry standards supported.
+    services: A list of GCP services supported. Output will also include the
+      count of resources protected by each GCP service.
+  """
+
+  class CloudPlatformValueValuesEnum(_messages.Enum):
+    r"""Cloud platform being used by the customer.
+
+    Values:
+      CLOUD_PLATFORM_UNSPECIFIED: Cloud platform unspecified.
+      GCP: Gcp Cloud Platform.
+    """
+    CLOUD_PLATFORM_UNSPECIFIED = 0
+    GCP = 1
+
+  cloudLocation = _messages.StringField(1, repeated=True)
+  cloudPlatform = _messages.EnumField('CloudPlatformValueValuesEnum', 2)
+  customerIndustries = _messages.StringField(3, repeated=True)
+  industryStandards = _messages.MessageField('IndustryStandard', 4, repeated=True)
+  services = _messages.MessageField('GcpServices', 5, repeated=True)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -200,6 +262,19 @@ class ExtractPostureRequest(_messages.Message):
 
   postureId = _messages.StringField(1)
   workload = _messages.StringField(2)
+
+
+class GcpServices(_messages.Message):
+  r"""GCP services with the count of resources.
+
+  Fields:
+    gcpServiceName: Name of the service.
+    resourcesCount: Output only. Count of resources protected under this
+      posture.
+  """
+
+  gcpServiceName = _messages.StringField(1)
+  resourcesCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudSecuritypostureV1CustomConstraint(_messages.Message):
@@ -353,6 +428,18 @@ class IaCValidationReport(_messages.Message):
 
   note = _messages.StringField(1)
   violations = _messages.MessageField('Violation', 2, repeated=True)
+
+
+class IndustryStandard(_messages.Message):
+  r"""Industry Standards with standard and version.
+
+  Fields:
+    standard: Industry Standard.
+    version: Industry Standard Version.
+  """
+
+  standard = _messages.StringField(1)
+  version = _messages.StringField(2)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -814,13 +901,11 @@ class Posture(_messages.Message):
       AI: AI Category.
       AWS: Posture contains AWS policies.
       GCP: Posture contains GCP policies.
-      CATEGORY_DATA_SECURITY: Posture with PostureType DATA_SECURITY.
     """
     CATEGORY_UNSPECIFIED = 0
     AI = 1
     AWS = 2
     GCP = 3
-    CATEGORY_DATA_SECURITY = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Required. State of Posture resource.
@@ -943,13 +1028,11 @@ class PostureDeployment(_messages.Message):
       AI: AI Category.
       AWS: Posture contains AWS policies.
       GCP: Posture contains GCP policies.
-      CATEGORY_DATA_SECURITY: Posture with PostureType DATA_SECURITY.
     """
     CATEGORY_UNSPECIFIED = 0
     AI = 1
     AWS = 2
     GCP = 3
-    CATEGORY_DATA_SECURITY = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of PostureDeployment resource.
@@ -1069,13 +1152,11 @@ class PostureTemplate(_messages.Message):
       AI: AI Category.
       AWS: Posture contains AWS policies.
       GCP: Posture contains GCP policies.
-      CATEGORY_DATA_SECURITY: Posture with PostureType DATA_SECURITY.
     """
     CATEGORY_UNSPECIFIED = 0
     AI = 1
     AWS = 2
     GCP = 3
-    CATEGORY_DATA_SECURITY = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of PostureTemplate resource.
@@ -1561,6 +1642,22 @@ class SecuritypostureOrganizationsLocationsPosturesPatchRequest(_messages.Messag
   posture = _messages.MessageField('Posture', 2)
   revisionId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class SecuritypostureOrganizationsLocationsPredictionsCreatePredictionRequest(_messages.Message):
+  r"""A
+  SecuritypostureOrganizationsLocationsPredictionsCreatePredictionRequest
+  object.
+
+  Fields:
+    createPredictionRequest: A CreatePredictionRequest resource to be passed
+      as the request body.
+    parent: Required. The parent resource name. The format of this value is as
+      follows: `organizations/{organization}/locations/{location}`
+  """
+
+  createPredictionRequest = _messages.MessageField('CreatePredictionRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class SecuritypostureOrganizationsLocationsReportsCreateIaCValidationReportRequest(_messages.Message):
