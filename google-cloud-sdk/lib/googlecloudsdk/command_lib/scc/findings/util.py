@@ -220,6 +220,17 @@ def ConvertStateInput(state, version):
   )
 
 
+def ConvertMuteStateInput(mute_state, messages):
+  """Convert mute state input to messages.BulkMuteFindingsRequest.MuteStateValueValuesEnum object."""
+  if mute_state == "muted":
+    return messages.BulkMuteFindingsRequest.MuteStateValueValuesEnum.MUTED
+  elif mute_state == "undefined":
+    return messages.BulkMuteFindingsRequest.MuteStateValueValuesEnum.UNDEFINED
+  raise errors.InvalidSCCInputError(
+      "Mute state must be one of [muted, undefined]."
+  )
+
+
 def ValidateAndGetParent(args):
   """Validates parent."""
   if args.organization is not None:  # Validates organization.

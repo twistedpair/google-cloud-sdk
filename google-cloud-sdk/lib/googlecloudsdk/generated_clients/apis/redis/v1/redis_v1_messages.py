@@ -189,6 +189,7 @@ class Cluster(_messages.Message):
       If not provided, auth feature is disabled for the cluster.
     createTime: Output only. The timestamp associated with the cluster
       creation request.
+    crossClusterReplicationConfig: Optional. Cross cluster replication config.
     deletionProtectionEnabled: Optional. The delete operation will fail when
       the value is set to true.
     discoveryEndpoints: Output only. Endpoints created on each given network,
@@ -211,7 +212,7 @@ class Cluster(_messages.Message):
     redisConfigs: Optional. Key/Value pairs of customer overrides for mutable
       Redis Configs
     replicaCount: Optional. The number of replica nodes per shard.
-    shardCount: Required. Number of shards for the Redis cluster.
+    shardCount: Optional. Number of shards for the Redis cluster.
     sizeGb: Output only. Redis memory size in GB for the entire cluster
       rounded up to the next integer.
     state: Output only. The current state of this cluster. Can be CREATING,
@@ -315,23 +316,24 @@ class Cluster(_messages.Message):
 
   authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
-  deletionProtectionEnabled = _messages.BooleanField(3)
-  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 4, repeated=True)
-  name = _messages.StringField(5)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 6)
-  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 7)
-  preciseSizeGb = _messages.FloatField(8)
-  pscConfigs = _messages.MessageField('PscConfig', 9, repeated=True)
-  pscConnections = _messages.MessageField('PscConnection', 10, repeated=True)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 11)
-  replicaCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  sizeGb = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  stateInfo = _messages.MessageField('StateInfo', 16)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 17)
-  uid = _messages.StringField(18)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 19)
+  crossClusterReplicationConfig = _messages.MessageField('CrossClusterReplicationConfig', 3)
+  deletionProtectionEnabled = _messages.BooleanField(4)
+  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 5, repeated=True)
+  name = _messages.StringField(6)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 7)
+  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 8)
+  preciseSizeGb = _messages.FloatField(9)
+  pscConfigs = _messages.MessageField('PscConfig', 10, repeated=True)
+  pscConnections = _messages.MessageField('PscConnection', 11, repeated=True)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 12)
+  replicaCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  stateInfo = _messages.MessageField('StateInfo', 17)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 18)
+  uid = _messages.StringField(19)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 20)
 
 
 class ClusterPersistenceConfig(_messages.Message):
@@ -379,6 +381,60 @@ class Compliance(_messages.Message):
 
   standard = _messages.StringField(1)
   version = _messages.StringField(2)
+
+
+class CrossClusterReplicationConfig(_messages.Message):
+  r"""Cross cluster replication config.
+
+  Enums:
+    ClusterRoleValueValuesEnum: The role of the cluster in cross cluster
+      replication.
+
+  Fields:
+    clusterRole: The role of the cluster in cross cluster replication.
+    membership: Output only. An output only view of all the member clusters
+      participating in the cross cluster replication. This view will be
+      provided by every member cluster irrespective of its cluster
+      role(primary or secondary). A primary cluster can provide information
+      about all the secondary clusters replicating from it. However, a
+      secondary cluster only knows about the primary cluster from which it is
+      replicating. However, for scenarios, where the primary cluster is
+      unavailable(e.g. regional outage), a GetCluster request can be sent to
+      any other member cluster and this field will list all the member
+      clusters participating in cross cluster replication.
+    primaryCluster: Details of the primary cluster that is used as the
+      replication source for this secondary cluster. This field is only set
+      for a secondary cluster.
+    secondaryClusters: List of secondary clusters that are replicating from
+      this primary cluster. This field is only set for a primary cluster.
+    updateTime: Output only. The last time cross cluster replication config
+      was updated.
+  """
+
+  class ClusterRoleValueValuesEnum(_messages.Enum):
+    r"""The role of the cluster in cross cluster replication.
+
+    Values:
+      CLUSTER_ROLE_UNSPECIFIED: Cluster role is not set. The behavior is
+        equivalent to NONE.
+      NONE: This cluster does not participate in cross cluster replication. It
+        is an independent cluster and does not replicate to or from any other
+        clusters.
+      PRIMARY: A cluster that allows both reads and writes. Any data written
+        to this cluster is also replicated to the attached secondary clusters.
+      SECONDARY: A cluster that allows only reads and replicates data from a
+        primary cluster.
+    """
+    CLUSTER_ROLE_UNSPECIFIED = 0
+    NONE = 1
+    PRIMARY = 2
+    SECONDARY = 3
+
+  clusterRole = _messages.EnumField('ClusterRoleValueValuesEnum', 1)
+  membership = _messages.MessageField('Membership', 2)
+  primaryCluster = _messages.MessageField('RemoteCluster', 3)
+  secondaryClusters = _messages.MessageField('RemoteCluster', 4, repeated=True)
+  updateTime = _messages.StringField(5)
 
 
 class CustomMetadataData(_messages.Message):
@@ -1672,6 +1728,9 @@ class Instance(_messages.Message):
       events Redis version 4.0 and newer: * activedefrag * lfu-decay-time *
       lfu-log-factor * maxmemory-gb Redis version 5.0 and newer: * stream-
       node-max-bytes * stream-node-max-entries
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     alternativeLocationId: Optional. If specified, at least one node will be
@@ -1776,6 +1835,9 @@ class Instance(_messages.Message):
       status of this instance, if available.
     suspensionReasons: Optional. reasons that causes instance in "SUSPENDED"
       state.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     tier: Required. The service tier of the instance.
     transitEncryptionMode: Optional. The TLS mode of the Redis instance. If
       not provided, TLS is disabled for the instance.
@@ -1935,6 +1997,32 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   alternativeLocationId = _messages.StringField(1)
   authEnabled = _messages.BooleanField(2)
   authorizedNetwork = _messages.StringField(3)
@@ -1970,8 +2058,9 @@ class Instance(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 33)
   statusMessage = _messages.StringField(34)
   suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 35, repeated=True)
-  tier = _messages.EnumField('TierValueValuesEnum', 36)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 37)
+  tags = _messages.MessageField('TagsValue', 36)
+  tier = _messages.EnumField('TierValueValuesEnum', 37)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 38)
 
 
 class InstanceAuthString(_messages.Message):
@@ -2228,6 +2317,21 @@ class ManagedCertificateAuthority(_messages.Message):
   """
 
   caCerts = _messages.MessageField('CertChain', 1, repeated=True)
+
+
+class Membership(_messages.Message):
+  r"""An output only view of all the member clusters participating in the
+  cross cluster replication.
+
+  Fields:
+    primaryCluster: Output only. The primary cluster that acts as the source
+      of replication for the secondary clusters.
+    secondaryClusters: Output only. The list of secondary clusters replicating
+      from the primary cluster.
+  """
+
+  primaryCluster = _messages.MessageField('RemoteCluster', 1)
+  secondaryClusters = _messages.MessageField('RemoteCluster', 2, repeated=True)
 
 
 class NodeInfo(_messages.Message):
@@ -3128,6 +3232,20 @@ class RedisProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class RemoteCluster(_messages.Message):
+  r"""Details of the remote cluster associated with this cluster in a cross
+  cluster replication setup.
+
+  Fields:
+    cluster: The full resource path of the remote cluster in the format:
+      projects//locations//clusters/
+    uid: Output only. The unique identifier of the remote cluster.
+  """
+
+  cluster = _messages.StringField(1)
+  uid = _messages.StringField(2)
 
 
 class RescheduleMaintenanceRequest(_messages.Message):

@@ -192,6 +192,30 @@ class AllocationAffinity(_messages.Message):
   values = _messages.StringField(3, repeated=True)
 
 
+class AssetLocation(_messages.Message):
+  r"""Provides the mapping of a cloud asset to a direct physical location or
+  to a proxy that defines the location on its behalf.
+
+  Fields:
+    ccfeRmsPath: Spanner path of the CCFE RMS database. It is only applicable
+      for CCFE tenants that use CCFE RMS for storing resource metadata.
+    expected: Defines the customer expectation around ZI/ZS for this asset and
+      ZI/ZS state of the region at the time of asset creation.
+    extraParameters: Defines extra parameters required for specific asset
+      types.
+    locationData: Contains all kinds of physical location definitions for this
+      asset.
+    parentAsset: Defines parents assets if any in order to allow later
+      generation of child_asset_location data via child assets.
+  """
+
+  ccfeRmsPath = _messages.StringField(1)
+  expected = _messages.MessageField('IsolationExpectations', 2)
+  extraParameters = _messages.MessageField('ExtraParameter', 3, repeated=True)
+  locationData = _messages.MessageField('LocationData', 4, repeated=True)
+  parentAsset = _messages.MessageField('CloudAsset', 5, repeated=True)
+
+
 class AttachedDisk(_messages.Message):
   r"""An instance-attached disk resource.
 
@@ -1932,8 +1956,41 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class BlobstoreLocation(_messages.Message):
+  r"""Policy ID that identified data placement in Blobstore as per
+  go/blobstore-user-guide#data-metadata-placement-and-failure-domains
+
+  Fields:
+    policyId: A string attribute.
+  """
+
+  policyId = _messages.StringField(1, repeated=True)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class CloudAsset(_messages.Message):
+  r"""A CloudAsset object.
+
+  Fields:
+    assetName: A string attribute.
+    assetType: A string attribute.
+  """
+
+  assetName = _messages.StringField(1)
+  assetType = _messages.StringField(2)
+
+
+class CloudAssetComposition(_messages.Message):
+  r"""A CloudAssetComposition object.
+
+  Fields:
+    childAsset: A CloudAsset attribute.
+  """
+
+  childAsset = _messages.MessageField('CloudAsset', 1, repeated=True)
 
 
 class ComputeInstanceBackupProperties(_messages.Message):
@@ -2394,6 +2451,16 @@ class DataSourceGcpResource(_messages.Message):
   type = _messages.StringField(4)
 
 
+class DirectLocationAssignment(_messages.Message):
+  r"""A DirectLocationAssignment object.
+
+  Fields:
+    location: A LocationAssignment attribute.
+  """
+
+  location = _messages.MessageField('LocationAssignment', 1, repeated=True)
+
+
 class DisplayDevice(_messages.Message):
   r"""A set of Display Device options
 
@@ -2462,6 +2529,17 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class ExtraParameter(_messages.Message):
+  r"""Defines parameters that should only be used for specific asset types.
+
+  Fields:
+    regionalMigDistributionPolicy: Details about zones used by regional
+      compute.googleapis.com/InstanceGroupManager to create instances.
+  """
+
+  regionalMigDistributionPolicy = _messages.MessageField('RegionalMigDistributionPolicy', 1)
 
 
 class FetchAccessTokenRequest(_messages.Message):
@@ -2728,6 +2806,156 @@ class InstanceParams(_messages.Message):
   resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 1)
 
 
+class IsolationExpectations(_messages.Message):
+  r"""A IsolationExpectations object.
+
+  Enums:
+    ZiOrgPolicyValueValuesEnum:
+    ZiRegionPolicyValueValuesEnum:
+    ZiRegionStateValueValuesEnum:
+    ZoneIsolationValueValuesEnum: Deprecated: use zi_org_policy,
+      zi_region_policy and zi_region_state instead for setting ZI expectations
+      as per go/zicy-publish-physical-location.
+    ZoneSeparationValueValuesEnum: Deprecated: use zs_org_policy, and
+      zs_region_stateinstead for setting Zs expectations as per go/zicy-
+      publish-physical-location.
+    ZsOrgPolicyValueValuesEnum:
+    ZsRegionStateValueValuesEnum:
+
+  Fields:
+    requirementOverride: Explicit overrides for ZI and ZS requirements to be
+      used for resources that should be excluded from ZI/ZS verification
+      logic.
+    ziOrgPolicy: A ZiOrgPolicyValueValuesEnum attribute.
+    ziRegionPolicy: A ZiRegionPolicyValueValuesEnum attribute.
+    ziRegionState: A ZiRegionStateValueValuesEnum attribute.
+    zoneIsolation: Deprecated: use zi_org_policy, zi_region_policy and
+      zi_region_state instead for setting ZI expectations as per go/zicy-
+      publish-physical-location.
+    zoneSeparation: Deprecated: use zs_org_policy, and zs_region_stateinstead
+      for setting Zs expectations as per go/zicy-publish-physical-location.
+    zsOrgPolicy: A ZsOrgPolicyValueValuesEnum attribute.
+    zsRegionState: A ZsRegionStateValueValuesEnum attribute.
+  """
+
+  class ZiOrgPolicyValueValuesEnum(_messages.Enum):
+    r"""ZiOrgPolicyValueValuesEnum enum type.
+
+    Values:
+      ZI_UNSPECIFIED: <no description>
+      ZI_UNKNOWN: To be used if tracking is not available
+      ZI_NOT_REQUIRED: <no description>
+      ZI_PREFERRED: <no description>
+      ZI_REQUIRED: <no description>
+    """
+    ZI_UNSPECIFIED = 0
+    ZI_UNKNOWN = 1
+    ZI_NOT_REQUIRED = 2
+    ZI_PREFERRED = 3
+    ZI_REQUIRED = 4
+
+  class ZiRegionPolicyValueValuesEnum(_messages.Enum):
+    r"""ZiRegionPolicyValueValuesEnum enum type.
+
+    Values:
+      ZI_REGION_POLICY_UNSPECIFIED: <no description>
+      ZI_REGION_POLICY_UNKNOWN: To be used if tracking is not available
+      ZI_REGION_POLICY_NOT_SET: <no description>
+      ZI_REGION_POLICY_FAIL_OPEN: <no description>
+      ZI_REGION_POLICY_FAIL_CLOSED: <no description>
+    """
+    ZI_REGION_POLICY_UNSPECIFIED = 0
+    ZI_REGION_POLICY_UNKNOWN = 1
+    ZI_REGION_POLICY_NOT_SET = 2
+    ZI_REGION_POLICY_FAIL_OPEN = 3
+    ZI_REGION_POLICY_FAIL_CLOSED = 4
+
+  class ZiRegionStateValueValuesEnum(_messages.Enum):
+    r"""ZiRegionStateValueValuesEnum enum type.
+
+    Values:
+      ZI_REGION_UNSPECIFIED: <no description>
+      ZI_REGION_UNKNOWN: To be used if tracking is not available
+      ZI_REGION_NOT_ENABLED: <no description>
+      ZI_REGION_ENABLED: <no description>
+    """
+    ZI_REGION_UNSPECIFIED = 0
+    ZI_REGION_UNKNOWN = 1
+    ZI_REGION_NOT_ENABLED = 2
+    ZI_REGION_ENABLED = 3
+
+  class ZoneIsolationValueValuesEnum(_messages.Enum):
+    r"""Deprecated: use zi_org_policy, zi_region_policy and zi_region_state
+    instead for setting ZI expectations as per go/zicy-publish-physical-
+    location.
+
+    Values:
+      ZI_UNSPECIFIED: <no description>
+      ZI_UNKNOWN: To be used if tracking is not available
+      ZI_NOT_REQUIRED: <no description>
+      ZI_PREFERRED: <no description>
+      ZI_REQUIRED: <no description>
+    """
+    ZI_UNSPECIFIED = 0
+    ZI_UNKNOWN = 1
+    ZI_NOT_REQUIRED = 2
+    ZI_PREFERRED = 3
+    ZI_REQUIRED = 4
+
+  class ZoneSeparationValueValuesEnum(_messages.Enum):
+    r"""Deprecated: use zs_org_policy, and zs_region_stateinstead for setting
+    Zs expectations as per go/zicy-publish-physical-location.
+
+    Values:
+      ZS_UNSPECIFIED: <no description>
+      ZS_UNKNOWN: To be used if tracking is not available
+      ZS_NOT_REQUIRED: <no description>
+      ZS_REQUIRED: <no description>
+    """
+    ZS_UNSPECIFIED = 0
+    ZS_UNKNOWN = 1
+    ZS_NOT_REQUIRED = 2
+    ZS_REQUIRED = 3
+
+  class ZsOrgPolicyValueValuesEnum(_messages.Enum):
+    r"""ZsOrgPolicyValueValuesEnum enum type.
+
+    Values:
+      ZS_UNSPECIFIED: <no description>
+      ZS_UNKNOWN: To be used if tracking is not available
+      ZS_NOT_REQUIRED: <no description>
+      ZS_REQUIRED: <no description>
+    """
+    ZS_UNSPECIFIED = 0
+    ZS_UNKNOWN = 1
+    ZS_NOT_REQUIRED = 2
+    ZS_REQUIRED = 3
+
+  class ZsRegionStateValueValuesEnum(_messages.Enum):
+    r"""ZsRegionStateValueValuesEnum enum type.
+
+    Values:
+      ZS_REGION_UNSPECIFIED: <no description>
+      ZS_REGION_UNKNOWN: To be used if tracking of the asset ZS-bit is not
+        available
+      ZS_REGION_NOT_ENABLED: <no description>
+      ZS_REGION_ENABLED: <no description>
+    """
+    ZS_REGION_UNSPECIFIED = 0
+    ZS_REGION_UNKNOWN = 1
+    ZS_REGION_NOT_ENABLED = 2
+    ZS_REGION_ENABLED = 3
+
+  requirementOverride = _messages.MessageField('RequirementOverride', 1)
+  ziOrgPolicy = _messages.EnumField('ZiOrgPolicyValueValuesEnum', 2)
+  ziRegionPolicy = _messages.EnumField('ZiRegionPolicyValueValuesEnum', 3)
+  ziRegionState = _messages.EnumField('ZiRegionStateValueValuesEnum', 4)
+  zoneIsolation = _messages.EnumField('ZoneIsolationValueValuesEnum', 5)
+  zoneSeparation = _messages.EnumField('ZoneSeparationValueValuesEnum', 6)
+  zsOrgPolicy = _messages.EnumField('ZsOrgPolicyValueValuesEnum', 7)
+  zsRegionState = _messages.EnumField('ZsRegionStateValueValuesEnum', 8)
+
+
 class ListBackupPlanAssociationsResponse(_messages.Message):
   r"""Response message for List BackupPlanAssociation
 
@@ -2954,6 +3182,65 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LocationAssignment(_messages.Message):
+  r"""A LocationAssignment object.
+
+  Enums:
+    LocationTypeValueValuesEnum:
+
+  Fields:
+    location: A string attribute.
+    locationType: A LocationTypeValueValuesEnum attribute.
+  """
+
+  class LocationTypeValueValuesEnum(_messages.Enum):
+    r"""LocationTypeValueValuesEnum enum type.
+
+    Values:
+      UNSPECIFIED: <no description>
+      CLUSTER: 1-10: Physical failure domains.
+      POP: <no description>
+      CLOUD_ZONE: 11-20: Logical failure domains.
+      CLOUD_REGION: <no description>
+      MULTI_REGION_GEO: <no description>
+      MULTI_REGION_JURISDICTION: <no description>
+      GLOBAL: <no description>
+      OTHER: <no description>
+    """
+    UNSPECIFIED = 0
+    CLUSTER = 1
+    POP = 2
+    CLOUD_ZONE = 3
+    CLOUD_REGION = 4
+    MULTI_REGION_GEO = 5
+    MULTI_REGION_JURISDICTION = 6
+    GLOBAL = 7
+    OTHER = 8
+
+  location = _messages.StringField(1)
+  locationType = _messages.EnumField('LocationTypeValueValuesEnum', 2)
+
+
+class LocationData(_messages.Message):
+  r"""A LocationData object.
+
+  Fields:
+    blobstoreLocation: A BlobstoreLocation attribute.
+    childAssetLocation: A CloudAssetComposition attribute.
+    directLocation: A DirectLocationAssignment attribute.
+    gcpProjectProxy: A TenantProjectProxy attribute.
+    placerLocation: A PlacerLocation attribute.
+    spannerLocation: A SpannerLocation attribute.
+  """
+
+  blobstoreLocation = _messages.MessageField('BlobstoreLocation', 1)
+  childAssetLocation = _messages.MessageField('CloudAssetComposition', 2)
+  directLocation = _messages.MessageField('DirectLocationAssignment', 3)
+  gcpProjectProxy = _messages.MessageField('TenantProjectProxy', 4)
+  placerLocation = _messages.MessageField('PlacerLocation', 5)
+  spannerLocation = _messages.MessageField('SpannerLocation', 6)
 
 
 class ManagementServer(_messages.Message):
@@ -3472,6 +3759,18 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(8)
 
 
+class PlacerLocation(_messages.Message):
+  r"""Message describing that the location of the customer resource is tied to
+  placer allocations
+
+  Fields:
+    placerConfig: Directory with a config related to it in placer (e.g.
+      "/placer/prod/home/my-root/my-dir")
+  """
+
+  placerConfig = _messages.StringField(1)
+
+
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
@@ -3550,6 +3849,20 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class RegionalMigDistributionPolicy(_messages.Message):
+  r"""To be used for specifying the intended distribution of regional
+  compute.googleapis.com/InstanceGroupManager instances
+
+  Fields:
+    targetShape: The shape in which the group converges around distribution of
+      resources. Instance of proto2 enum
+    zones: Cloud zones used by regional MIG to create instances.
+  """
+
+  targetShape = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  zones = _messages.MessageField('ZoneConfiguration', 2, repeated=True)
+
+
 class RemoveDataSourceRequest(_messages.Message):
   r"""Message for deleting a DataSource.
 
@@ -3568,6 +3881,52 @@ class RemoveDataSourceRequest(_messages.Message):
   """
 
   requestId = _messages.StringField(1)
+
+
+class RequirementOverride(_messages.Message):
+  r"""A RequirementOverride object.
+
+  Enums:
+    ZiOverrideValueValuesEnum:
+    ZsOverrideValueValuesEnum:
+
+  Fields:
+    ziOverride: A ZiOverrideValueValuesEnum attribute.
+    zsOverride: A ZsOverrideValueValuesEnum attribute.
+  """
+
+  class ZiOverrideValueValuesEnum(_messages.Enum):
+    r"""ZiOverrideValueValuesEnum enum type.
+
+    Values:
+      ZI_UNSPECIFIED: <no description>
+      ZI_UNKNOWN: To be used if tracking is not available
+      ZI_NOT_REQUIRED: <no description>
+      ZI_PREFERRED: <no description>
+      ZI_REQUIRED: <no description>
+    """
+    ZI_UNSPECIFIED = 0
+    ZI_UNKNOWN = 1
+    ZI_NOT_REQUIRED = 2
+    ZI_PREFERRED = 3
+    ZI_REQUIRED = 4
+
+  class ZsOverrideValueValuesEnum(_messages.Enum):
+    r"""ZsOverrideValueValuesEnum enum type.
+
+    Values:
+      ZS_UNSPECIFIED: <no description>
+      ZS_UNKNOWN: To be used if tracking is not available
+      ZS_NOT_REQUIRED: <no description>
+      ZS_REQUIRED: <no description>
+    """
+    ZS_UNSPECIFIED = 0
+    ZS_UNKNOWN = 1
+    ZS_NOT_REQUIRED = 2
+    ZS_REQUIRED = 3
+
+  ziOverride = _messages.EnumField('ZiOverrideValueValuesEnum', 1)
+  zsOverride = _messages.EnumField('ZsOverrideValueValuesEnum', 2)
 
 
 class RestoreBackupRequest(_messages.Message):
@@ -3825,6 +4184,20 @@ class SetInternalStatusRequest(_messages.Message):
   backupConfigState = _messages.EnumField('BackupConfigStateValueValuesEnum', 1)
   requestId = _messages.StringField(2)
   value = _messages.BytesField(3)
+
+
+class SpannerLocation(_messages.Message):
+  r"""A SpannerLocation object.
+
+  Fields:
+    backupName: Set of backups used by the resource with name in the same
+      format as what is available at
+      http://table/spanner_automon.backup_metadata
+    dbName: Set of databases used by the resource in format /span//
+  """
+
+  backupName = _messages.StringField(1, repeated=True)
+  dbName = _messages.StringField(2, repeated=True)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -4087,6 +4460,16 @@ class Tags(_messages.Message):
   items = _messages.StringField(1, repeated=True)
 
 
+class TenantProjectProxy(_messages.Message):
+  r"""A TenantProjectProxy object.
+
+  Fields:
+    projectNumbers: A string attribute.
+  """
+
+  projectNumbers = _messages.StringField(1, repeated=True)
+
+
 class TestIamPermissionsRequest(_messages.Message):
   r"""Request message for `TestIamPermissions` method.
 
@@ -4218,6 +4601,16 @@ class WorkforceIdentityBasedOAuth2ClientID(_messages.Message):
 
   firstPartyOauth2ClientId = _messages.StringField(1)
   thirdPartyOauth2ClientId = _messages.StringField(2)
+
+
+class ZoneConfiguration(_messages.Message):
+  r"""A ZoneConfiguration object.
+
+  Fields:
+    zone: A string attribute.
+  """
+
+  zone = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

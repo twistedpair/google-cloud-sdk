@@ -431,8 +431,7 @@ def AddPreemptibleArg(parser, required=True):
       """
   parser.add_argument(
       '--preemptible',
-      action='store_true',
-      default=False,
+      action=arg_parsers.StoreTrueFalseAction,
       required=required,
       help=helptext,
   )
@@ -446,8 +445,7 @@ def AddRestartOnFailureArg(parser, required=True):
       """
   parser.add_argument(
       '--restart-on-failure',
-      action='store_true',
-      default=False,
+      action=arg_parsers.StoreTrueFalseAction,
       required=required,
       help=helptext,
   )
@@ -598,7 +596,7 @@ def AddEnableDisplayDeviceArg(parser, required=False):
       """
   parser.add_argument(
       '--enable-display-device',
-      action='store_true',
+      action=arg_parsers.StoreTrueFalseAction,
       required=required,
       help=helptext,
   )
@@ -612,7 +610,7 @@ def AddCanIpForwardArg(parser, required=False):
       """
   parser.add_argument(
       '--can-ip-forward',
-      action='store_true',
+      action=arg_parsers.StoreTrueFalseAction,
       required=required,
       help=helptext,
   )
@@ -686,7 +684,7 @@ def AddDeletionProtectionArg(parser, required=False):
       """
   parser.add_argument(
       '--deletion-protection',
-      action='store_true',
+      action=arg_parsers.StoreTrueFalseAction,
       required=required,
       help=helptext,
   )

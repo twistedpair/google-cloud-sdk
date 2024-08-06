@@ -1105,6 +1105,8 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
     proxyConfig: Optional. Proxy configuration for outbound HTTP(S) traffic.
     reconciling: Output only. If set, there are currently changes in flight to
       the cluster.
+    securityPostureConfig: Optional. Security Posture configuration for this
+      cluster.
     state: Output only. The current state of the cluster.
     uid: Output only. A globally unique identifier for the cluster.
     updateTime: Output only. The time at which this cluster was last updated.
@@ -1186,10 +1188,11 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
   platformVersion = _messages.StringField(16)
   proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedProxyConfig', 17)
   reconciling = _messages.BooleanField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  uid = _messages.StringField(20)
-  updateTime = _messages.StringField(21)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 22)
+  securityPostureConfig = _messages.MessageField('GoogleCloudGkemulticloudV1SecurityPostureConfig', 19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  uid = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 23)
 
 
 class GoogleCloudGkemulticloudV1AttachedClusterError(_messages.Message):
@@ -3517,6 +3520,34 @@ class GoogleCloudGkemulticloudV1RollbackAwsNodePoolUpdateRequest(_messages.Messa
   """
 
   respectPdb = _messages.BooleanField(1)
+
+
+class GoogleCloudGkemulticloudV1SecurityPostureConfig(_messages.Message):
+  r"""SecurityPostureConfig defines the flags needed to enable/disable
+  features for the Security Posture API.
+
+  Enums:
+    VulnerabilityModeValueValuesEnum: Sets which mode to use for vulnerability
+      scanning.
+
+  Fields:
+    vulnerabilityMode: Sets which mode to use for vulnerability scanning.
+  """
+
+  class VulnerabilityModeValueValuesEnum(_messages.Enum):
+    r"""Sets which mode to use for vulnerability scanning.
+
+    Values:
+      VULNERABILITY_MODE_UNSPECIFIED: Default value not specified.
+      VULNERABILITY_DISABLED: Disables vulnerability scanning on the cluster.
+      VULNERABILITY_ENTERPRISE: Applies the Security Posture's vulnerability
+        on cluster Enterprise level features.
+    """
+    VULNERABILITY_MODE_UNSPECIFIED = 0
+    VULNERABILITY_DISABLED = 1
+    VULNERABILITY_ENTERPRISE = 2
+
+  vulnerabilityMode = _messages.EnumField('VulnerabilityModeValueValuesEnum', 1)
 
 
 class GoogleCloudGkemulticloudV1SpotConfig(_messages.Message):

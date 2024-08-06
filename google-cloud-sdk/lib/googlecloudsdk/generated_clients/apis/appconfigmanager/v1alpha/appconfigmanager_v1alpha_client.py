@@ -273,7 +273,7 @@ class AppconfigmanagerV1alpha(base_api.BaseApiClient):
         method_id='appconfigmanager.projects.locations.configs.versions.render',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['view'],
+        query_params=[],
         relative_path='v1alpha/{+name}:render',
         request_field='',
         request_type_name='AppconfigmanagerProjectsLocationsConfigsVersionsRenderRequest',

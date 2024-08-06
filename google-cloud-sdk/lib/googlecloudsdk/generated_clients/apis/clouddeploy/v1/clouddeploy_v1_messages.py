@@ -149,6 +149,30 @@ class ApproveRolloutResponse(_messages.Message):
   r"""The response object from `ApproveRollout`."""
 
 
+class AssociatedEntities(_messages.Message):
+  r"""Information about entities associated with a `Target`.
+
+  Fields:
+    associatedEntities: Optional. List of associated entities.
+  """
+
+  associatedEntities = _messages.MessageField('AssociatedEntity', 1, repeated=True)
+
+
+class AssociatedEntity(_messages.Message):
+  r"""Information specifying an associated entity.
+
+  Fields:
+    anthosCluster: Optional. Information specifying an Anthos cluster as an
+      associated entity.
+    gke: Optional. Information specifying a GKE cluster as an associated
+      entity.
+  """
+
+  anthosCluster = _messages.MessageField('AnthosCluster', 1)
+  gke = _messages.MessageField('GkeCluster', 2)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -3095,92 +3119,6 @@ class DeployPolicy(_messages.Message):
   updateTime = _messages.StringField(11)
 
 
-class DeployPolicyEvaluationEvent(_messages.Message):
-  r"""Payload proto for "clouddeploy.googleapis.com/deploypolicy_evaluation"
-  Platform Log event that describes the deploy policy evaluation event.
-
-  Enums:
-    InvokerValueValuesEnum: What invoked the action (e.g. a user or
-      automation).
-    OverridesValueListEntryValuesEnum:
-    VerdictValueValuesEnum: The policy verdict of the request.
-
-  Fields:
-    allowed: Whether the request is allowed. Allowed is set as true if: (1)
-      the request complies with the policy; or (2) the request doesn't comply
-      with the policy but the policy was overridden; or (3) the request
-      doesn't comply with the policy but the policy was suspended
-    deliveryPipeline: The name of the `Delivery Pipeline`.
-    deployPolicy: The name of the `DeployPolicy`.
-    deployPolicyUid: Unique identifier of the `DeployPolicy`.
-    invoker: What invoked the action (e.g. a user or automation).
-    message: Debug message for when a deploy policy event occurs.
-    overrides: Things that could have overridden the policy verdict. Overrides
-      together with verdict decide whether the request is allowed.
-    pipelineUid: Unique identifier of the `Delivery Pipeline`.
-    rule: Rule id.
-    ruleType: Rule type (e.g. Restrict Rollouts).
-    target: The name of the `Target`. This is an optional field, as a `Target`
-      may not always be applicable to a policy.
-    targetUid: Unique identifier of the `Target`. This is an optional field,
-      as a `Target` may not always be applicable to a policy.
-    verdict: The policy verdict of the request.
-  """
-
-  class InvokerValueValuesEnum(_messages.Enum):
-    r"""What invoked the action (e.g. a user or automation).
-
-    Values:
-      INVOKER_UNSPECIFIED: Unspecified.
-      USER: The action is user-driven. For example, creating a rollout
-        manually via a gcloud create command.
-      DEPLOY_AUTOMATION: Automated action by Cloud Deploy.
-    """
-    INVOKER_UNSPECIFIED = 0
-    USER = 1
-    DEPLOY_AUTOMATION = 2
-
-  class OverridesValueListEntryValuesEnum(_messages.Enum):
-    r"""OverridesValueListEntryValuesEnum enum type.
-
-    Values:
-      POLICY_VERDICT_OVERRIDE_UNSPECIFIED: This should never happen.
-      POLICY_OVERRIDDEN: The policy was overridden.
-      POLICY_SUSPENDED: The policy was suspended.
-    """
-    POLICY_VERDICT_OVERRIDE_UNSPECIFIED = 0
-    POLICY_OVERRIDDEN = 1
-    POLICY_SUSPENDED = 2
-
-  class VerdictValueValuesEnum(_messages.Enum):
-    r"""The policy verdict of the request.
-
-    Values:
-      POLICY_VERDICT_UNSPECIFIED: This should never happen.
-      ALLOWED_BY_POLICY: Allowed by policy. This enum value is not currently
-        used but may be used in the future. Currently logs are only generated
-        when a request is denied by policy.
-      DENIED_BY_POLICY: Denied by policy.
-    """
-    POLICY_VERDICT_UNSPECIFIED = 0
-    ALLOWED_BY_POLICY = 1
-    DENIED_BY_POLICY = 2
-
-  allowed = _messages.BooleanField(1)
-  deliveryPipeline = _messages.StringField(2)
-  deployPolicy = _messages.StringField(3)
-  deployPolicyUid = _messages.StringField(4)
-  invoker = _messages.EnumField('InvokerValueValuesEnum', 5)
-  message = _messages.StringField(6)
-  overrides = _messages.EnumField('OverridesValueListEntryValuesEnum', 7, repeated=True)
-  pipelineUid = _messages.StringField(8)
-  rule = _messages.StringField(9)
-  ruleType = _messages.StringField(10)
-  target = _messages.StringField(11)
-  targetUid = _messages.StringField(12)
-  verdict = _messages.EnumField('VerdictValueValuesEnum', 13)
-
-
 class DeployPolicyNotificationEvent(_messages.Message):
   r"""Payload proto for
   "clouddeploy.googleapis.com/deploypolicy_notification". Platform Log event
@@ -3377,6 +3315,14 @@ class GatewayServiceMesh(_messages.Message):
     deployment: Required. Name of the Kubernetes Deployment whose traffic is
       managed by the specified HTTPRoute and Service.
     httpRoute: Required. Name of the Gateway API HTTPRoute.
+    podSelectorLabel: Optional. The label to use when selecting Pods for the
+      Deployment and Service resources. This label must already be present in
+      both resources.
+    routeDestinations: Optional. The clusters where the HTTPRoute resource
+      will be deployed. Valid entries include the associated entity IDs
+      configured in the `Target` and "@self" to include the `Target`s
+      deployment cluster. If unspecified, the HTTPRoute will be deployed to
+      the `Target`s deployment cluster.
     routeUpdateWaitTime: Optional. The time to wait for route updates to
       propagate. The maximum configurable time is 3 hours, in seconds format.
       If unspecified, there is no wait time.
@@ -3389,9 +3335,11 @@ class GatewayServiceMesh(_messages.Message):
 
   deployment = _messages.StringField(1)
   httpRoute = _messages.StringField(2)
-  routeUpdateWaitTime = _messages.StringField(3)
-  service = _messages.StringField(4)
-  stableCutbackDuration = _messages.StringField(5)
+  podSelectorLabel = _messages.StringField(3)
+  routeDestinations = _messages.StringField(4, repeated=True)
+  routeUpdateWaitTime = _messages.StringField(5)
+  service = _messages.StringField(6)
+  stableCutbackDuration = _messages.StringField(7)
 
 
 class GkeCluster(_messages.Message):
@@ -5788,12 +5736,16 @@ class ServiceNetworking(_messages.Message):
       overprovisioning. If Pod overprovisioning is disabled then Cloud Deploy
       will limit the number of total Pods used for the deployment strategy to
       the number of Pods the Deployment has on the cluster.
+    podSelectorLabel: Optional. The label to use when selecting Pods for the
+      Deployment resource. This label must already be present in the
+      Deployment.
     service: Required. Name of the Kubernetes Service.
   """
 
   deployment = _messages.StringField(1)
   disablePodOverprovisioning = _messages.BooleanField(2)
-  service = _messages.StringField(3)
+  podSelectorLabel = _messages.StringField(3)
+  service = _messages.StringField(4)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -6115,6 +6067,15 @@ class Target(_messages.Message):
       set and used by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
+    AssociatedEntitiesValue: Optional. Map of entity IDs to their associated
+      entities. Associated entities allows specifying places other than the
+      deployment target for specific features. For example, the Gateway API
+      canary can be configured to deploy the HTTPRoute to a different
+      cluster(s) than the deployment cluster using associated entities. An
+      entity ID must consist of lower-case letters, numbers, and hyphens,
+      start with a letter and end with a letter or a number, and have a max
+      length of 63 characters. In other words, it must match the following
+      regex: `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
     DeployParametersValue: Optional. The deploy parameters to use for this
       target.
     LabelsValue: Optional. Labels are attributes that can be set and used by
@@ -6132,6 +6093,15 @@ class Target(_messages.Message):
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     anthosCluster: Optional. Information specifying an Anthos Cluster.
+    associatedEntities: Optional. Map of entity IDs to their associated
+      entities. Associated entities allows specifying places other than the
+      deployment target for specific features. For example, the Gateway API
+      canary can be configured to deploy the HTTPRoute to a different
+      cluster(s) than the deployment cluster using associated entities. An
+      entity ID must consist of lower-case letters, numbers, and hyphens,
+      start with a letter and end with a letter or a number, and have a max
+      length of 63 characters. In other words, it must match the following
+      regex: `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
     createTime: Output only. Time at which the `Target` was created.
     customTarget: Optional. Information specifying a Custom Target.
     deployParameters: Optional. The deploy parameters to use for this target.
@@ -6197,6 +6167,39 @@ class Target(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class AssociatedEntitiesValue(_messages.Message):
+    r"""Optional. Map of entity IDs to their associated entities. Associated
+    entities allows specifying places other than the deployment target for
+    specific features. For example, the Gateway API canary can be configured
+    to deploy the HTTPRoute to a different cluster(s) than the deployment
+    cluster using associated entities. An entity ID must consist of lower-case
+    letters, numbers, and hyphens, start with a letter and end with a letter
+    or a number, and have a max length of 63 characters. In other words, it
+    must match the following regex: `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
+
+    Messages:
+      AdditionalProperty: An additional property for a AssociatedEntitiesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AssociatedEntitiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AssociatedEntitiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A AssociatedEntities attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('AssociatedEntities', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class DeployParametersValue(_messages.Message):
     r"""Optional. The deploy parameters to use for this target.
 
@@ -6255,21 +6258,22 @@ class Target(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   anthosCluster = _messages.MessageField('AnthosCluster', 2)
-  createTime = _messages.StringField(3)
-  customTarget = _messages.MessageField('CustomTarget', 4)
-  deployParameters = _messages.MessageField('DeployParametersValue', 5)
-  description = _messages.StringField(6)
-  etag = _messages.StringField(7)
-  executionConfigs = _messages.MessageField('ExecutionConfig', 8, repeated=True)
-  gke = _messages.MessageField('GkeCluster', 9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  multiTarget = _messages.MessageField('MultiTarget', 11)
-  name = _messages.StringField(12)
-  requireApproval = _messages.BooleanField(13)
-  run = _messages.MessageField('CloudRunLocation', 14)
-  targetId = _messages.StringField(15)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
+  associatedEntities = _messages.MessageField('AssociatedEntitiesValue', 3)
+  createTime = _messages.StringField(4)
+  customTarget = _messages.MessageField('CustomTarget', 5)
+  deployParameters = _messages.MessageField('DeployParametersValue', 6)
+  description = _messages.StringField(7)
+  etag = _messages.StringField(8)
+  executionConfigs = _messages.MessageField('ExecutionConfig', 9, repeated=True)
+  gke = _messages.MessageField('GkeCluster', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  multiTarget = _messages.MessageField('MultiTarget', 12)
+  name = _messages.StringField(13)
+  requireApproval = _messages.BooleanField(14)
+  run = _messages.MessageField('CloudRunLocation', 15)
+  targetId = _messages.StringField(16)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
 
 
 class TargetArtifact(_messages.Message):

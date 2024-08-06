@@ -68,7 +68,7 @@ class Client:
     self.messages = GetMessagesModule(release_track)
     self._resource_parser = resources.Registry()
     self._resource_parser.RegisterApiByName(
-        _API_NAME, _API_VERSION_FOR_TRACK.get(release_track)
+        _API_NAME, GetApiVersion(release_track)
     )
 
   def CreateDeployment(

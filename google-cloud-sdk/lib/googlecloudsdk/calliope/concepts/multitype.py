@@ -123,7 +123,6 @@ class MultitypeResourceSpec(concepts.ConceptSpec):
 
     attr_list = sorted(list(attr_map.values()), key=lambda x: x[0])
     self._attributes = [attr[1] for attr in attr_list]
-    self._anchor = self._GetAnchor()
 
   @property
   def name(self):
@@ -132,20 +131,6 @@ class MultitypeResourceSpec(concepts.ConceptSpec):
   @property
   def attributes(self):
     return self._attributes
-
-  @property
-  def anchor(self):
-    return self._anchor
-
-  def _GetAnchor(self):
-    leaf_anchors = set(
-        attr for attr in self.attributes if self.IsLeafAnchor(attr))
-    if len(leaf_anchors) != 1:
-      anchor_names = ', '.join([attr.name for attr in leaf_anchors])
-      raise ConfigurationError(
-          'Could not find single achor value for multitype resource. '
-          f'Resource {self.name} has multiple leaf anchors: [{anchor_names}].')
-    return leaf_anchors.pop()
 
   def IsAnchor(self, attribute):
     """Returns True if attribute is an anchor in at least one concept."""
@@ -370,8 +355,12 @@ class MultitypeResourceSpec(concepts.ConceptSpec):
       list[FallthroughsMap], fallthrough map for each anchor value
     """
     fallthroughs_map = {**base_fallthroughs_map}
+    # Do not include other leaf anchors not related to this anchor
+    attributes = [
+        attr for attr in self.attributes
+        if not self.IsLeafAnchor(attr) or attr.name == anchor.name]
     deps_map_util.AddFlagFallthroughs(
-        fallthroughs_map, self.attributes, attribute_to_args_map)
+        fallthroughs_map, attributes, attribute_to_args_map)
     deps_map_util.PluralizeFallthroughs(fallthroughs_map, anchor.name)
 
     map_list = deps_map_util.CreateValueFallthroughMapList(

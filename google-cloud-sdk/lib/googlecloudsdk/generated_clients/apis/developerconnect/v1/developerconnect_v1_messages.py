@@ -732,7 +732,7 @@ class GitLabEnterpriseConfig(_messages.Message):
       should only be set if the GitLab Enterprise server is hosted on-premises
       and not reachable by public internet. If this field is left empty, calls
       to the GitLab Enterprise server will be made over the public internet.
-    sslCaCertSercretVersion: Optional. SecretManager resource containing SSL
+    sslCaCertSecretVersion: Optional. SecretManager resource containing SSL
       certificate to use for requests to GitLab Enterprise instance. Format:
       `projects/*/secrets/*/versions/*`.
     webhookSecretSecretVersion: Required. Immutable. SecretManager resource
@@ -745,7 +745,7 @@ class GitLabEnterpriseConfig(_messages.Message):
   readAuthorizerCredential = _messages.MessageField('UserCredential', 3)
   serverVersion = _messages.StringField(4)
   serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 5)
-  sslCaCertSercretVersion = _messages.StringField(6)
+  sslCaCertSecretVersion = _messages.StringField(6)
   webhookSecretSecretVersion = _messages.StringField(7)
 
 

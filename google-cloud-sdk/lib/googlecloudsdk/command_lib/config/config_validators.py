@@ -33,6 +33,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import creds as c_creds
 from googlecloudsdk.core.credentials import store as c_store
+from googlecloudsdk.core.universe_descriptor import universe_descriptor
 
 
 def WarnIfSettingNonExistentRegionZone(value, zonal=True):
@@ -79,6 +80,25 @@ def WarnIfSettingNonExistentRegionZone(value, zonal=True):
           'zone' if zonal else 'region'
       )
   )
+  return False
+
+
+def WarnIfSettingUniverseDomainWithNoDescriptorData(
+    universe_domain: str,
+) -> bool:
+  """Warn if setting 'core/universe_domain' with no cached descriptor data."""
+  universe_descriptor_data = universe_descriptor.UniverseDescriptor()
+  try:
+    cached_descriptor_data = universe_descriptor_data.Get(universe_domain)
+    if cached_descriptor_data:
+      return False
+  except universe_descriptor.UniverseDescriptorError as e:
+    log.warning(f'Failed to update descriptor data: {e}')
+    log.warning(
+        'Using gcloud without universe descriptor data outside the default'
+        ' universe may lead to unexpected behavior.'
+    )
+    return True
   return False
 
 

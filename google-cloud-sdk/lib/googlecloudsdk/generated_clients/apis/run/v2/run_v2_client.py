@@ -1101,6 +1101,33 @@ class RunV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ExportProjectMetadata(self, request, global_params=None):
+      r"""Export generated customer metadata for a given project.
+
+      Args:
+        request: (RunProjectsLocationsExportProjectMetadataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRunV2Metadata) The response message.
+      """
+      config = self.GetMethodConfig('ExportProjectMetadata')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportProjectMetadata.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}:exportProjectMetadata',
+        http_method='GET',
+        method_id='run.projects.locations.exportProjectMetadata',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:exportProjectMetadata',
+        request_field='',
+        request_type_name='RunProjectsLocationsExportProjectMetadataRequest',
+        response_type_name='GoogleCloudRunV2Metadata',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 

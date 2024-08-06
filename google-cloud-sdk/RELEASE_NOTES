@@ -5,6 +5,99 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 487.0.0 (2024-08-06)
+
+### Breaking Changes
+
+*   **(Cloud Storage)** Remove '-' in error message for non-matching GCloud buckets. Currently, when
+*   **(Cloud Storage)** listing buckets, all buckets that don't match are prefixed with '-', which might
+*   **(Cloud Storage)** confuse readers of the bucket URLs.
+*   **(Compute Engine)** Changed behavior of `--local-ssd` flag so that unknown interfaces trigger an exception rather than defaulting to SCSI.
+
+
+### Google Cloud CLI
+
+* Updated linux bundled python for the `gcloud` CLI to 3.11.9.
+* Updated `setuptools` package to version 70.3.0.
+* Updated `openssl` package to version 3.0.14.
+
+### Cloud DNS
+
+* Added support to allow specifying Network Proxy load
+balancers as health checked targets for Routing Policies.
+
+### Cloud Dataproc
+
+*  Use the `cluster-pool` name as the identifier of the staging directory path when using a cluster pool. This change applies to `gcloud dataproc clusters create` and `gcloud dataproc clusters update` commands.
+
+### Cloud Filestore
+
+* Added `--performance` flag to `gcloud filestore instances create` and
+`gcloud filestore instances update` to support performance configuration
+of filestore instances.
+
+### Cloud Firestore
+
+* Promoted `--show-deleted` flag of `gcloud firestore databases list` command to beta and GA.
+* Promoted `--kms-key-name` flag of `gcloud firestore databases create` command to beta and GA.
+
+### Cloud NetApp
+
+* Added `--large-capacity` and `--multiple-endpoints` flag to `gcloud netapp volumes {create}`.
+
+### Cloud On Demand Scanning
+
+*   Added support for parsing RPM package databases in SQLite format.
+*   Fixed issue where `local-extract` would return an error when running it in a
+    container without the user manually overriding the `gid` and `uid` values.
+
+### Cloud Run
+
+* Modified the api enablement default prompt value to be Y for `gcloud run deploy` command.
+
+### Cloud SQL
+
+*   Added `gcloud sql instances switchover`, which switches over a Cloud SQL instance
+    to one of its replicas.
+
+### Cloud Storage
+
+* Fixed a bug in where IAM policies with conditional bindings were not
+supported because of version issue in  `gcloud storage buckets
+add-iam-policy-binding` command.
+* Fixed a bug in `objects update` command where it was ignoring `--clear-content-type` flag.
+
+### Compute Engine
+
+*   Promoted `--source-regions` flag of `gcloud compute health-checks` to GA.
+*   Promoted `--availability-domain` flag of `gcloud compute instances create` to GA.
+*   Added interface support to `gcloud compute instances create`, `gcloud compute instances attach-disk` and `gcloud compute instance-templates create` for persistent disks.
+
+### Distributed Cloud Edge
+
+* Fixed issue in `gcloud edge-cloud container clusters create` command where it was ignoring `--offline-reboot-ttl` flag.
+
+### GKE Hub
+
+* Modified `--description` flag of `gcloud beta container fleet memberships create` to be optional.
+
+### Security Command Center
+
+* Added `UNDEFINED` option to `--mute` flag of `gcloud scc findings set-mute` to reset finding mute state.
+* Added `--mute-state` flag to `gcloud scc findings bulk-mute` to facilitate
+  resetting 'static' mute state.
+* Added `--type` flag to `gcloud scc muteconfigs create` to support creation of
+  dynamically evaluated ('dynamic') mute configs.
+* Added `--expiry-time` flag to `gcloud scc muteconfigs create` and
+  `gcloud scc muteconfigs update` to support creation and update of expiry time
+  for temporary mute configs ('dynamic' only).
+* Promoted `gcloud scc iac-validation-reports describe` command to GA.
+* Promoted `gcloud scc iac-validation-reports list` command to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 486.0.0 (2024-07-30)
 
 ### Cloud DNS

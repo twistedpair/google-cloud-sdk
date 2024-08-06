@@ -109,21 +109,29 @@ def MakeLocalSsds(messages, ssd_configs):
   for s in ssd_configs:
     if s['interface'].upper() == 'NVME':
       interface = interface_msg.NVME
-    else:
+    elif s['interface'].upper() == 'SCSI':
       interface = interface_msg.SCSI
+    else:
+      raise exceptions.InvalidArgumentException(
+          '--local-ssd',
+          'Must specify a valid interface (NVME, SCSI) for SSDs attached to the'
+          ' instance.',
+      )
     m = disk_msg(diskSizeGb=s['size'], interface=interface)
     partitions = s.get('count', 1)
     if partitions not in range(24 + 1):
       raise exceptions.InvalidArgumentException(
           '--local-ssd',
-          'The number of SSDs attached to an instance must be in the range of 1-24.'
+          'The number of SSDs attached to an instance must be in the range of'
+          ' 1-24.',
       )
 
     total_partitions += partitions
     if total_partitions > 24:
       raise exceptions.InvalidArgumentException(
           '--local-ssd',
-          'The total number of SSDs attached to an instance must not exceed 24.'
+          'The total number of SSDs attached to an instance must not'
+          ' exceed 24.',
       )
 
     local_ssds.extend([m] * partitions)

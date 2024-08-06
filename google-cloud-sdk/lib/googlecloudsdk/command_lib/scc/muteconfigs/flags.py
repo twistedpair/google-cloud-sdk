@@ -39,11 +39,29 @@ DISPLAY_NAME_FLAG = base.Argument(
     help="""The text that will be used to represent a mute configuration display name."""
     )
 
+EXPIRY_TIME_FLAG = base.Argument(
+    "--expiry-time",
+    required=False,
+    help="""The expiry of the mute config. Only applicable for dynamic
+      configs. If the expiry is set, when the config expires, it is removed from
+      all findings. See `$ gcloud topic datetimes` for information on
+      supported time formats.""",
+)
+
 FILTER_FLAG = base.Argument(
     "--filter",
     required=False,
     help="""The filter string which will applied to findings muted by a mute configuration."""
     )
+
+TYPE_FLAG = base.ChoiceArgument(
+    "--type",
+    choices=["static", "dynamic"],
+    metavar="TYPE",
+    required=False,
+    help_str="The mute configuration type. Immutable after creation.",
+    default="static",
+)
 
 
 def AddParentGroup(parser, required=False):
@@ -63,4 +81,3 @@ def AddParentGroup(parser, required=False):
       help="""Project (id or number) where the mute config resides. Formatted as ``projects/789'' or just ``789''.""",
   )
   return parser
-

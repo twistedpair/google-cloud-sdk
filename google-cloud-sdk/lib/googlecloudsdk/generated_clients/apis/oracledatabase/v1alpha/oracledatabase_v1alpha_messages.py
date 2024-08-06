@@ -40,6 +40,7 @@ class AutonomousDatabase(_messages.Message):
 
   Fields:
     adminPassword: Optional. Password for the default ADMIN user.
+    cidr: Required. The subnet CIDR for the autonomous database.
     database: Optional. The name of the Autonomous Database. The database name
       must be unique in the tenancy. The name must begin with an alphabetic
       character and can contain a maximum of 30 alphanumeric characters.
@@ -83,14 +84,15 @@ class AutonomousDatabase(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   adminPassword = _messages.StringField(1)
-  database = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  entitlementId = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  properties = _messages.MessageField('AutonomousDatabaseProperties', 8)
-  zone = _messages.StringField(9)
+  cidr = _messages.StringField(2)
+  database = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  entitlementId = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  properties = _messages.MessageField('AutonomousDatabaseProperties', 9)
+  zone = _messages.StringField(10)
 
 
 class AutonomousDatabaseApex(_messages.Message):

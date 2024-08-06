@@ -1437,6 +1437,9 @@ class ConfigManagementMembershipSpec(_messages.Message):
     hierarchyController: Hierarchy Controller configuration for the cluster.
     management: Enables automatic Feature management.
     policyController: Policy Controller configuration for the cluster.
+      Deprecated: Configuring Policy Controller through the configmanagement
+      feature is no longer recommended. Use the policycontroller feature
+      instead.
     version: Version of ACM installed.
   """
 
@@ -4652,6 +4655,7 @@ class Membership(_messages.Message):
   r"""Membership contains information about a member cluster.
 
   Enums:
+    ClusterTierValueValuesEnum: Output only. The tier of the cluster.
     InfrastructureTypeValueValuesEnum: Optional. The infrastructure type this
       Membership is running on.
 
@@ -4662,6 +4666,7 @@ class Membership(_messages.Message):
     authority: Optional. How to identify workloads from this Membership. See
       the documentation on Workload Identity for more details:
       https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
+    clusterTier: Output only. The tier of the cluster.
     createTime: Output only. When the Membership was created.
     deleteTime: Output only. When the Membership was deleted.
     description: Output only. Description of this membership, limited to 63
@@ -4697,6 +4702,18 @@ class Membership(_messages.Message):
       different unique_id.
     updateTime: Output only. When the Membership was last updated.
   """
+
+  class ClusterTierValueValuesEnum(_messages.Enum):
+    r"""Output only. The tier of the cluster.
+
+    Values:
+      CLUSTER_TIER_UNSPECIFIED: The ClusterTier is not set.
+      STANDARD: The ClusterTier is standard.
+      ENTERPRISE: The ClusterTier is enterprise.
+    """
+    CLUSTER_TIER_UNSPECIFIED = 0
+    STANDARD = 1
+    ENTERPRISE = 2
 
   class InfrastructureTypeValueValuesEnum(_messages.Enum):
     r"""Optional. The infrastructure type this Membership is running on.
@@ -4739,19 +4756,20 @@ class Membership(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   authority = _messages.MessageField('Authority', 1)
-  createTime = _messages.StringField(2)
-  deleteTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  endpoint = _messages.MessageField('MembershipEndpoint', 5)
-  externalId = _messages.StringField(6)
-  infrastructureType = _messages.EnumField('InfrastructureTypeValueValuesEnum', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  lastConnectionTime = _messages.StringField(9)
-  monitoringConfig = _messages.MessageField('MonitoringConfig', 10)
-  name = _messages.StringField(11)
-  state = _messages.MessageField('MembershipState', 12)
-  uniqueId = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  clusterTier = _messages.EnumField('ClusterTierValueValuesEnum', 2)
+  createTime = _messages.StringField(3)
+  deleteTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  endpoint = _messages.MessageField('MembershipEndpoint', 6)
+  externalId = _messages.StringField(7)
+  infrastructureType = _messages.EnumField('InfrastructureTypeValueValuesEnum', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  lastConnectionTime = _messages.StringField(10)
+  monitoringConfig = _messages.MessageField('MonitoringConfig', 11)
+  name = _messages.StringField(12)
+  state = _messages.MessageField('MembershipState', 13)
+  uniqueId = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class MembershipBinding(_messages.Message):

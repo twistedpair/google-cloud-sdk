@@ -34,17 +34,17 @@ _API_NAME = 'networksecurity'
 
 
 def GetMessagesModule(release_track=base.ReleaseTrack.ALPHA):
-  api_version = _API_VERSION_FOR_TRACK.get(release_track)
+  api_version = GetApiVersion(release_track)
   return apis.GetMessagesModule(_API_NAME, api_version)
 
 
 def GetClientInstance(release_track=base.ReleaseTrack.ALPHA):
-  api_version = _API_VERSION_FOR_TRACK.get(release_track)
+  api_version = GetApiVersion(release_track)
   return apis.GetClientInstance(_API_NAME, api_version)
 
 
 def GetEffectiveApiEndpoint(release_track=base.ReleaseTrack.ALPHA):
-  api_version = _API_VERSION_FOR_TRACK.get(release_track)
+  api_version = GetApiVersion(release_track)
   return apis.GetEffectiveApiEndpoint(_API_NAME, api_version)
 
 
@@ -69,7 +69,7 @@ class Client:
     self.messages = GetMessagesModule(release_track)
     self._resource_parser = resources.Registry()
     self._resource_parser.RegisterApiByName(
-        _API_NAME, _API_VERSION_FOR_TRACK.get(release_track)
+        _API_NAME, GetApiVersion(release_track)
     )
 
   def CreateEndpointGroupAssociation(
@@ -100,6 +100,22 @@ class Client:
         name=name
     )
     return self._association_client.Delete(delete_request)
+
+  def UpdateEndpointGroupAssociation(
+      self,
+      name,
+      update_fields,
+  ):
+    """Calls the UpdateEndpointGroupAssociation API."""
+    association = self.messages.MirroringEndpointGroupAssociation(
+        labels=update_fields.get('labels', None)
+    )
+    update_request = self.messages.NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsPatchRequest(
+        name=name,
+        mirroringEndpointGroupAssociation=association,
+        updateMask=','.join(update_fields.keys()),
+    )
+    return self._association_client.Patch(update_request)
 
   def DescribeEndpointGroupAssociation(self, name):
     """Calls the GetEndpointGroupAssociation API."""

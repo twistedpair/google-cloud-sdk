@@ -631,7 +631,7 @@ class AuthzPolicyTarget(_messages.Message):
       EXTERNAL_MANAGED: Signifies that this is used for Global external or
         Regional external Application Load Balancing.
       INTERNAL_SELF_MANAGED: Signifies that this is used for Cloud Service
-        Mesh.
+        Mesh. Meant for use by CSM GKE controller only.
     """
     LOAD_BALANCING_SCHEME_UNSPECIFIED = 0
     INTERNAL_MANAGED = 1

@@ -4169,7 +4169,7 @@ class MulticastConsumerAssociation(_messages.Message):
       multicast consumer association.
 
   Messages:
-    LabelsValue: Labels as key-value pairs
+    LabelsValue: Optional. Labels as key-value pairs
 
   Fields:
     createTime: Output only. [Output only] The timestamp when the multicast
@@ -4179,16 +4179,16 @@ class MulticastConsumerAssociation(_messages.Message):
     domainActivation: Reference to the domain activation in the same zone as
       the consumer association. [Deprecated] Use multicast_domain_activation
       instead.
-    labels: Labels as key-value pairs
+    labels: Optional. Labels as key-value pairs
     multicastDomainActivation: Optional. The resource name of the multicast
       domain activation that is in the same zone as this multicast consumer
       association. Use the following format: //
       `projects/*/locations/*/multicastConsumerAssociations/*`.
-    name: The resource name of the multicast consumer association. Use the
-      following format:
+    name: Identifier. The resource name of the multicast consumer association.
+      Use the following format:
       `projects/*/locations/*/multicastConsumerAssociations/*`.
-    network: The resource name of the multicast consumer VPC network. Use
-      following format:
+    network: Required. The resource name of the multicast consumer VPC
+      network. Use following format:
       `projects/{project}/locations/global/networks/{network}`.
     resourceState: Output only. The resource state of the multicast consumer
       association.
@@ -4212,7 +4212,7 @@ class MulticastConsumerAssociation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key-value pairs
+    r"""Optional. Labels as key-value pairs
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -4261,8 +4261,8 @@ class MulticastDomain(_messages.Message):
     description: Optional. An optional text description of the multicast
       domain.
     labels: Optional. Labels as key-value pairs.
-    name: The resource name of the multicast domain. Use the following format:
-      `projects/*/locations/global/multicastDomains/*`
+    name: Identifier. The resource name of the multicast domain. Use the
+      following format: `projects/*/locations/global/multicastDomains/*`
     network: Optional. [Deprecated] Use `admin_network` instead. The resource
       name of the multicast producer VPC network. Use following format:
       `projects/{project}/locations/global/networks/{network}`.
@@ -4308,7 +4308,7 @@ class MulticastDomainActivation(_messages.Message):
   r"""Multicast domain activation resource.
 
   Messages:
-    LabelsValue: Labels as key-value pairs
+    LabelsValue: Optional. Labels as key-value pairs
 
   Fields:
     adminNetwork: Output only. [Output only] The URL of the admin network.
@@ -4318,22 +4318,23 @@ class MulticastDomainActivation(_messages.Message):
       domain activation.
     domain: Reference to the domain that is being activated. [Deprecated] Use
       multicast_domain instead.
-    labels: Labels as key-value pairs
+    labels: Optional. Labels as key-value pairs
     multicastConsumerAssociations: Output only. The resource names of
       associated multicast consumer associations. Use the following format:
       `projects/*/locations/*/multicastConsumerAssociations/*`.
     multicastDomain: Optional. The resource name of the multicast domain to
       activate. Use the following format:
       `projects/*/locations/global/multicastDomains/*`.
-    name: The resource name of the multicast domain activation. Use the
-      following format: `projects/*/locations/*/multicastDomainActivations/*`.
+    name: Identifier. The resource name of the multicast domain activation.
+      Use the following format:
+      `projects/*/locations/*/multicastDomainActivations/*`.
     updateTime: Output only. [Output only] The timestamp when the multicast
       domain activation was most recently updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key-value pairs
+    r"""Optional. Labels as key-value pairs
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -4370,7 +4371,7 @@ class MulticastGroup(_messages.Message):
   r"""Multicast group resource.
 
   Messages:
-    LabelsValue: Labels as key-value pairs.
+    LabelsValue: Optional. Labels as key-value pairs.
 
   Fields:
     createTime: Output only. [Output only] The timestamp when the multicast
@@ -4383,7 +4384,7 @@ class MulticastGroup(_messages.Message):
       the group. [Deprecated] Use multicast_group_definition instead.
     ipCidrRange: Output only. [Output only] The multicast group IP address
       range.
-    labels: Labels as key-value pairs.
+    labels: Optional. Labels as key-value pairs.
     multicastDomainActivation: Optional. The resource name of a multicast
       domain activation that is in the same zone as this multicast group. Use
       the following format:
@@ -4394,15 +4395,15 @@ class MulticastGroup(_messages.Message):
     multicastGroupDefinition: Optional. The resource name of the global
       multicast group definition for the group. Use the following format:
       `projects/*/locations/global/multicastGroupDefinitions/*`
-    name: The resource name of the multicast group. Use the following format:
-      `projects/*/locations/*/multicastGroups/*`.
+    name: Identifier. The resource name of the multicast group. Use the
+      following format: `projects/*/locations/*/multicastGroups/*`.
     updateTime: Output only. [Output only] The timestamp when the multicast
       group was most recently updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key-value pairs.
+    r"""Optional. Labels as key-value pairs.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -4523,7 +4524,7 @@ class MulticastGroupDefinition(_messages.Message):
   r"""Multicast group definition resource.
 
   Messages:
-    LabelsValue: Labels as key-value pairs.
+    LabelsValue: Optional. Labels as key-value pairs.
 
   Fields:
     createTime: Output only. [Output only] The timestamp when the multicast
@@ -4532,12 +4533,12 @@ class MulticastGroupDefinition(_messages.Message):
       definition.
     ipCidrRange: Output only. [Output only] The multicast group IP address
       range.
-    labels: Labels as key-value pairs.
+    labels: Optional. Labels as key-value pairs.
     multicastDomain: Required. The resource name of the multicast domain in
       which to create this multicast group definition. Use the following
       format: `projects/*/locations/global/multicastDomains/*`.
-    name: The resource name of the multicast group definition. Use the
-      following format:
+    name: Identifier. The resource name of the multicast group definition. Use
+      the following format:
       `projects/*/locations/global/multicastGroupDefinitions/*`.
     reservedInternalRange: Required. The resource name of the internal range
       reserved for this multicast group definition. The internal range must be
@@ -4550,7 +4551,7 @@ class MulticastGroupDefinition(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key-value pairs.
+    r"""Optional. Labels as key-value pairs.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -6317,8 +6318,8 @@ class NetworkservicesProjectsLocationsMulticastConsumerAssociationsPatchRequest(
   Fields:
     multicastConsumerAssociation: A MulticastConsumerAssociation resource to
       be passed as the request body.
-    name: The resource name of the multicast consumer association. Use the
-      following format:
+    name: Identifier. The resource name of the multicast consumer association.
+      Use the following format:
       `projects/*/locations/*/multicastConsumerAssociations/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -6453,8 +6454,9 @@ class NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest(_me
   Fields:
     multicastDomainActivation: A MulticastDomainActivation resource to be
       passed as the request body.
-    name: The resource name of the multicast domain activation. Use the
-      following format: `projects/*/locations/*/multicastDomainActivations/*`.
+    name: Identifier. The resource name of the multicast domain activation.
+      Use the following format:
+      `projects/*/locations/*/multicastDomainActivations/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -6579,8 +6581,8 @@ class NetworkservicesProjectsLocationsMulticastDomainsPatchRequest(_messages.Mes
   Fields:
     multicastDomain: A MulticastDomain resource to be passed as the request
       body.
-    name: The resource name of the multicast domain. Use the following format:
-      `projects/*/locations/global/multicastDomains/*`
+    name: Identifier. The resource name of the multicast domain. Use the
+      following format: `projects/*/locations/global/multicastDomains/*`
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -6849,8 +6851,8 @@ class NetworkservicesProjectsLocationsMulticastGroupDefinitionsPatchRequest(_mes
   Fields:
     multicastGroupDefinition: A MulticastGroupDefinition resource to be passed
       as the request body.
-    name: The resource name of the multicast group definition. Use the
-      following format:
+    name: Identifier. The resource name of the multicast group definition. Use
+      the following format:
       `projects/*/locations/global/multicastGroupDefinitions/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -7113,8 +7115,8 @@ class NetworkservicesProjectsLocationsMulticastGroupsPatchRequest(_messages.Mess
   Fields:
     multicastGroup: A MulticastGroup resource to be passed as the request
       body.
-    name: The resource name of the multicast group. Use the following format:
-      `projects/*/locations/*/multicastGroups/*`.
+    name: Identifier. The resource name of the multicast group. Use the
+      following format: `projects/*/locations/*/multicastGroups/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The

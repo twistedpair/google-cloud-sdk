@@ -34,23 +34,18 @@ _API_NAME = 'networksecurity'
 
 
 def GetMessagesModule(release_track=base.ReleaseTrack.ALPHA):
-  api_version = _API_VERSION_FOR_TRACK.get(release_track)
+  api_version = GetApiVersion(release_track)
   return apis.GetMessagesModule(_API_NAME, api_version)
 
 
 def GetClientInstance(release_track=base.ReleaseTrack.ALPHA):
-  api_version = _API_VERSION_FOR_TRACK.get(release_track)
+  api_version = GetApiVersion(release_track)
   return apis.GetClientInstance(_API_NAME, api_version)
 
 
 def GetEffectiveApiEndpoint(release_track=base.ReleaseTrack.ALPHA):
-  api_version = _API_VERSION_FOR_TRACK.get(release_track)
+  api_version = GetApiVersion(release_track)
   return apis.GetEffectiveApiEndpoint(_API_NAME, api_version)
-
-
-def GetApiBaseUrl(release_track=base.ReleaseTrack.ALPHA):
-  api_version = _API_VERSION_FOR_TRACK.get(release_track)
-  return resources.GetApiBaseUrlOrThrow(_API_NAME, api_version)
 
 
 def GetApiVersion(release_track=base.ReleaseTrack.ALPHA):
@@ -73,7 +68,7 @@ class Client:
     self.messages = GetMessagesModule(release_track)
     self._resource_parser = resources.Registry()
     self._resource_parser.RegisterApiByName(
-        'networksecurity', _API_VERSION_FOR_TRACK.get(release_track)
+        'networksecurity', GetApiVersion(release_track)
     )
 
   def CreateDeploymentGroup(

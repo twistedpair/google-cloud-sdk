@@ -92,7 +92,8 @@ class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
     else:
       gen_cls = UpdateDefaultResourceArgumentGenerator
 
-    arg_name = arg_data.GetAnchorArgName(resource_collection, is_list_method)
+    arg_name = arg_data.GetPresentationFlagName(
+        resource_collection, is_list_method)
     is_primary = arg_data.IsPrimaryResource(resource_collection)
     if is_primary:
       raise util.InvalidSchemaError(

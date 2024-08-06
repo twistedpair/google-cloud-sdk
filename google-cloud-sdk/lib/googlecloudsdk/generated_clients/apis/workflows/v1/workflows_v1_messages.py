@@ -432,6 +432,8 @@ class Workflow(_messages.Message):
       logging to apply to calls and call responses during executions of this
       workflow. If both the workflow and the execution specify a logging
       level, the execution level takes precedence.
+    ExecutionHistoryLevelValueValuesEnum: Optional. Describes the level of the
+      execution history feature to apply to this workflow.
     StateValueValuesEnum: Output only. State of the workflow deployment.
 
   Messages:
@@ -441,6 +443,8 @@ class Workflow(_messages.Message):
       dashes. Label keys must start with a letter. International characters
       are allowed. This is a workflow-wide field and is not tied to a specific
       revision.
+    TagsValue: Optional. Input only. Immutable. Tags associated with this
+      workflow.
     UserEnvVarsValue: Optional. User-defined environment variables associated
       with this workflow revision. This map has a maximum length of 20. Each
       string can take up to 4KiB. Keys cannot be empty strings and cannot
@@ -470,6 +474,8 @@ class Workflow(_messages.Message):
     description: Description of the workflow provided by the user. Must be at
       most 1000 Unicode characters long. This is a workflow-wide field and is
       not tied to a specific revision.
+    executionHistoryLevel: Optional. Describes the level of the execution
+      history feature to apply to this workflow.
     labels: Labels associated with this workflow. Labels can contain at most
       64 entries. Keys and values can be no longer than 63 characters and can
       only contain lowercase letters, numeric characters, underscores, and
@@ -501,6 +507,7 @@ class Workflow(_messages.Message):
     stateError: Output only. Error regarding the state of the workflow. For
       example, this field will have error details if the execution data is
       unavailable due to revoked KMS key permissions.
+    tags: Optional. Input only. Immutable. Tags associated with this workflow.
     updateTime: Output only. The timestamp for when the workflow was last
       updated. This is a workflow-wide field and is not tied to a specific
       revision.
@@ -528,6 +535,19 @@ class Workflow(_messages.Message):
     LOG_ALL_CALLS = 1
     LOG_ERRORS_ONLY = 2
     LOG_NONE = 3
+
+  class ExecutionHistoryLevelValueValuesEnum(_messages.Enum):
+    r"""Optional. Describes the level of the execution history feature to
+    apply to this workflow.
+
+    Values:
+      EXECUTION_HISTORY_LEVEL_UNSPECIFIED: The default/unset value.
+      EXECUTION_HISTORY_BASIC: Enable execution history basic feature.
+      EXECUTION_HISTORY_DETAILED: Enable execution history detailed feature.
+    """
+    EXECUTION_HISTORY_LEVEL_UNSPECIFIED = 0
+    EXECUTION_HISTORY_BASIC = 1
+    EXECUTION_HISTORY_DETAILED = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the workflow deployment.
@@ -558,6 +578,30 @@ class Workflow(_messages.Message):
 
     class AdditionalProperty(_messages.Message):
       r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tags associated with this workflow.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -604,16 +648,18 @@ class Workflow(_messages.Message):
   cryptoKeyName = _messages.StringField(5)
   cryptoKeyVersion = _messages.StringField(6)
   description = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  revisionCreateTime = _messages.StringField(10)
-  revisionId = _messages.StringField(11)
-  serviceAccount = _messages.StringField(12)
-  sourceContents = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  stateError = _messages.MessageField('StateError', 15)
-  updateTime = _messages.StringField(16)
-  userEnvVars = _messages.MessageField('UserEnvVarsValue', 17)
+  executionHistoryLevel = _messages.EnumField('ExecutionHistoryLevelValueValuesEnum', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  revisionCreateTime = _messages.StringField(11)
+  revisionId = _messages.StringField(12)
+  serviceAccount = _messages.StringField(13)
+  sourceContents = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  stateError = _messages.MessageField('StateError', 16)
+  tags = _messages.MessageField('TagsValue', 17)
+  updateTime = _messages.StringField(18)
+  userEnvVars = _messages.MessageField('UserEnvVarsValue', 19)
 
 
 class WorkflowsProjectsLocationsGetRequest(_messages.Message):

@@ -54,7 +54,7 @@ def check_and_enable_apis(project_id, required_apis):
   if apis_not_enabled:
     apis_to_enable = '\n\t'.join(apis_not_enabled)
     console_io.PromptContinue(
-        default=False,
+        default=True,
         cancel_on_no=True,
         message=(
             'The following APIs are not enabled on project [{0}]:\n\t{1}'

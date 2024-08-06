@@ -6071,7 +6071,9 @@ class GoogleCloudDataplexV1Entry(_messages.Message):
       type that was used to create this entry, in the format projects/{project
       _id_or_number}/locations/{location_id}/entryTypes/{entry_type_id}.
     fullyQualifiedName: Optional. A name for the entry that can be referenced
-      by an external system. The maximum size of the field is 4000 characters.
+      by an external system. For more information, see Fully qualified names
+      (https://cloud.google.com/data-catalog/docs/fully-qualified-names). The
+      maximum size of the field is 4000 characters.
     name: Identifier. The relative resource name of the entry, in the format p
       rojects/{project_id_or_number}/locations/{location_id}/entryGroups/{entr
       y_group_id}/entries/{entry_id}.

@@ -40,6 +40,7 @@ class AddressGroup(_messages.Message):
   used in Firewall Policy.
 
   Enums:
+    PurposeValueListEntryValuesEnum:
     TypeValueValuesEnum: Required. The type of the Address Group. Possible
       values are "IPv4" or "IPV6".
 
@@ -56,12 +57,26 @@ class AddressGroup(_messages.Message):
       resource.
     name: Required. Name of the AddressGroup resource. It matches pattern
       `projects/*/locations/{location}/addressGroups/`.
+    purpose: Optional. List of supported purposes of the Address Group.
     selfLink: Output only. Server-defined fully-qualified URL for this
       resource.
     type: Required. The type of the Address Group. Possible values are "IPv4"
       or "IPV6".
     updateTime: Output only. The timestamp when the resource was updated.
   """
+
+  class PurposeValueListEntryValuesEnum(_messages.Enum):
+    r"""PurposeValueListEntryValuesEnum enum type.
+
+    Values:
+      PURPOSE_UNSPECIFIED: Default value. Should never happen.
+      DEFAULT: Address Group is distributed to VMC, and is usable in Firewall
+        Policies and other systems that rely on VMC.
+      CLOUD_ARMOR: Address Group is usable in Cloud Armor.
+    """
+    PURPOSE_UNSPECIFIED = 0
+    DEFAULT = 1
+    CLOUD_ARMOR = 2
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Required. The type of the Address Group. Possible values are "IPv4" or
@@ -106,9 +121,10 @@ class AddressGroup(_messages.Message):
   items = _messages.StringField(4, repeated=True)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  selfLink = _messages.StringField(7)
-  type = _messages.EnumField('TypeValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
+  purpose = _messages.EnumField('PurposeValueListEntryValuesEnum', 7, repeated=True)
+  selfLink = _messages.StringField(8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class AuthorizationPolicy(_messages.Message):

@@ -97,6 +97,87 @@ class ContaineranalysisV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def BatchCreate(self, request, global_params=None):
+      r"""Creates new notes in batch.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsNotesBatchCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BatchCreateNotesResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchCreate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notes:batchCreate',
+        http_method='POST',
+        method_id='containeranalysis.projects.locations.notes.batchCreate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/notes:batchCreate',
+        request_field='batchCreateNotesRequest',
+        request_type_name='ContaineranalysisProjectsLocationsNotesBatchCreateRequest',
+        response_type_name='BatchCreateNotesResponse',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new note.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsNotesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Note) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notes',
+        http_method='POST',
+        method_id='containeranalysis.projects.locations.notes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['noteId'],
+        relative_path='v1/{+parent}/notes',
+        request_field='note',
+        request_type_name='ContaineranalysisProjectsLocationsNotesCreateRequest',
+        response_type_name='Note',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified note.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsNotesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notes/{notesId}',
+        http_method='DELETE',
+        method_id='containeranalysis.projects.locations.notes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ContaineranalysisProjectsLocationsNotesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets the specified note.
 
@@ -151,6 +232,33 @@ class ContaineranalysisV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified note.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsNotesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Note) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notes/{notesId}',
+        http_method='PATCH',
+        method_id='containeranalysis.projects.locations.notes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='note',
+        request_type_name='ContaineranalysisProjectsLocationsNotesPatchRequest',
+        response_type_name='Note',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOccurrencesService(base_api.BaseApiService):
     """Service class for the projects_locations_occurrences resource."""
 
@@ -160,6 +268,87 @@ class ContaineranalysisV1(base_api.BaseApiClient):
       super(ContaineranalysisV1.ProjectsLocationsOccurrencesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def BatchCreate(self, request, global_params=None):
+      r"""Creates new occurrences in batch.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsOccurrencesBatchCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BatchCreateOccurrencesResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchCreate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/occurrences:batchCreate',
+        http_method='POST',
+        method_id='containeranalysis.projects.locations.occurrences.batchCreate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/occurrences:batchCreate',
+        request_field='batchCreateOccurrencesRequest',
+        request_type_name='ContaineranalysisProjectsLocationsOccurrencesBatchCreateRequest',
+        response_type_name='BatchCreateOccurrencesResponse',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new occurrence.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsOccurrencesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Occurrence) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/occurrences',
+        http_method='POST',
+        method_id='containeranalysis.projects.locations.occurrences.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/occurrences',
+        request_field='occurrence',
+        request_type_name='ContaineranalysisProjectsLocationsOccurrencesCreateRequest',
+        response_type_name='Occurrence',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified occurrence. For example, use this method to delete an occurrence when the occurrence is no longer applicable for the given resource.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsOccurrencesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/occurrences/{occurrencesId}',
+        http_method='DELETE',
+        method_id='containeranalysis.projects.locations.occurrences.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ContaineranalysisProjectsLocationsOccurrencesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       r"""Gets the specified occurrence.
@@ -266,6 +455,33 @@ class ContaineranalysisV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ContaineranalysisProjectsLocationsOccurrencesListRequest',
         response_type_name='ListOccurrencesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified occurrence.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsOccurrencesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Occurrence) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/occurrences/{occurrencesId}',
+        http_method='PATCH',
+        method_id='containeranalysis.projects.locations.occurrences.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='occurrence',
+        request_type_name='ContaineranalysisProjectsLocationsOccurrencesPatchRequest',
+        response_type_name='Occurrence',
         supports_download=False,
     )
 

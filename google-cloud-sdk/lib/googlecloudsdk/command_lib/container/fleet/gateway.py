@@ -23,6 +23,7 @@ from typing import List
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.container import util as container_util
 from googlecloudsdk.api_lib.container.fleet.connectgateway import client as gateway_client
+from googlecloudsdk.api_lib.container.fleet.connectgateway import util as gateway_util
 from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
@@ -134,35 +135,21 @@ class GetCredentialsCommand(hub_base.HubCommand, base.Command):
     # gkehub.gateway.get, which would lead to unclear errors when using kubectl.
     self.RunIamCheck(project_id, REQUIRED_SERVER_PERMISSIONS)
 
+    operating_system = None
+    if platforms.OperatingSystem.IsWindows():
+      operating_system = gateway_util.WindowsOperatingSystem(
+          self.ReleaseTrack()
+      )
+
     with overrides.RegionalGatewayEndpoint(arg_location):
       client = gateway_client.GatewayClient(self.ReleaseTrack())
       resp = client.GenerateCredentials(
           name=f'projects/{project_number}/locations/{arg_location}/memberships/{membership_id}',
           force_use_agent=force_use_agent,
+          operating_system=operating_system,
       )
 
     new = kconfig.Kubeconfig.LoadFromBytes(resp.kubeconfig)
-    # TODO(b/345527618): Remove once platform-dependent server-side
-    # functionality is complete.
-    for user in new.users.values():
-      try:
-        exec_config = user['user']['exec']
-        # The gke-gcloud-auth-plugin binary ends in `.exe` on Windows.
-        # Conditionally add the extension if the server has not already.
-        if (
-            isinstance(exec_config['command'], str)
-            and (not exec_config['command'].endswith('.exe'))
-            and platforms.OperatingSystem.IsWindows()
-        ):
-          exec_config['command'] += '.exe'
-      except KeyError:
-        if platforms.OperatingSystem.IsWindows():
-          log.warning(
-              "Your kubeconfig's authentication may be misconfigured. Please"
-              ' verify you are able to authenticate with the membership using'
-              ' kubectl.'
-          )
-
     kubeconfig = kconfig.Kubeconfig.Default()
     kubeconfig.Merge(new, overwrite=True)
     # The returned kubeconfig should only have one context.

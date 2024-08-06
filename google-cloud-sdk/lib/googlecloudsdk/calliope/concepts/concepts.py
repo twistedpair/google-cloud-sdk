@@ -93,14 +93,13 @@ class ConceptSpec(object, metaclass=abc.ABCMeta):
   def name(self):
     """The name of the overall concept."""
 
-  @property
-  @abc.abstractmethod
-  def anchor(self):
-    """The anchor attribute of the concept."""
-
   @abc.abstractmethod
   def IsAnchor(self, attribute):
     """Returns True if attribute is an anchor."""
+
+  @abc.abstractmethod
+  def IsLeafAnchor(self, attribute):
+    """Returns True if attribute is a leaf anchor."""
 
   @abc.abstractmethod
   def Initialize(self, fallthroughs_map, parsed_args=None):
@@ -357,6 +356,10 @@ class ResourceSpec(ConceptSpec):
   def IsAnchor(self, attribute):
     """Convenience method."""
     return attribute == self.anchor
+
+  def IsLeafAnchor(self, attribute):
+    """Convenience method."""
+    return self.IsAnchor(attribute)
 
   @property
   def attribute_to_params_map(self):

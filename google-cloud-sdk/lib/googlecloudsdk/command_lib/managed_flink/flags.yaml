@@ -11,6 +11,12 @@ max-slots:
   help_text: |
     max slots of the Flink deployment.
 
+display-name:
+  api_field: deployment.displayName
+  arg_name: display-name
+  help_text: |
+    display name of the Flink deployment.
+
 network-config-vpc:
   api_field: deployment.deploymentSpec.networkConfig.vpc
   arg_name: network-config-vpc

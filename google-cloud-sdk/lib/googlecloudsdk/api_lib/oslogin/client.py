@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import Optional
+
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.calliope import base
@@ -123,8 +125,14 @@ class OsloginClient(object):
 
     self.client.users_projects.Delete(message)
 
-  def ImportSshPublicKey(self, user, public_key, expiration_time=None,
-                         include_security_keys=False):
+  def ImportSshPublicKey(
+      self,
+      user,
+      public_key,
+      expiration_time=None,
+      include_security_keys=False,
+      region: Optional[str] = None,
+  ):
     """Upload an SSH public key to the user's login profile.
 
     Args:
@@ -132,6 +140,8 @@ class OsloginClient(object):
       public_key: str, An SSH public key.
       expiration_time: int, microseconds since epoch.
       include_security_keys: bool, If true, return security key information.
+      region: str, The region to which to make sure the key is imported.
+
     Returns:
       The login profile for the user.
     """
@@ -141,11 +151,15 @@ class OsloginClient(object):
         key=public_key,
         expirationTimeUsec=expiration_time)
 
+    regions = [region] if region else []
+
     if self.version == 'v1':
       message = import_request(
           parent='users/{0}'.format(user),
           projectId=self.project,
-          sshPublicKey=public_key_message)
+          sshPublicKey=public_key_message,
+          regions=regions,
+      )
     else:
       if include_security_keys:
         view = import_request.ViewValueValuesEnum.SECURITY_KEY
@@ -156,7 +170,9 @@ class OsloginClient(object):
           parent='users/{0}'.format(user),
           projectId=self.project,
           sshPublicKey=public_key_message,
-          view=view)
+          regions=regions,
+          view=view,
+      )
 
     res = self.client.users.ImportSshPublicKey(message)
     return res

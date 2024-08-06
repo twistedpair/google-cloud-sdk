@@ -31,6 +31,11 @@ HTTP_ERROR_FORMAT = (
     'ResponseError: code={status_code}, message={status_message}'
 )
 
+ASYNC_OPERATION_MESSAGE = (
+    'Run [backup-dr operations describe {}]'
+    ' to check the status of this operation.'
+)
+
 
 class BackupDrClientBase(object):
   """Base class for Backup and DR API client wrappers."""

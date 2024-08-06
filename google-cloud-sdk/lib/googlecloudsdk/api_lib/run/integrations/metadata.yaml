@@ -132,7 +132,7 @@ integrations:
       bindings:
       - target: cloudsql/cloudsql-1
   service_type: backing
-  visible: true
+  visible: false
   eta_in_min: 15
   cta: >-
     To connect to the CloudSQL instance utilize the environment variables DB_NAME, INSTANCE_HOST,

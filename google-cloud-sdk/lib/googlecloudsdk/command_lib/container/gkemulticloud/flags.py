@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import textwrap
+
 from googlecloudsdk.api_lib.container.gkemulticloud import util as api_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.container.gkemulticloud import constants
@@ -1155,6 +1157,39 @@ def GetBinauthzEvaluationMode(args):
   return _BINAUTHZ_EVAL_MODE_ENUM_MAPPER.GetEnumForChoice(
       _ToHyphenCase(evaluation_mode)
   )
+
+
+def AddSecurityPosture(parser):
+  """Adds --security-posture flag to parser."""
+  parser.add_argument(
+      '--security-posture',
+      choices=['disabled', 'enterprise'],
+      default=None,
+      hidden=True,
+      help=textwrap.dedent("""\
+      Sets the mode of the Kubernetes security posture API's off-cluster features.
+
+      To enable advanced mode explicitly set the flag to
+      `--security-posture=enterprise`.
+
+      To disable in an existing cluster, explicitly set the flag to
+      `--security-posture=disabled`.
+      """),
+  )
+
+
+def GetSecurityPosture(args):
+  vulnerability_mode = getattr(args, 'security_posture', None)
+  if vulnerability_mode is None:
+    return None
+  enum_type = (
+      api_util.GetMessagesModule().GoogleCloudGkemulticloudV1SecurityPostureConfig.VulnerabilityModeValueValuesEnum
+  )
+  mapping = {
+      'disabled': enum_type.VULNERABILITY_DISABLED,
+      'enterprise': enum_type.VULNERABILITY_ENTERPRISE,
+  }
+  return mapping[vulnerability_mode]
 
 
 def AddMaxSurgeUpdate(parser):

@@ -18,6 +18,8 @@ This does not provide client methods for GatewayService, which expects raw HTTP
 requests as provided by e.g. kubectl.
 """
 
+from typing import Union
+
 from googlecloudsdk.api_lib.container.fleet.connectgateway import util
 from googlecloudsdk.calliope import base
 
@@ -42,17 +44,24 @@ class GatewayClient:
     self.messages = util.GetMessagesModule(release_track)
 
   def GenerateCredentials(
-      self, name: str, force_use_agent=False, version=None
+      self,
+      name: str,
+      force_use_agent: bool = False,
+      version: Union[str, None] = None,
+      operating_system: util.TYPES.OperatingSystem = None,
   ) -> util.TYPES.GenerateCredentialsResponse:
     """Retrieve connection information for accessing a membership through Connect Gateway.
 
     Args:
       name: The full membership name, in the form
-        projects/*/locations/*/memberships/*.
+        `projects/*/locations/*/memberships/*`.
       force_use_agent: Whether to force the use of Connect Agent-based
         transport.
       version: The Connect Gateway version to be used in the resulting
         configuration.
+      operating_system: The operating system for which the kubeconfig should be
+        generated. The default value of `None` works for supported operating
+        systems other than Windows.
 
     Returns:
       The GenerateCredentialsResponse message.
@@ -61,5 +70,6 @@ class GatewayClient:
         name=name,
         forceUseAgent=force_use_agent,
         version=version,
+        operatingSystem=operating_system,
     )
     return self.client.projects_locations_memberships.GenerateCredentials(req)

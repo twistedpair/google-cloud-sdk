@@ -89,8 +89,12 @@ class JobSubmitter(base.Command):
           clusterName=cluster_ref.clusterName)
 
       cluster = dataproc.client.projects_regions_clusters.Get(request)
+    cluster_pool = None
+    if args.cluster_labels is not None:
+      if 'cluster-pool' in args.cluster_labels:
+        cluster_pool = args.cluster_labels['cluster-pool']
     self._staging_dir = self.GetStagingDir(
-        cluster, job_ref.jobId, bucket=args.bucket)
+        cluster, cluster_pool, job_ref.jobId, bucket=args.bucket)
     self.ValidateAndStageFiles()
 
     job = dataproc.messages.Job(

@@ -50,3 +50,9 @@ class JobsClient(object):
         self.messages.BatchProjectsLocationsJobsDeleteRequest)
     delete_req = delete_req_type(name=job_ref.RelativeName())
     return self.service.Delete(delete_req)
+
+  def Cancel(self, job_ref):
+    cancel_req_type = (
+        self.messages.BatchProjectsLocationsJobsCancelRequest)
+    cancel_req = cancel_req_type(name=job_ref.RelativeName())
+    return self.service.Cancel(cancel_req)

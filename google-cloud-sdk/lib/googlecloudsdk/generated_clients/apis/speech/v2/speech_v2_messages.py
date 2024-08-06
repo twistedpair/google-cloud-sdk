@@ -1109,12 +1109,12 @@ class OutputFormatConfig(_messages.Message):
 
   Fields:
     native: Configuration for the native output format. If this field is set
-      or if no other output format field is set then transcripts will be
+      or if no other output format field is set, then transcripts will be
       written to the sink in the native format.
-    srt: Configuration for the srt output format. If this field is set then
-      transcripts will be written to the sink in the srt format.
-    vtt: Configuration for the vtt output format. If this field is set then
-      transcripts will be written to the sink in the vtt format.
+    srt: Configuration for the SRT output format. If this field is set, then
+      transcripts will be written to the sink in the SRT format.
+    vtt: Configuration for the VTT output format. If this field is set, then
+      transcripts will be written to the sink in the VTT format.
   """
 
   native = _messages.MessageField('NativeOutputFileFormatConfig', 1)

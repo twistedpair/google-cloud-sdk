@@ -491,6 +491,169 @@ class Argument(YAMLArgument):
     arg_utils.SetFieldInMessage(message, self.api_field, value)
 
 
+def _GetAttributeNames(resource_spec):
+  return [attr.name for attr in resource_spec.attributes]
+
+
+def _GetAnchors(resource_spec):
+  """Get the anchor for the resource arg."""
+  return [a for a in resource_spec.attributes
+          if resource_spec.IsLeafAnchor(a)]
+
+
+def _IsAnchorSpecified(
+    resource_spec, namespace, attribute_to_dest_map, clearable):
+  """Checks if any of the resource anchors are specified in the namespace."""
+  for anchor in _GetAnchors(resource_spec):
+    arg_name = attribute_to_dest_map.get(anchor.name)
+    if _IsSpecified(namespace, arg_name, clearable):
+      return True
+  return False
+
+
+def _GetPresentationName(resource_spec, repeated):
+  """Name of the resource arg.
+
+  Name is used to prefix attribute flags (if needed) and determine the
+  location where the resource is specified in the namespace.
+
+  For presentation name foo-bar, the expected format is...
+    1. `foo-bar` if anchor is not positional
+    2. `FOO_BAR` if anchor is positional
+
+  Args:
+    resource_spec: The resource spec.
+    repeated: True if the resource is repeated.
+
+  Returns:
+    The name of the resource arg.
+  """
+  count = 2 if repeated else 1
+  # Only non-positional resources can have multiple anchors.
+  name = '-or-'.join(a.name for a in _GetAnchors(resource_spec))
+  return text.Pluralize(count, name)
+
+
+def _GetIsList(methods):
+  is_list = set(method.IsList() for method in methods)
+  if len(is_list) > 1:
+    raise util.InvalidSchemaError(
+        'Methods used to generate YAMLConceptArgument cannot contain both '
+        'list and non-list methods. Update the list of methods to only use '
+        'list or non-list methods.')
+
+  if is_list:
+    return is_list.pop()
+  else:
+    return False
+
+
+def _GetResourceMap(ref, resource_method_params):
+  """Generates a map of message fields to respective resource attribute value.
+
+    Ex: If you have a resource arg...
+      projects/foo/locations/us-central1/instances/bar
+
+    ...and you want to set the `parent` field in the request message to the
+    resource's relative name, you would use this function like...
+      _GetResourceMap(ref, {'parent': '__relative_name__'})
+
+    ...and it would return...
+      {'parent': 'projects/foo/locations/us-central1/instances/bar'}
+
+  Args:
+    ref: Parsed resource arg.
+    resource_method_params: A dict of message field name to resource attribute
+      name.
+
+  Returns:
+    A dict of message field name to resource attribute value.
+  """
+  message_resource_map = {}
+  for message_field_name, param_str in resource_method_params.items():
+    if ref is None:
+      values = None
+    elif isinstance(ref, list):
+      values = [util.FormatResourceAttrStr(param_str, r) for r in ref]
+    else:
+      values = util.FormatResourceAttrStr(param_str, ref)
+    message_resource_map[message_field_name] = values
+  return message_resource_map
+
+
+def _FallthroughFlagFromData(fallthrough_data):
+  """Returns the fallthrough string for the given fallthrough data."""
+  if fallthrough_data.get('is_positional', False):
+    return resource_util.PositionalFormat(fallthrough_data['arg_name'])
+  else:
+    return resource_util.FlagNameFormat(fallthrough_data['arg_name'])
+
+
+def _GenerateFallthroughsMapFromData(fallthroughs_data):
+  """Generate a map of command-level fallthroughs from yaml data."""
+  command_level_fallthroughs = {}
+
+  for attr_name, fallthroughs_data in (fallthroughs_data or {}).items():
+    fallthroughs_list = [_FallthroughFlagFromData(fallthrough)
+                         for fallthrough in fallthroughs_data]
+    command_level_fallthroughs[attr_name] = fallthroughs_list
+
+  return command_level_fallthroughs
+
+
+def _GenerateFullFallthroughsMap(
+    arg_fallthroughs, attribute_names,
+    shared_resource_flags, presentation_flag_name):
+  """Generate a map of fallthroughs for the given argument.
+
+  Generates a map of a resource attribute name and the flag it should default
+  to for the ConceptParser. The shared (ignored) flags have to be added
+  manually since they are not added by the ConceptParser.
+
+  Args:
+    arg_fallthroughs: A dict of fallthroughs for the given argument.
+    attribute_names: The names of the attributes in the resource spec.
+    shared_resource_flags: Flags that are already generated elsewhere.
+    presentation_flag_name: The name of the anchor argument.
+
+  Returns:
+    A dictionary of resource attributes to fallthrough flags
+  """
+  shared = shared_resource_flags or []
+  command_level_fallthroughs = {}
+  full_arg_fallthroughs = arg_fallthroughs.copy()
+  full_arg_fallthroughs.update(
+      {n: ['--' + n] for n in shared if n in attribute_names})
+
+  concept_parsers.UpdateFallthroughsMap(
+      command_level_fallthroughs, presentation_flag_name, full_arg_fallthroughs)
+  return command_level_fallthroughs
+
+
+def _GenerateIgnoredFlagsMap(
+    shared_resource_flags, removed_flags, attribute_names):
+  """Generate a map of flags that should be ignored.
+
+  Flags are either ignored because they have already been generated elsewhere
+  or because the command explicitly removed them.
+
+  Args:
+    shared_resource_flags: Flags that are already generated elsewhere
+    removed_flags: Flags that have been explicitly removed in the command
+    attribute_names: The names of the attributes in the resource spec
+
+  Returns:
+    A map of flags to ignore to an empty string.
+  """
+  shared = shared_resource_flags or []
+  ignored_fields = (list(concepts.IGNORED_FIELDS.values()) +
+                    removed_flags + shared)
+  return {
+      n: ''
+      for n in ignored_fields if n in attribute_names
+  }
+
+
 class YAMLConceptArgument(YAMLArgument, metaclass=abc.ABCMeta):
   """Encapsulate data used to generate and parse all resource args.
 
@@ -548,7 +711,7 @@ class YAMLConceptArgument(YAMLArgument, metaclass=abc.ABCMeta):
     self.is_parent_resource = is_parent_resource
     self.is_primary_resource = is_primary_resource
     self.removed_flags = removed_flags or []
-    self.command_level_fallthroughs = self._GenerateFallthroughsMap(
+    self.command_level_fallthroughs = _GenerateFallthroughsMapFromData(
         command_level_fallthroughs)
     # TODO(b/274890004): Remove data.get('request_id_field')
     self.request_id_field = request_id_field or data.get('request_id_field')
@@ -569,14 +732,14 @@ class YAMLConceptArgument(YAMLArgument, metaclass=abc.ABCMeta):
 
   @property
   @abc.abstractmethod
-  def _resource_spec(self):
-    """"concepts.ConceptSpec generated from the YAML."""
+  def collection(self):
+    """"Get registry.APICollection based on collection and api_version."""
     pass
 
   @property
   @abc.abstractmethod
-  def collection(self):
-    """"Get registry.APICollection based on collection and api_version."""
+  def attribute_names(self):
+    """Names of attributes in the resource spec."""
     pass
 
   @abc.abstractmethod
@@ -584,10 +747,22 @@ class YAMLConceptArgument(YAMLArgument, metaclass=abc.ABCMeta):
     """Determines if this resource arg is the primary resource."""
     pass
 
-  @property
-  def attribute_names(self):
-    """Names of resource attributes."""
-    return [attr.name for attr in self._resource_spec.attributes]
+  @abc.abstractmethod
+  def GenerateResourceArg(
+      self, method, presentation_flag_name=None,
+      shared_resource_flags=None, group_help=None):
+    """Generate the resource arg for the given method."""
+    pass
+
+  @abc.abstractmethod
+  def ParseResourceArg(self, namespace, group_required=True):
+    """Parses the resource ref from namespace (no update flags)."""
+    pass
+
+  @abc.abstractmethod
+  def GetPresentationFlagName(self, resource_collection, is_list_method):
+    """Get the anchor argument name for the resource spec."""
+    pass
 
   @property
   def api_fields(self):
@@ -596,74 +771,6 @@ class YAMLConceptArgument(YAMLArgument, metaclass=abc.ABCMeta):
       return list(self.resource_method_params.keys())
     else:
       return []
-
-  @property
-  def _anchor_name(self):
-    """Name of the anchor attribute.
-
-    For anchor attribute foo-bar, the expected format is...
-      1. `foo-bar` if anchor is not positional
-      2. `FOO_BAR` if anchor is positional
-    """
-    if self.flag_name_override:
-      return self.flag_name_override
-    else:
-      count = 2 if self.repeated else 1
-      return text.Pluralize(count, self._resource_spec.anchor.name)
-
-  def GenerateResourceArg(
-      self, method, anchor_arg_name=None,
-      shared_resource_flags=None, group_help=None):
-    """Generates only the resource arg (no update flags)."""
-
-    return self._GenerateConceptParser(
-        self._resource_spec,
-        self.attribute_names,
-        repeated=self.repeated,
-        shared_resource_flags=shared_resource_flags,
-        anchor_arg_name=anchor_arg_name,
-        group_help=group_help,
-        is_required=self.IsRequired(method))
-
-  def ParseResourceArg(self, namespace, group_required=True):
-    """Parses the resource ref from namespace (no update flags).
-
-    Args:
-      namespace: The argparse namespace.
-      group_required: bool, whether parent argument group is required
-
-    Returns:
-      The parsed resource ref or None if no resource arg was generated for this
-      method.
-    """
-    # If surrounding argument group is not required, only parse argument
-    # if the anchor is specified. Otherwise, user will receive some unncessary
-    # errors for missing attribute flags.
-    # TODO(b/280668052): This a temporary solution. Whether or not a resource
-    # argument should be parsed as required should be fixed in the
-    # resource argument and take into account the other arguments specified
-    # in the group.
-    if (not arg_utils.GetFromNamespace(namespace, self._anchor_name)
-        and not group_required):
-      return None
-
-    result = arg_utils.GetFromNamespace(namespace.CONCEPTS, self._anchor_name)
-
-    if result:
-      result = result.Parse()
-
-    if isinstance(result, multitype.TypedConceptResult):
-      return result.result
-    else:
-      return result
-
-  def IsApiFieldSpecified(self, namespace):
-    if not self.api_fields:
-      return False
-    return _IsSpecified(
-        namespace=namespace,
-        arg_dest=resource_util.NormalizeFormat(self._anchor_name),
-        clearable=self.clearable)
 
   def IsPositional(self, resource_collection=None, is_list_method=False):
     """Determines if the resource arg is positional.
@@ -700,25 +807,6 @@ class YAMLConceptArgument(YAMLArgument, metaclass=abc.ABCMeta):
 
     return self.IsPrimaryResource(resource_collection)
 
-  def GetAnchorArgName(self, resource_collection, is_list_method):
-    """Get the anchor argument name for the resource spec.
-
-    Args:
-      resource_collection: APICollection | None, collection associated with
-        the api method. None if a methodless command.
-      is_list_method: bool | None, whether command is associated with list
-        method. None if methodless command.
-
-    Returns:
-      string, anchor in flag format ie `--foo-bar` or `FOO_BAR`
-    """
-    # If left unspecified, decide whether the resource is positional based on
-    # the method.
-    anchor_arg_is_flag = not self.IsPositional(
-        resource_collection, is_list_method)
-    return (
-        '--' + self._anchor_name if anchor_arg_is_flag else self._anchor_name)
-
   def _GetMethodCollection(self, methods):
     for method in methods:
       if self.IsPrimaryResource(method.resource_argument_collection):
@@ -727,100 +815,6 @@ class YAMLConceptArgument(YAMLArgument, metaclass=abc.ABCMeta):
       # Return any of the methods if none are associated with
       # a primary collection
       return methods[0].resource_argument_collection if methods else None
-
-  def _GetIsList(self, methods):
-    is_list = set(method.IsList() for method in methods)
-    if len(is_list) > 1:
-      raise util.InvalidSchemaError(
-          'Methods used to generate YAMLConceptArgument cannot contain both '
-          'list and non-list methods. Update the list of methods to only use '
-          'list or non-list methods.')
-
-    if is_list:
-      return is_list.pop()
-    else:
-      return False
-
-  def _GetResourceMap(self, ref):
-    message_resource_map = {}
-    for message_field_name, param_str in self.resource_method_params.items():
-      if ref is None:
-        values = None
-      elif isinstance(ref, list):
-        values = [util.FormatResourceAttrStr(param_str, r) for r in ref]
-      else:
-        values = util.FormatResourceAttrStr(param_str, ref)
-      message_resource_map[message_field_name] = values
-    return message_resource_map
-
-  def _GenerateFallthroughsMap(self, command_level_fallthroughs_data):
-    """Generate a map of command-level fallthroughs."""
-    command_level_fallthroughs_data = command_level_fallthroughs_data or {}
-    command_level_fallthroughs = {}
-
-    def _FallthroughStringFromData(fallthrough_data):
-      if fallthrough_data.get('is_positional', False):
-        return resource_util.PositionalFormat(fallthrough_data['arg_name'])
-      return resource_util.FlagNameFormat(fallthrough_data['arg_name'])
-
-    for attr_name, fallthroughs_data in command_level_fallthroughs_data.items():
-      fallthroughs_list = [_FallthroughStringFromData(fallthrough)
-                           for fallthrough in fallthroughs_data]
-      command_level_fallthroughs[attr_name] = fallthroughs_list
-
-    return command_level_fallthroughs
-
-  def _GenerateConceptParser(self, resource_spec, attribute_names,
-                             repeated=False, shared_resource_flags=None,
-                             anchor_arg_name=None, group_help=None,
-                             is_required=False):
-    """Generates a ConceptParser from YAMLConceptArgument.
-
-    Args:
-      resource_spec: concepts.ResourceSpec, used to create PresentationSpec
-      attribute_names: names of resource attributes
-      repeated: bool, whether or not the resource arg should be plural
-      shared_resource_flags: [string], list of flags being generated elsewhere
-      anchor_arg_name: string | None, anchor arg name
-      group_help: string | None, group help text
-      is_required: bool, whether the resource arg should be required
-
-    Returns:
-      ConceptParser that will be added to the parser.
-    """
-    shared_resource_flags = shared_resource_flags or []
-    ignored_fields = (list(concepts.IGNORED_FIELDS.values()) +
-                      self.removed_flags + shared_resource_flags)
-    no_gen = {
-        n: ''
-        for n in ignored_fields if n in attribute_names
-    }
-
-    command_level_fallthroughs = {}
-    arg_fallthroughs = self.command_level_fallthroughs.copy()
-    arg_fallthroughs.update(
-        {n: ['--' + n] for n in shared_resource_flags if n in attribute_names})
-
-    concept_parsers.UpdateFallthroughsMap(
-        command_level_fallthroughs,
-        anchor_arg_name,
-        arg_fallthroughs)
-    presentation_spec_class = presentation_specs.ResourcePresentationSpec
-
-    if isinstance(resource_spec, multitype.MultitypeResourceSpec):
-      presentation_spec_class = (
-          presentation_specs.MultitypeResourcePresentationSpec)
-
-    return concept_parsers.ConceptParser(
-        [presentation_spec_class(
-            anchor_arg_name,
-            resource_spec,
-            group_help=group_help,
-            prefixes=False,
-            required=is_required,
-            flag_name_overrides=no_gen,
-            plural=repeated)],
-        command_level_fallthroughs=command_level_fallthroughs)
 
 
 class YAMLResourceArgument(YAMLConceptArgument):
@@ -875,6 +869,10 @@ class YAMLResourceArgument(YAMLConceptArgument):
         self._full_collection_name, api_version=self._api_version)
 
   @property
+  def attribute_names(self):
+    return _GetAttributeNames(self._resource_spec)
+
+  @property
   def _resource_spec(self):
     """Resource spec generated from the YAML."""
 
@@ -895,6 +893,28 @@ class YAMLResourceArgument(YAMLConceptArgument):
         # it now.
         is_positional=self._is_positional,
         **{attribute.parameter_name: attribute for attribute in attributes})
+
+  @property
+  def _presentation_name(self):
+    if self.flag_name_override:
+      return self.flag_name_override
+    else:
+      return _GetPresentationName(self._resource_spec, self.repeated)
+
+  @property
+  def _attribute_to_flag_name_map(self):
+    """Returns a map of attribute name to normalized flag name."""
+    # Not an accurate attribute to flag name map since it does not include
+    # positional vs non-positional or skipped flags. However, it is sufficient
+    # for the purposes of determining if a flag is specified.
+    approx_attr_to_args = self._GeneratePresentationSpec(
+        False, resource_util.FlagNameFormat(self._presentation_name), [], None
+    ).attribute_to_args_map
+
+    return {
+        attr: resource_util.NormalizeFormat(flag)
+        for attr, flag in approx_attr_to_args.items()
+    }
 
   def _GetParentResource(self, resource_collection):
     parent_collection, _, _ = resource_collection.full_name.rpartition('.')
@@ -946,6 +966,94 @@ class YAMLResourceArgument(YAMLConceptArgument):
 
     return True
 
+  def _GeneratePresentationSpec(
+      self, is_required, presentation_flag_name, shared_resource_flags,
+      group_help=None):
+    return presentation_specs.ResourcePresentationSpec(
+        presentation_flag_name,
+        self._resource_spec,
+        group_help=group_help,
+        prefixes=False,
+        required=is_required,
+        flag_name_overrides=_GenerateIgnoredFlagsMap(
+            shared_resource_flags, self.removed_flags,
+            self.attribute_names),
+        plural=self.repeated)
+
+  def GenerateResourceArg(
+      self, method, presentation_flag_name=None,
+      shared_resource_flags=None, group_help=None):
+    """Generates only the resource arg (no update flags)."""
+
+    command_level_fallthroughs = _GenerateFullFallthroughsMap(
+        self.command_level_fallthroughs, self.attribute_names,
+        shared_resource_flags, presentation_flag_name)
+
+    presentation_spec = self._GeneratePresentationSpec(
+        self.IsRequired(method), presentation_flag_name,
+        shared_resource_flags, group_help)
+
+    return concept_parsers.ConceptParser(
+        [presentation_spec],
+        command_level_fallthroughs=command_level_fallthroughs)
+
+  def ParseResourceArg(self, namespace, group_required=True):
+    """Parses the resource ref from namespace (no update flags).
+
+    Args:
+      namespace: The argparse namespace.
+      group_required: bool, whether parent argument group is required
+
+    Returns:
+      The parsed resource ref or None if no resource arg was generated for this
+      method.
+    """
+    # If surrounding argument group is not required, only parse argument
+    # if the anchor is specified. Otherwise, user will receive some unncessary
+    # errors for missing attribute flags.
+    # TODO(b/280668052): This a temporary solution. Whether or not a resource
+    # argument should be parsed as required should be fixed in the
+    # resource argument and take into account the other arguments specified
+    # in the group.
+    anchor_specified = _IsAnchorSpecified(
+        self._resource_spec, namespace,
+        self._attribute_to_flag_name_map, False)
+    if not anchor_specified and not group_required:
+      return None
+
+    result = arg_utils.GetFromNamespace(
+        namespace.CONCEPTS, self._presentation_name)
+
+    return result and result.Parse()
+
+  def IsApiFieldSpecified(self, namespace):
+    if not self.api_fields:
+      return False
+
+    return _IsAnchorSpecified(
+        self._resource_spec, namespace,
+        self._attribute_to_flag_name_map, self.clearable)
+
+  def GetPresentationFlagName(self, resource_collection, is_list_method):
+    """Get the anchor argument name for the resource spec.
+
+    Args:
+      resource_collection: APICollection | None, collection associated with
+        the api method. None if a methodless command.
+      is_list_method: bool | None, whether command is associated with list
+        method. None if methodless command.
+
+    Returns:
+      string, anchor in flag format ie `--foo-bar` or `FOO_BAR`
+    """
+    # If left unspecified, decide whether the resource is positional based on
+    # the method.
+    anchor_arg_is_flag = not self.IsPositional(
+        resource_collection, is_list_method)
+    return (
+        '--' + self._presentation_name
+        if anchor_arg_is_flag else self._presentation_name)
+
   def _GenerateUpdateFlags(
       self, resource_collection, is_list_method, shared_resource_flags=None):
     """Creates update flags generator using aptiools message."""
@@ -969,7 +1077,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
       Resource argument.
     """
     resource_collection = self._GetMethodCollection(methods)
-    is_list_method = self._GetIsList(methods)
+    is_list_method = _GetIsList(methods)
 
     if self.clearable:
       return self._GenerateUpdateFlags(
@@ -977,7 +1085,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
     else:
       return self.GenerateResourceArg(
           resource_collection,
-          anchor_arg_name=self.GetAnchorArgName(
+          presentation_flag_name=self.GetPresentationFlagName(
               resource_collection, is_list_method),
           shared_resource_flags=shared_resource_flags,
           group_help=self.group_help)
@@ -1009,7 +1117,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
     # For each method path field, get the value from the resource reference.
     arg_utils.ParseResourceIntoMessage(
         ref, method, message,
-        message_resource_map=self._GetResourceMap(ref),
+        message_resource_map=_GetResourceMap(ref, self.resource_method_params),
         request_id_field=self.request_id_field,
         use_relative_name=self.use_relative_name,
         is_primary_resource=self.IsPrimaryResource(
@@ -1034,6 +1142,32 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
   @property
   def collection(self):
     return None
+
+  @property
+  def attribute_names(self):
+    return _GetAttributeNames(self._resource_spec)
+
+  @property
+  def _presentation_name(self):
+    if self.flag_name_override:
+      return self.flag_name_override
+    else:
+      return _GetPresentationName(self._resource_spec, self.repeated)
+
+  @property
+  def _attribute_to_flag_name_map(self):
+    """Returns a map of attribute name to normalized flag name."""
+    # Not an accurate attribute to flag name map since it does not include
+    # positional vs non-positional or skipped flags. However, it is sufficient
+    # for the purposes of determining if a flag is specified.
+    approx_attr_to_args = self._GeneratePresentationSpec(
+        False, resource_util.FlagNameFormat(self._presentation_name), [], None
+    ).attribute_to_args_map
+
+    return {
+        attr: resource_util.NormalizeFormat(flag)
+        for attr, flag in approx_attr_to_args.items()
+    }
 
   @property
   def _resource_spec(self):
@@ -1080,13 +1214,101 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
               resource_collection.api_version))
     return False
 
+  def _GeneratePresentationSpec(
+      self, is_required, presentation_flag_name, shared_resource_flags,
+      group_help=None):
+    return presentation_specs.MultitypeResourcePresentationSpec(
+        presentation_flag_name,
+        self._resource_spec,
+        group_help=group_help,
+        prefixes=False,
+        required=is_required,
+        flag_name_overrides=_GenerateIgnoredFlagsMap(
+            shared_resource_flags, self.removed_flags,
+            self.attribute_names),
+        plural=self.repeated)
+
+  def GenerateResourceArg(
+      self, method, presentation_flag_name=None,
+      shared_resource_flags=None, group_help=None):
+    """Generates only the resource arg (no update flags)."""
+
+    command_level_fallthroughs = _GenerateFullFallthroughsMap(
+        self.command_level_fallthroughs, self.attribute_names,
+        shared_resource_flags, presentation_flag_name)
+
+    presentation_spec = self._GeneratePresentationSpec(
+        self.IsRequired(method), presentation_flag_name,
+        shared_resource_flags, group_help)
+
+    return concept_parsers.ConceptParser(
+        [presentation_spec],
+        command_level_fallthroughs=command_level_fallthroughs)
+
+  def ParseResourceArg(self, namespace, group_required=True):
+    """Parses the resource ref from namespace (no update flags).
+
+    Args:
+      namespace: The argparse namespace.
+      group_required: bool, whether parent argument group is required
+
+    Returns:
+      The parsed resource ref or None if no resource arg was generated for this
+      method.
+    """
+    # If surrounding argument group is not required, only parse argument
+    # if the anchor is specified. Otherwise, user will receive some unncessary
+    # errors for missing attribute flags.
+    # TODO(b/280668052): This a temporary solution. Whether or not a resource
+    # argument should be parsed as required should be fixed in the
+    # resource argument and take into account the other arguments specified
+    # in the group.
+    is_anchor_specified = _IsAnchorSpecified(
+        self._resource_spec, namespace,
+        self._attribute_to_flag_name_map, False)
+    if not is_anchor_specified and not group_required:
+      return None
+
+    result = arg_utils.GetFromNamespace(
+        namespace.CONCEPTS, self._presentation_name)
+
+    parsed_result = result and result.Parse()
+    return parsed_result and parsed_result.result
+
+  def IsApiFieldSpecified(self, namespace):
+    if not self.api_fields:
+      return False
+    return _IsAnchorSpecified(
+        self._resource_spec, namespace,
+        self._attribute_to_flag_name_map, self.clearable)
+
+  def GetPresentationFlagName(self, resource_collection, is_list_method):
+    """Get the anchor argument name for the resource spec.
+
+    Args:
+      resource_collection: APICollection | None, collection associated with
+        the api method. None if a methodless command.
+      is_list_method: bool | None, whether command is associated with list
+        method. None if methodless command.
+
+    Returns:
+      string, anchor in flag format ie `--foo-bar` or `FOO_BAR`
+    """
+    # If left unspecified, decide whether the resource is positional based on
+    # the method.
+    anchor_arg_is_flag = not self.IsPositional(
+        resource_collection, is_list_method)
+    return (
+        '--' + self._presentation_name
+        if anchor_arg_is_flag else self._presentation_name)
+
   def Generate(self, methods, shared_resource_flags=None):
     resource_collection = self._GetMethodCollection(methods)
-    is_list_method = self._GetIsList(methods)
+    is_list_method = _GetIsList(methods)
 
     return self.GenerateResourceArg(
         resource_collection,
-        anchor_arg_name=self.GetAnchorArgName(
+        presentation_flag_name=self.GetPresentationFlagName(
             resource_collection, is_list_method),
         shared_resource_flags=shared_resource_flags,
         group_help=self.group_help)
@@ -1099,7 +1321,7 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
     # For each method path field, get the value from the resource reference.
     arg_utils.ParseResourceIntoMessage(
         ref, method, message,
-        message_resource_map=self._GetResourceMap(ref),
+        message_resource_map=_GetResourceMap(ref, self.resource_method_params),
         request_id_field=self.request_id_field,
         use_relative_name=self.use_relative_name,
         is_primary_resource=self.IsPrimaryResource(

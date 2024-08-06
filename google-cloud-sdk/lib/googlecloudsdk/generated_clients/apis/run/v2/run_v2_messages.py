@@ -705,15 +705,42 @@ class GoogleCloudRunV2ExecutionReference(_messages.Message):
   r"""Reference to an Execution. Use /Executions.GetExecution with the given
   name to get full execution including the latest status.
 
+  Enums:
+    CompletionStatusValueValuesEnum: Status for the execution completion.
+
   Fields:
+    completionStatus: Status for the execution completion.
     completionTime: Creation timestamp of the execution.
     createTime: Creation timestamp of the execution.
+    deleteTime: The deletion time of the execution. It is only populated as a
+      response to a Delete request.
     name: Name of the execution.
   """
 
-  completionTime = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  name = _messages.StringField(3)
+  class CompletionStatusValueValuesEnum(_messages.Enum):
+    r"""Status for the execution completion.
+
+    Values:
+      COMPLETION_STATUS_UNSPECIFIED: The default value. This value is used if
+        the state is omitted.
+      EXECUTION_SUCCEEDED: Job execution has succeeded.
+      EXECUTION_FAILED: Job execution has failed.
+      EXECUTION_RUNNING: Job execution is running normally.
+      EXECUTION_PENDING: Waiting for backing resources to be provisioned.
+      EXECUTION_CANCELLED: Job execution has been cancelled by the user.
+    """
+    COMPLETION_STATUS_UNSPECIFIED = 0
+    EXECUTION_SUCCEEDED = 1
+    EXECUTION_FAILED = 2
+    EXECUTION_RUNNING = 3
+    EXECUTION_PENDING = 4
+    EXECUTION_CANCELLED = 5
+
+  completionStatus = _messages.EnumField('CompletionStatusValueValuesEnum', 1)
+  completionTime = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  deleteTime = _messages.StringField(4)
+  name = _messages.StringField(5)
 
 
 class GoogleCloudRunV2ExecutionTemplate(_messages.Message):
@@ -1050,7 +1077,8 @@ class GoogleCloudRunV2Job(_messages.Message):
       additional information on reconciliation process in Cloud Run.
     createTime: Output only. The creation time.
     creator: Output only. Email address of the authenticated creator.
-    deleteTime: Output only. The deletion time.
+    deleteTime: Output only. The deletion time. It is only populated as a
+      response to a Delete request.
     etag: Output only. A system-generated fingerprint for this version of the
       resource. May be used to detect modification conflict during updates.
     executionCount: Output only. Number of executions created for this job.
@@ -1858,7 +1886,9 @@ class GoogleCloudRunV2RevisionTemplate(_messages.Message):
       system labels in v1 now have a corresponding field in v2
       RevisionTemplate.
     maxInstanceRequestConcurrency: Optional. Sets the maximum number of
-      requests that each serving instance can receive.
+      requests that each serving instance can receive. If not specified or 0,
+      defaults to 80 when requested CPU >= 1 and defaults to 1 when requested
+      CPU < 1.
     nodeSelector: Optional. The node selector for the revision template.
     revision: Optional. The unique name for the revision. If this field is
       omitted, it will be automatically generated based on the Service name.
@@ -2110,7 +2140,8 @@ class GoogleCloudRunV2Service(_messages.Message):
       https://cloud.google.com/run/docs/configuring/custom-audiences.
     defaultUriDisabled: Optional. Disables public resolution of the default
       URI of this service.
-    deleteTime: Output only. The deletion time.
+    deleteTime: Output only. The deletion time. It is only populated as a
+      response to a Delete request.
     description: User-provided description of the Service. This field
       currently has a 512-character limit.
     etag: Output only. A system-generated fingerprint for this version of the
@@ -3686,23 +3717,6 @@ class GoogleDevtoolsCloudbuildV1FileHashes(_messages.Message):
   fileHash = _messages.MessageField('GoogleDevtoolsCloudbuildV1Hash', 1, repeated=True)
 
 
-class GoogleDevtoolsCloudbuildV1GCSLocation(_messages.Message):
-  r"""Represents a storage location in Cloud Storage
-
-  Fields:
-    bucket: Cloud Storage bucket. See
-      https://cloud.google.com/storage/docs/naming#requirements
-    generation: Cloud Storage generation for the object. If the generation is
-      omitted, the latest generation will be used.
-    object: Cloud Storage object. See
-      https://cloud.google.com/storage/docs/naming#objectnames
-  """
-
-  bucket = _messages.StringField(1)
-  generation = _messages.IntegerField(2)
-  object = _messages.StringField(3)
-
-
 class GoogleDevtoolsCloudbuildV1GitConfig(_messages.Message):
   r"""GitConfig is a configuration for git operations.
 
@@ -3770,13 +3784,13 @@ class GoogleDevtoolsCloudbuildV1HttpConfig(_messages.Message):
 
   Fields:
     proxySecretVersionName: SecretVersion resource of the HTTP proxy URL. The
-      proxy URL should be in format protocol://@]proxyhost[:port].
-    proxySslCaInfo: Optional. Cloud Storage object storing the certificate to
-      use with the HTTP proxy.
+      Service Account used in the build (either the default Service Account or
+      user-specified Service Account) should have
+      `secretmanager.versions.access` permissions on this secret. The proxy
+      URL should be in format `protocol://@]proxyhost[:port]`.
   """
 
   proxySecretVersionName = _messages.StringField(1)
-  proxySslCaInfo = _messages.MessageField('GoogleDevtoolsCloudbuildV1GCSLocation', 2)
 
 
 class GoogleDevtoolsCloudbuildV1InlineSecret(_messages.Message):
@@ -4922,6 +4936,18 @@ class RunProjectsLocationsExportMetadataRequest(_messages.Message):
       ns/{location}/services/{service}/revisions/{revision}` for Revision `pro
       jects/{project_id_or_number}/locations/{location}/jobs/{job}/executions/
       {execution}` for Execution
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunProjectsLocationsExportProjectMetadataRequest(_messages.Message):
+  r"""A RunProjectsLocationsExportProjectMetadataRequest object.
+
+  Fields:
+    name: Required. The name of the project of which metadata should be
+      exported. Format: `projects/{project_id_or_number}/locations/{location}`
+      for Project in a given location.
   """
 
   name = _messages.StringField(1, required=True)

@@ -227,18 +227,29 @@ class ListLogEntriesRequest(proto.Message):
             retrieve log entries. Example: ``"my-project-1A"``.
         resource_names (MutableSequence[str]):
             Required. Names of one or more parent resources from which
-            to retrieve log entries:
+            to retrieve log entries. Resources may either be resource
+            containers or specific ``LogViews``. For the case of
+            resource containers, all logs ingested into that container
+            will be returned regardless of which ``LogBuckets`` they are
+            actually stored in - i.e. these queries may fan out to
+            multiple regions. In the event of region unavailability,
+            specify a specific set of ``LogViews`` that do not include
+            the unavailable region.
 
             -  ``projects/[PROJECT_ID]``
+
             -  ``organizations/[ORGANIZATION_ID]``
+
             -  ``billingAccounts/[BILLING_ACCOUNT_ID]``
+
             -  ``folders/[FOLDER_ID]``
 
-            May alternatively be one or more views:
-
             -  ``projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]``
+
             -  ``organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]``
+
             -  ``billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]``
+
             -  ``folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]``
 
             Projects listed in the ``project_ids`` field are added to

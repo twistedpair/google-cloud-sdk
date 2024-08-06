@@ -773,11 +773,15 @@ class IAPWebsocketTunnelHelper(object):
           # When we recv an EOF, we notify the websocket_conn of it, then we
           # wait for all data to send before returning.
           websocket_conn.LocalEOF()
+          log.debug('[%d] Received local EOF, closing connection', conn_id)
           if not websocket_conn.WaitForAllSent():
             log.warning('[%d] Failed to send all data from [%s].',
                         conn_id, socket_address)
           break
         websocket_conn.Send(data)
+    except (Exception, exceptions.Error) as e:  # pylint: disable=broad-exception-caught
+      log.exception('[%d] Error during local connection to [%s]: %s', conn_id,
+                    socket_address, e)
     finally:
       if self._shutdown:
         log.info('[%d] Terminating connection to [%s].',

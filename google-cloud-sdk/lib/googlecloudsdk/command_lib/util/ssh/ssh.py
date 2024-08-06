@@ -1152,6 +1152,13 @@ def GetOsloginState(
       or properties.VALUES.core.account.Get()
   )
 
+  if instance and instance.zone:
+    zone = instance.zone.split('/').pop()
+    # Inclusively trim suffix from last '-' to convert a zone into a region.
+    region = zone[: zone.rindex('-')]
+  else:
+    region = None
+
   if (
       release_track
       in [
@@ -1162,9 +1169,6 @@ def GetOsloginState(
       or oslogin_state.require_certificates
   ):
     user_email = quote(user_email, safe=':@')
-    zone = instance.zone.split('/').pop()
-    # Inclusively trim suffix from last '-' to convert a zone into a region.
-    region = zone[:zone.rindex('-')]
     ValidateCertificate(oslogin_state, region)
     if not oslogin_state.signed_ssh_key:
       sign_response = oslogin.SignSshPublicKey(
@@ -1207,7 +1211,11 @@ def GetOsloginState(
       fingerprint = oslogin_utils.FindKeyInKeyList(public_key, keys)
       if not fingerprint or not login_profile.posixAccounts:
         import_response = oslogin.ImportSshPublicKey(
-            user_email, public_key, expiration_time
+            user_email,
+            public_key,
+            expiration_time=expiration_time,
+            include_security_keys=False,
+            region=region,
         )
         login_profile = import_response.loginProfile
       elif expiration_time:

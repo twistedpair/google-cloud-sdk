@@ -17,21 +17,14 @@ class AutotuningConfig(_messages.Message):
   r"""The autotuning configuration for the Flink job.
 
   Fields:
-    enableHorizontalAutoscaling: Optional. Whether to enable horizontal
-      autoscaling for the Flink job.
     fixed: Fixed policy to disable autoscaling.
-    maxParallelism: Optional. The maximum task parallelism for the Flink job.
-    minParallelism: Optional. The minimum task parallelism for the Flink job.
     throughputBased: The throughput based autoscaling policy leveraging
       observed throughput, true processing rate (i.e. estimated maximum
       achievable throughput) to autoscale the task parallelism per job vertex.
   """
 
-  enableHorizontalAutoscaling = _messages.BooleanField(1)
-  fixed = _messages.MessageField('Fixed', 2)
-  maxParallelism = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  minParallelism = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  throughputBased = _messages.MessageField('Elastic', 5)
+  fixed = _messages.MessageField('Fixed', 1)
+  throughputBased = _messages.MessageField('Elastic', 2)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -246,12 +239,13 @@ class JobSpec(_messages.Message):
     artifactUris: Required. The list of URIs for the flink job artifact files
       in cloud storage.
     autotuningConfig: Optional. Autotuning configuration for the job.
-    displayName: Optional. Display name of the Flink job, derived from the
-      Flink job graph.
+    displayName: Optional. Display name of the Flink job. This is explicitly
+      set by the user.
     jarUris: Optional. The list of URIs for the job jars in cloud storage.
+    jobGraphEncoding: Optional. The encoding type of the job graph.
     jobGraphUri: Required. The flink job graph uri in cloud storage.
-    managedKafkaClusters: Optional. DEPRECATED FIELD. To be deleted once the
-      clients are regenerated. Use managed_kafka_config instead.
+    jobName: Optional. Job name of the Flink job. This is derived
+      automatically by the client from the Flink job graph
     managedKafkaConfig: Optional. The configuration for the Managed Kafka
       clusters to be used by the job.
     networkConfig: Optional. Network configuration for the job.
@@ -261,10 +255,11 @@ class JobSpec(_messages.Message):
   autotuningConfig = _messages.MessageField('AutotuningConfig', 2)
   displayName = _messages.StringField(3)
   jarUris = _messages.StringField(4, repeated=True)
-  jobGraphUri = _messages.StringField(5)
-  managedKafkaClusters = _messages.StringField(6, repeated=True)
-  managedKafkaConfig = _messages.MessageField('ManagedKafkaConfig', 7)
-  networkConfig = _messages.MessageField('NetworkConfig', 8)
+  jobGraphEncoding = _messages.StringField(5)
+  jobGraphUri = _messages.StringField(6)
+  jobName = _messages.StringField(7)
+  managedKafkaConfig = _messages.MessageField('ManagedKafkaConfig', 8)
+  networkConfig = _messages.MessageField('NetworkConfig', 9)
 
 
 class Limits(_messages.Message):

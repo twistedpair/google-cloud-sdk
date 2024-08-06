@@ -384,8 +384,8 @@ class DlpOrganizationsLocationsConnectionsListRequest(_messages.Message):
       set of results. If set, all other request fields must match the original
       request.
     parent: Required. Resource name of the organization or project, for
-      example `organizations/433245324/locations/europe` or `projects/project-
-      id/locations/asia`.
+      example, `organizations/433245324/locations/europe` or
+      `projects/project-id/locations/asia`.
   """
 
   filter = _messages.StringField(1)
@@ -420,7 +420,7 @@ class DlpOrganizationsLocationsConnectionsSearchRequest(_messages.Message):
       set of results. If set, all other request fields must match the original
       request.
     parent: Required. Resource name of the organization or project with a
-      wildcard location, for example `organizations/433245324/locations/-` or
+      wildcard location, for example, `organizations/433245324/locations/-` or
       `projects/project-id/locations/-`.
   """
 
@@ -2021,8 +2021,8 @@ class DlpProjectsLocationsConnectionsListRequest(_messages.Message):
       set of results. If set, all other request fields must match the original
       request.
     parent: Required. Resource name of the organization or project, for
-      example `organizations/433245324/locations/europe` or `projects/project-
-      id/locations/asia`.
+      example, `organizations/433245324/locations/europe` or
+      `projects/project-id/locations/asia`.
   """
 
   filter = _messages.StringField(1)
@@ -2057,7 +2057,7 @@ class DlpProjectsLocationsConnectionsSearchRequest(_messages.Message):
       set of results. If set, all other request fields must match the original
       request.
     parent: Required. Resource name of the organization or project with a
-      wildcard location, for example `organizations/433245324/locations/-` or
+      wildcard location, for example, `organizations/433245324/locations/-` or
       `projects/project-id/locations/-`.
   """
 
@@ -5887,15 +5887,17 @@ class GooglePrivacyDlpV2DiscoveryGenerationCadence(_messages.Message):
   system capacity.
 
   Enums:
-    RefreshFrequencyValueValuesEnum: Frequency to update profiles regardless
-      of whether the underlying resource has changed. Defaults to never.
+    RefreshFrequencyValueValuesEnum: Frequency at which profiles should be
+      updated, regardless of whether the underlying resource has changed.
+      Defaults to never.
 
   Fields:
     inspectTemplateModifiedCadence: Governs when to update data profiles when
       the inspection rules defined by the `InspectTemplate` change. If not
       set, changing the template will not cause a data profile to update.
-    refreshFrequency: Frequency to update profiles regardless of whether the
-      underlying resource has changed. Defaults to never.
+    refreshFrequency: Frequency at which profiles should be updated,
+      regardless of whether the underlying resource has changed. Defaults to
+      never.
     schemaModifiedCadence: Governs when to update data profiles when a schema
       is modified.
     tableModifiedCadence: Governs when to update data profiles when a table is
@@ -5903,8 +5905,8 @@ class GooglePrivacyDlpV2DiscoveryGenerationCadence(_messages.Message):
   """
 
   class RefreshFrequencyValueValuesEnum(_messages.Enum):
-    r"""Frequency to update profiles regardless of whether the underlying
-    resource has changed. Defaults to never.
+    r"""Frequency at which profiles should be updated, regardless of whether
+    the underlying resource has changed. Defaults to never.
 
     Values:
       UPDATE_FREQUENCY_UNSPECIFIED: Unspecified.
@@ -6017,7 +6019,7 @@ class GooglePrivacyDlpV2DiscoveryStartingLocation(_messages.Message):
   folder ID within an organization.
 
   Fields:
-    folderId: The ID of the folder within an organization to scan.
+    folderId: The ID of the folder within an organization to be scanned.
     organizationId: The ID of an organization to scan.
   """
 

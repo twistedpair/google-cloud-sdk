@@ -89,7 +89,7 @@ class JobBase(six.with_metaclass(abc.ABCMeta, object)):
                                                         self._staging_dir))
       storage_helpers.Upload(self.files_to_stage, self._staging_dir)
 
-  def GetStagingDir(self, cluster, job_id, bucket=None):
+  def GetStagingDir(self, cluster, cluster_pool, job_id, bucket=None):
     """Determine the GCS directory to stage job resources in."""
     if bucket is None and cluster is None:
       return None
@@ -104,15 +104,16 @@ class JobBase(six.with_metaclass(abc.ABCMeta, object)):
         # everything will work. If it does need to stage files, then it will
         # fail with a message saying --bucket should be specified.
         return None
-    cluster_id = 'unresolved'
+    environment = 'unresolved'
     if cluster is not None:
-      cluster_id = cluster.clusterUuid
-
+      environment = cluster.clusterUuid
+    if cluster_pool is not None:
+      environment = cluster_pool
     staging_dir = (
-        'gs://{bucket}/{prefix}/{cluster_id}/jobs/{job_id}/staging/'.format(
+        'gs://{bucket}/{prefix}/{environment}/jobs/{job_id}/staging/'.format(
             bucket=bucket,
             prefix=constants.GCS_METADATA_PREFIX,
-            cluster_id=cluster_id,
+            environment=environment,
             job_id=job_id))
     return staging_dir
 

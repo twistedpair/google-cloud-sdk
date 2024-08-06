@@ -1481,7 +1481,7 @@ def AddMaxSurgeFlag(parser, resource_kind='service'):
 def AddScalingModeFlag(parser):
   """Add scaling mode flag."""
   parser.add_argument(
-      '--scaling-mode',
+      '--scaling',
       choices=_SCALING_MODES,
       help='The scaling mode to use for this resource.',
   )
@@ -2215,11 +2215,11 @@ def _GetServiceScalingChanges(args):
               str(max_surge_value.surge_percent),
           )
       )
-  if 'scaling_mode' in args and args.scaling_mode is not None:
+  if 'scaling' in args and args.scaling is not None:
     result.append(
         config_changes.SetAnnotationChange(
             service.SERVICE_SCALING_MODE_ANNOTATION,
-            args.scaling_mode,
+            args.scaling,
         )
     )
   return result
@@ -2275,11 +2275,11 @@ def _GetWorkerScalingChanges(args):
               str(max_surge_value.surge_percent),
           )
       )
-  if 'scaling_mode' in args and args.scaling_mode is not None:
+  if 'scaling' in args and args.scaling is not None:
     result.append(
         config_changes.SetAnnotationChange(
             service.SERVICE_SCALING_MODE_ANNOTATION,
-            args.scaling_mode,
+            args.scaling,
         )
     )
   return result
@@ -4319,8 +4319,12 @@ def BaseImageArg():
           '--base-image',
           hidden=True,
           help=(
-              'Opts in to use automatic base image updates using the specified'
-              ' image.'
+              'Specifies the base image to be used for automatic base image'
+              ' updates. When deploying from source using the Google Cloud'
+              ' buildpacks, this flag will also override the base image used'
+              ' for the application image. See'
+              ' https://cloud.google.com/run/docs/deploying-source-code for'
+              ' more details.'
           ),
       )
   )
@@ -4333,6 +4337,19 @@ def BaseImageArg():
       )
   )
   return group
+
+
+def AutomaticUpdatesFlag():
+  """Adds automatic base image update related flags."""
+  return base.Argument(
+      '--automatic-updates',
+      hidden=True,
+      action=arg_parsers.StoreTrueFalseAction,
+      help=(
+          'Indicates whether automatic base image updates should be enabled for'
+          ' an image built from source.'
+      ),
+  )
 
 
 def BuildWorkerPoolMutexGroup():
@@ -4386,6 +4403,14 @@ def AddDelegateBuildsFlag(parser):
   )
 
 
+def BuildServiceAccountMutexGroup():
+  """Adds flags for configuring the build service account for Cloud Function."""
+  group = base.ArgumentGroup(mutex=True, hidden=True)
+  group.AddArgument(BuildServiceAccountFlag())
+  group.AddArgument(ClearBuildServiceAccountFlag())
+  return group
+
+
 def BuildServiceAccountFlag():
   """Adds flag to specify a service account to use for the build for source deploy builds."""
   return base.Argument(
@@ -4395,4 +4420,14 @@ def BuildServiceAccountFlag():
       Specifies the service account to use to execute the build. Applies only
       to source deploy builds using the Build API.
       """,
+  )
+
+
+def ClearBuildServiceAccountFlag():
+  """Adds flag to clear build service account."""
+  return base.Argument(
+      '--clear-build-service-account',
+      hidden=True,
+      action='store_true',
+      help='Clears the Cloud Build service account field.',
   )

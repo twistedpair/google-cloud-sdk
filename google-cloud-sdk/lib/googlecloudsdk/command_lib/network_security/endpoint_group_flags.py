@@ -35,12 +35,11 @@ ENDPOINT_GROUP_RESOURCE_COLLECTION = (
 DEPLOYMENT_GROUP_RESOURCE_COLLECTION = (
     "networksecurity.projects.locations.mirroringDeploymentGroups"
 )
-API_VERSION = "v1alpha1"
 
 
-def AddEndpointGroupResource(parser):
+def AddEndpointGroupResource(release_track, parser):
   """Adds Mirroring Endpoint Group resource."""
-  api_version = API_VERSION
+  api_version = api.GetApiVersion(release_track)
   resource_spec = concepts.ResourceSpec(
       ENDPOINT_GROUP_RESOURCE_COLLECTION,
       "mirroring endpoint group",
@@ -128,18 +127,19 @@ def AddLocationResourceArg(parser: parser_arguments.ArgumentInterceptor,
   ).AddToParser(parser)
 
 
-def AddMirroringDeploymentGroupResource(parser):
+def AddMirroringDeploymentGroupResource(release_track, parser):
   """Adds mirroring deployment group resource."""
+  api_version = api.GetApiVersion(release_track)
   collection_info = resources.REGISTRY.Clone().GetCollectionInfo(
-      ENDPOINT_GROUP_RESOURCE_COLLECTION, API_VERSION
+      ENDPOINT_GROUP_RESOURCE_COLLECTION, api_version
   )
   resource_spec = concepts.ResourceSpec(
       DEPLOYMENT_GROUP_RESOURCE_COLLECTION,
       "mirroring deployment group",
-      api_version=API_VERSION,
+      api_version=api_version,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=concepts.ResourceParameterAttributeConfig(
-          "deployment-group-location",
+          "location",
           "Location of the {resource}.",
           parameter_name="locationsId",
           fallthroughs=[
@@ -154,7 +154,7 @@ def AddMirroringDeploymentGroupResource(parser):
           ],
       ),
       mirroringDeploymentGroupsId=concepts.ResourceParameterAttributeConfig(
-          "deployment-group-id",
+          "id",
           "Id of the {resource}",
           parameter_name="mirroringDeploymentGroupsId",
       ),
@@ -164,5 +164,6 @@ def AddMirroringDeploymentGroupResource(parser):
       concept_spec=resource_spec,
       required=True,
       group_help="Mirroring Deployment Group.",
+      prefixes=True,
   )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)

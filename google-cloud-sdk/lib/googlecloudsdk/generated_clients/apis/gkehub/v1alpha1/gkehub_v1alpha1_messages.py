@@ -2981,6 +2981,9 @@ class MembershipConfig(_messages.Message):
     hierarchyController: Hierarchy Controller configuration for the cluster.
     management: Enables automatic Feature management.
     policyController: Policy Controller configuration for the cluster.
+      Deprecated: Configuring Policy Controller through the configmanagement
+      feature is no longer recommended. Use the policycontroller feature
+      instead.
     version: Version of ACM installed.
   """
 

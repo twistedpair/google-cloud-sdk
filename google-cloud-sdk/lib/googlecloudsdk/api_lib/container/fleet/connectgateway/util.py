@@ -30,6 +30,12 @@ class TYPES:
       messages_v1beta1.GenerateCredentialsResponse,
       messages_v1.GenerateCredentialsResponse,
   ]
+  # pylint: disable=invalid-name: Follows the naming convention of the generated client.
+  OperatingSystem = Union[
+      messages_v1alpha1.ConnectgatewayProjectsLocationsMembershipsGenerateCredentialsRequest.OperatingSystemValueValuesEnum,
+      messages_v1beta1.ConnectgatewayProjectsLocationsMembershipsGenerateCredentialsRequest.OperatingSystemValueValuesEnum,
+      messages_v1.ConnectgatewayProjectsLocationsMembershipsGenerateCredentialsRequest.OperatingSystemValueValuesEnum,
+  ]
 
 
 API_NAME = 'connectgateway'
@@ -50,3 +56,14 @@ def GetMessagesModule(release_track=DEFAULT_TRACK):
 def GetClientInstance(release_track=DEFAULT_TRACK):
   api_version = VERSION_MAP.get(release_track, VERSION_MAP[DEFAULT_TRACK])
   return apis.GetClientInstance(API_NAME, api_version)
+
+
+def WindowsOperatingSystem(release_track=DEFAULT_TRACK):
+  """Returns the Windows enum value for the OperatingSystem enum.
+
+  Args:
+    release_track: The gcloud release track to use.
+  """
+  return GetMessagesModule(
+      release_track
+  ).ConnectgatewayProjectsLocationsMembershipsGenerateCredentialsRequest.OperatingSystemValueValuesEnum.OPERATING_SYSTEM_WINDOWS

@@ -13249,6 +13249,8 @@ class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
       format, this update pertains to." }, "status": { "type": "string",
       "enum": ["succeeded", "failed", "cancelled", "expired"], "description":
       "The status in which the job finished its execution." } } } ```
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     startTime: Output only. Time when the CustomJob for the first time entered
       the `JOB_STATE_RUNNING` state.
     state: Output only. The detailed state of the job.
@@ -13369,10 +13371,12 @@ class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 7)
   name = _messages.StringField(8)
   pubsubTopic = _messages.StringField(9)
-  startTime = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
-  webAccessUris = _messages.MessageField('WebAccessUrisValue', 13)
+  satisfiesPzi = _messages.BooleanField(10)
+  satisfiesPzs = _messages.BooleanField(11)
+  startTime = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  updateTime = _messages.StringField(14)
+  webAccessUris = _messages.MessageField('WebAccessUrisValue', 15)
 
 
 class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
@@ -14031,12 +14035,15 @@ class GoogleCloudAiplatformV1beta1DedicatedResources(_messages.Message):
       be greater than or equal to 1. If traffic against the DeployedModel
       increases, it may dynamically be deployed onto more replicas, and as
       traffic decreases, some of these extra replicas may be freed.
+    spot: Optional. If true, schedule the deployment workload on [spot
+      VMs](https://cloud.google.com/kubernetes-engine/docs/concepts/spot-vms).
   """
 
   autoscalingMetricSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1AutoscalingMetricSpec', 1, repeated=True)
   machineSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1MachineSpec', 2)
   maxReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   minReplicaCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  spot = _messages.BooleanField(5)
 
 
 class GoogleCloudAiplatformV1beta1DeleteFeatureValuesOperationMetadata(_messages.Message):
@@ -19226,6 +19233,8 @@ class GoogleCloudAiplatformV1beta1HyperparameterTuningJob(_messages.Message):
     name: Output only. Resource name of the HyperparameterTuningJob.
     parallelTrialCount: Required. The desired number of Trials to run in
       parallel.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     startTime: Output only. Time when the HyperparameterTuningJob for the
       first time entered the `JOB_STATE_RUNNING` state.
     state: Output only. The detailed state of the job.
@@ -19312,12 +19321,14 @@ class GoogleCloudAiplatformV1beta1HyperparameterTuningJob(_messages.Message):
   maxTrialCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   name = _messages.StringField(9)
   parallelTrialCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  startTime = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  studySpec = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpec', 13)
-  trialJobSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1CustomJobSpec', 14)
-  trials = _messages.MessageField('GoogleCloudAiplatformV1beta1Trial', 15, repeated=True)
-  updateTime = _messages.StringField(16)
+  satisfiesPzi = _messages.BooleanField(11)
+  satisfiesPzs = _messages.BooleanField(12)
+  startTime = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  studySpec = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpec', 15)
+  trialJobSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1CustomJobSpec', 16)
+  trials = _messages.MessageField('GoogleCloudAiplatformV1beta1Trial', 17, repeated=True)
+  updateTime = _messages.StringField(18)
 
 
 class GoogleCloudAiplatformV1beta1IdMatcher(_messages.Message):
@@ -21062,6 +21073,8 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
       compute#machine-types). For DeployedModel this field is optional, and
       the default value is `n1-standard-2`. For BatchPredictionJob or as part
       of WorkerPoolSpec this field is required.
+    reservationAffinity: Optional. Immutable. Configuration controlling how
+      this resource pool consumes reservation.
     tpuTopology: Immutable. The topology of the TPUs. Corresponds to the TPU
       topologies available from GKE. (Example: tpu_topology: "2x2x1").
   """
@@ -21107,7 +21120,8 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
   machineType = _messages.StringField(3)
-  tpuTopology = _messages.StringField(4)
+  reservationAffinity = _messages.MessageField('GoogleCloudAiplatformV1beta1ReservationAffinity', 4)
+  tpuTopology = _messages.StringField(5)
 
 
 class GoogleCloudAiplatformV1beta1ManualBatchTuningParameters(_messages.Message):
@@ -23819,6 +23833,8 @@ class GoogleCloudAiplatformV1beta1NasJob(_messages.Message):
     name: Output only. Resource name of the NasJob.
     nasJobOutput: Output only. Output of the NasJob.
     nasJobSpec: Required. The specification of a NasJob.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     startTime: Output only. Time when the NasJob for the first time entered
       the `JOB_STATE_RUNNING` state.
     state: Output only. The detailed state of the job.
@@ -23899,9 +23915,11 @@ class GoogleCloudAiplatformV1beta1NasJob(_messages.Message):
   name = _messages.StringField(8)
   nasJobOutput = _messages.MessageField('GoogleCloudAiplatformV1beta1NasJobOutput', 9)
   nasJobSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1NasJobSpec', 10)
-  startTime = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  updateTime = _messages.StringField(13)
+  satisfiesPzi = _messages.BooleanField(11)
+  satisfiesPzs = _messages.BooleanField(12)
+  startTime = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  updateTime = _messages.StringField(15)
 
 
 class GoogleCloudAiplatformV1beta1NasJobOutput(_messages.Message):
@@ -26189,10 +26207,14 @@ class GoogleCloudAiplatformV1beta1PrivateServiceConnectConfig(_messages.Message)
       via private service connect.
     projectAllowlist: A list of Projects from which the forwarding rule will
       target the service attachment.
+    serviceAttachment: Output only. The name of the generated service
+      attachment resource. This is only populated if the endpoint is deployed
+      with PrivateServiceConnect.
   """
 
   enablePrivateServiceConnect = _messages.BooleanField(1)
   projectAllowlist = _messages.StringField(2, repeated=True)
+  serviceAttachment = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1Probe(_messages.Message):
@@ -27198,18 +27220,21 @@ class GoogleCloudAiplatformV1beta1RagContextsContext(_messages.Message):
   r"""A context of the query.
 
   Fields:
-    distance: The distance between the query vector and the context text
-      vector.
+    distance: The distance between the query dense embedding vector and the
+      context text vector.
     sourceUri: For vertex RagStore, if the file is imported from Cloud Storage
       or Google Drive, source_uri will be original file URI in Cloud Storage
       or Google Drive; if file is uploaded, source_uri will be file display
       name.
+    sparseDistance: The distance between the query sparse embedding vector and
+      the context text vector.
     text: The text chunk.
   """
 
   distance = _messages.FloatField(1)
   sourceUri = _messages.StringField(2)
-  text = _messages.StringField(3)
+  sparseDistance = _messages.FloatField(3)
+  text = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1beta1RagCorpus(_messages.Message):
@@ -27239,13 +27264,59 @@ class GoogleCloudAiplatformV1beta1RagEmbeddingModelConfig(_messages.Message):
   r"""Config for the embedding model to use for RAG.
 
   Fields:
+    hybridSearchConfig: Configuration for hybrid search.
     vertexPredictionEndpoint: The Vertex AI Prediction Endpoint that either
       refers to a publisher model or an endpoint that is hosting a 1P fine-
       tuned text embedding model. Endpoints hosting non-1P fine-tuned text
-      embedding models are currently not supported.
+      embedding models are currently not supported. This is used for dense
+      vector search.
   """
 
-  vertexPredictionEndpoint = _messages.MessageField('GoogleCloudAiplatformV1beta1RagEmbeddingModelConfigVertexPredictionEndpoint', 1)
+  hybridSearchConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1RagEmbeddingModelConfigHybridSearchConfig', 1)
+  vertexPredictionEndpoint = _messages.MessageField('GoogleCloudAiplatformV1beta1RagEmbeddingModelConfigVertexPredictionEndpoint', 2)
+
+
+class GoogleCloudAiplatformV1beta1RagEmbeddingModelConfigHybridSearchConfig(_messages.Message):
+  r"""Config for hybrid search.
+
+  Fields:
+    denseEmbeddingModelPredictionEndpoint: Required. The Vertex AI Prediction
+      Endpoint that hosts the embedding model for dense embedding generations.
+    sparseEmbeddingConfig: Optional. The configuration for sparse embedding
+      generation. This field is optional the default behavior depends on the
+      vector database choice on the RagCorpus.
+  """
+
+  denseEmbeddingModelPredictionEndpoint = _messages.MessageField('GoogleCloudAiplatformV1beta1RagEmbeddingModelConfigVertexPredictionEndpoint', 1)
+  sparseEmbeddingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1RagEmbeddingModelConfigSparseEmbeddingConfig', 2)
+
+
+class GoogleCloudAiplatformV1beta1RagEmbeddingModelConfigSparseEmbeddingConfig(_messages.Message):
+  r"""Configuration for sparse emebdding generation.
+
+  Fields:
+    bm25: Use BM25 scoring algorithm.
+  """
+
+  bm25 = _messages.MessageField('GoogleCloudAiplatformV1beta1RagEmbeddingModelConfigSparseEmbeddingConfigBm25', 1)
+
+
+class GoogleCloudAiplatformV1beta1RagEmbeddingModelConfigSparseEmbeddingConfigBm25(_messages.Message):
+  r"""Message for BM25 parameters.
+
+  Fields:
+    b: Optional. The parameter to control document length normalization. It
+      determines how much the document length affects the final score. b is in
+      the range of [0, 1]. The default value is 0.75.
+    k1: Optional. The parameter to control term frequency saturation. It
+      determines the scaling between the matching term frequency and final
+      score. k1 is in the range of [1.2, 3]. The default value is 1.2.
+    multilingual: Optional. Use multilingual tokenizer if set to true.
+  """
+
+  b = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  k1 = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  multilingual = _messages.BooleanField(3)
 
 
 class GoogleCloudAiplatformV1beta1RagEmbeddingModelConfigVertexPredictionEndpoint(_messages.Message):
@@ -27901,6 +27972,48 @@ class GoogleCloudAiplatformV1beta1ReportRuntimeEventResponse(_messages.Message):
   idleShutdownMessage = _messages.StringField(1)
 
 
+class GoogleCloudAiplatformV1beta1ReservationAffinity(_messages.Message):
+  r"""A ReservationAffinity can be used to configure a Vertex AI resource
+  (e.g., a DeployedModel) to draw its Compute Engine resources from a Shared
+  Reservation, or exclusively from on-demand capacity.
+
+  Enums:
+    ReservationAffinityTypeValueValuesEnum: Required. Specifies the
+      reservation affinity type.
+
+  Fields:
+    key: Optional. Corresponds to the label key of a reservation resource. To
+      target a SPECIFIC_RESERVATION by name, use
+      `compute.googleapis.com/reservation-name` as the key and specify the
+      name of your reservation as its value.
+    reservationAffinityType: Required. Specifies the reservation affinity
+      type.
+    values: Optional. Corresponds to the label values of a reservation
+      resource. This must be the full resource name of the reservation.
+  """
+
+  class ReservationAffinityTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Specifies the reservation affinity type.
+
+    Values:
+      TYPE_UNSPECIFIED: Default value. This should not be used.
+      NO_RESERVATION: Do not consume from any reserved capacity, only use on-
+        demand.
+      ANY_RESERVATION: Consume any reservation available, falling back to on-
+        demand.
+      SPECIFIC_RESERVATION: Consume from a specific reservation. When chosen,
+        the reservation must be identified via the `key` and `values` fields.
+    """
+    TYPE_UNSPECIFIED = 0
+    NO_RESERVATION = 1
+    ANY_RESERVATION = 2
+    SPECIFIC_RESERVATION = 3
+
+  key = _messages.StringField(1)
+  reservationAffinityType = _messages.EnumField('ReservationAffinityTypeValueValuesEnum', 2)
+  values = _messages.StringField(3, repeated=True)
+
+
 class GoogleCloudAiplatformV1beta1ResourcePool(_messages.Message):
   r"""Represents the spec of a group of resources of the same type, for
   example machine type, disk, and accelerators, in a PersistentResource.
@@ -28092,13 +28205,15 @@ class GoogleCloudAiplatformV1beta1RetrieveContextsRequestVertexRagStore(_message
       used to specify corpus only or ragfiles. Currently only support one
       corpus or multiple files from one corpus. In the future we may open up
       multiple corpora support.
+    ranking: Optional. Configurations for hybrid search results ranking.
     vectorDistanceThreshold: Optional. Only return contexts with vector
       distance smaller than the threshold.
   """
 
   ragCorpora = _messages.StringField(1, repeated=True)
   ragResources = _messages.MessageField('GoogleCloudAiplatformV1beta1RetrieveContextsRequestVertexRagStoreRagResource', 2, repeated=True)
-  vectorDistanceThreshold = _messages.FloatField(3)
+  ranking = _messages.MessageField('GoogleCloudAiplatformV1beta1RetrieveContextsRequestVertexRagStoreRanking', 3)
+  vectorDistanceThreshold = _messages.FloatField(4)
 
 
 class GoogleCloudAiplatformV1beta1RetrieveContextsRequestVertexRagStoreRagResource(_messages.Message):
@@ -28113,6 +28228,19 @@ class GoogleCloudAiplatformV1beta1RetrieveContextsRequestVertexRagStoreRagResour
 
   ragCorpus = _messages.StringField(1)
   ragFileIds = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1RetrieveContextsRequestVertexRagStoreRanking(_messages.Message):
+  r"""Configurations for hybrid search results ranking.
+
+  Fields:
+    alpha: Optional. Alpha value controls the weight between dense and sparse
+      vector search results. The range is [0, 1], while 0 means sparse vector
+      search only and 1 means dense vector search only. The default value is
+      0.5 which balances sparse and dense vector search equally.
+  """
+
+  alpha = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudAiplatformV1beta1RetrieveContextsResponse(_messages.Message):
@@ -28746,13 +28874,18 @@ class GoogleCloudAiplatformV1beta1Scheduling(_messages.Message):
     r"""Optional. This determines which type of scheduling strategy to use.
 
     Values:
-      STRATEGY_UNSPECIFIED: Strategy will default to ON_DEMAND.
+      STRATEGY_UNSPECIFIED: Strategy will default to STANDARD.
       ON_DEMAND: Regular on-demand provisioning strategy.
       LOW_COST: Low cost by making potential use of spot resources.
+      STANDARD: Standard provisioning strategy uses regular on-demand
+        resources.
+      SPOT: Spot provisioning strategy uses spot resources.
     """
     STRATEGY_UNSPECIFIED = 0
     ON_DEMAND = 1
     LOW_COST = 2
+    STANDARD = 3
+    SPOT = 4
 
   disableRetries = _messages.BooleanField(1)
   maxWaitDuration = _messages.StringField(2)

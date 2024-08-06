@@ -1607,13 +1607,17 @@ class AllocationAggregateReservation(_messages.Message):
     must belong to.
 
     Values:
+      VM_FAMILY_CLOUD_TPU_DEVICE_CT3: <no description>
       VM_FAMILY_CLOUD_TPU_LITE_DEVICE_CT5L: <no description>
       VM_FAMILY_CLOUD_TPU_LITE_POD_SLICE_CT5LP: <no description>
+      VM_FAMILY_CLOUD_TPU_POD_SLICE_CT3P: <no description>
       VM_FAMILY_CLOUD_TPU_POD_SLICE_CT4P: <no description>
     """
-    VM_FAMILY_CLOUD_TPU_LITE_DEVICE_CT5L = 0
-    VM_FAMILY_CLOUD_TPU_LITE_POD_SLICE_CT5LP = 1
-    VM_FAMILY_CLOUD_TPU_POD_SLICE_CT4P = 2
+    VM_FAMILY_CLOUD_TPU_DEVICE_CT3 = 0
+    VM_FAMILY_CLOUD_TPU_LITE_DEVICE_CT5L = 1
+    VM_FAMILY_CLOUD_TPU_LITE_POD_SLICE_CT5LP = 2
+    VM_FAMILY_CLOUD_TPU_POD_SLICE_CT3P = 3
+    VM_FAMILY_CLOUD_TPU_POD_SLICE_CT4P = 4
 
   class WorkloadTypeValueValuesEnum(_messages.Enum):
     r"""The workload type of the instances that will target this reservation.
@@ -42348,7 +42352,8 @@ class InstanceGroupManagerResizeRequest(_messages.Message):
       created by this request. At the end of the run duration instance will be
       deleted.
     resizeBy: The number of instances to be created by this resize request.
-      The group's target size will be increased by this number.
+      The group's target size will be increased by this number. This field
+      cannot be used together with 'instances'.
     selfLink: [Output Only] The URL for this resize request. The server
       defines this URL.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with

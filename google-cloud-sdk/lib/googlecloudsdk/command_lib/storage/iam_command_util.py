@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import cloud_api
+from googlecloudsdk.api_lib.storage import gcs_iam_util
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
@@ -99,6 +100,10 @@ def add_iam_binding_to_resource(args, url, messages, policy, task_type):
     object: The updated IAM policy set in the cloud.
   """
   condition = iam_util.ValidateAndExtractCondition(args)
+  # TODO: b/355117705 - Change this variable to
+  # iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION once all the verification and
+  # testing is done.
+  policy.version = gcs_iam_util.IAM_POLICY_VERSION
   iam_util.AddBindingToIamPolicyWithCondition(
       messages.Policy.BindingsValueListEntry, messages.Expr, policy,
       args.member, args.role, condition)
@@ -122,6 +127,10 @@ def remove_iam_binding_from_resource(args, url, policy, task_type):
     object: The updated IAM policy set in the cloud.
   """
   condition = iam_util.ValidateAndExtractCondition(args)
+  # TODO: b/355117705 - Change this variable to
+  # iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION once all the verification and
+  # testing is done.
+  policy.version = gcs_iam_util.IAM_POLICY_VERSION
   iam_util.RemoveBindingFromIamPolicyWithCondition(policy, args.member,
                                                    args.role, condition,
                                                    args.all)

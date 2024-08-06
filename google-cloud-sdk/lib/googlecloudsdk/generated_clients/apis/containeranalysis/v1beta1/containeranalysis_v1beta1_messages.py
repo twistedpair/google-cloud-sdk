@@ -2568,6 +2568,46 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Volume(_messages.Message):
   path = _messages.StringField(2)
 
 
+class ContaineranalysisProjectsLocationsNotesBatchCreateRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsNotesBatchCreateRequest object.
+
+  Fields:
+    batchCreateNotesRequest: A BatchCreateNotesRequest resource to be passed
+      as the request body.
+    parent: Required. The name of the project in the form of
+      `projects/[PROJECT_ID]`, under which the notes are to be created.
+  """
+
+  batchCreateNotesRequest = _messages.MessageField('BatchCreateNotesRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ContaineranalysisProjectsLocationsNotesCreateRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsNotesCreateRequest object.
+
+  Fields:
+    note: A Note resource to be passed as the request body.
+    noteId: Required. The ID to use for this note.
+    parent: Required. The name of the project in the form of
+      `projects/[PROJECT_ID]`, under which the note is to be created.
+  """
+
+  note = _messages.MessageField('Note', 1)
+  noteId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ContaineranalysisProjectsLocationsNotesDeleteRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsNotesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the note in the form of
+      `projects/[PROVIDER_ID]/notes/[NOTE_ID]`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ContaineranalysisProjectsLocationsNotesGetRequest(_messages.Message):
   r"""A ContaineranalysisProjectsLocationsNotesGetRequest object.
 
@@ -2612,6 +2652,60 @@ class ContaineranalysisProjectsLocationsNotesOccurrencesListRequest(_messages.Me
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class ContaineranalysisProjectsLocationsNotesPatchRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsNotesPatchRequest object.
+
+  Fields:
+    name: Required. The name of the note in the form of
+      `projects/[PROVIDER_ID]/notes/[NOTE_ID]`.
+    note: A Note resource to be passed as the request body.
+    updateMask: The fields to update.
+  """
+
+  name = _messages.StringField(1, required=True)
+  note = _messages.MessageField('Note', 2)
+  updateMask = _messages.StringField(3)
+
+
+class ContaineranalysisProjectsLocationsOccurrencesBatchCreateRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsOccurrencesBatchCreateRequest
+  object.
+
+  Fields:
+    batchCreateOccurrencesRequest: A BatchCreateOccurrencesRequest resource to
+      be passed as the request body.
+    parent: Required. The name of the project in the form of
+      `projects/[PROJECT_ID]`, under which the occurrences are to be created.
+  """
+
+  batchCreateOccurrencesRequest = _messages.MessageField('BatchCreateOccurrencesRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ContaineranalysisProjectsLocationsOccurrencesCreateRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsOccurrencesCreateRequest object.
+
+  Fields:
+    occurrence: A Occurrence resource to be passed as the request body.
+    parent: Required. The name of the project in the form of
+      `projects/[PROJECT_ID]`, under which the occurrence is to be created.
+  """
+
+  occurrence = _messages.MessageField('Occurrence', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ContaineranalysisProjectsLocationsOccurrencesDeleteRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsOccurrencesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the occurrence in the form of
+      `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]`.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class ContaineranalysisProjectsLocationsOccurrencesGetNotesRequest(_messages.Message):
@@ -2668,6 +2762,21 @@ class ContaineranalysisProjectsLocationsOccurrencesListRequest(_messages.Message
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class ContaineranalysisProjectsLocationsOccurrencesPatchRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsOccurrencesPatchRequest object.
+
+  Fields:
+    name: Required. The name of the occurrence in the form of
+      `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]`.
+    occurrence: A Occurrence resource to be passed as the request body.
+    updateMask: The fields to update.
+  """
+
+  name = _messages.StringField(1, required=True)
+  occurrence = _messages.MessageField('Occurrence', 2)
+  updateMask = _messages.StringField(3)
 
 
 class ContaineranalysisProjectsLocationsResourcesExportSBOMRequest(_messages.Message):

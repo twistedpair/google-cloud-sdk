@@ -18,15 +18,14 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import base64
 import re
 
-from apitools.base.py import encoding_helper
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.code import kubernetes
 from googlecloudsdk.command_lib.run import secrets_mapping
 
 SECRETS_MESSAGE_MODULE = apis.GetMessagesModule('secretmanager', 'v1')
-RUN_MESSAGE_MODULE = apis.GetMessagesModule('run', 'v1')
 
 
 class SecretManagerSecret(object):
@@ -77,18 +76,13 @@ def _BuildSecret(client, project, secret_name, mapped_secret, versions,
 
 def _BuildK8sSecret(secret_name, secrets, namespace):
   """Turn a map of SecretManager responses into a k8s secret."""
-  data_value = RUN_MESSAGE_MODULE.Secret.DataValue(additionalProperties=[])
-  k8s_secret = RUN_MESSAGE_MODULE.Secret(
-      metadata=RUN_MESSAGE_MODULE.ObjectMeta(
-          name=secret_name, namespace=namespace),
-      data=data_value)
+  data = {}
   for version, secret in secrets.items():
-    k8s_secret.data.additionalProperties.append(
-        RUN_MESSAGE_MODULE.Secret.DataValue.AdditionalProperty(
-            key=version, value=secret.payload.data))
-  d = encoding_helper.MessageToDict(k8s_secret)
-  # RUN_MESSAGE_MODULE.Secret doesn't have fields for apiVersion and Kind so we
-  # need to add that here
+    data[version] = base64.b64encode(secret.payload.data).decode('ascii')
+  metadata = {'name': secret_name}
+  if namespace:
+    metadata['namespace'] = namespace
+  d = {'metadata': metadata, 'data': data}
   d['apiVersion'] = 'v1'
   d['kind'] = 'Secret'
   return d

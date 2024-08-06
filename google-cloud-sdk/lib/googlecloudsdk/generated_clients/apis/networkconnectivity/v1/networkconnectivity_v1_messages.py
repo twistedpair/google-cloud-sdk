@@ -285,11 +285,15 @@ class ConsumerPscConfig(_messages.Message):
         network and Service Class
       POLICY_LIMIT_REACHED: Service Connection Policy limit reached for this
         network and Service Class
+      CONSUMER_INSTANCE_PROJECT_NOT_ALLOWLISTED: The consumer instance project
+        is not in AllowedGoogleProducersResourceHierarchyLevels of the
+        matching ServiceConnectionPolicy.
     """
     STATE_UNSPECIFIED = 0
     VALID = 1
     CONNECTION_POLICY_MISSING = 2
     POLICY_LIMIT_REACHED = 3
+    CONSUMER_INSTANCE_PROJECT_NOT_ALLOWLISTED = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ServiceAttachmentIpAddressMapValue(_messages.Message):

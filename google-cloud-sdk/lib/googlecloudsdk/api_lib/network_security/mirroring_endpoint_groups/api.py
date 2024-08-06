@@ -34,18 +34,22 @@ _API_NAME = 'networksecurity'
 
 
 def GetMessagesModule(release_track=base.ReleaseTrack.ALPHA):
-  api_version = _API_VERSION_FOR_TRACK.get(release_track)
+  api_version = GetApiVersion(release_track)
   return apis.GetMessagesModule(_API_NAME, api_version)
 
 
 def GetClientInstance(release_track=base.ReleaseTrack.ALPHA):
-  api_version = _API_VERSION_FOR_TRACK.get(release_track)
+  api_version = GetApiVersion(release_track)
   return apis.GetClientInstance(_API_NAME, api_version)
 
 
 def GetEffectiveApiEndpoint(release_track=base.ReleaseTrack.ALPHA):
-  api_version = _API_VERSION_FOR_TRACK.get(release_track)
+  api_version = GetApiVersion(release_track)
   return apis.GetEffectiveApiEndpoint(_API_NAME, api_version)
+
+
+def GetApiVersion(release_track=base.ReleaseTrack.ALPHA):
+  return _API_VERSION_FOR_TRACK.get(release_track)
 
 
 class Client:
@@ -64,7 +68,7 @@ class Client:
     self.messages = GetMessagesModule(release_track)
     self._resource_parser = resources.Registry()
     self._resource_parser.RegisterApiByName(
-        _API_NAME, _API_VERSION_FOR_TRACK.get(release_track)
+        _API_NAME, GetApiVersion(release_track)
     )
 
   def CreateEndpointGroup(
@@ -104,6 +108,31 @@ class Client:
         name=name
     )
     return self._endpoint_group_client.Delete(delete_request)
+
+  def UpdateEndpointGroup(
+      self,
+      name,
+      update_fields,
+  ):
+    """Calls the UpdateEndpointGroup API.
+
+    Args:
+      name: The name of the Endpoint Group to update.
+      update_fields: A dictionary of the fields to update mapped to their new
+        values.
+
+    Returns:
+      Operation ref to track the long-running process.
+    """
+    endpoint_group = self.messages.MirroringEndpointGroup(
+        labels=update_fields.get('labels', None),
+    )
+    update_request = self.messages.NetworksecurityProjectsLocationsMirroringEndpointGroupsPatchRequest(
+        name=name,
+        mirroringEndpointGroup=endpoint_group,
+        updateMask=','.join(update_fields.keys())
+    )
+    return self._endpoint_group_client.Patch(update_request)
 
   def DescribeEndpointGroup(self, name):
     """Calls the GetEndpointGroup API."""

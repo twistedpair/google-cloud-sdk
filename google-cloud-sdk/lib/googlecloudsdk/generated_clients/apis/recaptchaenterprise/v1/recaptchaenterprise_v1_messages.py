@@ -293,6 +293,9 @@ class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
     accountVerification: Optional. Account verification information for
       identity verification. The assessment event must include a token and
       site key to use this feature.
+    assessmentEnvironment: Optional. The environment creating the assessment.
+      This describes your environment (the system invoking CreateAssessment),
+      NOT the environment of your user.
     event: Optional. The event being assessed.
     firewallPolicyAssessment: Output only. Assessment returned when firewall
       policies belonging to the project are evaluated using the field
@@ -316,15 +319,35 @@ class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
 
   accountDefenderAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1AccountDefenderAssessment', 1)
   accountVerification = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1AccountVerificationInfo', 2)
-  event = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1Event', 3)
-  firewallPolicyAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallPolicyAssessment', 4)
-  fraudPreventionAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessment', 5)
-  fraudSignals = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudSignals', 6)
-  name = _messages.StringField(7)
-  phoneFraudAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1PhoneFraudAssessment', 8)
-  privatePasswordLeakVerification = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification', 9)
-  riskAnalysis = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RiskAnalysis', 10)
-  tokenProperties = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TokenProperties', 11)
+  assessmentEnvironment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1AssessmentEnvironment', 3)
+  event = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1Event', 4)
+  firewallPolicyAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallPolicyAssessment', 5)
+  fraudPreventionAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessment', 6)
+  fraudSignals = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudSignals', 7)
+  name = _messages.StringField(8)
+  phoneFraudAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1PhoneFraudAssessment', 9)
+  privatePasswordLeakVerification = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification', 10)
+  riskAnalysis = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RiskAnalysis', 11)
+  tokenProperties = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TokenProperties', 12)
+
+
+class GoogleCloudRecaptchaenterpriseV1AssessmentEnvironment(_messages.Message):
+  r"""The environment creating the assessment. This describes your environment
+  (the system invoking CreateAssessment), NOT the environment of your user.
+
+  Fields:
+    client: Optional. Identifies the client module initiating the
+      CreateAssessment request. This can be the link to the client module's
+      project. Examples include: - "github.com/GoogleCloudPlatform/recaptcha-
+      enterprise-google-tag-manager" -
+      "cloud.google.com/recaptcha/docs/implement-waf-akamai" -
+      "cloud.google.com/recaptcha/docs/implement-waf-cloudflare" -
+      "wordpress.org/plugins/recaptcha-something"
+    version: Optional. The version of the client module. For example, "1.0.0".
+  """
+
+  client = _messages.StringField(1)
+  version = _messages.StringField(2)
 
 
 class GoogleCloudRecaptchaenterpriseV1ChallengeMetrics(_messages.Message):

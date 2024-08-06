@@ -468,3 +468,13 @@ def GetSkipExistingFlag():
           ' repository, and continue to upload the remaining files.'
       ),
   )
+
+
+def GetChunkSize():
+  return base.Argument(
+      '--chunk-size',
+      help=(
+          'If specified, the chunk size (bytes) to use for downloading the'
+          ' package.'
+      ),
+  )

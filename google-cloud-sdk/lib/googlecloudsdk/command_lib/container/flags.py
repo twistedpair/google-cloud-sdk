@@ -1286,7 +1286,9 @@ def AddEnableStackdriverKubernetesFlag(parser):
               'will be removed in an upcoming release. '
               'Please use `--logging` and `--monitoring` instead. '
               'For more information, please read: '
-              'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.'
+              'https://cloud.google.com/kubernetes-engine/docs/concepts/about-logs'
+              ' and '
+              'https://cloud.google.com/kubernetes-engine/docs/how-to/configure-metrics.'
           ),
           action='store_true',
       ),
@@ -1307,7 +1309,9 @@ def AddEnableLoggingMonitoringSystemOnlyFlag(parser):
               'deprecated and will be removed in an upcoming release. '
               'Please use `--logging` and `--monitoring` instead. '
               'For more information, please read: '
-              'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.'
+              'https://cloud.google.com/kubernetes-engine/docs/concepts/about-logs'
+              ' and '
+              'https://cloud.google.com/kubernetes-engine/docs/how-to/configure-metrics.'
           ),
           action='store_true',
       ),
@@ -1391,7 +1395,7 @@ Examples:
               'The `--master-logs` flag is deprecated and will be removed in '
               'an upcoming release. Please use `--logging` instead. '
               'For more information, please read: '
-              'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.'
+              'https://cloud.google.com/kubernetes-engine/docs/concepts/about-logs.'
           ),
       ),
   )
@@ -1408,7 +1412,7 @@ Disable sending logs from master components to Cloud Operations.
                 'The `--no-master-logs` flag is deprecated and will be removed'
                 ' in an upcoming release. Please use `--logging` instead. '
                 'For more information, please read: '
-                'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.'
+                'https://cloud.google.com/kubernetes-engine/docs/concepts/about-logs.'
             ),
             action='store_true',
         ),
@@ -1428,7 +1432,7 @@ Enable sending metrics from master components to Cloud Operations.
               'removed in an upcoming release. Please use `--monitoring`'
               ' instead. '
               'For more information, please read: '
-              'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.'
+              'https://cloud.google.com/kubernetes-engine/docs/how-to/configure-metrics.'
           ),
           action='store_true',
       ),
@@ -1444,7 +1448,7 @@ Set the components that have logging enabled. Valid component values are:
 `SYSTEM`, `WORKLOAD`, `API_SERVER`, `CONTROLLER_MANAGER`, `SCHEDULER`, `NONE`
 
 For more information, see
-https://cloud.google.com/stackdriver/docs/solutions/gke/installing#available-logs
+https://cloud.google.com/kubernetes-engine/docs/concepts/about-logs#available-logs
 
 Examples:
 
@@ -1461,7 +1465,7 @@ The default is `SYSTEM,WORKLOAD`. If this flag is set, then `SYSTEM` must be
 included.
 
 For more information, see
-https://cloud.google.com/stackdriver/docs/solutions/gke/installing#available-logs
+https://cloud.google.com/kubernetes-engine/docs/concepts/about-logs#available-logs
 
 Examples:
 
@@ -1488,7 +1492,7 @@ Set the components that have monitoring enabled. Valid component values are:
 `CADVISOR`, `KUBELET`, `DCGM`
 
 For more information, see
-https://cloud.google.com/stackdriver/docs/solutions/gke/installing#available-metrics
+https://cloud.google.com/kubernetes-engine/docs/how-to/configure-metrics#available-metrics
 
 Examples:
 
@@ -1504,7 +1508,7 @@ Set the components that have monitoring enabled. Valid component values are:
 `CADVISOR`, `KUBELET`, `DCGM`
 
 For more information, see
-https://cloud.google.com/stackdriver/docs/solutions/gke/installing#available-metrics
+https://cloud.google.com/kubernetes-engine/docs/how-to/configure-metrics#available-metrics
 
 Examples:
 
@@ -3415,7 +3419,7 @@ service with Kubernetes-native resource model enabled),
               'The `--logging-service` flag is deprecated and will be removed '
               'in an upcoming release. Please use `--logging` instead. '
               'For more information, please read: '
-              'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.'
+              'https://cloud.google.com/kubernetes-engine/docs/concepts/about-logs.'
           ),
       ),
       help=help_str,
@@ -3446,7 +3450,7 @@ Monitoring service with Kubernetes-native resource model enabled),
               'removed in an upcoming release. Please use `--monitoring`'
               ' instead. '
               'For more information, please read: '
-              'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.'
+              'https://cloud.google.com/kubernetes-engine/docs/how-to/configure-metrics.'
           ),
       ),
       help=help_str,
@@ -5466,7 +5470,9 @@ def AddEnableCloudLogging(parser):
               ' in an upcoming release. '
               'Please use `--logging` (optionally with `--monitoring`). '
               'For more details, please read: '
-              'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.'
+              'https://cloud.google.com/kubernetes-engine/docs/concepts/about-logs'
+              ' and '
+              'https://cloud.google.com/kubernetes-engine/docs/how-to/configure-metrics.'
           ),
           action='store_true',
       ),
@@ -5488,7 +5494,9 @@ def AddEnableCloudMonitoring(parser):
               'flag `--enable-cloud-monitoring` is also deprecated. Please use '
               '`--monitoring` (optionally with `--logging`). '
               'For more details, please read: '
-              'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.'
+              'https://cloud.google.com/kubernetes-engine/docs/how-to/configure-metrics'
+              ' and '
+              'https://cloud.google.com/kubernetes-engine/docs/concepts/about-logs.'
           ),
           action='store_true',
       ),

@@ -66,6 +66,9 @@ class GoogleAppsScriptTypeCalendarCalendarAddOnManifest(_messages.Message):
       the add-on's settings page.
     currentEventAccess: Defines the level of data access when an event add-on
       is triggered.
+    eventAttachmentTrigger: An endpoint that triggers when the event add-
+      attachment flow is selected. Add-ons that declare this endpoint will be
+      considered as an attachment provider.
     eventOpenTrigger: An endpoint that triggers when an event is opened to be
       viewed or edited.
     eventUpdateTrigger: An endpoint that triggers when the open event is
@@ -103,9 +106,10 @@ class GoogleAppsScriptTypeCalendarCalendarAddOnManifest(_messages.Message):
   conferenceSolution = _messages.MessageField('GoogleAppsScriptTypeCalendarConferenceSolution', 1, repeated=True)
   createSettingsUrlFunction = _messages.StringField(2)
   currentEventAccess = _messages.EnumField('CurrentEventAccessValueValuesEnum', 3)
-  eventOpenTrigger = _messages.MessageField('GoogleAppsScriptTypeCalendarCalendarExtensionPoint', 4)
-  eventUpdateTrigger = _messages.MessageField('GoogleAppsScriptTypeCalendarCalendarExtensionPoint', 5)
-  homepageTrigger = _messages.MessageField('GoogleAppsScriptTypeHomepageExtensionPoint', 6)
+  eventAttachmentTrigger = _messages.MessageField('GoogleAppsScriptTypeMenuItemExtensionPoint', 4)
+  eventOpenTrigger = _messages.MessageField('GoogleAppsScriptTypeCalendarCalendarExtensionPoint', 5)
+  eventUpdateTrigger = _messages.MessageField('GoogleAppsScriptTypeCalendarCalendarExtensionPoint', 6)
+  homepageTrigger = _messages.MessageField('GoogleAppsScriptTypeHomepageExtensionPoint', 7)
 
 
 class GoogleAppsScriptTypeCalendarCalendarExtensionPoint(_messages.Message):

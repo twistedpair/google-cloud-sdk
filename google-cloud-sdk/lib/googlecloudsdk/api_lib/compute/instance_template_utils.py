@@ -337,6 +337,7 @@ def CreateDiskMessages(
             support_kms=support_kms,
             disk_provisioned_iops=args.boot_disk_provisioned_iops,
             disk_provisioned_throughput=args.boot_disk_provisioned_throughput,
+            disk_interface=args.boot_disk_interface,
         )
     ]
   elif persistent_create_disks and persistent_create_disks[0].boot:
@@ -408,6 +409,13 @@ def CreatePersistentAttachedDiskMessages(
         mode=mode,
         source=name,
         type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT)
+
+    if disk.get('interface'):
+      if disk.get('interface') == 'SCSI':
+        interface = messages.AttachedDisk.InterfaceValueValuesEnum.SCSI
+      else:
+        interface = messages.AttachedDisk.InterfaceValueValuesEnum.NVME
+      attached_disk.interface = interface
 
     # The boot disk must end up at index 0.
     if boot:
@@ -550,6 +558,12 @@ def CreatePersistentCreateDiskMessages(
         type=client.messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
         diskEncryptionKey=disk_key,
     )
+    if disk.get('interface'):
+      if disk.get('interface') == 'SCSI':
+        interface = messages.AttachedDisk.InterfaceValueValuesEnum.SCSI
+      else:
+        interface = messages.AttachedDisk.InterfaceValueValuesEnum.NVME
+      create_disk.interface = interface
 
     # The boot disk must end up at index 0.
     if boot:
@@ -571,6 +585,7 @@ def CreateDefaultBootAttachedDiskMessage(
     support_kms=False,
     disk_provisioned_iops=None,
     disk_provisioned_throughput=None,
+    disk_interface=None,
 ):
   """Returns an AttachedDisk message for creating a new boot disk."""
   disk_key = None
@@ -587,14 +602,22 @@ def CreateDefaultBootAttachedDiskMessage(
   if disk_provisioned_throughput is not None:
     initialize_params.provisionedThroughput = disk_provisioned_throughput
 
-  return messages.AttachedDisk(
+  boot_attached_disk = messages.AttachedDisk(
       autoDelete=disk_auto_delete,
       boot=True,
       deviceName=disk_device_name,
       initializeParams=initialize_params,
       mode=messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE,
       type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
-      diskEncryptionKey=disk_key)
+      diskEncryptionKey=disk_key,
+  )
+  if disk_interface:
+    if disk_interface == 'SCSI':
+      interface = messages.AttachedDisk.InterfaceValueValuesEnum.SCSI
+    else:
+      interface = messages.AttachedDisk.InterfaceValueValuesEnum.NVME
+    boot_attached_disk.interface = interface
+  return boot_attached_disk
 
 
 def CreateAcceleratorConfigMessages(messages, accelerator):

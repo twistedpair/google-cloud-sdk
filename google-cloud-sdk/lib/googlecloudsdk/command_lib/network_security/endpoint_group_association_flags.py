@@ -27,19 +27,20 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import resources
 
-ENDPOINT_GROUP_ASSOCIATION_RESOURCE_NAME = "MIRRORING_ENDPOINT_GROUP_ASSOCIATION"
+ENDPOINT_GROUP_ASSOCIATION_RESOURCE_NAME = (
+    "MIRRORING_ENDPOINT_GROUP_ASSOCIATION"
+)
 ENDPOINT_GROUP_ASSOCIATION_RESOURCE_COLLECTION = (
     "networksecurity.projects.locations.mirroringEndpointGroupAssociations"
 )
 ENDPOINT_GROUP_RESOURCE_COLLECTION = (
     "networksecurity.projects.locations.mirroringEndpointGroups"
 )
-API_VERSION = "v1alpha1"
 
 
-def AddEndpointGroupAssociationResource(parser):
+def AddEndpointGroupAssociationResource(release_track, parser):
   """Adds Mirroring Endpoint Group Association resource."""
-  api_version = API_VERSION
+  api_version = api.GetApiVersion(release_track)
   resource_spec = concepts.ResourceSpec(
       ENDPOINT_GROUP_ASSOCIATION_RESOURCE_COLLECTION,
       "mirroring endpoint group association",
@@ -162,33 +163,36 @@ def AddNetworkResource(parser):
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
-def AddMirroringEndpointGroupResource(parser):
+def AddMirroringEndpointGroupResource(release_track, parser):
   """Adds mirroring endpoint group resource."""
+  api_version = api.GetApiVersion(release_track)
   collection_info = resources.REGISTRY.GetCollectionInfo(
-      ENDPOINT_GROUP_RESOURCE_COLLECTION, api_version=API_VERSION
+      ENDPOINT_GROUP_RESOURCE_COLLECTION, api_version=api_version
   )
   resource_spec = concepts.ResourceSpec(
       ENDPOINT_GROUP_RESOURCE_COLLECTION,
       "mirroring endpoint group",
-      api_version=API_VERSION,
+      api_version=api_version,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=concepts.ResourceParameterAttributeConfig(
-          "endpoint-group-location",
+          "location",
           "Location of the {resource}.",
           parameter_name="locationsId",
           fallthroughs=[
               deps.ArgFallthrough("--location"),
               deps.FullySpecifiedAnchorFallthrough(
-                  [deps.ArgFallthrough(
-                      ENDPOINT_GROUP_ASSOCIATION_RESOURCE_COLLECTION
-                  )],
+                  [
+                      deps.ArgFallthrough(
+                          ENDPOINT_GROUP_ASSOCIATION_RESOURCE_COLLECTION
+                      )
+                  ],
                   collection_info,
                   "locationsId",
               ),
           ],
       ),
       mirroringEndpointGroupsId=concepts.ResourceParameterAttributeConfig(
-          "endpoint-group-id",
+          "id",
           "Id of the {resource}",
           parameter_name="mirroringEndpointGroupsId",
       ),
@@ -198,5 +202,6 @@ def AddMirroringEndpointGroupResource(parser):
       concept_spec=resource_spec,
       required=True,
       group_help="Mirroring Endpoint Group.",
+      prefixes=True,
   )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)

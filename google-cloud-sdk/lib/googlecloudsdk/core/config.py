@@ -498,10 +498,15 @@ class SqliteConfigStore(object):
 
     Returns:
       The JSON value for this attribute or None.
+
+    Raises:
+      sqlite3.DataError: if the attribute value is None.
     """
     attr_value = self._LoadAttribute(config_attr, required)
     if attr_value is None:
-      return None
+      raise sqlite3.DataError(
+          'The attribute [{attr}] is not set.'.format(attr=config_attr)
+      )
     try:
       return json.loads(attr_value)
     except ValueError:
@@ -542,29 +547,21 @@ class SqliteConfigStore(object):
 
     Returns:
       Whether the attribute was successfully deleted.
-    """
-    try:
-      self._Execute(
-          'DELETE FROM config WHERE config_attr = ?',
-          (config_attr,),
-      )
-      # Check if deletion itself was successful
-      if self._cursor.RowCount() < 1:
-        logging.warning(
-            'Could not delete attribute [%s] from cache in config store [%s].',
-            config_attr,
-            self._config_name,
-        )
-        return False
-      return True
 
-    except sqlite3.OperationalError as e:
-      logging.warning(
-          'Could not delete attribute [%s] from cache: %s',
-          config_attr,
-          str(e),
+    Raises:
+      sqlite3.OperationalError: if the attribute could not be deleted.
+    """
+    self._Execute(
+        'DELETE FROM config WHERE config_attr = ?',
+        (config_attr,),
+    )
+    # Check if deletion itself was successful
+    if self._cursor.RowCount() < 1:
+      raise sqlite3.OperationalError(
+          'Could not delete attribute [%s] from config store [%s].'
+          % (config_attr, self._config_name)
       )
-      return False
+    return True
 
   def Remove(self, config_attr: str) -> bool:
     """Removes an attribute from the config.

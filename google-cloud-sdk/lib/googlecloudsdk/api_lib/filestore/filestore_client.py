@@ -299,7 +299,7 @@ class FilestoreClient(object):
     if source_instance:
       self._adapter.ParseSourceInstanceIntoInstance(instance, source_instance)
     # 'instance.performance' is a member of 'instance' structure only in
-    # Beta API.
+    # Beta, V1 APIs.
     if performance:
       self._adapter.ParsePerformanceIntoInstance(instance, performance)
     instance.labels = labels

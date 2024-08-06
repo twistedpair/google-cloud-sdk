@@ -43,6 +43,7 @@ def CheckSpecifiedDiskArgs(args,
       'boot_disk_type',
       'boot_disk_device_name',
       'boot_disk_auto_delete',
+      'boot_disk_interface',
   ]
 
   if support_disks:
@@ -187,6 +188,7 @@ def CreateDiskMessages(
         use_disk_type_uri=use_disk_type_uri,
         instant_snapshot_uri=boot_instant_snapshot_uri,
         support_source_instant_snapshot=support_source_instant_snapshot,
+        disk_interface=args.boot_disk_interface,
     )
     persistent_disks = [boot_disk] + persistent_disks
 
@@ -255,6 +257,12 @@ def CreatePersistentAttachedDiskMessages(resources,
         type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
         forceAttach=force_attach,
         **kwargs)
+    if disk.get('interface'):
+      if disk.get('interface') == 'SCSI':
+        interface = messages.AttachedDisk.InterfaceValueValuesEnum.SCSI
+      else:
+        interface = messages.AttachedDisk.InterfaceValueValuesEnum.NVME
+      attached_disk.interface = interface
 
     # The boot disk must end up at index 0.
     if boot:
@@ -498,6 +506,12 @@ def CreatePersistentCreateDiskMessages(
         mode=mode,
         type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
         diskEncryptionKey=disk_key)
+    if disk.get('interface'):
+      if disk.get('interface') == 'SCSI':
+        interface = messages.AttachedDisk.InterfaceValueValuesEnum.SCSI
+      else:
+        interface = messages.AttachedDisk.InterfaceValueValuesEnum.NVME
+      create_disk.interface = interface
 
     # The boot disk must end up at index 0.
     if boot:
@@ -530,6 +544,7 @@ def CreateDefaultBootAttachedDiskMessage(
     disk_provisioned_throughput=None,
     instant_snapshot_uri=None,
     support_source_instant_snapshot=False,
+    disk_interface=None,
 ):
   """Returns an AttachedDisk message for creating a new boot disk."""
   messages = compute_client.messages
@@ -616,14 +631,22 @@ def CreateDefaultBootAttachedDiskMessage(
     initialize_params.sourceSnapshot = None
     initialize_params.sourceInstantSnapshot = instant_snapshot_uri
 
-  return messages.AttachedDisk(
+  boot_attached_disk = messages.AttachedDisk(
       autoDelete=disk_auto_delete,
       boot=True,
       deviceName=effective_boot_disk_name,
       initializeParams=initialize_params,
       mode=messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE,
       type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
-      **kwargs_disk)
+      **kwargs_disk
+  )
+  if disk_interface:
+    if disk_interface == 'SCSI':
+      interface = messages.AttachedDisk.InterfaceValueValuesEnum.SCSI
+    else:
+      interface = messages.AttachedDisk.InterfaceValueValuesEnum.NVME
+    boot_attached_disk.interface = interface
+  return boot_attached_disk
 
 
 # TODO(b/116515070) Replace `aep-nvdimm` with `local-nvdimm`

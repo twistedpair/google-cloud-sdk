@@ -128,6 +128,60 @@ class AwsKinesis(_messages.Message):
   streamArn = _messages.StringField(5)
 
 
+class AzureEventHubs(_messages.Message):
+  r"""Ingestion settings for Azure Event Hubs.
+
+  Enums:
+    StateValueValuesEnum: Output only. An output-only field that indicates the
+      state of the Event Hubs ingestion source.
+
+  Fields:
+    clientId: Optional. The client id of the Azure application that is being
+      used to authenticate Pub/Sub.
+    eventHub: Optional. The name of the Event Hub.
+    gcpServiceAccount: Optional. The GCP service account to be used for
+      Federated Identity authentication.
+    namespace: Optional. The name of the Event Hubs namespace.
+    state: Output only. An output-only field that indicates the state of the
+      Event Hubs ingestion source.
+    subscriptionId: Optional. The Azure subscription id.
+    tenantId: Optional. The tenant id of the Azure application that is being
+      used to authenticate Pub/Sub.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. An output-only field that indicates the state of the
+    Event Hubs ingestion source.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: Ingestion is active.
+      EVENT_HUBS_PERMISSION_DENIED: Permission denied encountered while
+        consuming data from Event Hubs. This can happen when `client_id`,
+        `tenant_id`, or `subscription_id` are invalid, or the right
+        permissions haven't been granted.
+      PUBLISH_PERMISSION_DENIED: Permission denied encountered while
+        publishing to the topic.
+      NAMESPACE_NOT_FOUND: The provided Event Hubs namespace couldn't be
+        found.
+      EVENT_HUB_NOT_FOUND: The provided Event Hub couldn't be found.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    EVENT_HUBS_PERMISSION_DENIED = 2
+    PUBLISH_PERMISSION_DENIED = 3
+    NAMESPACE_NOT_FOUND = 4
+    EVENT_HUB_NOT_FOUND = 5
+
+  clientId = _messages.StringField(1)
+  eventHub = _messages.StringField(2)
+  gcpServiceAccount = _messages.StringField(3)
+  namespace = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  subscriptionId = _messages.StringField(6)
+  tenantId = _messages.StringField(7)
+
+
 class BigQueryConfig(_messages.Message):
   r"""Configuration for a BigQuery subscription.
 
@@ -598,11 +652,13 @@ class IngestionDataSourceSettings(_messages.Message):
 
   Fields:
     awsKinesis: Optional. Amazon Kinesis Data Streams.
+    azureEventHubs: Optional. Azure Event Hubs.
     cloudStorage: Optional. Cloud Storage.
   """
 
   awsKinesis = _messages.MessageField('AwsKinesis', 1)
-  cloudStorage = _messages.MessageField('CloudStorage', 2)
+  azureEventHubs = _messages.MessageField('AzureEventHubs', 2)
+  cloudStorage = _messages.MessageField('CloudStorage', 3)
 
 
 class ListSchemaRevisionsResponse(_messages.Message):

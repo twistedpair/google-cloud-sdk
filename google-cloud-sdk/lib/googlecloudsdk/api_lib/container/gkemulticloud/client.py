@@ -100,6 +100,14 @@ class ClientBase(object):
         evaluationMode=evaluation_mode
     )
 
+  def _SecurityPosture(self, args):
+    vulnerability_mode = flags.GetSecurityPosture(args)
+    if not vulnerability_mode:
+      return None
+    return self._messages.GoogleCloudGkemulticloudV1SecurityPostureConfig(
+        vulnerabilityMode=vulnerability_mode
+    )
+
   def List(self, parent_ref, page_size=None, limit=None, parent_field='parent'):
     """Lists gkemulticloud API resources.
 

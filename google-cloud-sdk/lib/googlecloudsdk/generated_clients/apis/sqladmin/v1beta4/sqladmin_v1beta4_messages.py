@@ -686,8 +686,6 @@ class ConnectSettings(_messages.Message):
       MYSQL_8_0_40: The database major version is MySQL 8.0 and the minor
         version is 40.
       MYSQL_8_4: The database version is MySQL 8.4.
-      MYSQL_8_4_0: The database version is MySQL 8.4 and the patch version is
-        0.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -736,15 +734,14 @@ class ConnectSettings(_messages.Message):
     MYSQL_8_0_39 = 32
     MYSQL_8_0_40 = 33
     MYSQL_8_4 = 34
-    MYSQL_8_4_0 = 35
-    SQLSERVER_2019_STANDARD = 36
-    SQLSERVER_2019_ENTERPRISE = 37
-    SQLSERVER_2019_EXPRESS = 38
-    SQLSERVER_2019_WEB = 39
-    SQLSERVER_2022_STANDARD = 40
-    SQLSERVER_2022_ENTERPRISE = 41
-    SQLSERVER_2022_EXPRESS = 42
-    SQLSERVER_2022_WEB = 43
+    SQLSERVER_2019_STANDARD = 35
+    SQLSERVER_2019_ENTERPRISE = 36
+    SQLSERVER_2019_EXPRESS = 37
+    SQLSERVER_2019_WEB = 38
+    SQLSERVER_2022_STANDARD = 39
+    SQLSERVER_2022_ENTERPRISE = 40
+    SQLSERVER_2022_EXPRESS = 41
+    SQLSERVER_2022_WEB = 42
 
   class ServerCaModeValueValuesEnum(_messages.Enum):
     r"""Specify what type of CA is used for the server certificate.
@@ -1031,8 +1028,6 @@ class DatabaseInstance(_messages.Message):
       MYSQL_8_0_40: The database major version is MySQL 8.0 and the minor
         version is 40.
       MYSQL_8_4: The database version is MySQL 8.4.
-      MYSQL_8_4_0: The database version is MySQL 8.4 and the patch version is
-        0.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -1081,15 +1076,14 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_39 = 32
     MYSQL_8_0_40 = 33
     MYSQL_8_4 = 34
-    MYSQL_8_4_0 = 35
-    SQLSERVER_2019_STANDARD = 36
-    SQLSERVER_2019_ENTERPRISE = 37
-    SQLSERVER_2019_EXPRESS = 38
-    SQLSERVER_2019_WEB = 39
-    SQLSERVER_2022_STANDARD = 40
-    SQLSERVER_2022_ENTERPRISE = 41
-    SQLSERVER_2022_EXPRESS = 42
-    SQLSERVER_2022_WEB = 43
+    SQLSERVER_2019_STANDARD = 35
+    SQLSERVER_2019_ENTERPRISE = 36
+    SQLSERVER_2019_EXPRESS = 37
+    SQLSERVER_2019_WEB = 38
+    SQLSERVER_2022_STANDARD = 39
+    SQLSERVER_2022_ENTERPRISE = 40
+    SQLSERVER_2022_EXPRESS = 41
+    SQLSERVER_2022_WEB = 42
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""Stores the current database version including minor version such as
@@ -1149,8 +1143,6 @@ class DatabaseInstance(_messages.Message):
       MYSQL_8_0_40: The database major version is MySQL 8.0 and the minor
         version is 40.
       MYSQL_8_4: The database version is MySQL 8.4.
-      MYSQL_8_4_0: The database version is MySQL 8.4 and the patch version is
-        0.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -1199,15 +1191,14 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_39 = 32
     MYSQL_8_0_40 = 33
     MYSQL_8_4 = 34
-    MYSQL_8_4_0 = 35
-    SQLSERVER_2019_STANDARD = 36
-    SQLSERVER_2019_ENTERPRISE = 37
-    SQLSERVER_2019_EXPRESS = 38
-    SQLSERVER_2019_WEB = 39
-    SQLSERVER_2022_STANDARD = 40
-    SQLSERVER_2022_ENTERPRISE = 41
-    SQLSERVER_2022_EXPRESS = 42
-    SQLSERVER_2022_WEB = 43
+    SQLSERVER_2019_STANDARD = 35
+    SQLSERVER_2019_ENTERPRISE = 36
+    SQLSERVER_2019_EXPRESS = 37
+    SQLSERVER_2019_WEB = 38
+    SQLSERVER_2022_STANDARD = 39
+    SQLSERVER_2022_ENTERPRISE = 40
+    SQLSERVER_2022_EXPRESS = 41
+    SQLSERVER_2022_WEB = 42
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -1827,8 +1818,6 @@ class Flag(_messages.Message):
       MYSQL_8_0_40: The database major version is MySQL 8.0 and the minor
         version is 40.
       MYSQL_8_4: The database version is MySQL 8.4.
-      MYSQL_8_4_0: The database version is MySQL 8.4 and the patch version is
-        0.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -1877,15 +1866,14 @@ class Flag(_messages.Message):
     MYSQL_8_0_39 = 32
     MYSQL_8_0_40 = 33
     MYSQL_8_4 = 34
-    MYSQL_8_4_0 = 35
-    SQLSERVER_2019_STANDARD = 36
-    SQLSERVER_2019_ENTERPRISE = 37
-    SQLSERVER_2019_EXPRESS = 38
-    SQLSERVER_2019_WEB = 39
-    SQLSERVER_2022_STANDARD = 40
-    SQLSERVER_2022_ENTERPRISE = 41
-    SQLSERVER_2022_EXPRESS = 42
-    SQLSERVER_2022_WEB = 43
+    SQLSERVER_2019_STANDARD = 35
+    SQLSERVER_2019_ENTERPRISE = 36
+    SQLSERVER_2019_EXPRESS = 37
+    SQLSERVER_2019_WEB = 38
+    SQLSERVER_2022_STANDARD = 39
+    SQLSERVER_2022_ENTERPRISE = 40
+    SQLSERVER_2022_EXPRESS = 41
+    SQLSERVER_2022_WEB = 42
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being `BOOLEAN`, `STRING`,
@@ -3128,6 +3116,29 @@ class PerformDiskShrinkContext(_messages.Message):
   targetSizeGb = _messages.IntegerField(1)
 
 
+class PscAutoConnectionConfig(_messages.Message):
+  r"""Settings for an automatically-setup Private Service Connect consumer
+  endpoint that is used to connect to a Cloud SQL instance.
+
+  Fields:
+    consumerNetwork: The consumer network of this consumer endpoint. This must
+      be a resource path that includes both the host project and the network
+      name. For example, `projects/project1/global/networks/network1`. The
+      consumer host project of this network might be different from the
+      consumer service project.
+    consumerProject: This is the project ID of consumer service project of
+      this consumer endpoint. Optional. This is only applicable if
+      consumer_network is a shared vpc network.
+    ipAddress: The IP address of the consumer endpoint.
+    status: The connection status of the consumer endpoint.
+  """
+
+  consumerNetwork = _messages.StringField(1)
+  consumerProject = _messages.StringField(2)
+  ipAddress = _messages.StringField(3)
+  status = _messages.StringField(4)
+
+
 class PscConfig(_messages.Message):
   r"""PSC settings for a Cloud SQL instance.
 
@@ -3137,11 +3148,15 @@ class PscConfig(_messages.Message):
       connected to with PSC from any network in these projects. Each consumer
       project in this list may be represented by a project number (numeric) or
       by a project id (alphanumeric).
+    pscAutoConnections: Optional. The list of settings for requested Private
+      Service Connect consumer endpoints that can be used to connect to this
+      Cloud SQL instance.
     pscEnabled: Whether PSC connectivity is enabled for this instance.
   """
 
   allowedConsumerProjects = _messages.StringField(1, repeated=True)
-  pscEnabled = _messages.BooleanField(2)
+  pscAutoConnections = _messages.MessageField('PscAutoConnectionConfig', 2, repeated=True)
+  pscEnabled = _messages.BooleanField(3)
 
 
 class ReplicaConfiguration(_messages.Message):

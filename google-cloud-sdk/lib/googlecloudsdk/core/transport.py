@@ -579,8 +579,12 @@ def GetAndCacheArchitecture(user_platform):
   """
 
   active_config_store = config.GetConfigStore()
-  if active_config_store and active_config_store.Get('client_arch'):
-    return active_config_store.Get('client_arch')
+  try:
+    cached_arch = active_config_store.Get('client_arch')
+  except Exception:  # pylint: disable=broad-except
+    cached_arch = None
+  if active_config_store and cached_arch:
+    return cached_arch
 
   # Determine if this is an M1 Mac Python using x86_64 emulation.
   if (user_platform.operating_system == platforms.OperatingSystem.MACOSX and

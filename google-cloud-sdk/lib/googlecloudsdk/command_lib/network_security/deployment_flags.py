@@ -182,7 +182,7 @@ def AddMirroringDeploymentGroupResource(release_track, parser):
       api_version=api_version,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=concepts.ResourceParameterAttributeConfig(
-          "deployment-group-location",
+          "location",
           "Location of the {resource}.",
           parameter_name="locationsId",
           fallthroughs=[
@@ -195,7 +195,7 @@ def AddMirroringDeploymentGroupResource(release_track, parser):
           ],
       ),
       mirroringDeploymentGroupsId=concepts.ResourceParameterAttributeConfig(
-          "deployment-group-id",
+          "id",
           "Id of the {resource}",
           parameter_name="mirroringDeploymentGroupsId",
       ),
@@ -205,5 +205,6 @@ def AddMirroringDeploymentGroupResource(release_track, parser):
       concept_spec=resource_spec,
       required=True,
       group_help="Mirroring Deployment Group.",
+      prefixes=True,
   )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)

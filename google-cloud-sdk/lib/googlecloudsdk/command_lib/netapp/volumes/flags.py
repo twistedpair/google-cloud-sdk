@@ -549,6 +549,8 @@ def AddVolumeCreateArgs(parser, release_track):
   AddVolumeSecurityStyleArg(parser, messages)
   AddVolumeEnableKerberosArg(parser)
   AddVolumeRestrictedActionsArg(parser)
+  AddVolumeLargeCapacityArg(parser)
+  AddVolumeMultipleEndpointsArg(parser)
   if (release_track == calliope_base.ReleaseTrack.BETA or
       release_track == calliope_base.ReleaseTrack.GA):
     AddVolumeBackupConfigArg(parser)
@@ -556,8 +558,6 @@ def AddVolumeCreateArgs(parser, release_track):
   # TODO(b/354772678):Remove the release track condition when auto tiering GA.
   if (release_track == calliope_base.ReleaseTrack.ALPHA or
       release_track == calliope_base.ReleaseTrack.BETA):
-    AddVolumeLargeCapacityArg(parser)
-    AddVolumeMultipleEndpointsArg(parser)
     AddVolumeTieringPolicyArg(parser, messages, False)
   else:
     AddVolumeTieringPolicyArg(parser, messages, True)

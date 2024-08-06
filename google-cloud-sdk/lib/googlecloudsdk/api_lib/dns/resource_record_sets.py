@@ -171,9 +171,14 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
       == compute_messages.ForwardingRule.LoadBalancingSchemeValueValuesEnum(
           'INTERNAL'
       )
-      and config.backendService
   ):
-    load_balancer_type = 'regionalL4ilb'
+    if config.backendService:
+      load_balancer_type = 'regionalL4ilb'
+    else:
+      raise UnsupportedLoadBalancingScheme(
+          'Network Passthrough Internal Load Balancers must have a backend'
+          ' service.'
+      )
   # L7 ILBs will have a HTTPx proxy and load_balancing_scheme=INTERNAL_MANAGED.
   elif (
       config.loadBalancingScheme
@@ -189,12 +194,7 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
       load_balancer_type = 'regionalL7ilb'
     else:
       load_balancer_type = 'globalL7ilb'
-  else:
-    raise UnsupportedLoadBalancingScheme(
-        'Only Regional internal passthrough Network load balancers and'
-        ' Regional/Global internal Application load balancers are supported at'
-        ' this time.'
-    )
+
   load_balancer_target.ipAddress = config.IPAddress
   compute_tcp_enum = compute_messages.ForwardingRule.IPProtocolValueValuesEnum(
       'TCP'
@@ -214,9 +214,10 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
   load_balancer_target.ipProtocol = dns_messages.RRSetRoutingPolicyLoadBalancerTarget.IpProtocolValueValuesEnum(
       ip_protocol
   )
-  load_balancer_target.loadBalancerType = dns_messages.RRSetRoutingPolicyLoadBalancerTarget.LoadBalancerTypeValueValuesEnum(
-      load_balancer_type
-  )
+  if load_balancer_type:
+    load_balancer_target.loadBalancerType = dns_messages.RRSetRoutingPolicyLoadBalancerTarget.LoadBalancerTypeValueValuesEnum(
+        load_balancer_type
+    )
   return load_balancer_target
 
 

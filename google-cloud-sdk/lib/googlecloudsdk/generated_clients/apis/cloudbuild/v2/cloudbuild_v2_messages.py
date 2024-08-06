@@ -2242,7 +2242,7 @@ class PipelineRef(_messages.Message):
       perform resolution of the referenced Tekton resource.
 
   Fields:
-    name: Name of the Pipeline.
+    name: Optional. Name of the Pipeline.
     params: Params contains the parameters used to identify the referenced
       Tekton resource. Example entries might include "repo" or "path" but the
       set of params ultimately depends on the chosen resolver.
@@ -3529,7 +3529,7 @@ class TaskRef(_messages.Message):
       perform resolution of the referenced Tekton resource.
 
   Fields:
-    name: Name of the task.
+    name: Optional. Name of the task.
     params: Params contains the parameters used to identify the referenced
       Tekton resource. Example entries might include "repo" or "path" but the
       set of params ultimately depends on the chosen resolver.

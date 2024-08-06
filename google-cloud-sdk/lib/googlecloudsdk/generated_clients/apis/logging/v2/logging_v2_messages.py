@@ -1373,14 +1373,19 @@ class ListLogEntriesRequest(_messages.Message):
       project identifiers or project numbers from which to retrieve log
       entries. Example: "my-project-1A".
     resourceNames: Required. Names of one or more parent resources from which
-      to retrieve log entries: projects/[PROJECT_ID]
-      organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
-      folders/[FOLDER_ID]May alternatively be one or more views: projects/[PRO
-      JECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] org
-      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
-      /views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATIO
-      N_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locations/
-      [LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]Projects listed in the
+      to retrieve log entries. Resources may either be resource containers or
+      specific LogViews. For the case of resource containers, all logs
+      ingested into that container will be returned regardless of which
+      LogBuckets they are actually stored in - i.e. these queries may fan out
+      to multiple regions. In the event of region unavailability, specify a
+      specific set of LogViews that do not include the unavailable region.
+      projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
+      billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID] projects/[PROJE
+      CT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] organ
+      izations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/v
+      iews/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_
+      ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locations/[L
+      OCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]Projects listed in the
       project_ids field are added to this list. A maximum of 100 resources may
       be specified in a single request.
   """

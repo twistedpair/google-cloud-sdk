@@ -1059,7 +1059,7 @@ class Expr(_messages.Message):
 
 class FirewallInfo(_messages.Message):
   r"""For display only. Metadata associated with a VPC firewall rule, an
-  implied VPC firewall rule, or a hierarchical firewall policy rule.
+  implied VPC firewall rule, or a firewall policy rule.
 
   Enums:
     FirewallRuleTypeValueValuesEnum: The firewall rule's type.
@@ -1067,21 +1067,25 @@ class FirewallInfo(_messages.Message):
   Fields:
     action: Possible values: ALLOW, DENY, APPLY_SECURITY_PROFILE_GROUP
     direction: Possible values: INGRESS, EGRESS
-    displayName: The display name of the VPC firewall rule. This field is not
-      applicable to hierarchical firewall policy rules.
+    displayName: The display name of the firewall rule. This field might be
+      empty for firewall policy rules.
     firewallRuleType: The firewall rule's type.
     networkUri: The URI of the VPC network that the firewall rule is
       associated with. This field is not applicable to hierarchical firewall
       policy rules.
-    policy: The hierarchical firewall policy that this rule is associated
-      with. This field is not applicable to VPC firewall rules.
+    policy: The name of the firewall policy that this rule is associated with.
+      This field is not applicable to VPC firewall rules and implied VPC
+      firewall rules.
+    policyUri: The URI of the firewall policy that this rule is associated
+      with. This field is not applicable to VPC firewall rules and implied VPC
+      firewall rules.
     priority: The priority of the firewall rule.
     targetServiceAccounts: The target service accounts specified by the
       firewall rule.
     targetTags: The target tags defined by the VPC firewall rule. This field
-      is not applicable to hierarchical firewall policy rules.
-    uri: The URI of the VPC firewall rule. This field is not applicable to
-      implied firewall rules or hierarchical firewall policy rules.
+      is not applicable to firewall policy rules.
+    uri: The URI of the firewall rule. This field is not applicable to implied
+      VPC firewall rules.
   """
 
   class FirewallRuleTypeValueValuesEnum(_messages.Enum):
@@ -1138,10 +1142,11 @@ class FirewallInfo(_messages.Message):
   firewallRuleType = _messages.EnumField('FirewallRuleTypeValueValuesEnum', 4)
   networkUri = _messages.StringField(5)
   policy = _messages.StringField(6)
-  priority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  targetServiceAccounts = _messages.StringField(8, repeated=True)
-  targetTags = _messages.StringField(9, repeated=True)
-  uri = _messages.StringField(10)
+  policyUri = _messages.StringField(7)
+  priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  targetServiceAccounts = _messages.StringField(9, repeated=True)
+  targetTags = _messages.StringField(10, repeated=True)
+  uri = _messages.StringField(11)
 
 
 class ForwardInfo(_messages.Message):

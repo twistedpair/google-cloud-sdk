@@ -48,7 +48,7 @@ def GetClusterCreateRequest(args, release_track):
   )
   PopulateClusterMessage(req, messages, args)
   if release_track == base.ReleaseTrack.ALPHA:
-    PopulateClusterAlphaMessage(req, messages, args)
+    PopulateClusterAlphaMessage(req, args)
   return req
 
 
@@ -170,14 +170,19 @@ def PopulateClusterMessage(req, messages, args):
               args.control_plane_shared_deployment_policy.upper()
           )
       )
+  if flags.FlagIsExplicitlySet(args, 'offline_reboot_ttl'):
+    if not req.cluster.survivabilityConfig:
+      req.cluster.survivabilityConfig = messages.SurvivabilityConfig()
+    req.cluster.survivabilityConfig.offlineRebootTtl = (
+        json.dumps(args.offline_reboot_ttl) + 's'
+    )
 
 
-def PopulateClusterAlphaMessage(req, messages, args):
+def PopulateClusterAlphaMessage(req, args):
   """Filled the Alpha cluster message from command arguments.
 
   Args:
     req: create cluster request message.
-    messages: message module of edgecontainer cluster.
     args: command line arguments.
   """
   if flags.FlagIsExplicitlySet(args, 'cluster_ipv6_cidr'):
@@ -189,11 +194,6 @@ def PopulateClusterAlphaMessage(req, messages, args):
         args.external_lb_ipv6_address_pools
     )
   resource_args.SetSystemAddonsConfig(args, req)
-  if flags.FlagIsExplicitlySet(args, 'offline_reboot_ttl'):
-    req.cluster.survivabilityConfig = messages.SurvivabilityConfig()
-    req.cluster.survivabilityConfig.offlineRebootTtl = (
-        json.dumps(args.offline_reboot_ttl) + 's'
-    )
   resource_args.SetExternalLoadBalancerAddressPoolsConfig(args, req)
   if flags.FlagIsExplicitlySet(args, 'control_plane_node_storage_schema'):
     req.cluster.controlPlane.local.controlPlaneNodeStorageSchema = (

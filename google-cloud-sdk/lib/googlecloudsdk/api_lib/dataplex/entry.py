@@ -67,7 +67,7 @@ def _GenerateAspectKeys(
     args: parser_extensions.Namespace,
     *,
     remove_aspects_arg_name: str,
-    update_aspects_arg_name: str
+    update_aspects_arg_name: str,
 ) -> List[str]:
   """Generate a list of unique aspect keys to be updated or removed.
 
@@ -125,19 +125,18 @@ def _GetEntrySourceLabels(
 
 def _GetEntrySourceAncestors(
     args: parser_extensions.Namespace,
-) -> (
-    List[Any]
-):
+) -> List[Any]:
   """Parse EntrySource ancestors from the command arguments if defined."""
   if not args.IsKnownAndSpecified('entry_source_ancestors'):
     return []
   return dataplex_parsers.ParseEntrySourceAncestors(args.entry_source_ancestors)
 
 
-def _GetEntrySource(
+def _GetEntrySourceOrNone(
     args: parser_extensions.Namespace,
-) -> dataplex_message.GoogleCloudDataplexV1EntrySource:
-  return dataplex_message.GoogleCloudDataplexV1EntrySource(
+) -> dataplex_message.GoogleCloudDataplexV1EntrySource | None:
+  """Parse EntrySource from the command arguments if defined."""
+  entry_source = dataplex_message.GoogleCloudDataplexV1EntrySource(
       resource=_GetArgValueOrNone(args, 'entry_source_resource'),
       system=_GetArgValueOrNone(args, 'entry_source_system'),
       platform=_GetArgValueOrNone(args, 'entry_source_platform'),
@@ -148,6 +147,7 @@ def _GetEntrySource(
       createTime=_GetArgValueOrNone(args, 'entry_source_create_time'),
       updateTime=_GetArgValueOrNone(args, 'entry_source_update_time'),
   )
+  return None if not entry_source else entry_source
 
 
 def Create(args: parser_extensions.Namespace):
@@ -173,7 +173,7 @@ def Create(args: parser_extensions.Namespace):
                   args, 'fully_qualified_name'
               ),
               aspects=_GetArgValueOrNone(args, 'aspects'),
-              entrySource=_GetEntrySource(args),
+              entrySource=_GetEntrySourceOrNone(args),
           ),
           parent=entry_ref.Parent().RelativeName(),
       )
@@ -212,7 +212,7 @@ def Update(
                   args, 'fully_qualified_name'
               ),
               aspects=_GetArgValueOrNone(args, update_aspects_arg_name),
-              entrySource=_GetEntrySource(args),
+              entrySource=_GetEntrySourceOrNone(args),
           ),
           deleteMissingAspects=args.IsKnownAndSpecified(
               remove_aspects_arg_name

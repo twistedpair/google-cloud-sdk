@@ -254,7 +254,7 @@ class Cluster(_messages.Message):
     replicaCount: Optional. The number of replica nodes per shard.
     satisfiesPzi: Optional. Output only. Reserved for future use.
     satisfiesPzs: Optional. Output only. Reserved for future use.
-    shardCount: Required. Number of shards for the Redis cluster.
+    shardCount: Optional. Number of shards for the Redis cluster.
     sizeGb: Output only. Redis memory size in GB for the entire cluster
       rounded up to the next integer.
     state: Output only. The current state of this cluster. Can be CREATING,
@@ -550,9 +550,9 @@ class CrossClusterReplicationConfig(_messages.Message):
 
   Fields:
     clusterRole: The role of the cluster in cross cluster replication.
-    memberClusters: Output only. An output only view of all the member
-      clusters participating in the cross cluster replication. This view will
-      be provided by every member cluster irrespective of its cluster
+    membership: Output only. An output only view of all the member clusters
+      participating in the cross cluster replication. This view will be
+      provided by every member cluster irrespective of its cluster
       role(primary or secondary). A primary cluster can provide information
       about all the secondary clusters replicating from it. However, a
       secondary cluster only knows about the primary cluster from which it is
@@ -589,7 +589,7 @@ class CrossClusterReplicationConfig(_messages.Message):
     SECONDARY = 3
 
   clusterRole = _messages.EnumField('ClusterRoleValueValuesEnum', 1)
-  memberClusters = _messages.MessageField('MemberClusters', 2)
+  membership = _messages.MessageField('Membership', 2)
   primaryCluster = _messages.MessageField('RemoteCluster', 3)
   secondaryClusters = _messages.MessageField('RemoteCluster', 4, repeated=True)
   updateTime = _messages.StringField(5)
@@ -1858,6 +1858,9 @@ class Instance(_messages.Message):
       events Redis version 4.0 and newer: * activedefrag * lfu-decay-time *
       lfu-log-factor * maxmemory-gb Redis version 5.0 and newer: * stream-
       node-max-bytes * stream-node-max-entries
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     alternativeLocationId: Optional. If specified, at least one node will be
@@ -1962,6 +1965,9 @@ class Instance(_messages.Message):
       status of this instance, if available.
     suspensionReasons: Optional. reasons that causes instance in "SUSPENDED"
       state.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     tier: Required. The service tier of the instance.
     transitEncryptionMode: Optional. The TLS mode of the Redis instance. If
       not provided, TLS is disabled for the instance.
@@ -2122,6 +2128,32 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   alternativeLocationId = _messages.StringField(1)
   authEnabled = _messages.BooleanField(2)
   authorizedNetwork = _messages.StringField(3)
@@ -2157,8 +2189,9 @@ class Instance(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 33)
   statusMessage = _messages.StringField(34)
   suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 35, repeated=True)
-  tier = _messages.EnumField('TierValueValuesEnum', 36)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 37)
+  tags = _messages.MessageField('TagsValue', 36)
+  tier = _messages.EnumField('TierValueValuesEnum', 37)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 38)
 
 
 class InstanceAuthString(_messages.Message):
@@ -2488,9 +2521,9 @@ class ManagedCertificateAuthority(_messages.Message):
   caCerts = _messages.MessageField('CertChain', 1, repeated=True)
 
 
-class MemberClusters(_messages.Message):
-  r"""An output only view of all the member cluster participating in the cross
-  cluster replication.
+class Membership(_messages.Message):
+  r"""An output only view of all the member clusters participating in the
+  cross cluster replication.
 
   Fields:
     primaryCluster: Output only. The primary cluster that acts as the source

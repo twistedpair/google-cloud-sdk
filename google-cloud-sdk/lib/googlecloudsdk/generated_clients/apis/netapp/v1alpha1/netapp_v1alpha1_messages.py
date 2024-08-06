@@ -2607,6 +2607,8 @@ class StoragePool(_messages.Message):
       this field are ignored.
     replicaZone: Optional. Specifies the replica zone for regional
       storagePool.
+    satisfiesPzi: Output only. Reserved for future use
+    satisfiesPzs: Output only. Reserved for future use
     serviceLevel: Required. Service level of the storage pool
     state: Output only. State of the storage pool
     stateDetails: Output only. State details of the storage pool
@@ -2705,12 +2707,14 @@ class StoragePool(_messages.Message):
   network = _messages.StringField(12)
   psaRange = _messages.StringField(13)
   replicaZone = _messages.StringField(14)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  stateDetails = _messages.StringField(17)
-  volumeCapacityGib = _messages.IntegerField(18)
-  volumeCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(20)
+  satisfiesPzi = _messages.BooleanField(15)
+  satisfiesPzs = _messages.BooleanField(16)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  stateDetails = _messages.StringField(19)
+  volumeCapacityGib = _messages.IntegerField(20)
+  volumeCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(22)
 
 
 class SwitchActiveReplicaZoneRequest(_messages.Message):

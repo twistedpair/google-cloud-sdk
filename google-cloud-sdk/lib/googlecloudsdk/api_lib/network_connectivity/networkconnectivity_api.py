@@ -106,6 +106,21 @@ class SpokesClient(object):
     )
     return self.spoke_service.Create(create_req)
 
+  def CreateSpokeBeta(self, spoke_ref, spoke, request_id=None):
+    """Call API to create a new spoke."""
+    parent = spoke_ref.Parent().RelativeName()
+    spoke_id = spoke_ref.Name()
+
+    create_req = (
+        self.messages.NetworkconnectivityProjectsLocationsSpokesCreateRequest(
+            parent=parent,
+            requestId=request_id,
+            googleCloudNetworkconnectivityV1betaSpoke=spoke,
+            spokeId=spoke_id,
+        )
+    )
+    return self.spoke_service.Create(create_req)
+
   def UpdateSpoke(self, spoke_ref, spoke, update_mask, request_id=None):
     """Call API to update a existing spoke."""
     name = spoke_ref.RelativeName()
@@ -116,6 +131,21 @@ class SpokesClient(object):
             name=name,
             requestId=request_id,
             spoke=spoke,
+            updateMask=update_mask_string,
+        )
+    )
+    return self.spoke_service.Patch(update_req)
+
+  def UpdateSpokeBeta(self, spoke_ref, spoke, update_mask, request_id=None):
+    """Call API to update a existing spoke."""
+    name = spoke_ref.RelativeName()
+    update_mask_string = ','.join(update_mask)
+
+    update_req = (
+        self.messages.NetworkconnectivityProjectsLocationsSpokesPatchRequest(
+            name=name,
+            requestId=request_id,
+            googleCloudNetworkconnectivityV1betaSpoke=spoke,
             updateMask=update_mask_string,
         )
     )
@@ -225,12 +255,12 @@ class GroupsClient(object):
     name = group_ref.RelativeName()
     update_mask_string = ','.join(update_mask)
 
-    update_req = (
-        self.messages.NetworkconnectivityProjectsLocationsGlobalHubsGroupsPatchRequest(
-            name=name,
-            requestId=request_id,
-            group=group,
-            updateMask=update_mask_string))
+    update_req = self.messages.NetworkconnectivityProjectsLocationsGlobalHubsGroupsPatchRequest(
+        name=name,
+        requestId=request_id,
+        group=group,
+        updateMask=update_mask_string,
+    )
     return self.group_service.Patch(update_req)
 
   def UpdateGroupBeta(self, group_ref, group, update_mask, request_id=None):

@@ -85,6 +85,14 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_PREDICTIONS = (
+      'organizations.locations.predictions',
+      'organizations/{organization}/locations/{location}/predictions/'
+      '{predictionID}',
+      {},
+      ['organization', 'location', 'predictionID'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_REPORTS = (
       'organizations.locations.reports',
       '{+name}',

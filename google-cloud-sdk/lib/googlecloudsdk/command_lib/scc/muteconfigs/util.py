@@ -19,10 +19,15 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import argparse
 import re
+import typing
 
 from googlecloudsdk.command_lib.scc import errors
 from googlecloudsdk.command_lib.scc import util as scc_util
+from googlecloudsdk.core.util import times
+from googlecloudsdk.generated_clients.apis.securitycenter.v1 import securitycenter_v1_messages
+from googlecloudsdk.generated_clients.apis.securitycenter.v2 import securitycenter_v2_messages
 
 
 def ValidateAndGetParent(args):
@@ -165,3 +170,44 @@ def ValidateAndGetRegionalizedParent(args, parent):
         return f"{parent}/{args.location}"
     else:
       return f"{parent}/locations/{args.location}"
+
+
+def ValidateAndGetType(args: argparse.Namespace, version: str) -> typing.Union[
+    securitycenter_v1_messages.GoogleCloudSecuritycenterV1MuteConfig.TypeValueValuesEnum,
+    securitycenter_v2_messages.GoogleCloudSecuritycenterV2MuteConfig.TypeValueValuesEnum,
+]:
+  """Parses and validates type."""
+  mute_config_class = (
+      securitycenter_v2_messages.GoogleCloudSecuritycenterV2MuteConfig
+      if version == "v2"
+      else securitycenter_v1_messages.GoogleCloudSecuritycenterV1MuteConfig
+  )
+  if args.type == "static":
+    return mute_config_class.TypeValueValuesEnum.STATIC
+  elif args.type == "dynamic":
+    return mute_config_class.TypeValueValuesEnum.DYNAMIC
+  raise errors.InvalidSCCInputError(
+      "Type must be either 'static' or 'dynamic'."
+  )
+
+
+def ValidateAndGetExpiryTime(
+    args: argparse.Namespace,
+) -> typing.Union[str, None]:
+  """Parses and validates expiry time."""
+  if args.expiry_time is None:
+    return None
+
+  if hasattr(args, "type") and args.type != "dynamic":
+    raise errors.InvalidSCCInputError(
+        "Expiry time is only supported for 'dynamic' mute configs."
+    )
+
+  try:
+    expiry_time_dt = times.ParseDateTime(args.expiry_time)
+    return times.FormatDateTime(expiry_time_dt)
+  except (times.DateTimeSyntaxError, times.DateTimeValueError):
+    raise errors.InvalidSCCInputError(
+        "Invalid expiry time. See `$ gcloud topic datetimes` for information on"
+        " supported time formats."
+    )

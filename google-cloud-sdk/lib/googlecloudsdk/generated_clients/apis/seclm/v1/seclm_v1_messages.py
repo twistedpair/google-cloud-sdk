@@ -565,6 +565,22 @@ class SafetySetting(_messages.Message):
   threshold = _messages.EnumField('ThresholdValueValuesEnum', 2)
 
 
+class SeclmContext(_messages.Message):
+  r"""Represents SecLM backend context for a Duet request. This is used to
+  pass the full qualified SecLM workbench name to the duet
+  TaskCompletionRequest.
+
+  Fields:
+    fullyQualifiedWorkbenchName: The fully qualified SecLM workbench name.
+      Format:
+      `projects/{project}/locations/{location}/workbenches/{workbench_name}`
+      e.g. `projects/seclm-playground/locations/us-
+      central1/workbenches/logging-enabled`
+  """
+
+  fullyQualifiedWorkbenchName = _messages.StringField(1)
+
+
 class SeclmProjectsLocationsGetRequest(_messages.Message):
   r"""A SeclmProjectsLocationsGetRequest object.
 
@@ -892,7 +908,8 @@ class Workbench(_messages.Message):
     labels: Optional. Labels as key value pairs.
     name: Identifier. Name of resource.
     presetConfig: Optional. Configuration to use pre-defined query execution
-      logic. Values include: [PASSTHROUGH]
+      logic. Values include: - passthrough (gemini-1.0-pro) - passthrough-
+      gemini-1.5-pro - passthrough-gemini-1.5-flash - passthrough-secpalm-v3
     updateTime: Output only. Update time stamp.
   """
 

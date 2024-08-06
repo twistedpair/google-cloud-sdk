@@ -258,8 +258,8 @@ class NameExpansionIterator:
     ]
     if non_matching_urls:
       raise errors.InvalidUrlError(
-          'The following URLs matched no objects or files:\n-{}'.format(
-              '\n-'.join(non_matching_urls)))
+          'The following URLs matched no objects or files:\n{}'.format(
+              '\n'.join(non_matching_urls)))
 
   def _raise_error_if_multiple_sources_include_stdin(self, expanded_url):
     if (self._has_multiple_top_level_resources and isinstance(

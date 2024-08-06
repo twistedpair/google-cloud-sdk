@@ -207,7 +207,7 @@ class EnvironmentOptions(_messages.Message):
     CloudPlatformValueValuesEnum: Cloud platform being used by the customer.
 
   Fields:
-    cloudLocation: A list of Cloud region standards supported.
+    cloudLocation: Cloud location the customer is in.
     cloudPlatform: Cloud platform being used by the customer.
     customerIndustries: A list of customer industries supported.
     industryStandards: A list of industry standards supported.
@@ -225,7 +225,7 @@ class EnvironmentOptions(_messages.Message):
     CLOUD_PLATFORM_UNSPECIFIED = 0
     GCP = 1
 
-  cloudLocation = _messages.StringField(1, repeated=True)
+  cloudLocation = _messages.StringField(1)
   cloudPlatform = _messages.EnumField('CloudPlatformValueValuesEnum', 2)
   customerIndustries = _messages.StringField(3, repeated=True)
   industryStandards = _messages.MessageField('IndustryStandard', 4, repeated=True)
@@ -290,8 +290,8 @@ class FindingRemediationExecution(_messages.Message):
 
   Fields:
     finding: Required. Name of the finding. The format of this value is as
-      follows: organizations/{organization}/sources/{source}/locations/{locati
-      on}/findings/{finding_id}
+      follows:
+      organizations/{organization}/sources/{source}/findings/{finding_id}
     name: Output only. The id of the finding remediation execution. The format
       of this value is as follows: organizations/{organization}/locations/{loc
       ation}/findingRemediationExecutions/{finding_remediation_execution_id}

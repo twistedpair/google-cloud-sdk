@@ -289,11 +289,8 @@ class KubernetesExceptionParser(object):
       return []
 
 
-class InvalidRuntimeLanguage(exceptions.Error):
-  def __init__(self, invalid_runtime):
-    super(InvalidRuntimeLanguage, self).__init__(
-        f'Runtime language [{invalid_runtime}] is not supported'
-    )
+class BaseImageError(exceptions.Error):
+  """An error was encountered when parsing the base image."""
 
 
 class RequiredImageArgumentException(c_exceptions.RequiredArgumentException):

@@ -827,6 +827,9 @@ def get_cleared_object_fields(request_config):
   if resource_args.cache_control == user_request_args_factory.CLEAR:
     cleared_fields.append('cacheControl')
 
+  if resource_args.content_type == user_request_args_factory.CLEAR:
+    cleared_fields.append('contentType')
+
   if resource_args.content_disposition == user_request_args_factory.CLEAR:
     cleared_fields.append('contentDisposition')
 

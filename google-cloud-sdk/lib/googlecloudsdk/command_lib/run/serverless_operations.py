@@ -830,7 +830,8 @@ class ServerlessOperations(object):
       )
 
     if build_source is not None:
-      self._ValidateService(service_ref, config_changes)
+      # TODO(b/355762514): Either remove or re-enable this validation.
+      # self._ValidateService(service_ref, config_changes)
       (
           image_digest,
           base_image_from_build,

@@ -236,6 +236,10 @@ class ResourcePresentationSpec(PresentationSpec):
             self.hidden == other.hidden)
 
 
+class InvalidPresentationSpecError(Exception):
+  """Error for invalid presentation spec."""
+
+
 # Currently no other type of multitype concepts have been implemented.
 class MultitypeResourcePresentationSpec(PresentationSpec):
   """A resource-specific presentation spec."""
@@ -245,6 +249,15 @@ class MultitypeResourcePresentationSpec(PresentationSpec):
     attribute_to_args_map = {}
     leaf_anchors = [a for a in self._concept_spec.attributes
                     if self._concept_spec.IsLeafAnchor(a)]
+
+    if len(leaf_anchors) > 1 and util.IsPositional(self.name):
+      anchor_names = ', '.join(a.name for a in leaf_anchors)
+      raise InvalidPresentationSpecError(
+          f'Multitype resource has anchors [{anchor_names}] and positional '
+          f'name [{self.name}]. Multitype resource can only be non-positional '
+          'or have a single anchor. Update multitype collections or change '
+          f'the presentation name to {util.FlagNameFormat(self.name)}.')
+
     for attribute in self._concept_spec.attributes:
       is_anchor = [attribute] == leaf_anchors
       name = self.GetFlagName(
@@ -284,7 +297,8 @@ class MultitypeResourcePresentationSpec(PresentationSpec):
 
     if prefixes:
       return util.FlagNameFormat('-'.join([presentation_name, attribute_name]))
-    return util.FlagNameFormat(attribute_name)
+    else:
+      return util.FlagNameFormat(attribute_name)
 
   def _GenerateInfo(self, fallthroughs_map):
     """Gets the MultitypeResourceInfo object for the ConceptParser.

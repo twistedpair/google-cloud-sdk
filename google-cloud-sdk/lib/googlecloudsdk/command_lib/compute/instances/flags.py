@@ -79,6 +79,7 @@ MIGRATION_OPTIONS = {
 }
 
 LOCAL_SSD_INTERFACES = ['NVME', 'SCSI']
+PD_INTERFACES = ['NVME', 'SCSI']
 
 DISK_METAVAR = ('name=NAME [mode={ro,rw}] [device-name=DEVICE_NAME] ')
 
@@ -611,6 +612,7 @@ def AddDiskArgs(parser,
       'boot': arg_parsers.ArgBoolean(),
       'device-name': str,
       'auto-delete': arg_parsers.ArgBoolean(),
+      'interface': str,
   }
 
   if enable_regional_disks:
@@ -618,12 +620,12 @@ def AddDiskArgs(parser,
     disk_arg_spec['force-attach'] = arg_parsers.ArgBoolean()
 
   disk_help = """
-      Attaches an existing persistent disk to the instances.
+      Attaches an existing disk to the instances.
 
       *name*::: The disk to attach to the instances. If you create more than
       one instance, you can only attach a disk in read-only mode. By default,
-      you attach a zonal persistent disk located in the same zone of the
-      instance. If you want to attach a regional persistent disk, you must
+      you attach a zonal disk located in the same zone of the
+      instance. If you want to attach a regional disk, you must
       specify the disk using its URI; for example,
       ``projects/myproject/regions/us-central1/disks/my-regional-disk''.
 
@@ -641,7 +643,12 @@ def AddDiskArgs(parser,
       *auto-delete*::: If set to ``yes'', the persistent disk is
       automatically deleted when the instance is deleted. However,
       if you detach the disk from the instance, deleting the instance
-      doesn't delete the disk. The default value for this is ``yes''.
+      doesn't delete the disk. The default value is ``yes''.
+
+      *interface*::: The interface to use for the disk.
+      The value must be one of the following:
+        * SCSI
+        * NVME
       """.format(disk_device_name_help)
   if enable_regional_disks:
     disk_help += """
@@ -712,6 +719,16 @@ def AddBootDiskArgs(parser, enable_kms=False):
       help="""\
       Indicates how much throughput to provision for the disk. This sets the
       number of throughput mb per second that the disk can handle.
+      """,
+  )
+
+  parser.add_argument(
+      '--boot-disk-interface',
+      help="""\
+      Indicates the interface to use for the boot disk.
+      The value must be one of the following:
+      * SCSI
+      * NVME
       """,
   )
 
@@ -841,10 +858,16 @@ def AddCreateDiskArgs(
 
       *storage-pool*::: The name of the storage pool in which the new disk is
       created. The new disk and the storage pool must be in the same location.
+
+      *interface*::: The interface to use with the disk. The value must be one
+      of the following:
+        * SCSI
+        * NVME
       """.format(
-          disk_name=disk_name_extra_help,
-          disk_mode=disk_mode_extra_help,
-          disk_device=disk_device_name_help)
+      disk_name=disk_name_extra_help,
+      disk_mode=disk_mode_extra_help,
+      disk_device=disk_device_name_help,
+  )
   if support_boot:
     disk_help += """
       *boot*::: If ``yes'', indicates that this is a boot disk. The
@@ -910,6 +933,7 @@ def AddCreateDiskArgs(
       'architecture': str,
       'storage-pool': str,
       'labels': arg_parsers.ArgList(min_length=1, custom_delim_char=':'),
+      'interface': str,
   }
 
   if include_name:
@@ -1159,14 +1183,24 @@ def ValidateDiskCommonFlags(args):
       raise exceptions.InvalidArgumentException(
           '--disk',
           '[name] is missing in [--disk]. [--disk] value must be of the form '
-          '[{0}].'.format(DISK_METAVAR))
+          '[{0}].'.format(DISK_METAVAR),
+      )
 
     mode_value = disk.get('mode')
     if mode_value and mode_value not in ('rw', 'ro'):
       raise exceptions.InvalidArgumentException(
           '--disk',
           'Value for [mode] in [--disk] must be [rw] or [ro], not [{0}].'
-          .format(mode_value))
+          .format(mode_value),
+      )
+
+    interface = disk.get('interface')
+    if interface and interface not in PD_INTERFACES:
+      raise exceptions.InvalidArgumentException(
+          '--disk',
+          'Value for [interface] in [--disk] must be one of following: {0}, not'
+          ' [{1}].'.format(PD_INTERFACES, interface),
+      )
 
 
 def ValidateDiskAccessModeFlags(args):
@@ -1236,6 +1270,15 @@ def ValidateDiskBootFlags(args, enable_kms=False):
           '--boot-disk-provisioned-throughput',
           '--boot-disk-provisioned-throughput cannot be used with the given'
           ' disk type.',
+      )
+  if args.IsSpecified('boot_disk_interface'):
+    if args.boot_disk_interface not in PD_INTERFACES:
+      raise exceptions.InvalidArgumentException(
+          '--boot-disk-interface',
+          'Value for [--boot-disk-interface] must be one of'
+          ' following: {0}, not [{1}].'.format(
+              PD_INTERFACES, args.boot_disk_interface
+          ),
       )
 
   if args.IsSpecified('boot_disk_size'):
@@ -1338,6 +1381,13 @@ def ValidateCreateDiskFlags(
           '--disk',
           'Value for [mode] in [--disk] must be [rw] or [ro], not [{0}].'
           .format(mode_value))
+    interface = disk.get('interface')
+    if interface and interface not in PD_INTERFACES:
+      raise exceptions.InvalidArgumentException(
+          '--disk',
+          'Value for [interface] in [--disk] must be one of following: {0}, not'
+          ' [{1}].'.format(PD_INTERFACES, interface),
+      )
 
     image_value = disk.get('image')
     image_family_value = disk.get('image-family')

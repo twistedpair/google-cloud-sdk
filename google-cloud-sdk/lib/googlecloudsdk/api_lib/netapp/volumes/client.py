@@ -214,6 +214,8 @@ class VolumesClient(object):
       backup=None,
       restricted_actions=None,
       backup_config=None,
+      large_capacity=None,
+      multiple_endpoints=None,
       tiering_policy=None,
   ):
     """Parses updates into a volume config."""
@@ -237,6 +239,8 @@ class VolumesClient(object):
         backup=backup,
         restricted_actions=restricted_actions,
         backup_config=backup_config,
+        large_capacity=large_capacity,
+        multiple_endpoints=multiple_endpoints,
         tiering_policy=tiering_policy)
 
   def UpdateVolume(self, volume_ref, volume_config, update_mask, async_):

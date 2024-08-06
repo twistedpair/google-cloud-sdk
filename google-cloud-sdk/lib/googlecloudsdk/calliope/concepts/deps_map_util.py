@@ -147,7 +147,7 @@ def CreateValueFallthroughMapList(
 
     {'book': [deps.ArgFallthrough('--book')]}
 
-  will generate somehting like...
+  will generate something like...
 
     [
         {'book': [deps.ValueFallthrough('foo')]},

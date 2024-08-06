@@ -38,6 +38,7 @@ from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
+from googlecloudsdk.core.universe_descriptor import universe_descriptor
 from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.updater import local_state
 from googlecloudsdk.core.updater import release_notes
@@ -46,7 +47,6 @@ from googlecloudsdk.core.updater import update_check
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
-
 import six
 from six.moves import map  # pylint: disable=redefined-builtin
 
@@ -1150,6 +1150,15 @@ version [{1}].  To clear your fixed version setting, run:
           new_diff.latest, bool(new_diff.AvailableUpdates()), force=True)
 
     self._PostProcess(snapshot=diff.latest)
+
+    try:
+      universe_descriptor_data = universe_descriptor.UniverseDescriptor()
+      universe_descriptor_data.UpdateAllDescriptors()
+    except Exception as e:  # pylint: disable=broad-except
+      log.warning(
+          'Failed to update universe descriptors: %s',
+          e,
+      )
 
     sha256dict2 = self._HashRcfiles(_SHELL_RCFILES)
     if sha256dict1 != sha256dict2:

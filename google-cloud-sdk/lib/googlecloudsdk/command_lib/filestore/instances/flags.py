@@ -626,7 +626,6 @@ def AddInstanceCreateArgs(parser, api_version):
   if api_version == filestore_client.BETA_API_VERSION:
     GetProtocolArg(messages).choice_arg.AddToParser(parser)
     AddConnectManagedActiveDirectoryArg(parser)
-    AddPerformanceArg(parser)
   AddFileShareArg(
       parser,
       api_version,
@@ -637,6 +636,7 @@ def AddInstanceCreateArgs(parser, api_version):
                      filestore_client.V1_API_VERSION]:
     AddKmsKeyArg(parser)
     AddSourceInstanceArg(parser)
+    AddPerformanceArg(parser)
 
 
 def AddInstanceUpdateArgs(parser, api_version):
@@ -651,7 +651,6 @@ def AddInstanceUpdateArgs(parser, api_version):
   labels_util.AddUpdateLabelsFlags(parser)
   if api_version == filestore_client.BETA_API_VERSION:
     AddManagedActiveDirectoryConnectionArgs(parser)
-    AddPerformanceArg(parser)
   AddFileShareArg(
       parser,
       api_version,
@@ -659,3 +658,6 @@ def AddInstanceUpdateArgs(parser, api_version):
           api_version == filestore_client.ALPHA_API_VERSION),
       clear_nfs_export_options_required=True,
       required=False)
+  if api_version in [filestore_client.BETA_API_VERSION,
+                     filestore_client.V1_API_VERSION]:
+    AddPerformanceArg(parser)

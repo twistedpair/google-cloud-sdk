@@ -222,6 +222,59 @@ def print_worker_thread_stack_traces(stack_trace_file_path):
     log.status.Print('No stack traces found. No worker threads running.')
 
 
+def print_queue_size(task_queue, task_status_queue, task_output_queue):
+  """Prints the size of the queues."""
+  log.status.Print(f'Task Queue size: {task_queue.qsize()}')
+  log.status.Print(f'Task Status Queue size: {task_status_queue.qsize()}')
+  log.status.Print(f'Task Output Queue size: {task_output_queue.qsize()}')
+
+
+def task_graph_debugger_worker(
+    management_threads_name_to_function: Dict[str, threading.Thread],
+    stack_trace_file: str,
+    task_graph: task_graph_module.TaskGraph,
+    task__buffer: task_buffer.TaskBuffer,
+):
+  """The main worker function for the task graph debugging framework.
+
+  Prints the stack traces of the management threads involved namely
+  iterator_to_buffer, buffer_to_queue and task_output_handler.Captures and
+  prints the contents of the task graph and task buffer.
+  Also prints the stack traces of the worker threads if they are running at the
+  particular snapshot taken.
+
+  Args:
+    management_threads_name_to_function: A dictionary of management thread name
+      to the thread function.
+    stack_trace_file: Path to the file containing the stack traces of the worker
+      threads.
+    task_graph: The task graph object.
+    task__buffer: The task buffer object.
+  """
+  is_task_buffer_empty = False
+  is_task_graph_empty = False
+  is_some_management_thread_alive = True
+
+  while (
+      is_some_management_thread_alive
+      or not is_task_buffer_empty
+      or not is_task_graph_empty
+  ):
+    print_management_thread_stacks(management_threads_name_to_function)
+    print_worker_thread_stack_traces(stack_trace_file)
+    log.status.Print(str(task_graph))
+    log.status.Print(str(task__buffer))
+
+    is_task_graph_empty = task_graph.is_empty.is_set()
+    is_task_buffer_empty = task__buffer.size() == 0
+
+    is_some_management_thread_alive = False
+    for thread in management_threads_name_to_function.values():
+      if thread.is_alive():
+        is_some_management_thread_alive = True
+        break
+
+
 class _DebugSignalHandler:
   """Signal handler for collecting debug information."""
 

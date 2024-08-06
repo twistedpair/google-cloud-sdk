@@ -162,6 +162,54 @@ def _BooleanValidator(property_name, property_value):
             ', '.join([x if x else "''" for x in accepted_strings])))
 
 
+def _IntegerValidator(property_name=None, property_value=None):
+  """Validates integer properties.
+
+  Args:
+    property_name: str, the name of the property
+    property_value: PropertyValue | int | str, the value to validate
+
+  Raises:
+    InvalidValueError: if value is not integer
+  """
+  if property_value is None:
+    return
+  if property_name is None:
+    return
+
+  if isinstance(property_value, PropertyValue):
+    value = property_value.value
+  else:
+    value = property_value
+
+  try:
+    # Attempt to convert the value to an integer.
+    int_value = int(value)
+
+  except (ValueError, TypeError):
+
+    raise InvalidValueError(
+        f'The [{property_name}] value [{value}] is not valid. Only integer'
+        ' values are allowed for this property.'
+    )
+
+  # Check if the converted value is an integer.
+
+  if not isinstance(int_value, int):
+    raise InvalidValueError(
+        f'The [{property_name}] value [{value}] is not valid. Only integer'
+        ' values are allowed for this property.'
+    )
+
+  # Ensure the integer value is positive.
+  if int_value <= 0:
+
+    raise InvalidValueError(
+        f'The [{property_name}] value [{value}] is not valid. Only positive'
+        ' integer values are allowed.'
+    )
+
+
 def _BuildTimeoutValidator(timeout):
   """Validates build timeouts."""
   # pylint: disable=g-import-not-at-top
@@ -1550,6 +1598,13 @@ class _SectionArtifacts(_Section):
             'Default host to use while interacting with Container Registry '
             'Docker resources.'
         ),
+    )
+
+    self.max_notes_per_batch_request = self._Add(
+        'max_notes_per_batch_request',
+        default=1000,
+        hidden=True,
+        help_text='Default batching size for BatchCreateNotes requests.',
     )
 
 
@@ -3402,8 +3457,22 @@ class _SectionStorage(_Section):
         'enable_task_graph_debugging',
         default=False,
         hidden=True,
+        help_text='Enables task graph debugging for gcloud storage commands.',
+    )
+
+    self.task_graph_debugging_snapshot_duration = self._Add(
+        'task_graph_debugging_snapshot_duration',
+        default=1,
+        hidden=True,
+        validator=_IntegerValidator,
         help_text=(
-            'Enables task graph debugging for gcloud storage commands.'
+            'The duration in seconds for which the task graph debugging'
+            'framework will take a snapshot'
+            'of the task graph, task buffer ,'
+            'management threads and worker threads'
+            'and then display them and provide a'
+            'visual representation of the contents'
+            'and help track down the issue.'
         ),
     )
 

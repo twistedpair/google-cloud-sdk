@@ -5628,7 +5628,6 @@ class WorkforcePoolInstalledApp(_messages.Message):
       installed app.
 
   Fields:
-    appId: Output only.
     appMetadata: Immutable. Metadata for the app.
     createTime: Output only. The timestamp when the workforce pool installed
       app was created.
@@ -5643,7 +5642,6 @@ class WorkforcePoolInstalledApp(_messages.Message):
     name: Immutable. The resource name of the workforce pool installed app.
       Format: `locations/{location}/workforcePools/{workforce_pool}/installedA
       pps/{installed_app}`
-    oauthClient: Immutable.
     state: Output only. The state of the workforce pool installed app.
     updateTime: Output only. The timestamp for the last update of the
       workforce pool installed app.
@@ -5664,17 +5662,15 @@ class WorkforcePoolInstalledApp(_messages.Message):
     ACTIVE = 1
     DELETED = 2
 
-  appId = _messages.StringField(1)
-  appMetadata = _messages.MessageField('AppMetadata', 2)
-  createTime = _messages.StringField(3)
-  deleteTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  displayName = _messages.StringField(6)
-  expireTime = _messages.StringField(7)
-  name = _messages.StringField(8)
-  oauthClient = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  appMetadata = _messages.MessageField('AppMetadata', 1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  expireTime = _messages.StringField(6)
+  name = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class WorkforcePoolProvider(_messages.Message):
