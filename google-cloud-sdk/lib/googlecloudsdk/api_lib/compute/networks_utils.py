@@ -41,8 +41,13 @@ def AddModesForListFormat(resource):
       x_gcloud_bgp_routing_mode=GetBgpRoutingMode(resource))
 
 
-def CreateNetworkResourceFromArgs(messages, network_ref, network_args,
-                                  support_firewall_order):
+def CreateNetworkResourceFromArgs(
+    messages,
+    network_ref,
+    network_args,
+    network_profile_ref,
+    support_firewall_order,
+):
   """Creates a new network resource from flag arguments."""
 
   network = messages.Network(
@@ -98,7 +103,7 @@ def CreateNetworkResourceFromArgs(messages, network_ref, network_args,
   if hasattr(network_args, 'internal_ipv6_range'):
     network.internalIpv6Range = network_args.internal_ipv6_range
 
-  if hasattr(network_args, 'rdma'):
-    network.rdma = network_args.rdma
+  if network_profile_ref:
+    network.networkProfile = network_profile_ref.SelfLink()
 
   return network

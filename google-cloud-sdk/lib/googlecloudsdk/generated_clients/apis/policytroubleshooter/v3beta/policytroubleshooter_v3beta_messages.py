@@ -2812,9 +2812,17 @@ class GoogleIamV3PolicyBindingTarget(_messages.Message):
       `//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID`
       * Workspace Identity:
       `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID`
+    resource: Immutable. Full Resource Name used for access policy bindings
+      Examples: * Organization:
+      `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
+      Folder: `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` *
+      Project: *
+      `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER` *
+      `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID`
   """
 
   principalSet = _messages.StringField(1)
+  resource = _messages.StringField(2)
 
 
 class GoogleIamV3PrincipalAccessBoundaryPolicy(_messages.Message):

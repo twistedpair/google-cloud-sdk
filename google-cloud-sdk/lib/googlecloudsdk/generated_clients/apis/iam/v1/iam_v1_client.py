@@ -2110,29 +2110,29 @@ class IamV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def SetAttestationRule(self, request, global_params=None):
+    def SetAttestationRules(self, request, global_params=None):
       r"""Set all AttestationRule on a WorkloadIdentityPoolManagedIdentity. A maximum of 100 AttestationRules can be set.
 
       Args:
-        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesSetAttestationRuleRequest) input message
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesSetAttestationRulesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
       """
-      config = self.GetMethodConfig('SetAttestationRule')
+      config = self.GetMethodConfig('SetAttestationRules')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    SetAttestationRule.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}:setAttestationRule',
+    SetAttestationRules.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}:setAttestationRules',
         http_method='POST',
-        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.setAttestationRule',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.setAttestationRules',
         ordered_params=['resource'],
         path_params=['resource'],
         query_params=[],
-        relative_path='v1/{+resource}:setAttestationRule',
+        relative_path='v1/{+resource}:setAttestationRules',
         request_field='setAttestationRulesRequest',
-        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesSetAttestationRuleRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesSetAttestationRulesRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -2686,6 +2686,33 @@ class IamV1(base_api.BaseApiClient):
         relative_path='v1/{+resource}:removeAttestationRule',
         request_field='removeAttestationRuleRequest',
         request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesRemoveAttestationRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetAttestationRules(self, request, global_params=None):
+      r"""Set all AttestationRule on a WorkloadIdentityPoolManagedIdentity. A maximum of 100 AttestationRules can be set.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesSetAttestationRulesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetAttestationRules')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetAttestationRules.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}:setAttestationRules',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.setAttestationRules',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setAttestationRules',
+        request_field='setAttestationRulesRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesSetAttestationRulesRequest',
         response_type_name='Operation',
         supports_download=False,
     )

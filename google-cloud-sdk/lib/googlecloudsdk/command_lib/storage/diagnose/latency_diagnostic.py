@@ -28,6 +28,7 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.diagnose import diagnostic
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.core import log
+from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import scaled_integer
 
@@ -197,47 +198,50 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
     latency of each operation.
     """
     for iteration in range(_ITERATION_COUNT):
-      log.status.Print(f'Running latency iteration {iteration}')
-      # Run operation for each file and store the results.
-      for object_number in range(self.object_count):
-        file_path = self._files[object_number]
-        file_size = self.object_sizes[object_number]
+      with progress_tracker.ProgressTracker(
+          f'Running latency iteration {iteration}'
+      ):
+        # Run operation for each file and store the results.
+        for object_number in range(self.object_count):
+          file_path = self._files[object_number]
+          file_size = self.object_sizes[object_number]
 
-        object_url = storage_url.CloudUrl(
-            storage_url.ProviderPrefix.GCS,
-            self.bucket_url.bucket_name,
-            file_path,
-        )
-        object_resource = resource_reference.ObjectResource(
-            object_url, size=file_size
-        )
-        request_config = request_config_factory.get_request_config(
-            object_resource.storage_url,
-            content_type=request_config_factory.DEFAULT_CONTENT_TYPE,
-            size=file_size,
-        )
-
-        try:
-          self._upload_object(
-              object_number,
+          object_url = storage_url.CloudUrl(
+              storage_url.ProviderPrefix.GCS,
+              self.bucket_url.bucket_name,
               file_path,
-              object_resource,
-              request_config,
-              iteration,
           )
-          self._fetch_object_metadata(
-              object_number, object_resource.name, iteration
+          object_resource = resource_reference.ObjectResource(
+              object_url, size=file_size
           )
-          self._download_object(
-              object_number, object_resource, request_config, iteration
+          request_config = request_config_factory.get_request_config(
+              object_resource.storage_url,
+              content_type=request_config_factory.DEFAULT_CONTENT_TYPE,
+              size=file_size,
           )
-          self._delete_object(
-              object_number, object_url, request_config, iteration
-          )
-        except api_errors.CloudApiError as e:
-          raise diagnostic.DiagnosticIgnorableError(
-              f'Failed to run operation for object {object_resource.name}. {e}'
-          )
+
+          try:
+            self._upload_object(
+                object_number,
+                file_path,
+                object_resource,
+                request_config,
+                iteration,
+            )
+            self._fetch_object_metadata(
+                object_number, object_resource.name, iteration
+            )
+            self._download_object(
+                object_number, object_resource, request_config, iteration
+            )
+            self._delete_object(
+                object_number, object_url, request_config, iteration
+            )
+          except api_errors.CloudApiError as e:
+            raise diagnostic.DiagnosticIgnorableError(
+                'Failed to run operation for object'
+                f' {object_resource.name}. {e}'
+            )
 
   def _post_process(self):
     if self.temp_dir is not None:

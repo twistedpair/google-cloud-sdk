@@ -272,3 +272,17 @@ entry:
     attribute_name: entry
     help: |
       Entry containing metadata about some resource.
+
+governance_rule:
+  name: governance rule
+  collection: dataplex.projects.locations.governanceRules
+  request_id_field: governanceRuleId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - &governance_rule
+    parameter_name: governanceRulesId
+    attribute_name: governance_rule
+    help: |
+      Identifier of the Dataplex Governance Rule resource.

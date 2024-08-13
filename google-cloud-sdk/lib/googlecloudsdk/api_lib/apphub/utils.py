@@ -22,7 +22,9 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+
 
 VERSION_MAP = {
     base.ReleaseTrack.ALPHA: 'v1alpha',
@@ -156,6 +158,16 @@ def GetOperationRef(args):
   return operation_ref
 
 
+def GetLocationRef(args):
+  """Returns a location reference."""
+  location_ref = args.CONCEPTS.location.Parse()
+  if not location_ref.Name():
+    raise exceptions.InvalidArgumentException(
+        'location', 'location id must be non-empty.'
+    )
+  return location_ref
+
+
 def GetDiscoveredWorkloadRef(args):
   """Returns a discovered workload reference."""
   discovered_workload_ref = args.CONCEPTS.discovered_workload.Parse()
@@ -204,3 +216,11 @@ def GetApplicationServiceRef(args):
         'service', 'service id must be non-empty.'
     )
   return service_ref
+
+
+def GetProjectRef():
+  """Returns a project reference."""
+  return resources.REGISTRY.Parse(
+      properties.VALUES.core.project.GetOrFail(),
+      collection='apphub.projects',
+  )

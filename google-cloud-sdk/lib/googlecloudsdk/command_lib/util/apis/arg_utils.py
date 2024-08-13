@@ -595,27 +595,6 @@ def GetFlagName(arg_name, flag_prefix=None):
   return format_util.FlagNameFormat(name)
 
 
-def GetAttributeFlags(
-    arg_data, arg_name, resource_collection, shared_resource_args):
-  """Gets a list of attribute flags for the given resource arg.
-
-  Args:
-    arg_data: yaml_arg_schema.YAMLResourceArgument, data used to generate the
-      resource argument
-    arg_name: str, name of the anchor resource arg
-    resource_collection: registry.APICollection | None, collection used to
-      create resource argument.
-    shared_resource_args: [str], list of resource args to ignore
-
-  Returns:
-    A list of base.Argument resource attribute flags.
-  """
-  name = GetFlagName(arg_name)
-  resource_arg = arg_data.GenerateResourceArg(
-      resource_collection, name, shared_resource_args).GetInfo(name)
-  return resource_arg.GetAttributeArgs()[:-1]
-
-
 def _GetCommonPrefix(longest_arr, arr):
   """Gets the long common sub list between two lists."""
   new_arr = []

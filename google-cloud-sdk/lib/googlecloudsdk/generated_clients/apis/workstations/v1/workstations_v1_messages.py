@@ -343,10 +343,10 @@ class GceInstance(_messages.Message):
 
   Messages:
     VmTagsValue: Optional. Resource manager tags to be bound to this instance.
-      Tag keys and values have the same definition as
-      https://cloud.google.com/resource-manager/docs/tags/tags-overview Keys
-      must be in the format `tagKeys/{tag_key_id}`, and values are in the
-      format `tagValues/456`.
+      Tag keys and values have the same definition as [resource manager
+      tags](https://cloud.google.com/resource-manager/docs/tags/tags-
+      overview). Keys must be in the format `tagKeys/{tag_key_id}`, and values
+      are in the format `tagValues/456`.
 
   Fields:
     accelerators: Optional. A list of the type and count of accelerator cards
@@ -366,11 +366,11 @@ class GceInstance(_messages.Message):
     disableSsh: Optional. Whether to disable SSH access to the VM.
     enableNestedVirtualization: Optional. Whether to enable nested
       virtualization on Cloud Workstations VMs created using this workstation
-      configuration. Nested virtualization lets you run virtual machine (VM)
-      instances inside your workstation. Before enabling nested
-      virtualization, consider the following important considerations. Cloud
-      Workstations instances are subject to the [same restrictions as Compute
-      Engine
+      configuration. Defaults to false. Nested virtualization lets you run
+      virtual machine (VM) instances inside your workstation. Before enabling
+      nested virtualization, consider the following important considerations.
+      Cloud Workstations instances are subject to the [same restrictions as
+      Compute Engine
       instances](https://cloud.google.com/compute/docs/instances/nested-
       virtualization/overview#restrictions): * **Organization policy**:
       projects, folders, or organizations may be restricted from creating
@@ -385,15 +385,7 @@ class GceInstance(_messages.Message):
       than a 10% decrease for workloads that are input/output bound. *
       **Machine Type**: nested virtualization can only be enabled on
       workstation configurations that specify a machine_type in the N1 or N2
-      machine series. * **GPUs**: nested virtualization may not be enabled on
-      workstation configurations with accelerators. * **Operating System**:
-      because [Container-Optimized
-      OS](https://cloud.google.com/compute/docs/images/os-details#container-
-      optimized_os_cos) does not support nested virtualization, when nested
-      virtualization is enabled, the underlying Compute Engine VM instances
-      boot from an [Ubuntu
-      LTS](https://cloud.google.com/compute/docs/images/os-details#ubuntu_lts)
-      image.
+      machine series.
     machineType: Optional. The type of machine to use for VM instances-for
       example, `"e2-standard-4"`. For more information about machine types
       that Cloud Workstations supports, see the list of [available machine
@@ -432,18 +424,19 @@ class GceInstance(_messages.Message):
       rules](https://cloud.google.com/workstations/docs/configure-firewall-
       rules).
     vmTags: Optional. Resource manager tags to be bound to this instance. Tag
-      keys and values have the same definition as
-      https://cloud.google.com/resource-manager/docs/tags/tags-overview Keys
-      must be in the format `tagKeys/{tag_key_id}`, and values are in the
-      format `tagValues/456`.
+      keys and values have the same definition as [resource manager
+      tags](https://cloud.google.com/resource-manager/docs/tags/tags-
+      overview). Keys must be in the format `tagKeys/{tag_key_id}`, and values
+      are in the format `tagValues/456`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class VmTagsValue(_messages.Message):
     r"""Optional. Resource manager tags to be bound to this instance. Tag keys
-    and values have the same definition as https://cloud.google.com/resource-
-    manager/docs/tags/tags-overview Keys must be in the format
-    `tagKeys/{tag_key_id}`, and values are in the format `tagValues/456`.
+    and values have the same definition as [resource manager
+    tags](https://cloud.google.com/resource-manager/docs/tags/tags-overview).
+    Keys must be in the format `tagKeys/{tag_key_id}`, and values are in the
+    format `tagValues/456`.
 
     Messages:
       AdditionalProperty: An additional property for a VmTagsValue object.
@@ -1042,7 +1035,9 @@ class PortRange(_messages.Message):
 
   Fields:
     first: Required. Starting port number for the current range of ports.
-    last: Required. Ending port number for the current range of ports.
+      Valid ports are 22, 80, and ports within the range 1024-65535.
+    last: Required. Ending port number for the current range of ports. Valid
+      ports are 22, 80, and ports within the range 1024-65535.
   """
 
   first = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1574,9 +1569,10 @@ class WorkstationConfig(_messages.Message):
       propagated to the underlying Compute Engine resources.
 
   Fields:
-    allowedPorts: Optional. A Single or Range of ports externally accessible
-      in the workstation. If not specified defaults to ports 22, 80 and ports
-      1024-65535.
+    allowedPorts: Optional. A list of PortRanges specifying single ports or
+      ranges of ports that are externally accessible in the workstation.
+      Allowed ports must be one of 22, 80, or within range 1024-65535. If not
+      specified defaults to ports 22, 80, and ports 1024-65535.
     annotations: Optional. Client-specified annotations.
     conditions: Output only. Status conditions describing the current resource
       state.
@@ -1598,10 +1594,14 @@ class WorkstationConfig(_messages.Message):
     displayName: Optional. Human-readable name for this workstation
       configuration.
     enableAuditAgent: Optional. Whether to enable Linux `auditd` logging on
-      the workstation. When enabled, a service account must also be specified
-      that has `logging.buckets.write` permission on the project. Operating
-      system audit logging is distinct from [Cloud Audit
-      Logs](https://cloud.google.com/workstations/docs/audit-logging).
+      the workstation. When enabled, a service_account must also be specified
+      that has `roles/logging.logWriter` and `roles/monitoring.metricWriter`
+      on the project. Operating system audit logging is distinct from [Cloud
+      Audit Logs](https://cloud.google.com/workstations/docs/audit-logging)
+      and [Container output logging](http://cloud/workstations/docs/container-
+      output-logging#overview). Operating system audit logs are available in
+      the [Cloud Logging](https://cloud.google.com/logging/docs) console by
+      querying: resource.type="gce_instance" log_name:"/logs/linux-auditd"
     encryptionKey: Immutable. Encrypts resources of this workstation
       configuration using a customer-managed encryption key (CMEK). If
       specified, the boot disk of the Compute Engine instance and the

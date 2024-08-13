@@ -21,6 +21,8 @@ MEMBERSHIP_FEATURE_PROJECT_ALLOWLIST = (
     'yufans-test',
     'membershipfeature-project',
     'membershipfeature-project-number',
+    'poco-mf-test-project',
+    'poco-mf-test-project-number',
 )
 
 

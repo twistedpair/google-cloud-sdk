@@ -5,6 +5,83 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 488.0.0 (2024-08-13)
+
+### BigQuery
+
+*   Fixed logging when `--use_google_auth` is used.
+*   Added a retry for server-side errors.
+*   Sorted `ls` response for projects.
+
+### Certificate Manager
+
+* Added command `gcloud certificate-manager issuance-configs update`.
+
+### Cloud Filestore
+
+* Added `--clear-performance` flag to `gcloud beta filestore instances update`
+and `gcloud filestore instances update` to support unsetting of performance
+configurations for filestore instances.
+
+### Cloud Firestore
+
+* Added support for `VECTOR_CONFIG` options in `gcloud firestore indexes
+  composite list` command.
+* Added support for `VECTOR_CONFIG` options in `gcloud firestore indexes
+  composite describe` command.
+
+### Cloud Memorystore
+
+* Added `--cross-cluster-replication-role` and `--primary-cluster` flags to `gcloud redis clusters create` for creating secondary clusters.
+* Added `gcloud redis clusters switchover`, `gcloud redis clusters detach` and `gcloud redis clusters detach-secondaries` commands for Cross Cluster Replication failover CUJs.
+
+### Cloud Run
+
+* Added `--gpu` and `--gpu-type` to `gcloud beta run deploy` and
+  `gcloud beta run services update` which allow deploying a service with GPU.
+
+### Cloud Workstations
+
+* Added `--allowed-ports` flag support for `gcloud workstations configs create`.
+
+### Compute Engine
+
+*   Updating `--session-affinity` to a value other than
+    `STRONG_COOKIE_AFFINITY` clears the value of strongSessionAffinityCookie.
+*   Added support for specifying multiple instances in `gcloud compute instances perform-maintenance`.
+* Promoted `--bgp-best-path-selection-mode` and related flags in `gcloud compute networks create` and `update` to beta.
+*  `gcloud compute instances ops-agents policies create/update` no longer supports Centos 7, Centos 8 and Debian 10.
+
+### Database Migration
+
+* Updated `gcloud database-migration connection-profiles create cloudsql` to support MySQL_8_0_37 minor version option for Cloud SQL connection profiles.
+
+### GKE Hub
+
+* Modified `gcloud beta container fleet memberships describe` to call gkehub API version v1beta instead of v1beta1.
+* Modified `gcloud beta container fleet memberships delete` to call gkehub API version v1beta instead of v1beta1.
+* Modified `gcloud beta container fleet memberships list` to call gkehub API version v1beta instead of v1beta1.
+
+### Identity and Access Management
+
+* Added `--credential-cert-path`, `--credential-key-path`, and
+  `--credential-cert-config-path` flags to
+  `gcloud iam workload pools create-cred-config`. This enables using
+  X509 certificate-sourced credentials with
+  `gcloud auth login --cred-file=/path/to/credential/config.json`
+  when using Workload Identity Federation.
+
+### Network Security
+
+*   Promoted `gcloud network-security address-groups --purpose` field to GA.
+*   Added `network-security mirroring-deployment-groups` commands to manage packet-mirroring deployment groups, and promoted them to beta.
+*   Added `network-security mirroring-deployments` commands to manage packet-mirroring deployments, and promoted them to beta.
+*   Added `network-security mirroring-endpoint-groups` commands to manage packet-mirroring endpoint groups, and promoted them to beta.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 487.0.0 (2024-08-06)
 
 ### Breaking Changes

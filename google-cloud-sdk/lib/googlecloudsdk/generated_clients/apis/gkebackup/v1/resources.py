@@ -86,6 +86,29 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_PERMITTEDBACKUPFLOWS = (
+      'projects.locations.permittedBackupFlows',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'permittedBackupFlows/{permittedBackupFlowsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_PERMITTEDBACKUPFLOWS_BACKUPPLANASSOCIATIONS = (
+      'projects.locations.permittedBackupFlows.backupPlanAssociations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'permittedBackupFlows/{permittedBackupFlowsId}/'
+              'backupPlanAssociations/{backupPlanAssociationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_RESTOREPLANS = (
       'projects.locations.restorePlans',
       '{+name}',

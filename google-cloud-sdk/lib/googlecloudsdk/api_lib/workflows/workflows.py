@@ -190,16 +190,42 @@ class WorkflowsClient(object):
             ],
         )
         flags.SetWorkflowLoggingArg(log_level, workflow, updated_fields)
+      if args.IsSpecified('execution_history_level'):
+        execution_history_level_enum = (
+            self.messages.Workflow.ExecutionHistoryLevelValueValuesEnum
+        )
+        history_level = arg_utils.ChoiceToEnum(
+            args.execution_history_level,
+            execution_history_level_enum,
+            valid_choices=[
+                'none',
+                'execution-history-basic',
+                'execution-history-detailed',
+            ],
+        )
+        flags.SetWorkflowExecutionHistoryLevelArg(
+            history_level, workflow, updated_fields)
+      if args.IsSpecified('tags') and old_workflow is not None:
+        raise arg_parsers.argparse.ArgumentError(
+            argument=None,
+            message='tags cannot be updated for an existing workflow',
+        )
+      flags.SetWorkflowsTagsArg(
+          args, workflow, self.messages.Workflow.TagsValue
+      )
     return workflow, updated_fields
 
   def WaitForOperation(self, operation, workflow_ref):
     """Waits until the given long-running operation is complete."""
     operation_ref = resources.REGISTRY.Parse(
-        operation.name, collection='workflows.projects.locations.operations',
+        operation.name,
+        collection='workflows.projects.locations.operations',
     )
     operations = poller_utils.OperationsClient(self.client, self.messages)
     poller = poller_utils.WorkflowsOperationPoller(
-        workflows=self, operations=operations, workflow_ref=workflow_ref,
+        workflows=self,
+        operations=operations,
+        workflow_ref=workflow_ref,
     )
     progress_string = 'Waiting for operation [{}] to complete'.format(
         operation_ref.Name(),
@@ -220,6 +246,7 @@ class WorkflowExecutionClient(object):
       workflow_ref,
       data,
       call_log_level=None,
+      execution_history_level=None,
       labels=None,
       overflow_buffering_disabled=False,
   ):
@@ -229,6 +256,8 @@ class WorkflowExecutionClient(object):
       workflow_ref: Resource reference to the Workflow to execute.
       data: Argments to use for executing the workflow.
       call_log_level: Level of call logging to apply during execution.
+      execution_history_level: Level of execution history to apply for the
+        execution.
       labels: Labels associated to the execution.
       overflow_buffering_disabled: If set to true, the execution will not be
         backlogged when the concurrency quota is exhausted. Backlogged
@@ -253,6 +282,22 @@ class WorkflowExecutionClient(object):
               'log-all-calls',
               'log-errors-only',
               'log-none',
+          ],
+      )
+    if (
+        execution_history_level is not None
+        and execution_history_level != 'none'
+    ):
+      execution_history_level_enum = (
+          self.messages.Execution.ExecutionHistoryLevelValueValuesEnum
+      )
+      execution.executionHistoryLevel = arg_utils.ChoiceToEnum(
+          execution_history_level,
+          execution_history_level_enum,
+          valid_choices=[
+              'none',
+              'execution-history-basic',
+              'execution-history-detailed',
           ],
       )
     create_req = self.messages.WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCreateRequest(

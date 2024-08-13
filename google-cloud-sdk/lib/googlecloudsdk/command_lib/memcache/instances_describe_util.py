@@ -74,4 +74,9 @@ def FormatResponse(response, _):
     modified_mw_policy['maintenanceWindow'] = modified_mwlist
     modified_response['maintenancePolicy'] = modified_mw_policy
 
+  if response.satisfiesPzs is not None:
+    modified_response['satisfiesPzs'] = response.satisfiesPzs
+  if response.satisfiesPzi is not None:
+    modified_response['satisfiesPzi'] = response.satisfiesPzi
+
   return modified_response

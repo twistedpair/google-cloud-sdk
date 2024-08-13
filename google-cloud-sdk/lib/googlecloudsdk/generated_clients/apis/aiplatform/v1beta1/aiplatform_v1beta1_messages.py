@@ -10331,6 +10331,8 @@ class AiplatformPublishersModelsGetRequest(_messages.Message):
       to read.
 
   Fields:
+    huggingFaceToken: Optional. Token used to access Hugging Face gated
+      models.
     isHuggingFaceModel: Optional. Boolean indicates whether the requested
       model is a Hugging Face model.
     languageCode: Optional. The IETF BCP-47 language code representing the
@@ -10358,10 +10360,11 @@ class AiplatformPublishersModelsGetRequest(_messages.Message):
     PUBLISHER_MODEL_VIEW_FULL = 2
     PUBLISHER_MODEL_VERSION_VIEW_BASIC = 3
 
-  isHuggingFaceModel = _messages.BooleanField(1)
-  languageCode = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 4)
+  huggingFaceToken = _messages.StringField(1)
+  isHuggingFaceModel = _messages.BooleanField(2)
+  languageCode = _messages.StringField(3)
+  name = _messages.StringField(4, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
 class AiplatformPublishersModelsListRequest(_messages.Message):
@@ -12320,6 +12323,7 @@ class GoogleCloudAiplatformV1beta1Candidate(_messages.Message):
       tokens.
 
   Fields:
+    avgLogprobs: Output only. Average log probability score of the candidate.
     citationMetadata: Output only. Source attribution of the generated
       content.
     content: Output only. Content parts of the candidate.
@@ -12371,13 +12375,14 @@ class GoogleCloudAiplatformV1beta1Candidate(_messages.Message):
     SPII = 8
     MALFORMED_FUNCTION_CALL = 9
 
-  citationMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1CitationMetadata', 1)
-  content = _messages.MessageField('GoogleCloudAiplatformV1beta1Content', 2)
-  finishMessage = _messages.StringField(3)
-  finishReason = _messages.EnumField('FinishReasonValueValuesEnum', 4)
-  groundingMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GroundingMetadata', 5)
-  index = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  safetyRatings = _messages.MessageField('GoogleCloudAiplatformV1beta1SafetyRating', 7, repeated=True)
+  avgLogprobs = _messages.FloatField(1)
+  citationMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1CitationMetadata', 2)
+  content = _messages.MessageField('GoogleCloudAiplatformV1beta1Content', 3)
+  finishMessage = _messages.StringField(4)
+  finishReason = _messages.EnumField('FinishReasonValueValuesEnum', 5)
+  groundingMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GroundingMetadata', 6)
+  index = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  safetyRatings = _messages.MessageField('GoogleCloudAiplatformV1beta1SafetyRating', 8, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateMetatdata(_messages.Message):
@@ -14969,6 +14974,8 @@ class GoogleCloudAiplatformV1beta1EntityType(_messages.Message):
       obsolete feature values older than `offline_storage_ttl_days` since the
       feature generation time. If unset (or explicitly set to 0), default to
       4000 days TTL.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     updateTime: Output only. Timestamp when this EntityType was most recently
       updated.
   """
@@ -15011,7 +15018,9 @@ class GoogleCloudAiplatformV1beta1EntityType(_messages.Message):
   monitoringConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfig', 5)
   name = _messages.StringField(6)
   offlineStorageTtlDays = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(8)
+  satisfiesPzi = _messages.BooleanField(8)
+  satisfiesPzs = _messages.BooleanField(9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudAiplatformV1beta1EnvVar(_messages.Message):
@@ -15100,10 +15109,12 @@ class GoogleCloudAiplatformV1beta1EvaluateInstancesRequest(_messages.Message):
       applicable to other categories. Input for fluency metric.
     fulfillmentInput: Input for fulfillment metric.
     groundednessInput: Input for groundedness metric.
+    pairwiseMetricInput: Input for pairwise metric.
     pairwiseQuestionAnsweringQualityInput: Input for pairwise question
       answering quality metric.
     pairwiseSummarizationQualityInput: Input for pairwise summarization
       quality metric.
+    pointwiseMetricInput: Input for pointwise metric.
     questionAnsweringCorrectnessInput: Input for question answering
       correctness metric.
     questionAnsweringHelpfulnessInput: Input for question answering
@@ -15131,21 +15142,23 @@ class GoogleCloudAiplatformV1beta1EvaluateInstancesRequest(_messages.Message):
   fluencyInput = _messages.MessageField('GoogleCloudAiplatformV1beta1FluencyInput', 4)
   fulfillmentInput = _messages.MessageField('GoogleCloudAiplatformV1beta1FulfillmentInput', 5)
   groundednessInput = _messages.MessageField('GoogleCloudAiplatformV1beta1GroundednessInput', 6)
-  pairwiseQuestionAnsweringQualityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1PairwiseQuestionAnsweringQualityInput', 7)
-  pairwiseSummarizationQualityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1PairwiseSummarizationQualityInput', 8)
-  questionAnsweringCorrectnessInput = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringCorrectnessInput', 9)
-  questionAnsweringHelpfulnessInput = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringHelpfulnessInput', 10)
-  questionAnsweringQualityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringQualityInput', 11)
-  questionAnsweringRelevanceInput = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringRelevanceInput', 12)
-  rougeInput = _messages.MessageField('GoogleCloudAiplatformV1beta1RougeInput', 13)
-  safetyInput = _messages.MessageField('GoogleCloudAiplatformV1beta1SafetyInput', 14)
-  summarizationHelpfulnessInput = _messages.MessageField('GoogleCloudAiplatformV1beta1SummarizationHelpfulnessInput', 15)
-  summarizationQualityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1SummarizationQualityInput', 16)
-  summarizationVerbosityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1SummarizationVerbosityInput', 17)
-  toolCallValidInput = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolCallValidInput', 18)
-  toolNameMatchInput = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolNameMatchInput', 19)
-  toolParameterKeyMatchInput = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolParameterKeyMatchInput', 20)
-  toolParameterKvMatchInput = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolParameterKVMatchInput', 21)
+  pairwiseMetricInput = _messages.MessageField('GoogleCloudAiplatformV1beta1PairwiseMetricInput', 7)
+  pairwiseQuestionAnsweringQualityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1PairwiseQuestionAnsweringQualityInput', 8)
+  pairwiseSummarizationQualityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1PairwiseSummarizationQualityInput', 9)
+  pointwiseMetricInput = _messages.MessageField('GoogleCloudAiplatformV1beta1PointwiseMetricInput', 10)
+  questionAnsweringCorrectnessInput = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringCorrectnessInput', 11)
+  questionAnsweringHelpfulnessInput = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringHelpfulnessInput', 12)
+  questionAnsweringQualityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringQualityInput', 13)
+  questionAnsweringRelevanceInput = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringRelevanceInput', 14)
+  rougeInput = _messages.MessageField('GoogleCloudAiplatformV1beta1RougeInput', 15)
+  safetyInput = _messages.MessageField('GoogleCloudAiplatformV1beta1SafetyInput', 16)
+  summarizationHelpfulnessInput = _messages.MessageField('GoogleCloudAiplatformV1beta1SummarizationHelpfulnessInput', 17)
+  summarizationQualityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1SummarizationQualityInput', 18)
+  summarizationVerbosityInput = _messages.MessageField('GoogleCloudAiplatformV1beta1SummarizationVerbosityInput', 19)
+  toolCallValidInput = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolCallValidInput', 20)
+  toolNameMatchInput = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolNameMatchInput', 21)
+  toolParameterKeyMatchInput = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolParameterKeyMatchInput', 22)
+  toolParameterKvMatchInput = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolParameterKVMatchInput', 23)
 
 
 class GoogleCloudAiplatformV1beta1EvaluateInstancesResponse(_messages.Message):
@@ -15160,10 +15173,12 @@ class GoogleCloudAiplatformV1beta1EvaluateInstancesResponse(_messages.Message):
       metrics, applicable to other categories. Result for fluency metric.
     fulfillmentResult: Result for fulfillment metric.
     groundednessResult: Result for groundedness metric.
+    pairwiseMetricResult: Result for pairwise metric.
     pairwiseQuestionAnsweringQualityResult: Result for pairwise question
       answering quality metric.
     pairwiseSummarizationQualityResult: Result for pairwise summarization
       quality metric.
+    pointwiseMetricResult: Generic metrics. Result for pointwise metric.
     questionAnsweringCorrectnessResult: Result for question answering
       correctness metric.
     questionAnsweringHelpfulnessResult: Result for question answering
@@ -15193,21 +15208,23 @@ class GoogleCloudAiplatformV1beta1EvaluateInstancesResponse(_messages.Message):
   fluencyResult = _messages.MessageField('GoogleCloudAiplatformV1beta1FluencyResult', 4)
   fulfillmentResult = _messages.MessageField('GoogleCloudAiplatformV1beta1FulfillmentResult', 5)
   groundednessResult = _messages.MessageField('GoogleCloudAiplatformV1beta1GroundednessResult', 6)
-  pairwiseQuestionAnsweringQualityResult = _messages.MessageField('GoogleCloudAiplatformV1beta1PairwiseQuestionAnsweringQualityResult', 7)
-  pairwiseSummarizationQualityResult = _messages.MessageField('GoogleCloudAiplatformV1beta1PairwiseSummarizationQualityResult', 8)
-  questionAnsweringCorrectnessResult = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringCorrectnessResult', 9)
-  questionAnsweringHelpfulnessResult = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringHelpfulnessResult', 10)
-  questionAnsweringQualityResult = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringQualityResult', 11)
-  questionAnsweringRelevanceResult = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringRelevanceResult', 12)
-  rougeResults = _messages.MessageField('GoogleCloudAiplatformV1beta1RougeResults', 13)
-  safetyResult = _messages.MessageField('GoogleCloudAiplatformV1beta1SafetyResult', 14)
-  summarizationHelpfulnessResult = _messages.MessageField('GoogleCloudAiplatformV1beta1SummarizationHelpfulnessResult', 15)
-  summarizationQualityResult = _messages.MessageField('GoogleCloudAiplatformV1beta1SummarizationQualityResult', 16)
-  summarizationVerbosityResult = _messages.MessageField('GoogleCloudAiplatformV1beta1SummarizationVerbosityResult', 17)
-  toolCallValidResults = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolCallValidResults', 18)
-  toolNameMatchResults = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolNameMatchResults', 19)
-  toolParameterKeyMatchResults = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolParameterKeyMatchResults', 20)
-  toolParameterKvMatchResults = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolParameterKVMatchResults', 21)
+  pairwiseMetricResult = _messages.MessageField('GoogleCloudAiplatformV1beta1PairwiseMetricResult', 7)
+  pairwiseQuestionAnsweringQualityResult = _messages.MessageField('GoogleCloudAiplatformV1beta1PairwiseQuestionAnsweringQualityResult', 8)
+  pairwiseSummarizationQualityResult = _messages.MessageField('GoogleCloudAiplatformV1beta1PairwiseSummarizationQualityResult', 9)
+  pointwiseMetricResult = _messages.MessageField('GoogleCloudAiplatformV1beta1PointwiseMetricResult', 10)
+  questionAnsweringCorrectnessResult = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringCorrectnessResult', 11)
+  questionAnsweringHelpfulnessResult = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringHelpfulnessResult', 12)
+  questionAnsweringQualityResult = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringQualityResult', 13)
+  questionAnsweringRelevanceResult = _messages.MessageField('GoogleCloudAiplatformV1beta1QuestionAnsweringRelevanceResult', 14)
+  rougeResults = _messages.MessageField('GoogleCloudAiplatformV1beta1RougeResults', 15)
+  safetyResult = _messages.MessageField('GoogleCloudAiplatformV1beta1SafetyResult', 16)
+  summarizationHelpfulnessResult = _messages.MessageField('GoogleCloudAiplatformV1beta1SummarizationHelpfulnessResult', 17)
+  summarizationQualityResult = _messages.MessageField('GoogleCloudAiplatformV1beta1SummarizationQualityResult', 18)
+  summarizationVerbosityResult = _messages.MessageField('GoogleCloudAiplatformV1beta1SummarizationVerbosityResult', 19)
+  toolCallValidResults = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolCallValidResults', 20)
+  toolNameMatchResults = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolNameMatchResults', 21)
+  toolParameterKeyMatchResults = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolParameterKeyMatchResults', 22)
+  toolParameterKvMatchResults = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolParameterKVMatchResults', 23)
 
 
 class GoogleCloudAiplatformV1beta1EvaluatedAnnotation(_messages.Message):
@@ -17068,10 +17085,29 @@ class GoogleCloudAiplatformV1beta1FeatureGroupBigQuery(_messages.Message):
       to either a BigQuery Table or View.
     entityIdColumns: Optional. Columns to construct entity_id / row keys. If
       not provided defaults to `entity_id`.
+    timeSeries: Optional. If the source is a time-series source, this can be
+      set to control how downstream sources (ex:
+      FeatureOnlineStore.FeatureView) will treat time series sources. If not
+      set, will treat the source as a time-series source with
+      feature_timestamp as timestamp column and no scan boundary.
   """
 
   bigQuerySource = _messages.MessageField('GoogleCloudAiplatformV1beta1BigQuerySource', 1)
   entityIdColumns = _messages.StringField(2, repeated=True)
+  timeSeries = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureGroupBigQueryTimeSeries', 3)
+
+
+class GoogleCloudAiplatformV1beta1FeatureGroupBigQueryTimeSeries(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1FeatureGroupBigQueryTimeSeries object.
+
+  Fields:
+    timestampColumn: Optional. Column hosting timestamp values for a time-
+      series source. Will be used to determine the latest featureValues for
+      each entity. Optional. If not provided, a feature_timestamp column of
+      type TIMESTAMP will be used.
+  """
+
+  timestampColumn = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1beta1FeatureMonitoringStatsAnomaly(_messages.Message):
@@ -17182,6 +17218,8 @@ class GoogleCloudAiplatformV1beta1FeatureOnlineStore(_messages.Message):
       FeatureOnlineStore. When choose Optimized storage type, need to set
       PrivateServiceConnectConfig.enable_private_service_connect to use
       private endpoint. Otherwise will use public endpoint by default.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     state: Output only. State of the featureOnlineStore.
     updateTime: Output only. Timestamp when this FeatureOnlineStore was last
       updated.
@@ -17245,8 +17283,10 @@ class GoogleCloudAiplatformV1beta1FeatureOnlineStore(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 7)
   name = _messages.StringField(8)
   optimized = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureOnlineStoreOptimized', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  satisfiesPzi = _messages.BooleanField(10)
+  satisfiesPzs = _messages.BooleanField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
 
 
 class GoogleCloudAiplatformV1beta1FeatureOnlineStoreBigtable(_messages.Message):
@@ -17512,6 +17552,8 @@ class GoogleCloudAiplatformV1beta1FeatureView(_messages.Message):
     name: Identifier. Name of the FeatureView. Format: `projects/{project}/loc
       ations/{location}/featureOnlineStores/{feature_online_store}/featureView
       s/{feature_view}`
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     serviceAccountEmail: Output only. A Service Account unique to this
       FeatureView. The role bigquery.dataViewer should be granted to this
       service account to allow Vertex AI Feature Store to sync data to the
@@ -17591,11 +17633,13 @@ class GoogleCloudAiplatformV1beta1FeatureView(_messages.Message):
   indexConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureViewIndexConfig', 5)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
-  serviceAccountEmail = _messages.StringField(8)
-  serviceAgentType = _messages.EnumField('ServiceAgentTypeValueValuesEnum', 9)
-  syncConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureViewSyncConfig', 10)
-  updateTime = _messages.StringField(11)
-  vectorSearchConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureViewVectorSearchConfig', 12)
+  satisfiesPzi = _messages.BooleanField(8)
+  satisfiesPzs = _messages.BooleanField(9)
+  serviceAccountEmail = _messages.StringField(10)
+  serviceAgentType = _messages.EnumField('ServiceAgentTypeValueValuesEnum', 11)
+  syncConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureViewSyncConfig', 12)
+  updateTime = _messages.StringField(13)
+  vectorSearchConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureViewVectorSearchConfig', 14)
 
 
 class GoogleCloudAiplatformV1beta1FeatureViewBigQuerySource(_messages.Message):
@@ -17754,6 +17798,8 @@ class GoogleCloudAiplatformV1beta1FeatureViewSync(_messages.Message):
       /locations/{location}/featureOnlineStores/{feature_online_store}/feature
       Views/{feature_view}/featureViewSyncs/{feature_view_sync}`
     runTime: Output only. Time when this FeatureViewSync is finished.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     syncSummary: Output only. Summary of the sync job.
   """
 
@@ -17761,7 +17807,9 @@ class GoogleCloudAiplatformV1beta1FeatureViewSync(_messages.Message):
   finalStatus = _messages.MessageField('GoogleRpcStatus', 2)
   name = _messages.StringField(3)
   runTime = _messages.MessageField('GoogleTypeInterval', 4)
-  syncSummary = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureViewSyncSyncSummary', 5)
+  satisfiesPzi = _messages.BooleanField(5)
+  satisfiesPzs = _messages.BooleanField(6)
+  syncSummary = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureViewSyncSyncSummary', 7)
 
 
 class GoogleCloudAiplatformV1beta1FeatureViewSyncConfig(_messages.Message):
@@ -17922,6 +17970,8 @@ class GoogleCloudAiplatformV1beta1Featurestore(_messages.Message):
       `online_storage_ttl_days` should be less than or equal to
       `offline_storage_ttl_days` for each EntityType under a featurestore. If
       not set, default to 4000 days
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     state: Output only. State of the featurestore.
     updateTime: Output only. Timestamp when this Featurestore was last
       updated.
@@ -17988,8 +18038,10 @@ class GoogleCloudAiplatformV1beta1Featurestore(_messages.Message):
   name = _messages.StringField(5)
   onlineServingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FeaturestoreOnlineServingConfig', 6)
   onlineStorageTtlDays = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
+  satisfiesPzi = _messages.BooleanField(8)
+  satisfiesPzs = _messages.BooleanField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfig(_messages.Message):
@@ -18634,7 +18686,7 @@ class GoogleCloudAiplatformV1beta1FunctionCallingConfig(_messages.Message):
       MODE_UNSPECIFIED: Unspecified function calling mode. This value should
         not be used.
       AUTO: Default model behavior, model decides to predict either a function
-        call or a natural language repspose.
+        call or a natural language response.
       ANY: Model is constrained to always predicting a function call only. If
         "allowed_function_names" are set, the predicted function call will be
         limited to any one of "allowed_function_names", else the predicted
@@ -18877,7 +18929,9 @@ class GoogleCloudAiplatformV1beta1GenerateContentResponseUsageMetadata(_messages
 
   Fields:
     candidatesTokenCount: Number of tokens in the response(s).
-    promptTokenCount: Number of tokens in the request.
+    promptTokenCount: Number of tokens in the request. When `cached_content`
+      is set, this is still the total effective prompt size meaning this
+      includes the number of tokens in the cached content.
     totalTokenCount: A integer attribute.
   """
 
@@ -19639,6 +19693,7 @@ class GoogleCloudAiplatformV1beta1ImportRagFilesConfig(_messages.Message):
       would be used.
     ragFileChunkingConfig: Specifies the size and overlap of chunks after
       importing RagFiles.
+    ragFileParsingConfig: Specifies the parsing config for RagFiles.
     slackSource: Slack channels with their corresponding access tokens.
   """
 
@@ -19647,7 +19702,8 @@ class GoogleCloudAiplatformV1beta1ImportRagFilesConfig(_messages.Message):
   jiraSource = _messages.MessageField('GoogleCloudAiplatformV1beta1JiraSource', 3)
   maxEmbeddingRequestsPerMin = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   ragFileChunkingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1RagFileChunkingConfig', 5)
-  slackSource = _messages.MessageField('GoogleCloudAiplatformV1beta1SlackSource', 6)
+  ragFileParsingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1RagFileParsingConfig', 6)
+  slackSource = _messages.MessageField('GoogleCloudAiplatformV1beta1SlackSource', 7)
 
 
 class GoogleCloudAiplatformV1beta1ImportRagFilesRequest(_messages.Message):
@@ -19710,6 +19766,8 @@ class GoogleCloudAiplatformV1beta1Index(_messages.Message):
       URI scheme, than the one given on input. The output URI will point to a
       location where the user only has a read access.
     name: Output only. The resource name of the Index.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     updateTime: Output only. Timestamp when this Index was most recently
       updated. This also includes any update to the contents of the Index.
       Note that Operations working on this Index may have their
@@ -19775,7 +19833,9 @@ class GoogleCloudAiplatformV1beta1Index(_messages.Message):
   metadata = _messages.MessageField('extra_types.JsonValue', 10)
   metadataSchemaUri = _messages.StringField(11)
   name = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  satisfiesPzi = _messages.BooleanField(13)
+  satisfiesPzs = _messages.BooleanField(14)
+  updateTime = _messages.StringField(15)
 
 
 class GoogleCloudAiplatformV1beta1IndexDatapoint(_messages.Message):
@@ -19948,6 +20008,8 @@ class GoogleCloudAiplatformV1beta1IndexEndpoint(_messages.Message):
       endpoint.
     publicEndpointEnabled: Optional. If true, the deployed index will be
       accessible through public endpoint.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     updateTime: Output only. Timestamp when this IndexEndpoint was last
       updated. This timestamp is not updated when the endpoint's
       DeployedIndexes are updated, e.g. due to updates of the original Indexes
@@ -19995,7 +20057,9 @@ class GoogleCloudAiplatformV1beta1IndexEndpoint(_messages.Message):
   privateServiceConnectConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1PrivateServiceConnectConfig', 11)
   publicEndpointDomainName = _messages.StringField(12)
   publicEndpointEnabled = _messages.BooleanField(13)
-  updateTime = _messages.StringField(14)
+  satisfiesPzi = _messages.BooleanField(14)
+  satisfiesPzs = _messages.BooleanField(15)
+  updateTime = _messages.StringField(16)
 
 
 class GoogleCloudAiplatformV1beta1IndexPrivateEndpoints(_messages.Message):
@@ -21086,7 +21150,8 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
     Values:
       ACCELERATOR_TYPE_UNSPECIFIED: Unspecified accelerator type, which means
         no accelerator.
-      NVIDIA_TESLA_K80: Nvidia Tesla K80 GPU.
+      NVIDIA_TESLA_K80: Deprecated: Nvidia Tesla K80 GPU has reached end of
+        support, see https://cloud.google.com/compute/docs/eol/k80-eol.
       NVIDIA_TESLA_P100: Nvidia Tesla P100 GPU.
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
@@ -22057,6 +22122,8 @@ class GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJob(_messages.Message
       PredictRequest.instances, this can be set as a replacement of
       ModelDeploymentMonitoringJob.predict_instance_schema_uri. If not set, we
       will generate predict schema from collected predict requests.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     scheduleState: Output only. Schedule state when the monitoring job is in
       Running state.
     state: Output only. The detailed state of the monitoring job. When the job
@@ -22171,10 +22238,12 @@ class GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJob(_messages.Message
   nextScheduleTime = _messages.StringField(17)
   predictInstanceSchemaUri = _messages.StringField(18)
   samplePredictInstance = _messages.MessageField('extra_types.JsonValue', 19)
-  scheduleState = _messages.EnumField('ScheduleStateValueValuesEnum', 20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  statsAnomaliesBaseDirectory = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 22)
-  updateTime = _messages.StringField(23)
+  satisfiesPzi = _messages.BooleanField(20)
+  satisfiesPzs = _messages.BooleanField(21)
+  scheduleState = _messages.EnumField('ScheduleStateValueValuesEnum', 22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  statsAnomaliesBaseDirectory = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 24)
+  updateTime = _messages.StringField(25)
 
 
 class GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJobLatestMonitoringPipelineMetadata(_messages.Message):
@@ -24500,6 +24569,9 @@ class GoogleCloudAiplatformV1beta1NotebookExecutionJob(_messages.Message):
     directNotebookSource: The contents of an input notebook file.
     displayName: The display name of the NotebookExecutionJob. The name can be
       up to 128 characters long and can consist of any UTF-8 characters.
+    encryptionSpec: Customer-managed encryption key spec for the notebook
+      execution job. This field is auto-populated if the
+      NotebookRuntimeTemplate has an encryption spec.
     executionTimeout: Max running time of the execution job in seconds
       (default 86400s / 24 hrs).
     executionUser: The user email to run the execution as. Only supported by
@@ -24602,18 +24674,19 @@ class GoogleCloudAiplatformV1beta1NotebookExecutionJob(_messages.Message):
   dataformRepositorySource = _messages.MessageField('GoogleCloudAiplatformV1beta1NotebookExecutionJobDataformRepositorySource', 2)
   directNotebookSource = _messages.MessageField('GoogleCloudAiplatformV1beta1NotebookExecutionJobDirectNotebookSource', 3)
   displayName = _messages.StringField(4)
-  executionTimeout = _messages.StringField(5)
-  executionUser = _messages.StringField(6)
-  gcsNotebookSource = _messages.MessageField('GoogleCloudAiplatformV1beta1NotebookExecutionJobGcsNotebookSource', 7)
-  gcsOutputUri = _messages.StringField(8)
-  jobState = _messages.EnumField('JobStateValueValuesEnum', 9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  notebookRuntimeTemplateResourceName = _messages.StringField(12)
-  scheduleResourceName = _messages.StringField(13)
-  serviceAccount = _messages.StringField(14)
-  status = _messages.MessageField('GoogleRpcStatus', 15)
-  updateTime = _messages.StringField(16)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 5)
+  executionTimeout = _messages.StringField(6)
+  executionUser = _messages.StringField(7)
+  gcsNotebookSource = _messages.MessageField('GoogleCloudAiplatformV1beta1NotebookExecutionJobGcsNotebookSource', 8)
+  gcsOutputUri = _messages.StringField(9)
+  jobState = _messages.EnumField('JobStateValueValuesEnum', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  notebookRuntimeTemplateResourceName = _messages.StringField(13)
+  scheduleResourceName = _messages.StringField(14)
+  serviceAccount = _messages.StringField(15)
+  status = _messages.MessageField('GoogleRpcStatus', 16)
+  updateTime = _messages.StringField(17)
 
 
 class GoogleCloudAiplatformV1beta1NotebookExecutionJobDataformRepositorySource(_messages.Message):
@@ -24996,6 +25069,71 @@ class GoogleCloudAiplatformV1beta1NotebookRuntimeTemplateRef(_messages.Message):
   """
 
   notebookRuntimeTemplate = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1PairwiseMetricInput(_messages.Message):
+  r"""Input for pairwise metric.
+
+  Fields:
+    instance: Required. Pairwise metric instance.
+    metricSpec: Required. Spec for pairwise metric.
+  """
+
+  instance = _messages.MessageField('GoogleCloudAiplatformV1beta1PairwiseMetricInstance', 1)
+  metricSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1PairwiseMetricSpec', 2)
+
+
+class GoogleCloudAiplatformV1beta1PairwiseMetricInstance(_messages.Message):
+  r"""Pairwise metric instance. Usually one instance corresponds to one row in
+  an evaluation dataset.
+
+  Fields:
+    jsonInstance: Instance specified as a json string. String key-value pairs
+      are expected in the json_instance to render
+      PairwiseMetricSpec.instance_prompt_template.
+  """
+
+  jsonInstance = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1PairwiseMetricResult(_messages.Message):
+  r"""Spec for pairwise metric result.
+
+  Enums:
+    PairwiseChoiceValueValuesEnum: Output only. Pairwise metric choice.
+
+  Fields:
+    explanation: Output only. Explanation for pairwise metric score.
+    pairwiseChoice: Output only. Pairwise metric choice.
+  """
+
+  class PairwiseChoiceValueValuesEnum(_messages.Enum):
+    r"""Output only. Pairwise metric choice.
+
+    Values:
+      PAIRWISE_CHOICE_UNSPECIFIED: Unspecified prediction choice.
+      BASELINE: Baseline prediction wins
+      CANDIDATE: Candidate prediction wins
+      TIE: Winner cannot be determined
+    """
+    PAIRWISE_CHOICE_UNSPECIFIED = 0
+    BASELINE = 1
+    CANDIDATE = 2
+    TIE = 3
+
+  explanation = _messages.StringField(1)
+  pairwiseChoice = _messages.EnumField('PairwiseChoiceValueValuesEnum', 2)
+
+
+class GoogleCloudAiplatformV1beta1PairwiseMetricSpec(_messages.Message):
+  r"""Spec for pairwise metric.
+
+  Fields:
+    metricPromptTemplate: Required. Metric prompt template for pairwise
+      metric.
+  """
+
+  metricPromptTemplate = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1beta1PairwiseQuestionAnsweringQualityInput(_messages.Message):
@@ -25971,6 +26109,54 @@ class GoogleCloudAiplatformV1beta1PipelineTemplateMetadata(_messages.Message):
   """
 
   version = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1PointwiseMetricInput(_messages.Message):
+  r"""Input for pointwise metric.
+
+  Fields:
+    instance: Required. Pointwise metric instance.
+    metricSpec: Required. Spec for pointwise metric.
+  """
+
+  instance = _messages.MessageField('GoogleCloudAiplatformV1beta1PointwiseMetricInstance', 1)
+  metricSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1PointwiseMetricSpec', 2)
+
+
+class GoogleCloudAiplatformV1beta1PointwiseMetricInstance(_messages.Message):
+  r"""Pointwise metric instance. Usually one instance corresponds to one row
+  in an evaluation dataset.
+
+  Fields:
+    jsonInstance: Instance specified as a json string. String key-value pairs
+      are expected in the json_instance to render
+      PointwiseMetricSpec.instance_prompt_template.
+  """
+
+  jsonInstance = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1PointwiseMetricResult(_messages.Message):
+  r"""Spec for pointwise metric result.
+
+  Fields:
+    explanation: Output only. Explanation for pointwise metric score.
+    score: Output only. Pointwise metric score.
+  """
+
+  explanation = _messages.StringField(1)
+  score = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1beta1PointwiseMetricSpec(_messages.Message):
+  r"""Spec for pointwise metric.
+
+  Fields:
+    metricPromptTemplate: Required. Metric prompt template for pointwise
+      metric.
+  """
+
+  metricPromptTemplate = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1beta1Port(_messages.Message):
@@ -27399,6 +27585,18 @@ class GoogleCloudAiplatformV1beta1RagFileChunkingConfig(_messages.Message):
 
   chunkOverlap = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   chunkSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1RagFileParsingConfig(_messages.Message):
+  r"""Specifies the parsing config for RagFiles.
+
+  Fields:
+    parsePdfsUsingOcr: Whether to use OCR for PDFs.
+    useAdvancedPdfParsing: Whether to use advanced PDF parsing.
+  """
+
+  parsePdfsUsingOcr = _messages.BooleanField(1)
+  useAdvancedPdfParsing = _messages.BooleanField(2)
 
 
 class GoogleCloudAiplatformV1beta1RagQuery(_messages.Message):

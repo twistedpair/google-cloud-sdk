@@ -404,8 +404,8 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
       should be the same action provided at token generation time on client-
       side platforms already integrated with recaptcha enterprise.
     express: Optional. Flag for a reCAPTCHA express request for an assessment
-      without a token. If enabled, `site_key` must reference an Express site
-      key.
+      without a token. If enabled, `site_key` must reference a SCORE key with
+      WAF feature set to EXPRESS.
     firewallPolicyEvaluation: Optional. Flag for enabling firewall policy
       config assessment. If this flag is enabled, the firewall policy will be
       evaluated and a suggested firewall action will be returned in the
@@ -472,10 +472,6 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
   userInfo = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1UserInfo', 13)
   userIpAddress = _messages.StringField(14)
   wafTokenAssessment = _messages.BooleanField(15)
-
-
-class GoogleCloudRecaptchaenterpriseV1ExpressKeySettings(_messages.Message):
-  r"""Settings specific to keys that can be used for reCAPTCHA Express."""
 
 
 class GoogleCloudRecaptchaenterpriseV1FirewallAction(_messages.Message):
@@ -797,7 +793,6 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
       this key.
     displayName: Required. Human-readable display name of this key. Modifiable
       by user.
-    expressSettings: Settings for keys that can be used by reCAPTCHA Express.
     iosSettings: Settings for keys that can be used by iOS apps.
     labels: Optional. See [Creating and managing labels]
       (https://cloud.google.com/recaptcha/docs/labels).
@@ -836,13 +831,12 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
   androidSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1AndroidKeySettings', 1)
   createTime = _messages.StringField(2)
   displayName = _messages.StringField(3)
-  expressSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ExpressKeySettings', 4)
-  iosSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1IOSKeySettings', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  testingOptions = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TestingOptions', 8)
-  wafSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WafSettings', 9)
-  webSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WebKeySettings', 10)
+  iosSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1IOSKeySettings', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  testingOptions = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TestingOptions', 7)
+  wafSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WafSettings', 8)
+  webSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WebKeySettings', 9)
 
 
 class GoogleCloudRecaptchaenterpriseV1ListFirewallPoliciesResponse(_messages.Message):

@@ -140,6 +140,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GOVERNANCERULES = (
+      'projects.locations.governanceRules',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/governanceRules/'
+              '{governanceRulesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_LAKES = (
       'projects.locations.lakes',
       '{+name}',

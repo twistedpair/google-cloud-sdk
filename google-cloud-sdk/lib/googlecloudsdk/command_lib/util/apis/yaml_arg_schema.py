@@ -156,7 +156,8 @@ def _IsSpecified(namespace, arg_dest, clearable=False):
       resource_util.NormalizeFormat(key)
       for key in namespace.GetSpecifiedArgs().keys())
 
-  if arg_dest in specified_args_list:
+  dest = arg_dest and resource_util.NormalizeFormat(arg_dest)
+  if dest in specified_args_list:
     return True
 
   if clearable:
@@ -166,7 +167,7 @@ def _IsSpecified(namespace, arg_dest, clearable=False):
   negative_prefixes = ('no',)
 
   for prefix in itertools.chain(update_prefixes, negative_prefixes):
-    if '{}_{}'.format(prefix, arg_dest) in specified_args_list:
+    if '{}_{}'.format(prefix, dest) in specified_args_list:
       return True
   else:
     return False
@@ -502,8 +503,14 @@ def _GetAnchors(resource_spec):
 
 
 def _IsAnchorSpecified(
-    resource_spec, namespace, attribute_to_dest_map, clearable):
+    resource_spec, namespace, attribute_to_dest_map,
+    presentation_name, clearable):
   """Checks if any of the resource anchors are specified in the namespace."""
+  # Determines when whole resource is cleared.
+  if _IsSpecified(namespace, presentation_name, clearable):
+    return True
+
+  # Determines when individual anchors are specified or cleared.
   for anchor in _GetAnchors(resource_spec):
     arg_name = attribute_to_dest_map.get(anchor.name)
     if _IsSpecified(namespace, arg_name, clearable):
@@ -738,6 +745,24 @@ class YAMLConceptArgument(YAMLArgument, metaclass=abc.ABCMeta):
 
   @property
   @abc.abstractmethod
+  def collections(self):
+    """Get registry.APICollection based on collection and api_version."""
+    pass
+
+  @property
+  @abc.abstractmethod
+  def anchors(self):
+    """Get the anchors from the resource spec."""
+    pass
+
+  @property
+  @abc.abstractmethod
+  def multitype(self):
+    """Whether the resource arg is multitype."""
+    pass
+
+  @property
+  @abc.abstractmethod
   def attribute_names(self):
     """Names of attributes in the resource spec."""
     pass
@@ -749,7 +774,7 @@ class YAMLConceptArgument(YAMLArgument, metaclass=abc.ABCMeta):
 
   @abc.abstractmethod
   def GenerateResourceArg(
-      self, method, presentation_flag_name=None,
+      self, method, presentation_flag_name=None, flag_name_override=None,
       shared_resource_flags=None, group_help=None):
     """Generate the resource arg for the given method."""
     pass
@@ -869,6 +894,18 @@ class YAMLResourceArgument(YAMLConceptArgument):
         self._full_collection_name, api_version=self._api_version)
 
   @property
+  def collections(self):
+    return [self.collection]
+
+  @property
+  def multitype(self):
+    return False
+
+  @property
+  def anchors(self):
+    return _GetAnchors(self._resource_spec)
+
+  @property
   def attribute_names(self):
     return _GetAttributeNames(self._resource_spec)
 
@@ -908,7 +945,8 @@ class YAMLResourceArgument(YAMLConceptArgument):
     # positional vs non-positional or skipped flags. However, it is sufficient
     # for the purposes of determining if a flag is specified.
     approx_attr_to_args = self._GeneratePresentationSpec(
-        False, resource_util.FlagNameFormat(self._presentation_name), [], None
+        False, resource_util.FlagNameFormat(self._presentation_name),
+        None, [], None
     ).attribute_to_args_map
 
     return {
@@ -967,21 +1005,23 @@ class YAMLResourceArgument(YAMLConceptArgument):
     return True
 
   def _GeneratePresentationSpec(
-      self, is_required, presentation_flag_name, shared_resource_flags,
-      group_help=None):
+      self, is_required, presentation_flag_name,
+      flag_name_override, shared_resource_flags, group_help=None):
+    ignored_flag_map = _GenerateIgnoredFlagsMap(
+        shared_resource_flags,
+        self.removed_flags,
+        self.attribute_names)
     return presentation_specs.ResourcePresentationSpec(
         presentation_flag_name,
         self._resource_spec,
         group_help=group_help,
         prefixes=False,
         required=is_required,
-        flag_name_overrides=_GenerateIgnoredFlagsMap(
-            shared_resource_flags, self.removed_flags,
-            self.attribute_names),
+        flag_name_overrides={**ignored_flag_map, **(flag_name_override or {})},
         plural=self.repeated)
 
   def GenerateResourceArg(
-      self, method, presentation_flag_name=None,
+      self, method, presentation_flag_name=None, flag_name_override=None,
       shared_resource_flags=None, group_help=None):
     """Generates only the resource arg (no update flags)."""
 
@@ -991,7 +1031,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
 
     presentation_spec = self._GeneratePresentationSpec(
         self.IsRequired(method), presentation_flag_name,
-        shared_resource_flags, group_help)
+        flag_name_override, shared_resource_flags, group_help)
 
     return concept_parsers.ConceptParser(
         [presentation_spec],
@@ -1016,8 +1056,11 @@ class YAMLResourceArgument(YAMLConceptArgument):
     # resource argument and take into account the other arguments specified
     # in the group.
     anchor_specified = _IsAnchorSpecified(
-        self._resource_spec, namespace,
-        self._attribute_to_flag_name_map, False)
+        self._resource_spec,
+        namespace,
+        self._attribute_to_flag_name_map,
+        self._presentation_name,
+        self.clearable)
     if not anchor_specified and not group_required:
       return None
 
@@ -1031,8 +1074,11 @@ class YAMLResourceArgument(YAMLConceptArgument):
       return False
 
     return _IsAnchorSpecified(
-        self._resource_spec, namespace,
-        self._attribute_to_flag_name_map, self.clearable)
+        self._resource_spec,
+        namespace,
+        self._attribute_to_flag_name_map,
+        self._presentation_name,
+        self.clearable)
 
   def GetPresentationFlagName(self, resource_collection, is_list_method):
     """Get the anchor argument name for the resource spec.
@@ -1087,6 +1133,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
           resource_collection,
           presentation_flag_name=self.GetPresentationFlagName(
               resource_collection, is_list_method),
+          flag_name_override=None,
           shared_resource_flags=shared_resource_flags,
           group_help=self.group_help)
 
@@ -1108,7 +1155,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
     else:
       ref = self.ParseResourceArg(namespace, group_required)
 
-    # Set resource to None only if the user explicityly specified it.
+    # Set resource to None only if the user explicitly specified it.
     user_specified = (
         not self.api_fields or self.IsApiFieldSpecified(namespace))
     if not self.parse_resource_into_request or (not ref and not user_specified):
@@ -1144,6 +1191,18 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
     return None
 
   @property
+  def collections(self):
+    return [resource.collection for resource in self._resources]
+
+  @property
+  def multitype(self):
+    return True
+
+  @property
+  def anchors(self):
+    return _GetAnchors(self._resource_spec)
+
+  @property
   def attribute_names(self):
     return _GetAttributeNames(self._resource_spec)
 
@@ -1161,7 +1220,8 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
     # positional vs non-positional or skipped flags. However, it is sufficient
     # for the purposes of determining if a flag is specified.
     approx_attr_to_args = self._GeneratePresentationSpec(
-        False, resource_util.FlagNameFormat(self._presentation_name), [], None
+        False, resource_util.FlagNameFormat(self._presentation_name),
+        None, [], None
     ).attribute_to_args_map
 
     return {
@@ -1215,21 +1275,22 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
     return False
 
   def _GeneratePresentationSpec(
-      self, is_required, presentation_flag_name, shared_resource_flags,
-      group_help=None):
+      self, is_required, presentation_flag_name,
+      flag_name_override, shared_resource_flags, group_help=None):
+    ignored_flag_map = _GenerateIgnoredFlagsMap(
+        shared_resource_flags, self.removed_flags,
+        self.attribute_names)
     return presentation_specs.MultitypeResourcePresentationSpec(
         presentation_flag_name,
         self._resource_spec,
         group_help=group_help,
         prefixes=False,
         required=is_required,
-        flag_name_overrides=_GenerateIgnoredFlagsMap(
-            shared_resource_flags, self.removed_flags,
-            self.attribute_names),
+        flag_name_overrides={**ignored_flag_map, **(flag_name_override or {})},
         plural=self.repeated)
 
   def GenerateResourceArg(
-      self, method, presentation_flag_name=None,
+      self, method, presentation_flag_name=None, flag_name_override=None,
       shared_resource_flags=None, group_help=None):
     """Generates only the resource arg (no update flags)."""
 
@@ -1239,7 +1300,7 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
 
     presentation_spec = self._GeneratePresentationSpec(
         self.IsRequired(method), presentation_flag_name,
-        shared_resource_flags, group_help)
+        flag_name_override, shared_resource_flags, group_help)
 
     return concept_parsers.ConceptParser(
         [presentation_spec],
@@ -1264,8 +1325,11 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
     # resource argument and take into account the other arguments specified
     # in the group.
     is_anchor_specified = _IsAnchorSpecified(
-        self._resource_spec, namespace,
-        self._attribute_to_flag_name_map, False)
+        self._resource_spec,
+        namespace,
+        self._attribute_to_flag_name_map,
+        self._presentation_name,
+        self.clearable)
     if not is_anchor_specified and not group_required:
       return None
 
@@ -1280,7 +1344,8 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
       return False
     return _IsAnchorSpecified(
         self._resource_spec, namespace,
-        self._attribute_to_flag_name_map, self.clearable)
+        self._attribute_to_flag_name_map, self._presentation_name,
+        self.clearable)
 
   def GetPresentationFlagName(self, resource_collection, is_list_method):
     """Get the anchor argument name for the resource spec.
@@ -1302,21 +1367,48 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
         '--' + self._presentation_name
         if anchor_arg_is_flag else self._presentation_name)
 
+  def _GenerateUpdateFlags(
+      self, resource_collection, is_list_method, shared_resource_flags=None):
+    """Creates update flags generator using aptiools message."""
+    return update_resource_args.UpdateResourceArgumentGenerator.FromArgData(
+        self, resource_collection, is_list_method, shared_resource_flags)
+
+  def _ParseUpdateArgsFromNamespace(
+      self, resource_collection, is_list_method, namespace, message):
+    """Parses update flags and returns modified apitools message field."""
+    return self._GenerateUpdateFlags(
+        resource_collection, is_list_method).Parse(namespace, message)
+
   def Generate(self, methods, shared_resource_flags=None):
     resource_collection = self._GetMethodCollection(methods)
     is_list_method = _GetIsList(methods)
 
-    return self.GenerateResourceArg(
-        resource_collection,
-        presentation_flag_name=self.GetPresentationFlagName(
-            resource_collection, is_list_method),
-        shared_resource_flags=shared_resource_flags,
-        group_help=self.group_help)
+    if self.clearable:
+      return self._GenerateUpdateFlags(
+          resource_collection, is_list_method, shared_resource_flags).Generate()
+    else:
+      return self.GenerateResourceArg(
+          resource_collection,
+          presentation_flag_name=self.GetPresentationFlagName(
+              resource_collection, is_list_method),
+          flag_name_override=None,
+          shared_resource_flags=shared_resource_flags,
+          group_help=self.group_help)
 
   def Parse(self, method, message, namespace, group_required=True):
-    ref = self.ParseResourceArg(namespace, group_required)
-    if not self.parse_resource_into_request or not ref:
-      return message
+    if self.clearable:
+      ref = self._ParseUpdateArgsFromNamespace(
+          method and method.resource_argument_collection,
+          method.IsList(),
+          namespace, message)
+    else:
+      ref = self.ParseResourceArg(namespace, group_required)
+
+    # Set resource to None only if the user explicitly specified it.
+    user_specified = (
+        not self.api_fields or self.IsApiFieldSpecified(namespace))
+    if not self.parse_resource_into_request or (not ref and not user_specified):
+      return
 
     # For each method path field, get the value from the resource reference.
     arg_utils.ParseResourceIntoMessage(

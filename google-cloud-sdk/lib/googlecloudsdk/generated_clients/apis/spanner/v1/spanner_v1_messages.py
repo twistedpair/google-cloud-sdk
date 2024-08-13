@@ -71,7 +71,7 @@ class AutoscalingTargets(_messages.Message):
 
 
 class Backup(_messages.Message):
-  r""" A backup of a Cloud Spanner database.
+  r"""A backup of a Cloud Spanner database.
 
   Enums:
     DatabaseDialectValueValuesEnum: Output only. The database dialect
@@ -162,7 +162,9 @@ class Backup(_messages.Message):
       different instances. The existence of any referencing database prevents
       the backup from being deleted. When a restored database from the backup
       enters the `READY` state, the reference to the backup is removed.
-    sizeBytes: Output only. Size of the backup in bytes.
+    sizeBytes: Output only. Size of the backup in bytes. For a backup in an
+      incremental backup chain, this is the sum of the `exclusive_size_bytes`
+      of itself and all older backups in the chain.
     state: Output only. The current state of the backup.
     versionTime: The backup will contain an externally consistent copy of the
       database at the timestamp specified by `version_time`. If `version_time`
@@ -1989,7 +1991,7 @@ class Instance(_messages.Message):
       EDITION_UNSPECIFIED: Edition not specified.
       STANDARD: Standard edition.
       ENTERPRISE: Enterprise edition.
-      ENTERPRISE_PLUS: Enterprise plus edition.
+      ENTERPRISE_PLUS: Enterprise Plus edition.
     """
     EDITION_UNSPECIFIED = 0
     STANDARD = 1

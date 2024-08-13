@@ -185,10 +185,6 @@ def PatchApplication(
   Returns:
     the LRO of this request.
   """
-  # API requires that only one of the resources or resourceList to be used
-  # in order to determine which shape the client is using.
-  # Thus unsetting the resources.
-  application.config.resources = None
   return client.projects_locations_applications.Patch(
       client.MESSAGES_MODULE.RunappsProjectsLocationsApplicationsPatchRequest(
           application=application,

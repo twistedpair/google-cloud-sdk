@@ -28,6 +28,7 @@ from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+import six
 
 INSTANCES_LIST_FORMAT = """\
     table(
@@ -121,6 +122,35 @@ def AddRegionArg(parser):
       '--region',
       required=False,
       help='Region of the Cloud Filestore instance.')
+
+
+def GetTagsArg():
+  """Makes the base.Argument for --tags flag."""
+  help_parts = [
+      'List of tags KEY=VALUE pairs to bind.',
+      'Each item must be expressed as',
+      '`<tag-key-namespaced-name>=<tag-value-short-name>`.\n',
+      'Example: `123/environment=production,123/costCenter=marketing`\n',
+  ]
+  return base.Argument(
+      '--tags',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      action=arg_parsers.UpdateAction,
+      help='\n'.join(help_parts),
+      hidden=True,
+  )
+
+
+def GetTagsFromArgs(args, tags_message, tags_arg_name='tags'):
+  """Makes the tags message object."""
+  tags = getattr(args, tags_arg_name)
+  if not tags:
+    return None
+  # Sorted for test stability
+  return tags_message(additionalProperties=[
+      tags_message.AdditionalProperty(key=key, value=value)
+      for key, value in sorted(six.iteritems(tags))])
 
 
 def AddDescriptionArg(parser):
@@ -549,14 +579,8 @@ def AddPerformanceArg(parser):
         to configure the read IOPS provisioned for the instance. The
         instance's write IOPS and read/write throughputs will be derived from the
         configured read IOPS. For more information about the derived performance
-        limits see https://cloud.google.com/filestore/docs/performance.
+        limits and default performance see: https://cloud.google.com/filestore/docs/performance.
         Must be one of:
-
-          iops-by-capacity
-            Default configuration. Automatically provisions the instance IOPS
-            based on its capacity. If the user changes the instance capacity,
-            IOPS will be automatically adjusted accordingly. The available IOPS
-            for a given capacity can be found here: https://cloud.google.com/filestore/docs/performance.
 
           max-read-iops
             The number of IOPS to provision for the instance.
@@ -564,50 +588,76 @@ def AddPerformanceArg(parser):
             range for the current capacity of the instance.
             For more details, see: https://cloud.google.com/filestore/docs/performance.
 
-          max-read-iops-per-gb
+          max-read-iops-per-tb
             Is used for setting the max IOPS of the instance by
-            specifying the IOPS per GB. When this parameter is used, the
+            specifying the IOPS per TB. When this parameter is used, the
             max IOPS are derived from the instance capacity:
             The instance max IOPS will be calculated by multiplying the
-            capacity of the instance (GB) by MAX-READ-IOPS-PER-GB, and rounding
+            capacity of the instance (TB) by MAX-READ-IOPS-PER-TB, and rounding
             to the nearest 1000. The max IOPS will be changed
             dynamically based on the instance capacity.
-            MAX-READ-IOPS-PER-GB must be in the supported range of the instance.
+            MAX-READ-IOPS-PER-TB must be in the supported range of the instance.
             For more details, see: https://cloud.google.com/filestore/docs/performance.
 
 
         Examples:
 
-        Configure an instance implicitly with `iops_by_capacity` performance:
-
-          $ {command} example-cluster
-
-        Configure an instance explicitly with `iops_by_capacity` performance:
-
-          $ {command} example-cluster --performance=iops_by_capacity
-
         Configure an instance with `max-read-iops` performance:
 
-          $ {command} example-cluster --performance=max-read-iops=1000
+          $ {command} example-cluster --performance=max-read-iops=17000
 
-        Configure an instance with `max-read-iops-per-gb` performance:
+        Configure an instance with `max-read-iops-per-tb` performance:
 
-          $ {command} example-cluster --performance=max-read-iops-per-gb=5
+          $ {command} example-cluster --performance=max-read-iops-per-tb=17000
   """
 
   performance_arg_spec = {
       'max-read-iops': arg_parsers.BoundedInt(1),
-      'max-read-iops-per-gb': arg_parsers.BoundedInt(1),
-      'iops-by-capacity': None,
+      'max-read-iops-per-tb': arg_parsers.BoundedInt(1),
   }
 
   parser.add_argument(
       '--performance',
       type=arg_parsers.ArgDict(
-          spec=performance_arg_spec, allow_key_only=True, max_length=1
+          spec=performance_arg_spec, max_length=1
       ),
       help=performance_help,
   )
+
+
+def AddClearPerformanceArg(parser):
+  """Adds a --clear-performance flag to the given parser.
+
+  Args:
+    parser: argparse parser.
+  """
+  clear_performance_help = """\
+        Clear the performance configuration of the instance and set it to the
+        default performance mode. In the default performance mode, the instance
+        performance will be automatically adjusted based on its capacity
+        (changes in the instance's capacity will automatically adjust the
+        instance's performance accordingly). For more information about the
+        default performance mode see: https://cloud.google.com/filestore/docs/performance.
+  """
+
+  parser.add_argument(
+      '--clear-performance',
+      action='store_true',
+      required=False,
+      help=clear_performance_help,
+  )
+
+
+def AddPerformanceArgs(parser):
+  """Adds performance mutually exclusive args group to the parser.
+
+  Args:
+    parser: argparse parser.
+  """
+
+  performance_arg_group = parser.add_mutually_exclusive_group()
+  AddPerformanceArg(performance_arg_group)
+  AddClearPerformanceArg(performance_arg_group)
 
 
 def AddInstanceCreateArgs(parser, api_version):
@@ -637,6 +687,7 @@ def AddInstanceCreateArgs(parser, api_version):
     AddKmsKeyArg(parser)
     AddSourceInstanceArg(parser)
     AddPerformanceArg(parser)
+    GetTagsArg().AddToParser(parser)
 
 
 def AddInstanceUpdateArgs(parser, api_version):
@@ -660,4 +711,4 @@ def AddInstanceUpdateArgs(parser, api_version):
       required=False)
   if api_version in [filestore_client.BETA_API_VERSION,
                      filestore_client.V1_API_VERSION]:
-    AddPerformanceArg(parser)
+    AddPerformanceArgs(parser)

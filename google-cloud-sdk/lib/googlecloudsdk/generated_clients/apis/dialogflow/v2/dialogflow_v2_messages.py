@@ -4877,16 +4877,6 @@ class GoogleCloudDialogflowCxV3ConversationTurnVirtualAgentOutput(_messages.Mess
   triggeredIntent = _messages.MessageField('GoogleCloudDialogflowCxV3Intent', 7)
 
 
-class GoogleCloudDialogflowCxV3CreateDocumentOperationMetadata(_messages.Message):
-  r"""Metadata for CreateDocument operation.
-
-  Fields:
-    genericMetadata: The generic information of the operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3GenericKnowledgeOperationMetadata', 1)
-
-
 class GoogleCloudDialogflowCxV3CreateVersionOperationMetadata(_messages.Message):
   r"""Metadata associated with the long running operation for
   Versions.CreateVersion.
@@ -4933,16 +4923,6 @@ class GoogleCloudDialogflowCxV3DataStoreConnection(_messages.Message):
 
   dataStore = _messages.StringField(1)
   dataStoreType = _messages.EnumField('DataStoreTypeValueValuesEnum', 2)
-
-
-class GoogleCloudDialogflowCxV3DeleteDocumentOperationMetadata(_messages.Message):
-  r"""Metadata for DeleteDocument operation.
-
-  Fields:
-    genericMetadata: The generic information of the operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3GenericKnowledgeOperationMetadata', 1)
 
 
 class GoogleCloudDialogflowCxV3DeployFlowMetadata(_messages.Message):
@@ -5390,54 +5370,6 @@ class GoogleCloudDialogflowCxV3GcsDestination(_messages.Message):
   """
 
   uri = _messages.StringField(1)
-
-
-class GoogleCloudDialogflowCxV3GenericKnowledgeOperationMetadata(_messages.Message):
-  r"""Metadata in google::longrunning::Operation for Knowledge operations.
-
-  Enums:
-    StateValueValuesEnum: Required. Output only. The current state of this
-      operation.
-
-  Fields:
-    state: Required. Output only. The current state of this operation.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Required. Output only. The current state of this operation.
-
-    Values:
-      STATE_UNSPECIFIED: State unspecified.
-      PENDING: The operation has been created.
-      RUNNING: The operation is currently running.
-      DONE: The operation is done, either cancelled or completed.
-    """
-    STATE_UNSPECIFIED = 0
-    PENDING = 1
-    RUNNING = 2
-    DONE = 3
-
-  state = _messages.EnumField('StateValueValuesEnum', 1)
-
-
-class GoogleCloudDialogflowCxV3ImportDocumentsOperationMetadata(_messages.Message):
-  r"""Metadata for ImportDocuments operation.
-
-  Fields:
-    genericMetadata: The generic information of the operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3GenericKnowledgeOperationMetadata', 1)
-
-
-class GoogleCloudDialogflowCxV3ImportDocumentsResponse(_messages.Message):
-  r"""Response message for Documents.ImportDocuments.
-
-  Fields:
-    warnings: Includes details about skipped documents or any other warnings.
-  """
-
-  warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
 
 
 class GoogleCloudDialogflowCxV3ImportEntityTypesMetadata(_messages.Message):
@@ -6072,16 +6004,6 @@ class GoogleCloudDialogflowCxV3QueryInput(_messages.Message):
   intent = _messages.MessageField('GoogleCloudDialogflowCxV3IntentInput', 4)
   languageCode = _messages.StringField(5)
   text = _messages.MessageField('GoogleCloudDialogflowCxV3TextInput', 6)
-
-
-class GoogleCloudDialogflowCxV3ReloadDocumentOperationMetadata(_messages.Message):
-  r"""Metadata for ReloadDocument operation.
-
-  Fields:
-    genericMetadata: The generic information of the operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3GenericKnowledgeOperationMetadata', 1)
 
 
 class GoogleCloudDialogflowCxV3ResponseMessage(_messages.Message):
@@ -6743,16 +6665,6 @@ class GoogleCloudDialogflowCxV3TurnSignals(_messages.Message):
   sentimentScore = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
   userEscalated = _messages.BooleanField(9)
   webhookStatuses = _messages.StringField(10, repeated=True)
-
-
-class GoogleCloudDialogflowCxV3UpdateDocumentOperationMetadata(_messages.Message):
-  r"""Metadata for UpdateDocument operation.
-
-  Fields:
-    genericMetadata: The generic information of the operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3GenericKnowledgeOperationMetadata', 1)
 
 
 class GoogleCloudDialogflowCxV3Webhook(_messages.Message):
@@ -7655,16 +7567,6 @@ class GoogleCloudDialogflowCxV3beta1ConversationTurnVirtualAgentOutput(_messages
   triggeredIntent = _messages.MessageField('GoogleCloudDialogflowCxV3beta1Intent', 7)
 
 
-class GoogleCloudDialogflowCxV3beta1CreateDocumentOperationMetadata(_messages.Message):
-  r"""Metadata for CreateDocument operation.
-
-  Fields:
-    genericMetadata: The generic information of the operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3beta1GenericKnowledgeOperationMetadata', 1)
-
-
 class GoogleCloudDialogflowCxV3beta1CreateVersionOperationMetadata(_messages.Message):
   r"""Metadata associated with the long running operation for
   Versions.CreateVersion.
@@ -7711,16 +7613,6 @@ class GoogleCloudDialogflowCxV3beta1DataStoreConnection(_messages.Message):
 
   dataStore = _messages.StringField(1)
   dataStoreType = _messages.EnumField('DataStoreTypeValueValuesEnum', 2)
-
-
-class GoogleCloudDialogflowCxV3beta1DeleteDocumentOperationMetadata(_messages.Message):
-  r"""Metadata for DeleteDocument operation.
-
-  Fields:
-    genericMetadata: The generic information of the operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3beta1GenericKnowledgeOperationMetadata', 1)
 
 
 class GoogleCloudDialogflowCxV3beta1DeployFlowMetadata(_messages.Message):
@@ -8168,54 +8060,6 @@ class GoogleCloudDialogflowCxV3beta1GcsDestination(_messages.Message):
   """
 
   uri = _messages.StringField(1)
-
-
-class GoogleCloudDialogflowCxV3beta1GenericKnowledgeOperationMetadata(_messages.Message):
-  r"""Metadata in google::longrunning::Operation for Knowledge operations.
-
-  Enums:
-    StateValueValuesEnum: Required. Output only. The current state of this
-      operation.
-
-  Fields:
-    state: Required. Output only. The current state of this operation.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Required. Output only. The current state of this operation.
-
-    Values:
-      STATE_UNSPECIFIED: State unspecified.
-      PENDING: The operation has been created.
-      RUNNING: The operation is currently running.
-      DONE: The operation is done, either cancelled or completed.
-    """
-    STATE_UNSPECIFIED = 0
-    PENDING = 1
-    RUNNING = 2
-    DONE = 3
-
-  state = _messages.EnumField('StateValueValuesEnum', 1)
-
-
-class GoogleCloudDialogflowCxV3beta1ImportDocumentsOperationMetadata(_messages.Message):
-  r"""Metadata for ImportDocuments operation.
-
-  Fields:
-    genericMetadata: The generic information of the operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3beta1GenericKnowledgeOperationMetadata', 1)
-
-
-class GoogleCloudDialogflowCxV3beta1ImportDocumentsResponse(_messages.Message):
-  r"""Response message for Documents.ImportDocuments.
-
-  Fields:
-    warnings: Includes details about skipped documents or any other warnings.
-  """
-
-  warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
 
 
 class GoogleCloudDialogflowCxV3beta1ImportEntityTypesMetadata(_messages.Message):
@@ -8852,16 +8696,6 @@ class GoogleCloudDialogflowCxV3beta1QueryInput(_messages.Message):
   languageCode = _messages.StringField(5)
   text = _messages.MessageField('GoogleCloudDialogflowCxV3beta1TextInput', 6)
   toolCallResult = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ToolCallResult', 7)
-
-
-class GoogleCloudDialogflowCxV3beta1ReloadDocumentOperationMetadata(_messages.Message):
-  r"""Metadata for ReloadDocument operation.
-
-  Fields:
-    genericMetadata: The generic information of the operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3beta1GenericKnowledgeOperationMetadata', 1)
 
 
 class GoogleCloudDialogflowCxV3beta1ResponseMessage(_messages.Message):
@@ -9605,16 +9439,6 @@ class GoogleCloudDialogflowCxV3beta1TurnSignals(_messages.Message):
   sentimentScore = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
   userEscalated = _messages.BooleanField(9)
   webhookStatuses = _messages.StringField(10, repeated=True)
-
-
-class GoogleCloudDialogflowCxV3beta1UpdateDocumentOperationMetadata(_messages.Message):
-  r"""Metadata for UpdateDocument operation.
-
-  Fields:
-    genericMetadata: The generic information of the operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3beta1GenericKnowledgeOperationMetadata', 1)
 
 
 class GoogleCloudDialogflowCxV3beta1Webhook(_messages.Message):
@@ -15642,7 +15466,7 @@ class GoogleCloudDialogflowV2SearchKnowledgeRequest(_messages.Message):
     parent: Required. The parent resource contains the conversation profile
       Format: 'projects/' or `projects//locations/`.
     query: Required. The natural language text query for knowledge search.
-    sessionId: Optional. The ID of the search session. The session_id can be
+    sessionId: Required. The ID of the search session. The session_id can be
       combined with Dialogflow V3 Agent ID retrieved from conversation profile
       or on its own to identify a search session. The search history of the
       same session will impact the search result. It's up to the API caller to
@@ -19916,84 +19740,6 @@ class GoogleCloudDialogflowV3alpha1ConversationSignals(_messages.Message):
   turnSignals = _messages.MessageField('GoogleCloudDialogflowV3alpha1TurnSignals', 1)
 
 
-class GoogleCloudDialogflowV3alpha1CreateDocumentOperationMetadata(_messages.Message):
-  r"""Metadata for CreateDocument operation.
-
-  Fields:
-    genericMetadata: The generic information of the operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudDialogflowV3alpha1GenericKnowledgeOperationMetadata', 1)
-
-
-class GoogleCloudDialogflowV3alpha1DeleteDocumentOperationMetadata(_messages.Message):
-  r"""Metadata for DeleteDocument operation.
-
-  Fields:
-    genericMetadata: The generic information of the operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudDialogflowV3alpha1GenericKnowledgeOperationMetadata', 1)
-
-
-class GoogleCloudDialogflowV3alpha1GenericKnowledgeOperationMetadata(_messages.Message):
-  r"""Metadata in google::longrunning::Operation for Knowledge operations.
-
-  Enums:
-    StateValueValuesEnum: Required. Output only. The current state of this
-      operation.
-
-  Fields:
-    state: Required. Output only. The current state of this operation.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Required. Output only. The current state of this operation.
-
-    Values:
-      STATE_UNSPECIFIED: State unspecified.
-      PENDING: The operation has been created.
-      RUNNING: The operation is currently running.
-      DONE: The operation is done, either cancelled or completed.
-    """
-    STATE_UNSPECIFIED = 0
-    PENDING = 1
-    RUNNING = 2
-    DONE = 3
-
-  state = _messages.EnumField('StateValueValuesEnum', 1)
-
-
-class GoogleCloudDialogflowV3alpha1ImportDocumentsOperationMetadata(_messages.Message):
-  r"""Metadata for ImportDocuments operation.
-
-  Fields:
-    genericMetadata: The generic information of the operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudDialogflowV3alpha1GenericKnowledgeOperationMetadata', 1)
-
-
-class GoogleCloudDialogflowV3alpha1ImportDocumentsResponse(_messages.Message):
-  r"""Response message for Documents.ImportDocuments.
-
-  Fields:
-    warnings: Includes details about skipped documents or any other warnings.
-  """
-
-  warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
-
-
-class GoogleCloudDialogflowV3alpha1ReloadDocumentOperationMetadata(_messages.Message):
-  r"""Metadata for ReloadDocument operation.
-
-  Fields:
-    genericMetadata: The generic information of the operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudDialogflowV3alpha1GenericKnowledgeOperationMetadata', 1)
-
-
 class GoogleCloudDialogflowV3alpha1TurnSignals(_messages.Message):
   r"""Collection of all signals that were extracted for a single turn of the
   conversation.
@@ -20044,16 +19790,6 @@ class GoogleCloudDialogflowV3alpha1TurnSignals(_messages.Message):
   triggeredAbandonmentEvent = _messages.BooleanField(9)
   userEscalated = _messages.BooleanField(10)
   webhookStatuses = _messages.StringField(11, repeated=True)
-
-
-class GoogleCloudDialogflowV3alpha1UpdateDocumentOperationMetadata(_messages.Message):
-  r"""Metadata for UpdateDocument operation.
-
-  Fields:
-    genericMetadata: The generic information of the operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudDialogflowV3alpha1GenericKnowledgeOperationMetadata', 1)
 
 
 class GoogleCloudLocationListLocationsResponse(_messages.Message):

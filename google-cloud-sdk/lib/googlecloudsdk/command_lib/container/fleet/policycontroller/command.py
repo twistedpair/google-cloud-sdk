@@ -23,7 +23,9 @@ from typing import Dict
 from apitools.base.protorpclite import messages
 from googlecloudsdk.api_lib.container.fleet import util as fleet_util
 from googlecloudsdk.calliope import parser_extensions
-from googlecloudsdk.command_lib.container.fleet.features import base
+from googlecloudsdk.command_lib.container.fleet.features import base as feature_base
+from googlecloudsdk.command_lib.container.fleet.membershipfeatures import convert
+from googlecloudsdk.command_lib.container.fleet.membershipfeatures import util
 from googlecloudsdk.command_lib.container.fleet.policycontroller import exceptions
 from googlecloudsdk.core import exceptions as gcloud_exceptions
 import six
@@ -67,7 +69,7 @@ class PocoCommand:
     """Filtered map of short membership names to full membership paths."""
     return {
         fleet_util.MembershipPartialName(path): path
-        for path in base.ParseMembershipsPlural(
+        for path in feature_base.ParseMembershipsPlural(
             args, prompt=True, prompt_cancel=False, autoselect=True
         )
     }
@@ -139,7 +141,8 @@ class PocoCommand:
       msg = 'Policy Controller is not enabled for membership {}'
       missing_memberships = [
           exceptions.InvalidPocoMembershipError(msg.format(path))
-          for path in memberships_paths if path not in specs
+          for path in memberships_paths
+          if path not in specs
       ]
       if missing_memberships:
         raise exceptions.InvalidPocoMembershipError(missing_memberships)
@@ -183,14 +186,24 @@ class PocoCommand:
     feature = self.messages.Feature(
         membershipSpecs=self.hubclient.ToMembershipSpecs(specs)
     )
-    try:
-      return self.Update(['membership_specs'], feature)
-    except gcloud_exceptions.Error as e:
-      fne = self.FeatureNotEnabledError()
-      if six.text_type(e) == six.text_type(fne):
-        return self.Enable(feature)
-      else:
-        raise e
+
+    if util.UseMembershipFeatureV2(self.Project(), self.ReleaseTrack()):
+      for spec in feature.membershipSpecs.additionalProperties:
+        membership_path = spec.key
+        v1_spec = spec.value
+        membershipfeature = convert.ToV2MembershipFeature(
+            membership_path, 'policycontroller', v1_spec
+        )
+        self.UpdateV2(membership_path, ['spec'], membershipfeature)
+    else:
+      try:
+        return self.Update(['membership_specs'], feature)
+      except gcloud_exceptions.Error as e:
+        fne = self.FeatureNotEnabledError()
+        if six.text_type(e) == six.text_type(fne):
+          return self.Enable(feature)
+        else:
+          raise e
 
   def current_states(self) -> SpecMapping:
     """Fetches the current states from the server.

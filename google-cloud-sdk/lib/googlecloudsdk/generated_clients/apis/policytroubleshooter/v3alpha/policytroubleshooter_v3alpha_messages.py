@@ -2527,7 +2527,7 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIngressPolicyExplana
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResource(_messages.Message):
-  r"""The details of a resolved resource NextTAG: 7
+  r"""The details of a resolved resource NextTAG: 8
 
   Enums:
     ResolvedStateValueValuesEnum: The resolved resource's state
@@ -2542,6 +2542,8 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResource(_me
     dryrunRegularServicePerimeters: Full resource name of the dry run regular
       service perimeters that restricts the resource Format:
       `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`
+    projectInfo: Details of the project associated with this resolved
+      resource.
     regularServicePerimeters: Full resource name of the regular service
       perimeters that restricts the resource Format:
       `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`
@@ -2568,9 +2570,20 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResource(_me
   bridgeServicePerimeters = _messages.StringField(1, repeated=True)
   dryrunBridgeServicePerimeters = _messages.StringField(2, repeated=True)
   dryrunRegularServicePerimeters = _messages.StringField(3, repeated=True)
-  regularServicePerimeters = _messages.StringField(4, repeated=True)
-  resolvedState = _messages.EnumField('ResolvedStateValueValuesEnum', 5)
-  resource = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResource', 6)
+  projectInfo = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResourceProjectInfo', 4)
+  regularServicePerimeters = _messages.StringField(5, repeated=True)
+  resolvedState = _messages.EnumField('ResolvedStateValueValuesEnum', 6)
+  resource = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResource', 7)
+
+
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResourceProjectInfo(_messages.Message):
+  r"""The details of a project. NextTAG: 2
+
+  Fields:
+    projectId: Project string identifier, e.g. "my-project-123".
+  """
+
+  projectId = _messages.StringField(1)
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResource(_messages.Message):
@@ -3776,9 +3789,17 @@ class GoogleIamV3PolicyBindingTarget(_messages.Message):
       `//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID`
       * Workspace Identity:
       `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID`
+    resource: Immutable. Full Resource Name used for access policy bindings
+      Examples: * Organization:
+      `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
+      Folder: `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` *
+      Project: *
+      `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER` *
+      `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID`
   """
 
   principalSet = _messages.StringField(1)
+  resource = _messages.StringField(2)
 
 
 class GoogleIamV3PrincipalAccessBoundaryPolicy(_messages.Message):
@@ -4063,10 +4084,12 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressFrom(_mess
   Fields:
     identities: A list of identities that are allowed access through
       [EgressPolicy]. Identities can be an individual user, service account,
-      Google group, or third-party identity. The `v1` identities that have the
-      prefix `user`, `group`, `serviceAccount`, `principal`, and
-      `principalSet` in https://cloud.google.com/iam/docs/principal-
-      identifiers#v1 are supported.
+      Google group, or third-party identity. For third-party identity, only
+      single identities are supported and other identity types are not
+      supported. The `v1` identities that have the prefix `user`, `group`,
+      `serviceAccount`, and `principal` in
+      https://cloud.google.com/iam/docs/principal-identifiers#v1 are
+      supported.
     identityType: Specifies the type of identities that are allowed access to
       outside the perimeter. If left unspecified, then members of `identities`
       field will be allowed access.
@@ -4218,10 +4241,12 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressFrom(_mes
   Fields:
     identities: A list of identities that are allowed access through
       [IngressPolicy]. Identities can be an individual user, service account,
-      Google group, or third-party identity. The `v1` identities that have the
-      prefix `user`, `group`, `serviceAccount`, `principal`, and
-      `principalSet` in https://cloud.google.com/iam/docs/principal-
-      identifiers#v1 are supported.
+      Google group, or third-party identity. For third-party identity, only
+      single identities are supported and other identity types are not
+      supported. The `v1` identities that have the prefix `user`, `group`,
+      `serviceAccount`, and `principal` in
+      https://cloud.google.com/iam/docs/principal-identifiers#v1 are
+      supported.
     identityType: Specifies the type of identities that are allowed access
       from outside the perimeter. If left unspecified, then members of
       `identities` field will be allowed access.

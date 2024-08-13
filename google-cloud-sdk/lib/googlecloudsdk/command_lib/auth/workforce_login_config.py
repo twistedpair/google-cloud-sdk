@@ -26,6 +26,15 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import properties
 
 CLOUDSDK_AUTH_LOGIN_CONFIG_FILE = 'CLOUDSDK_AUTH_LOGIN_CONFIG_FILE'
+GOOGLE_DEFAULT_CLOUD_WEB_DOMAIN = 'cloud.google'
+AUTH_PROXY_URL_GDU = 'https://sdk.cloud.google/authcode.html'
+AUTH_PROXY_URL_TEMPLATE_NON_GDU = 'https://sdk.{}/authcode'
+ADC_AUTH_PROXY_URL_GDU = (
+    'https://sdk.cloud.google/applicationdefaultauthcode.html'
+)
+ADC_AUTH_PROXY_URL_TEMPLATE_NON_GDU = (
+    'https://sdk.{}/applicationdefaultauthcode'
+)
 
 
 def DoWorkforceHeadfulLogin(login_config_file, is_adc=False, **kwargs):
@@ -62,6 +71,29 @@ def DoWorkforceHeadfulLogin(login_config_file, is_adc=False, **kwargs):
     # Then the provider_name is "locations/global/workforcePools/
     # <workforce-pool-id>/providers/<provider-id>".
     provider_name = audience[path_start + 1:]
+
+  # Figure out the correct auth_proxy_redirect_uri if not provided by the user.
+  auth_proxy_redirect_uri = kwargs.get('auth_proxy_redirect_uri', None)
+  if not auth_proxy_redirect_uri:
+    universe_cloud_web_domain = login_config_data.get(
+        'universe_cloud_web_domain', None
+    )
+    if (
+        not universe_cloud_web_domain
+        or universe_cloud_web_domain == GOOGLE_DEFAULT_CLOUD_WEB_DOMAIN
+    ):
+      if is_adc:
+        kwargs['auth_proxy_redirect_uri'] = ADC_AUTH_PROXY_URL_GDU
+      else:
+        kwargs['auth_proxy_redirect_uri'] = AUTH_PROXY_URL_GDU
+    else:
+      if is_adc:
+        template = ADC_AUTH_PROXY_URL_TEMPLATE_NON_GDU
+      else:
+        template = AUTH_PROXY_URL_TEMPLATE_NON_GDU
+      kwargs['auth_proxy_redirect_uri'] = template.format(
+          universe_cloud_web_domain
+      )
 
   creds = auth_util.DoInstalledAppBrowserFlowGoogleAuth(
       config.CLOUDSDK_EXTERNAL_ACCOUNT_SCOPES,

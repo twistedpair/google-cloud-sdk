@@ -101,6 +101,13 @@ class Collections(enum.Enum):
       ['project', 'region', 'forwardingRule'],
       True
   )
+  FUTURERESERVATIONS = (
+      'futureReservations',
+      'projects/{project}/zones/{zone}/futureReservations/{futureReservation}',
+      {},
+      ['project', 'zone', 'futureReservation'],
+      True
+  )
   GLOBALADDRESSES = (
       'globalAddresses',
       'projects/{project}/global/addresses/{address}',

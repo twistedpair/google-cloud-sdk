@@ -20,7 +20,7 @@ class ApihubProjectsLocationsApiHubInstancesCreateRequest(_messages.Message):
     apiHubInstanceId: Optional. Identifier to assign to the Api Hub instance.
       Must be unique within scope of the parent resource. If the field is not
       provided, system generated id will be used. This value should be 4-40
-      characters, and valid characters are /a-z[0-9]-_/.
+      characters, and valid characters are `/a-z[0-9]-_/`.
     googleCloudApihubV1ApiHubInstance: A GoogleCloudApihubV1ApiHubInstance
       resource to be passed as the request body.
     parent: Required. The parent resource for the Api Hub instance resource.
@@ -48,9 +48,8 @@ class ApihubProjectsLocationsApiHubInstancesLookupRequest(_messages.Message):
 
   Fields:
     parent: Required. There will always be only one Api Hub instance for a GCP
-      project across all locations. For preview, the location can be 'us-
-      central1' or 'eu-west1' in the request. The parent resource for the Api
-      Hub instance resource. Format: `projects/{project}/locations/{location}`
+      project across all locations. The parent resource for the Api Hub
+      instance resource. Format: `projects/{project}/locations/{location}`
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1019,8 +1018,8 @@ class ApihubProjectsLocationsHostProjectRegistrationsGetRequest(_messages.Messag
 
   Fields:
     name: Required. Host project registration resource name. projects/{project
-      }/locations/{location}/hostProjectRegistrations/{hostProjectRegistration
-      _id}
+      }/locations/{location}/hostProjectRegistrations/{host_project_registrati
+      on_id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -1051,7 +1050,7 @@ class ApihubProjectsLocationsHostProjectRegistrationsListRequest(_messages.Messa
       page_size) provided to `ListHostProjectRegistrations` must match the
       call that provided the page token.
     parent: Required. The parent, which owns this collection of host projects.
-      Format: 'projects/*/locations/*'
+      Format: `projects/*/locations/*`
   """
 
   filter = _messages.StringField(1)
@@ -2382,10 +2381,7 @@ class GoogleCloudApihubV1ListApiOperationsResponse(_messages.Message):
   r"""The ListApiOperations method's response.
 
   Fields:
-    apiOperations: The operations corresponding to an API version. Only
-      following field will be populated in the response: name, spec,
-      details.deprecated, details.http_operation.path.path,
-      details.http_operation.method and details.documentation.external_uri.
+    apiOperations: The operations corresponding to an API version.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
   """
@@ -2494,9 +2490,7 @@ class GoogleCloudApihubV1ListSpecsResponse(_messages.Message):
   Fields:
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
-    specs: The specs corresponding to an API. Only following field will be
-      populated in the response: name, display_name,
-      spec_type.enum_values.values.id and lint_response.json_values.values.
+    specs: The specs corresponding to an API.
   """
 
   nextPageToken = _messages.StringField(1)

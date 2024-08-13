@@ -712,6 +712,9 @@ class Candidate(proto.Message):
             Output only. Index of the candidate.
         content (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Content):
             Output only. Content parts of the candidate.
+        avg_logprobs (float):
+            Output only. Average log probability score of
+            the candidate.
         finish_reason (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Candidate.FinishReason):
             Output only. The reason why the model stopped
             generating tokens. If empty, the model has not
@@ -790,6 +793,10 @@ class Candidate(proto.Message):
         proto.MESSAGE,
         number=2,
         message='Content',
+    )
+    avg_logprobs: float = proto.Field(
+        proto.DOUBLE,
+        number=9,
     )
     finish_reason: FinishReason = proto.Field(
         proto.ENUM,

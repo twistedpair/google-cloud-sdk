@@ -1138,6 +1138,8 @@ class Cve(_messages.Message):
   Fields:
     cvssv3: Describe Common Vulnerability Scoring System specified at
       https://www.first.org/cvss/v3.1/specification-document
+    exploitReleaseDate: Date the first publicly available exploit or PoC was
+      released.
     exploitationActivity: The exploitation activity of the vulnerability in
       the wild.
     id: The unique identifier for the vulnerability. e.g. CVE-2021-34527
@@ -1193,13 +1195,14 @@ class Cve(_messages.Message):
     CRITICAL = 4
 
   cvssv3 = _messages.MessageField('Cvssv3', 1)
-  exploitationActivity = _messages.EnumField('ExploitationActivityValueValuesEnum', 2)
-  id = _messages.StringField(3)
-  impact = _messages.EnumField('ImpactValueValuesEnum', 4)
-  observedInTheWild = _messages.BooleanField(5)
-  references = _messages.MessageField('Reference', 6, repeated=True)
-  upstreamFixAvailable = _messages.BooleanField(7)
-  zeroDay = _messages.BooleanField(8)
+  exploitReleaseDate = _messages.StringField(2)
+  exploitationActivity = _messages.EnumField('ExploitationActivityValueValuesEnum', 3)
+  id = _messages.StringField(4)
+  impact = _messages.EnumField('ImpactValueValuesEnum', 5)
+  observedInTheWild = _messages.BooleanField(6)
+  references = _messages.MessageField('Reference', 7, repeated=True)
+  upstreamFixAvailable = _messages.BooleanField(8)
+  zeroDay = _messages.BooleanField(9)
 
 
 class Cvssv3(_messages.Message):
@@ -1477,6 +1480,21 @@ class DiskPath(_messages.Message):
 
   partitionUuid = _messages.StringField(1)
   relativePath = _messages.StringField(2)
+
+
+class DynamicMuteRecord(_messages.Message):
+  r"""The record of a dynamic mute rule that matches the finding.
+
+  Fields:
+    matchTime: When the dynamic mute rule first matched the finding.
+    muteConfig: The relative resource name of the mute rule, represented by a
+      mute config, that created this record, for example
+      `organizations/123/muteConfigs/mymuteconfig` or
+      `organizations/123/locations/global/muteConfigs/mymuteconfig`.
+  """
+
+  matchTime = _messages.StringField(1)
+  muteConfig = _messages.StringField(2)
 
 
 class EffectiveEventThreatDetectionCustomModule(_messages.Message):
@@ -1883,6 +1901,7 @@ class Finding(_messages.Message):
       e.g. mute config that muted the finding etc. Unlike other attributes of
       a finding, a finding provider shouldn't set the value of
       mute_annotation.
+    muteInfo: Output only. The mute information regarding this finding.
     muteInitiator: Records additional information about the mute operation,
       for example, the [mute configuration](/security-command-center/docs/how-
       to-mute-findings) that muted the finding and the user who muted the
@@ -2159,23 +2178,24 @@ class Finding(_messages.Message):
   moduleName = _messages.StringField(31)
   mute = _messages.EnumField('MuteValueValuesEnum', 32)
   muteAnnotation = _messages.StringField(33)
-  muteInitiator = _messages.StringField(34)
-  muteUpdateTime = _messages.StringField(35)
-  name = _messages.StringField(36)
-  nextSteps = _messages.StringField(37)
-  notebook = _messages.MessageField('Notebook', 38)
-  orgPolicies = _messages.MessageField('OrgPolicy', 39, repeated=True)
-  parent = _messages.StringField(40)
-  parentDisplayName = _messages.StringField(41)
-  processes = _messages.MessageField('Process', 42, repeated=True)
-  resourceName = _messages.StringField(43)
-  securityMarks = _messages.MessageField('SecurityMarks', 44)
-  securityPosture = _messages.MessageField('SecurityPosture', 45)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 46)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 47)
-  state = _messages.EnumField('StateValueValuesEnum', 48)
-  toxicCombination = _messages.MessageField('ToxicCombination', 49)
-  vulnerability = _messages.MessageField('Vulnerability', 50)
+  muteInfo = _messages.MessageField('MuteInfo', 34)
+  muteInitiator = _messages.StringField(35)
+  muteUpdateTime = _messages.StringField(36)
+  name = _messages.StringField(37)
+  nextSteps = _messages.StringField(38)
+  notebook = _messages.MessageField('Notebook', 39)
+  orgPolicies = _messages.MessageField('OrgPolicy', 40, repeated=True)
+  parent = _messages.StringField(41)
+  parentDisplayName = _messages.StringField(42)
+  processes = _messages.MessageField('Process', 43, repeated=True)
+  resourceName = _messages.StringField(44)
+  securityMarks = _messages.MessageField('SecurityMarks', 45)
+  securityPosture = _messages.MessageField('SecurityPosture', 46)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 47)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 48)
+  state = _messages.EnumField('StateValueValuesEnum', 49)
+  toxicCombination = _messages.MessageField('ToxicCombination', 50)
+  vulnerability = _messages.MessageField('Vulnerability', 51)
 
 
 class Folder(_messages.Message):
@@ -3926,6 +3946,8 @@ class GoogleCloudSecuritycenterV2Cve(_messages.Message):
   Fields:
     cvssv3: Describe Common Vulnerability Scoring System specified at
       https://www.first.org/cvss/v3.1/specification-document
+    exploitReleaseDate: Date the first publicly available exploit or PoC was
+      released.
     exploitationActivity: The exploitation activity of the vulnerability in
       the wild.
     id: The unique identifier for the vulnerability. e.g. CVE-2021-34527
@@ -3981,13 +4003,14 @@ class GoogleCloudSecuritycenterV2Cve(_messages.Message):
     CRITICAL = 4
 
   cvssv3 = _messages.MessageField('GoogleCloudSecuritycenterV2Cvssv3', 1)
-  exploitationActivity = _messages.EnumField('ExploitationActivityValueValuesEnum', 2)
-  id = _messages.StringField(3)
-  impact = _messages.EnumField('ImpactValueValuesEnum', 4)
-  observedInTheWild = _messages.BooleanField(5)
-  references = _messages.MessageField('GoogleCloudSecuritycenterV2Reference', 6, repeated=True)
-  upstreamFixAvailable = _messages.BooleanField(7)
-  zeroDay = _messages.BooleanField(8)
+  exploitReleaseDate = _messages.StringField(2)
+  exploitationActivity = _messages.EnumField('ExploitationActivityValueValuesEnum', 3)
+  id = _messages.StringField(4)
+  impact = _messages.EnumField('ImpactValueValuesEnum', 5)
+  observedInTheWild = _messages.BooleanField(6)
+  references = _messages.MessageField('GoogleCloudSecuritycenterV2Reference', 7, repeated=True)
+  upstreamFixAvailable = _messages.BooleanField(8)
+  zeroDay = _messages.BooleanField(9)
 
 
 class GoogleCloudSecuritycenterV2Cvssv3(_messages.Message):
@@ -4267,6 +4290,21 @@ class GoogleCloudSecuritycenterV2DiskPath(_messages.Message):
   relativePath = _messages.StringField(2)
 
 
+class GoogleCloudSecuritycenterV2DynamicMuteRecord(_messages.Message):
+  r"""The record of a dynamic mute rule that matches the finding.
+
+  Fields:
+    matchTime: When the dynamic mute rule first matched the finding.
+    muteConfig: The relative resource name of the mute rule, represented by a
+      mute config, that created this record, for example
+      `organizations/123/muteConfigs/mymuteconfig` or
+      `organizations/123/locations/global/muteConfigs/mymuteconfig`.
+  """
+
+  matchTime = _messages.StringField(1)
+  muteConfig = _messages.StringField(2)
+
+
 class GoogleCloudSecuritycenterV2EnvironmentVariable(_messages.Message):
   r"""A name-value pair representing an environment variable used in an
   operating system process.
@@ -4507,6 +4545,7 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
     mute: Indicates the mute state of a finding (either muted, unmuted or
       undefined). Unlike other attributes of a finding, a finding provider
       shouldn't set the value of mute.
+    muteInfo: Output only. The mute information regarding this finding.
     muteInitiator: Records additional information about the mute operation,
       for example, the [mute configuration](https://cloud.google.com/security-
       command-center/docs/how-to-mute-findings) that muted the finding and the
@@ -4791,23 +4830,24 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
   mitreAttack = _messages.MessageField('GoogleCloudSecuritycenterV2MitreAttack', 30)
   moduleName = _messages.StringField(31)
   mute = _messages.EnumField('MuteValueValuesEnum', 32)
-  muteInitiator = _messages.StringField(33)
-  muteUpdateTime = _messages.StringField(34)
-  name = _messages.StringField(35)
-  nextSteps = _messages.StringField(36)
-  notebook = _messages.MessageField('GoogleCloudSecuritycenterV2Notebook', 37)
-  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 38, repeated=True)
-  parent = _messages.StringField(39)
-  parentDisplayName = _messages.StringField(40)
-  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 41, repeated=True)
-  resourceName = _messages.StringField(42)
-  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 43)
-  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 44)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 45)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 46)
-  state = _messages.EnumField('StateValueValuesEnum', 47)
-  toxicCombination = _messages.MessageField('GoogleCloudSecuritycenterV2ToxicCombination', 48)
-  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 49)
+  muteInfo = _messages.MessageField('GoogleCloudSecuritycenterV2MuteInfo', 33)
+  muteInitiator = _messages.StringField(34)
+  muteUpdateTime = _messages.StringField(35)
+  name = _messages.StringField(36)
+  nextSteps = _messages.StringField(37)
+  notebook = _messages.MessageField('GoogleCloudSecuritycenterV2Notebook', 38)
+  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 39, repeated=True)
+  parent = _messages.StringField(40)
+  parentDisplayName = _messages.StringField(41)
+  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 42, repeated=True)
+  resourceName = _messages.StringField(43)
+  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 44)
+  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 45)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 46)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 47)
+  state = _messages.EnumField('StateValueValuesEnum', 48)
+  toxicCombination = _messages.MessageField('GoogleCloudSecuritycenterV2ToxicCombination', 49)
+  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 50)
 
 
 class GoogleCloudSecuritycenterV2Folder(_messages.Message):
@@ -5490,6 +5530,21 @@ class GoogleCloudSecuritycenterV2MuteConfig(_messages.Message):
   name = _messages.StringField(6)
   type = _messages.EnumField('TypeValueValuesEnum', 7)
   updateTime = _messages.StringField(8)
+
+
+class GoogleCloudSecuritycenterV2MuteInfo(_messages.Message):
+  r"""Mute information about the finding, including whether the finding has a
+  static mute or any matching dynamic mute rules.
+
+  Fields:
+    dynamicMuteRecords: The list of dynamic mute rules that currently match
+      the finding.
+    staticMute: If set, the static mute applied to this finding. Static mutes
+      override dynamic mutes. If unset, there is no static mute.
+  """
+
+  dynamicMuteRecords = _messages.MessageField('GoogleCloudSecuritycenterV2DynamicMuteRecord', 1, repeated=True)
+  staticMute = _messages.MessageField('GoogleCloudSecuritycenterV2StaticMute', 2)
 
 
 class GoogleCloudSecuritycenterV2Node(_messages.Message):
@@ -6217,6 +6272,41 @@ class GoogleCloudSecuritycenterV2ServiceAccountDelegationInfo(_messages.Message)
 
   principalEmail = _messages.StringField(1)
   principalSubject = _messages.StringField(2)
+
+
+class GoogleCloudSecuritycenterV2StaticMute(_messages.Message):
+  r"""Information about the static mute state. A static mute state overrides
+  any dynamic mute rules that apply to this finding. The static mute state can
+  be set by a static mute rule or by muting the finding directly.
+
+  Enums:
+    StateValueValuesEnum: The static mute state. If the value is `MUTED` or
+      `UNMUTED`, then the finding's overall mute state will have the same
+      value.
+
+  Fields:
+    applyTime: When the static mute was applied.
+    state: The static mute state. If the value is `MUTED` or `UNMUTED`, then
+      the finding's overall mute state will have the same value.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The static mute state. If the value is `MUTED` or `UNMUTED`, then the
+    finding's overall mute state will have the same value.
+
+    Values:
+      MUTE_UNSPECIFIED: Unspecified.
+      MUTED: Finding has been muted.
+      UNMUTED: Finding has been unmuted.
+      UNDEFINED: Finding has never been muted/unmuted.
+    """
+    MUTE_UNSPECIFIED = 0
+    MUTED = 1
+    UNMUTED = 2
+    UNDEFINED = 3
+
+  applyTime = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class GoogleCloudSecuritycenterV2Subject(_messages.Message):
@@ -7457,6 +7547,21 @@ class MitreAttack(_messages.Message):
   primaryTactic = _messages.EnumField('PrimaryTacticValueValuesEnum', 3)
   primaryTechniques = _messages.EnumField('PrimaryTechniquesValueListEntryValuesEnum', 4, repeated=True)
   version = _messages.StringField(5)
+
+
+class MuteInfo(_messages.Message):
+  r"""Mute information about the finding, including whether the finding has a
+  static mute or any matching dynamic mute rules.
+
+  Fields:
+    dynamicMuteRecords: The list of dynamic mute rules that currently match
+      the finding.
+    staticMute: If set, the static mute applied to this finding. Static mutes
+      override dynamic mutes. If unset, there is no static mute.
+  """
+
+  dynamicMuteRecords = _messages.MessageField('DynamicMuteRecord', 1, repeated=True)
+  staticMute = _messages.MessageField('StaticMute', 2)
 
 
 class Node(_messages.Message):
@@ -12467,6 +12572,41 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class StaticMute(_messages.Message):
+  r"""Information about the static mute state. A static mute state overrides
+  any dynamic mute rules that apply to this finding. The static mute state can
+  be set by a static mute rule or by muting the finding directly.
+
+  Enums:
+    StateValueValuesEnum: The static mute state. If the value is `MUTED` or
+      `UNMUTED`, then the finding's overall mute state will have the same
+      value.
+
+  Fields:
+    applyTime: When the static mute was applied.
+    state: The static mute state. If the value is `MUTED` or `UNMUTED`, then
+      the finding's overall mute state will have the same value.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The static mute state. If the value is `MUTED` or `UNMUTED`, then the
+    finding's overall mute state will have the same value.
+
+    Values:
+      MUTE_UNSPECIFIED: Unspecified.
+      MUTED: Finding has been muted.
+      UNMUTED: Finding has been unmuted.
+      UNDEFINED: Finding has never been muted/unmuted.
+    """
+    MUTE_UNSPECIFIED = 0
+    MUTED = 1
+    UNMUTED = 2
+    UNDEFINED = 3
+
+  applyTime = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class Status(_messages.Message):

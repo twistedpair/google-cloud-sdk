@@ -1031,8 +1031,6 @@ class CloudVmClusterProperties(_messages.Message):
     StateValueValuesEnum: Output only. State of the cluster
 
   Fields:
-    backupSubnetCidr: Required. CIDR range of the backup subnet.
-    cidr: Required. Network settings. CIDR to use for cluster IP allocation.
     clusterName: Optional. OCI Cluster name.
     compartmentId: Output only. Compartment ID of cluster.
     cpuCoreCount: Required. Number of enabled CPU cores.
@@ -1053,9 +1051,6 @@ class CloudVmClusterProperties(_messages.Message):
     licenseType: Required. License type of VM Cluster
     localBackupEnabled: Optional. use local backup.
     memorySizeGb: Optional. Memory allocated in GBs.
-    network: Required. The name of the VPC network. Format:
-      projects/{project}/locations/global/networks/{network} or
-      projects/{project}/global/networks/{network} https://google.aip.dev/122
     nodeCount: Optional. Number of database servers.
     ociUrl: Output only. Deep link to the OCI console to view this resource.
     ocid: Output only. OCID of VM Cluster
@@ -1123,41 +1118,38 @@ class CloudVmClusterProperties(_messages.Message):
     FAILED = 6
     MAINTENANCE_IN_PROGRESS = 7
 
-  backupSubnetCidr = _messages.StringField(1)
-  cidr = _messages.StringField(2)
-  clusterName = _messages.StringField(3)
-  compartmentId = _messages.StringField(4)
-  cpuCoreCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  dataStorageSizeTb = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
-  dbNodeStorageSizeGb = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  dbServerOcids = _messages.StringField(8, repeated=True)
-  diagnosticsDataCollectionOptions = _messages.MessageField('DataCollectionOptions', 9)
-  diskRedundancy = _messages.EnumField('DiskRedundancyValueValuesEnum', 10)
-  dnsListenerIp = _messages.StringField(11)
-  domain = _messages.StringField(12)
-  giVersion = _messages.StringField(13)
-  hostname = _messages.StringField(14)
-  hostnamePrefix = _messages.StringField(15)
-  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 16)
-  localBackupEnabled = _messages.BooleanField(17)
-  memorySizeGb = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  network = _messages.StringField(19)
-  nodeCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  ociUrl = _messages.StringField(21)
-  ocid = _messages.StringField(22)
-  ocpuCount = _messages.FloatField(23, variant=_messages.Variant.FLOAT)
-  scanDns = _messages.StringField(24)
-  scanDnsRecordId = _messages.StringField(25)
-  scanIpIds = _messages.StringField(26, repeated=True)
-  scanListenerPortTcp = _messages.IntegerField(27, variant=_messages.Variant.INT32)
-  scanListenerPortTcpSsl = _messages.IntegerField(28, variant=_messages.Variant.INT32)
-  shape = _messages.StringField(29)
-  sparseDiskgroupEnabled = _messages.BooleanField(30)
-  sshPublicKeys = _messages.StringField(31, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 32)
-  storageSizeGb = _messages.IntegerField(33, variant=_messages.Variant.INT32)
-  systemVersion = _messages.StringField(34)
-  timeZone = _messages.MessageField('TimeZone', 35)
+  clusterName = _messages.StringField(1)
+  compartmentId = _messages.StringField(2)
+  cpuCoreCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  dataStorageSizeTb = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  dbNodeStorageSizeGb = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  dbServerOcids = _messages.StringField(6, repeated=True)
+  diagnosticsDataCollectionOptions = _messages.MessageField('DataCollectionOptions', 7)
+  diskRedundancy = _messages.EnumField('DiskRedundancyValueValuesEnum', 8)
+  dnsListenerIp = _messages.StringField(9)
+  domain = _messages.StringField(10)
+  giVersion = _messages.StringField(11)
+  hostname = _messages.StringField(12)
+  hostnamePrefix = _messages.StringField(13)
+  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 14)
+  localBackupEnabled = _messages.BooleanField(15)
+  memorySizeGb = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  nodeCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  ociUrl = _messages.StringField(18)
+  ocid = _messages.StringField(19)
+  ocpuCount = _messages.FloatField(20, variant=_messages.Variant.FLOAT)
+  scanDns = _messages.StringField(21)
+  scanDnsRecordId = _messages.StringField(22)
+  scanIpIds = _messages.StringField(23, repeated=True)
+  scanListenerPortTcp = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  scanListenerPortTcpSsl = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  shape = _messages.StringField(26)
+  sparseDiskgroupEnabled = _messages.BooleanField(27)
+  sshPublicKeys = _messages.StringField(28, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 29)
+  storageSizeGb = _messages.IntegerField(30, variant=_messages.Variant.INT32)
+  systemVersion = _messages.StringField(31)
+  timeZone = _messages.MessageField('TimeZone', 32)
 
 
 class CustomerContact(_messages.Message):

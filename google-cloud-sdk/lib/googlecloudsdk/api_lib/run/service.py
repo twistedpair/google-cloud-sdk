@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import traffic
 
+DEFAULT_BASE_IMAGE = 'gcr.io/buildpacks/google-22/run'
 ENDPOINT_VISIBILITY = 'networking.knative.dev/visibility'
 CLUSTER_LOCAL = 'cluster-local'
 
@@ -41,12 +42,22 @@ SERVICE_SCALING_MODE_ANNOTATION = 'run.googleapis.com/scalingMode'
 OPERATION_ID_ANNOTATION = 'run.googleapis.com/operation-id'
 RUN_FUNCTIONS_SOURCE_LOCATION_ANNOTATION = 'run.googleapis.com/source-location'
 RUN_FUNCTIONS_BUILD_ID_ANNOTATION = 'run.googleapis.com/build-id'
-RUN_FUNCTIONS_BUILD_ENV_VARS_ANNOTATION = 'run.googleapis.com/build-environment-variables'
+RUN_FUNCTIONS_BUILD_ENV_VARS_ANNOTATION = (
+    'run.googleapis.com/build-environment-variables'
+)
 RUN_FUNCTIONS_FUNCTION_TARGET_ANNOTATION = 'run.googleapis.com/function-target'
-RUN_FUNCTIONS_BUILD_WORKER_POOL_ANNOTATION = 'run.googleapis.com/build-worker-pool'
-RUN_FUNCTIONS_BUILD_SERVICE_ACCOUNT_ANNOTATION = 'run.googleapis.com/build-service-account'
+RUN_FUNCTIONS_BUILD_WORKER_POOL_ANNOTATION = (
+    'run.googleapis.com/build-worker-pool'
+)
+RUN_FUNCTIONS_BUILD_SERVICE_ACCOUNT_ANNOTATION = (
+    'run.googleapis.com/build-service-account'
+)
 RUN_FUNCTIONS_IMAGE_URI_ANNOTATION = 'run.googleapis.com/image-uri'
 RUN_FUNCTIONS_BUILD_NAME_ANNOTATION = 'run.googleapis.com/build-name'
+RUN_FUNCTIONS_BUILD_BASE_IMAGE = 'run.googleapis.com/build-base-image'
+RUN_FUNCTIONS_ENABLE_AUTOMATIC_UPDATES = (
+    'run.googleapis.com/enable-automatic-updates'
+)
 
 
 class Service(k8s_object.KubernetesObject):

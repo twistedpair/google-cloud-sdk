@@ -173,17 +173,19 @@ class BigquerydatatransferProjectsLocationsTransferConfigsCreateRequest(_message
   object.
 
   Fields:
-    authorizationCode: Optional OAuth2 authorization code to use with this
-      transfer configuration. This is required only if
-      `transferConfig.dataSourceId` is 'youtube_channel' and new credentials
-      are needed, as indicated by `CheckValidCreds`. In order to obtain
-      authorization_code, make a request to the following URL: https://bigquer
-      y.cloud.google.com/datatransfer/oauthz/auth?redirect_uri=urn:ietf:wg:oau
-      th:2.0:oob&response_type=authorization_code&client_id=client_id&scope=da
-      ta_source_scopes * The client_id is the OAuth client_id of the a data
-      source as returned by ListDataSources method. * data_source_scopes are
-      the scopes returned by ListDataSources method. Note that this should not
-      be set when `service_account_name` is used to create the transfer
+    authorizationCode: Deprecated: Authorization code was required when
+      `transferConfig.dataSourceId` is 'youtube_channel' but it is no longer
+      used in any data sources. Use `version_info` instead. Optional OAuth2
+      authorization code to use with this transfer configuration. This is
+      required only if `transferConfig.dataSourceId` is 'youtube_channel' and
+      new credentials are needed, as indicated by `CheckValidCreds`. In order
+      to obtain authorization_code, make a request to the following URL: https
+      ://bigquery.cloud.google.com/datatransfer/oauthz/auth?redirect_uri=urn:i
+      etf:wg:oauth:2.0:oob&response_type=authorization_code&client_id=client_i
+      d&scope=data_source_scopes * The client_id is the OAuth client_id of the
+      data source as returned by ListDataSources method. * data_source_scopes
+      are the scopes returned by ListDataSources method. Note that this should
+      not be set when `service_account_name` is used to create the transfer
       config.
     parent: Required. The BigQuery project id where the transfer configuration
       should be created. Must be in the format
@@ -200,16 +202,18 @@ class BigquerydatatransferProjectsLocationsTransferConfigsCreateRequest(_message
       accounts).
     transferConfig: A TransferConfig resource to be passed as the request
       body.
-    versionInfo: Optional version info. This is required only if
-      `transferConfig.dataSourceId` is not 'youtube_channel' and new
-      credentials are needed, as indicated by `CheckValidCreds`. In order to
-      obtain version info, make a request to the following URL: https://bigque
-      ry.cloud.google.com/datatransfer/oauthz/auth?redirect_uri=urn:ietf:wg:oa
-      uth:2.0:oob&response_type=version_info&client_id=client_id&scope=data_so
-      urce_scopes * The client_id is the OAuth client_id of the a data source
-      as returned by ListDataSources method. * data_source_scopes are the
-      scopes returned by ListDataSources method. Note that this should not be
-      set when `service_account_name` is used to create the transfer config.
+    versionInfo: Optional version info. This parameter replaces
+      `authorization_code` which is no longer used in any data sources. This
+      is required only if `transferConfig.dataSourceId` is 'youtube_channel'
+      *or* new credentials are needed, as indicated by `CheckValidCreds`. In
+      order to obtain version info, make a request to the following URL: https
+      ://bigquery.cloud.google.com/datatransfer/oauthz/auth?redirect_uri=urn:i
+      etf:wg:oauth:2.0:oob&response_type=version_info&client_id=client_id&scop
+      e=data_source_scopes * The client_id is the OAuth client_id of the data
+      source as returned by ListDataSources method. * data_source_scopes are
+      the scopes returned by ListDataSources method. Note that this should not
+      be set when `service_account_name` is used to create the transfer
+      config.
   """
 
   authorizationCode = _messages.StringField(1)
@@ -273,17 +277,19 @@ class BigquerydatatransferProjectsLocationsTransferConfigsPatchRequest(_messages
   object.
 
   Fields:
-    authorizationCode: Optional OAuth2 authorization code to use with this
-      transfer configuration. This is required only if
-      `transferConfig.dataSourceId` is 'youtube_channel' and new credentials
-      are needed, as indicated by `CheckValidCreds`. In order to obtain
-      authorization_code, make a request to the following URL: https://bigquer
-      y.cloud.google.com/datatransfer/oauthz/auth?redirect_uri=urn:ietf:wg:oau
-      th:2.0:oob&response_type=authorization_code&client_id=client_id&scope=da
-      ta_source_scopes * The client_id is the OAuth client_id of the a data
-      source as returned by ListDataSources method. * data_source_scopes are
-      the scopes returned by ListDataSources method. Note that this should not
-      be set when `service_account_name` is used to update the transfer
+    authorizationCode: Deprecated: Authorization code was required when
+      `transferConfig.dataSourceId` is 'youtube_channel' but it is no longer
+      used in any data sources. Use `version_info` instead. Optional OAuth2
+      authorization code to use with this transfer configuration. This is
+      required only if `transferConfig.dataSourceId` is 'youtube_channel' and
+      new credentials are needed, as indicated by `CheckValidCreds`. In order
+      to obtain authorization_code, make a request to the following URL: https
+      ://bigquery.cloud.google.com/datatransfer/oauthz/auth?redirect_uri=urn:i
+      etf:wg:oauth:2.0:oob&response_type=authorization_code&client_id=client_i
+      d&scope=data_source_scopes * The client_id is the OAuth client_id of the
+      data source as returned by ListDataSources method. * data_source_scopes
+      are the scopes returned by ListDataSources method. Note that this should
+      not be set when `service_account_name` is used to update the transfer
       config.
     name: Identifier. The resource name of the transfer config. Transfer
       config names have the form either
@@ -303,16 +309,18 @@ class BigquerydatatransferProjectsLocationsTransferConfigsPatchRequest(_messages
       body.
     updateMask: Required. Required list of fields to be updated in this
       request.
-    versionInfo: Optional version info. This is required only if
-      `transferConfig.dataSourceId` is not 'youtube_channel' and new
-      credentials are needed, as indicated by `CheckValidCreds`. In order to
-      obtain version info, make a request to the following URL: https://bigque
-      ry.cloud.google.com/datatransfer/oauthz/auth?redirect_uri=urn:ietf:wg:oa
-      uth:2.0:oob&response_type=version_info&client_id=client_id&scope=data_so
-      urce_scopes * The client_id is the OAuth client_id of the a data source
-      as returned by ListDataSources method. * data_source_scopes are the
-      scopes returned by ListDataSources method. Note that this should not be
-      set when `service_account_name` is used to update the transfer config.
+    versionInfo: Optional version info. This parameter replaces
+      `authorization_code` which is no longer used in any data sources. This
+      is required only if `transferConfig.dataSourceId` is 'youtube_channel'
+      *or* new credentials are needed, as indicated by `CheckValidCreds`. In
+      order to obtain version info, make a request to the following URL: https
+      ://bigquery.cloud.google.com/datatransfer/oauthz/auth?redirect_uri=urn:i
+      etf:wg:oauth:2.0:oob&response_type=version_info&client_id=client_id&scop
+      e=data_source_scopes * The client_id is the OAuth client_id of the data
+      source as returned by ListDataSources method. * data_source_scopes are
+      the scopes returned by ListDataSources method. Note that this should not
+      be set when `service_account_name` is used to update the transfer
+      config.
   """
 
   authorizationCode = _messages.StringField(1)
@@ -511,17 +519,19 @@ class BigquerydatatransferProjectsTransferConfigsCreateRequest(_messages.Message
   r"""A BigquerydatatransferProjectsTransferConfigsCreateRequest object.
 
   Fields:
-    authorizationCode: Optional OAuth2 authorization code to use with this
-      transfer configuration. This is required only if
-      `transferConfig.dataSourceId` is 'youtube_channel' and new credentials
-      are needed, as indicated by `CheckValidCreds`. In order to obtain
-      authorization_code, make a request to the following URL: https://bigquer
-      y.cloud.google.com/datatransfer/oauthz/auth?redirect_uri=urn:ietf:wg:oau
-      th:2.0:oob&response_type=authorization_code&client_id=client_id&scope=da
-      ta_source_scopes * The client_id is the OAuth client_id of the a data
-      source as returned by ListDataSources method. * data_source_scopes are
-      the scopes returned by ListDataSources method. Note that this should not
-      be set when `service_account_name` is used to create the transfer
+    authorizationCode: Deprecated: Authorization code was required when
+      `transferConfig.dataSourceId` is 'youtube_channel' but it is no longer
+      used in any data sources. Use `version_info` instead. Optional OAuth2
+      authorization code to use with this transfer configuration. This is
+      required only if `transferConfig.dataSourceId` is 'youtube_channel' and
+      new credentials are needed, as indicated by `CheckValidCreds`. In order
+      to obtain authorization_code, make a request to the following URL: https
+      ://bigquery.cloud.google.com/datatransfer/oauthz/auth?redirect_uri=urn:i
+      etf:wg:oauth:2.0:oob&response_type=authorization_code&client_id=client_i
+      d&scope=data_source_scopes * The client_id is the OAuth client_id of the
+      data source as returned by ListDataSources method. * data_source_scopes
+      are the scopes returned by ListDataSources method. Note that this should
+      not be set when `service_account_name` is used to create the transfer
       config.
     parent: Required. The BigQuery project id where the transfer configuration
       should be created. Must be in the format
@@ -538,16 +548,18 @@ class BigquerydatatransferProjectsTransferConfigsCreateRequest(_messages.Message
       accounts).
     transferConfig: A TransferConfig resource to be passed as the request
       body.
-    versionInfo: Optional version info. This is required only if
-      `transferConfig.dataSourceId` is not 'youtube_channel' and new
-      credentials are needed, as indicated by `CheckValidCreds`. In order to
-      obtain version info, make a request to the following URL: https://bigque
-      ry.cloud.google.com/datatransfer/oauthz/auth?redirect_uri=urn:ietf:wg:oa
-      uth:2.0:oob&response_type=version_info&client_id=client_id&scope=data_so
-      urce_scopes * The client_id is the OAuth client_id of the a data source
-      as returned by ListDataSources method. * data_source_scopes are the
-      scopes returned by ListDataSources method. Note that this should not be
-      set when `service_account_name` is used to create the transfer config.
+    versionInfo: Optional version info. This parameter replaces
+      `authorization_code` which is no longer used in any data sources. This
+      is required only if `transferConfig.dataSourceId` is 'youtube_channel'
+      *or* new credentials are needed, as indicated by `CheckValidCreds`. In
+      order to obtain version info, make a request to the following URL: https
+      ://bigquery.cloud.google.com/datatransfer/oauthz/auth?redirect_uri=urn:i
+      etf:wg:oauth:2.0:oob&response_type=version_info&client_id=client_id&scop
+      e=data_source_scopes * The client_id is the OAuth client_id of the data
+      source as returned by ListDataSources method. * data_source_scopes are
+      the scopes returned by ListDataSources method. Note that this should not
+      be set when `service_account_name` is used to create the transfer
+      config.
   """
 
   authorizationCode = _messages.StringField(1)
@@ -608,17 +620,19 @@ class BigquerydatatransferProjectsTransferConfigsPatchRequest(_messages.Message)
   r"""A BigquerydatatransferProjectsTransferConfigsPatchRequest object.
 
   Fields:
-    authorizationCode: Optional OAuth2 authorization code to use with this
-      transfer configuration. This is required only if
-      `transferConfig.dataSourceId` is 'youtube_channel' and new credentials
-      are needed, as indicated by `CheckValidCreds`. In order to obtain
-      authorization_code, make a request to the following URL: https://bigquer
-      y.cloud.google.com/datatransfer/oauthz/auth?redirect_uri=urn:ietf:wg:oau
-      th:2.0:oob&response_type=authorization_code&client_id=client_id&scope=da
-      ta_source_scopes * The client_id is the OAuth client_id of the a data
-      source as returned by ListDataSources method. * data_source_scopes are
-      the scopes returned by ListDataSources method. Note that this should not
-      be set when `service_account_name` is used to update the transfer
+    authorizationCode: Deprecated: Authorization code was required when
+      `transferConfig.dataSourceId` is 'youtube_channel' but it is no longer
+      used in any data sources. Use `version_info` instead. Optional OAuth2
+      authorization code to use with this transfer configuration. This is
+      required only if `transferConfig.dataSourceId` is 'youtube_channel' and
+      new credentials are needed, as indicated by `CheckValidCreds`. In order
+      to obtain authorization_code, make a request to the following URL: https
+      ://bigquery.cloud.google.com/datatransfer/oauthz/auth?redirect_uri=urn:i
+      etf:wg:oauth:2.0:oob&response_type=authorization_code&client_id=client_i
+      d&scope=data_source_scopes * The client_id is the OAuth client_id of the
+      data source as returned by ListDataSources method. * data_source_scopes
+      are the scopes returned by ListDataSources method. Note that this should
+      not be set when `service_account_name` is used to update the transfer
       config.
     name: Identifier. The resource name of the transfer config. Transfer
       config names have the form either
@@ -638,16 +652,18 @@ class BigquerydatatransferProjectsTransferConfigsPatchRequest(_messages.Message)
       body.
     updateMask: Required. Required list of fields to be updated in this
       request.
-    versionInfo: Optional version info. This is required only if
-      `transferConfig.dataSourceId` is not 'youtube_channel' and new
-      credentials are needed, as indicated by `CheckValidCreds`. In order to
-      obtain version info, make a request to the following URL: https://bigque
-      ry.cloud.google.com/datatransfer/oauthz/auth?redirect_uri=urn:ietf:wg:oa
-      uth:2.0:oob&response_type=version_info&client_id=client_id&scope=data_so
-      urce_scopes * The client_id is the OAuth client_id of the a data source
-      as returned by ListDataSources method. * data_source_scopes are the
-      scopes returned by ListDataSources method. Note that this should not be
-      set when `service_account_name` is used to update the transfer config.
+    versionInfo: Optional version info. This parameter replaces
+      `authorization_code` which is no longer used in any data sources. This
+      is required only if `transferConfig.dataSourceId` is 'youtube_channel'
+      *or* new credentials are needed, as indicated by `CheckValidCreds`. In
+      order to obtain version info, make a request to the following URL: https
+      ://bigquery.cloud.google.com/datatransfer/oauthz/auth?redirect_uri=urn:i
+      etf:wg:oauth:2.0:oob&response_type=version_info&client_id=client_id&scop
+      e=data_source_scopes * The client_id is the OAuth client_id of the data
+      source as returned by ListDataSources method. * data_source_scopes are
+      the scopes returned by ListDataSources method. Note that this should not
+      be set when `service_account_name` is used to update the transfer
+      config.
   """
 
   authorizationCode = _messages.StringField(1)

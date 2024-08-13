@@ -692,6 +692,16 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
                 'uri': '/v1/{model=projects/*/locations/*/publishers/*/models/*}:generateContent',
                 'body': '*',
             },
+{
+                'method': 'post',
+                'uri': '/v1/{model=endpoints/*}:generateContent',
+                'body': '*',
+            },
+{
+                'method': 'post',
+                'uri': '/v1/{model=publishers/*/models/*}:generateContent',
+                'body': '*',
+            },
             ]
             request, metadata = self._interceptor.pre_generate_content(request, metadata)
             pb_request = prediction_service.GenerateContentRequest.pb(request)
@@ -1124,6 +1134,16 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
 {
                 'method': 'post',
                 'uri': '/v1/{model=projects/*/locations/*/publishers/*/models/*}:streamGenerateContent',
+                'body': '*',
+            },
+{
+                'method': 'post',
+                'uri': '/v1/{model=endpoints/*}:streamGenerateContent',
+                'body': '*',
+            },
+{
+                'method': 'post',
+                'uri': '/v1/{model=publishers/*/models/*}:streamGenerateContent',
                 'body': '*',
             },
             ]

@@ -100,6 +100,7 @@ class Destination(_messages.Message):
       source. For example, this can be used with private GCP destinations that
       require GCP crendential to access like Cloud Run. This field is optional
       and should be set only by users interested in authenticated push.
+    messageBindingHttp: Optional. HTTP Binding.
     networkConfig: Optional. Network config is used to configure how Message
       Streams resolves and connect to a destination.
     outputPayloadFormat: Optional. The format of the payload before it's
@@ -114,9 +115,10 @@ class Destination(_messages.Message):
   """
 
   authenticationConfig = _messages.MessageField('AuthenticationConfig', 1)
-  networkConfig = _messages.MessageField('NetworkConfig', 2)
-  outputPayloadFormat = _messages.MessageField('MessagePayloadFormat', 3)
-  serviceEndpoint = _messages.StringField(4)
+  messageBindingHttp = _messages.MessageField('MessageBindingHttp', 2)
+  networkConfig = _messages.MessageField('NetworkConfig', 3)
+  outputPayloadFormat = _messages.MessageField('MessagePayloadFormat', 4)
+  serviceEndpoint = _messages.StringField(5)
 
 
 class Empty(_messages.Message):
@@ -392,6 +394,54 @@ class Mediation(_messages.Message):
 
   bindAttributesAsRawHeaders = _messages.BooleanField(1)
   transformation = _messages.MessageField('Transformation', 2)
+
+
+class MessageBindingHttp(_messages.Message):
+  r"""Represents a config used to bind a message in the internal
+  representation of an event to the final HTTP request that will be sent to
+  the destination. If a binding is not specified here, by default the message
+  is treated as a CloudEvent and is mapped to the HTTP request, according to
+  the CloudEvent HTTP Protocol Binding Binary Content Mode. The stream
+  converts the data field of the message to the format provided in
+  destination-output-payload-format and maps it to the body field of the
+  result. It also sets the corresponding Content-Type header in the headers
+  map field of the return value. The stream expects that the content of the
+  message will adhere to the standard CloudEvent format. If it doesn't then
+  the incoming message request will fail with a persistent error.
+
+  Fields:
+    celExpression: Required. The CEL expression used to construct a new HTTP
+      request to be sent to the final destination. The CEL expression may
+      access the message in the intermediary format in its definition. The
+      result of the CEL expression must be a map of key/value pairs such that:
+      - If a map named headers exists on the result of the expression, then
+      its key/value pairs are directly mapped to the HTTP request headers. The
+      headers' values are constructed from the corresponding value type's
+      canonical representation. If the headers field doesn't exist then the
+      resulting HTTP request will be without headers. - If a field named body
+      exists on the result of the expression then its value is directly mapped
+      to the body of the request. If the value of the body field is of type
+      bytes or string then it is used for the HTTP request body as-is, with no
+      conversion. If the body field is of any other type then it is converted
+      to a JSON string. If the body field doesn't exist then the resulting
+      HTTP request will be without a body. - Any other fields in the resulting
+      expression will be ignored. Headers added to the request by previous
+      filters in the chain can be accessed in the CEL expression using the
+      `headers` variable. The `headers` variable defines a map of key/value
+      pairs corresponding to only the HTTP headers added by previous filters
+      in the chain and not the headers present on the original incoming
+      request. For example, the following CEL expression can be used to
+      construct a Headers-only HTTP request by adding an additional header to
+      the headers added by previous filters in the chain: ``` {"headers":
+      headers.merge({"new-header-key": "new-header-value"})} ``` Additionally,
+      the following CEL extension functions are provided for use in this CEL
+      expression: - toBase64Url(): Converts a CelValue to a base64url encoded
+      string. - toJsonString(): Converts a CelValue to a JSON string. -
+      merge(): Merges the given CEL map with the existing CEL map. - toMap():
+      Converts a CEL list of CEL maps to a single CEL map.
+  """
+
+  celExpression = _messages.StringField(1)
 
 
 class MessagePayloadFormat(_messages.Message):

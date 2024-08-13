@@ -672,6 +672,8 @@ class GitHubEnterpriseConfig(_messages.Message):
       and not reachable by public internet. If this field is left empty, calls
       to the GitHub Enterprise server will be made over the public internet.
     sslCa: Optional. SSL certificate to use for requests to GitHub Enterprise.
+    sslCaCertificate: Optional. SSL certificate to use for requests to GitHub
+      Enterprise.
     webhookSecretSecretVersion: Optional. SecretManager resource containing
       the webhook secret of the GitHub App, formatted as
       `projects/*/secrets/*/versions/*`.
@@ -686,7 +688,8 @@ class GitHubEnterpriseConfig(_messages.Message):
   serverVersion = _messages.StringField(7)
   serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 8)
   sslCa = _messages.StringField(9)
-  webhookSecretSecretVersion = _messages.StringField(10)
+  sslCaCertificate = _messages.StringField(10)
+  webhookSecretSecretVersion = _messages.StringField(11)
 
 
 class GitLabConfig(_messages.Message):
@@ -732,9 +735,8 @@ class GitLabEnterpriseConfig(_messages.Message):
       should only be set if the GitLab Enterprise server is hosted on-premises
       and not reachable by public internet. If this field is left empty, calls
       to the GitLab Enterprise server will be made over the public internet.
-    sslCaCertSecretVersion: Optional. SecretManager resource containing SSL
-      certificate to use for requests to GitLab Enterprise instance. Format:
-      `projects/*/secrets/*/versions/*`.
+    sslCaCertificate: Optional. SSL Certificate Authority certificate to use
+      for requests to GitLab Enterprise instance.
     webhookSecretSecretVersion: Required. Immutable. SecretManager resource
       containing the webhook secret of a GitLab project, formatted as
       `projects/*/secrets/*/versions/*`. This is used to validate webhooks.
@@ -745,7 +747,7 @@ class GitLabEnterpriseConfig(_messages.Message):
   readAuthorizerCredential = _messages.MessageField('UserCredential', 3)
   serverVersion = _messages.StringField(4)
   serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 5)
-  sslCaCertSecretVersion = _messages.StringField(6)
+  sslCaCertificate = _messages.StringField(6)
   webhookSecretSecretVersion = _messages.StringField(7)
 
 
@@ -774,6 +776,8 @@ class GitRepositoryLink(_messages.Message):
     uid: Output only. A system-assigned unique identifier for a the
       GitRepositoryLink.
     updateTime: Output only. [Output only] Update timestamp
+    webhookId: Output only. External ID of the webhook created for the
+      repository.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -835,6 +839,7 @@ class GitRepositoryLink(_messages.Message):
   reconciling = _messages.BooleanField(8)
   uid = _messages.StringField(9)
   updateTime = _messages.StringField(10)
+  webhookId = _messages.StringField(11)
 
 
 class Installation(_messages.Message):

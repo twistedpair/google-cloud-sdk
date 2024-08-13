@@ -278,13 +278,25 @@ def TargetNameServerType(value, version='v1'):
 
   Returns:
     A messages.PolicyAlternativeNameServerConfigTargetNameServer instance
-    populated from the given ipv4 ip address.
+    populated from the given ip address.
   """
   messages = GetMessages(version)
-  return messages.PolicyAlternativeNameServerConfigTargetNameServer(
-      ipv4Address=value,
-      forwardingPath=messages.PolicyAlternativeNameServerConfigTargetNameServer
-      .ForwardingPathValueValuesEnum(0))
+  if IsIPv4(value):
+    return messages.PolicyAlternativeNameServerConfigTargetNameServer(
+        ipv4Address=value,
+        ipv6Address=None,
+        forwardingPath=messages.PolicyAlternativeNameServerConfigTargetNameServer.ForwardingPathValueValuesEnum(
+            0
+        ),
+    )
+  else:
+    return messages.PolicyAlternativeNameServerConfigTargetNameServer(
+        ipv4Address=None,
+        ipv6Address=value,
+        forwardingPath=messages.PolicyAlternativeNameServerConfigTargetNameServer.ForwardingPathValueValuesEnum(
+            0
+        ),
+    )
 
 
 def BetaTargetNameServerType(value, version='v1beta2'):
@@ -329,13 +341,25 @@ def PrivateTargetNameServerType(value, version='v1'):
 
   Returns:
     A messages.PolicyAlternativeNameServerConfigTargetNameServer instance
-    populated from the given ipv4 ip address.
+    populated from the given ip address.
   """
   messages = GetMessages(version)
-  return messages.PolicyAlternativeNameServerConfigTargetNameServer(
-      ipv4Address=value,
-      forwardingPath=messages.PolicyAlternativeNameServerConfigTargetNameServer
-      .ForwardingPathValueValuesEnum(1))
+  if IsIPv4(value):
+    return messages.PolicyAlternativeNameServerConfigTargetNameServer(
+        ipv4Address=value,
+        ipv6Address=None,
+        forwardingPath=messages.PolicyAlternativeNameServerConfigTargetNameServer.ForwardingPathValueValuesEnum(
+            1
+        ),
+    )
+  else:
+    return messages.PolicyAlternativeNameServerConfigTargetNameServer(
+        ipv4Address=None,
+        ipv6Address=value,
+        forwardingPath=messages.PolicyAlternativeNameServerConfigTargetNameServer.ForwardingPathValueValuesEnum(
+            1
+        ),
+    )
 
 
 def BetaPrivateTargetNameServerType(value, version='v1beta2'):
@@ -417,11 +441,10 @@ def ParseAltNameServers(version, server_list=None, private_server_list=None):
   messages = GetMessages(version)
   result_list = []
   if server_list:
-    result_list += [TargetNameServerType(ipv4, version) for ipv4 in server_list]
+    result_list += [TargetNameServerType(ip, version) for ip in server_list]
   if private_server_list:
     result_list += [
-        PrivateTargetNameServerType(ipv4, version)
-        for ipv4 in private_server_list
+        PrivateTargetNameServerType(ip, version) for ip in private_server_list
     ]
   return messages.PolicyAlternativeNameServerConfig(
       targetNameServers=result_list)

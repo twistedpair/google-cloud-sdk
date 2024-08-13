@@ -44,6 +44,7 @@ def CreateImage(
     service_account=None,
     build_worker_pool=None,
     build_env_vars=None,
+    enable_automatic_updates=False,
 ):
   """Creates an image from Source."""
   if repo_to_create:
@@ -75,6 +76,7 @@ def CreateImage(
         service_account,
         build_worker_pool,
         build_env_vars,
+        enable_automatic_updates,
     )
     try:
       response_dict, build_log_url, base_image_from_build = _SubmitBuild(
@@ -295,6 +297,7 @@ def _PrepareSubmitBuildRequest(
     service_account,
     build_worker_pool,
     build_env_vars,
+    enable_automatic_updates,
 ):
   """Upload the provided build source and prepare submit build request."""
   messages = run_util.GetMessagesModule(release_track)
@@ -322,15 +325,17 @@ def _PrepareSubmitBuildRequest(
               for key, value in sorted(build_env_vars.items())
           ]
       )
-
     return messages.RunProjectsLocationsBuildsSubmitRequest(
         parent=parent,
         googleCloudRunV2SubmitBuildRequest=messages.GoogleCloudRunV2SubmitBuildRequest(
             storageSource=storage_source,
             imageUri=build_pack[0].get('image'),
             buildpackBuild=messages.GoogleCloudRunV2BuildpacksBuild(
-                baseImage=base_image, functionTarget=function_target,
-                environmentVariables=build_env_vars),
+                baseImage=base_image,
+                functionTarget=function_target,
+                environmentVariables=build_env_vars,
+                enableAutomaticUpdates=enable_automatic_updates,
+            ),
             dockerBuild=None,
             tags=tags,
             serviceAccount=service_account,

@@ -34,6 +34,7 @@ from typing import Dict, List, Tuple
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
+from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files as file_utils
 
 _THREAD_COUNT_ENV_VAR = 'CLOUDSDK_STORAGE_THREAD_COUNT'
@@ -190,31 +191,24 @@ class Diagnostic(abc.ABC):
 
     try:
       self.temp_dir = file_utils.TemporaryDirectory()
-      log.status.Print(
-          'Creating {} test files in {}'.format(
-              object_count, self.temp_dir.path
-          )
-      )
-      for i in range(object_count):
-        with tempfile.NamedTemporaryFile(
-            dir=self.temp_dir.path,
-            prefix=file_prefix,
-            delete=False,
-            mode='w+t',
-            encoding='utf-8',
-        ) as f:
-          bytes_remaining = object_sizes[i]
-          while bytes_remaining > 0:
-            current_chunk_size = min(bytes_remaining, chunk_size)
-            f.write(self._generate_random_string(current_chunk_size))
-            bytes_remaining -= current_chunk_size
-        self._files.append(f.name)
-
-      log.status.Print(
-          'Finished creating {} test files in {}'.format(
-              object_count, self.temp_dir.path
-          )
-      )
+      with progress_tracker.ProgressTracker(
+          f'Creating {object_count} test files in {self.temp_dir.path}',
+          autotick=True,
+      ):
+        for i in range(object_count):
+          with tempfile.NamedTemporaryFile(
+              dir=self.temp_dir.path,
+              prefix=file_prefix,
+              delete=False,
+              mode='w+t',
+              encoding='utf-8',
+          ) as f:
+            bytes_remaining = object_sizes[i]
+            while bytes_remaining > 0:
+              current_chunk_size = min(bytes_remaining, chunk_size)
+              f.write(self._generate_random_string(current_chunk_size))
+              bytes_remaining -= current_chunk_size
+          self._files.append(f.name)
       return True
     except (OSError, EnvironmentError) as e:
       log.warning('Failed to create test files: {}'.format(e))

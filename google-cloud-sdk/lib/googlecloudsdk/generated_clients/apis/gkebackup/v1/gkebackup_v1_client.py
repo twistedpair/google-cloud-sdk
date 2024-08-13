@@ -43,6 +43,8 @@ class GkebackupV1(base_api.BaseApiClient):
     self.projects_locations_backupPlans_backups = self.ProjectsLocationsBackupPlansBackupsService(self)
     self.projects_locations_backupPlans = self.ProjectsLocationsBackupPlansService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_permittedBackupFlows_backupPlanAssociations = self.ProjectsLocationsPermittedBackupFlowsBackupPlanAssociationsService(self)
+    self.projects_locations_permittedBackupFlows = self.ProjectsLocationsPermittedBackupFlowsService(self)
     self.projects_locations_restorePlans_restores_volumeRestores = self.ProjectsLocationsRestorePlansRestoresVolumeRestoresService(self)
     self.projects_locations_restorePlans_restores = self.ProjectsLocationsRestorePlansRestoresService(self)
     self.projects_locations_restorePlans = self.ProjectsLocationsRestorePlansService(self)
@@ -788,6 +790,215 @@ class GkebackupV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkebackupProjectsLocationsOperationsListRequest',
         response_type_name='GoogleLongrunningListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPermittedBackupFlowsBackupPlanAssociationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_permittedBackupFlows_backupPlanAssociations resource."""
+
+    _NAME = 'projects_locations_permittedBackupFlows_backupPlanAssociations'
+
+    def __init__(self, client):
+      super(GkebackupV1.ProjectsLocationsPermittedBackupFlowsBackupPlanAssociationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieve the details of a single BackupPlanAssociation.
+
+      Args:
+        request: (GkebackupProjectsLocationsPermittedBackupFlowsBackupPlanAssociationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackupPlanAssociation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/permittedBackupFlows/{permittedBackupFlowsId}/backupPlanAssociations/{backupPlanAssociationsId}',
+        http_method='GET',
+        method_id='gkebackup.projects.locations.permittedBackupFlows.backupPlanAssociations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='GkebackupProjectsLocationsPermittedBackupFlowsBackupPlanAssociationsGetRequest',
+        response_type_name='BackupPlanAssociation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists BackupPlanAssociations in a given location.
+
+      Args:
+        request: (GkebackupProjectsLocationsPermittedBackupFlowsBackupPlanAssociationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBackupPlanAssociationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/permittedBackupFlows/{permittedBackupFlowsId}/backupPlanAssociations',
+        http_method='GET',
+        method_id='gkebackup.projects.locations.permittedBackupFlows.backupPlanAssociations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/backupPlanAssociations',
+        request_field='',
+        request_type_name='GkebackupProjectsLocationsPermittedBackupFlowsBackupPlanAssociationsListRequest',
+        response_type_name='ListBackupPlanAssociationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPermittedBackupFlowsService(base_api.BaseApiService):
+    """Service class for the projects_locations_permittedBackupFlows resource."""
+
+    _NAME = 'projects_locations_permittedBackupFlows'
+
+    def __init__(self, client):
+      super(GkebackupV1.ProjectsLocationsPermittedBackupFlowsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new PermittedBackupFlow in a given location.
+
+      Args:
+        request: (GkebackupProjectsLocationsPermittedBackupFlowsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/permittedBackupFlows',
+        http_method='POST',
+        method_id='gkebackup.projects.locations.permittedBackupFlows.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['permittedBackupFlowId'],
+        relative_path='v1/{+parent}/permittedBackupFlows',
+        request_field='permittedBackupFlow',
+        request_type_name='GkebackupProjectsLocationsPermittedBackupFlowsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing PermittedBackupFlow.
+
+      Args:
+        request: (GkebackupProjectsLocationsPermittedBackupFlowsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/permittedBackupFlows/{permittedBackupFlowsId}',
+        http_method='DELETE',
+        method_id='gkebackup.projects.locations.permittedBackupFlows.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'force'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='GkebackupProjectsLocationsPermittedBackupFlowsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieve the details of a single PermittedBackupFlow.
+
+      Args:
+        request: (GkebackupProjectsLocationsPermittedBackupFlowsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PermittedBackupFlow) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/permittedBackupFlows/{permittedBackupFlowsId}',
+        http_method='GET',
+        method_id='gkebackup.projects.locations.permittedBackupFlows.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='GkebackupProjectsLocationsPermittedBackupFlowsGetRequest',
+        response_type_name='PermittedBackupFlow',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists PermittedBackupFlows in a given location.
+
+      Args:
+        request: (GkebackupProjectsLocationsPermittedBackupFlowsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPermittedBackupFlowsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/permittedBackupFlows',
+        http_method='GET',
+        method_id='gkebackup.projects.locations.permittedBackupFlows.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/permittedBackupFlows',
+        request_field='',
+        request_type_name='GkebackupProjectsLocationsPermittedBackupFlowsListRequest',
+        response_type_name='ListPermittedBackupFlowsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a PermittedBackupFlow.
+
+      Args:
+        request: (GkebackupProjectsLocationsPermittedBackupFlowsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/permittedBackupFlows/{permittedBackupFlowsId}',
+        http_method='PATCH',
+        method_id='gkebackup.projects.locations.permittedBackupFlows.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='permittedBackupFlow',
+        request_type_name='GkebackupProjectsLocationsPermittedBackupFlowsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

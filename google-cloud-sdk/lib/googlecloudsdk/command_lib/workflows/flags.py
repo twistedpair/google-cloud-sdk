@@ -29,6 +29,7 @@ from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
+import six
 
 _KEY_NAME_PATTERN = (
     r'^projects/[^/]+/locations/[^/]+/keyRings/[a-zA-Z0-9_-]+'
@@ -186,6 +187,26 @@ def AddLoggingArg(parser):
   log_level.AddToParser(parser)
 
 
+def AddExecutionHistoryLevelArg(parser):
+  """Adds argument for specifying the execution history level for an execution."""
+  execution_history_level = base.ChoiceArgument(
+      '--execution-history-level',
+      choices={
+          'none': 'No execution history level specified.',
+          'execution-history-basic': (
+              'Enable execution history basic feature.'
+          ),
+          'execution-history-detailed': (
+              'Enable execution history detailed feature.'
+          ),
+      },
+      help_str='Level of execution history to apply during execution.',
+      default='none',
+      hidden=True,
+  )
+  execution_history_level.AddToParser(parser)
+
+
 def AddDisableOverflowBufferArg(parser):
   """Adds an argument for determining whether to backlog the execution."""
   parser.add_argument(
@@ -237,6 +258,57 @@ def AddWorkflowLoggingArg(parser):
   log_level.AddToParser(parser)
 
 
+def AddWorkflowTagsArg(parser):
+  """Adds argument for specifying the tags for a workflow."""
+  help_parts = [
+      'List of tags KEY=VALUE pairs to bind.',
+      'Each item must be expressed as',
+      '"<tag-key-namespaced-name>=<tag-value-short-name>".\n',
+      'Example: 123/environment=production,123/costCenter=marketing',
+  ]
+  tags = base.Argument(
+      '--tags',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      action=arg_parsers.UpdateAction,
+      help='\n'.join(help_parts),
+      hidden=True,
+  )
+  tags.AddToParser(parser)
+
+
+def SetWorkflowsTagsArg(args, workflow, tags_message):
+  """Sets --tags for the workflow based on the arguments."""
+  if args.IsSpecified('tags'):
+    tags = getattr(args, 'tags')
+    if not tags:
+      return None
+    # Sorted for test stability
+    workflow.tags = tags_message(additionalProperties=[
+        tags_message.AdditionalProperty(key=key, value=value)
+        for key, value in sorted(six.iteritems(tags))])
+
+
+def AddWorkflowExecutionHistoryLevelArg(parser):
+  """"Adds argument for specifying the execution history level for a workflow."""
+  execution_history_level = base.ChoiceArgument(
+      '--execution-history-level',
+      choices={
+          'none': 'No execution history level specified.',
+          'execution-history-basic': (
+              'Enable execution history basic feature.'
+          ),
+          'execution-history-detailed': (
+              'Enable execution history detailed feature.'
+          ),
+      },
+      help_str='Level of execution history to apply for the workflow.',
+      default='none',
+      hidden=True,
+  )
+  execution_history_level.AddToParser(parser)
+
+
 def SetWorkflowLoggingArg(loglevel, workflow, updated_fields):
   """Sets --call-log-level for the workflow based on the arguments.
 
@@ -251,6 +323,24 @@ def SetWorkflowLoggingArg(loglevel, workflow, updated_fields):
   if loglevel is not None:
     workflow.callLogLevel = loglevel
     updated_fields.append('callLogLevel')
+
+
+def SetWorkflowExecutionHistoryLevelArg(
+    execution_history_level, workflow, updated_fields):
+  """Sets --execution-history-level for the workflow based on the arguments.
+
+  Also updates updated_fields accordingly.
+
+  Args:
+    execution_history_level: Parsed executionHistoryLevel to be set
+    on the workflow.
+    workflow: The workflow in which to set the execution-history-level.
+    updated_fields: A list to which the execution-history-level field will
+    be added if needed.
+  """
+  if execution_history_level is not None:
+    workflow.executionHistoryLevel = execution_history_level
+    updated_fields.append('executionHistoryLevel')
 
 
 # Flags for CMEK

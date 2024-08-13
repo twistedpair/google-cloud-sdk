@@ -109,16 +109,6 @@ def AddMtuArg(parser):
   )
 
 
-def AddRdmaArg(parser):
-  """Adds the --rdma flag."""
-  parser.add_argument(
-      '--rdma',
-      hidden=True,
-      action=arg_parsers.StoreTrueFalseAction,
-      help="""Enable/disable RDMA on this network.""",
-  )
-
-
 def AddBgpBestPathSelectionArgGroup(parser):
   """Adds the BGP Best Path Selection flags.
 
@@ -130,9 +120,10 @@ def AddBgpBestPathSelectionArgGroup(parser):
       '--bgp-best-path-selection-mode',
       choices={
           'LEGACY': (
-              'Dynamic routes are ranked based on MED BGP attribute. When'
-              ' global routing is enabled, MED of the routes received from'
-              ' other regions is original MED plus region-to-region cost.'
+              'Dynamic routes are ranked based on the multiple'
+              ' exit-discriminator (MED) BGP attribute. When global routing is'
+              ' enabled, the MED of the routes received from other regions is'
+              ' the original MED plus the region-to-region cost.'
           ),
           'STANDARD': (
               'Dynamic routes are ranked based on AS Path, Origin, Neighbor ASN'
@@ -143,29 +134,29 @@ def AddBgpBestPathSelectionArgGroup(parser):
               ' --bgp-bps-inter-region-cost'
           ),
       },
-      help="""The BGP best selection algorithm to be employed. MODE can be LEGACY or STANDARD.""",
+      help="""The BGP best path selection algorithm to be employed. MODE can be LEGACY or STANDARD.""",
       type=arg_utils.ChoiceToEnumName,
   )
   group.add_argument(
       '--bgp-bps-always-compare-med',
       action=arg_parsers.StoreTrueFalseAction,
-      help="""Enables/disables the comparison of MED across routes with different NeighborAsn. This value can only be set if the --bgp-best-path-selection-mode is STANDARD.""",
+      help="""Enables/disables the comparison of MED across routes with different Neighbor ASNs. This value can only be set if the --bgp-best-path-selection-mode is STANDARD.""",
   )
   group.add_argument(
       '--bgp-bps-inter-region-cost',
       choices={
           'DEFAULT': (
-              'MED is compared as originally received from peers. Cost is'
-              ' evaluated as a next step when MED is the same.'
+              'MED is compared as originally received from peers. When multiple'
+              ' routes have the same MED, cost is evaluated as the next step.'
           ),
           'ADD_COST_TO_MED': (
-              'Adds inter-region cost to the MED before comparing MED value.'
-              ' When multiple routes have the same value after the'
+              'Adds inter-region cost to the MED before comparing the MED'
+              ' value. When multiple routes have the same value after the'
               ' Add-cost-to-med comparison, the route selection continues and'
               ' prefers the route with lowest cost.'
           ),
       },
-      help="""Allows to define preferred approach for handling inter-region cost in the selection process. This value can only be set if the --bgp-best-path-selection-mode is STANDARD.""",
+      help="""Defines the preferred approach for handling inter-region cost in the selection process. This value can only be set if the --bgp-best-path-selection-mode is STANDARD.""",
       type=arg_utils.ChoiceToEnumName,
   )
 

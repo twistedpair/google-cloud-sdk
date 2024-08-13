@@ -4,29 +4,6 @@ mode: ENFORCEMENT
 allowNoResourceGroupMatch: true
 resourceGroups:
 - inventoryFilters:
-  - osShortName: centos
-    osVersion: '7'
-  - osShortName: rhel
-    osVersion: '7.*'
-  resources:
-  # TODO: b/329895431 - Consider removing add-repo steps in this policy
-  - id: add-repo
-    repository:
-      yum:
-        id: google-cloud-ops-agent
-        displayName: Google Cloud Ops Agent Repository
-        baseUrl: https://packages.cloud.google.com/yum/repos/google-cloud-ops-agent-el7-x86_64-$agent_version
-        gpgKeys:
-        - https://packages.cloud.google.com/yum/doc/yum-key.gpg
-        - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-  - id: install-pkg
-    pkg:
-      desiredState: REMOVED
-      yum:
-        name: google-cloud-ops-agent
-- inventoryFilters:
-  - osShortName: centos
-    osVersion: '8'
   - osShortName: rocky
     osVersion: '8.*'
   - osShortName: rhel
@@ -111,24 +88,6 @@ resourceGroups:
     pkg:
       desiredState: REMOVED
       zypper:
-        name: google-cloud-ops-agent
-- inventoryFilters:
-  - osShortName: debian
-    osVersion: '10'
-  resources:
-  - id: add-repo
-    repository:
-      apt:
-        archiveType: DEB
-        uri: https://packages.cloud.google.com/apt
-        distribution: google-cloud-ops-agent-buster-$agent_version
-        components:
-        - main
-        gpgKey: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-  - id: install-pkg
-    pkg:
-      desiredState: REMOVED
-      apt:
         name: google-cloud-ops-agent
 - inventoryFilters:
   - osShortName: debian

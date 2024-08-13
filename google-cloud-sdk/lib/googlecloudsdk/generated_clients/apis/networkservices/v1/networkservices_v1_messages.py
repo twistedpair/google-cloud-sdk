@@ -6753,12 +6753,34 @@ class NetworkservicesProjectsLocationsWasmPluginsDeleteRequest(_messages.Message
 class NetworkservicesProjectsLocationsWasmPluginsGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsWasmPluginsGetRequest object.
 
+  Enums:
+    ViewValueValuesEnum: Determine how much data should be returned by the
+      API. See [AIP-157](https://google.aip.dev/157).
+
   Fields:
     name: Required. A name of the `WasmPlugin` resource to get. Must be in the
       format `projects/{project}/locations/global/wasmPlugins/{wasm_plugin}`.
+    view: Determine how much data should be returned by the API. See
+      [AIP-157](https://google.aip.dev/157).
   """
 
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Determine how much data should be returned by the API. See
+    [AIP-157](https://google.aip.dev/157).
+
+    Values:
+      WASM_PLUGIN_VIEW_UNSPECIFIED: The default / unset value. The API will
+        default to the BASIC view.
+      WASM_PLUGIN_VIEW_BASIC: Include just WasmPlugin record.
+      WASM_PLUGIN_VIEW_FULL: Include WasmPlugin record and all its
+        WasmPluginVersions.
+    """
+    WASM_PLUGIN_VIEW_UNSPECIFIED = 0
+    WASM_PLUGIN_VIEW_BASIC = 1
+    WASM_PLUGIN_VIEW_FULL = 2
+
   name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
 class NetworkservicesProjectsLocationsWasmPluginsListRequest(_messages.Message):
@@ -7292,6 +7314,9 @@ class RouteRule(_messages.Message):
       performs advanced routing actions like URL rewrites, header
       transformations, and so forth prior to forwarding the request to the
       selected origin.
+    routeMethods: Optional. Allow overriding the set of methods that are
+      allowed for this route. When not set, Media CDN only allows `GET`,
+      `HEAD`, and `OPTIONS`.
     urlRedirect: Optional. The URL redirect configuration for requests that
       match this route. Only one of origin or `url_redirect` can be set.
   """
@@ -7302,7 +7327,19 @@ class RouteRule(_messages.Message):
   origin = _messages.StringField(4)
   priority = _messages.IntegerField(5)
   routeAction = _messages.MessageField('RouteAction', 6)
-  urlRedirect = _messages.MessageField('UrlRedirect', 7)
+  routeMethods = _messages.MessageField('RouteRuleRouteMethods', 7)
+  urlRedirect = _messages.MessageField('UrlRedirect', 8)
+
+
+class RouteRuleRouteMethods(_messages.Message):
+  r"""Allow overriding the set of methods that are allowed for a route.
+
+  Fields:
+    allowedMethods: Required. The non-empty set of HTTP methods that are
+      allowed for this route.
+  """
+
+  allowedMethods = _messages.StringField(1, repeated=True)
 
 
 class Routing(_messages.Message):
@@ -8195,6 +8232,17 @@ class WasmPlugin(_messages.Message):
     LabelsValue: Optional. Set of labels associated with the `WasmPlugin`
       resource. The format must comply with [the following
       requirements](/compute/docs/labeling-resources#requirements).
+    VersionsValue: Optional. All versions of this `WasmPlugin` in the key-
+      value format. The key is the resource ID, the value is the
+      `VersionDetails`. Allows to create or update `WasmPlugin` and its
+      WasmPluginVersions in a single request. When the `main_version_id` field
+      is not empty it must point to one of the VersionDetails in the map. If
+      provided in the update request, the new versions replace the previous
+      set. Any version omitted from the `versions` will be removed. Since the
+      `WasmPluginVersion` resource is immutable, if the WasmPluginVersion with
+      the same name already exists and differs the Update request will fail.
+      Note: In the GET request, this field is populated only if the
+      GetWasmPluginRequest.view is set to WASM_PLUGIN_VIEW_FULL.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -8214,6 +8262,17 @@ class WasmPlugin(_messages.Message):
     name: Required. Name of the `WasmPlugin` resource in the following format:
       `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}`.
     updateTime: Output only. The timestamp when the resource was updated.
+    versions: Optional. All versions of this `WasmPlugin` in the key-value
+      format. The key is the resource ID, the value is the `VersionDetails`.
+      Allows to create or update `WasmPlugin` and its WasmPluginVersions in a
+      single request. When the `main_version_id` field is not empty it must
+      point to one of the VersionDetails in the map. If provided in the update
+      request, the new versions replace the previous set. Any version omitted
+      from the `versions` will be removed. Since the `WasmPluginVersion`
+      resource is immutable, if the WasmPluginVersion with the same name
+      already exists and differs the Update request will fail. Note: In the
+      GET request, this field is populated only if the
+      GetWasmPluginRequest.view is set to WASM_PLUGIN_VIEW_FULL.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -8242,6 +8301,40 @@ class WasmPlugin(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class VersionsValue(_messages.Message):
+    r"""Optional. All versions of this `WasmPlugin` in the key-value format.
+    The key is the resource ID, the value is the `VersionDetails`. Allows to
+    create or update `WasmPlugin` and its WasmPluginVersions in a single
+    request. When the `main_version_id` field is not empty it must point to
+    one of the VersionDetails in the map. If provided in the update request,
+    the new versions replace the previous set. Any version omitted from the
+    `versions` will be removed. Since the `WasmPluginVersion` resource is
+    immutable, if the WasmPluginVersion with the same name already exists and
+    differs the Update request will fail. Note: In the GET request, this field
+    is populated only if the GetWasmPluginRequest.view is set to
+    WASM_PLUGIN_VIEW_FULL.
+
+    Messages:
+      AdditionalProperty: An additional property for a VersionsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type VersionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a VersionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A WasmPluginVersionDetails attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('WasmPluginVersionDetails', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
@@ -8249,6 +8342,7 @@ class WasmPlugin(_messages.Message):
   mainVersionId = _messages.StringField(5)
   name = _messages.StringField(6)
   updateTime = _messages.StringField(7)
+  versions = _messages.MessageField('VersionsValue', 8)
 
 
 class WasmPluginLogConfig(_messages.Message):
@@ -8397,6 +8491,82 @@ class WasmPluginVersion(_messages.Message):
   pluginConfigDigest = _messages.StringField(8)
   pluginConfigUri = _messages.StringField(9)
   updateTime = _messages.StringField(10)
+
+
+class WasmPluginVersionDetails(_messages.Message):
+  r"""Details of a `WasmPluginVersion` resource to be inlined in the
+  `WasmPlugin` resource.
+
+  Messages:
+    LabelsValue: Optional. Set of labels associated with the
+      `WasmPluginVersion` resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A human-readable description of the resource.
+    imageDigest: Output only. The resolved digest for the image specified in
+      `image`. The digest is resolved during the creation of a
+      `WasmPluginVersion` resource. This field holds the digest value
+      regardless of whether a tag or digest was originally specified in the
+      `image` field.
+    imageUri: Optional. URI of the container image containing the Wasm module,
+      stored in the Artifact Registry. The container image must contain only a
+      single file with the name `plugin.wasm`. When a new `WasmPluginVersion`
+      resource is created, the URI gets resolved to an image digest and saved
+      in the `image_digest` field.
+    labels: Optional. Set of labels associated with the `WasmPluginVersion`
+      resource.
+    pluginConfigData: Configuration for the Wasm plugin. The configuration is
+      provided to the Wasm plugin at runtime through the `ON_CONFIGURE`
+      callback. When a new `WasmPluginVersion` version is created, the digest
+      of the contents is saved in the `plugin_config_digest` field.
+    pluginConfigDigest: Output only. This field holds the digest (usually
+      checksum) value for the plugin configuration. The value is calculated
+      based on the contents of the `plugin_config_data` or the container image
+      defined by the `plugin_config_uri` field.
+    pluginConfigUri: URI of the WasmPlugin configuration stored in the
+      Artifact Registry. The configuration is provided to the Wasm plugin at
+      runtime through the `ON_CONFIGURE` callback. The container image must
+      contain only a single file with the name `plugin.config`. When a new
+      `WasmPluginVersion` resource is created, the digest of the container
+      image is saved in the `plugin_config_digest` field.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of labels associated with the `WasmPluginVersion`
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  imageDigest = _messages.StringField(3)
+  imageUri = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  pluginConfigData = _messages.BytesField(6)
+  pluginConfigDigest = _messages.StringField(7)
+  pluginConfigUri = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 encoding.AddCustomJsonFieldMapping(

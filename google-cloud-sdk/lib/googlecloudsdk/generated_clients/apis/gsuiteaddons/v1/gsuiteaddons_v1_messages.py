@@ -66,9 +66,9 @@ class GoogleAppsScriptTypeCalendarCalendarAddOnManifest(_messages.Message):
       the add-on's settings page.
     currentEventAccess: Defines the level of data access when an event add-on
       is triggered.
-    eventAttachmentTrigger: An endpoint that triggers when the event add-
-      attachment flow is selected. Add-ons that declare this endpoint will be
-      considered as an attachment provider.
+    eventAttachmentTrigger: A configuration for a contextual trigger that
+      fires when the user clicks on the add-on attachment provider in the
+      Calendar dropdown menu.
     eventOpenTrigger: An endpoint that triggers when an event is opened to be
       viewed or edited.
     eventUpdateTrigger: An endpoint that triggers when the open event is

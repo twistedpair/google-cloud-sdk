@@ -2785,6 +2785,8 @@ class Operation(_messages.Message):
   in the resource.
 
   Enums:
+    MaintenanceTypeValueValuesEnum: Optional. The type of maintenance to be
+      performed on the instance.
     OperationTypeValueValuesEnum: The type of the operation. Valid values are:
       * `CREATE` * `DELETE` * `UPDATE` * `RESTART` * `IMPORT` * `EXPORT` *
       `BACKUP_VOLUME` * `RESTORE_VOLUME` * `CREATE_USER` * `DELETE_USER` *
@@ -2807,6 +2809,8 @@ class Operation(_messages.Message):
       3339](https://tools.ietf.org/html/rfc3339) format, for example
       `2012-11-15T16:19:00.094Z`.
     kind: This is always `sql#operation`.
+    maintenanceType: Optional. The type of maintenance to be performed on the
+      instance.
     name: An identifier that uniquely identifies the operation. You can use
       this identifier to retrieve the Operations resource that has information
       about the operation.
@@ -2825,6 +2829,26 @@ class Operation(_messages.Message):
       operation.
     user: The email address of the user who initiated this operation.
   """
+
+  class MaintenanceTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of maintenance to be performed on the instance.
+
+    Values:
+      SQL_MAINTENANCE_TYPE_UNSPECIFIED: Maintenance type is unspecified.
+      INSTANCE_MAINTENANCE: Maintenance type is standalone instance
+        maintenance.
+      CLUSTER_BASED_MAINTENANCE: Maintenance type is cluster-based
+        maintenance.
+      INSTANCE_SELF_SERVICE_MAINTENANCE: Maintenance type is standalone
+        instance self-service maintenance.
+      CLUSTER_BASED_SELF_SERVICE_MAINTENANCE: Maintenance type is cluster-
+        based self-service maintenance.
+    """
+    SQL_MAINTENANCE_TYPE_UNSPECIFIED = 0
+    INSTANCE_MAINTENANCE = 1
+    CLUSTER_BASED_MAINTENANCE = 2
+    INSTANCE_SELF_SERVICE_MAINTENANCE = 3
+    CLUSTER_BASED_SELF_SERVICE_MAINTENANCE = 4
 
   class OperationTypeValueValuesEnum(_messages.Enum):
     r"""The type of the operation. Valid values are: * `CREATE` * `DELETE` *
@@ -2975,15 +2999,16 @@ class Operation(_messages.Message):
   importContext = _messages.MessageField('ImportContext', 7)
   insertTime = _messages.StringField(8)
   kind = _messages.StringField(9)
-  name = _messages.StringField(10)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 11)
-  selfLink = _messages.StringField(12)
-  startTime = _messages.StringField(13)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  targetId = _messages.StringField(15)
-  targetLink = _messages.StringField(16)
-  targetProject = _messages.StringField(17)
-  user = _messages.StringField(18)
+  maintenanceType = _messages.EnumField('MaintenanceTypeValueValuesEnum', 10)
+  name = _messages.StringField(11)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 12)
+  selfLink = _messages.StringField(13)
+  startTime = _messages.StringField(14)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  targetId = _messages.StringField(16)
+  targetLink = _messages.StringField(17)
+  targetProject = _messages.StringField(18)
+  user = _messages.StringField(19)
 
 
 class OperationError(_messages.Message):
@@ -5394,9 +5419,11 @@ class User(_messages.Message):
       BUILT_IN: The database's built-in user type.
       CLOUD_IAM_USER: Cloud IAM user.
       CLOUD_IAM_SERVICE_ACCOUNT: Cloud IAM service account.
-      CLOUD_IAM_GROUP: Cloud IAM group non-login user.
-      CLOUD_IAM_GROUP_USER: Cloud IAM group login user.
-      CLOUD_IAM_GROUP_SERVICE_ACCOUNT: Cloud IAM group service account.
+      CLOUD_IAM_GROUP: Cloud IAM group. Not used for login.
+      CLOUD_IAM_GROUP_USER: Read-only. Login for a user that belongs to the
+        Cloud IAM group.
+      CLOUD_IAM_GROUP_SERVICE_ACCOUNT: Read-only. Login for a service account
+        that belongs to the Cloud IAM group.
     """
     BUILT_IN = 0
     CLOUD_IAM_USER = 1

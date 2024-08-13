@@ -53,6 +53,10 @@ class GoogleCloudRunV2BuildpacksBuild(_messages.Message):
       derive a build-specific temporary URL by substituting the tag with the
       build ID. The build will clean up the temporary image on a best-effort
       basis.
+    enableAutomaticUpdates: Optional. Whether or not the application container
+      will be enrolled in automatic base image updates. When true, the
+      application will be built on a scratch base image, so the base layers
+      can be appended at run time.
     environmentVariables: Optional. User-provided build-time environment
       variables.
     functionTarget: Optional. Name of the function target if the source is a
@@ -88,9 +92,10 @@ class GoogleCloudRunV2BuildpacksBuild(_messages.Message):
 
   baseImage = _messages.StringField(1)
   cacheImageUri = _messages.StringField(2)
-  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 3)
-  functionTarget = _messages.StringField(4)
-  runtime = _messages.StringField(5)
+  enableAutomaticUpdates = _messages.BooleanField(3)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 4)
+  functionTarget = _messages.StringField(5)
+  runtime = _messages.StringField(6)
 
 
 class GoogleCloudRunV2CancelExecutionRequest(_messages.Message):
@@ -1622,6 +1627,7 @@ class GoogleCloudRunV2Revision(_messages.Message):
       the revision of the service. The service account represents the identity
       of the running revision, and determines what permissions the revision
       has.
+    serviceMesh: Enables service mesh connectivity.
     sessionAffinity: Enable session affinity.
     timeout: Max allowed time for an instance to respond to a request.
     uid: Output only. Server assigned unique identifier for the Revision. The
@@ -1790,12 +1796,13 @@ class GoogleCloudRunV2Revision(_messages.Message):
   scalingStatus = _messages.MessageField('GoogleCloudRunV2RevisionScalingStatus', 23)
   service = _messages.StringField(24)
   serviceAccount = _messages.StringField(25)
-  sessionAffinity = _messages.BooleanField(26)
-  timeout = _messages.StringField(27)
-  uid = _messages.StringField(28)
-  updateTime = _messages.StringField(29)
-  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 30, repeated=True)
-  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 31)
+  serviceMesh = _messages.MessageField('GoogleCloudRunV2ServiceMesh', 26)
+  sessionAffinity = _messages.BooleanField(27)
+  timeout = _messages.StringField(28)
+  uid = _messages.StringField(29)
+  updateTime = _messages.StringField(30)
+  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 31, repeated=True)
+  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 32)
 
 
 class GoogleCloudRunV2RevisionScaling(_messages.Message):
@@ -1898,6 +1905,7 @@ class GoogleCloudRunV2RevisionTemplate(_messages.Message):
       represents the identity of the running revision, and determines what
       permissions the revision has. If not provided, the revision will use the
       project's default service account.
+    serviceMesh: Optional. Enables service mesh connectivity.
     sessionAffinity: Optional. Enable session affinity.
     timeout: Optional. Max allowed time for an instance to respond to a
       request.
@@ -1995,10 +2003,11 @@ class GoogleCloudRunV2RevisionTemplate(_messages.Message):
   revision = _messages.StringField(9)
   scaling = _messages.MessageField('GoogleCloudRunV2RevisionScaling', 10)
   serviceAccount = _messages.StringField(11)
-  sessionAffinity = _messages.BooleanField(12)
-  timeout = _messages.StringField(13)
-  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 14, repeated=True)
-  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 15)
+  serviceMesh = _messages.MessageField('GoogleCloudRunV2ServiceMesh', 12)
+  sessionAffinity = _messages.BooleanField(13)
+  timeout = _messages.StringField(14)
+  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 15, repeated=True)
+  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 16)
 
 
 class GoogleCloudRunV2RunJobRequest(_messages.Message):
@@ -2398,6 +2407,17 @@ class GoogleCloudRunV2Service(_messages.Message):
   uid = _messages.StringField(30)
   updateTime = _messages.StringField(31)
   uri = _messages.StringField(32)
+
+
+class GoogleCloudRunV2ServiceMesh(_messages.Message):
+  r"""Service mesh configuration.
+
+  Fields:
+    mesh: The service mesh resource name. Format:
+      projects/{project_number}/locations/global/meshes/{mesh}.
+  """
+
+  mesh = _messages.StringField(1)
 
 
 class GoogleCloudRunV2ServiceScaling(_messages.Message):

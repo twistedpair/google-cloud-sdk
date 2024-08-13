@@ -155,6 +155,8 @@ class Backup(_messages.Message):
     name: Identifier. The resource name of the backup. Format: `projects/{proj
       ect_id}/locations/{location}/backupVaults/{backup_vault_id}/backups/{bac
       kup_id}`.
+    satisfiesPzi: Output only. Reserved for future use
+    satisfiesPzs: Output only. Reserved for future use
     sourceSnapshot: If specified, backup will be created from the given
       snapshot. If not specified, there will be a new snapshot taken to
       initiate the backup creation. Format: `projects/{project_id}/locations/{
@@ -234,10 +236,12 @@ class Backup(_messages.Message):
   description = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  sourceSnapshot = _messages.StringField(7)
-  sourceVolume = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  volumeUsageBytes = _messages.IntegerField(10)
+  satisfiesPzi = _messages.BooleanField(7)
+  satisfiesPzs = _messages.BooleanField(8)
+  sourceSnapshot = _messages.StringField(9)
+  sourceVolume = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  volumeUsageBytes = _messages.IntegerField(12)
 
 
 class BackupConfig(_messages.Message):
@@ -2774,8 +2778,10 @@ class TransferStats(_messages.Message):
     lastTransferEndTime: Time when last transfer completed.
     lastTransferError: A message describing the cause of the last transfer
       failure.
-    totalTransferDuration: Total time taken during transfer.
-    transferBytes: bytes trasferred so far in current transfer.
+    totalTransferDuration: Cumulative time taken across all transfers for the
+      replication relationship.
+    transferBytes: Cumulative bytes trasferred so far for the replication
+      relatinonship.
     updateTime: Time when progress was updated last.
   """
 

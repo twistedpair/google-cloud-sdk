@@ -654,11 +654,14 @@ class IngestionDataSourceSettings(_messages.Message):
     awsKinesis: Optional. Amazon Kinesis Data Streams.
     azureEventHubs: Optional. Azure Event Hubs.
     cloudStorage: Optional. Cloud Storage.
+    platformLogsSettings: Optional. Platform Logs settings. If unset, no
+      Platform Logs will be generated.
   """
 
   awsKinesis = _messages.MessageField('AwsKinesis', 1)
   azureEventHubs = _messages.MessageField('AzureEventHubs', 2)
   cloudStorage = _messages.MessageField('CloudStorage', 3)
+  platformLogsSettings = _messages.MessageField('PlatformLogsSettings', 4)
 
 
 class ListSchemaRevisionsResponse(_messages.Message):
@@ -847,6 +850,41 @@ class OidcToken(_messages.Message):
 
   audience = _messages.StringField(1)
   serviceAccountEmail = _messages.StringField(2)
+
+
+class PlatformLogsSettings(_messages.Message):
+  r"""Settings for Platform Logs produced by Pub/Sub.
+
+  Enums:
+    SeverityValueValuesEnum: Optional. The minimum severity level of Platform
+      Logs that will be written.
+
+  Fields:
+    severity: Optional. The minimum severity level of Platform Logs that will
+      be written.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""Optional. The minimum severity level of Platform Logs that will be
+    written.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Default value. Logs level is unspecified. Logs
+        will be disabled.
+      DISABLED: Logs will be disabled.
+      DEBUG: Debug logs and higher-severity logs will be written.
+      INFO: Info logs and higher-severity logs will be written.
+      WARNING: Warning logs and higher-severity logs will be written.
+      ERROR: Only error logs will be written.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    DISABLED = 1
+    DEBUG = 2
+    INFO = 3
+    WARNING = 4
+    ERROR = 5
+
+  severity = _messages.EnumField('SeverityValueValuesEnum', 1)
 
 
 class Policy(_messages.Message):

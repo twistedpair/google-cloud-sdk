@@ -208,6 +208,7 @@ def AddSqlServerBackupFilePattern(parser, default_value=None):
       '--sqlserver-backup-file-pattern',
       help=help_text,
       default=default_value,
+      hidden=True,
   )
 
 

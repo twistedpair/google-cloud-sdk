@@ -917,6 +917,8 @@ apis:
       discovery_doc: iam_v3alpha.json
     v3beta:
       discovery_doc: iam_v3beta.json
+    v3:
+      discovery_doc: iam_v3.json
   iamcredentials:
     v1:
       discovery_doc: iamcredentials_v1.json

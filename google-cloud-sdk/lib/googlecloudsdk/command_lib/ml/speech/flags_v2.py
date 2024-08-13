@@ -111,8 +111,8 @@ def AddRecognizeRequestFlagsToParser(parser, add_async_flag=False):
   AddDecodingConfigFlagsToParser(parser)
   AddBaseRecognizerAttributeFlagsToParser(parser)
   parser.add_argument(
-      '--hints',
-      metavar='HINTS',
+      '--hint-phrases',
+      metavar='PHRASE',
       type=arg_parsers.ArgList(),
       help="""\
         A list of strings containing word and phrase "hints" so that the '
@@ -122,6 +122,22 @@ def AddRecognizeRequestFlagsToParser(parser, add_async_flag=False):
         'the user. This can also be used to add additional words to the '
         'vocabulary of the recognizer. '
         'See https://cloud.google.com/speech/limits#content.
+      """,
+  )
+  parser.add_argument(
+      '--hint-phrase-sets',
+      metavar='PHRASE_SET',
+      type=arg_parsers.ArgList(),
+      help="""\
+        A list of phrase set resource names to use for speech recognition.
+      """,
+  )
+  parser.add_argument(
+      '--hint-boost',
+      type=arg_parsers.BoundedFloat(1, 20),
+      help="""\
+        Boost value for the phrases passed to --phrases.
+        Can have a value between 1 and 20.
       """,
   )
 

@@ -1137,7 +1137,7 @@ class SecuresourcemanagerProjectsLocationsRepositoriesCreateRepositoryInternalRe
     repository: A Repository resource to be passed as the request body.
     repositoryId: Required. The ID to use for the repository, which will
       become the final component of the repository's resource name. This value
-      should be 4-63 characters, and valid characters are /a-z-/.
+      should be 4-63 characters, and valid characters are /a-z-_/.
   """
 
   parent = _messages.StringField(1, required=True)

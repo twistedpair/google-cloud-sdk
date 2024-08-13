@@ -3267,6 +3267,7 @@ class GoogleCloudDocumentaiV1ProcessRequest(_messages.Message):
       pages field, so it must be in the form of `{document_field_name}` or
       `pages.{page_field_name}`.
     gcsDocument: A raw document on Google Cloud Storage.
+    imagelessMode: Optional. Option to remove images from the document.
     inlineDocument: An inline document proto.
     labels: Optional. The labels with user-defined metadata for the request.
       Label keys and values can be no longer than 63 characters (Unicode
@@ -3309,11 +3310,12 @@ class GoogleCloudDocumentaiV1ProcessRequest(_messages.Message):
 
   fieldMask = _messages.StringField(1)
   gcsDocument = _messages.MessageField('GoogleCloudDocumentaiV1GcsDocument', 2)
-  inlineDocument = _messages.MessageField('GoogleCloudDocumentaiV1Document', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  processOptions = _messages.MessageField('GoogleCloudDocumentaiV1ProcessOptions', 5)
-  rawDocument = _messages.MessageField('GoogleCloudDocumentaiV1RawDocument', 6)
-  skipHumanReview = _messages.BooleanField(7)
+  imagelessMode = _messages.BooleanField(3)
+  inlineDocument = _messages.MessageField('GoogleCloudDocumentaiV1Document', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  processOptions = _messages.MessageField('GoogleCloudDocumentaiV1ProcessOptions', 6)
+  rawDocument = _messages.MessageField('GoogleCloudDocumentaiV1RawDocument', 7)
+  skipHumanReview = _messages.BooleanField(8)
 
 
 class GoogleCloudDocumentaiV1ProcessResponse(_messages.Message):

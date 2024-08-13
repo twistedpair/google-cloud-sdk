@@ -221,14 +221,15 @@ class Backup(_messages.Message):
     endTime: Output only. `end_time` is the time that the backup was finished.
       The row data in the backup will be no newer than this timestamp.
     expireTime: Required. The expiration time of the backup. When creating a
-      backup or updating its `expire_time`, the new value must: - Be at most
-      90 days in the future - Be at least 6 hours in the future Once the
+      backup or updating its `expire_time`, the value must be greater than the
+      backup creation time by: - At least 6 hours - At most 90 days Once the
       `expire_time` has passed, Cloud Bigtable will delete the backup.
     hotToStandardTime: The time at which the hot backup will be converted to a
       standard backup. Once the `hot_to_standard_time` has passed, Cloud
-      Bigtable will convert the hot backup to a standard backup. This field
-      only applies for hot backups. When creating or updating a standard
-      backup, attempting to set this field will fail the request.
+      Bigtable will convert the hot backup to a standard backup. This value
+      must be greater than the backup creation time by: - At least 24 hours
+      This field only applies for hot backups. When creating or updating a
+      standard backup, attempting to set this field will fail the request.
     name: A globally unique identifier for the backup which cannot be changed.
       Values are of the form
       `projects/{project}/instances/{instance}/clusters/{cluster}/ backups/_a-

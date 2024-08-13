@@ -454,7 +454,7 @@ class FileProjectsLocationsInstancesPatchRequest(_messages.Message):
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field may
       only include these fields: * "description" * "directory_services" *
-      "file_shares" * "labels"
+      "file_shares" * "labels" * "performance_config"
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -1347,6 +1347,16 @@ class IOPSPerGB(_messages.Message):
   maxReadIopsPerGb = _messages.IntegerField(1)
 
 
+class IOPSPerTB(_messages.Message):
+  r"""IOPS per TB. Filestore defines TB as 1024^4 bytes (TiB).
+
+  Fields:
+    maxReadIopsPerTb: Required. Maximum read IOPS per TiB.
+  """
+
+  maxReadIopsPerTb = _messages.IntegerField(1)
+
+
 class Instance(_messages.Message):
   r"""A Filestore instance.
 
@@ -1375,6 +1385,10 @@ class Instance(_messages.Message):
       performance enabled can be configured by populating the instance's
       `performance_config` field.
     createTime: Output only. The time when the instance was created.
+    deletionProtectionEnabled: Optional. Indicates whether the instance is
+      protected against deletion.
+    deletionProtectionReason: Optional. The reason for enabling deletion
+      protection.
     description: The description of the instance (2048 characters or less).
     directoryServices: Optional. Directory Services configuration for
       Kerberos-based authentication. Should only be set if protocol is
@@ -1561,28 +1575,30 @@ class Instance(_messages.Message):
   capacityStepSizeGb = _messages.IntegerField(2)
   configurablePerformanceEnabled = _messages.BooleanField(3)
   createTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  directoryServices = _messages.MessageField('DirectoryServicesConfig', 6)
-  etag = _messages.StringField(7)
-  fileShares = _messages.MessageField('FileShareConfig', 8, repeated=True)
-  kmsKeyName = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  maxCapacityGb = _messages.IntegerField(11)
-  maxShareCount = _messages.IntegerField(12)
-  multiShareEnabled = _messages.BooleanField(13)
-  name = _messages.StringField(14)
-  networks = _messages.MessageField('NetworkConfig', 15, repeated=True)
-  performanceConfig = _messages.MessageField('PerformanceConfig', 16)
-  performanceLimits = _messages.MessageField('PerformanceLimits', 17)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 18)
-  replication = _messages.MessageField('Replication', 19)
-  satisfiesPzi = _messages.BooleanField(20)
-  satisfiesPzs = _messages.BooleanField(21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  statusMessage = _messages.StringField(23)
-  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 24, repeated=True)
-  tags = _messages.MessageField('TagsValue', 25)
-  tier = _messages.EnumField('TierValueValuesEnum', 26)
+  deletionProtectionEnabled = _messages.BooleanField(5)
+  deletionProtectionReason = _messages.StringField(6)
+  description = _messages.StringField(7)
+  directoryServices = _messages.MessageField('DirectoryServicesConfig', 8)
+  etag = _messages.StringField(9)
+  fileShares = _messages.MessageField('FileShareConfig', 10, repeated=True)
+  kmsKeyName = _messages.StringField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  maxCapacityGb = _messages.IntegerField(13)
+  maxShareCount = _messages.IntegerField(14)
+  multiShareEnabled = _messages.BooleanField(15)
+  name = _messages.StringField(16)
+  networks = _messages.MessageField('NetworkConfig', 17, repeated=True)
+  performanceConfig = _messages.MessageField('PerformanceConfig', 18)
+  performanceLimits = _messages.MessageField('PerformanceLimits', 19)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 20)
+  replication = _messages.MessageField('Replication', 21)
+  satisfiesPzi = _messages.BooleanField(22)
+  satisfiesPzs = _messages.BooleanField(23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  statusMessage = _messages.StringField(25)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 26, repeated=True)
+  tags = _messages.MessageField('TagsValue', 27)
+  tier = _messages.EnumField('TierValueValuesEnum', 28)
 
 
 class ListBackupsResponse(_messages.Message):
@@ -2190,11 +2206,22 @@ class PerformanceConfig(_messages.Message):
       instance creation will fail with an `InvalidArgument` error. Similarly,
       if an instance capacity update would result in a value outside the
       supported range, the update will fail with an `InvalidArgument` error.
+    iopsPerTb: Provision IOPS dynamically based on the capacity of the
+      instance. Provisioned read IOPS will be calculated by by multiplying the
+      capacity of the instance in TiB by the `iops_per_tb` value, and rounding
+      to the nearest 1000. For example, for a 1 TiB instance with an
+      `iops_per_tb` value of 15, the provisioned read IOPS would be `1024 * 15
+      = 15,360`, rounded to `15,000`. If the calculated value is outside the
+      supported range for the instance's capacity during instance creation,
+      instance creation will fail with an `InvalidArgument` error. Similarly,
+      if an instance capacity update would result in a value outside the
+      supported range, the update will fail with an `InvalidArgument` error.
   """
 
   fixedIops = _messages.MessageField('FixedIOPS', 1)
   iopsByCapacity = _messages.BooleanField(2)
   iopsPerGb = _messages.MessageField('IOPSPerGB', 3)
+  iopsPerTb = _messages.MessageField('IOPSPerTB', 4)
 
 
 class PerformanceLimits(_messages.Message):
@@ -2204,14 +2231,20 @@ class PerformanceLimits(_messages.Message):
   Fields:
     maxReadIops: Output only. The max read IOPS.
     maxReadThroughput: Output only. The max read throughput.
+    maxReadThroughputBps: Output only. The max read throughput in bytes per
+      second.
     maxWriteIops: Output only. The max write IOPS.
     maxWriteThroughput: Output only. The max write throughput.
+    maxWriteThroughputBps: Output only. The max write throughput in bytes per
+      second.
   """
 
   maxReadIops = _messages.IntegerField(1)
   maxReadThroughput = _messages.IntegerField(2)
-  maxWriteIops = _messages.IntegerField(3)
-  maxWriteThroughput = _messages.IntegerField(4)
+  maxReadThroughputBps = _messages.IntegerField(3)
+  maxWriteIops = _messages.IntegerField(4)
+  maxWriteThroughput = _messages.IntegerField(5)
+  maxWriteThroughputBps = _messages.IntegerField(6)
 
 
 class PromoteReplicaRequest(_messages.Message):

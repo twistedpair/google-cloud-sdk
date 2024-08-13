@@ -8568,13 +8568,17 @@ class QueryRestrictionConflict(_messages.Message):
 
 
 class QueryResults(_messages.Message):
-  r"""Results of a SQL query over logs. Next ID: 12
+  r"""Results of a SQL query over logs. Next ID: 13
+
+  Enums:
+    IndexUsageValueValuesEnum: The type of search index usage in the query.
 
   Messages:
     RowsValueListEntry: A RowsValueListEntry object.
 
   Fields:
     executionDuration: The total execution duration of the query.
+    indexUsage: The type of search index usage in the query.
     jobLocation: The location where the query was executed.
     nextPageToken: A token that can be sent as page_token to retrieve the next
       page. If this field is omitted, there are no subsequent pages.
@@ -8605,6 +8609,20 @@ class QueryResults(_messages.Message):
       only on a call to ReadQueryResults.
   """
 
+  class IndexUsageValueValuesEnum(_messages.Enum):
+    r"""The type of search index usage in the query.
+
+    Values:
+      INDEX_USAGE_UNSPECIFIED: The index usage is unknown.
+      UNUSED: The query did not use any indexes.
+      PARTIALLY_USED: Part of the query used search indexes.
+      FULLY_USED: The entire query used search indexes.
+    """
+    INDEX_USAGE_UNSPECIFIED = 0
+    UNUSED = 1
+    PARTIALLY_USED = 2
+    FULLY_USED = 3
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RowsValueListEntry(_messages.Message):
     r"""A RowsValueListEntry object.
@@ -8631,16 +8649,17 @@ class QueryResults(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   executionDuration = _messages.StringField(1)
-  jobLocation = _messages.StringField(2)
-  nextPageToken = _messages.StringField(3)
-  queryComplete = _messages.BooleanField(4)
-  restrictionConflicts = _messages.MessageField('QueryRestrictionConflict', 5, repeated=True)
-  resultReference = _messages.StringField(6)
-  rows = _messages.MessageField('RowsValueListEntry', 7, repeated=True)
-  schema = _messages.MessageField('TableSchema', 8)
-  totalBytesProcessed = _messages.IntegerField(9)
-  totalRows = _messages.IntegerField(10)
-  totalSlotMs = _messages.IntegerField(11)
+  indexUsage = _messages.EnumField('IndexUsageValueValuesEnum', 2)
+  jobLocation = _messages.StringField(3)
+  nextPageToken = _messages.StringField(4)
+  queryComplete = _messages.BooleanField(5)
+  restrictionConflicts = _messages.MessageField('QueryRestrictionConflict', 6, repeated=True)
+  resultReference = _messages.StringField(7)
+  rows = _messages.MessageField('RowsValueListEntry', 8, repeated=True)
+  schema = _messages.MessageField('TableSchema', 9)
+  totalBytesProcessed = _messages.IntegerField(10)
+  totalRows = _messages.IntegerField(11)
+  totalSlotMs = _messages.IntegerField(12)
 
 
 class QueryStep(_messages.Message):

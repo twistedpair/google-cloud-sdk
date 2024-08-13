@@ -49,34 +49,57 @@ def _GetRelativeNameField(arg_data):
   return api_fields[0]
 
 
-def _GetAllSharedAttributes(arg_data, shared_resource_args):
+def _GetSharedAttributes(arg_data, shared_resource_args):
   """Gets a list of all shared resource attributes."""
-  if not shared_resource_args:
-    ignored_attributes = set()
-  else:
-    ignored_attributes = set(shared_resource_args)
+  ignored_attributes = set()
+  anchor_names = set(attr.name for attr in arg_data.anchors)
 
-  # iterate through all attributes except the anchor
-  for a in arg_data.attribute_names[:-1]:
-    if a in arg_data.removed_flags or concepts.IGNORED_FIELDS.get(a):
+  for attr_name in arg_data.attribute_names:
+    if (attr_name in arg_data.removed_flags or
+        concepts.IGNORED_FIELDS.get(attr_name) or
+        attr_name in shared_resource_args or
+        attr_name in anchor_names):
       continue
-    ignored_attributes.add(a)
+    ignored_attributes.add(attr_name)
 
   return list(ignored_attributes)
 
 
 def _GetResourceArgGenerator(
-    arg_data, resource_collection, shared_resource_args):
+    arg_data, resource_collection, ignored_attributes):
   """Gets a function to generate a resource arg."""
-  ignored_attributes = _GetAllSharedAttributes(arg_data, shared_resource_args)
-  def ArgGen(name, group_help):
+  def ArgGen(name, group_help, flag_name_override):
     group_help += '\n\n'
     if arg_data.group_help:
       group_help += arg_data.group_help
 
     return arg_data.GenerateResourceArg(
-        resource_collection, name, ignored_attributes, group_help=group_help)
+        resource_collection,
+        presentation_flag_name=name,
+        flag_name_override=flag_name_override,
+        shared_resource_flags=ignored_attributes,
+        group_help=group_help)
   return ArgGen
+
+
+def _GenerateSharedFlags(
+    arg_data, resource_collection, shared_flag_names):
+  """Generates a list of flags needed to generate more than one resource arg."""
+  arg_gen = _GetResourceArgGenerator(
+      arg_data, resource_collection, None)
+
+  # Generate a fake resource arg where none of the flags are filtered out.
+  resource_arg_info = arg_gen(
+      '--current', '', None).GetInfo('--current')
+
+  shared_flags = set(
+      resource_arg_info.attribute_to_args_map.get(attr)
+      for attr in shared_flag_names)
+
+  return [
+      arg for arg in resource_arg_info.GetAttributeArgs()
+      if arg.name in shared_flags
+  ]
 
 
 class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
@@ -84,21 +107,25 @@ class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
 
   @classmethod
   def FromArgData(
-      cls, arg_data, resource_collection, is_list_method=False,
+      cls, arg_data, method_resource_collection, is_list_method=False,
       shared_resource_args=None
   ):
-    if arg_data.repeated:
+    if arg_data.multitype and arg_data.repeated:
+      gen_cls = UpdateMultitypeListResourceArgumentGenerator
+    elif arg_data.multitype:
+      gen_cls = UpdateMultitypeResourceArgumentGenerator
+    elif arg_data.repeated:
       gen_cls = UpdateListResourceArgumentGenerator
     else:
       gen_cls = UpdateDefaultResourceArgumentGenerator
 
-    arg_name = arg_data.GetPresentationFlagName(
-        resource_collection, is_list_method)
-    is_primary = arg_data.IsPrimaryResource(resource_collection)
+    presentation_flag_name = arg_data.GetPresentationFlagName(
+        method_resource_collection, is_list_method)
+    is_primary = arg_data.IsPrimaryResource(method_resource_collection)
     if is_primary:
       raise util.InvalidSchemaError(
           '{} is a primary resource. Primary resources are required and '
-          'cannot be listed as clearable.'.format(arg_name)
+          'cannot be listed as clearable.'.format(presentation_flag_name)
       )
 
     api_field = _GetRelativeNameField(arg_data)
@@ -107,50 +134,87 @@ class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
           '{} does not specify the message field where the relative name is '
           'mapped in resource_method_params. Message field name is needed '
           'in order add update args. Please update '
-          'resource_method_params.'.format(arg_name)
+          'resource_method_params.'.format(presentation_flag_name)
       )
 
+    shared_args = shared_resource_args or []
+    shared_attribute_names = _GetSharedAttributes(
+        arg_data, shared_args)
+    # All of the flags the resource arg should not generate
+    all_shared_attribute_names = shared_attribute_names + shared_args
+
     return gen_cls(
-        arg_name=arg_name,
+        presentation_flag_name=presentation_flag_name,
         arg_gen=_GetResourceArgGenerator(
-            arg_data, resource_collection, shared_resource_args),
+            arg_data, method_resource_collection, all_shared_attribute_names),
         api_field=api_field,
         repeated=arg_data.repeated,
-        collection=arg_data.collection,
+        collections=arg_data.collections,
         is_primary=is_primary,
-        attribute_flags=arg_utils.GetAttributeFlags(
-            arg_data, arg_name, resource_collection, shared_resource_args),
+        # attributes shared between update args we need to generate and
+        # add to the root.
+        shared_attribute_flags=_GenerateSharedFlags(
+            arg_data, method_resource_collection, shared_attribute_names),
+        anchor_names=[attr.name for attr in arg_data.anchors],
     )
 
   def __init__(
       self,
-      arg_name,
+      presentation_flag_name,
       arg_gen=None,
       is_hidden=False,
       api_field=None,
       repeated=False,
-      collection=None,
+      collections=None,
       is_primary=None,
-      attribute_flags=None,
+      shared_attribute_flags=None,
+      anchor_names=None,
   ):
     super(UpdateResourceArgumentGenerator, self).__init__()
-    self.arg_name = format_util.NormalizeFormat(arg_name)
+    self.arg_name = format_util.NormalizeFormat(
+        presentation_flag_name)
     self.arg_gen = arg_gen
     self.is_hidden = is_hidden
     self.api_field = api_field
     self.repeated = repeated
-    self.collection = collection
+    self.collections = collections or []
     self.is_primary = is_primary
-    self.attribute_flags = attribute_flags
+    self.shared_attribute_flags = shared_attribute_flags or []
+    self.anchor_names = anchor_names or []
+
+  def _GetAnchorFlag(self, attr_name, flag_prefix_value):
+    if len(self.anchor_names) > 1:
+      base_name = attr_name
+    else:
+      base_name = self.arg_name
+    return arg_utils.GetFlagName(base_name, flag_prefix=flag_prefix_value)
 
   def _CreateResourceFlag(self, flag_prefix=None, group_help=None):
+    prefix = flag_prefix and flag_prefix.value
     flag_name = arg_utils.GetFlagName(
-        self.arg_name, flag_prefix=flag_prefix and flag_prefix.value)
-    return self.arg_gen(flag_name, group_help=group_help)
+        self.arg_name,
+        flag_prefix=prefix)
+
+    flag_name_override = {
+        anchor_name: self._GetAnchorFlag(anchor_name, prefix)
+        for anchor_name in self.anchor_names
+    }
+
+    return self.arg_gen(
+        flag_name, group_help=group_help, flag_name_override=flag_name_override)
 
   def _RelativeName(self, value):
-    return resources.REGISTRY.ParseRelativeName(
-        value, self.collection.full_name)
+    resource = None
+    for collection in self.collections:
+      try:
+        resource = resources.REGISTRY.ParseRelativeName(
+            value,
+            collection.full_name,
+            api_version=collection.api_version)
+      except resources.Error:
+        continue
+
+    return resource
 
   def GetArgFromNamespace(self, namespace, arg):
     """Retrieves namespace value associated with flag.
@@ -188,12 +252,14 @@ class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
       return None
 
     if isinstance(value, list):
-      return [self._RelativeName(v) for v in value]
-    return self._RelativeName(value)
+      relative_names = (self._RelativeName(v) for v in value)
+      return [name for name in relative_names if name]
+    else:
+      return self._RelativeName(value)
 
   def Generate(self):
     return super(UpdateResourceArgumentGenerator, self).Generate(
-        self.attribute_flags)
+        self.shared_attribute_flags)
 
 
 class UpdateDefaultResourceArgumentGenerator(UpdateResourceArgumentGenerator):
@@ -214,8 +280,9 @@ class UpdateDefaultResourceArgumentGenerator(UpdateResourceArgumentGenerator):
         self.arg_name,
         flag_prefix=update_args.Prefix.CLEAR,
         action='store_true',
-        help_text='Clear {} value and set to {}.'.format(
-            self.arg_name, self._GetTextFormatOfEmptyValue(self._empty_value)),
+        help_text=(
+            f'Clear {self.arg_name} value and set '
+            f'to {self._GetTextFormatOfEmptyValue(self._empty_value)}.'),
     )
 
   def ApplySetFlag(self, output, set_val):
@@ -229,12 +296,12 @@ class UpdateDefaultResourceArgumentGenerator(UpdateResourceArgumentGenerator):
     return output
 
 
-class UpdateListResourceArgumentGenerator(UpdateResourceArgumentGenerator):
-  """Update flag generator for list resource args."""
+class UpdateMultitypeResourceArgumentGenerator(UpdateResourceArgumentGenerator):
+  """Update flag generator for multitype resource args."""
 
   @property
   def _empty_value(self):
-    return []
+    return None
 
   @property
   def set_arg(self):
@@ -247,21 +314,58 @@ class UpdateListResourceArgumentGenerator(UpdateResourceArgumentGenerator):
         self.arg_name,
         flag_prefix=update_args.Prefix.CLEAR,
         action='store_true',
-        help_text='Clear {} value and set to {}.'.format(
-            self.arg_name, self._GetTextFormatOfEmptyValue(self._empty_value)),
+        help_text=(
+            f'Clear {self.arg_name} value and set '
+            f'to {self._GetTextFormatOfEmptyValue(self._empty_value)}.'),
+    )
+
+  def ApplySetFlag(self, output, set_val):
+    if result := (set_val and set_val.result):
+      return result
+    else:
+      return output
+
+  def ApplyClearFlag(self, output, clear_flag):
+    if clear_flag:
+      return self._empty_value
+    else:
+      return output
+
+
+class UpdateListResourceArgumentGenerator(UpdateResourceArgumentGenerator):
+  """Update flag generator for list resource args."""
+
+  @property
+  def _empty_value(self):
+    return []
+
+  @property
+  def set_arg(self):
+    return self._CreateResourceFlag(
+        group_help=f'Set {self.arg_name} to new value.')
+
+  @property
+  def clear_arg(self):
+    return self._CreateFlag(
+        self.arg_name,
+        flag_prefix=update_args.Prefix.CLEAR,
+        action='store_true',
+        help_text=(
+            f'Clear {self.arg_name} value and set '
+            f'to {self._GetTextFormatOfEmptyValue(self._empty_value)}.'),
     )
 
   @property
   def update_arg(self):
     return self._CreateResourceFlag(
         flag_prefix=update_args.Prefix.ADD,
-        group_help='Add new value to {} list.'.format(self.arg_name))
+        group_help=f'Add new value to {self.arg_name} list.')
 
   @property
   def remove_arg(self):
     return self._CreateResourceFlag(
         flag_prefix=update_args.Prefix.REMOVE,
-        group_help='Remove value from {} list.'.format(self.arg_name))
+        group_help=f'Remove value from {self.arg_name} list.')
 
   def ApplySetFlag(self, output, set_val):
     if set_val:
@@ -287,3 +391,67 @@ class UpdateListResourceArgumentGenerator(UpdateResourceArgumentGenerator):
     else:
       return value
 
+
+class UpdateMultitypeListResourceArgumentGenerator(
+    UpdateResourceArgumentGenerator):
+  """Update flag generator for multitype list resource args."""
+
+  @property
+  def _empty_value(self):
+    return []
+
+  @property
+  def set_arg(self):
+    return self._CreateResourceFlag(
+        group_help=f'Set {self.arg_name} to new value.')
+
+  @property
+  def clear_arg(self):
+    return self._CreateFlag(
+        self.arg_name,
+        flag_prefix=update_args.Prefix.CLEAR,
+        action='store_true',
+        help_text=(
+            f'Clear {self.arg_name} value and set '
+            f'to {self._GetTextFormatOfEmptyValue(self._empty_value)}.'),
+    )
+
+  @property
+  def update_arg(self):
+    return self._CreateResourceFlag(
+        flag_prefix=update_args.Prefix.ADD,
+        group_help=f'Add new value to {self.arg_name} list.')
+
+  @property
+  def remove_arg(self):
+    return self._CreateResourceFlag(
+        flag_prefix=update_args.Prefix.REMOVE,
+        group_help=f'Remove value from {self.arg_name} list.')
+
+  def ApplySetFlag(self, output, set_val):
+    resource_list = [val.result for val in set_val if val.result]
+    if resource_list:
+      return resource_list
+    else:
+      return output
+
+  def ApplyClearFlag(self, output, clear_flag):
+    if clear_flag:
+      return self._empty_value
+    else:
+      return output
+
+  def ApplyRemoveFlag(self, existing_val, remove_val):
+    value = existing_val or self._empty_value
+    if remove_resources := set(val.result for val in remove_val if val.result):
+      return [x for x in value if x not in remove_resources]
+    else:
+      return value
+
+  def ApplyUpdateFlag(self, existing_val, update_val):
+    value = existing_val or self._empty_value
+    if update_val:
+      return value + [
+          x.result for x in update_val if x.result not in value]
+    else:
+      return value

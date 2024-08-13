@@ -26,7 +26,7 @@ class DlpInfoTypesListRequest(_messages.Message):
       will be returned.
     locationId: Deprecated. This field has no effect.
     parent: The parent resource name. The format of this value is as follows:
-      locations/ LOCATION_ID
+      `locations/{location_id}`
   """
 
   filter = _messages.StringField(1)
@@ -46,7 +46,7 @@ class DlpLocationsInfoTypesListRequest(_messages.Message):
       will be returned.
     locationId: Deprecated. This field has no effect.
     parent: The parent resource name. The format of this value is as follows:
-      locations/ LOCATION_ID
+      `locations/{location_id}`
   """
 
   filter = _messages.StringField(1)
@@ -67,11 +67,11 @@ class DlpOrganizationsDeidentifyTemplatesCreateRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -130,11 +130,11 @@ class DlpOrganizationsDeidentifyTemplatesListRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -177,11 +177,11 @@ class DlpOrganizationsInspectTemplatesCreateRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -240,11 +240,11 @@ class DlpOrganizationsInspectTemplatesListRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -343,8 +343,8 @@ class DlpOrganizationsLocationsConnectionsCreateRequest(_messages.Message):
       request body.
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization): +
-      Projects scope: `projects/`PROJECT_ID`/locations/`LOCATION_ID +
-      Organizations scope: `organizations/`ORG_ID`/locations/`LOCATION_ID
+      Projects scope: `projects/{project_id}/locations/{location_id}` +
+      Organizations scope: `organizations/{org_id}/locations/{location_id}`
   """
 
   googlePrivacyDlpV2CreateConnectionRequest = _messages.MessageField('GooglePrivacyDlpV2CreateConnectionRequest', 1)
@@ -442,11 +442,11 @@ class DlpOrganizationsLocationsDeidentifyTemplatesCreateRequest(_messages.Messag
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -505,11 +505,11 @@ class DlpOrganizationsLocationsDeidentifyTemplatesListRequest(_messages.Message)
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -549,12 +549,12 @@ class DlpOrganizationsLocationsDiscoveryConfigsCreateRequest(_messages.Message):
       the request body.
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization): +
-      Projects scope: `projects/`PROJECT_ID`/locations/`LOCATION_ID +
-      Organizations scope: `organizations/`ORG_ID`/locations/`LOCATION_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      Projects scope: `projects/{project_id}/locations/{location_id}` +
+      Organizations scope: `organizations/{org_id}/locations/{location_id}`
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2CreateDiscoveryConfigRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDiscoveryConfigRequest', 1)
@@ -599,7 +599,7 @@ class DlpOrganizationsLocationsDiscoveryConfigsListRequest(_messages.Message):
       to ListDiscoveryConfigs. `order_by` field must not change for subsequent
       calls.
     parent: Required. Parent resource name. The format of this value is as
-      follows: `projects/`PROJECT_ID`/locations/`LOCATION_ID The following
+      follows: `projects/{project_id}/locations/{location_id}` The following
       example `parent` string specifies a parent project with the identifier
       `example-project`, and specifies the `europe-west3` location for
       processing data: parent=projects/example-project/locations/europe-west3
@@ -665,12 +665,12 @@ class DlpOrganizationsLocationsDlpJobsListRequest(_messages.Message):
       depending on whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
     type: The type of job. Defaults to `DlpJobType.INSPECT`
   """
 
@@ -774,11 +774,11 @@ class DlpOrganizationsLocationsInspectTemplatesCreateRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -837,11 +837,11 @@ class DlpOrganizationsLocationsInspectTemplatesListRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -883,12 +883,12 @@ class DlpOrganizationsLocationsJobTriggersCreateRequest(_messages.Message):
       depending on whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
   """
 
   googlePrivacyDlpV2CreateJobTriggerRequest = _messages.MessageField('GooglePrivacyDlpV2CreateJobTriggerRequest', 1)
@@ -959,12 +959,12 @@ class DlpOrganizationsLocationsJobTriggersListRequest(_messages.Message):
       depending on whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
     type: The type of jobs. Will use `DlpJobType.INSPECT` if not set.
   """
 
@@ -1064,11 +1064,11 @@ class DlpOrganizationsLocationsStoredInfoTypesCreateRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -1125,12 +1125,12 @@ class DlpOrganizationsLocationsStoredInfoTypesListRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
   """
 
   locationId = _messages.StringField(1)
@@ -1235,11 +1235,11 @@ class DlpOrganizationsStoredInfoTypesCreateRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -1296,12 +1296,12 @@ class DlpOrganizationsStoredInfoTypesListRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
   """
 
   locationId = _messages.StringField(1)
@@ -1338,12 +1338,12 @@ class DlpProjectsContentDeidentifyRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
   """
 
   googlePrivacyDlpV2DeidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2DeidentifyContentRequest', 1)
@@ -1361,12 +1361,12 @@ class DlpProjectsContentInspectRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
   """
 
   googlePrivacyDlpV2InspectContentRequest = _messages.MessageField('GooglePrivacyDlpV2InspectContentRequest', 1)
@@ -1384,12 +1384,12 @@ class DlpProjectsContentReidentifyRequest(_messages.Message):
       depending on whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
   """
 
   googlePrivacyDlpV2ReidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2ReidentifyContentRequest', 1)
@@ -1408,11 +1408,11 @@ class DlpProjectsDeidentifyTemplatesCreateRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -1471,11 +1471,11 @@ class DlpProjectsDeidentifyTemplatesListRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -1531,12 +1531,12 @@ class DlpProjectsDlpJobsCreateRequest(_messages.Message):
       depending on whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
   """
 
   googlePrivacyDlpV2CreateDlpJobRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDlpJobRequest', 1)
@@ -1602,12 +1602,12 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
       depending on whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
     type: The type of job. Defaults to `DlpJobType.INSPECT`
   """
 
@@ -1643,12 +1643,12 @@ class DlpProjectsImageRedactRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
   """
 
   googlePrivacyDlpV2RedactImageRequest = _messages.MessageField('GooglePrivacyDlpV2RedactImageRequest', 1)
@@ -1667,11 +1667,11 @@ class DlpProjectsInspectTemplatesCreateRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -1730,11 +1730,11 @@ class DlpProjectsInspectTemplatesListRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -1791,12 +1791,12 @@ class DlpProjectsJobTriggersCreateRequest(_messages.Message):
       depending on whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
   """
 
   googlePrivacyDlpV2CreateJobTriggerRequest = _messages.MessageField('GooglePrivacyDlpV2CreateJobTriggerRequest', 1)
@@ -1867,12 +1867,12 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
       depending on whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
     type: The type of jobs. Will use `DlpJobType.INSPECT` if not set.
   """
 
@@ -1980,8 +1980,8 @@ class DlpProjectsLocationsConnectionsCreateRequest(_messages.Message):
       request body.
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization): +
-      Projects scope: `projects/`PROJECT_ID`/locations/`LOCATION_ID +
-      Organizations scope: `organizations/`ORG_ID`/locations/`LOCATION_ID
+      Projects scope: `projects/{project_id}/locations/{location_id}` +
+      Organizations scope: `organizations/{org_id}/locations/{location_id}`
   """
 
   googlePrivacyDlpV2CreateConnectionRequest = _messages.MessageField('GooglePrivacyDlpV2CreateConnectionRequest', 1)
@@ -2078,12 +2078,12 @@ class DlpProjectsLocationsContentDeidentifyRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
   """
 
   googlePrivacyDlpV2DeidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2DeidentifyContentRequest', 1)
@@ -2101,12 +2101,12 @@ class DlpProjectsLocationsContentInspectRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
   """
 
   googlePrivacyDlpV2InspectContentRequest = _messages.MessageField('GooglePrivacyDlpV2InspectContentRequest', 1)
@@ -2124,12 +2124,12 @@ class DlpProjectsLocationsContentReidentifyRequest(_messages.Message):
       depending on whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
   """
 
   googlePrivacyDlpV2ReidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2ReidentifyContentRequest', 1)
@@ -2148,11 +2148,11 @@ class DlpProjectsLocationsDeidentifyTemplatesCreateRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -2211,11 +2211,11 @@ class DlpProjectsLocationsDeidentifyTemplatesListRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -2255,12 +2255,12 @@ class DlpProjectsLocationsDiscoveryConfigsCreateRequest(_messages.Message):
       the request body.
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization): +
-      Projects scope: `projects/`PROJECT_ID`/locations/`LOCATION_ID +
-      Organizations scope: `organizations/`ORG_ID`/locations/`LOCATION_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      Projects scope: `projects/{project_id}/locations/{location_id}` +
+      Organizations scope: `organizations/{org_id}/locations/{location_id}`
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2CreateDiscoveryConfigRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDiscoveryConfigRequest', 1)
@@ -2305,7 +2305,7 @@ class DlpProjectsLocationsDiscoveryConfigsListRequest(_messages.Message):
       to ListDiscoveryConfigs. `order_by` field must not change for subsequent
       calls.
     parent: Required. Parent resource name. The format of this value is as
-      follows: `projects/`PROJECT_ID`/locations/`LOCATION_ID The following
+      follows: `projects/{project_id}/locations/{location_id}` The following
       example `parent` string specifies a parent project with the identifier
       `example-project`, and specifies the `europe-west3` location for
       processing data: parent=projects/example-project/locations/europe-west3
@@ -2357,12 +2357,12 @@ class DlpProjectsLocationsDlpJobsCreateRequest(_messages.Message):
       depending on whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
   """
 
   googlePrivacyDlpV2CreateDlpJobRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDlpJobRequest', 1)
@@ -2457,12 +2457,12 @@ class DlpProjectsLocationsDlpJobsListRequest(_messages.Message):
       depending on whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
     type: The type of job. Defaults to `DlpJobType.INSPECT`
   """
 
@@ -2565,12 +2565,12 @@ class DlpProjectsLocationsImageRedactRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
   """
 
   googlePrivacyDlpV2RedactImageRequest = _messages.MessageField('GooglePrivacyDlpV2RedactImageRequest', 1)
@@ -2589,11 +2589,11 @@ class DlpProjectsLocationsInspectTemplatesCreateRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -2652,11 +2652,11 @@ class DlpProjectsLocationsInspectTemplatesListRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -2713,12 +2713,12 @@ class DlpProjectsLocationsJobTriggersCreateRequest(_messages.Message):
       depending on whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
   """
 
   googlePrivacyDlpV2CreateJobTriggerRequest = _messages.MessageField('GooglePrivacyDlpV2CreateJobTriggerRequest', 1)
@@ -2804,12 +2804,12 @@ class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
       depending on whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
     type: The type of jobs. Will use `DlpJobType.INSPECT` if not set.
   """
 
@@ -2909,11 +2909,11 @@ class DlpProjectsLocationsStoredInfoTypesCreateRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -2970,12 +2970,12 @@ class DlpProjectsLocationsStoredInfoTypesListRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
   """
 
   locationId = _messages.StringField(1)
@@ -3080,11 +3080,11 @@ class DlpProjectsStoredInfoTypesCreateRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      + Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` + Organizations scope, location specified:
+      `organizations/{org_id}/locations/{location_id}` + Organizations scope,
+      no location specified (defaults to global): `organizations/{org_id}` The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -3141,12 +3141,12 @@ class DlpProjectsStoredInfoTypesListRequest(_messages.Message):
       whether you have [specified a processing
       location](https://cloud.google.com/sensitive-data-
       protection/docs/specifying-location): + Projects scope, location
-      specified: `projects/`PROJECT_ID`/locations/` LOCATION_ID + Projects
-      scope, no location specified (defaults to global): `projects/`PROJECT_ID
-      The following example `parent` string specifies a parent project with
-      the identifier `example-project`, and specifies the `europe-west3`
-      location for processing data: parent=projects/example-
-      project/locations/europe-west3
+      specified: `projects/{project_id}/locations/{location_id}` + Projects
+      scope, no location specified (defaults to global):
+      `projects/{project_id}` The following example `parent` string specifies
+      a parent project with the identifier `example-project`, and specifies
+      the `europe-west3` location for processing data:
+      parent=projects/example-project/locations/europe-west3
   """
 
   locationId = _messages.StringField(1)
@@ -4632,9 +4632,8 @@ class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
       before/after encryption/decryption. Each character listed must appear
       only once. Number of characters must be in the range [2, 95]. This must
       be encoded as ASCII. The order of characters does not matter. The full
-      list of allowed characters is:
-      0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
-      ~`!@#$%^&*()_-+={[}]|\:;"'<,>.?/
+      list of allowed characters is: ``0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabc
+      defghijklmnopqrstuvwxyz~`!@#$%^&*()_-+={[}]|\:;"'<,>.?/``
     radix: The native way to select the alphabet. Must be in the range [2,
       95].
     surrogateInfoType: The custom infoType to annotate the surrogate with.
@@ -4777,10 +4776,12 @@ class GooglePrivacyDlpV2DataProfileAction(_messages.Message):
   Fields:
     exportData: Export data profiles into a provided location.
     pubSubNotification: Publish a message into the Pub/Sub topic.
+    tagResources: Tags the profiled resources with the specified tag values.
   """
 
   exportData = _messages.MessageField('GooglePrivacyDlpV2Export', 1)
   pubSubNotification = _messages.MessageField('GooglePrivacyDlpV2PubSubNotification', 2)
+  tagResources = _messages.MessageField('GooglePrivacyDlpV2TagResources', 3)
 
 
 class GooglePrivacyDlpV2DataProfileBigQueryRowSchema(_messages.Message):
@@ -9856,6 +9857,81 @@ class GooglePrivacyDlpV2TableReference(_messages.Message):
   tableId = _messages.StringField(2)
 
 
+class GooglePrivacyDlpV2TagCondition(_messages.Message):
+  r"""The tag to attach to profiles matching the condition. At most one
+  `TagCondition` can be specified per sensitivity level.
+
+  Fields:
+    sensitivityScore: Conditions attaching the tag to a resource on its
+      profile having this sensitivity score.
+    tag: The tag value to attach to resources.
+  """
+
+  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 1)
+  tag = _messages.MessageField('GooglePrivacyDlpV2TagValue', 2)
+
+
+class GooglePrivacyDlpV2TagResources(_messages.Message):
+  r"""If set, attaches the [tags] (https://cloud.google.com/resource-
+  manager/docs/tags/tags-overview) provided to profiled resources. Tags
+  support [access control](https://cloud.google.com/iam/docs/tags-access-
+  control). You can conditionally grant or deny access to a resource based on
+  whether the resource has a specific tag.
+
+  Enums:
+    ProfileGenerationsToTagValueListEntryValuesEnum:
+
+  Fields:
+    lowerDataRiskToLow: Whether applying a tag to a resource should lower the
+      risk of the profile for that resource. For example, in conjunction with
+      an [IAM deny policy](https://cloud.google.com/iam/docs/deny-overview),
+      you can deny all principals a permission if a tag value is present,
+      mitigating the risk of the resource. This also lowers the data risk of
+      resources at the lower levels of the resource hierarchy. For example,
+      reducing the data risk of a table data profile also reduces the data
+      risk of the constituent column data profiles.
+    profileGenerationsToTag: The profile generations for which the tag should
+      be attached to resources. If you attach a tag to only new profiles, then
+      if the sensitivity score of a profile subsequently changes, its tag
+      doesn't change. By default, this field includes only new profiles. To
+      include both new and updated profiles for tagging, this field should
+      explicitly include both `PROFILE_GENERATION_NEW` and
+      `PROFILE_GENERATION_UPDATE`.
+    tagConditions: The tags to associate with different conditions.
+  """
+
+  class ProfileGenerationsToTagValueListEntryValuesEnum(_messages.Enum):
+    r"""ProfileGenerationsToTagValueListEntryValuesEnum enum type.
+
+    Values:
+      PROFILE_GENERATION_UNSPECIFIED: Unused.
+      PROFILE_GENERATION_NEW: The profile is the first profile for the
+        resource.
+      PROFILE_GENERATION_UPDATE: The profile is an update to a previous
+        profile.
+    """
+    PROFILE_GENERATION_UNSPECIFIED = 0
+    PROFILE_GENERATION_NEW = 1
+    PROFILE_GENERATION_UPDATE = 2
+
+  lowerDataRiskToLow = _messages.BooleanField(1)
+  profileGenerationsToTag = _messages.EnumField('ProfileGenerationsToTagValueListEntryValuesEnum', 2, repeated=True)
+  tagConditions = _messages.MessageField('GooglePrivacyDlpV2TagCondition', 3, repeated=True)
+
+
+class GooglePrivacyDlpV2TagValue(_messages.Message):
+  r"""A value of a tag.
+
+  Fields:
+    namespacedValue: The namespaced name for the tag value to attach to
+      resources. Must be in the format
+      `{parent_id}/{tag_key_short_name}/{short_name}`, for example,
+      "123456/environment/prod".
+  """
+
+  namespacedValue = _messages.StringField(1)
+
+
 class GooglePrivacyDlpV2TaggedField(_messages.Message):
   r"""A column with a semantic tag attached.
 
@@ -9952,8 +10028,8 @@ class GooglePrivacyDlpV2TimespanConfig(_messages.Message):
     startTime: Exclude files, tables, or rows older than this value. If not
       set, no lower time limit is applied.
     timestampField: Specification of the field containing the timestamp of
-      scanned items. Used for data sources like Datastore and BigQuery. *For
-      BigQuery* If this value is not specified and the table was modified
+      scanned items. Used for data sources like Datastore and BigQuery. **For
+      BigQuery** If this value is not specified and the table was modified
       between the given start and end times, the entire table will be scanned.
       If this value is specified, then rows are filtered based on the given
       start and end times. Rows with a `NULL` value in the provided BigQuery
@@ -9963,9 +10039,9 @@ class GooglePrivacyDlpV2TimespanConfig(_messages.Message):
       time](https://cloud.google.com/bigquery/docs/partitioned-
       tables#ingestion_time), you can use any of the following pseudo-columns
       as your timestamp field. When used with Cloud DLP, these pseudo-column
-      names are case sensitive. - _PARTITIONTIME - _PARTITIONDATE -
-      _PARTITION_LOAD_TIME *For Datastore* If this value is specified, then
-      entities are filtered based on the given start and end times. If an
+      names are case sensitive. - `_PARTITIONTIME` - `_PARTITIONDATE` -
+      `_PARTITION_LOAD_TIME` **For Datastore** If this value is specified,
+      then entities are filtered based on the given start and end times. If an
       entity does not contain the provided timestamp property or contains
       empty or invalid values, then it is included. Valid data types of the
       provided timestamp property are: `TIMESTAMP`. See the [known

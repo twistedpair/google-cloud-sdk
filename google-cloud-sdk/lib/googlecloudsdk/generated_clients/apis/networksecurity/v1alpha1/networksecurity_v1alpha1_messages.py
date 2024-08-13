@@ -2832,13 +2832,13 @@ class MirroringEndpointGroupAssociation(_messages.Message):
 
 
 class MirroringEndpointGroupAssociationLocationDetails(_messages.Message):
-  r"""Details about the association status in a specific location.
+  r"""Details about the association status in a specific cloud location.
 
   Enums:
     StateValueValuesEnum: Output only. The association state in this location.
 
   Fields:
-    location: Output only. The location.
+    location: Output only. The cloud location.
     reason: Output only. The reason for an invalid state, if one is available.
     state: Output only. The association state in this location.
   """
@@ -6797,8 +6797,10 @@ class PartnerSSEEnvironment(_messages.Message):
   r"""Message describing PartnerSSEEnvironment object.
 
   Enums:
-    SseServiceValueValuesEnum: Immutable. Only SYMANTEC_CLOUD_SWG uses
+    SecurityServiceValueValuesEnum: Immutable. Only SYMANTEC_CLOUD_SWG uses
       PartnerSSEEnvironment today.
+    SseServiceValueValuesEnum: Immutable. Only SYMANTEC_CLOUD_SWG uses
+      PartnerSSEEnvironment today. Deprecated; use security_service instead.
 
   Messages:
     LabelsValue: Optional. Labels as key value pair
@@ -6815,6 +6817,8 @@ class PartnerSSEEnvironment(_messages.Message):
     partnerNetwork: Required. Partner-owned network in the partner project
       created for this environment. Supports all user traffic and peers to
       sse_network.
+    securityService: Immutable. Only SYMANTEC_CLOUD_SWG uses
+      PartnerSSEEnvironment today.
     sseNetwork: Output only. Google-owned VPC in the SSE project created for
       this environment. Supports all user traffic and peers to partner_vpc.
     sseNetworkingRanges: Required. CIDR ranges reserved for Google's use.
@@ -6822,13 +6826,28 @@ class PartnerSSEEnvironment(_messages.Message):
     sseProject: Output only. Google-owned project created for this
       environment.
     sseService: Immutable. Only SYMANTEC_CLOUD_SWG uses PartnerSSEEnvironment
-      today.
+      today. Deprecated; use security_service instead.
     symantecOptions: Optional. Required iff sse_service is SYMANTEC_CLOUD_SWG.
     updateTime: Output only. [Output only] Update time stamp
   """
 
+  class SecurityServiceValueValuesEnum(_messages.Enum):
+    r"""Immutable. Only SYMANTEC_CLOUD_SWG uses PartnerSSEEnvironment today.
+
+    Values:
+      SECURITY_SERVICE_UNSPECIFIED: The default value. This value is used if
+        the state is omitted.
+      PALO_ALTO_PRISMA_ACCESS: [Palo Alto Networks Prisma
+        Access](https://www.paloaltonetworks.com/sase/access).
+      SYMANTEC_CLOUD_SWG: Symantec Cloud SWG is not fully supported yet.
+    """
+    SECURITY_SERVICE_UNSPECIFIED = 0
+    PALO_ALTO_PRISMA_ACCESS = 1
+    SYMANTEC_CLOUD_SWG = 2
+
   class SseServiceValueValuesEnum(_messages.Enum):
     r"""Immutable. Only SYMANTEC_CLOUD_SWG uses PartnerSSEEnvironment today.
+    Deprecated; use security_service instead.
 
     Values:
       SSE_SERVICE_UNSPECIFIED: The default value. This value is used if the
@@ -6872,12 +6891,13 @@ class PartnerSSEEnvironment(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   partnerNetwork = _messages.StringField(6)
-  sseNetwork = _messages.StringField(7)
-  sseNetworkingRanges = _messages.StringField(8, repeated=True)
-  sseProject = _messages.StringField(9)
-  sseService = _messages.EnumField('SseServiceValueValuesEnum', 10)
-  symantecOptions = _messages.MessageField('PartnerSSEEnvironmentSymantecEnvironmentOptions', 11)
-  updateTime = _messages.StringField(12)
+  securityService = _messages.EnumField('SecurityServiceValueValuesEnum', 7)
+  sseNetwork = _messages.StringField(8)
+  sseNetworkingRanges = _messages.StringField(9, repeated=True)
+  sseProject = _messages.StringField(10)
+  sseService = _messages.EnumField('SseServiceValueValuesEnum', 11)
+  symantecOptions = _messages.MessageField('PartnerSSEEnvironmentSymantecEnvironmentOptions', 12)
+  updateTime = _messages.StringField(13)
 
 
 class PartnerSSEEnvironmentDNSPeeringZone(_messages.Message):
@@ -7397,7 +7417,8 @@ class SACRealmSACRealmSymantecOptions(_messages.Message):
   r"""Fields specific to realms using SYMANTEC_CLOUD_SWG.
 
   Fields:
-    apiKey: Optional. --
+    apiKey: Optional. Deprecated; use secret_id instead to pass the location
+      of the API key in Secret Manager.
     availableSymantecSites: Output only. Symantec site IDs that the user can
       choose to connect to.
     secretId: Optional. API Key used to call Symantec APIs on the user's
@@ -7697,7 +7718,7 @@ class SSERealmSSERealmSymantecOptions(_messages.Message):
 
 class SecurityProfile(_messages.Message):
   r"""SecurityProfile is a resource that defines the behavior for one of many
-  ProfileTypes. Next ID: 11
+  ProfileTypes. Next ID: 12
 
   Enums:
     TypeValueValuesEnum: Immutable. The single ProfileType that the
@@ -7781,7 +7802,7 @@ class SecurityProfile(_messages.Message):
 
 class SecurityProfileGroup(_messages.Message):
   r"""SecurityProfileGroup is a resource that defines the behavior for various
-  ProfileTypes. Next ID: 10
+  ProfileTypes. Next ID: 11
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs.
@@ -7802,7 +7823,7 @@ class SecurityProfileGroup(_messages.Message):
       matches pattern `projects|organizations/*/locations/{location}/securityP
       rofileGroups/{security_profile_group}`.
     threatPreventionProfile: Optional. Reference to a SecurityProfile with the
-      threat prevention configuration for the SecurityProfileGroup.
+      ThreatPrevention configuration.
     updateTime: Output only. Last resource update timestamp.
   """
 

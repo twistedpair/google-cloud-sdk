@@ -1503,6 +1503,40 @@ class DataplexProjectsLocationsGlossariesTestIamPermissionsRequest(_messages.Mes
   resource = _messages.StringField(2, required=True)
 
 
+class DataplexProjectsLocationsGovernanceRulesCreateRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGovernanceRulesCreateRequest object.
+
+  Fields:
+    googleCloudDataplexV1GovernanceRule: A GoogleCloudDataplexV1GovernanceRule
+      resource to be passed as the request body.
+    governanceRuleId: Required. GovernanceRule identifier. * Must contain only
+      lowercase letters, numbers and hyphens. * Must start with a letter. *
+      Must be between 1-63 characters. * Must end with a number or a letter. *
+      Must be unique within the Project.
+    parent: Required. The resource name of the governance rule location, of
+      the form: projects/{project_number}/locations/{location_id} where
+      location_id refers to a GCP region.
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is false.
+  """
+
+  googleCloudDataplexV1GovernanceRule = _messages.MessageField('GoogleCloudDataplexV1GovernanceRule', 1)
+  governanceRuleId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class DataplexProjectsLocationsGovernanceRulesDeleteRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGovernanceRulesDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the GovernanceRule. projects/{project
+      _number}/locations/{location_id}/governanceRules/{governance_rule_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class DataplexProjectsLocationsGovernanceRulesGetIamPolicyRequest(_messages.Message):
   r"""A DataplexProjectsLocationsGovernanceRulesGetIamPolicyRequest object.
 
@@ -1525,6 +1559,60 @@ class DataplexProjectsLocationsGovernanceRulesGetIamPolicyRequest(_messages.Mess
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsGovernanceRulesGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGovernanceRulesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the GovernanceRule: projects/{project
+      _number}/locations/{location_id}/governanceRules/{governance_rule_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsGovernanceRulesListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGovernanceRulesListRequest object.
+
+  Fields:
+    filter: Optional. Filter request.
+    pageSize: Optional. Maximum number of GovernanceRules to return. The
+      service may return fewer than this value. If unspecified, at most 10
+      GovernanceRules will be returned. The maximum value is 1000; values
+      above 1000 will be coerced to 1000.
+    pageToken: Optional. Page token received from a previous
+      ListGovernanceRules call. Provide this to retrieve the subsequent page.
+      When paginating, all other parameters provided to ListGovernanceRules
+      must match the call that provided the page token.
+    parent: Required. The resource name of the GovernanceRule location, of the
+      form: projects/{project_number}/locations/{location_id} where
+      location_id refers to a GCP region.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class DataplexProjectsLocationsGovernanceRulesPatchRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGovernanceRulesPatchRequest object.
+
+  Fields:
+    googleCloudDataplexV1GovernanceRule: A GoogleCloudDataplexV1GovernanceRule
+      resource to be passed as the request body.
+    name: Output only. The relative resource name of the Rule, of the form:
+      projects/{project_number}/locations/{location}/rules/{rule_id}
+    updateMask: Required. Mask of fields to update.
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is false.
+  """
+
+  googleCloudDataplexV1GovernanceRule = _messages.MessageField('GoogleCloudDataplexV1GovernanceRule', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class DataplexProjectsLocationsGovernanceRulesSetIamPolicyRequest(_messages.Message):
@@ -3211,6 +3299,26 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class GoogleCloudDataplexV1AccessSpec(_messages.Message):
+  r"""AccessSpec holds the access control configuration to be enforced on the
+  resources, for example, Cloud Storage bucket, BigQuery dataset, BigQuery
+  table.
+
+  Fields:
+    owners: Optional. The set of principals to be granted owner role on the
+      resource.
+    readers: Optional. The format of strings follows the pattern followed by
+      IAM in the bindings. user:{email}, serviceAccount:{email} group:{email}.
+      The set of principals to be granted reader role on the resource.
+    writers: Optional. The set of principals to be granted writer role on the
+      resource.
+  """
+
+  owners = _messages.StringField(1, repeated=True)
+  readers = _messages.StringField(2, repeated=True)
+  writers = _messages.StringField(3, repeated=True)
 
 
 class GoogleCloudDataplexV1Action(_messages.Message):
@@ -6670,6 +6778,168 @@ class GoogleCloudDataplexV1GovernanceEventEntity(_messages.Message):
   entityType = _messages.EnumField('EntityTypeValueValuesEnum', 2)
 
 
+class GoogleCloudDataplexV1GovernanceRule(_messages.Message):
+  r"""Governance Rules are used to specify governance intent at scale. A rule
+  comprises of a query and the list of 'specs' to be applied on the resources
+  matching the query. Additionally, specs can also be applied on the sub-
+  resources using 'DynamicPaths'. A rule can also be used to specify
+  governance intent on a single resource, by applying specs explicitly.
+
+  Messages:
+    LabelsValue: Optional. User-defined labels for the Rule.
+
+  Fields:
+    createTime: Output only. The time when the Rule was created.
+    description: Optional. Description of the Rule.
+    displayName: Optional. User friendly display name.
+    etag: This checksum is computed by the server based on the value of other
+      fields, and may be sent on update and delete requests to ensure the
+      client has an up-to-date value before proceeding. Etags must be used
+      when calling the DeleteRule and the UpdateRule method.
+    fields: Optional. The list of 'fields' to specify the column identifiers
+      to apply governance specs on the columns in the matched resources.
+    labels: Optional. User-defined labels for the Rule.
+    name: Output only. The relative resource name of the Rule, of the form:
+      projects/{project_number}/locations/{location}/rules/{rule_id}
+    paths: Optional. The list of 'path' to specify the column identifiers to
+      apply specs on the columns in the matched resources.
+    query: Optional. Query is used to identify resources in a logical
+      container using filters and apply specs.
+    specs: Optional. Specs to be associated with the resource.
+    uid: Output only. System generated globally unique ID for the Rule. This
+      ID will be different if the Rule is deleted and re-created with the same
+      name.
+    updateTime: Output only. The time when the Rule was last updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User-defined labels for the Rule.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  fields = _messages.MessageField('GoogleCloudDataplexV1GovernanceRuleField', 5, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  paths = _messages.MessageField('GoogleCloudDataplexV1GovernanceRulePath', 8, repeated=True)
+  query = _messages.MessageField('GoogleCloudDataplexV1GovernanceRuleQuery', 9)
+  specs = _messages.MessageField('GoogleCloudDataplexV1GovernanceRuleSpecs', 10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+
+
+class GoogleCloudDataplexV1GovernanceRuleField(_messages.Message):
+  r"""Field specifies the column identifiers to apply specs on the columns in
+  the matched resources.
+
+  Fields:
+    expression: Required.
+    specs: Required. Spec to be associated with the path of the resource.
+  """
+
+  expression = _messages.StringField(1)
+  specs = _messages.MessageField('GoogleCloudDataplexV1GovernanceRuleSpecs', 2)
+
+
+class GoogleCloudDataplexV1GovernanceRulePath(_messages.Message):
+  r"""Path specifies the column identifiers to apply specs on the columns in
+  the matched resources.
+
+  Fields:
+    aspect: A string attribute.
+    specs: Required. Specs to be associated with the path of the resource.
+  """
+
+  aspect = _messages.StringField(1)
+  specs = _messages.MessageField('GoogleCloudDataplexV1GovernanceRuleSpecs', 2)
+
+
+class GoogleCloudDataplexV1GovernanceRuleQuery(_messages.Message):
+  r"""Query is used for governing data at scale. They can be used to identify
+  resources in a logical container using filters.
+
+  Enums:
+    TypeValueValuesEnum: Required. The metastore system to execute query on.
+
+  Fields:
+    entryTypes: Required. The list of entry types to apply the filter on.
+      Entry Type format will be as defined below 1. For Dataplex-defined entry
+      types: EntryTypeID 2. For user-defined entry types in global region:
+      ProjectID.EntryTypeID 3. For user-defined entry types in a specific
+      region (must match region of governance rule):
+      ProjectID.LocationID.EntryTypeID For Dataplex-defined entry allowed
+      types are 'bigquery-table', 'bigquery-dataset' , 'bigquery-view',
+      'storage-bucket' and 'storage-folder'
+    expression: Required. The query string to match the resources. All the
+      resources which are returned as response from the querySystem for this
+      filter will have the attributes applied. Expression Format : 1. Query
+      expression does only supports aspect facet. a) Aspect type it should be
+      fully Qualified aspect aspect:... b) For Dataplex-defined aspect types:
+      projectId will be 'dataplex-types' and location will be 'global'. 2.
+      Will accept logical and bracketed expressions (AND, NOT, OR)
+    scopes: Optional. The full resource name of the resource logical
+      container. Should either be organizations/ or projects/. If scope is not
+      provided, will be defaulted to project in which rule is ben created.
+      Only a single scope can be specified at this time.
+    type: Required. The metastore system to execute query on.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The metastore system to execute query on.
+
+    Values:
+      TYPE_UNSPECIFIED: DATA_CATALOG is the default system used for querying,
+        when unspecified.
+      DATAPLEX: <no description>
+    """
+    TYPE_UNSPECIFIED = 0
+    DATAPLEX = 1
+
+  entryTypes = _messages.StringField(1, repeated=True)
+  expression = _messages.StringField(2)
+  scopes = _messages.StringField(3, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+
+
+class GoogleCloudDataplexV1GovernanceRuleSpecs(_messages.Message):
+  r"""Specs hold the governance intent to be applied on resources.
+
+  Fields:
+    access: Optional. Access Spec hold the Security/Access intent to be
+      applied on resources.
+    dataAccess: Optional. Specified when applied to data stored on the
+      resource (eg: rows, columns in BigQuery Tables).
+    resourceAccess: Optional. Specified when applied to a resource (eg: Cloud
+      Storage bucket, BigQuery dataset, BigQuery table).
+  """
+
+  access = _messages.MessageField('GoogleCloudDataplexV1AccessSpec', 1)
+  dataAccess = _messages.MessageField('GoogleCloudDataplexV1DataAccessSpec', 2)
+  resourceAccess = _messages.MessageField('GoogleCloudDataplexV1ResourceAccessSpec', 3)
+
+
 class GoogleCloudDataplexV1ImportItem(_messages.Message):
   r"""An object that describes the values that you want to set for an entry
   and its attached aspects when you import metadata. Used when you run a
@@ -7249,6 +7519,19 @@ class GoogleCloudDataplexV1ListEnvironmentsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudDataplexV1ListGovernanceRulesResponse(_messages.Message):
+  r"""List GovernanceRules response.
+
+  Fields:
+    governanceRules: GovernanceRules under the given parent location.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  governanceRules = _messages.MessageField('GoogleCloudDataplexV1GovernanceRule', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudDataplexV1ListJobsResponse(_messages.Message):
   r"""List jobs response.
 
@@ -7350,7 +7633,7 @@ class GoogleCloudDataplexV1MetadataJob(_messages.Message):
   r"""A metadata job resource.
 
   Enums:
-    TypeValueValuesEnum:
+    TypeValueValuesEnum: Required. Metadata job type.
 
   Messages:
     LabelsValue: Optional. User-defined labels.
@@ -7360,11 +7643,11 @@ class GoogleCloudDataplexV1MetadataJob(_messages.Message):
     importResult: Output only. Import job result.
     importSpec: Import job specification.
     labels: Optional. User-defined labels.
-    name: Output only. The name of the resource that the configuration is
-      applied to, in the format projects/{project_number}/locations/{location_
-      id}/metadataJobs/{metadata_job_id}.
-    status: A GoogleCloudDataplexV1MetadataJobStatus attribute.
-    type: A TypeValueValuesEnum attribute.
+    name: Output only. Identifier. The name of the resource that the
+      configuration is applied to, in the format projects/{project_number}/loc
+      ations/{location_id}/metadataJobs/{metadata_job_id}.
+    status: Output only. Metadata job status.
+    type: Required. Metadata job type.
     uid: Output only. A system-generated, globally unique ID for the metadata
       job. If the metadata job is deleted and then re-created with the same
       name, this ID is different.
@@ -7372,7 +7655,7 @@ class GoogleCloudDataplexV1MetadataJob(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""TypeValueValuesEnum enum type.
+    r"""Required. Metadata job type.
 
     Values:
       TYPE_UNSPECIFIED: Unspecified.

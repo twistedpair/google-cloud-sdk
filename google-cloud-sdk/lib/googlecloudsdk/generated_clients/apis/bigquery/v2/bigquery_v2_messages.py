@@ -1993,6 +1993,18 @@ class DataMaskingStatistics(_messages.Message):
   dataMaskingApplied = _messages.BooleanField(1)
 
 
+class DataPolicyOption(_messages.Message):
+  r"""Data policy option proto, it currently supports name only, will support
+  precedence later.
+
+  Fields:
+    name: Data policy resource name in the form of
+      projects/project_id/locations/location_id/dataPolicies/data_policy_id.
+  """
+
+  name = _messages.StringField(1)
+
+
 class DataSplitResult(_messages.Message):
   r"""Data split result. This contains references to the training and
   evaluation data tables that were used to train the model.
@@ -3658,45 +3670,6 @@ class HparamTuningTrial(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 8)
   trainingLoss = _messages.FloatField(9)
   trialId = _messages.IntegerField(10)
-
-
-class IdentityColumnInfo(_messages.Message):
-  r"""Metadata for value generation for an identity column.
-
-  Enums:
-    GeneratedModeValueValuesEnum: Optional. Dictates when system generated
-      values are used to populate the field.
-
-  Fields:
-    generatedMode: Optional. Dictates when system generated values are used to
-      populate the field.
-    increment: Optional. The minimum difference between two successive
-      generated values. Should be INTEGER compatible. Can be negative or
-      positive but not 0. The default value is 1 if the field is not
-      specified.
-    start: Optional. The first generated value. Should be INTEGER compatible.
-      The default value is 1 if the field is not specified.
-  """
-
-  class GeneratedModeValueValuesEnum(_messages.Enum):
-    r"""Optional. Dictates when system generated values are used to populate
-    the field.
-
-    Values:
-      GENERATED_MODE_UNSPECIFIED: Unspecified GeneratedMode will default to
-        GENERATED_ALWAYS.
-      GENERATED_ALWAYS: Field can only have system generated values. Users
-        cannot manually insert values into the field.
-      GENERATED_BY_DEFAULT: Use system generated values only if the user does
-        not explicitly provide a value.
-    """
-    GENERATED_MODE_UNSPECIFIED = 0
-    GENERATED_ALWAYS = 1
-    GENERATED_BY_DEFAULT = 2
-
-  generatedMode = _messages.EnumField('GeneratedModeValueValuesEnum', 1)
-  increment = _messages.StringField(2)
-  start = _messages.StringField(3)
 
 
 class IndexUnusedReason(_messages.Message):
@@ -8307,6 +8280,8 @@ class TableFieldSchema(_messages.Message):
       field is STRING. The following values are supported: * 'und:ci':
       undetermined locale, case insensitive. * '': empty string. Default to
       case-sensitive behavior.
+    dataPolicies: Optional. Data policy options, will replace the
+      data_policies.
     defaultValueExpression: Optional. A SQL expression to specify the [default
       value] (https://cloud.google.com/bigquery/docs/default-values) for this
       field.
@@ -8317,10 +8292,6 @@ class TableFieldSchema(_messages.Message):
     foreignTypeDefinition: Optional. Definition of the foreign data type. Only
       valid for top-level schema fields (not nested fields). If the type is
       FOREIGN, this field is required.
-    identityColumnInfo: Optional. Definition of how values are generated for
-      the field. Setting this option means that the field is an identity
-      column. Only valid for top-level schema INTEGER fields (not nested
-      fields).
     maxLength: Optional. Maximum length of values of this field for STRINGS or
       BYTES. If max_length is not specified, no maximum length constraint is
       imposed on this field. If type = "STRING", then max_length represents
@@ -8417,11 +8388,11 @@ class TableFieldSchema(_messages.Message):
 
   categories = _messages.MessageField('CategoriesValue', 1)
   collation = _messages.StringField(2)
-  defaultValueExpression = _messages.StringField(3)
-  description = _messages.StringField(4)
-  fields = _messages.MessageField('TableFieldSchema', 5, repeated=True)
-  foreignTypeDefinition = _messages.StringField(6)
-  identityColumnInfo = _messages.MessageField('IdentityColumnInfo', 7)
+  dataPolicies = _messages.MessageField('DataPolicyOption', 3, repeated=True)
+  defaultValueExpression = _messages.StringField(4)
+  description = _messages.StringField(5)
+  fields = _messages.MessageField('TableFieldSchema', 6, repeated=True)
+  foreignTypeDefinition = _messages.StringField(7)
   maxLength = _messages.IntegerField(8)
   mode = _messages.StringField(9)
   name = _messages.StringField(10)

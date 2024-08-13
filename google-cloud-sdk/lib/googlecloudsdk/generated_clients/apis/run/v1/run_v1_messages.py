@@ -703,15 +703,43 @@ class ExecutionReference(_messages.Message):
   r"""Reference to an Execution. Use /Executions.GetExecution with the given
   name to get full execution including the latest status.
 
+  Enums:
+    CompletionStatusValueValuesEnum: Optional. Status for the execution
+      completion.
+
   Fields:
+    completionStatus: Optional. Status for the execution completion.
     completionTimestamp: Optional. Completion timestamp of the execution.
     creationTimestamp: Optional. Creation timestamp of the execution.
+    deletionTimestamp: Optional. The read-only soft deletion timestamp of the
+      execution.
     name: Optional. Name of the execution.
   """
 
-  completionTimestamp = _messages.StringField(1)
-  creationTimestamp = _messages.StringField(2)
-  name = _messages.StringField(3)
+  class CompletionStatusValueValuesEnum(_messages.Enum):
+    r"""Optional. Status for the execution completion.
+
+    Values:
+      COMPLETION_STATUS_UNSPECIFIED: The default value. This value is used if
+        the state is omitted.
+      EXECUTION_SUCCEEDED: Job execution has succeeded.
+      EXECUTION_FAILED: Job execution has failed.
+      EXECUTION_RUNNING: Job execution is running normally.
+      EXECUTION_PENDING: Waiting for backing resources to be provisioned.
+      EXECUTION_CANCELLED: Job execution has been cancelled by the user.
+    """
+    COMPLETION_STATUS_UNSPECIFIED = 0
+    EXECUTION_SUCCEEDED = 1
+    EXECUTION_FAILED = 2
+    EXECUTION_RUNNING = 3
+    EXECUTION_PENDING = 4
+    EXECUTION_CANCELLED = 5
+
+  completionStatus = _messages.EnumField('CompletionStatusValueValuesEnum', 1)
+  completionTimestamp = _messages.StringField(2)
+  creationTimestamp = _messages.StringField(3)
+  deletionTimestamp = _messages.StringField(4)
+  name = _messages.StringField(5)
 
 
 class ExecutionSpec(_messages.Message):
@@ -1281,7 +1309,7 @@ class GoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message):
       operating system and build utilities. Also note that this is the minimum
       disk size that will be allocated for the build -- the build may run with
       a larger disk than requested. At present, the maximum disk size is
-      2000GB; builds that request more than the maximum are rejected with an
+      4000GB; builds that request more than the maximum are rejected with an
       error.
     dynamicSubstitutions: Option to specify whether or not to apply bash style
       string operations to the substitutions. NOTE: this is always enabled for
@@ -1670,23 +1698,6 @@ class GoogleDevtoolsCloudbuildV1FileHashes(_messages.Message):
   fileHash = _messages.MessageField('GoogleDevtoolsCloudbuildV1Hash', 1, repeated=True)
 
 
-class GoogleDevtoolsCloudbuildV1GCSLocation(_messages.Message):
-  r"""Represents a storage location in Cloud Storage
-
-  Fields:
-    bucket: Cloud Storage bucket. See
-      https://cloud.google.com/storage/docs/naming#requirements
-    generation: Cloud Storage generation for the object. If the generation is
-      omitted, the latest generation will be used.
-    object: Cloud Storage object. See
-      https://cloud.google.com/storage/docs/naming#objectnames
-  """
-
-  bucket = _messages.StringField(1)
-  generation = _messages.IntegerField(2)
-  object = _messages.StringField(3)
-
-
 class GoogleDevtoolsCloudbuildV1GitConfig(_messages.Message):
   r"""GitConfig is a configuration for git operations.
 
@@ -1754,13 +1765,13 @@ class GoogleDevtoolsCloudbuildV1HttpConfig(_messages.Message):
 
   Fields:
     proxySecretVersionName: SecretVersion resource of the HTTP proxy URL. The
-      proxy URL should be in format protocol://@]proxyhost[:port].
-    proxySslCaInfo: Optional. Cloud Storage object storing the certificate to
-      use with the HTTP proxy.
+      Service Account used in the build (either the default Service Account or
+      user-specified Service Account) should have
+      `secretmanager.versions.access` permissions on this secret. The proxy
+      URL should be in format `protocol://@]proxyhost[:port]`.
   """
 
   proxySecretVersionName = _messages.StringField(1)
-  proxySslCaInfo = _messages.MessageField('GoogleDevtoolsCloudbuildV1GCSLocation', 2)
 
 
 class GoogleDevtoolsCloudbuildV1InlineSecret(_messages.Message):
@@ -2962,44 +2973,6 @@ class NFSVolumeSource(_messages.Message):
   server = _messages.StringField(3)
 
 
-class Namespace(_messages.Message):
-  r"""Not supported by Cloud Run. Namespace provides a scope for Names. Use of
-  multiple namespaces is optional.
-
-  Fields:
-    metadata: Standard object's metadata.
-    spec: Spec defines the behavior of the Namespace.
-    status: Status describes the current status of a Namespace.
-  """
-
-  metadata = _messages.MessageField('ObjectMeta', 1)
-  spec = _messages.MessageField('NamespaceSpec', 2)
-  status = _messages.MessageField('NamespaceStatus', 3)
-
-
-class NamespaceSpec(_messages.Message):
-  r"""Not supported by Cloud Run. NamespaceSpec describes the attributes on a
-  Namespace.
-
-  Fields:
-    finalizers: Finalizers is an opaque list of values that must be empty to
-      permanently remove object from storage.
-  """
-
-  finalizers = _messages.StringField(1, repeated=True)
-
-
-class NamespaceStatus(_messages.Message):
-  r"""Not supported by Cloud Run. NamespaceStatus is information about the
-  current status of a Namespace.
-
-  Fields:
-    phase: Phase is the current lifecycle phase of the namespace.
-  """
-
-  phase = _messages.StringField(1)
-
-
 class ObjectMeta(_messages.Message):
   r"""google.cloud.run.meta.v1.ObjectMeta is metadata that all persisted
   resources must have, which includes all objects users must create.
@@ -3013,26 +2986,35 @@ class ObjectMeta(_messages.Message):
       will be different depending on the resource type. *
       `autoscaling.knative.dev/maxScale`: Revision. *
       `autoscaling.knative.dev/minScale`: Revision. *
+      `run.googleapis.com/base-images`: Service, Revision. *
       `run.googleapis.com/binary-authorization-breakglass`: Service, Job, *
       `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
+      `run.googleapis.com/build-base-image`: Service. *
+      `run.googleapis.com/build-environment-variables`: Service. *
+      `run.googleapis.com/build-id`: Service. * `run.googleapis.com/build-
+      name`: Service. * `run.googleapis.com/build-service-account`: Service. *
+      `run.googleapis.com/build-worker-pool`: Service. *
       `run.googleapis.com/client-name`: All resources. *
       `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
       `run.googleapis.com/container-dependencies`: Revision . *
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
       `run.googleapis.com/default-url-disabled`: Service. *
-      `run.googleapis.com/description`: Service. *
-      `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
-      `run.googleapis.com/encryption-key`: Revision, Execution. *
-      `run.googleapis.com/execution-environment`: Revision, Execution. *
+      `run.googleapis.com/description`: Service. * `run.googleapis.com/enable-
+      automatic-updates`: Service. * `run.googleapis.com/encryption-key-
+      shutdown-hours`: Revision * `run.googleapis.com/encryption-key`:
+      Revision, Execution. * `run.googleapis.com/execution-environment`:
+      Revision, Execution. * `run.googleapis.com/function-target`: Service. *
       `run.googleapis.com/gc-traffic-tags`: Service. *
-      `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
-      stage`: Service, Job. * `run.googleapis.com/minScale`: Service (ALPHA) *
+      `run.googleapis.com/image-uri`: Service. * `run.googleapis.com/ingress`:
+      Service. * `run.googleapis.com/launch-stage`: Service, Job. *
+      `run.googleapis.com/minScale`: Service (ALPHA) *
       `run.googleapis.com/network-interfaces`: Revision, Execution. *
       `run.googleapis.com/post-key-revocation-action-type`: Revision. *
       `run.googleapis.com/secrets`: Revision, Execution. *
       `run.googleapis.com/secure-session-agent`: Revision. *
       `run.googleapis.com/sessionAffinity`: Revision. *
+      `run.googleapis.com/source-location`: Service. *
       `run.googleapis.com/startup-cpu-boost`: Revision. *
       `run.googleapis.com/vpc-access-connector`: Revision, Execution. *
       `run.googleapis.com/vpc-access-egress`: Revision, Execution.
@@ -3049,26 +3031,35 @@ class ObjectMeta(_messages.Message):
       will be different depending on the resource type. *
       `autoscaling.knative.dev/maxScale`: Revision. *
       `autoscaling.knative.dev/minScale`: Revision. *
+      `run.googleapis.com/base-images`: Service, Revision. *
       `run.googleapis.com/binary-authorization-breakglass`: Service, Job, *
       `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
+      `run.googleapis.com/build-base-image`: Service. *
+      `run.googleapis.com/build-environment-variables`: Service. *
+      `run.googleapis.com/build-id`: Service. * `run.googleapis.com/build-
+      name`: Service. * `run.googleapis.com/build-service-account`: Service. *
+      `run.googleapis.com/build-worker-pool`: Service. *
       `run.googleapis.com/client-name`: All resources. *
       `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
       `run.googleapis.com/container-dependencies`: Revision . *
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
       `run.googleapis.com/default-url-disabled`: Service. *
-      `run.googleapis.com/description`: Service. *
-      `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
-      `run.googleapis.com/encryption-key`: Revision, Execution. *
-      `run.googleapis.com/execution-environment`: Revision, Execution. *
+      `run.googleapis.com/description`: Service. * `run.googleapis.com/enable-
+      automatic-updates`: Service. * `run.googleapis.com/encryption-key-
+      shutdown-hours`: Revision * `run.googleapis.com/encryption-key`:
+      Revision, Execution. * `run.googleapis.com/execution-environment`:
+      Revision, Execution. * `run.googleapis.com/function-target`: Service. *
       `run.googleapis.com/gc-traffic-tags`: Service. *
-      `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
-      stage`: Service, Job. * `run.googleapis.com/minScale`: Service (ALPHA) *
+      `run.googleapis.com/image-uri`: Service. * `run.googleapis.com/ingress`:
+      Service. * `run.googleapis.com/launch-stage`: Service, Job. *
+      `run.googleapis.com/minScale`: Service (ALPHA) *
       `run.googleapis.com/network-interfaces`: Revision, Execution. *
       `run.googleapis.com/post-key-revocation-action-type`: Revision. *
       `run.googleapis.com/secrets`: Revision, Execution. *
       `run.googleapis.com/secure-session-agent`: Revision. *
       `run.googleapis.com/sessionAffinity`: Revision. *
+      `run.googleapis.com/source-location`: Service. *
       `run.googleapis.com/startup-cpu-boost`: Revision. *
       `run.googleapis.com/vpc-access-connector`: Revision, Execution. *
       `run.googleapis.com/vpc-access-egress`: Revision, Execution.
@@ -3112,27 +3103,35 @@ class ObjectMeta(_messages.Message):
     annotations with 'run.googleapis.com/' and 'autoscaling.knative.dev' are
     restricted, and the accepted annotations will be different depending on
     the resource type. * `autoscaling.knative.dev/maxScale`: Revision. *
-    `autoscaling.knative.dev/minScale`: Revision. *
-    `run.googleapis.com/binary-authorization-breakglass`: Service, Job, *
-    `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
+    `autoscaling.knative.dev/minScale`: Revision. * `run.googleapis.com/base-
+    images`: Service, Revision. * `run.googleapis.com/binary-authorization-
+    breakglass`: Service, Job, * `run.googleapis.com/binary-authorization`:
+    Service, Job, Execution. * `run.googleapis.com/build-base-image`: Service.
+    * `run.googleapis.com/build-environment-variables`: Service. *
+    `run.googleapis.com/build-id`: Service. * `run.googleapis.com/build-name`:
+    Service. * `run.googleapis.com/build-service-account`: Service. *
+    `run.googleapis.com/build-worker-pool`: Service. *
     `run.googleapis.com/client-name`: All resources. *
     `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
     `run.googleapis.com/container-dependencies`: Revision . *
     `run.googleapis.com/cpu-throttling`: Revision. *
     `run.googleapis.com/custom-audiences`: Service. *
     `run.googleapis.com/default-url-disabled`: Service. *
-    `run.googleapis.com/description`: Service. *
-    `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
-    `run.googleapis.com/encryption-key`: Revision, Execution. *
-    `run.googleapis.com/execution-environment`: Revision, Execution. *
+    `run.googleapis.com/description`: Service. * `run.googleapis.com/enable-
+    automatic-updates`: Service. * `run.googleapis.com/encryption-key-
+    shutdown-hours`: Revision * `run.googleapis.com/encryption-key`: Revision,
+    Execution. * `run.googleapis.com/execution-environment`: Revision,
+    Execution. * `run.googleapis.com/function-target`: Service. *
     `run.googleapis.com/gc-traffic-tags`: Service. *
-    `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
-    stage`: Service, Job. * `run.googleapis.com/minScale`: Service (ALPHA) *
+    `run.googleapis.com/image-uri`: Service. * `run.googleapis.com/ingress`:
+    Service. * `run.googleapis.com/launch-stage`: Service, Job. *
+    `run.googleapis.com/minScale`: Service (ALPHA) *
     `run.googleapis.com/network-interfaces`: Revision, Execution. *
     `run.googleapis.com/post-key-revocation-action-type`: Revision. *
     `run.googleapis.com/secrets`: Revision, Execution. *
     `run.googleapis.com/secure-session-agent`: Revision. *
     `run.googleapis.com/sessionAffinity`: Revision. *
+    `run.googleapis.com/source-location`: Service. *
     `run.googleapis.com/startup-cpu-boost`: Revision. *
     `run.googleapis.com/vpc-access-connector`: Revision, Execution. *
     `run.googleapis.com/vpc-access-egress`: Revision, Execution.
@@ -3517,11 +3516,11 @@ class RevisionSpec(_messages.Message):
   Fields:
     containerConcurrency: ContainerConcurrency specifies the maximum allowed
       in-flight (concurrent) requests per container instance of the Revision.
-      If not specified, defaults to 80.
-    containers: Required. Containers holds the single container that defines
-      the unit of execution for this Revision. In the context of a Revision,
-      we disallow a number of fields on this Container, including: name and
-      lifecycle. In Cloud Run, only a single container may be provided.
+      If not specified or 0, defaults to 80 when requested CPU >= 1 and
+      defaults to 1 when requested CPU < 1.
+    containers: Required. Containers holds the list which define the units of
+      execution for this Revision. In the context of a Revision, we disallow a
+      number of fields on this Container, including: name and lifecycle.
     enableServiceLinks: Not supported by Cloud Run.
     imagePullSecrets: Not supported by Cloud Run.
     nodeSelector: Optional. The Node Selector configuration. Map of selector
@@ -3712,72 +3711,6 @@ class RouteStatus(_messages.Message):
   observedGeneration = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   traffic = _messages.MessageField('TrafficTarget', 4, repeated=True)
   url = _messages.StringField(5)
-
-
-class RunApiV1NamespacesGetRequest(_messages.Message):
-  r"""A RunApiV1NamespacesGetRequest object.
-
-  Fields:
-    name: Required. The name of the namespace being retrieved. If needed,
-      replace {namespace_id} with the project ID.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class RunApiV1NamespacesPatchRequest(_messages.Message):
-  r"""A RunApiV1NamespacesPatchRequest object.
-
-  Fields:
-    name: Required. The name of the namespace being retrieved. If needed,
-      replace {namespace_id} with the project ID.
-    namespace: A Namespace resource to be passed as the request body.
-    updateMask: Required. Indicates which fields in the provided namespace to
-      update. This field is currently unused.
-  """
-
-  name = _messages.StringField(1, required=True)
-  namespace = _messages.MessageField('Namespace', 2)
-  updateMask = _messages.StringField(3)
-
-
-class RunApiV1NamespacesSecretsCreateRequest(_messages.Message):
-  r"""A RunApiV1NamespacesSecretsCreateRequest object.
-
-  Fields:
-    parent: Required. The project ID or project number in which this secret
-      should be created.
-    secret: A Secret resource to be passed as the request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  secret = _messages.MessageField('Secret', 2)
-
-
-class RunApiV1NamespacesSecretsGetRequest(_messages.Message):
-  r"""A RunApiV1NamespacesSecretsGetRequest object.
-
-  Fields:
-    name: Required. The name of the secret being retrieved. If needed, replace
-      {namespace} with the project ID or number. It takes the form
-      namespaces/{namespace}. For example: namespaces/PROJECT_ID
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class RunApiV1NamespacesSecretsReplaceSecretRequest(_messages.Message):
-  r"""A RunApiV1NamespacesSecretsReplaceSecretRequest object.
-
-  Fields:
-    name: Required. The name of the secret being retrieved. If needed, replace
-      {namespace} with the project ID or number. It takes the form
-      namespaces/{namespace}. For example: namespaces/PROJECT_ID
-    secret: A Secret resource to be passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  secret = _messages.MessageField('Secret', 2)
 
 
 class RunJobRequest(_messages.Message):
@@ -4617,33 +4550,6 @@ class RunProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class RunProjectsLocationsNamespacesGetRequest(_messages.Message):
-  r"""A RunProjectsLocationsNamespacesGetRequest object.
-
-  Fields:
-    name: Required. The name of the namespace being retrieved. If needed,
-      replace {namespace_id} with the project ID.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class RunProjectsLocationsNamespacesPatchRequest(_messages.Message):
-  r"""A RunProjectsLocationsNamespacesPatchRequest object.
-
-  Fields:
-    name: Required. The name of the namespace being retrieved. If needed,
-      replace {namespace_id} with the project ID.
-    namespace: A Namespace resource to be passed as the request body.
-    updateMask: Required. Indicates which fields in the provided namespace to
-      update. This field is currently unused.
-  """
-
-  name = _messages.StringField(1, required=True)
-  namespace = _messages.MessageField('Namespace', 2)
-  updateMask = _messages.StringField(3)
-
-
 class RunProjectsLocationsOperationsDeleteRequest(_messages.Message):
   r"""A RunProjectsLocationsOperationsDeleteRequest object.
 
@@ -4811,45 +4717,6 @@ class RunProjectsLocationsRoutesListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunProjectsLocationsSecretsCreateRequest(_messages.Message):
-  r"""A RunProjectsLocationsSecretsCreateRequest object.
-
-  Fields:
-    parent: Required. The project ID or project number in which this secret
-      should be created.
-    secret: A Secret resource to be passed as the request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  secret = _messages.MessageField('Secret', 2)
-
-
-class RunProjectsLocationsSecretsGetRequest(_messages.Message):
-  r"""A RunProjectsLocationsSecretsGetRequest object.
-
-  Fields:
-    name: Required. The name of the secret being retrieved. If needed, replace
-      {namespace} with the project ID or number. It takes the form
-      namespaces/{namespace}. For example: namespaces/PROJECT_ID
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class RunProjectsLocationsSecretsReplaceSecretRequest(_messages.Message):
-  r"""A RunProjectsLocationsSecretsReplaceSecretRequest object.
-
-  Fields:
-    name: Required. The name of the secret being retrieved. If needed, replace
-      {namespace} with the project ID or number. It takes the form
-      namespaces/{namespace}. For example: namespaces/PROJECT_ID
-    secret: A Secret resource to be passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  secret = _messages.MessageField('Secret', 2)
-
-
 class RunProjectsLocationsServicesCreateRequest(_messages.Message):
   r"""A RunProjectsLocationsServicesCreateRequest object.
 
@@ -5015,99 +4882,6 @@ class RunProjectsLocationsServicesTestIamPermissionsRequest(_messages.Message):
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class Secret(_messages.Message):
-  r"""Not supported by Cloud Run. Cloud Run on GKE: supported Secret holds
-  secret data of a certain type. The total bytes of the values in the Data
-  field must be less than MaxSecretSize bytes.
-
-  Messages:
-    DataValue: Data contains the secret data. Each key must consist of
-      alphanumeric characters, '-', '_' or '.'. The serialized form of the
-      secret data is a base64 encoded string, representing the arbitrary
-      (possibly non-string) data value here. Described in
-      https://tools.ietf.org/html/rfc4648#section-4
-    StringDataValue: stringData allows specifying non-binary secret data in
-      string form. It is provided as a write-only convenience method. All keys
-      and values are merged into the data field on write, overwriting any
-      existing values. It is never output when reading from the API.
-      +k8s:conversion-gen=false
-
-  Fields:
-    data: Data contains the secret data. Each key must consist of alphanumeric
-      characters, '-', '_' or '.'. The serialized form of the secret data is a
-      base64 encoded string, representing the arbitrary (possibly non-string)
-      data value here. Described in
-      https://tools.ietf.org/html/rfc4648#section-4
-    metadata: Standard object's metadata.
-    stringData: stringData allows specifying non-binary secret data in string
-      form. It is provided as a write-only convenience method. All keys and
-      values are merged into the data field on write, overwriting any existing
-      values. It is never output when reading from the API. +k8s:conversion-
-      gen=false
-    type: Used to facilitate programmatic handling of secret data.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class DataValue(_messages.Message):
-    r"""Data contains the secret data. Each key must consist of alphanumeric
-    characters, '-', '_' or '.'. The serialized form of the secret data is a
-    base64 encoded string, representing the arbitrary (possibly non-string)
-    data value here. Described in
-    https://tools.ietf.org/html/rfc4648#section-4
-
-    Messages:
-      AdditionalProperty: An additional property for a DataValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type DataValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a DataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A byte attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.BytesField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class StringDataValue(_messages.Message):
-    r"""stringData allows specifying non-binary secret data in string form. It
-    is provided as a write-only convenience method. All keys and values are
-    merged into the data field on write, overwriting any existing values. It
-    is never output when reading from the API. +k8s:conversion-gen=false
-
-    Messages:
-      AdditionalProperty: An additional property for a StringDataValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type StringDataValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a StringDataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  data = _messages.MessageField('DataValue', 1)
-  metadata = _messages.MessageField('ObjectMeta', 2)
-  stringData = _messages.MessageField('StringDataValue', 3)
-  type = _messages.StringField(4)
 
 
 class SecretEnvSource(_messages.Message):

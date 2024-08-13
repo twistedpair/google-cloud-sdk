@@ -548,25 +548,64 @@ def AddBackupRule(parser, required=True):
       action='append',
       metavar='PROPERTY=VALUE',
       help=("""
-          Name of the backup rule. A backup rule defines parameters for when and how a backup is created. This flag can be repeated to create more backup rules.
+          Backup rule that defines parameters for when and how a backup is created. This flag can be repeated to create more backup rules.
 
-          Parameters for the backup rule include::
-          - rule-id
-          - retention-days
-          - recurrence
-          - backup-window-start
-          - backup-window-end
-          - time-zone
+          Parameters for the backup rule include:
 
-          Along with any of these mutually exclusive flags:
-          - hourly-frequency (for HOURLY recurrence, expects value between 6-23)
-          - days-of-week (for WEEKLY recurrence, eg: 'MON TUE')
-          - days-of-month (for MONTHLY & YEARLY recurrence, eg: '1 7 5' days)
-          - months (for YEARLY recurrence, eg: 'JANUARY JUNE')
-          - week-day-of-month (for MONTHLY & YEARLY recurrence, eg: 'FIRST-MONDAY')
+          *rule-id*::: Name of the backup rule. The name must be unique and
+          start with a lowercase letter followed by up to 62 lowercase letters,
+          numbers, or hyphens.
 
-          This flag can be repeated to specify multiple backup rules.
+          *retention-days*::: Duration for which backup data should be
+          retained. It must be defined in "days". The value should be greater
+          than or equal to the enforced retention period set for the backup vault.
 
-          E.g., `rule-id=sample-daily-rule,backup-vault=projects/sample-project/locations/us-central1/backupVaults/sample-backup-vault,recurrence=WEEKLY,backup-window-start=2,backup-window-end=14,retention-days=20,days-of-week='SUNDAY MONDAY'`
+          *recurrence*::: Frequency for the backup schedule. It must be either:
+          HOURLY, DAILY, WEEKLY, MONTHLY or YEARLY.
+
+          *backup-window-start*::: Start time of the interval during which
+          backup jobs should be executed. It can be defined as backup-window-start=2,
+          that means backup window starts at 2 a.m. The start time and end time must
+          have an interval of 6 hours.
+
+          *backup-window-end*::: End time of the interval during which backup
+          jobs should be executed. It can be defined as backup-window-end=14,
+          that means backup window ends at 2 p.m. The start time and end time
+          must have an interval of 6 hours.
+
+          Jobs are queued at the beginning of the window and will be marked as
+          `SKIPPED` if they do not start by the end time. Jobs that are
+          in progress will not be canceled at the end time.
+
+          *time-zone*::: The time zone to be used for the backup schedule.
+          The value must exist in the
+          [IANA tz database](https://www.iana.org/time-zones).
+          The default value is UTC. E.g., Europe/Paris
+
+          ::: Following flags are mutually exclusive:
+
+          *hourly-frequency*::: Frequency for hourly backups. An hourly
+          frequency of 2 means backup jobs will run every 2 hours from start
+          time till the end time defined. The hourly frequency must be between
+          6 and 23. The value is needed only if recurrence type is HOURLY.
+
+          *days-of-week*::: Days of the week when the backup job should be
+          executed. The value is needed if recurrence type is WEEKLY.
+          E.g., MONDAY,TUESDAY
+
+          *days-of-month*::: Days of the month when the backup job should
+          be executed. The value is needed only if recurrence type is YEARLY.
+          E.g.,"1,5,14"
+
+          *months*::: Month for the backup schedule. The value is needed only if
+          recurrence type is YEARLY. E.g., JANUARY, MARCH
+
+          *week-day-of-month*::: Recurring day of the week in the month or
+          year when the backup job should be executed. E.g. FIRST-SUNDAY, THIRD-MONDAY.
+          The value can only be provided if the recurrence type is MONTHLY or YEARLY.
+          Allowed values for the number of week - FIRST, SECOND, THIRD, FOURTH, LAST.
+          Allowed values for days of the week - MONDAY to SUNDAY.
+
+          ::: E.g., "rule-id=sample-daily-rule,recurrence=WEEKLY,backup-window-start=2,backup-window-end=14,retention-days=20,days-of-week='SUNDAY MONDAY'"
           """),
   )

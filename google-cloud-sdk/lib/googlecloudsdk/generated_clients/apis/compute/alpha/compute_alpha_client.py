@@ -109,7 +109,6 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regionInstances = self.RegionInstancesService(self)
     self.regionInstantSnapshotGroups = self.RegionInstantSnapshotGroupsService(self)
     self.regionInstantSnapshots = self.RegionInstantSnapshotsService(self)
-    self.regionMultiMigs = self.RegionMultiMigsService(self)
     self.regionNetworkEndpointGroups = self.RegionNetworkEndpointGroupsService(self)
     self.regionNetworkFirewallPolicies = self.RegionNetworkFirewallPoliciesService(self)
     self.regionNotificationEndpoints = self.RegionNotificationEndpointsService(self)
@@ -16589,10 +16588,10 @@ class ComputeAlpha(base_api.BaseApiClient):
     Get.method_config = lambda: base_api.ApiMethodInfo(
         http_method='GET',
         method_id='compute.regionInstantSnapshotGroups.get',
-        ordered_params=['project', 'region', 'instantSnapshot'],
-        path_params=['instantSnapshot', 'project', 'region'],
+        ordered_params=['project', 'region', 'instantSnapshotGroup'],
+        path_params=['instantSnapshotGroup', 'project', 'region'],
         query_params=[],
-        relative_path='projects/{project}/regions/{region}/instantSnapshotGroups/{instantSnapshot}',
+        relative_path='projects/{project}/regions/{region}/instantSnapshotGroups/{instantSnapshotGroup}',
         request_field='',
         request_type_name='ComputeRegionInstantSnapshotGroupsGetRequest',
         response_type_name='InstantSnapshotGroup',
@@ -16866,120 +16865,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputeRegionInstantSnapshotsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
-        supports_download=False,
-    )
-
-  class RegionMultiMigsService(base_api.BaseApiService):
-    """Service class for the regionMultiMigs resource."""
-
-    _NAME = 'regionMultiMigs'
-
-    def __init__(self, client):
-      super(ComputeAlpha.RegionMultiMigsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a regional multiMIG in the specified project.
-
-      Args:
-        request: (ComputeRegionMultiMigsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='DELETE',
-        method_id='compute.regionMultiMigs.delete',
-        ordered_params=['project', 'region', 'multiMig'],
-        path_params=['multiMig', 'project', 'region'],
-        query_params=['requestId'],
-        relative_path='projects/{project}/regions/{region}/multiMigs/{multiMig}',
-        request_field='',
-        request_type_name='ComputeRegionMultiMigsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Returns the specified MultiMIG resource.
-
-      Args:
-        request: (ComputeRegionMultiMigsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (MultiMig) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.regionMultiMigs.get',
-        ordered_params=['project', 'region', 'multiMig'],
-        path_params=['multiMig', 'project', 'region'],
-        query_params=[],
-        relative_path='projects/{project}/regions/{region}/multiMigs/{multiMig}',
-        request_field='',
-        request_type_name='ComputeRegionMultiMigsGetRequest',
-        response_type_name='MultiMig',
-        supports_download=False,
-    )
-
-    def Insert(self, request, global_params=None):
-      r"""Creates a regional multiMIG in the specified project.
-
-      Args:
-        request: (ComputeRegionMultiMigsInsertRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Insert')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='compute.regionMultiMigs.insert',
-        ordered_params=['project', 'region'],
-        path_params=['project', 'region'],
-        query_params=['requestId'],
-        relative_path='projects/{project}/regions/{region}/multiMigs',
-        request_field='multiMig',
-        request_type_name='ComputeRegionMultiMigsInsertRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Retrieves a list of MultiMIGs in a project and region.
-
-      Args:
-        request: (ComputeRegionMultiMigsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (MultiMigsList) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.regionMultiMigs.list',
-        ordered_params=['project', 'region'],
-        path_params=['project', 'region'],
-        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
-        relative_path='projects/{project}/regions/{region}/multiMigs',
-        request_field='',
-        request_type_name='ComputeRegionMultiMigsListRequest',
-        response_type_name='MultiMigsList',
         supports_download=False,
     )
 

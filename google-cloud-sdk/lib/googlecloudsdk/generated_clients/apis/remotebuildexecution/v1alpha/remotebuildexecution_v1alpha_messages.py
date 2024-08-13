@@ -1851,21 +1851,14 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
     StateValueValuesEnum: Output only. State of the instance.
 
   Messages:
-    CasRelationResultValue: The map stores the validation results of
-      `cas_parents`, `cas_children`, where the key is the instance number and
-      the value is `google.rpc.Status` type. Each map stores whether the
-      instance (i.e. the key) is a valid parent or child of the requestor
-      (i.e. `this` Instance).
+    CasRelationResultValue: A CasRelationResultValue object.
 
   Fields:
     backendProperties: Output only. Describes the instance's backend project
       configuration. Currently, this includes the list of user-managed IAM
       bindings applied to the backend project, which will always be empty for
       instances not in one of the ENABLE_BE_IAM_BINDING_* feature allowlists.
-    casRelationResult: The map stores the validation results of `cas_parents`,
-      `cas_children`, where the key is the instance number and the value is
-      `google.rpc.Status` type. Each map stores whether the instance (i.e. the
-      key) is a valid parent or child of the requestor (i.e. `this` Instance).
+    casRelationResult: A CasRelationResultValue attribute.
     featurePolicy: The policy to define whether or not RBE features can be
       used or how they can be used.
     location: The location is a GCP region. Currently only `us-central1` is
@@ -1902,10 +1895,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CasRelationResultValue(_messages.Message):
-    r"""The map stores the validation results of `cas_parents`,
-    `cas_children`, where the key is the instance number and the value is
-    `google.rpc.Status` type. Each map stores whether the instance (i.e. the
-    key) is a valid parent or child of the requestor (i.e. `this` Instance).
+    r"""A CasRelationResultValue object.
 
     Messages:
       AdditionalProperty: An additional property for a CasRelationResultValue

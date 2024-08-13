@@ -262,6 +262,20 @@ class ClusterUser(_messages.Message):
   username = _messages.StringField(1)
 
 
+class ConfigData(_messages.Message):
+  r"""Config data holds all the config related data for the zone.
+
+  Fields:
+    availableExternalLbPoolsIpv4: list of available v4 ip pools for external
+      loadbalancer
+    availableExternalLbPoolsIpv6: list of available v6 ip pools for external
+      loadbalancer
+  """
+
+  availableExternalLbPoolsIpv4 = _messages.StringField(1, repeated=True)
+  availableExternalLbPoolsIpv6 = _messages.StringField(2, repeated=True)
+
+
 class ConnectionState(_messages.Message):
   r"""ConnectionState holds the current connection state from the cluster to
   Google.
@@ -2068,6 +2082,7 @@ class ZoneMetadata(_messages.Message):
     RackTypesValue: The map keyed by rack name and has value of RackType.
 
   Fields:
+    configData: Config data for the zone.
     quota: Quota for resources in this zone.
     rackTypes: The map keyed by rack name and has value of RackType.
   """
@@ -2114,8 +2129,9 @@ class ZoneMetadata(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  quota = _messages.MessageField('Quota', 1, repeated=True)
-  rackTypes = _messages.MessageField('RackTypesValue', 2)
+  configData = _messages.MessageField('ConfigData', 1)
+  quota = _messages.MessageField('Quota', 2, repeated=True)
+  rackTypes = _messages.MessageField('RackTypesValue', 3)
 
 
 class ZoneStorageEncryption(_messages.Message):

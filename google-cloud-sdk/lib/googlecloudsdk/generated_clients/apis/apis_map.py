@@ -2244,6 +2244,16 @@ MAP = {
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
+        'v3':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.iam.v3',
+                    client_classpath='iam_v3_client.IamV3',
+                    base_url='https://iam.googleapis.com/',
+                    messages_modulepath='iam_v3_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v3alpha':
             APIDef(
                 apitools=ApitoolsClientDef(

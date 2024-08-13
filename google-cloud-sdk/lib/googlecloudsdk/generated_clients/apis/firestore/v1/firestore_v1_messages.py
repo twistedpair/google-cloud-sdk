@@ -588,7 +588,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class ExecutionStats(_messages.Message):
   r"""Execution statistics for the query.
 
@@ -1131,7 +1130,7 @@ class FirestoreProjectsDatabasesCreateRequest(_messages.Message):
       the final component of the database's resource name. This value should
       be 4-63 characters. Valid characters are /a-z-/ with first character a
       letter and the last a letter or a number. Must not be UUID-like
-      /[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/. "(default)" database id is
+      /[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/. "(default)" database ID is
       also valid.
     googleFirestoreAdminV1Database: A GoogleFirestoreAdminV1Database resource
       to be passed as the request body.
@@ -1793,16 +1792,17 @@ class GoogleFirestoreAdminV1BackupSchedule(_messages.Message):
 
 class GoogleFirestoreAdminV1BulkDeleteDocumentsMetadata(_messages.Message):
   r"""Metadata for google.longrunning.Operation results from
+
   FirestoreAdmin.BulkDeleteDocuments.
 
   Enums:
     OperationStateValueValuesEnum: The state of the operation.
 
   Fields:
-    collectionIds: The ids of the collection groups that are being deleted.
+    collectionIds: The IDs of the collection groups that are being deleted.
     endTime: The time this operation completed. Will be unset if operation
       still in progress.
-    namespaceIds: Which namespace ids are being deleted.
+    namespaceIds: Which namespace IDs are being deleted.
     operationState: The state of the operation.
     progressBytes: The progress, in bytes, of this operation.
     progressDocuments: The progress, in documents, of this operation.
@@ -1900,11 +1900,28 @@ class GoogleFirestoreAdminV1CreateDatabaseMetadata(_messages.Message):
   r"""Metadata related to the create database operation."""
 
 
+class GoogleFirestoreAdminV1CustomerManagedEncryptionOptions(_messages.Message):
+  r"""The configuration options for using CMEK (Customer Managed Encryption
+
+  Key) encryption.
+
+  Fields:
+    kmsKeyName: Required. Only keys in the same location as the database are
+      allowed to be used for encryption. For Firestore's nam5 multi-region,
+      this corresponds to Cloud KMS multi-region us. For Firestore's eur3
+      multi-region, this corresponds to Cloud KMS multi-region europe. See
+      https://cloud.google.com/kms/docs/locations. The expected format is `pro
+      jects/{project_id}/locations/{kms_location}/keyRings/{key_ring}/cryptoKe
+      ys/{crypto_key}`.
+  """
+
+  kmsKeyName = _messages.StringField(1)
+
+
 class GoogleFirestoreAdminV1DailyRecurrence(_messages.Message):
   r"""Represents a recurring schedule that runs every day. The time zone is
   UTC.
   """
-
 
 
 class GoogleFirestoreAdminV1Database(_messages.Message):
@@ -1945,8 +1962,8 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
     keyPrefix: Output only. The key_prefix for this database. This key_prefix
-      is used, in combination with the project id ("~") to construct the
-      application id that is returned from the Cloud Datastore APIs in Google
+      is used, in combination with the project ID ("~") to construct the
+      application ID that is returned from the Cloud Datastore APIs in Google
       App Engine first generation runtimes. This value may be empty in which
       case the appid to use for URL-encoded keys is the project_id (eg: foo
       instead of v~foo).
@@ -2077,18 +2094,43 @@ class GoogleFirestoreAdminV1DeleteDatabaseMetadata(_messages.Message):
   r"""Metadata related to the delete database operation."""
 
 
+class GoogleFirestoreAdminV1EncryptionConfig(_messages.Message):
+  r"""Encryption configuration for a new database being created from another
+
+  source. The source could be a Backup or a DatabaseSnapshot.
+
+  Fields:
+    customerManagedEncryption: Use Customer Managed Encryption Keys (CMEK) for
+      encryption.
+    googleDefaultEncryption: Use Google default encryption.
+    useSourceEncryption: The database will use the same encryption
+      configuration as the source.
+  """
+
+  customerManagedEncryption = _messages.MessageField(
+      'GoogleFirestoreAdminV1CustomerManagedEncryptionOptions', 1
+  )
+  googleDefaultEncryption = _messages.MessageField(
+      'GoogleFirestoreAdminV1GoogleDefaultEncryptionOptions', 2
+  )
+  useSourceEncryption = _messages.MessageField(
+      'GoogleFirestoreAdminV1SourceEncryptionOptions', 3
+  )
+
+
 class GoogleFirestoreAdminV1ExportDocumentsMetadata(_messages.Message):
   r"""Metadata for google.longrunning.Operation results from
+
   FirestoreAdmin.ExportDocuments.
 
   Enums:
     OperationStateValueValuesEnum: The state of the export operation.
 
   Fields:
-    collectionIds: Which collection ids are being exported.
+    collectionIds: Which collection IDs are being exported.
     endTime: The time this operation completed. Will be unset if operation
       still in progress.
-    namespaceIds: Which namespace ids are being exported.
+    namespaceIds: Which namespace IDs are being exported.
     operationState: The state of the export operation.
     outputUriPrefix: Where the documents are being exported to.
     progressBytes: The progress, in bytes, of this operation.
@@ -2138,8 +2180,8 @@ class GoogleFirestoreAdminV1ExportDocumentsRequest(_messages.Message):
   r"""The request for FirestoreAdmin.ExportDocuments.
 
   Fields:
-    collectionIds: Which collection ids to export. Unspecified means all
-      collections. Each collection id in this list must be unique.
+    collectionIds: Which collection IDs to export. Unspecified means all
+      collections. Each collection ID in this list must be unique.
     namespaceIds: An empty list represents all namespaces. This is the
       preferred usage for databases that don't use namespaces. An empty string
       element represents the default namespace. This should be used if the
@@ -2180,9 +2222,10 @@ class GoogleFirestoreAdminV1ExportDocumentsResponse(_messages.Message):
 
 
 class GoogleFirestoreAdminV1Field(_messages.Message):
-  r"""Represents a single field in the database. Fields are grouped by their
-  "Collection Group", which represent all collections in the database with the
-  same id.
+  r"""Represents a single field in the database.
+
+  Fields are grouped by their "Collection Group", which represent all
+  collections in the database with the same ID.
 
   Fields:
     indexConfig: The index configuration for this field. If unset, field
@@ -2278,20 +2321,24 @@ class GoogleFirestoreAdminV1FlatIndex(_messages.Message):
   """
 
 
+class GoogleFirestoreAdminV1GoogleDefaultEncryptionOptions(_messages.Message):
+  r"""The configuration options for using Google default encryption."""
+
 
 class GoogleFirestoreAdminV1ImportDocumentsMetadata(_messages.Message):
   r"""Metadata for google.longrunning.Operation results from
+
   FirestoreAdmin.ImportDocuments.
 
   Enums:
     OperationStateValueValuesEnum: The state of the import operation.
 
   Fields:
-    collectionIds: Which collection ids are being imported.
+    collectionIds: Which collection IDs are being imported.
     endTime: The time this operation completed. Will be unset if operation
       still in progress.
     inputUriPrefix: The location of the documents being imported.
-    namespaceIds: Which namespace ids are being imported.
+    namespaceIds: Which namespace IDs are being imported.
     operationState: The state of the import operation.
     progressBytes: The progress, in bytes, of this operation.
     progressDocuments: The progress, in documents, of this operation.
@@ -2336,8 +2383,8 @@ class GoogleFirestoreAdminV1ImportDocumentsRequest(_messages.Message):
   r"""The request for FirestoreAdmin.ImportDocuments.
 
   Fields:
-    collectionIds: Which collection ids to import. Unspecified means all
-      collections included in the import. Each collection id in this list must
+    collectionIds: Which collection IDs to import. Unspecified means all
+      collections included in the import. Each collection ID in this list must
       be unique.
     inputUriPrefix: Location of the exported files. This must match the
       output_uri_prefix of an ExportDocumentsResponse from an export that has
@@ -2357,16 +2404,17 @@ class GoogleFirestoreAdminV1ImportDocumentsRequest(_messages.Message):
 
 class GoogleFirestoreAdminV1Index(_messages.Message):
   r"""Cloud Firestore indexes enable simple and complex queries against
+
   documents in a database.
 
   Enums:
     ApiScopeValueValuesEnum: The API scope supported by this index.
     QueryScopeValueValuesEnum: Indexes with a collection query scope specified
       allow queries against a collection that is the child of a specific
-      document, specified at query time, and that has the same collection id.
+      document, specified at query time, and that has the same collection ID.
       Indexes with a collection group query scope specified allow queries
       against all collections descended from a specific document, specified at
-      query time, and that have the same collection id as this index.
+      query time, and that have the same collection ID as this index.
     StateValueValuesEnum: Output only. The serving state of the index.
 
   Fields:
@@ -2386,10 +2434,10 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
       ` For single field indexes, this field will be empty.
     queryScope: Indexes with a collection query scope specified allow queries
       against a collection that is the child of a specific document, specified
-      at query time, and that has the same collection id. Indexes with a
+      at query time, and that has the same collection ID. Indexes with a
       collection group query scope specified allow queries against all
       collections descended from a specific document, specified at query time,
-      and that have the same collection id as this index.
+      and that have the same collection ID as this index.
     state: Output only. The serving state of the index.
   """
 
@@ -2407,21 +2455,22 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
 
   class QueryScopeValueValuesEnum(_messages.Enum):
     r"""Indexes with a collection query scope specified allow queries against
+
     a collection that is the child of a specific document, specified at query
-    time, and that has the same collection id. Indexes with a collection group
+    time, and that has the same collection ID. Indexes with a collection group
     query scope specified allow queries against all collections descended from
     a specific document, specified at query time, and that have the same
-    collection id as this index.
+    collection ID as this index.
 
     Values:
       QUERY_SCOPE_UNSPECIFIED: The query scope is unspecified. Not a valid
         option.
       COLLECTION: Indexes with a collection query scope specified allow
         queries against a collection that is the child of a specific document,
-        specified at query time, and that has the collection id specified by
+        specified at query time, and that has the collection ID specified by
         the index.
       COLLECTION_GROUP: Indexes with a collection group query scope specified
-        allow queries against all collections that has the collection id
+        allow queries against all collections that has the collection ID
         specified by the index.
       COLLECTION_RECURSIVE: Include all the collections's ancestor in the
         index. Only available for Datastore Mode databases.
@@ -2762,31 +2811,30 @@ class GoogleFirestoreAdminV1RestoreDatabaseRequest(_messages.Message):
       the source backup. Format is:
       `projects/{project_id}/locations/{location}/backups/{backup}`
     databaseId: Required. The ID to use for the database, which will become
-      the final component of the database's resource name. This database id
+      the final component of the database's resource name. This database ID
       must not be associated with an existing database. This value should be
       4-63 characters. Valid characters are /a-z-/ with first character a
       letter and the last a letter or a number. Must not be UUID-like
-      /[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/. "(default)" database id is
+      /[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/. "(default)" database ID is
       also valid.
-    kmsKeyName: Use Customer Managed Encryption Keys (CMEK) for encryption.
-      Only keys in the same location as the restored database are allowed to
-      be used for encryption. For Firestore's nam5 multi-region, this
-      corresponds to Cloud KMS multi-region us. For Firestore's eur3 multi-
-      region, this corresponds to Cloud KMS multi-region europe. See
-      https://cloud.google.com/kms/docs/locations. The expected format is `pro
-      jects/{project_id}/locations/{kms_location}/keyRings/{key_ring}/cryptoKe
-      ys/{crypto_key}`.
-    useBackupEncryption: The restored database will use the same encryption
-      configuration as the backup. This is the default option when no
-      `encryption_config` is specified.
-    useGoogleDefaultEncryption: Use Google default encryption.
+    encryptionConfig: Optional. Encryption configuration for the restored
+      database. If this field is not specified, the restored database will use
+      the same encryption configuration as the backup, namely
+      use_source_encryption.
   """
 
   backup = _messages.StringField(1)
   databaseId = _messages.StringField(2)
-  kmsKeyName = _messages.StringField(3)
-  useBackupEncryption = _messages.MessageField('Empty', 4)
-  useGoogleDefaultEncryption = _messages.MessageField('Empty', 5)
+  encryptionConfig = _messages.MessageField(
+      'GoogleFirestoreAdminV1EncryptionConfig', 3
+  )
+
+
+class GoogleFirestoreAdminV1SourceEncryptionOptions(_messages.Message):
+  r"""The configuration options for using the same encryption method as the
+
+  source.
+  """
 
 
 class GoogleFirestoreAdminV1Stats(_messages.Message):

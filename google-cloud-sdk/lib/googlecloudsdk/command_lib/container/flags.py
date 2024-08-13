@@ -595,6 +595,28 @@ def AddAutoscalingProfilesFlag(parser, hidden=False):
   )
 
 
+def AddHPAProfilesFlag(parser, hidden=True):
+  """Adds workload autoscaling profiles flag to parser.
+
+  HPA profile flag is --hpa-profile.
+
+  Args:
+    parser: A given parser.
+    hidden: If true, suppress help text for added options.
+  """
+  parser.add_argument(
+      '--hpa-profile',
+      required=False,
+      default=None,
+      help="""\
+         Setting HPA behavior. Choices are 'performance' and 'none'.
+         Default is 'none'.
+      """,
+      hidden=hidden,
+      choices=['none', 'performance'],
+  )
+
+
 def AddAutoprovisioningFlags(parser, hidden=False, for_create=False):
   """Adds node autoprovisioning related flags to parser.
 
@@ -6644,6 +6666,83 @@ def AddComplianceFlags(parser, hidden=True):
   )
 
 
+def AddControlPlaneKeysFlags(parser):
+  """Adds control plane keys flags to the given parser.
+
+  Args:
+    parser: A given parser.
+  """
+
+  group = parser.add_group(help='Control Plane Keys', hidden=True, mutex=False)
+
+  group.add_argument(
+      '--cluster-ca',
+      help=(
+          'The Certificate Authority Service caPool that will back the'
+          ' cluster CA'
+      ),
+      metavar='CA_POOL_PATH',
+  )
+  group.add_argument(
+      '--aggregation-ca',
+      help=(
+          'The Certificate Authority Service caPool that will back the'
+          ' aggregation CA'
+      ),
+      metavar='CA_POOL_PATH',
+  )
+  group.add_argument(
+      '--etcd-api-ca',
+      help=(
+          'The Certificate Authority Service caPool that will back the etcd'
+          ' API CA'
+      ),
+      metavar='CA_POOL_PATH',
+  )
+  group.add_argument(
+      '--etcd-peer-ca',
+      help=(
+          'The Certificate Authority Service caPool that will back the etcd'
+          ' peer CA'
+      ),
+      metavar='CA_POOL_PATH',
+  )
+  group.add_argument(
+      '--service-account-signing-keys',
+      type=arg_parsers.ArgList(min_length=1),
+      help=(
+          'A Cloud KMS asymmetric signing cryptoKeyVersion that will be used to'
+          ' sign service account tokens'
+      ),
+      metavar='KEY_VERSION',
+  )
+  group.add_argument(
+      '--service-account-verification-keys',
+      type=arg_parsers.ArgList(min_length=1),
+      help=(
+          'A Cloud KMS asymmetric signing cryptoKeyVersion that will be used to'
+          ' verify service account tokens.  Maybe specified multiple times.'
+      ),
+      metavar='KEY_VERSION',
+  )
+  group.add_argument(
+      '--control-plane-disk-encryption-key',
+      help=(
+          'The Cloud KMS symmetric encryption cryptoKey that will be used to'
+          ' encrypt the control plane disks'
+      ),
+      metavar='KEY',
+  )
+  group.add_argument(
+      '--gkeops-etcd-backup-encryption-key',
+      help=(
+          'The Cloud KMS symmetric encryption cryptoKey that will be used to'
+          ' encrypt the disaster recovery etcd backups for the cluster'
+      ),
+      metavar='KEY',
+  )
+
+
 def AddInsecureRBACBindingFlags(parser, hidden=True):
   """Adds --enable-insecure-binding-system-authenticated and --enable-insecure-binding-system-unauthenticated flag group to the group.
 
@@ -6752,4 +6851,3 @@ def AddClusterEnablePrivateNodesFlag(parser, hidden=True):
       help=help_text,
       hidden=hidden,
   )
-

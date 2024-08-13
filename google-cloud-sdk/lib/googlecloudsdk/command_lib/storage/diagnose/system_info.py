@@ -17,15 +17,17 @@
 from __future__ import annotations
 
 import abc
-from collections.abc import Mapping, MutableSequence, Sequence
+from collections.abc import Iterator, Mapping, MutableSequence, Sequence
 import contextlib
 import ctypes
+from ctypes import wintypes
 import dataclasses
 import io
 import os
 import re
 from typing import Callable, Tuple, TypeVar
 
+import frozendict
 from googlecloudsdk.command_lib.storage import metrics_util
 from googlecloudsdk.command_lib.storage.diagnose import diagnostic
 from googlecloudsdk.core import execution_utils
@@ -86,7 +88,7 @@ class SystemInfoProvider(abc.ABC):
   @abc.abstractmethod
   def get_cpu_load_avg(self) -> float:
     """Returns the average CPU load during last 1-minute."""
-    pass
+    raise NotImplementedError()
 
   @abc.abstractmethod
   def get_memory_stats(self) -> Tuple[int, int]:
@@ -96,7 +98,7 @@ class SystemInfoProvider(abc.ABC):
       A tuple containing total memory and free memory in the system
       respectively.
     """
-    pass
+    raise NotImplementedError()
 
   @abc.abstractmethod
   def get_disk_io_stats(self) -> Sequence[DiskIOStats]:
@@ -192,7 +194,186 @@ class MemoryStatusEX(ctypes.Structure):
   def __init__(self):
     # Have to initialize this to the size of MemoryStatusEX.
     self.dwLength = ctypes.sizeof(self)  # pylint: disable=invalid-name
-    super(MemoryStatusEX, self).__init__()
+    super().__init__()
+
+
+class PDHCounterUnion(ctypes.Union):
+  """Structure for the union of the windows perfmon counter values.
+
+  https://learn.microsoft.com/en-us/windows/win32/api/pdh/ns-pdh-pdh_counter_union
+  """
+
+  _fields_ = [
+      ('longValue', wintypes.LONG),
+      ('doubleValue', ctypes.c_double),
+      ('largeValue', ctypes.c_longlong),
+      ('AnsiStringValue', wintypes.LPCSTR),
+      ('WideStringValue', wintypes.LPCWSTR),
+  ]
+
+
+class PDHFormattedCounterValue(ctypes.Structure):
+  """Structure for the windows perfmon formatted counter value.
+
+  https://learn.microsoft.com/en-us/windows/win32/api/pdh/ns-pdh-pdh_fmt_countervalue
+  """
+
+  _fields_ = [
+      ('CStatus', wintypes.DWORD),
+      ('union', PDHCounterUnion),
+  ]
+
+
+class WindowsPerfmonCounterProvider:
+  """Provider for interacting with windows perfmon counters.
+
+  This class wraps the windows perfmon low level API.
+  https://learn.microsoft.com/en-us/windows/win32/perfctrs/using-the-perflib-functions-to-consume-counter-data
+
+  Attributes:
+    counters: The string counter identifiers whose values are to be fetched.
+  """
+
+  # Constant for fetching the double value from the perfmon counter.
+  _PDH_FORMAT_DOUBLE = 512
+
+  # Mapping of the error codes returned by the perfmon API to human readable
+  # error messages.
+  # https://learn.microsoft.com/en-us/windows/win32/perfctrs/pdh-error-codes
+  _PDH_ERRORCODES_TO_MESSAGES = frozendict.frozendict({
+      0x00000000: 'PDH_CSTATUS_VALID_DATA',
+      0x800007D0: 'PDH_CSTATUS_NO_MACHINE',
+      0x800007D2: 'PDH_MORE_DATA',
+      0x800007D5: 'PDH_NO_DATA',
+      0xC0000BB8: 'PDH_CSTATUS_NO_OBJECT',
+      0xC0000BB9: 'PDH_CSTATUS_NO_COUNTER',
+      0xC0000BBB: 'PDH_MEMORY_ALLOCATION_FAILURE',
+      0xC0000BBC: 'PDH_INVALID_HANDLE',
+      0xC0000BBD: 'PDH_INVALID_ARGUMENT',
+      0xC0000BC0: 'PDH_CSTATUS_BAD_COUNTERNAME',
+      0xC0000BC2: 'PDH_INSUFFICIENT_BUFFER',
+      0xC0000BC6: 'PDH_INVALID_DATA',
+      0xC0000BD3: 'PDH_NOT_IMPLEMENTED',
+      0xC0000BD4: 'PDH_STRING_NOT_FOUND',
+  })
+
+  def __init__(self, counters: Sequence[str]):
+    """Initializes the provider.
+
+    Some of the perfmom counters are intantaneous and some are cumulative. This
+    provider will fetch the counters during instantiation so that the data for
+    cummulative counters is availble on successive calls to the
+    get_perfmon_counter_values method. The data for cumulative counters is
+    updated from the start of the initialization to the time of the call to
+    get_perfmon_counter_values. The instance of this class encapsulates the
+    counter state which is updated during the initialization and the subsequent
+    calls to get_perfmon_counter_values. The counter state is reset when the
+    close method is called.
+
+    Example usage:
+      provider = WindowsPerfmonCounterProvider(counters)
+      counter_values = provider.get_perfmon_counter_values()
+      ...
+      # Fetch the counter values again.
+      counter_values = provider.get_perfmon_counter_values()
+      ...
+      # Close the perfmon query.
+      provider.close()
+
+      Can be used with closing context manager as well.
+      with contextlib.closing(WindowsPerfmonCounterProvider(counters)) as
+      provider:
+        counter_values = provider.get_perfmon_counter_values()
+
+    Args:
+      counters: The language neutral perfmon counter identifiers.
+
+    Raises:
+      DiagnosticIgnorableError: If failed to initialize the perfmon query.
+    """
+    self.counters = counters
+    self._pdh = ctypes.windll.pdh
+    self._query_handle = None
+    self._counter_handles = []
+    self._initialize_perfmon_query()
+
+    # Populate the initial counter values.
+    self._populate_perfmon_counter_values()
+
+  def _get_pdh_error(self, code) -> str:
+    """Convert a PDH error code to a human readable string."""
+    code &= 0xFFFF_FFFF  # signed to unsigned conversion.
+    return self._PDH_ERRORCODES_TO_MESSAGES.get(code, code)
+
+  def _translate_and_raise_error(self, error_code: int) -> None:
+    """Translates the error code to a human readable string and raises it."""
+    raise diagnostic.DiagnosticIgnorableError(
+        f'Failed to fetch perfmon data. {self._get_pdh_error(error_code)}'
+    )
+
+  def _initialize_perfmon_query(self) -> None:
+    """Initializes the perfmon query."""
+    # Handle to the perfmon query.
+    self._query_handle = wintypes.HANDLE()
+    # Handle to each counter.
+    self._counter_handles = []
+
+    # TODO(b/358001644): Confirm the validity of query_handle in case of
+    # PdhOpenQueryW errors.
+    error = self._pdh.PdhOpenQueryW(None, 0, ctypes.byref(self._query_handle))
+    if error:
+      self._translate_and_raise_error(error)
+
+    for counter in self.counters:
+      counter_handle = wintypes.HANDLE()
+      error = self._pdh.PdhAddEnglishCounterW(
+          self._query_handle, counter, 0, ctypes.byref(counter_handle)
+      )
+      if error:
+        self._translate_and_raise_error(error)
+      self._counter_handles.append(counter_handle)
+
+  def _populate_perfmon_counter_values(self) -> None:
+    """Fetches the values for the perfmon counters."""
+    error = self._pdh.PdhCollectQueryData(self._query_handle)
+    if error:
+      self._translate_and_raise_error(error)
+
+  def get_perfmon_counter_values(self) -> Iterator[float | None]:
+    """Fetches the values for the perfmon counters.
+
+    For the cumulative counters, the values are updated from the start of the
+    initialization to the time of the call to this method.
+
+    Yields:
+      The value for the perfmon counter as Float or None if counter value is not
+      available.
+
+    Raises:
+      DiagnosticIgnorableError: If failed to fetch the perfmon counter values.
+    """
+    self._populate_perfmon_counter_values()
+
+    for counter_handle in self._counter_handles:
+      value = PDHFormattedCounterValue()
+      error = self._pdh.PdhGetFormattedCounterValue(
+          counter_handle, self._PDH_FORMAT_DOUBLE, None, ctypes.byref(value)
+      )
+      if error:
+        self._translate_and_raise_error(error)
+
+      yield getattr(value.union, 'doubleValue', None)
+
+  def close(self) -> None:
+    """Closes the perfmon query."""
+    if not self._query_handle:
+      return
+    error = self._pdh.PdhCloseQuery(self._query_handle)
+    self._query_handle = None
+    if error:
+      log.error(
+          'Failed to close the perfmon query. %s', self._get_pdh_error(error)
+      )
 
 
 class WindowsSystemInfoProvider(SystemInfoProvider):

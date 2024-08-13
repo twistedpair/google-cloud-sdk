@@ -320,8 +320,16 @@ class BackupPlan(_messages.Message):
       in the request to `UpdateBackupPlan` or `DeleteBackupPlan` to ensure
       that their change will be applied to the same version of the resource.
     labels: Optional. A set of custom labels supplied by user.
+    lastSuccessfulBackupTime: Output only. Completion time of the last
+      successful Backup. This is sourced from a successful Backup's
+      complete_time field. This field is added to maintain consistency with
+      BackupPlanAssociation to display last successful backup time.
     name: Output only. The full name of the BackupPlan resource. Format:
       `projects/*/locations/*/backupPlans/*`
+    permittedBackupFlow: Output only. The fully qualified name of the
+      PermittedBackupFlow to be used to create a backup. This field is set
+      only if the cluster being backed up is in a different project.
+      `projects/*/locations/*/permittedBackupFlows/*`
     protectedPodCount: Output only. The number of Kubernetes Pods backed up in
       the last successful Backup created via this BackupPlan.
     retentionPolicy: Optional. RetentionPolicy governs lifecycle of Backups
@@ -399,15 +407,57 @@ class BackupPlan(_messages.Message):
   description = _messages.StringField(6)
   etag = _messages.StringField(7)
   labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  protectedPodCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  retentionPolicy = _messages.MessageField('RetentionPolicy', 11)
-  rpoRiskLevel = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  rpoRiskReason = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  stateReason = _messages.StringField(15)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
+  lastSuccessfulBackupTime = _messages.StringField(9)
+  name = _messages.StringField(10)
+  permittedBackupFlow = _messages.StringField(11)
+  protectedPodCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  retentionPolicy = _messages.MessageField('RetentionPolicy', 13)
+  rpoRiskLevel = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  rpoRiskReason = _messages.StringField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  stateReason = _messages.StringField(17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+
+
+class BackupPlanAssociation(_messages.Message):
+  r"""A BackupPlanAssociation associates a BackupPlan with a
+  PermittedBackupFlow. This resource is created automatically when a
+  BackupPlan is created using a PermittedBackupFlow. This also serves as a
+  holder for cross-project fields that need to be displayed in the current
+  project.
+
+  Fields:
+    backupPlan: Output only. The fully qualified name of the BackupPlan
+      associated with the parent PermittedBackupFlow
+      `projects/*/locations/*/backupPlans/{backup_plan}`
+    cluster: Output only. The fully qualified name of the cluster that is
+      being backed up Valid formats: - `projects/*/locations/*/clusters/*` -
+      `projects/*/zones/*/clusters/*`
+    createTime: Output only. The timestamp when this association was created.
+    etag: Output only. `etag` is used for optimistic concurrency control as a
+      way to help prevent simultaneous updates of a BackupPlanAssociation from
+      overwriting each other. It is strongly suggested that systems make use
+      of the 'etag' in the read-modify-write cycle to perform
+      BackupPlanAssociation updates in order to avoid race conditions: An
+      `etag` is returned in the response to `GetBackupPlanAssociation`, and
+      systems are expected to put that etag in the request to
+      `UpdateBackupPlanAssociation` or `DeleteBackupPlanAssociation` to ensure
+      that their change will be applied to the same version of the resource.
+    name: Identifier. The fully qualified name of the BackupPlanAssociation.
+      `projects/*/locations/*/permittedBackupFlows/*/backupPlanAssociations/*`
+    uid: Output only. Server generated global unique identifier of
+      [UUID4](https://en.wikipedia.org/wiki/Universally_unique_identifier)
+    updateTime: Output only. The timestamp when this association was created.
+  """
+
+  backupPlan = _messages.StringField(1)
+  cluster = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  name = _messages.StringField(5)
+  uid = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class Binding(_messages.Message):
@@ -1268,6 +1318,149 @@ class GkebackupProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class GkebackupProjectsLocationsPermittedBackupFlowsBackupPlanAssociationsGetRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsPermittedBackupFlowsBackupPlanAssociationsGe
+  tRequest object.
+
+  Fields:
+    name: Required. Fully qualified BackupPlanAssociation name. Format:
+      `projects/*/locations/*/permittedBackupFlows/*/backupPlanAssociations/*`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkebackupProjectsLocationsPermittedBackupFlowsBackupPlanAssociationsListRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsPermittedBackupFlowsBackupPlanAssociationsLi
+  stRequest object.
+
+  Fields:
+    filter: Optional. Field match expression used to filter the results.
+    orderBy: Optional. Field by which to sort the results.
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
+      `ListBackupPlanAssociations` call. Provide this to retrieve the
+      subsequent page in a multi-page list of results. When paginating, all
+      other parameters provided to `ListBackupPlanAssociations` must match the
+      call that provided the page token.
+    parent: Required. The PermittedBackupFlow that contains the
+      BackupPlanAssociations to list. Format:
+      `projects/*/locations/*/permittedBackupFlows/*`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class GkebackupProjectsLocationsPermittedBackupFlowsCreateRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsPermittedBackupFlowsCreateRequest object.
+
+  Fields:
+    parent: Required. The location within which to create the
+      PermittedBackupFlow. Format: `projects/*/locations/*`
+    permittedBackupFlow: A PermittedBackupFlow resource to be passed as the
+      request body.
+    permittedBackupFlowId: Optional. The client-provided short name for the
+      PermittedBackupFlow resource. This name must: - be between 1 and 63
+      characters long (inclusive) - consist of only lower-case ASCII letters,
+      numbers, and dashes - start with a lower-case letter - end with a lower-
+      case letter or number - be unique within the set of PermittedBackupFlows
+      in this location If the user does not provide a name, a uuid will be
+      used as the name.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  permittedBackupFlow = _messages.MessageField('PermittedBackupFlow', 2)
+  permittedBackupFlowId = _messages.StringField(3)
+
+
+class GkebackupProjectsLocationsPermittedBackupFlowsDeleteRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsPermittedBackupFlowsDeleteRequest object.
+
+  Fields:
+    etag: Optional. If provided, this value must match the current value of
+      the target PermittedBackupFlow's etag field or the request is rejected.
+    force: Optional. If set to true, any BackupPlanAssociations below this
+      PermittedBackupFlow will also be deleted. Otherwise, the request will
+      only succeed if the PermittedBackupFlow has no BackupPlanAssociations.
+    name: Required. Fully qualified PermittedBackupFlow name. Format:
+      `projects/*/locations/*/permittedBackupFlows/*`
+  """
+
+  etag = _messages.StringField(1)
+  force = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+
+
+class GkebackupProjectsLocationsPermittedBackupFlowsGetRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsPermittedBackupFlowsGetRequest object.
+
+  Fields:
+    name: Required. Fully qualified PermittedBackupFlow name. Format:
+      `projects/*/locations/*/permittedBackupFlows/*`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkebackupProjectsLocationsPermittedBackupFlowsListRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsPermittedBackupFlowsListRequest object.
+
+  Fields:
+    filter: Optional. Field match expression used to filter the results.
+    orderBy: Optional. Field by which to sort the results.
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
+      `ListPermittedBackupFlows` call. Provide this to retrieve the subsequent
+      page in a multi-page list of results. When paginating, all other
+      parameters provided to `ListPermittedBackupFlows` must match the call
+      that provided the page token.
+    parent: Required. The location that contains the PermittedBackupFlows to
+      list. Format: `projects/*/locations/*`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class GkebackupProjectsLocationsPermittedBackupFlowsPatchRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsPermittedBackupFlowsPatchRequest object.
+
+  Fields:
+    name: Identifier. The fully qualified name of the PermittedBackupFlow.
+      `projects/*/locations/*/permittedBackupFlows/*`
+    permittedBackupFlow: A PermittedBackupFlow resource to be passed as the
+      request body.
+    updateMask: Optional. This is used to specify the fields to be overwritten
+      in the PermittedBackupFlow targeted for update. The values for each of
+      these updated fields will be taken from the `permitted_backup_flow`
+      provided with this request. Field names are relative to the root of the
+      resource (e.g., `description`, `destination_project_id`, etc.) If no
+      `update_mask` is provided, all fields in `permitted_backup_flow` will be
+      written to the target PermittedBackupFlow resource. Note that
+      OUTPUT_ONLY and IMMUTABLE fields in `permitted_backup_flow` are ignored
+      and are not used to update the target PermittedBackupFlow.
+  """
+
+  name = _messages.StringField(1, required=True)
+  permittedBackupFlow = _messages.MessageField('PermittedBackupFlow', 2)
+  updateMask = _messages.StringField(3)
+
+
 class GkebackupProjectsLocationsRestorePlansCreateRequest(_messages.Message):
   r"""A GkebackupProjectsLocationsRestorePlansCreateRequest object.
 
@@ -1893,6 +2086,24 @@ class GroupKindDependency(_messages.Message):
   satisfying = _messages.MessageField('GroupKind', 2)
 
 
+class ListBackupPlanAssociationsResponse(_messages.Message):
+  r"""Response message for ListBackupPlanAssociations.
+
+  Fields:
+    backupPlanAssociations: The list of BackupPlanAssociations matching the
+      given criteria.
+    nextPageToken: A token which may be sent as page_token in a subsequent
+      `ListBackupPlanAssociations` call to retrieve the next page of results.
+      If this field is omitted or empty, then there are no more results to
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  backupPlanAssociations = _messages.MessageField('BackupPlanAssociation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListBackupPlansResponse(_messages.Message):
   r"""Response message for ListBackupPlans.
 
@@ -1934,6 +2145,24 @@ class ListLocationsResponse(_messages.Message):
 
   locations = _messages.MessageField('Location', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListPermittedBackupFlowsResponse(_messages.Message):
+  r"""Response message for ListPermittedBackupFlows.
+
+  Fields:
+    nextPageToken: A token which may be sent as page_token in a subsequent
+      `ListPermittedBackupFlows` call to retrieve the next page of results. If
+      this field is omitted or empty, then there are no more results to
+      return.
+    permittedBackupFlows: The list of PermittedBackupFlows matching the given
+      criteria.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  permittedBackupFlows = _messages.MessageField('PermittedBackupFlow', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListRestorePlansResponse(_messages.Message):
@@ -2133,6 +2362,75 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class PermittedBackupFlow(_messages.Message):
+  r"""A PermittedBackupFlow imposes constraints on where clusters can be
+  backed up. The PermittedBackupFlow should be in the same project and region
+  as the cluster being backed up. The backup can be created only in
+  destination_project.
+
+  Messages:
+    LabelsValue: Optional. A set of custom labels supplied by user.
+
+  Fields:
+    createTime: Output only. The timestamp when this PermittedBackupFlow
+      resource was created.
+    description: Optional. User specified descriptive string for this
+      PermittedBackupFlow.
+    destinationProjectId: Required. Immutable. The project where backups are
+      allowed to be stored.
+    etag: Output only. `etag` is used for optimistic concurrency control as a
+      way to help prevent simultaneous updates of a PermittedBackupFlow from
+      overwriting each other. It is strongly suggested that systems make use
+      of the 'etag' in the read-modify-write cycle to perform
+      PermittedBackupFlow updates in order to avoid race conditions: An `etag`
+      is returned in the response to `GetPermittedBackupFlow`, and systems are
+      expected to put that etag in the request to `UpdatePermittedBackupFlow`
+      or `DeletePermittedBackupFlow` to ensure that their change will be
+      applied to the same version of the resource.
+    labels: Optional. A set of custom labels supplied by user.
+    name: Identifier. The fully qualified name of the PermittedBackupFlow.
+      `projects/*/locations/*/permittedBackupFlows/*`
+    uid: Output only. Server generated global unique identifier of
+      [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier)
+      format.
+    updateTime: Output only. The timestamp when this PermittedBackupFlow
+      resource was last updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. A set of custom labels supplied by user.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  destinationProjectId = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class Policy(_messages.Message):

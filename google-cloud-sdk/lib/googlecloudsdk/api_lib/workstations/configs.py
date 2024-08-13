@@ -160,10 +160,7 @@ class Configs:
             setattr(desired_boost_config, BOOST_CONFIG_MAP.get(key), value)
         config.host.gceInstance.boostConfigs.append(desired_boost_config)
 
-    if (
-        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
-        and args.allowed_ports
-    ):
+    if args.allowed_ports:
       for port_range in args.allowed_ports:
         desired_allowed_ports = self.messages.PortRange()
         for key, value in port_range.items():
@@ -465,10 +462,7 @@ class Configs:
         config.host.gceInstance.boostConfigs.append(desired_boost_config)
       update_mask.append('host.gce_instance.boost_configs')
 
-    if (
-        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
-        and args.allowed_ports
-    ):
+    if args.allowed_ports:
       for port_range in args.allowed_ports:
         desired_allowed_ports = self.messages.PortRange()
         for key, value in port_range.items():

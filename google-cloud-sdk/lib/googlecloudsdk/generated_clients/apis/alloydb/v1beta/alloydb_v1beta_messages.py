@@ -3511,6 +3511,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
       GCP/AWS/Azure/OnPrem/SelfManaged
     SignalClassValueValuesEnum: Required. The class of the signal, such as if
       it's a THREAT or VULNERABILITY.
+    SignalSeverityValueValuesEnum: The severity of the signal, such as if it's
+      a HIGH or LOW severity.
     SignalTypeValueValuesEnum: Required. Type of signal, for example,
       `AVAILABLE_IN_MULTIPLE_ZONES`, `LOGGING_MOST_ERRORS`, etc.
     StateValueValuesEnum:
@@ -3547,6 +3549,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
       or VULNERABILITY.
     signalId: Required. Unique identifier for the signal. This is an unique id
       which would be mainatined by partner to identify a signal.
+    signalSeverity: The severity of the signal, such as if it's a HIGH or LOW
+      severity.
     signalType: Required. Type of signal, for example,
       `AVAILABLE_IN_MULTIPLE_ZONES`, `LOGGING_MOST_ERRORS`, etc.
     state: A StateValueValuesEnum attribute.
@@ -3598,6 +3602,28 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     MISCONFIGURATION = 3
     OBSERVATION = 4
     ERROR = 5
+
+  class SignalSeverityValueValuesEnum(_messages.Enum):
+    r"""The severity of the signal, such as if it's a HIGH or LOW severity.
+
+    Values:
+      SIGNAL_SEVERITY_UNSPECIFIED: This value is used for findings when a
+        source doesn't write a severity value.
+      CRITICAL: A critical vulnerability is easily discoverable by an external
+        actor, exploitable.
+      HIGH: A high risk vulnerability can be easily discovered and exploited
+        in combination with other vulnerabilities.
+      MEDIUM: A medium risk vulnerability could be used by an actor to gain
+        access to resources or privileges that enable them to eventually gain
+        access and the ability to execute arbitrary code or exfiltrate data.
+      LOW: A low risk vulnerability hampers a security organization's ability
+        to detect vulnerabilities or active threats in their deployment.
+    """
+    SIGNAL_SEVERITY_UNSPECIFIED = 0
+    CRITICAL = 1
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
 
   class SignalTypeValueValuesEnum(_messages.Enum):
     r"""Required. Type of signal, for example, `AVAILABLE_IN_MULTIPLE_ZONES`,
@@ -3918,8 +3944,9 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
   resourceName = _messages.StringField(9)
   signalClass = _messages.EnumField('SignalClassValueValuesEnum', 10)
   signalId = _messages.StringField(11)
-  signalType = _messages.EnumField('SignalTypeValueValuesEnum', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
+  signalSeverity = _messages.EnumField('SignalSeverityValueValuesEnum', 12)
+  signalType = _messages.EnumField('SignalTypeValueValuesEnum', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message):

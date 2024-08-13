@@ -18,6 +18,8 @@ class Backup(_messages.Message):
   r"""A Filestore backup.
 
   Enums:
+    FileSystemProtocolValueValuesEnum: Output only. The file system protocol
+      of the source Filestore instance that this backup is created from.
     SourceInstanceTierValueValuesEnum: Output only. The service tier of the
       source Filestore instance that this backup is created from.
     StateValueValuesEnum: Output only. The backup state.
@@ -37,6 +39,8 @@ class Backup(_messages.Message):
     downloadBytes: Output only. Amount of bytes that will be downloaded if the
       backup is restored. This may be different than storage bytes, since
       sequential backups of the same disk will share storage.
+    fileSystemProtocol: Output only. The file system protocol of the source
+      Filestore instance that this backup is created from.
     kmsKey: Immutable. KMS key name used for data encryption.
     labels: Resource labels to represent user provided metadata.
     name: Output only. The resource name of the backup, in the format
@@ -58,6 +62,20 @@ class Backup(_messages.Message):
       this resource. For example: "123/environment": "production",
       "123/costCenter": "marketing"
   """
+
+  class FileSystemProtocolValueValuesEnum(_messages.Enum):
+    r"""Output only. The file system protocol of the source Filestore instance
+    that this backup is created from.
+
+    Values:
+      FILE_PROTOCOL_UNSPECIFIED: FILE_PROTOCOL_UNSPECIFIED serves a "not set"
+        default value when a FileProtocol is a separate field in a message.
+      NFS_V3: NFS 3.0.
+      NFS_V4_1: NFS 4.1.
+    """
+    FILE_PROTOCOL_UNSPECIFIED = 0
+    NFS_V3 = 1
+    NFS_V4_1 = 2
 
   class SourceInstanceTierValueValuesEnum(_messages.Enum):
     r"""Output only. The service tier of the source Filestore instance that
@@ -167,17 +185,18 @@ class Backup(_messages.Message):
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
   downloadBytes = _messages.IntegerField(4)
-  kmsKey = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  satisfiesPzi = _messages.BooleanField(8)
-  satisfiesPzs = _messages.BooleanField(9)
-  sourceFileShare = _messages.StringField(10)
-  sourceInstance = _messages.StringField(11)
-  sourceInstanceTier = _messages.EnumField('SourceInstanceTierValueValuesEnum', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  storageBytes = _messages.IntegerField(14)
-  tags = _messages.MessageField('TagsValue', 15)
+  fileSystemProtocol = _messages.EnumField('FileSystemProtocolValueValuesEnum', 5)
+  kmsKey = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  satisfiesPzi = _messages.BooleanField(9)
+  satisfiesPzs = _messages.BooleanField(10)
+  sourceFileShare = _messages.StringField(11)
+  sourceInstance = _messages.StringField(12)
+  sourceInstanceTier = _messages.EnumField('SourceInstanceTierValueValuesEnum', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  storageBytes = _messages.IntegerField(15)
+  tags = _messages.MessageField('TagsValue', 16)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -243,6 +262,17 @@ class DenyMaintenancePeriod(_messages.Message):
   endDate = _messages.MessageField('Date', 1)
   startDate = _messages.MessageField('Date', 2)
   time = _messages.MessageField('TimeOfDay', 3)
+
+
+class DirectoryServicesConfig(_messages.Message):
+  r"""Directory Services configuration for Kerberos-based authentication.
+
+  Fields:
+    managedActiveDirectory: Configuration for Managed Service for Microsoft
+      Active Directory.
+  """
+
+  managedActiveDirectory = _messages.MessageField('ManagedActiveDirectoryConfig', 1)
 
 
 class Empty(_messages.Message):
@@ -423,7 +453,8 @@ class FileProjectsLocationsInstancesPatchRequest(_messages.Message):
       `projects/{project}/locations/{location}/instances/{instance}`.
     updateMask: Mask of fields to update. At least one path must be supplied
       in this field. The elements of the repeated paths field may only include
-      these fields: * "description" * "file_shares" * "labels"
+      these fields: * "description" * "file_shares" * "labels" *
+      "performance_config"
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -1234,10 +1265,24 @@ class IOPSPerGB(_messages.Message):
   maxReadIopsPerGb = _messages.IntegerField(1)
 
 
+class IOPSPerTB(_messages.Message):
+  r"""IOPS per TB. Filestore defines TB as 1024^4 bytes (TiB).
+
+  Fields:
+    maxReadIopsPerTb: Required. Maximum read IOPS per TiB.
+  """
+
+  maxReadIopsPerTb = _messages.IntegerField(1)
+
+
 class Instance(_messages.Message):
   r"""A Filestore instance.
 
   Enums:
+    ProtocolValueValuesEnum: Immutable. The protocol indicates the access
+      protocol for all shares in the instance. This field is immutable and it
+      cannot be changed after the instance has been created. Default value:
+      `NFS_V3`.
     StateValueValuesEnum: Output only. The instance state.
     SuspensionReasonsValueListEntryValuesEnum:
     TierValueValuesEnum: The service tier of the instance.
@@ -1254,7 +1299,14 @@ class Instance(_messages.Message):
       performance enabled can be configured by populating the instance's
       `performance_config` field.
     createTime: Output only. The time when the instance was created.
+    deletionProtectionEnabled: Optional. Indicates whether the instance is
+      protected against deletion.
+    deletionProtectionReason: Optional. The reason for enabling deletion
+      protection.
     description: The description of the instance (2048 characters or less).
+    directoryServices: Optional. Directory Services configuration for
+      Kerberos-based authentication. Should only be set if protocol is
+      "NFS_V4_1".
     etag: Server-specified ETag for the instance resource to prevent
       simultaneous updates from overwriting each other.
     fileShares: File system shares on the instance. For this version, only a
@@ -1267,6 +1319,9 @@ class Instance(_messages.Message):
       version, only a single network is supported.
     performanceConfig: Optional. Used to configure performance.
     performanceLimits: Output only. Used for getting performance limits.
+    protocol: Immutable. The protocol indicates the access protocol for all
+      shares in the instance. This field is immutable and it cannot be changed
+      after the instance has been created. Default value: `NFS_V3`.
     replication: Optional. Replicaition configuration.
     satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
@@ -1280,6 +1335,21 @@ class Instance(_messages.Message):
       "123/costCenter": "marketing"
     tier: The service tier of the instance.
   """
+
+  class ProtocolValueValuesEnum(_messages.Enum):
+    r"""Immutable. The protocol indicates the access protocol for all shares
+    in the instance. This field is immutable and it cannot be changed after
+    the instance has been created. Default value: `NFS_V3`.
+
+    Values:
+      FILE_PROTOCOL_UNSPECIFIED: FILE_PROTOCOL_UNSPECIFIED serves a "not set"
+        default value when a FileProtocol is a separate field in a message.
+      NFS_V3: NFS 3.0.
+      NFS_V4_1: NFS 4.1.
+    """
+    FILE_PROTOCOL_UNSPECIFIED = 0
+    NFS_V3 = 1
+    NFS_V4_1 = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The instance state.
@@ -1411,23 +1481,27 @@ class Instance(_messages.Message):
 
   configurablePerformanceEnabled = _messages.BooleanField(1)
   createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  fileShares = _messages.MessageField('FileShareConfig', 5, repeated=True)
-  kmsKeyName = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  networks = _messages.MessageField('NetworkConfig', 9, repeated=True)
-  performanceConfig = _messages.MessageField('PerformanceConfig', 10)
-  performanceLimits = _messages.MessageField('PerformanceLimits', 11)
-  replication = _messages.MessageField('Replication', 12)
-  satisfiesPzi = _messages.BooleanField(13)
-  satisfiesPzs = _messages.BooleanField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  statusMessage = _messages.StringField(16)
-  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 17, repeated=True)
-  tags = _messages.MessageField('TagsValue', 18)
-  tier = _messages.EnumField('TierValueValuesEnum', 19)
+  deletionProtectionEnabled = _messages.BooleanField(3)
+  deletionProtectionReason = _messages.StringField(4)
+  description = _messages.StringField(5)
+  directoryServices = _messages.MessageField('DirectoryServicesConfig', 6)
+  etag = _messages.StringField(7)
+  fileShares = _messages.MessageField('FileShareConfig', 8, repeated=True)
+  kmsKeyName = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  networks = _messages.MessageField('NetworkConfig', 12, repeated=True)
+  performanceConfig = _messages.MessageField('PerformanceConfig', 13)
+  performanceLimits = _messages.MessageField('PerformanceLimits', 14)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 15)
+  replication = _messages.MessageField('Replication', 16)
+  satisfiesPzi = _messages.BooleanField(17)
+  satisfiesPzs = _messages.BooleanField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  statusMessage = _messages.StringField(20)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 21, repeated=True)
+  tags = _messages.MessageField('TagsValue', 22)
+  tier = _messages.EnumField('TierValueValuesEnum', 23)
 
 
 class ListBackupsResponse(_messages.Message):
@@ -1679,6 +1753,23 @@ class MaintenanceWindow(_messages.Message):
   weeklyCycle = _messages.MessageField('WeeklyCycle', 2)
 
 
+class ManagedActiveDirectoryConfig(_messages.Message):
+  r"""ManagedActiveDirectoryConfig contains all the parameters for connecting
+  to Managed Active Directory.
+
+  Fields:
+    computer: Required. The computer name is used as a prefix to the mount
+      remote target. Example: if the computer is `my-computer`, the mount
+      command will look like: `$mount -o vers=4.1,sec=krb5 my-
+      computer.filestore.: `.
+    domain: Required. The domain resource name, in the format
+      `projects/{project_id}/locations/global/domains/{domain}`.
+  """
+
+  computer = _messages.StringField(1)
+  domain = _messages.StringField(2)
+
+
 class NetworkConfig(_messages.Message):
   r"""Network configuration for the instance.
 
@@ -1755,6 +1846,7 @@ class NfsExportOptions(_messages.Message):
     AccessModeValueValuesEnum: Either READ_ONLY, for allowing only read
       requests on the exported directory, or READ_WRITE, for allowing both
       read and write requests. The default is READ_WRITE.
+    SecurityFlavorsValueListEntryValuesEnum:
     SquashModeValueValuesEnum: Either NO_ROOT_SQUASH, for allowing root access
       on the exported directory, or ROOT_SQUASH, for not allowing root access.
       The default is NO_ROOT_SQUASH.
@@ -1777,6 +1869,8 @@ class NfsExportOptions(_messages.Message):
       file share. Overlapping IP ranges are not allowed, both within and
       across NfsExportOptions. An error will be returned. The limit is 64 IP
       ranges/addresses for each FileShareConfig among all NfsExportOptions.
+    securityFlavors: Optional. The security flavors allowed for mount
+      operations. The default is AUTH_SYS.
     squashMode: Either NO_ROOT_SQUASH, for allowing root access on the
       exported directory, or ROOT_SQUASH, for not allowing root access. The
       default is NO_ROOT_SQUASH.
@@ -1795,6 +1889,25 @@ class NfsExportOptions(_messages.Message):
     ACCESS_MODE_UNSPECIFIED = 0
     READ_ONLY = 1
     READ_WRITE = 2
+
+  class SecurityFlavorsValueListEntryValuesEnum(_messages.Enum):
+    r"""SecurityFlavorsValueListEntryValuesEnum enum type.
+
+    Values:
+      SECURITY_FLAVOR_UNSPECIFIED: SecurityFlavor not set.
+      AUTH_SYS: The user's UNIX user-id and group-ids are transferred "in the
+        clear" (not encrypted) on the network, unauthenticated by the NFS
+        server (default).
+      KRB5: End-user authentication through Kerberos V5.
+      KRB5I: krb5 plus integrity protection (data packets are tamper proof).
+      KRB5P: krb5i plus privacy protection (data packets are tamper proof and
+        encrypted).
+    """
+    SECURITY_FLAVOR_UNSPECIFIED = 0
+    AUTH_SYS = 1
+    KRB5 = 2
+    KRB5I = 3
+    KRB5P = 4
 
   class SquashModeValueValuesEnum(_messages.Enum):
     r"""Either NO_ROOT_SQUASH, for allowing root access on the exported
@@ -1815,7 +1928,8 @@ class NfsExportOptions(_messages.Message):
   anonGid = _messages.IntegerField(2)
   anonUid = _messages.IntegerField(3)
   ipRanges = _messages.StringField(4, repeated=True)
-  squashMode = _messages.EnumField('SquashModeValueValuesEnum', 5)
+  securityFlavors = _messages.EnumField('SecurityFlavorsValueListEntryValuesEnum', 5, repeated=True)
+  squashMode = _messages.EnumField('SquashModeValueValuesEnum', 6)
 
 
 class Operation(_messages.Message):
@@ -1980,11 +2094,22 @@ class PerformanceConfig(_messages.Message):
       instance creation will fail with an `InvalidArgument` error. Similarly,
       if an instance capacity update would result in a value outside the
       supported range, the update will fail with an `InvalidArgument` error.
+    iopsPerTb: Provision IOPS dynamically based on the capacity of the
+      instance. Provisioned read IOPS will be calculated by by multiplying the
+      capacity of the instance in TiB by the `iops_per_tb` value, and rounding
+      to the nearest 1000. For example, for a 1 TiB instance with an
+      `iops_per_tb` value of 15, the provisioned read IOPS would be `1024 * 15
+      = 15,360`, rounded to `15,000`. If the calculated value is outside the
+      supported range for the instance's capacity during instance creation,
+      instance creation will fail with an `InvalidArgument` error. Similarly,
+      if an instance capacity update would result in a value outside the
+      supported range, the update will fail with an `InvalidArgument` error.
   """
 
   fixedIops = _messages.MessageField('FixedIOPS', 1)
   iopsByCapacity = _messages.BooleanField(2)
   iopsPerGb = _messages.MessageField('IOPSPerGB', 3)
+  iopsPerTb = _messages.MessageField('IOPSPerTB', 4)
 
 
 class PerformanceLimits(_messages.Message):
@@ -1994,14 +2119,20 @@ class PerformanceLimits(_messages.Message):
   Fields:
     maxReadIops: Output only. The max read IOPS.
     maxReadThroughput: Output only. The max read throughput.
+    maxReadThroughputBps: Output only. The max read throughput in bytes per
+      second.
     maxWriteIops: Output only. The max write IOPS.
     maxWriteThroughput: Output only. The max write throughput.
+    maxWriteThroughputBps: Output only. The max write throughput in bytes per
+      second.
   """
 
   maxReadIops = _messages.IntegerField(1)
   maxReadThroughput = _messages.IntegerField(2)
-  maxWriteIops = _messages.IntegerField(3)
-  maxWriteThroughput = _messages.IntegerField(4)
+  maxReadThroughputBps = _messages.IntegerField(3)
+  maxWriteIops = _messages.IntegerField(4)
+  maxWriteThroughput = _messages.IntegerField(5)
+  maxWriteThroughputBps = _messages.IntegerField(6)
 
 
 class PromoteReplicaRequest(_messages.Message):

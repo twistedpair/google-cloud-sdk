@@ -195,6 +195,17 @@ def GetEntryTypeResourceSpec():
   )
 
 
+def GetGovernanceRuleResourceSpec():
+  """Gets GovernanceRule resource spec."""
+  return concepts.ResourceSpec(
+      'dataplex.projects.locations.governanceRules',
+      resource_name='governance rule',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      governanceRulesId=GovernanceRuleAttributeConfig(),
+  )
+
+
 def EntryTypeProjectAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='entry-type-project',
@@ -294,6 +305,12 @@ def DatascanAttributeConfig():
 def EntryTypeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='entry_type', help_text='The name of {resource} to use.'
+  )
+
+
+def GovernanceRuleAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='governance_rule', help_text='The name of {resource} to use.'
   )
 
 
@@ -492,6 +509,18 @@ def AddEntryResourceArg(parser):
   ).AddToParser(parser)
 
 
+def AddGovernanceRuleResourceArg(parser, verb, positional=True):
+  """Adds a resource argument for a Dataplex GovernanceRule."""
+  name = 'governance_rule' if positional else '--governance_rule'
+  return concept_parsers.ConceptParser.ForResource(
+      name,
+      GetGovernanceRuleResourceSpec(),
+      'Arguments and flags that define the Dataplex governance rule you want {}'
+      .format(verb),
+      required=True,
+  ).AddToParser(parser)
+
+
 def AddParentEntryResourceArg(parser):
   """Adds a resource argument for a Dataplex Entry parent."""
   entry_data = yaml_data.ResourceYAMLData.FromPath('dataplex.entry')
@@ -512,4 +541,3 @@ def AddParentEntryResourceArg(parser):
           'entry_group': '',
       },
   ).AddToParser(parser)
-

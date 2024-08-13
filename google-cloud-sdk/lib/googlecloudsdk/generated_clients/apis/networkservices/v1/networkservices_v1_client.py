@@ -4019,7 +4019,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
         method_id='networkservices.projects.locations.wasmPlugins.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['view'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='NetworkservicesProjectsLocationsWasmPluginsGetRequest',

@@ -33,6 +33,9 @@ def ToV2MembershipFeature(
   v2_membershipfeature = message_v2.MembershipFeature()
   v2_membershipfeature.name = f'{membership_path}/features/{feature_name}'
   v2_membershipfeature.spec = message_v2.FeatureSpec()
+  v2_membershipfeature.spec.origin = _ToV2Origin(
+      v1_membership_feature_spec.origin
+  )
 
   if feature_name == 'policycontroller':
     v2_membershipfeature.spec.policycontroller = _ToV2PolicyControllerSpec(
@@ -43,6 +46,54 @@ def ToV2MembershipFeature(
         f'Unsupported membership feature: {v2_membershipfeature.name}'
     )
   return v2_membershipfeature
+
+
+def _ToV2Origin(
+    v1_origin: message_v1.Origin,
+) -> message_v2.Origin:
+  """Converts a v1alpha Origin to a v2alpha Origin."""
+  if v1_origin is None:
+    return None
+
+  v2_origin = message_v2.Origin()
+  v2_origin.type = _ToV2OriginTypeValueValuesEnum(v1_origin.type)
+  return v2_origin
+
+
+def _ToV2OriginTypeValueValuesEnum(
+    v1_origin_type: message_v1.Origin.TypeValueValuesEnum,
+) -> message_v2.Origin.TypeValueValuesEnum:
+  """Converts a v1alpha OriginTypeValueValuesEnum to a v2alpha OriginTypeValueValuesEnum."""
+  if (
+      v1_origin_type
+      is message_v1.Origin.TypeValueValuesEnum.TYPE_UNSPECIFIED
+  ):
+    return (
+        message_v2.Origin.TypeValueValuesEnum.TYPE_UNSPECIFIED
+    )
+  elif (
+      v1_origin_type
+      is message_v1.Origin.TypeValueValuesEnum.FLEET
+  ):
+    return (
+        message_v2.Origin.TypeValueValuesEnum.FLEET
+    )
+  elif (
+      v1_origin_type
+      is message_v1.Origin.TypeValueValuesEnum.FLEET_OUT_OF_SYNC
+  ):
+    return (
+        message_v2.Origin.TypeValueValuesEnum.FLEET_OUT_OF_SYNC
+    )
+  elif (
+      v1_origin_type
+      is message_v1.Origin.TypeValueValuesEnum.USER
+  ):
+    return (
+        message_v2.Origin.TypeValueValuesEnum.USER
+    )
+  else:
+    raise ValueError(f'Unsupported origin type: {v1_origin_type}')
 
 
 def _ToV2PolicyControllerSpec(

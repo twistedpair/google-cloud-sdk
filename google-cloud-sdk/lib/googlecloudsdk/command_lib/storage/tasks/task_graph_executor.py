@@ -234,6 +234,7 @@ def task_graph_debugger_worker(
     stack_trace_file: str,
     task_graph: task_graph_module.TaskGraph,
     task__buffer: task_buffer.TaskBuffer,
+    delay_seconds: int = 3,
 ):
   """The main worker function for the task graph debugging framework.
 
@@ -250,6 +251,7 @@ def task_graph_debugger_worker(
       threads.
     task_graph: The task graph object.
     task__buffer: The task buffer object.
+    delay_seconds: The time interval between two consecutive snapshots.
   """
   is_task_buffer_empty = False
   is_task_graph_empty = False
@@ -273,6 +275,36 @@ def task_graph_debugger_worker(
       if thread.is_alive():
         is_some_management_thread_alive = True
         break
+
+    # Wait for the delay_seconds to pass before taking the next snapshot
+    # if conditions are met.
+    event = threading.Event()
+    event.wait(delay_seconds)
+
+
+def start_thread_for_task_graph_debugging(
+    management_threads_name_to_function: Dict[str, threading.Thread],
+    stack_trace_file: str,
+    task_graph: task_graph_module.TaskGraph,
+    task__buffer: task_buffer.TaskBuffer,
+    delay_seconds: int = 3,
+):
+  """Starts a thread for task graph debugging."""
+  try:
+    thread_for_task_graph_debugging = threading.Thread(
+        target=task_graph_debugger_worker,
+        args=(
+            management_threads_name_to_function,
+            stack_trace_file,
+            task_graph,
+            task__buffer,
+            delay_seconds,
+        ),
+    )
+    thread_for_task_graph_debugging.start()
+
+  except Exception as e:  # pylint: disable=broad-except
+    log.error(f'Error starting thread: {e}')
 
 
 class _DebugSignalHandler:
@@ -671,6 +703,8 @@ class TaskGraphExecutor:
       except IOError as e:
         log.error('Error creating stack trace file: %s', e)
 
+    self._management_threads_name_to_function = {}
+
   def _add_worker_process(self):
     """Signal the worker process spawner to create a new process."""
     self._signal_queue.put(_CREATE_WORKER_PROCESS)
@@ -816,6 +850,26 @@ class TaskGraphExecutor:
         get_tasks_from_iterator_thread.start()
         add_executable_tasks_to_queue_thread.start()
         handle_task_output_thread.start()
+
+        if is_task_graph_debugging_enabled():
+          self._management_threads_name_to_function[
+              'get_tasks_from_iterator'
+          ] = get_tasks_from_iterator_thread
+
+          self._management_threads_name_to_function[
+              'add_executable_tasks_to_queue'
+          ] = add_executable_tasks_to_queue_thread
+
+          self._management_threads_name_to_function['handle_task_output'] = (
+              handle_task_output_thread
+          )
+
+          start_thread_for_task_graph_debugging(
+              self._management_threads_name_to_function,
+              self.stack_trace_file_path,
+              self._task_graph,
+              self._executable_tasks,
+          )
 
         get_tasks_from_iterator_thread.join()
         try:

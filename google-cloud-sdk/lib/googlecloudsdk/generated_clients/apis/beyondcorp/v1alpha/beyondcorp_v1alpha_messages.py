@@ -1698,6 +1698,20 @@ class BeyondcorpProjectsLocationsAppGatewaysSetIamPolicyRequest(_messages.Messag
   resource = _messages.StringField(2, required=True)
 
 
+class BeyondcorpProjectsLocationsAppGatewaysShouldThrottleRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppGatewaysShouldThrottleRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    port: Optional. The port that is being throttled
+    requestedAmount: Optional. The current throughput through the port (mbps)
+  """
+
+  name = _messages.StringField(1, required=True)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  requestedAmount = _messages.IntegerField(3)
+
+
 class BeyondcorpProjectsLocationsAppGatewaysTestIamPermissionsRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsAppGatewaysTestIamPermissionsRequest
   object.
@@ -5651,6 +5665,16 @@ class ServiceAccount(_messages.Message):
   """
 
   email = _messages.StringField(1)
+
+
+class ShouldThrottleResponse(_messages.Message):
+  r"""Response message for calling ShouldThrottle
+
+  Fields:
+    shouldThrottle: Whether the port should be throttled
+  """
+
+  shouldThrottle = _messages.BooleanField(1)
 
 
 class StandardQueryParameters(_messages.Message):

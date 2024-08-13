@@ -1068,7 +1068,6 @@ class RunAppsOperations(object):
       app.config = runapps_v1alpha1_messages.Config(
           resourceList=[],
       )
-    app.config.resources = None
     return app
 
   def GetAppRef(self, name):

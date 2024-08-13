@@ -2942,8 +2942,8 @@ class IPAllocationPolicy(_messages.Message):
       added to the cluster. These pod ranges can be used by new node pools to
       allocate pod IPs automatically. Once the range is removed it will not
       show up in IPAllocationPolicy.
-    autoIpamConfig: Output only. AutoIpamConfig contains all information
-      related to Auto IPAM
+    autoIpamConfig: Optional. AutoIpamConfig contains all information related
+      to Auto IPAM
     clusterIpv4Cidr: This field is deprecated, use cluster_ipv4_cidr_block.
     clusterIpv4CidrBlock: The IP address range for the cluster pod IPs. If
       this field is set, then `cluster.cluster_ipv4_cidr` must be left blank.
@@ -3373,6 +3373,7 @@ class LoggingComponentConfig(_messages.Message):
       CONTROLLER_MANAGER: kube-controller-manager
       ADDON_MANAGER: kube-addon-manager
       KCP_SSHD: kcp-sshd
+      KCP_CONNECTION: kcp connection logs
     """
     COMPONENT_UNSPECIFIED = 0
     SYSTEM_COMPONENTS = 1
@@ -3382,6 +3383,7 @@ class LoggingComponentConfig(_messages.Message):
     CONTROLLER_MANAGER = 5
     ADDON_MANAGER = 6
     KCP_SSHD = 7
+    KCP_CONNECTION = 8
 
   enableComponents = _messages.EnumField('EnableComponentsValueListEntryValuesEnum', 1, repeated=True)
 
@@ -3573,7 +3575,8 @@ class MasterAuth(_messages.Message):
 
   Fields:
     clientCertificate: Output only. Base64-encoded public certificate used by
-      clients to authenticate to the cluster endpoint.
+      clients to authenticate to the cluster endpoint. Issued only if
+      client_certificate_config is set.
     clientCertificateConfig: Configuration for client certificate
       authentication on the cluster. For clusters before v1.12, if no
       configuration is specified, a client certificate is issued.
@@ -7084,35 +7087,56 @@ class UserManagedKeysConfig(_messages.Message):
   for signing certs and token that are used for communication within cluster.
 
   Fields:
-    byoAggregationCa: Resource address to aggregation CA managed in
-      Certificate Authority Service.
-    byoClusterCa: Resource address to cluster CA managed in Certificate
-      Authority Service.
-    byoEtcdApiServerCa: Resource address to etcd<->apiserver CA managed in
-      Certificate Authority Service.
-    byoEtcdPeerCa: Resource address to etcd peer CA managed in Certificate
-      Authority Service.
-    byoServiceAccountSigningKeys: Resource addresses for signing keys for
-      service account tokens managed in KMS. Format: `projects/{project}/locat
-      ions/{location}/keyRings/{keyring}/cryptoKeys/{cryptoKey}/cryptoKeyVersi
-      ons/{cryptoKeyVersion}`
-    byoServiceAccountVerificationKeys: Resource addresses for verifying keys
-      for service account tokens managed in KMS. Format: `projects/{project}/l
-      ocations/{location}/keyRings/{keyring}/cryptoKeys/{cryptoKey}/cryptoKeyV
-      ersions/{cryptoKeyVersion}`
-    cmekControlPlaneDisksCaKey: Resource address to control plane CA's root
-      key managed in KMS.
-    cmekEtcdBackupsKey: Resource address to etcd backups key managed in KMS.
+    aggregationCa: The Certificate Authority Service caPool to use for the
+      aggregation CA in this cluster.
+    byoAggregationCa: Deprecated: Use aggregation_ca instead.
+    byoClusterCa: Deprecated: Use cluster_ca instead.
+    byoEtcdApiServerCa: Deprecated: Use etcd_api_ca instead.
+    byoEtcdPeerCa: Deprecated: Use etcd_peer_ca instead.
+    byoServiceAccountSigningKeys: Deprecated: Use service_account_signing_keys
+      instead.
+    byoServiceAccountVerificationKeys: Deprecated: Use
+      service_account_verification_keys instead.
+    clusterCa: The Certificate Authority Service caPool to use for the cluster
+      CA in this cluster.
+    cmekControlPlaneDisksCaKey: Deprecated: Use
+      control_plane_disk_encryption_key instead.
+    cmekEtcdBackupsKey: Deprecated: Use gkeops_etcd_backup_encryption_key
+      instead.
+    controlPlaneDiskEncryptionKey: The Cloud KMS cryptoKey to use for
+      Confidential Hyperdisk on the control plane nodes.
+    etcdApiCa: Resource path of the Certificate Authority Service caPool to
+      use for the etcd API CA in this cluster.
+    etcdPeerCa: Resource path of the Certificate Authority Service caPool to
+      use for the etcd peer CA in this cluster.
+    gkeopsEtcdBackupEncryptionKey: Resource path of the Cloud KMS cryptoKey to
+      use for encryption of internal etcd backups.
+    serviceAccountSigningKeys: The Cloud KMS cryptoKeyVersions to use for
+      signing service account JWTs issued by this cluster. Format: `projects/{
+      project}/locations/{location}/keyRings/{keyring}/cryptoKeys/{cryptoKey}/
+      cryptoKeyVersions/{cryptoKeyVersion}`
+    serviceAccountVerificationKeys: The Cloud KMS cryptoKeyVersions to use for
+      verifying service account JWTs issued by this cluster. Format: `projects
+      /{project}/locations/{location}/keyRings/{keyring}/cryptoKeys/{cryptoKey
+      }/cryptoKeyVersions/{cryptoKeyVersion}`
   """
 
-  byoAggregationCa = _messages.StringField(1)
-  byoClusterCa = _messages.StringField(2)
-  byoEtcdApiServerCa = _messages.StringField(3)
-  byoEtcdPeerCa = _messages.StringField(4)
-  byoServiceAccountSigningKeys = _messages.StringField(5, repeated=True)
-  byoServiceAccountVerificationKeys = _messages.StringField(6, repeated=True)
-  cmekControlPlaneDisksCaKey = _messages.StringField(7)
-  cmekEtcdBackupsKey = _messages.StringField(8)
+  aggregationCa = _messages.StringField(1)
+  byoAggregationCa = _messages.StringField(2)
+  byoClusterCa = _messages.StringField(3)
+  byoEtcdApiServerCa = _messages.StringField(4)
+  byoEtcdPeerCa = _messages.StringField(5)
+  byoServiceAccountSigningKeys = _messages.StringField(6, repeated=True)
+  byoServiceAccountVerificationKeys = _messages.StringField(7, repeated=True)
+  clusterCa = _messages.StringField(8)
+  cmekControlPlaneDisksCaKey = _messages.StringField(9)
+  cmekEtcdBackupsKey = _messages.StringField(10)
+  controlPlaneDiskEncryptionKey = _messages.StringField(11)
+  etcdApiCa = _messages.StringField(12)
+  etcdPeerCa = _messages.StringField(13)
+  gkeopsEtcdBackupEncryptionKey = _messages.StringField(14)
+  serviceAccountSigningKeys = _messages.StringField(15, repeated=True)
+  serviceAccountVerificationKeys = _messages.StringField(16, repeated=True)
 
 
 class VerticalPodAutoscaling(_messages.Message):

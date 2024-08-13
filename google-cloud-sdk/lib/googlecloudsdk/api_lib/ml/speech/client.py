@@ -475,25 +475,37 @@ class SpeechV2Client(object):
   ):
     """Initializes PhraseSets based on hints."""
     return self._InitializeAdaptationConfigRecognizeRequest(
-        args.hints, update_mask
+        args.hint_phrases, args.hint_phrase_sets, args.hint_boost, update_mask
     )
 
   def _InitializeAdaptationConfigRecognizeRequest(
-      self, hints, update_mask=None
+      self, hint_phrases, hint_phrase_sets, hint_boost=5.0, update_mask=None
   ):
-    """Initializes PhraseSets based on hints."""
+    """Initializes PhraseSets based on phrases and phrase sets."""
+    speech_adaptation_phrase_sets = []
 
-    inline_phrase_set = self._messages.PhraseSet(
-        phrases=[
-            self._messages.Phrase(value=hint, boost=5.0) for hint in hints
-        ],
-        boost=5.0,
-    )
-    adaptation_phrase_set = self._messages.AdaptationPhraseSet(
-        inlinePhraseSet=inline_phrase_set
-    )
+    if hint_phrases:
+      inline_phrase_set = self._messages.PhraseSet(
+          phrases=[
+              self._messages.Phrase(value=hint_phrase, boost=5.0)
+              for hint_phrase in hint_phrases
+          ],
+          boost=hint_boost,
+      )
+      inline_adaptation_phrase_set = self._messages.AdaptationPhraseSet(
+          inlinePhraseSet=inline_phrase_set
+      )
+      speech_adaptation_phrase_sets.append(inline_adaptation_phrase_set)
+
+    if hint_phrase_sets:
+      for hint_phrase_set in hint_phrase_sets:
+        adaptation_phrase_set = self._messages.AdaptationPhraseSet(
+            phraseSet=hint_phrase_set
+        )
+        speech_adaptation_phrase_sets.append(adaptation_phrase_set)
+
     speech_adaptation_config = self._messages.SpeechAdaptation(
-        phraseSets=[adaptation_phrase_set]
+        phraseSets=speech_adaptation_phrase_sets
     )
 
     if update_mask is not None:

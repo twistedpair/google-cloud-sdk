@@ -1039,22 +1039,22 @@ def AddCpuFlag(parser, managed_only=False):
   CpuFlag(managed_only=managed_only).AddToParser(parser)
 
 
-def AddGpuTypeFlag(parser):
+def AddGpuTypeFlag(parser, hidden=True):
   """Add the --gpu-type flag."""
   parser.add_argument(
       '--gpu-type',
       metavar='GPU_TYPE',
-      hidden=True,
+      hidden=hidden,
       help='The GPU type to use.',
   )
 
 
-def GpuFlag():
+def GpuFlag(hidden=True):
   """Add the --gpu flag."""
   return base.Argument(
       '--gpu',
       metavar='GPU',
-      hidden=True,
+      hidden=hidden,
       help=(
           'Cloud Run supports values 0 or 1.'
           '  1 gpu also requires a minimum 4 `--cpu` value'

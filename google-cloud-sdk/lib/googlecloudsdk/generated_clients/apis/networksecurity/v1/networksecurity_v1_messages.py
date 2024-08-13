@@ -3277,7 +3277,7 @@ class Rule(_messages.Message):
 
 class SecurityProfile(_messages.Message):
   r"""SecurityProfile is a resource that defines the behavior for one of many
-  ProfileTypes. Next ID: 11
+  ProfileTypes. Next ID: 12
 
   Enums:
     TypeValueValuesEnum: Immutable. The single ProfileType that the
@@ -3351,7 +3351,7 @@ class SecurityProfile(_messages.Message):
 
 class SecurityProfileGroup(_messages.Message):
   r"""SecurityProfileGroup is a resource that defines the behavior for various
-  ProfileTypes. Next ID: 10
+  ProfileTypes. Next ID: 11
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs.
@@ -3368,7 +3368,7 @@ class SecurityProfileGroup(_messages.Message):
       matches pattern `projects|organizations/*/locations/{location}/securityP
       rofileGroups/{security_profile_group}`.
     threatPreventionProfile: Optional. Reference to a SecurityProfile with the
-      threat prevention configuration for the SecurityProfileGroup.
+      ThreatPrevention configuration.
     updateTime: Output only. Last resource update timestamp.
   """
 

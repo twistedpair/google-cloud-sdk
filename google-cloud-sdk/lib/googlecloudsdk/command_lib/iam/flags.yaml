@@ -549,6 +549,12 @@ workforce_pool_provider:
       Disables the workforce pool provider. You cannot use a disabled provider to perform
       new token exchanges or sign-ins. However, existing tokens still grant access. Specify
       `--no-disabled` to enable a disabled pool.
+  detailed_audit_logging:
+    api_field: workforcePoolProvider.detailedAuditLogging
+    arg_name: detailed-audit-logging
+    help_text: |-
+      Enables detailed audit logging for this provider, which populates additional debug information
+      in STS Cloud Audit Logs. Specify `--no-detailed-audit-logging` to disable it.
   attribute_mapping:
     api_field: workforcePoolProvider.attributeMapping
     arg_name: attribute-mapping

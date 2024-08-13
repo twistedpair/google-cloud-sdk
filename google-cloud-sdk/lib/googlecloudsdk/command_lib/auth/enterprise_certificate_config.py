@@ -80,6 +80,7 @@ class ConfigType(enum.Enum):
   PKCS11 = 1
   KEYCHAIN = 2
   MYSTORE = 3
+  WORKLOAD = 4
 
 
 class WindowsBinaryPathConfig(object):
@@ -153,6 +154,13 @@ class MyStoreConfig(object):
     self.issuer = issuer
     self.store = store
     self.provider = provider
+
+
+class WorkloadConfig(object):
+
+  def __init__(self, cert_path, key_path):
+    self.cert_path = cert_path
+    self.key_path = key_path
 
 
 def create_linux_config(base_config, **kwargs):
@@ -256,6 +264,33 @@ def create_windows_config(base_config, **kwargs):
   return {'windows_store': vars(ecp_config)}, {'libs': vars(lib_config)}
 
 
+def create_workload_config(base_config, **kwargs):
+  """Creates a Workload ECP Config.
+
+  Args:
+    base_config: Optional parameter to use as a fallback for parameters that are
+      not set in kwargs.
+    **kwargs: Workload config parameters. See go/enterprise-cert-config for
+      valid variables.
+
+  Returns:
+    A dictionary object containing the ECP config.
+  """
+  if base_config:
+    base_workload_config = base_config['cert_configs']['workload']
+  else:
+    base_workload_config = {}
+
+  workload_config = WorkloadConfig(
+      kwargs.get('cert_path', None)
+      or base_workload_config.get('cert_path', None),
+      kwargs.get('key_path', None)
+      or base_workload_config.get('key_path', None),
+  )
+
+  return {'workload': vars(workload_config)}, {}
+
+
 def create_ecp_config(config_type, base_config=None, **kwargs):
   """Creates an ECP Config.
 
@@ -278,6 +313,8 @@ def create_ecp_config(config_type, base_config=None, **kwargs):
     ecp_config, libs_config = create_macos_config(base_config, **kwargs)
   elif config_type == ConfigType.MYSTORE:
     ecp_config, libs_config = create_windows_config(base_config, **kwargs)
+  elif config_type == ConfigType.WORKLOAD:
+    ecp_config, libs_config = create_workload_config(base_config, **kwargs)
   else:
     raise ECPConfigError(
         (

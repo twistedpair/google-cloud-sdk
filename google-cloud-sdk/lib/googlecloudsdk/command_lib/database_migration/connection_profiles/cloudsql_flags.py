@@ -49,6 +49,7 @@ def AddDatabaseVersionFlag(parser, support_minor_version):
       'MYSQL_8_0_34',
       'MYSQL_8_0_35',
       'MYSQL_8_0_36',
+      'MYSQL_8_0_37',
       'POSTGRES_9_6',
       'POSTGRES_10',
       'POSTGRES_11',

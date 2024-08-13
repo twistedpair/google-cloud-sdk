@@ -1341,7 +1341,7 @@ class LinkedInterconnectAttachments(_messages.Message):
 
 
 class LinkedProducerVpcNetwork(_messages.Message):
-  r"""Next ID: 6
+  r"""Next ID: 7
 
   Fields:
     excludeExportRanges: Optional. IP ranges encompassing the subnets to be
@@ -1354,6 +1354,7 @@ class LinkedProducerVpcNetwork(_messages.Message):
       Consumer VPC and the Producer VPC (defined in the Tenant project) which
       is added to the NCC hub. This peering must be in ACTIVE state.
     producerNetwork: Output only. The URI of the Producer VPC.
+    serviceConsumerVpcSpoke: Output only. The Service Consumer Network spoke.
   """
 
   excludeExportRanges = _messages.StringField(1, repeated=True)
@@ -1361,6 +1362,7 @@ class LinkedProducerVpcNetwork(_messages.Message):
   network = _messages.StringField(3)
   peering = _messages.StringField(4)
   producerNetwork = _messages.StringField(5)
+  serviceConsumerVpcSpoke = _messages.StringField(6)
 
 
 class LinkedRouterApplianceInstances(_messages.Message):

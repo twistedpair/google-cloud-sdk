@@ -594,8 +594,8 @@ class CLILoader(object):
         metavar='CONFIGURATION',
         category=calliope_base.COMMONLY_USED_FLAGS,
         help="""\
-        The configuration to use for this command invocation. For more
-        information on how to use configurations, run:
+        File name of the configuration to use for this command invocation.
+        For more information on how to use configurations, run:
         `gcloud topic configurations`.  You can also use the {0} environment
         variable to set the equivalent of this flag for a terminal
         session.""".format(config.CLOUDSDK_ACTIVE_CONFIG_NAME))

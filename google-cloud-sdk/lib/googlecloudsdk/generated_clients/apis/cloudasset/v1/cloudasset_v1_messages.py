@@ -3719,10 +3719,12 @@ class GoogleIdentityAccesscontextmanagerV1EgressFrom(_messages.Message):
   Fields:
     identities: A list of identities that are allowed access through
       [EgressPolicy]. Identities can be an individual user, service account,
-      Google group, or third-party identity. The `v1` identities that have the
-      prefix `user`, `group`, `serviceAccount`, `principal`, and
-      `principalSet` in https://cloud.google.com/iam/docs/principal-
-      identifiers#v1 are supported.
+      Google group, or third-party identity. For third-party identity, only
+      single identities are supported and other identity types are not
+      supported. The `v1` identities that have the prefix `user`, `group`,
+      `serviceAccount`, and `principal` in
+      https://cloud.google.com/iam/docs/principal-identifiers#v1 are
+      supported.
     identityType: Specifies the type of identities that are allowed access to
       outside the perimeter. If left unspecified, then members of `identities`
       field will be allowed access.
@@ -3866,10 +3868,12 @@ class GoogleIdentityAccesscontextmanagerV1IngressFrom(_messages.Message):
   Fields:
     identities: A list of identities that are allowed access through
       [IngressPolicy]. Identities can be an individual user, service account,
-      Google group, or third-party identity. The `v1` identities that have the
-      prefix `user`, `group`, `serviceAccount`, `principal`, and
-      `principalSet` in https://cloud.google.com/iam/docs/principal-
-      identifiers#v1 are supported.
+      Google group, or third-party identity. For third-party identity, only
+      single identities are supported and other identity types are not
+      supported. The `v1` identities that have the prefix `user`, `group`,
+      `serviceAccount`, and `principal` in
+      https://cloud.google.com/iam/docs/principal-identifiers#v1 are
+      supported.
     identityType: Specifies the type of identities that are allowed access
       from outside the perimeter. If left unspecified, then members of
       `identities` field will be allowed access.
@@ -5433,13 +5437,15 @@ class QueryAssetsResponse(_messages.Message):
   Fields:
     done: The query response, which can be either an `error` or a valid
       `response`. If `done` == `false` and the query result is being saved in
-      a output, the output_config field will be set. If `done` == `true`,
+      an output, the output_config field will be set. If `done` == `true`,
       exactly one of `error`, `query_result` or `output_config` will be set.
+      [done] is unset unless the [QueryAssetsResponse] contains a
+      [QueryAssetsResponse.job_reference].
     error: Error status.
     jobReference: Reference to a query job.
-    outputConfig: Output configuration which indicates instead of being
-      returned in API response on the fly, the query result will be saved in a
-      specific output.
+    outputConfig: Output configuration, which indicates that instead of being
+      returned in an API response on the fly, the query result will be saved
+      in a specific output.
     queryResult: Result of the query.
   """
 
