@@ -25,6 +25,7 @@ from concurrent import futures
 import encodings.idna  # pylint: disable=unused-import
 import json
 import mimetypes
+import multiprocessing
 import os
 import re
 import sys
@@ -55,6 +56,7 @@ from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import edit
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import parallel
+from googlecloudsdk.core.util import platforms
 import requests
 
 _INVALID_REPO_NAME_ERROR = (
@@ -568,6 +570,9 @@ def ListRepositories(args):
     ])
 
   pool_size = len(loc_paths) if loc_paths else 1
+  if platforms.OperatingSystem.Current() is platforms.OperatingSystem.WINDOWS:
+    pool_size = multiprocessing.cpu_count() if loc_paths else 1
+
   pool = parallel.GetPool(pool_size)
   page_size = args.page_size
   try:
@@ -824,7 +829,6 @@ def GetMultiProjectRedirectionEnablementReport(projects):
         report_line[1] += 1
         p_repos.append(gcr_repo)
     repo_report.append(report_line)
-    log.status.Print(report_line)
     if p_repos:
       missing_repos[project] = p_repos
 
@@ -1419,8 +1423,8 @@ def MigrateToArtifactRegistry(unused_ref, args):
         "--pkg-dev-location is only used when migrating to pkg.dev repos"
     )
     sys.exit(1)
-  if recent_images is not None and (recent_images < 30 or recent_images > 150):
-    log.status.Print("--recent-images must be between 30 and 150 inclusive")
+  if recent_images is not None and (recent_images < 30 or recent_images > 180):
+    log.status.Print("--recent-images must be between 30 and 180 inclusive")
     sys.exit(1)
   output_iam_policy_dir = args.output_iam_policy_dir
   input_iam_policy_dir = args.input_iam_policy_dir
@@ -1792,14 +1796,14 @@ def MigrateToArtifactRegistry(unused_ref, args):
       ):
         copying_projects.append(project)
         log.status.Print(
-            f"{canary_reads}% of *gcr.io read traffic is now being served by"
+            f"\n{canary_reads}% of *gcr.io read traffic is now being served by"
             f" Artifact Registry for {project}. Missing images are copied from"
             " Container Registry.\nTo send traffic back to Container Registry,"
             " run:\n  gcloud artifacts settings disable-upgrade-redirection"
             f" --project={project}\nTo send all traffic to Artifact"
             " Registry, re-run this script without --canary-reads"
         )
-        return None
+    return None
 
   if projects_to_redirect:
     caveat = ""

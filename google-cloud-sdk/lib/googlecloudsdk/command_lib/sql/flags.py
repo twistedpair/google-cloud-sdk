@@ -2441,8 +2441,10 @@ def AddTimeout(
   )
 
 
-def AddEnablePrivateServiceConnect(parser, hidden=False):
-  kwargs = _GetKwargsForBoolFlag(False)
+def AddEnablePrivateServiceConnect(
+    parser, show_negated_in_help=False, hidden=False
+):
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(
       '--enable-private-service-connect',
       required=False,

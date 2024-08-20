@@ -370,6 +370,7 @@ SCHEDULER = 'SCHEDULER'
 CONTROLLER_MANAGER = 'CONTROLLER_MANAGER'
 ADDON_MANAGER = 'ADDON_MANAGER'
 KCP_SSHD = 'KCP_SSHD'
+KCP_CONNECTION = 'KCP_CONNECTION'
 STORAGE = 'STORAGE'
 HPA_COMPONENT = 'HPA'
 POD = 'POD'
@@ -388,6 +389,7 @@ LOGGING_OPTIONS = [
     CONTROLLER_MANAGER,
     ADDON_MANAGER,
     KCP_SSHD,
+    KCP_CONNECTION,
 ]
 MONITORING_OPTIONS = [
     NONE,
@@ -1604,7 +1606,8 @@ class UpdateNodePoolOptions(object):
                disk_type=None,
                disk_size_gb=None,
                enable_queued_provisioning=None,
-               max_run_duration=None):
+               max_run_duration=None,
+               storage_pools=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -1649,6 +1652,7 @@ class UpdateNodePoolOptions(object):
     self.disk_size_gb = disk_size_gb
     self.enable_queued_provisioning = enable_queued_provisioning
     self.max_run_duration = max_run_duration
+    self.storage_pools = storage_pools
     self.enable_insecure_kubelet_readonly_port = (
         enable_insecure_kubelet_readonly_port
     )
@@ -1692,7 +1696,8 @@ class UpdateNodePoolOptions(object):
             self.disk_type is not None or
             self.disk_size_gb is not None or
             self.enable_queued_provisioning is not None or
-            self.max_run_duration is not None)
+            self.max_run_duration is not None or
+            self.storage_pools is not None)
 
 
 class APIAdapter(object):
@@ -5297,6 +5302,8 @@ class APIAdapter(object):
       update_request.queuedProvisioning = self.messages.QueuedProvisioning()
       update_request.queuedProvisioning.enabled = (
           options.enable_queued_provisioning)
+    elif options.storage_pools is not None:
+      update_request.storagePools = options.storage_pools
     return update_request
 
   def UpdateNodePool(self, node_pool_ref, options):
@@ -7493,6 +7500,10 @@ def _GetLoggingConfig(options, messages):
     config.enableComponents.append(
         messages.LoggingComponentConfig.EnableComponentsValueListEntryValuesEnum
         .KCP_SSHD)
+  if KCP_CONNECTION in options.logging:
+    config.enableComponents.append(
+        messages.LoggingComponentConfig.EnableComponentsValueListEntryValuesEnum
+        .KCP_CONNECTION)
 
   return messages.LoggingConfig(componentConfig=config)
 

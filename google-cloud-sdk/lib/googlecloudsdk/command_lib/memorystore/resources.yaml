@@ -1,0 +1,42 @@
+project:
+  name: project
+  plural_name: projects
+  collection: memorystore.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: The project ID of the {resource} resource.
+    property: core/project
+  disable_auto_completers: true
+
+project_location:
+  name: location
+  collection: memorystore.projects.locations
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: The location ID of the {resource} resource.
+  disable_auto_completers: false
+
+instance:
+  name: instance
+  collection: memorystore.projects.locations.instances
+  attributes:
+  - *location
+  - parameter_name: instancesId
+    attribute_name: instance
+    help: The Memorystore instance.
+  disable_auto_completers: false
+
+operation:
+  name: operation
+  collection: memorystore.projects.locations.operations
+  attributes:
+  - *location
+  - parameter_name: operationsId
+    attribute_name: operation
+    help: The Memorystore operation.
+  disable_auto_completers: false

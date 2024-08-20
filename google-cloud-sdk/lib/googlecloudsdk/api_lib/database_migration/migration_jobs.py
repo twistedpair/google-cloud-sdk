@@ -37,7 +37,15 @@ class Error(core_exceptions.Error):
 class MigrationJobsClient(object):
   """Client for migration jobs service in the API."""
 
-  _FIELDS_MAP = ['display_name', 'type', 'dump_path', 'source', 'destination']
+  # Contains the update mask for specified fields.
+  _FIELDS_MAP = [
+      'display_name',
+      'type',
+      'dump_path',
+      'source',
+      'destination',
+      'dump_flags',
+  ]
   _REVERSE_MAP = ['vm_ip', 'vm_port', 'vm', 'vpc']
 
   def __init__(self, release_track):
@@ -342,6 +350,9 @@ class MigrationJobsClient(object):
     elif args.IsSpecified('static_ip'):
       params['staticIpConnectivity'] = self._GetStaticIpConnectivity()
 
+    if args.IsSpecified('dump_flags'):
+      params['dumpFlags'] = self._GetDumpFlags(args.dump_flags)
+
     migration_job_obj = migration_job_type(
         labels=labels,
         displayName=args.display_name,
@@ -350,7 +361,8 @@ class MigrationJobsClient(object):
         dumpPath=args.dump_path,
         source=source,
         destination=destination,
-        **params)
+        **params
+    )
     if conversion_workspace_ref is not None:
       migration_job_obj.conversionWorkspace = self._GetConversionWorkspaceInfo(
           conversion_workspace_ref, args
@@ -474,6 +486,18 @@ class MigrationJobsClient(object):
       )
     return  update_fields
 
+  def _GetDumpFlags(self, dump_flags):
+    """Returns the dump flags for the migration job."""
+    dump_flags_list = []
+    for name, value in dump_flags.items():
+      dump_flags_list.append(
+          self.messages.DumpFlag(
+              name=name,
+              value=value,
+          )
+      )
+    return self.messages.DumpFlags(dumpFlags=dump_flags_list)
+
   def _GetUpdatedMigrationJob(
       self, migration_job, source_ref, destination_ref, args):
     """Returns updated migration job and list of updated fields."""
@@ -488,6 +512,8 @@ class MigrationJobsClient(object):
       )
     if args.IsSpecified('dump_path'):
       migration_job.dumpPath = args.dump_path
+    if args.IsSpecified('dump_flags'):
+      migration_job.dumpFlags = self._GetDumpFlags(args.dump_flags)
     if args.IsSpecified('source'):
       migration_job.source = source_ref.RelativeName()
     if args.IsSpecified('destination'):

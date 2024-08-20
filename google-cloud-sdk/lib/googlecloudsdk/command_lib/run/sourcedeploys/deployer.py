@@ -16,7 +16,8 @@
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
-from googlecloudsdk.api_lib.run import run_util
+from googlecloudsdk.api_lib.run import global_methods
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.builds import submit_util
@@ -58,8 +59,9 @@ def CreateImage(
   base_image_from_build = None
   source = None
 
-  if release_track is base.ReleaseTrack.ALPHA:
-    # In the alpha track we separately upload the source code then call the new
+  if release_track != base.ReleaseTrack.GA:
+    # In the alpha and beta track we separately
+    # upload the source code then call the new
     # builds API.
     tracker.StartStage(stages.UPLOAD_SOURCE)
     tracker.UpdateHeaderMessage('Uploading sources.')
@@ -69,7 +71,6 @@ def CreateImage(
         build_image,
         build_pack,
         region,
-        release_track,
         base_image,
         source,
         resource_ref,
@@ -81,7 +82,6 @@ def CreateImage(
     try:
       response_dict, build_log_url, base_image_from_build = _SubmitBuild(
           tracker,
-          release_track,
           region,
           submit_build_request,
       )
@@ -290,7 +290,6 @@ def _PrepareSubmitBuildRequest(
     docker_image,
     build_pack,
     region,
-    release_track,
     base_image,
     source,
     resource_ref,
@@ -300,7 +299,7 @@ def _PrepareSubmitBuildRequest(
     enable_automatic_updates,
 ):
   """Upload the provided build source and prepare submit build request."""
-  messages = run_util.GetMessagesModule(release_track)
+  messages = apis.GetMessagesModule(global_methods.SERVERLESS_API_NAME, 'v2')
   parent = 'projects/{project}/locations/{region}'.format(
       project=properties.VALUES.core.project.Get(required=True), region=region
   )
@@ -364,7 +363,6 @@ def _GetBuildTags(resource_ref):
 
 def _SubmitBuild(
     tracker,
-    release_track,
     region,
     submit_build_request,
 ):
@@ -372,7 +370,6 @@ def _SubmitBuild(
 
   Arguments:
     tracker: StagedProgressTracker, to report on the progress of releasing.
-    release_track: ReleaseTrack, the release track of a command calling this.
     region: str, The region of the control plane.
     submit_build_request: SubmitBuildRequest, the request to submit build.
 
@@ -382,7 +379,7 @@ def _SubmitBuild(
     build_response.baseImageUri: The rectified uri of the base image that should
     be used in automatic base image update.
   """
-  run_client = run_util.GetClientInstance(release_track)
+  run_client = apis.GetClientInstance(global_methods.SERVERLESS_API_NAME, 'v2')
   build_messages = cloudbuild_util.GetMessagesModule()
 
   build_response = run_client.projects_locations_builds.Submit(

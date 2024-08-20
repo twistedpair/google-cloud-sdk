@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2018 Google LLC. All Rights Reserved.
+# Copyright 2024 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -169,6 +169,43 @@ def AddSnapshotScheduleArgs(parser, messages):
       help='Create an application consistent snapshot by informing the OS to '
            'prepare for the snapshot process.')
   compute_flags.AddStorageLocationFlag(snapshot_properties_group, 'snapshot')
+
+
+def AddInstanceScheduleArgs(parser):
+  """Adds flags specific to instance schedule resource policies."""
+  parser.add_argument(
+      '--timezone',
+      help="""
+      Timezone used in interpreting schedule. The value of this field must be
+      a time zone name from the tz database
+      http://en.wikipedia.org/wiki/Tz_database
+    """,
+  )
+  parser.add_argument(
+      '--vm-start-schedule',
+      help="""
+      Schedule for starting the instance, specified using standard CRON format.
+    """,
+  )
+  parser.add_argument(
+      '--vm-stop-schedule',
+      help="""
+      Schedule for stopping the instance, specified using standard CRON format.
+    """,
+  )
+  parser.add_argument(
+      '--initiation-date',
+      type=arg_parsers.Datetime.Parse,
+      help="""
+     The start time of the schedule policy. The timestamp must be
+     an RFC3339 valid string.""",
+  )
+  parser.add_argument(
+      '--end-date',
+      type=arg_parsers.Datetime.Parse,
+      help="""The expiration time of the schedule policy. The timestamp must be
+        an RFC3339 valid string.""",
+  )
 
 
 def AddSnapshotMaxRetentionDaysArgs(parser, required=True):

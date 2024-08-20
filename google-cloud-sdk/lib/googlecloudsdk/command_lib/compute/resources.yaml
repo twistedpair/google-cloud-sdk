@@ -125,6 +125,15 @@ instance_template:
     attribute_name: instance_template
     help: The name of the Google Compute Engine instance template.
 
+network_profile:
+  name: network_profile
+  collection: compute.networkProfiles
+  attributes:
+  - *project
+  - parameter_name: networkProfile
+    attribute_name: network_profile
+    help: The name of the Google Compute Engine network profile.
+
 node_group:
   name: node_group
   collection: compute.nodeGroups

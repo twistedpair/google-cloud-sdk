@@ -944,6 +944,7 @@ class ComponentInfo(object):
     name: str, The display name of the component.
     current_version_string: str, The version of the component.
     is_hidden: bool, If the component is hidden.
+    gdu_only: bool, If the component is only available in GDU.
     is_configuration: bool, True if this should be displayed in the packages
       section of the component manager.
     platform_required: bool, True if a platform-specific executable is
@@ -983,6 +984,10 @@ class ComponentInfo(object):
   @property
   def is_hidden(self):
     return self._component.is_hidden
+
+  @property
+  def gdu_only(self):
+    return self._component.gdu_only
 
   @property
   def is_configuration(self):
@@ -1041,6 +1046,7 @@ class ComponentDiff(object):
     data_provider = self.__latest if self.__latest else self.__current
     self.name = data_provider.details.display_name
     self.is_hidden = data_provider.is_hidden
+    self.gdu_only = data_provider.gdu_only
     self.is_configuration = data_provider.is_configuration
     self.platform_required = data_provider.platform_required
     self.state = self._ComputeState()

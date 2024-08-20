@@ -108,6 +108,7 @@ Examples:
 
   $ {command} --distribution=aks
   $ {command} --distribution=eks
+  $ {command} --distribution=generic
 """
   parser.add_argument('--distribution', required=required, help=help_text)
 

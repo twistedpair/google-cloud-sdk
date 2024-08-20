@@ -17,6 +17,24 @@ from apitools.base.py import extra_types
 package = 'run'
 
 
+class GoogleCloudRunV2AutomaticScaling(_messages.Message):
+  r"""Automatic scaling settings.
+
+  Fields:
+    maxInstanceCount: Optional. Total max instances for the worker. This
+      number of instances is divided among all revisions with specified
+      instance split based on the percent of instance split they are
+      receiving.
+    minInstanceCount: Optional. Total min instances for the worker. This
+      number of instances is divided among all revisions with specified
+      instance split based on the percent of instance split they are
+      receiving.
+  """
+
+  maxInstanceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minInstanceCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudRunV2BinaryAuthorization(_messages.Message):
   r"""Settings for Binary Authorization feature.
 
@@ -444,13 +462,9 @@ class GoogleCloudRunV2EnvVar(_messages.Message):
   Fields:
     name: Required. Name of the environment variable. Must not exceed 32768
       characters.
-    value: Variable references $(VAR_NAME) are expanded using the previous
-      defined environment variables in the container and any route environment
-      variables. If a variable cannot be resolved, the reference in the input
-      string will be unchanged. The $(VAR_NAME) syntax can be escaped with a
-      double $$, ie: $$(VAR_NAME). Escaped references will never be expanded,
-      regardless of whether the variable exists or not. Defaults to "", and
-      the maximum length is 32768 bytes.
+    value: Literal value of the environment variable. Defaults to "", and the
+      maximum length is 32768 bytes. Variable references are not supported in
+      Cloud Run.
     valueSource: Source for the environment variable's value.
   """
 
@@ -1029,6 +1043,73 @@ class GoogleCloudRunV2ImageExportStatus(_messages.Message):
   tag = _messages.StringField(4)
 
 
+class GoogleCloudRunV2InstanceSplit(_messages.Message):
+  r"""Holds a single instance split entry for the Worker. Allocations can be
+  done to a specific Revision name, or pointing to the latest Ready Revision.
+
+  Enums:
+    TypeValueValuesEnum: The allocation type for this instance split.
+
+  Fields:
+    percent: Specifies percent of the instance split to this Revision. This
+      defaults to zero if unspecified.
+    revision: Revision to which to assign this portion of instances, if split
+      allocation is by revision.
+    type: The allocation type for this instance split.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The allocation type for this instance split.
+
+    Values:
+      INSTANCE_SPLIT_ALLOCATION_TYPE_UNSPECIFIED: Unspecified instance
+        allocation type.
+      INSTANCE_SPLIT_ALLOCATION_TYPE_LATEST: Allocates instances to the
+        Service's latest ready Revision.
+      INSTANCE_SPLIT_ALLOCATION_TYPE_REVISION: Allocates instances to a
+        Revision by name.
+    """
+    INSTANCE_SPLIT_ALLOCATION_TYPE_UNSPECIFIED = 0
+    INSTANCE_SPLIT_ALLOCATION_TYPE_LATEST = 1
+    INSTANCE_SPLIT_ALLOCATION_TYPE_REVISION = 2
+
+  percent = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  revision = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class GoogleCloudRunV2InstanceSplitStatus(_messages.Message):
+  r"""Represents the observed state of a single `InstanceSplit` entry.
+
+  Enums:
+    TypeValueValuesEnum: The allocation type for this instance split.
+
+  Fields:
+    percent: Specifies percent of the instance split to this Revision.
+    revision: Revision to which this instance split is assigned.
+    type: The allocation type for this instance split.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The allocation type for this instance split.
+
+    Values:
+      INSTANCE_SPLIT_ALLOCATION_TYPE_UNSPECIFIED: Unspecified instance
+        allocation type.
+      INSTANCE_SPLIT_ALLOCATION_TYPE_LATEST: Allocates instances to the
+        Service's latest ready Revision.
+      INSTANCE_SPLIT_ALLOCATION_TYPE_REVISION: Allocates instances to a
+        Revision by name.
+    """
+    INSTANCE_SPLIT_ALLOCATION_TYPE_UNSPECIFIED = 0
+    INSTANCE_SPLIT_ALLOCATION_TYPE_LATEST = 1
+    INSTANCE_SPLIT_ALLOCATION_TYPE_REVISION = 2
+
+  percent = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  revision = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
 class GoogleCloudRunV2Job(_messages.Message):
   r"""Job represents the configuration of a single job, which references a
   container image that is run to completion.
@@ -1361,6 +1442,32 @@ class GoogleCloudRunV2ListTasksResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   tasks = _messages.MessageField('GoogleCloudRunV2Task', 2, repeated=True)
+
+
+class GoogleCloudRunV2ListWorkerPoolsResponse(_messages.Message):
+  r"""Response message containing a list of WorkerPools.
+
+  Fields:
+    nextPageToken: A token indicating there are more items than page_size. Use
+      it in the next ListWorkerPools request to continue.
+    workerPools: The resulting list of WorkerPools.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workerPools = _messages.MessageField('GoogleCloudRunV2WorkerPool', 2, repeated=True)
+
+
+class GoogleCloudRunV2ManualScaling(_messages.Message):
+  r"""Manual scaling settings.
+
+  Fields:
+    instanceCount: Optional. Total fixed instances for the manually scaled
+      worker. This number of instances is divided among all revisions with
+      specified instance split based on the percent of instance split they are
+      receiving.
+  """
+
+  instanceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudRunV2Metadata(_messages.Message):
@@ -2954,6 +3061,513 @@ class GoogleCloudRunV2VpcAccess(_messages.Message):
   connector = _messages.StringField(1)
   egress = _messages.EnumField('EgressValueValuesEnum', 2)
   networkInterfaces = _messages.MessageField('GoogleCloudRunV2NetworkInterface', 3, repeated=True)
+
+
+class GoogleCloudRunV2WorkerPool(_messages.Message):
+  r"""WorkerPool acts as a top-level container that manages a set of
+  configurations and revision templates which implement a pull-based workload.
+  WorkerPool exists to provide a singular abstraction which can be access
+  controlled, reasoned about, and which encapsulates software lifecycle
+  decisions such as rollout policy and team resource ownership.
+
+  Enums:
+    LaunchStageValueValuesEnum: Optional. The launch stage as defined by
+      [Google Cloud Platform Launch
+      Stages](https://cloud.google.com/terms/launch-stages). Cloud Run
+      supports `ALPHA`, `BETA`, and `GA`. If no value is specified, GA is
+      assumed. Set the launch stage to a preview stage on input to allow use
+      of preview features in that stage. On read (or output), describes
+      whether the resource uses preview features. For example, if ALPHA is
+      provided as input, but only BETA and GA-level features are used, this
+      field will be BETA on output.
+
+  Messages:
+    AnnotationsValue: Optional. Unstructured key value map that may be set by
+      external tools to store and arbitrary metadata. They are not queryable
+      and should be preserved when modifying objects. Cloud Run API v2 does
+      not support annotations with `run.googleapis.com`,
+      `cloud.googleapis.com`, `serving.knative.dev`, or
+      `autoscaling.knative.dev` namespaces, and they will be rejected in new
+      resources. All system annotations in v1 now have a corresponding field
+      in v2 WorkerPool. This field follows Kubernetes annotations'
+      namespacing, limits, and rules.
+    LabelsValue: Optional. Unstructured key value map that can be used to
+      organize and categorize objects. User-provided labels are shared with
+      Google's billing system, so they can be used to filter, or break down
+      billing charges by team, component, environment, state, etc. For more
+      information, visit https://cloud.google.com/resource-
+      manager/docs/creating-managing-labels or
+      https://cloud.google.com/run/docs/configuring/labels. Cloud Run API v2
+      does not support labels with `run.googleapis.com`,
+      `cloud.googleapis.com`, `serving.knative.dev`, or
+      `autoscaling.knative.dev` namespaces, and they will be rejected. All
+      system labels in v1 now have a corresponding field in v2 WorkerPool.
+
+  Fields:
+    annotations: Optional. Unstructured key value map that may be set by
+      external tools to store and arbitrary metadata. They are not queryable
+      and should be preserved when modifying objects. Cloud Run API v2 does
+      not support annotations with `run.googleapis.com`,
+      `cloud.googleapis.com`, `serving.knative.dev`, or
+      `autoscaling.knative.dev` namespaces, and they will be rejected in new
+      resources. All system annotations in v1 now have a corresponding field
+      in v2 WorkerPool. This field follows Kubernetes annotations'
+      namespacing, limits, and rules.
+    binaryAuthorization: Optional. Settings for the Binary Authorization
+      feature.
+    client: Arbitrary identifier for the API client.
+    clientVersion: Arbitrary version identifier for the API client.
+    conditions: Output only. The Conditions of all other associated sub-
+      resources. They contain additional diagnostics information in case the
+      WorkerPool does not reach its Serving state. See comments in
+      `reconciling` for additional information on reconciliation process in
+      Cloud Run.
+    createTime: Output only. The creation time.
+    creator: Output only. Email address of the authenticated creator.
+    customAudiences: One or more custom audiences that you want this worker
+      pool to support. Specify each custom audience as the full URL in a
+      string. The custom audiences are encoded in the token and used to
+      authenticate requests. For more information, see
+      https://cloud.google.com/run/docs/configuring/custom-audiences.
+    deleteTime: Output only. The deletion time. It is only populated as a
+      response to a Delete request.
+    description: User-provided description of the WorkerPool. This field
+      currently has a 512-character limit.
+    etag: Output only. A system-generated fingerprint for this version of the
+      resource. May be used to detect modification conflict during updates.
+    expireTime: Output only. For a deleted resource, the time after which it
+      will be permamently deleted.
+    generation: Output only. A number that monotonically increases every time
+      the user modifies the desired state. Please note that unlike v1, this is
+      an int64 value. As with most Google APIs, its JSON representation will
+      be a `string` instead of an `integer`.
+    instanceSplitStatuses: Output only. Detailed status information for
+      corresponding instance splits. See comments in `reconciling` for
+      additional information on reconciliation process in Cloud Run.
+    instanceSplits: Optional. Specifies how to distribute instances over a
+      collection of Revisions belonging to the WorkerPool. If instance split
+      is empty or not provided, defaults to 100% instances assigned to the
+      latest `Ready` Revision.
+    labels: Optional. Unstructured key value map that can be used to organize
+      and categorize objects. User-provided labels are shared with Google's
+      billing system, so they can be used to filter, or break down billing
+      charges by team, component, environment, state, etc. For more
+      information, visit https://cloud.google.com/resource-
+      manager/docs/creating-managing-labels or
+      https://cloud.google.com/run/docs/configuring/labels. Cloud Run API v2
+      does not support labels with `run.googleapis.com`,
+      `cloud.googleapis.com`, `serving.knative.dev`, or
+      `autoscaling.knative.dev` namespaces, and they will be rejected. All
+      system labels in v1 now have a corresponding field in v2 WorkerPool.
+    lastModifier: Output only. Email address of the last authenticated
+      modifier.
+    latestCreatedRevision: Output only. Name of the last created revision. See
+      comments in `reconciling` for additional information on reconciliation
+      process in Cloud Run.
+    latestReadyRevision: Output only. Name of the latest revision that is
+      serving traffic. See comments in `reconciling` for additional
+      information on reconciliation process in Cloud Run.
+    launchStage: Optional. The launch stage as defined by [Google Cloud
+      Platform Launch Stages](https://cloud.google.com/terms/launch-stages).
+      Cloud Run supports `ALPHA`, `BETA`, and `GA`. If no value is specified,
+      GA is assumed. Set the launch stage to a preview stage on input to allow
+      use of preview features in that stage. On read (or output), describes
+      whether the resource uses preview features. For example, if ALPHA is
+      provided as input, but only BETA and GA-level features are used, this
+      field will be BETA on output.
+    name: The fully qualified name of this WorkerPool. In
+      CreateWorkerPoolRequest, this field is ignored, and instead composed
+      from CreateWorkerPoolRequest.parent and
+      CreateWorkerPoolRequest.worker_id. Format:
+      projects/{project}/locations/{location}/workerPools/{worker_id}
+    observedGeneration: Output only. The generation of this WorkerPool
+      currently serving traffic. See comments in `reconciling` for additional
+      information on reconciliation process in Cloud Run. Please note that
+      unlike v1, this is an int64 value. As with most Google APIs, its JSON
+      representation will be a `string` instead of an `integer`.
+    reconciling: Output only. Returns true if the WorkerPool is currently
+      being acted upon by the system to bring it into the desired state. When
+      a new WorkerPool is created, or an existing one is updated, Cloud Run
+      will asynchronously perform all necessary steps to bring the WorkerPool
+      to the desired serving state. This process is called reconciliation.
+      While reconciliation is in process, `observed_generation`,
+      `latest_ready_revison`, `traffic_statuses`, and `uri` will have
+      transient values that might mismatch the intended state: Once
+      reconciliation is over (and this field is false), there are two possible
+      outcomes: reconciliation succeeded and the serving state matches the
+      WorkerPool, or there was an error, and reconciliation failed. This state
+      can be found in `terminal_condition.state`. If reconciliation succeeded,
+      the following fields will match: `traffic` and `traffic_statuses`,
+      `observed_generation` and `generation`, `latest_ready_revision` and
+      `latest_created_revision`. If reconciliation failed, `traffic_statuses`,
+      `observed_generation`, and `latest_ready_revision` will have the state
+      of the last serving revision, or empty for newly created WorkerPools.
+      Additional information on the failure can be found in
+      `terminal_condition` and `conditions`.
+    satisfiesPzs: Output only. Reserved for future use.
+    scaling: Optional. Specifies worker-pool-level scaling settings
+    template: Required. The template used to create revisions for this
+      WorkerPool.
+    terminalCondition: Output only. The Condition of this WorkerPool,
+      containing its readiness status, and detailed error information in case
+      it did not reach a serving state. See comments in `reconciling` for
+      additional information on reconciliation process in Cloud Run.
+    uid: Output only. Server assigned unique identifier for the trigger. The
+      value is a UUID4 string and guaranteed to remain unchanged until the
+      resource is deleted.
+    updateTime: Output only. The last-modified time.
+  """
+
+  class LaunchStageValueValuesEnum(_messages.Enum):
+    r"""Optional. The launch stage as defined by [Google Cloud Platform Launch
+    Stages](https://cloud.google.com/terms/launch-stages). Cloud Run supports
+    `ALPHA`, `BETA`, and `GA`. If no value is specified, GA is assumed. Set
+    the launch stage to a preview stage on input to allow use of preview
+    features in that stage. On read (or output), describes whether the
+    resource uses preview features. For example, if ALPHA is provided as
+    input, but only BETA and GA-level features are used, this field will be
+    BETA on output.
+
+    Values:
+      LAUNCH_STAGE_UNSPECIFIED: Do not use this default value.
+      UNIMPLEMENTED: The feature is not yet implemented. Users can not use it.
+      PRELAUNCH: Prelaunch features are hidden from users and are only visible
+        internally.
+      EARLY_ACCESS: Early Access features are limited to a closed group of
+        testers. To use these features, you must sign up in advance and sign a
+        Trusted Tester agreement (which includes confidentiality provisions).
+        These features may be unstable, changed in backward-incompatible ways,
+        and are not guaranteed to be released.
+      ALPHA: Alpha is a limited availability test for releases before they are
+        cleared for widespread use. By Alpha, all significant design issues
+        are resolved and we are in the process of verifying functionality.
+        Alpha customers need to apply for access, agree to applicable terms,
+        and have their projects allowlisted. Alpha releases don't have to be
+        feature complete, no SLAs are provided, and there are no technical
+        support obligations, but they will be far enough along that customers
+        can actually use them in test environments or for limited-use tests --
+        just like they would in normal production cases.
+      BETA: Beta is the point at which we are ready to open a release for any
+        customer to use. There are no SLA or technical support obligations in
+        a Beta release. Products will be complete from a feature perspective,
+        but may have some open outstanding issues. Beta releases are suitable
+        for limited production use cases.
+      GA: GA features are open to all developers and are considered stable and
+        fully qualified for production use.
+      DEPRECATED: Deprecated features are scheduled to be shut down and
+        removed. For more information, see the "Deprecation Policy" section of
+        our [Terms of Service](https://cloud.google.com/terms/) and the
+        [Google Cloud Platform Subject to the Deprecation
+        Policy](https://cloud.google.com/terms/deprecation) documentation.
+    """
+    LAUNCH_STAGE_UNSPECIFIED = 0
+    UNIMPLEMENTED = 1
+    PRELAUNCH = 2
+    EARLY_ACCESS = 3
+    ALPHA = 4
+    BETA = 5
+    GA = 6
+    DEPRECATED = 7
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Unstructured key value map that may be set by external tools
+    to store and arbitrary metadata. They are not queryable and should be
+    preserved when modifying objects. Cloud Run API v2 does not support
+    annotations with `run.googleapis.com`, `cloud.googleapis.com`,
+    `serving.knative.dev`, or `autoscaling.knative.dev` namespaces, and they
+    will be rejected in new resources. All system annotations in v1 now have a
+    corresponding field in v2 WorkerPool. This field follows Kubernetes
+    annotations' namespacing, limits, and rules.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Unstructured key value map that can be used to organize and
+    categorize objects. User-provided labels are shared with Google's billing
+    system, so they can be used to filter, or break down billing charges by
+    team, component, environment, state, etc. For more information, visit
+    https://cloud.google.com/resource-manager/docs/creating-managing-labels or
+    https://cloud.google.com/run/docs/configuring/labels. Cloud Run API v2
+    does not support labels with `run.googleapis.com`, `cloud.googleapis.com`,
+    `serving.knative.dev`, or `autoscaling.knative.dev` namespaces, and they
+    will be rejected. All system labels in v1 now have a corresponding field
+    in v2 WorkerPool.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  binaryAuthorization = _messages.MessageField('GoogleCloudRunV2BinaryAuthorization', 2)
+  client = _messages.StringField(3)
+  clientVersion = _messages.StringField(4)
+  conditions = _messages.MessageField('GoogleCloudRunV2Condition', 5, repeated=True)
+  createTime = _messages.StringField(6)
+  creator = _messages.StringField(7)
+  customAudiences = _messages.StringField(8, repeated=True)
+  deleteTime = _messages.StringField(9)
+  description = _messages.StringField(10)
+  etag = _messages.StringField(11)
+  expireTime = _messages.StringField(12)
+  generation = _messages.IntegerField(13)
+  instanceSplitStatuses = _messages.MessageField('GoogleCloudRunV2InstanceSplitStatus', 14, repeated=True)
+  instanceSplits = _messages.MessageField('GoogleCloudRunV2InstanceSplit', 15, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 16)
+  lastModifier = _messages.StringField(17)
+  latestCreatedRevision = _messages.StringField(18)
+  latestReadyRevision = _messages.StringField(19)
+  launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 20)
+  name = _messages.StringField(21)
+  observedGeneration = _messages.IntegerField(22)
+  reconciling = _messages.BooleanField(23)
+  satisfiesPzs = _messages.BooleanField(24)
+  scaling = _messages.MessageField('GoogleCloudRunV2WorkerPoolScaling', 25)
+  template = _messages.MessageField('GoogleCloudRunV2WorkerPoolRevisionTemplate', 26)
+  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 27)
+  uid = _messages.StringField(28)
+  updateTime = _messages.StringField(29)
+
+
+class GoogleCloudRunV2WorkerPoolRevisionTemplate(_messages.Message):
+  r"""WorkerPoolRevisionTemplate describes the data a worker pool revision
+  should have when created from a template.
+
+  Messages:
+    AnnotationsValue: Optional. Unstructured key value map that may be set by
+      external tools to store and arbitrary metadata. They are not queryable
+      and should be preserved when modifying objects. Cloud Run API v2 does
+      not support annotations with `run.googleapis.com`,
+      `cloud.googleapis.com`, `serving.knative.dev`, or
+      `autoscaling.knative.dev` namespaces, and they will be rejected. All
+      system annotations in v1 now have a corresponding field in v2
+      WorkerPoolRevisionTemplate. This field follows Kubernetes annotations'
+      namespacing, limits, and rules.
+    ContainersValue: Holds the map of the containers that defines the unit of
+      execution for this Revision.
+    LabelsValue: Optional. Unstructured key value map that can be used to
+      organize and categorize objects. User-provided labels are shared with
+      Google's billing system, so they can be used to filter, or break down
+      billing charges by team, component, environment, state, etc. For more
+      information, visit https://cloud.google.com/resource-
+      manager/docs/creating-managing-labels or
+      https://cloud.google.com/run/docs/configuring/labels. Cloud Run API v2
+      does not support labels with `run.googleapis.com`,
+      `cloud.googleapis.com`, `serving.knative.dev`, or
+      `autoscaling.knative.dev` namespaces, and they will be rejected. All
+      system labels in v1 now have a corresponding field in v2
+      WorkerPoolRevisionTemplate.
+
+  Fields:
+    annotations: Optional. Unstructured key value map that may be set by
+      external tools to store and arbitrary metadata. They are not queryable
+      and should be preserved when modifying objects. Cloud Run API v2 does
+      not support annotations with `run.googleapis.com`,
+      `cloud.googleapis.com`, `serving.knative.dev`, or
+      `autoscaling.knative.dev` namespaces, and they will be rejected. All
+      system annotations in v1 now have a corresponding field in v2
+      WorkerPoolRevisionTemplate. This field follows Kubernetes annotations'
+      namespacing, limits, and rules.
+    containers: Holds the map of the containers that defines the unit of
+      execution for this Revision.
+    encryptionKey: A reference to a customer managed encryption key (CMEK) to
+      use to encrypt this container image. For more information, go to
+      https://cloud.google.com/run/docs/securing/using-cmek
+    labels: Optional. Unstructured key value map that can be used to organize
+      and categorize objects. User-provided labels are shared with Google's
+      billing system, so they can be used to filter, or break down billing
+      charges by team, component, environment, state, etc. For more
+      information, visit https://cloud.google.com/resource-
+      manager/docs/creating-managing-labels or
+      https://cloud.google.com/run/docs/configuring/labels. Cloud Run API v2
+      does not support labels with `run.googleapis.com`,
+      `cloud.googleapis.com`, `serving.knative.dev`, or
+      `autoscaling.knative.dev` namespaces, and they will be rejected. All
+      system labels in v1 now have a corresponding field in v2
+      WorkerPoolRevisionTemplate.
+    nodeSelector: Optional. The node selector for the revision template.
+    revision: Optional. The unique name for the revision. If this field is
+      omitted, it will be automatically generated based on the WorkerPool
+      name.
+    serviceAccount: Optional. Email address of the IAM service account
+      associated with the revision of the service. The service account
+      represents the identity of the running revision, and determines what
+      permissions the revision has. If not provided, the revision will use the
+      project's default service account.
+    serviceMesh: Optional. Enables service mesh connectivity.
+    sessionAffinity: Optional. Enable session affinity.
+    volumes: Optional. A list of Volumes to make available to containers.
+    vpcAccess: Optional. VPC Access configuration to use for this Revision.
+      For more information, visit
+      https://cloud.google.com/run/docs/configuring/connecting-vpc.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Unstructured key value map that may be set by external tools
+    to store and arbitrary metadata. They are not queryable and should be
+    preserved when modifying objects. Cloud Run API v2 does not support
+    annotations with `run.googleapis.com`, `cloud.googleapis.com`,
+    `serving.knative.dev`, or `autoscaling.knative.dev` namespaces, and they
+    will be rejected. All system annotations in v1 now have a corresponding
+    field in v2 WorkerPoolRevisionTemplate. This field follows Kubernetes
+    annotations' namespacing, limits, and rules.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ContainersValue(_messages.Message):
+    r"""Holds the map of the containers that defines the unit of execution for
+    this Revision.
+
+    Messages:
+      AdditionalProperty: An additional property for a ContainersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ContainersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ContainersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudRunV2Container attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudRunV2Container', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Unstructured key value map that can be used to organize and
+    categorize objects. User-provided labels are shared with Google's billing
+    system, so they can be used to filter, or break down billing charges by
+    team, component, environment, state, etc. For more information, visit
+    https://cloud.google.com/resource-manager/docs/creating-managing-labels or
+    https://cloud.google.com/run/docs/configuring/labels. Cloud Run API v2
+    does not support labels with `run.googleapis.com`, `cloud.googleapis.com`,
+    `serving.knative.dev`, or `autoscaling.knative.dev` namespaces, and they
+    will be rejected. All system labels in v1 now have a corresponding field
+    in v2 WorkerPoolRevisionTemplate.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  containers = _messages.MessageField('ContainersValue', 2)
+  encryptionKey = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 5)
+  revision = _messages.StringField(6)
+  serviceAccount = _messages.StringField(7)
+  serviceMesh = _messages.MessageField('GoogleCloudRunV2ServiceMesh', 8)
+  sessionAffinity = _messages.BooleanField(9)
+  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 10, repeated=True)
+  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 11)
+
+
+class GoogleCloudRunV2WorkerPoolScaling(_messages.Message):
+  r"""Worker pool scaling settings.
+
+  Fields:
+    automaticScaling: The worker will automatically scale between min and max
+      instances.
+    manualScaling: The worker will have a fixed number of instances.
+    maxSurge: Optional. A maximum percentage of instances that will be moved
+      in each step of traffic split changes. When set to a positive value, the
+      server will bring up, at most, that percentage of new instances at a
+      time before moving traffic to them. After moving traffic, the server
+      will bring down instances of the old revision. This can reduce a spike
+      of total active instances during changes from one revision to another
+      but specifying how many extra instances can be brought up at a time.
+    maxUnavailable: Optional. A maximum percentage of instances that may be
+      unavailable during changes from one revision to another. When set to a
+      positive value, the server may bring down instances before bringing up
+      new instances. This can prevent a spike of total active instances during
+      changes from one revision by reducing the pool of instances before
+      bringing up new ones. Some requests may be slow or fail to serve during
+      the transition.
+  """
+
+  automaticScaling = _messages.MessageField('GoogleCloudRunV2AutomaticScaling', 1)
+  manualScaling = _messages.MessageField('GoogleCloudRunV2ManualScaling', 2)
+  maxSurge = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maxUnavailable = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GoogleDevtoolsCloudbuildV1ApprovalConfig(_messages.Message):
@@ -5537,6 +6151,110 @@ class RunProjectsLocationsServicesTestIamPermissionsRequest(_messages.Message):
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
   resource = _messages.StringField(2, required=True)
+
+
+class RunProjectsLocationsWorkerPoolsCreateRequest(_messages.Message):
+  r"""A RunProjectsLocationsWorkerPoolsCreateRequest object.
+
+  Fields:
+    googleCloudRunV2WorkerPool: A GoogleCloudRunV2WorkerPool resource to be
+      passed as the request body.
+    parent: Required. The location and project in which this worker pool
+      should be created. Format: projects/{project}/locations/{location},
+      where {project} can be project id or number. Only lowercase characters,
+      digits, and hyphens.
+    validateOnly: Indicates that the request should be validated and default
+      values populated, without persisting the request or creating any
+      resources.
+    workerPoolId: Required. The unique identifier for the WorkerPool. It must
+      begin with letter, and cannot end with hyphen; must contain fewer than
+      50 characters. The name of the worker pool becomes
+      {parent}/workerPools/{worker_pool_id}.
+  """
+
+  googleCloudRunV2WorkerPool = _messages.MessageField('GoogleCloudRunV2WorkerPool', 1)
+  parent = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
+  workerPoolId = _messages.StringField(4)
+
+
+class RunProjectsLocationsWorkerPoolsDeleteRequest(_messages.Message):
+  r"""A RunProjectsLocationsWorkerPoolsDeleteRequest object.
+
+  Fields:
+    etag: A system-generated fingerprint for this version of the resource. May
+      be used to detect modification conflict during updates.
+    name: Required. The full name of the WorkerPool. Format:
+      projects/{project}/locations/{location}/workerPools/{worker_pool}, where
+      {project} can be project id or number.
+    validateOnly: Indicates that the request should be validated without
+      actually deleting any resources.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
+
+
+class RunProjectsLocationsWorkerPoolsGetRequest(_messages.Message):
+  r"""A RunProjectsLocationsWorkerPoolsGetRequest object.
+
+  Fields:
+    name: Required. The full name of the WorkerPool. Format:
+      projects/{project}/locations/{location}/workerPools/{worker_pool}, where
+      {project} can be project id or number.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunProjectsLocationsWorkerPoolsListRequest(_messages.Message):
+  r"""A RunProjectsLocationsWorkerPoolsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of WorkerPools to return in this call.
+    pageToken: A page token received from a previous call to ListWorkerPools.
+      All other parameters must match.
+    parent: Required. The location and project to list resources on. Location
+      must be a valid Google Cloud region, and cannot be the "-" wildcard.
+      Format: projects/{project}/locations/{location}, where {project} can be
+      project id or number.
+    showDeleted: If true, returns deleted (but unexpired) resources along with
+      active ones.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
+
+
+class RunProjectsLocationsWorkerPoolsPatchRequest(_messages.Message):
+  r"""A RunProjectsLocationsWorkerPoolsPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, and if the WorkerPool does not
+      exist, it will create a new one. The caller must have
+      'run.services.create' permissions if this is set to true and the
+      WorkerPool does not exist.
+    googleCloudRunV2WorkerPool: A GoogleCloudRunV2WorkerPool resource to be
+      passed as the request body.
+    name: The fully qualified name of this WorkerPool. In
+      CreateWorkerPoolRequest, this field is ignored, and instead composed
+      from CreateWorkerPoolRequest.parent and
+      CreateWorkerPoolRequest.worker_id. Format:
+      projects/{project}/locations/{location}/workerPools/{worker_id}
+    updateMask: Optional. The list of fields to be updated.
+    validateOnly: Indicates that the request should be validated and default
+      values populated, without persisting the request or updating any
+      resources.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  googleCloudRunV2WorkerPool = _messages.MessageField('GoogleCloudRunV2WorkerPool', 2)
+  name = _messages.StringField(3, required=True)
+  updateMask = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
 
 
 class StandardQueryParameters(_messages.Message):

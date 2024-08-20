@@ -190,6 +190,133 @@ class ClusterUpgradeUpgradeStatus(_messages.Message):
   updateTime = _messages.StringField(3)
 
 
+class ConfigDeliveryArgoCDCondition(_messages.Message):
+  r"""Condition contains details for one aspect of the current state of the
+  reconciliation object.
+
+  Enums:
+    StatusValueValuesEnum: status of the condition, one of True, False,
+      Unknown.
+    TypeValueValuesEnum: type of condition in CamelCase.
+
+  Fields:
+    lastTransitionTime: lastTransitionTime is the last time the condition
+      transitioned from one status to another
+    message: message is a human readable message indicating details about the
+      transition. This may be an empty string.
+    reason: reason contains a programmatic identifier indicating the reason
+      for the condition's last transition.
+    status: status of the condition, one of True, False, Unknown.
+    type: type of condition in CamelCase.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""status of the condition, one of True, False, Unknown.
+
+    Values:
+      CONDITION_STATUS_UNSPECIFIED: CONDITION_STATUS_UNSPECIFIED is the
+        default unspecified conditionStatus.
+      TRUE: TRUE means a resource is in the condition.
+      FALSE: FALSE means a resource is not in the condition.
+      UNKNOWN: UNKNOWN means kubernetes can't decide if a resource is in the
+        condition or not.
+    """
+    CONDITION_STATUS_UNSPECIFIED = 0
+    TRUE = 1
+    FALSE = 2
+    UNKNOWN = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""type of condition in CamelCase.
+
+    Values:
+      CONDITION_TYPE_UNSPECIFIED: CONDITION_TYPE_UNSPECIFIED is the default
+        unspecified conditionType.
+      READY: READY indicates the type of the configdeliveryargocd' status
+        condtion is "READY". This is a normally used term in k8s which used as
+        a specific "conditionType". The "conditionStatus" tells the value of
+        "READY" (e.g. conditionStatus=true means not ready).
+    """
+    CONDITION_TYPE_UNSPECIFIED = 0
+    READY = 1
+
+  lastTransitionTime = _messages.StringField(1)
+  message = _messages.StringField(2)
+  reason = _messages.StringField(3)
+  status = _messages.EnumField('StatusValueValuesEnum', 4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
+
+
+class ConfigDeliveryArgoCDDeclarativeState(_messages.Message):
+  r"""DeclarativeState summaries the state of all the deployable manifests.
+
+  Fields:
+    conditions: conditions provides a standard mechanism for higher-level
+      status reporting from the moss reconciler.
+    healthy: healthy tells whether the current state is healthy or not.
+    version: version is the current in-use ArgoCD version. Users can only
+      specify the channel and the margo/populas operator will decide which
+      version is actually being used.
+  """
+
+  conditions = _messages.MessageField('ConfigDeliveryArgoCDCondition', 1, repeated=True)
+  healthy = _messages.BooleanField(2)
+  version = _messages.StringField(3)
+
+
+class ConfigDeliveryArgoCDSpec(_messages.Message):
+  r"""Spec defines the ConfigDeliveryArgoCD Feature specification.
+
+  Enums:
+    ChannelValueValuesEnum: Channel specifies a channel that can be used to
+      resolve a specific addon. Margo will use the same release channel as the
+      current cluster.
+
+  Fields:
+    channel: Channel specifies a channel that can be used to resolve a
+      specific addon. Margo will use the same release channel as the current
+      cluster.
+    version: Version specifies the expected ArgoCD version to manage.
+  """
+
+  class ChannelValueValuesEnum(_messages.Enum):
+    r"""Channel specifies a channel that can be used to resolve a specific
+    addon. Margo will use the same release channel as the current cluster.
+
+    Values:
+      CHANNEL_UNSPECIFIED: CHANNEL_UNSPECIFIED is the default unspecified
+        channel field.
+      REGULAR: REGULAR refers to access the ConfigDeliveryArgoCD feature
+        reasonably soon after they debut, but on a version that has been
+        qualified over a longer period of time.
+      RAPID: RAPID refers to get the latest ConfigDeliveryArgoCD release as
+        early as possible, and be able to use new features the moment they go
+        GA.
+      STABLE: STABLE refers to prioritize stability over new functionality.
+    """
+    CHANNEL_UNSPECIFIED = 0
+    REGULAR = 1
+    RAPID = 2
+    STABLE = 3
+
+  channel = _messages.EnumField('ChannelValueValuesEnum', 1)
+  version = _messages.StringField(2)
+
+
+class ConfigDeliveryArgoCDState(_messages.Message):
+  r"""State defines the state of the Margo reconciliation objects.
+
+  Fields:
+    cluster: The user-defined name for the cluster used by ClusterSelectors to
+      group clusters together. This should match Membership's membership_name,
+    margoState: This state describes the state of all the deployable ArgoCD
+      manifests.
+  """
+
+  cluster = _messages.StringField(1)
+  margoState = _messages.MessageField('ConfigDeliveryArgoCDDeclarativeState', 2)
+
+
 class ConfigLifecycleState(_messages.Message):
   r"""ConfigLifecycleState describes the state of a FeatureConfig resource.
 
@@ -294,6 +421,9 @@ class ConfigManagementConfigSync(_messages.Message):
       webhook and does not prevent drifts.
     sourceFormat: Specifies whether the Config Sync Repo is in "hierarchical"
       or "unstructured" mode.
+    stopSyncing: Set to true to stop syncing configs for a single cluster when
+      automatic Feature management is enabled. Default to false. The field
+      will be ignored when automatic Feature management is disabled.
   """
 
   allowVerticalScale = _messages.BooleanField(1)
@@ -303,6 +433,7 @@ class ConfigManagementConfigSync(_messages.Message):
   oci = _messages.MessageField('ConfigManagementOciConfig', 5)
   preventDrift = _messages.BooleanField(6)
   sourceFormat = _messages.StringField(7)
+  stopSyncing = _messages.BooleanField(8)
 
 
 class ConfigManagementConfigSyncDeploymentState(_messages.Message):
@@ -1289,26 +1420,32 @@ class FeatureSpec(_messages.Message):
 
   Fields:
     cloudbuild: Cloudbuild-specific FeatureSpec.
+    configDeliveryArgoCd: Config Delivery ArgoCD FeatureSpec.
     configmanagement: Config Management FeatureSpec.
     helloworld: Helloworld-specific FeatureSpec.
     identityservice: IdentityService FeatureSpec.
+    namespaceactuation: NamespaceActuation-specific FeatureSpec.
     origin: Whether this per-Feature spec was inherited from a fleet-level
       default. This field can be updated by users by either overriding a
       Feature config (updated to USER implicitly) or setting to FLEET
       explicitly.
     policycontroller: Policycontroller-specific FeatureSpec.
+    rbacrolebindingactuation: Rbacrolebindingactuation-specific FeatureSpec.
     servicemesh: ServiceMesh Feature Spec.
     workloadcertificate: Workloadcertificate-specific FeatureSpec.
   """
 
   cloudbuild = _messages.MessageField('CloudBuildSpec', 1)
-  configmanagement = _messages.MessageField('ConfigManagementSpec', 2)
-  helloworld = _messages.MessageField('HelloWorldSpec', 3)
-  identityservice = _messages.MessageField('IdentityServiceSpec', 4)
-  origin = _messages.MessageField('Origin', 5)
-  policycontroller = _messages.MessageField('PolicyControllerSpec', 6)
-  servicemesh = _messages.MessageField('ServiceMeshSpec', 7)
-  workloadcertificate = _messages.MessageField('WorkloadCertificateSpec', 8)
+  configDeliveryArgoCd = _messages.MessageField('ConfigDeliveryArgoCDSpec', 2)
+  configmanagement = _messages.MessageField('ConfigManagementSpec', 3)
+  helloworld = _messages.MessageField('HelloWorldSpec', 4)
+  identityservice = _messages.MessageField('IdentityServiceSpec', 5)
+  namespaceactuation = _messages.MessageField('NamespaceActuationSpec', 6)
+  origin = _messages.MessageField('Origin', 7)
+  policycontroller = _messages.MessageField('PolicyControllerSpec', 8)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationSpec', 9)
+  servicemesh = _messages.MessageField('ServiceMeshSpec', 10)
+  workloadcertificate = _messages.MessageField('WorkloadCertificateSpec', 11)
 
 
 class FeatureState(_messages.Message):
@@ -1318,24 +1455,30 @@ class FeatureState(_messages.Message):
   Fields:
     appdevexperience: Appdevexperience specific state.
     clusterupgrade: Cluster upgrade state.
+    configDeliveryArgoCd: Config Delivery ArgoCD FeatureState.
     configmanagement: Config Management state
     helloworld: Helloworld-specific FeatureState.
     identityservice: Identity service state
     metering: Metering state
+    namespaceactuation: RBAC Role Binding Actuation state
     policycontroller: Policy Controller state
+    rbacrolebindingactuation: RBAC Role Binding Actuation state
     servicemesh: Service mesh state
     state: The high-level state of this MembershipFeature.
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceState', 1)
   clusterupgrade = _messages.MessageField('ClusterUpgradeState', 2)
-  configmanagement = _messages.MessageField('ConfigManagementState', 3)
-  helloworld = _messages.MessageField('HelloWorldState', 4)
-  identityservice = _messages.MessageField('IdentityServiceState', 5)
-  metering = _messages.MessageField('MeteringState', 6)
-  policycontroller = _messages.MessageField('PolicyControllerState', 7)
-  servicemesh = _messages.MessageField('ServiceMeshState', 8)
-  state = _messages.MessageField('State', 9)
+  configDeliveryArgoCd = _messages.MessageField('ConfigDeliveryArgoCDState', 3)
+  configmanagement = _messages.MessageField('ConfigManagementState', 4)
+  helloworld = _messages.MessageField('HelloWorldState', 5)
+  identityservice = _messages.MessageField('IdentityServiceState', 6)
+  metering = _messages.MessageField('MeteringState', 7)
+  namespaceactuation = _messages.MessageField('NamespaceActuationState', 8)
+  policycontroller = _messages.MessageField('PolicyControllerState', 9)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationState', 10)
+  servicemesh = _messages.MessageField('ServiceMeshState', 11)
+  state = _messages.MessageField('State', 12)
 
 
 class GetReferenceRequest(_messages.Message):
@@ -2404,6 +2547,14 @@ class MeteringState(_messages.Message):
   preciseLastMeasuredClusterVcpuCapacity = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
+class NamespaceActuationSpec(_messages.Message):
+  r"""Spec for FNS actuation feature."""
+
+
+class NamespaceActuationState(_messages.Message):
+  r"""FNS actuation Feature state."""
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -3097,6 +3248,45 @@ class PolicyControllerToleration(_messages.Message):
   value = _messages.StringField(4)
 
 
+class RBACRoleBindingActuationSpec(_messages.Message):
+  r"""**RBAC RoleBinding Actuation**: The membership-specific input for
+  RBACRoleBindingActuation feature.
+
+  Fields:
+    actuationDisabled: A boolean attribute.
+  """
+
+  actuationDisabled = _messages.BooleanField(1)
+
+
+class RBACRoleBindingActuationState(_messages.Message):
+  r"""**RBAC RoleBinding Actuation**: An empty state left as an example
+  membership-specific Feature state.
+
+  Enums:
+    LifecycleStateValueValuesEnum:
+
+  Fields:
+    lifecycleState: A LifecycleStateValueValuesEnum attribute.
+    stateDetails: A string attribute.
+  """
+
+  class LifecycleStateValueValuesEnum(_messages.Enum):
+    r"""LifecycleStateValueValuesEnum enum type.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: The lifecycle state is unspecified.
+      ACTIVE: <no description>
+      ERROR: <no description>
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    ERROR = 2
+
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 1)
+  stateDetails = _messages.StringField(2)
+
+
 class Reference(_messages.Message):
   r"""Represents a reference to a resource.
 
@@ -3418,6 +3608,101 @@ class ServiceMeshControlPlaneManagement(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
+class ServiceMeshControlPlaneRevision(_messages.Message):
+  r"""Status of a control plane revision that is intended to be available for
+  use in the cluster.
+
+  Enums:
+    ChannelValueValuesEnum: Release Channel the managed control plane revision
+      is subscribed to.
+    StateValueValuesEnum: State of the control plane revision.
+      LIFECYCLE_STATE_UNSPECIFIED, FAILED_PRECONDITION, PROVISIONING, ACTIVE,
+      and STALLED are applicable here.
+    TypeValueValuesEnum: Type of the control plane revision.
+
+  Fields:
+    channel: Release Channel the managed control plane revision is subscribed
+      to.
+    details: Explanation of the state.
+    owner: Owner of the control plane revision.
+    revision: Unique name of the control plane revision.
+    state: State of the control plane revision. LIFECYCLE_STATE_UNSPECIFIED,
+      FAILED_PRECONDITION, PROVISIONING, ACTIVE, and STALLED are applicable
+      here.
+    type: Type of the control plane revision.
+    version: Static version of the control plane revision.
+  """
+
+  class ChannelValueValuesEnum(_messages.Enum):
+    r"""Release Channel the managed control plane revision is subscribed to.
+
+    Values:
+      CHANNEL_UNSPECIFIED: Unspecified
+      RAPID: RAPID channel is offered on an early access basis for customers
+        who want to test new releases.
+      REGULAR: REGULAR channel is intended for production users who want to
+        take advantage of new features.
+      STABLE: STABLE channel includes versions that are known to be stable and
+        reliable in production.
+    """
+    CHANNEL_UNSPECIFIED = 0
+    RAPID = 1
+    REGULAR = 2
+    STABLE = 3
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of the control plane revision. LIFECYCLE_STATE_UNSPECIFIED,
+    FAILED_PRECONDITION, PROVISIONING, ACTIVE, and STALLED are applicable
+    here.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: Unspecified
+      DISABLED: DISABLED means that the component is not enabled.
+      FAILED_PRECONDITION: FAILED_PRECONDITION means that provisioning cannot
+        proceed because of some characteristic of the member cluster.
+      PROVISIONING: PROVISIONING means that provisioning is in progress.
+      ACTIVE: ACTIVE means that the component is ready for use.
+      STALLED: STALLED means that provisioning could not be done.
+      NEEDS_ATTENTION: NEEDS_ATTENTION means that the component is ready, but
+        some user intervention is required. (For example that the user should
+        migrate workloads to a new control plane revision.)
+      DEGRADED: DEGRADED means that the component is ready, but operating in a
+        degraded state.
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    DISABLED = 1
+    FAILED_PRECONDITION = 2
+    PROVISIONING = 3
+    ACTIVE = 4
+    STALLED = 5
+    NEEDS_ATTENTION = 6
+    DEGRADED = 7
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the control plane revision.
+
+    Values:
+      CONTROL_PLANE_REVISION_TYPE_UNSPECIFIED: Unspecified.
+      UNMANAGED: User-installed in-cluster control plane revision.
+      MANAGED_SERVICE: Google-managed service running outside the cluster.
+        Note: Google-managed control planes are independent per-cluster,
+        regardless of whether the revision name is the same or not.
+      MANAGED_LOCAL: Google-managed local control plane revision.
+    """
+    CONTROL_PLANE_REVISION_TYPE_UNSPECIFIED = 0
+    UNMANAGED = 1
+    MANAGED_SERVICE = 2
+    MANAGED_LOCAL = 3
+
+  channel = _messages.EnumField('ChannelValueValuesEnum', 1)
+  details = _messages.MessageField('ServiceMeshStatusDetails', 2, repeated=True)
+  owner = _messages.StringField(3)
+  revision = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  version = _messages.StringField(7)
+
+
 class ServiceMeshDataPlaneManagement(_messages.Message):
   r"""Status of data plane management. Only reported per-member.
 
@@ -3459,6 +3744,48 @@ class ServiceMeshDataPlaneManagement(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
+class ServiceMeshMeshConnectivity(_messages.Message):
+  r"""Status of cross cluster load balancing between other clusters in the
+  mesh.
+
+  Enums:
+    StateValueValuesEnum: LifecycleState of multicluster load balancing.
+
+  Fields:
+    details: Explanation of state.
+    state: LifecycleState of multicluster load balancing.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""LifecycleState of multicluster load balancing.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: Unspecified
+      DISABLED: DISABLED means that the component is not enabled.
+      FAILED_PRECONDITION: FAILED_PRECONDITION means that provisioning cannot
+        proceed because of some characteristic of the member cluster.
+      PROVISIONING: PROVISIONING means that provisioning is in progress.
+      ACTIVE: ACTIVE means that the component is ready for use.
+      STALLED: STALLED means that provisioning could not be done.
+      NEEDS_ATTENTION: NEEDS_ATTENTION means that the component is ready, but
+        some user intervention is required. (For example that the user should
+        migrate workloads to a new control plane revision.)
+      DEGRADED: DEGRADED means that the component is ready, but operating in a
+        degraded state.
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    DISABLED = 1
+    FAILED_PRECONDITION = 2
+    PROVISIONING = 3
+    ACTIVE = 4
+    STALLED = 5
+    NEEDS_ATTENTION = 6
+    DEGRADED = 7
+
+  details = _messages.MessageField('ServiceMeshStatusDetails', 1, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
 class ServiceMeshSpec(_messages.Message):
   r"""**Service Mesh**: Spec for a single Membership for the servicemesh
   feature
@@ -3468,6 +3795,7 @@ class ServiceMeshSpec(_messages.Message):
       for configuring the mesh workloads.
     ControlPlaneValueValuesEnum: Deprecated: use `management` instead Enables
       automatic control plane management.
+    DataPlaneValueValuesEnum: Enables automatic data plane management.
     DefaultChannelValueValuesEnum: Determines which release channel to use for
       default injection and service mesh APIs.
     ManagementValueValuesEnum: Optional. Enables automatic Service Mesh
@@ -3478,6 +3806,7 @@ class ServiceMeshSpec(_messages.Message):
       the mesh workloads.
     controlPlane: Deprecated: use `management` instead Enables automatic
       control plane management.
+    dataPlane: Enables automatic data plane management.
     defaultChannel: Determines which release channel to use for default
       injection and service mesh APIs.
     management: Optional. Enables automatic Service Mesh management.
@@ -3513,6 +3842,21 @@ class ServiceMeshSpec(_messages.Message):
     AUTOMATIC = 1
     MANUAL = 2
 
+  class DataPlaneValueValuesEnum(_messages.Enum):
+    r"""Enables automatic data plane management.
+
+    Values:
+      DATA_PLANE_MANAGEMENT_UNSPECIFIED: Unspecified
+      DATA_PLANE_MANAGEMENT_AUTOMATIC: Enables Google-managed data plane that
+        provides L7 service mesh capabilities. Data plane management is
+        enabled at the cluster level. Users can exclude individual workloads
+        or namespaces.
+      DATA_PLANE_MANAGEMENT_MANUAL: User will manage their L7 data plane.
+    """
+    DATA_PLANE_MANAGEMENT_UNSPECIFIED = 0
+    DATA_PLANE_MANAGEMENT_AUTOMATIC = 1
+    DATA_PLANE_MANAGEMENT_MANUAL = 2
+
   class DefaultChannelValueValuesEnum(_messages.Enum):
     r"""Determines which release channel to use for default injection and
     service mesh APIs.
@@ -3547,13 +3891,18 @@ class ServiceMeshSpec(_messages.Message):
 
   configApi = _messages.EnumField('ConfigApiValueValuesEnum', 1)
   controlPlane = _messages.EnumField('ControlPlaneValueValuesEnum', 2)
-  defaultChannel = _messages.EnumField('DefaultChannelValueValuesEnum', 3)
-  management = _messages.EnumField('ManagementValueValuesEnum', 4)
+  dataPlane = _messages.EnumField('DataPlaneValueValuesEnum', 3)
+  defaultChannel = _messages.EnumField('DefaultChannelValueValuesEnum', 4)
+  management = _messages.EnumField('ManagementValueValuesEnum', 5)
 
 
 class ServiceMeshState(_messages.Message):
   r"""**Service Mesh**: State for a single Membership, as analyzed by the
   Service Mesh Hub Controller.
+
+  Enums:
+    DefaultChannelValueValuesEnum: Release channel to use for default
+      injection and service mesh APIs.
 
   Fields:
     analysisMessages: Output only. Results of running Service Mesh analyzers.
@@ -3562,14 +3911,40 @@ class ServiceMeshState(_messages.Message):
       service mesh in this cluster. This version is influenced by the
       `default_channel` field.
     controlPlaneManagement: Output only. Status of control plane management
+    controlPlaneRevisions: Output only. State of all control plane revisions
+      that are available in the cluster.
     dataPlaneManagement: Output only. Status of data plane management.
+    defaultChannel: Release channel to use for default injection and service
+      mesh APIs.
+    meshConnectivity: Output only. Status of cross cluster load balancing
+      between other clusters in the mesh.
   """
+
+  class DefaultChannelValueValuesEnum(_messages.Enum):
+    r"""Release channel to use for default injection and service mesh APIs.
+
+    Values:
+      CHANNEL_UNSPECIFIED: Unspecified
+      RAPID: RAPID channel is offered on an early access basis for customers
+        who want to test new releases.
+      REGULAR: REGULAR channel is intended for production users who want to
+        take advantage of new features.
+      STABLE: STABLE channel includes versions that are known to be stable and
+        reliable in production.
+    """
+    CHANNEL_UNSPECIFIED = 0
+    RAPID = 1
+    REGULAR = 2
+    STABLE = 3
 
   analysisMessages = _messages.MessageField('ServiceMeshAnalysisMessage', 1, repeated=True)
   conditions = _messages.MessageField('ServiceMeshCondition', 2, repeated=True)
   configApiVersion = _messages.StringField(3)
   controlPlaneManagement = _messages.MessageField('ServiceMeshControlPlaneManagement', 4)
-  dataPlaneManagement = _messages.MessageField('ServiceMeshDataPlaneManagement', 5)
+  controlPlaneRevisions = _messages.MessageField('ServiceMeshControlPlaneRevision', 5, repeated=True)
+  dataPlaneManagement = _messages.MessageField('ServiceMeshDataPlaneManagement', 6)
+  defaultChannel = _messages.EnumField('DefaultChannelValueValuesEnum', 7)
+  meshConnectivity = _messages.MessageField('ServiceMeshMeshConnectivity', 8)
 
 
 class ServiceMeshStatusDetails(_messages.Message):

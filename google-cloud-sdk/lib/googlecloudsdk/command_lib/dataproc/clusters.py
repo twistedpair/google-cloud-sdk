@@ -788,7 +788,7 @@ def _AddAcceleratorArgs(parser, include_driver_pool_args=False):
       """
   accelerator_help_fmt += """
       *type*::: The specific type of accelerator to attach to the instances,
-      such as `nvidia-tesla-k80` for NVIDIA Tesla K80. Use `gcloud compute
+      such as `nvidia-tesla-t4` for NVIDIA T4. Use `gcloud compute
       accelerator-types list` to display available accelerator types.
 
       *count*::: The number of accelerators to attach to each instance. The default value is 1.

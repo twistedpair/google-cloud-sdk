@@ -18,8 +18,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import os
+
 from googlecloudsdk.api_lib.dataplex import util as dataplex_api
 from googlecloudsdk.api_lib.util import messages as messages_util
+from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import yaml
+from googlecloudsdk.core.util import files
+import six
 
 
 def GenerateGovernanceRuleForCreateRequest(args):
@@ -28,7 +34,7 @@ def GenerateGovernanceRuleForCreateRequest(args):
   request = module.GoogleCloudDataplexV1GovernanceRule(
       description=args.description,
       displayName=args.display_name,
-      rlabels=dataplex_api.CreateLabels(
+      labels=dataplex_api.CreateLabels(
           module.GoogleCloudDataplexV1GovernanceRule, args
       ),
       query=GenerateGovernanceRuleQuery(args),
@@ -37,20 +43,18 @@ def GenerateGovernanceRuleForCreateRequest(args):
   )
 
   if args.IsSpecified('rule_metadata_file'):
-    rule_metadata_file = dataplex_api.ReadObject(args.rule_metadata_file)
+    rule_metadata_file = ReadRuleMetadataFile(args)
     if rule_metadata_file is None:
       raise ValueError(
           'Rule metadata file is empty for Governance Rules create request.'
       )
-    governance_rule_specs = messages_util.DictToMessageWithErrorCheck(
-        dataplex_api.SnakeToCamelDict(rule_metadata_file),
-        module.GoogleCloudDataplexV1GovernanceRuleSpecs,
-    )
-    governance_rule_fields = messages_util.DictToMessageWithErrorCheck(
-        dataplex_api.SnakeToCamelDict(rule_metadata_file),
-        module.GoogleCloudDataplexV1GovernanceRuleField,
-    )
-    if governance_rule_specs is None and governance_rule_fields is None:
+    if rule_metadata_file.get('query') is None:
+      raise ValueError(
+          'Query should be provided for Governance Rules create request.'
+      )
+    if GenerateGovernanceRuleSpecs(
+        args
+    ) is None and not GenerateGovernanceRuleFields(args):
       raise ValueError(
           'Either specs or field should be provided for Governance Rules create'
           ' request.'
@@ -74,52 +78,94 @@ def GenerateGovernanceRuleForUpdateRequest(args):
       labels=dataplex_api.CreateLabels(
           module.GoogleCloudDataplexV1GovernanceRule, args
       ),
-      query=GenerateGovernanceRuleQuery(args),
-      specs=GenerateGovernanceRuleSpecs(args),
-      fields=GenerateGovernanceRuleFields(args),
   )
+  if (
+      args.IsSpecified('rule_metadata_file')
+      and args.rule_metadata_file is not None
+  ):
+    query = GenerateGovernanceRuleQuery(args)
+    specs = GenerateGovernanceRuleSpecs(args)
+    fields = GenerateGovernanceRuleFields(args)
+    if query is not None:
+      request.query = query
+    if specs is not None:
+      request.specs = specs
+    if fields:
+      request.fields = fields
   return request
 
 
+def ReadRuleMetadataFile(args):
+  """Read Rule Metadata File."""
+  if not os.path.exists(args.rule_metadata_file):
+    raise exceptions.BadFileException(
+        'No such file [{0}]'.format(args.rule_metadata_file)
+    )
+  if os.path.isdir(args.rule_metadata_file):
+    raise exceptions.BadFileException(
+        '[{0}] is a directory'.format(args.rule_metadata_file)
+    )
+  try:
+    with files.FileReader(args.rule_metadata_file) as import_file:
+      return yaml.load(import_file)
+  except Exception as exp:
+    exp_msg = getattr(exp, 'message', six.text_type(exp))
+    msg = (
+        'Unable to read Rule Metadata config from specified file '
+        '[{0}] because [{1}]'.format(args.rule_metadata_file, exp_msg)
+    )
+    raise exceptions.BadFileException(msg)
+
+
 def GenerateGovernanceRuleQuery(args):
-  """Generate Governance Rule Query From Arguments."""
+  """Generate Governance Rule Query From Rule Metadata File."""
   module = dataplex_api.GetMessageModule()
   governance_rule_query = module.GoogleCloudDataplexV1GovernanceRuleQuery()
-
-  if args.IsSpecified('rule_metadata_file'):
-    rule_metadata_file = dataplex_api.ReadObject(args.rule_metadata_file)
-    if rule_metadata_file is not None:
-      governance_rule_query = messages_util.DictToMessageWithErrorCheck(
-          dataplex_api.SnakeToCamelDict(rule_metadata_file),
-          module.GoogleCloudDataplexV1GovernanceRuleQuery,
-      )
+  rule_metadata_file = ReadRuleMetadataFile(args)
+  if (
+      rule_metadata_file is not None
+      and rule_metadata_file.get('query') is not None
+  ):
+    governance_rule_query = messages_util.DictToMessageWithErrorCheck(
+        dataplex_api.SnakeToCamelDict(rule_metadata_file.get('query')),
+        module.GoogleCloudDataplexV1GovernanceRuleQuery,
+        True,
+    )
   return governance_rule_query
 
 
 def GenerateGovernanceRuleSpecs(args):
-  """Generate Governance Rule Specs From Arguments."""
+  """Generate Governance Rule Specs From Rule Metadata File."""
   module = dataplex_api.GetMessageModule()
-  governance_rule_specs = module.GoogleCloudDataplexV1GovernanceRuleSpecs()
-  if args.IsSpecified('rule_metadata_file'):
-    rule_specs_file = dataplex_api.ReadObject(args.rule_metadata_file)
-    if rule_specs_file is not None:
-      governance_rule_specs = messages_util.DictToMessageWithErrorCheck(
-          dataplex_api.SnakeToCamelDict(rule_specs_file),
-          module.GoogleCloudDataplexV1GovernanceRuleSpecs,
-      )
+  governance_rule_specs = None
+  rule_metadata_file = ReadRuleMetadataFile(args)
+  if (
+      rule_metadata_file is not None
+      and rule_metadata_file.get('specs') is not None
+  ):
+    governance_rule_specs = messages_util.DictToMessageWithErrorCheck(
+        dataplex_api.SnakeToCamelDict(rule_metadata_file.get('specs')),
+        module.GoogleCloudDataplexV1GovernanceRuleSpecs,
+    )
   return governance_rule_specs
 
 
 def GenerateGovernanceRuleFields(args):
-  """Generate Governance Rule Fields From Arguments."""
+  """Generate Governance Rule Fields From Rule Metadata File."""
   module = dataplex_api.GetMessageModule()
-  governance_rule_fields = module.GoogleCloudDataplexV1GovernanceRuleField()
-  if args.IsSpecified('rule_metadata_file'):
-    rule_fields_file = dataplex_api.ReadObject(args.rule_metadata_file)
-    if rule_fields_file is not None:
-      governance_rule_fields = messages_util.DictToMessageWithErrorCheck(
-          dataplex_api.SnakeToCamelDict(rule_fields_file),
-          module.GoogleCloudDataplexV1GovernanceRuleField,
+  governance_rule_fields = []
+  rule_metadata_file = ReadRuleMetadataFile(args)
+  if (
+      rule_metadata_file is not None
+      and rule_metadata_file.get('fields') is not None
+  ):
+    fields = rule_metadata_file.get('fields')
+    for field in fields:
+      governance_rule_fields.append(
+          messages_util.DictToMessageWithErrorCheck(
+              dataplex_api.SnakeToCamelDict(field),
+              module.GoogleCloudDataplexV1GovernanceRuleField,
+          )
       )
   return governance_rule_fields
 
@@ -133,6 +179,15 @@ def GenerateUpdateMask(args):
     update_mask.append('displayName')
   if args.IsSpecified('labels'):
     update_mask.append('labels')
+
+  if args.IsSpecified('rule_metadata_file'):
+    if args.rule_metadata_file is not None:
+      if GenerateGovernanceRuleQuery(args) is not None:
+        update_mask.append('query')
+      if GenerateGovernanceRuleSpecs(args) is not None:
+        update_mask.append('specs')
+      if GenerateGovernanceRuleFields(args):
+        update_mask.append('fields')
   return update_mask
 
 

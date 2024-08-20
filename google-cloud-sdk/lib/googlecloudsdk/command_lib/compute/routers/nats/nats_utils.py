@@ -56,6 +56,19 @@ class IpAllocationUnspecifiedError(core_exceptions.Error):
     super(IpAllocationUnspecifiedError, self).__init__(msg)
 
 
+class SubnetOptionOrSubnet64OptionShouldBeSpecified(core_exceptions.Error):
+  """Raised when not ipv4 nor ipv6 subnet option is specified."""
+
+  def __init__(self):
+    msg = (
+        'At least one of: --nat-all-subnet-ip-ranges,'
+        ' --nat-primary-subnet-ip-ranges, --nat-custom-subnet-ip-ranges,'
+        ' --nat64-all-v6-subnet-ip-ranges, --nat64-custom-v6-subnet-ip-ranges'
+        ' should be specified.'
+    )
+    super(SubnetOptionOrSubnet64OptionShouldBeSpecified, self).__init__(msg)
+
+
 def FindNatOrRaise(router, nat_name):
   """Returns the nat with the given name in the given router."""
   for nat in router.nats:
@@ -64,13 +77,16 @@ def FindNatOrRaise(router, nat_name):
   raise NatNotFoundError(nat_name)
 
 
-def CreateNatMessage(args, compute_holder):
+def CreateNatMessage(args, compute_holder, with_nat64):
   """Creates a NAT message from the specified arguments."""
   params = {'name': args.name}
 
-  params['sourceSubnetworkIpRangesToNat'], params['subnetworks'] = (
-      _ParseSubnetFields(args, compute_holder)
-  )
+  if not with_nat64:
+    params['sourceSubnetworkIpRangesToNat'], params['subnetworks'] = (
+        _ParseSubnetFields(args, compute_holder)
+    )
+  else:
+    _AddSubnetOptionsToParams(args, compute_holder, params)
 
   if args.type is not None:
     params['type'] = (
@@ -130,14 +146,58 @@ def CreateNatMessage(args, compute_holder):
   return compute_holder.client.messages.RouterNat(**params)
 
 
-def UpdateNatMessage(nat, args, compute_holder):
+def _AddSubnetOptionsToParams(args, compute_holder, params):
+  """Adds subnet options to the params dict."""
+  source_ipv4_subnets_to_nat, ipv4_subnets = _ParseIpv4SubnetFields(
+      args, compute_holder
+  )
+  source_ipv6_subnets_to_nat, ipv6_subnets = _ParseIpv6SubnetFields(
+      args, compute_holder
+  )
+
+  if not source_ipv4_subnets_to_nat and not source_ipv6_subnets_to_nat:
+    raise SubnetOptionOrSubnet64OptionShouldBeSpecified()
+
+  if source_ipv4_subnets_to_nat:
+    params['sourceSubnetworkIpRangesToNat'] = source_ipv4_subnets_to_nat
+  if ipv4_subnets:
+    params['subnetworks'] = ipv4_subnets
+  if source_ipv6_subnets_to_nat:
+    params['sourceSubnetworkIpRangesToNat64'] = source_ipv6_subnets_to_nat
+  if ipv6_subnets:
+    params['nat64Subnetworks'] = ipv6_subnets
+
+
+def UpdateNatMessage(nat, args, compute_holder, with_nat64):
   """Updates a NAT message with the specified arguments."""
-  if (args.subnet_option in [
-      nat_flags.SubnetOption.ALL_RANGES, nat_flags.SubnetOption.PRIMARY_RANGES
-  ] or args.nat_custom_subnet_ip_ranges):
+  if (
+      args.subnet_option
+      in [
+          nat_flags.SubnetOption.ALL_RANGES,
+          nat_flags.SubnetOption.PRIMARY_RANGES,
+      ]
+      or args.nat_custom_subnet_ip_ranges
+  ):
     ranges_to_nat, subnetworks = _ParseSubnetFields(args, compute_holder)
     nat.sourceSubnetworkIpRangesToNat = ranges_to_nat
     nat.subnetworks = subnetworks
+
+  if with_nat64:
+    if (
+        args.subnet_ipv6_option is nat_flags.SubnetIpv6Option.ALL_IPV6_SUBNETS
+        or args.nat64_custom_v6_subnet_ip_ranges
+    ):
+      ranges_to_nat, subnetworks = _ParseIpv6SubnetFields(args, compute_holder)
+      nat.sourceSubnetworkIpRangesToNat64 = ranges_to_nat
+      nat.nat64Subnetworks = subnetworks
+
+    if args.clear_nat_subnet_ip_ranges:
+      nat.sourceSubnetworkIpRangesToNat = None
+      nat.subnetworks = []
+
+    if args.clear_nat64_subnet_ip_ranges:
+      nat.sourceSubnetworkIpRangesToNat64 = None
+      nat.nat64Subnetworks = []
 
   if args.nat_external_drain_ip_pool:
     drain_nat_ips = nat_flags.DRAIN_NAT_IP_ADDRESSES_ARG.ResolveAsResource(
@@ -304,6 +364,48 @@ def _ParseSubnetFields(args, compute_holder):
       })
   # Sorted for test stability.
   return (ranges_to_nat, sorted(subnetworks, key=lambda subnet: subnet['name']))
+
+
+def _ParseIpv4SubnetFields(args, compute_holder):
+  """Parses arguments related to ipv4 subnets to use for NAT."""
+  if (
+      args.subnet_option is nat_flags.SubnetOption.CUSTOM_RANGES
+      and not args.nat_custom_subnet_ip_ranges
+  ):
+    return None, []
+  return _ParseSubnetFields(args, compute_holder)
+
+
+def _ParseIpv6SubnetFields(args, compute_holder):
+  """Parses arguments related to ipv6 subnets to use for NAT."""
+  if (
+      args.subnet_ipv6_option is nat_flags.SubnetIpv6Option.LIST_OF_IPV6_SUBNETS
+      and not args.nat64_custom_v6_subnet_ip_ranges
+  ):
+    return None, []
+
+  subnets = []
+  messages = compute_holder.client.messages
+  if args.subnet_ipv6_option is nat_flags.SubnetIpv6Option.ALL_IPV6_SUBNETS:
+    return (
+        messages.RouterNat.SourceSubnetworkIpRangesToNat64ValueValuesEnum.ALL_IPV6_SUBNETWORKS,
+        [],
+    )
+
+  for subnet_name in args.nat64_custom_v6_subnet_ip_ranges:
+    subnet_ref = subnet_flags.SubnetworkResolver().ResolveResources(
+        [subnet_name],
+        compute_scope.ScopeEnum.REGION,
+        args.region,
+        compute_holder.resources,
+        scope_lister=compute_flags.GetDefaultScopeLister(compute_holder.client),
+    )
+    subnets.append({'name': six.text_type(subnet_ref[0])})
+
+  return (
+      messages.RouterNat.SourceSubnetworkIpRangesToNat64ValueValuesEnum.LIST_OF_IPV6_SUBNETWORKS,
+      sorted(subnets, key=lambda subnet: subnet['name']),
+  )
 
 
 def _ParseNatIpFields(args, compute_holder):

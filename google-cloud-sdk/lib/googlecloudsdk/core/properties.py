@@ -34,7 +34,6 @@ from googlecloudsdk.core.docker import constants as const_lib
 from googlecloudsdk.core.resource import resource_printer_types as formats
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import http_proxy_types
-from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import scaled_integer
 from googlecloudsdk.generated_clients.apis import apis_map
 import six
@@ -100,16 +99,8 @@ _PUBSUB_NOTICE_URL = (
 
 
 def _DefaultToFastUpdate():
-  # TODO(b/153353954): Roll this out everywhere.
-  current_platform = platforms.OperatingSystem.Current()
-  return (
-      (encoding.GetEncodedValue(os.environ,
-                                'CLOUDSDK_INTERNAL_USER_FAST_UPDATE') == 'true')
-      or config.INSTALLATION_CONFIG.IsAlternateReleaseChannel()
-      or current_platform == platforms.OperatingSystem.WINDOWS
-      or current_platform == platforms.OperatingSystem.MACOSX
-      or current_platform == platforms.OperatingSystem.LINUX
-  )
+  # TODO(b/153353954): Clean this up.
+  return True
 
 
 def Stringize(value):

@@ -2535,6 +2535,16 @@ MAP = {
                     client_classpath='memorystore_v1alpha_client.MemorystoreV1alpha',
                     base_url='https://memorystore.googleapis.com/',
                     messages_modulepath='memorystore_v1alpha_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v1beta':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.memorystore.v1beta',
+                    client_classpath='memorystore_v1beta_client.MemorystoreV1beta',
+                    base_url='https://memorystore.googleapis.com/',
+                    messages_modulepath='memorystore_v1beta_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

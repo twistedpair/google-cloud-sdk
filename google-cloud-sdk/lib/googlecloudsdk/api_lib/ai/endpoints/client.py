@@ -706,7 +706,9 @@ class EndpointsClient(object):
       accelerator_dict=None,
       min_replica_count=None,
       max_replica_count=None,
+      reservation_affinity=None,
       autoscaling_metric_specs=None,
+      spot=False,
       enable_access_logging=False,
       disable_container_logging=False,
       service_account=None,
@@ -728,9 +730,13 @@ class EndpointsClient(object):
         deployed model will be always deployed on.
       max_replica_count: int or None, the maximum number of replicas the
         deployed model may be deployed on.
+      reservation_affinity: dict or None, the reservation affinity of the
+        deployed model which specifies which reservations the deployed model can
+        use.
       autoscaling_metric_specs: dict or None, the metric specification that
         defines the target resource utilization for calculating the desired
         replica count.
+      spot: bool, whether or not deploy the model on spot resources.
       enable_access_logging: bool, whether or not enable access logs.
       disable_container_logging: bool, whether or not disable container logging.
       service_account: str or None, the service account that the deployed model
@@ -757,9 +763,13 @@ class EndpointsClient(object):
       if accelerator is not None:
         machine_spec.acceleratorType = accelerator.acceleratorType
         machine_spec.acceleratorCount = accelerator.acceleratorCount
+      if reservation_affinity is not None:
+        machine_spec.reservationAffinity = flags.ParseReservationAffinityFlag(
+            reservation_affinity, constants.GA_VERSION
+        )
 
       dedicated = self.messages.GoogleCloudAiplatformV1DedicatedResources(
-          machineSpec=machine_spec
+          machineSpec=machine_spec, spot=spot
       )
       # min-replica-count is required and must be >= 1 if models use dedicated
       # resources. Default to 1 if not specified.
@@ -841,7 +851,9 @@ class EndpointsClient(object):
       accelerator_dict=None,
       min_replica_count=None,
       max_replica_count=None,
+      reservation_affinity=None,
       autoscaling_metric_specs=None,
+      spot=False,
       enable_access_logging=False,
       enable_container_logging=False,
       service_account=None,
@@ -864,9 +876,13 @@ class EndpointsClient(object):
         deployed model will be always deployed on.
       max_replica_count: int or None, the maximum number of replicas the
         deployed model may be deployed on.
+      reservation_affinity: dict or None, the reservation affinity of the
+        deployed model which specifies which reservations the deployed model can
+        use.
       autoscaling_metric_specs: dict or None, the metric specification that
         defines the target resource utilization for calculating the desired
         replica count.
+      spot: bool, whether or not deploy the model on spot resources.
       enable_access_logging: bool, whether or not enable access logs.
       enable_container_logging: bool, whether or not enable container logging.
       service_account: str or None, the service account that the deployed model
@@ -897,9 +913,13 @@ class EndpointsClient(object):
       if accelerator is not None:
         machine_spec.acceleratorType = accelerator.acceleratorType
         machine_spec.acceleratorCount = accelerator.acceleratorCount
+      if reservation_affinity is not None:
+        machine_spec.reservationAffinity = flags.ParseReservationAffinityFlag(
+            reservation_affinity, constants.BETA_VERSION
+        )
 
       dedicated = self.messages.GoogleCloudAiplatformV1beta1DedicatedResources(
-          machineSpec=machine_spec
+          machineSpec=machine_spec, spot=spot
       )
       # min-replica-count is required and must be >= 1 if models use dedicated
       # resources. Default to 1 if not specified.

@@ -153,24 +153,14 @@ class AssociatedEntities(_messages.Message):
   r"""Information about entities associated with a `Target`.
 
   Fields:
-    associatedEntities: Optional. List of associated entities.
+    anthosClusters: Optional. Information specifying Anthos clusters as
+      associated entities.
+    gkeClusters: Optional. Information specifying GKE clusters as associated
+      entities.
   """
 
-  associatedEntities = _messages.MessageField('AssociatedEntity', 1, repeated=True)
-
-
-class AssociatedEntity(_messages.Message):
-  r"""Information specifying an associated entity.
-
-  Fields:
-    anthosCluster: Optional. Information specifying an Anthos cluster as an
-      associated entity.
-    gke: Optional. Information specifying a GKE cluster as an associated
-      entity.
-  """
-
-  anthosCluster = _messages.MessageField('AnthosCluster', 1)
-  gke = _messages.MessageField('GkeCluster', 2)
+  anthosClusters = _messages.MessageField('AnthosCluster', 1, repeated=True)
+  gkeClusters = _messages.MessageField('GkeCluster', 2, repeated=True)
 
 
 class AuditConfig(_messages.Message):
@@ -2716,9 +2706,8 @@ class DeliveryPipelineAttribute(_messages.Message):
 
   Fields:
     id: ID of the `DeliveryPipeline`. The value of this field could be one of
-      the following: * The last segment of a pipeline name. It only needs the
-      ID to determine which pipeline is being referred to * "*", all delivery
-      pipelines in a location.
+      the following: * The last segment of a pipeline name * "*", all delivery
+      pipelines in a location
     labels: DeliveryPipeline labels.
   """
 
@@ -4418,10 +4407,8 @@ class PromoteReleaseRule(_messages.Message):
     destinationTargetId: Optional. The ID of the stage in the pipeline to
       which this `Release` is deploying. If unspecified, default it to the
       next stage in the promotion flow. The value of this field could be one
-      of the following: * The last segment of a target name. It only needs the
-      ID to determine if the target is one of the stages in the promotion
-      sequence defined in the pipeline. * "@next", the next target in the
-      promotion sequence.
+      of the following: * The last segment of a target name * "@next", the
+      next target in the promotion sequence
     id: Required. ID of the rule. This id must be unique in the `Automation`
       resource to which this rule belongs. The format is
       `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`.
@@ -6335,9 +6322,8 @@ class TargetAttribute(_messages.Message):
 
   Fields:
     id: ID of the `Target`. The value of this field could be one of the
-      following: * The last segment of a target name. It only needs the ID to
-      determine which target is being referred to * "*", all targets in a
-      location.
+      following: * The last segment of a target name * "*", all targets in a
+      location
     labels: Target labels.
   """
 

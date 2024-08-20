@@ -407,6 +407,36 @@ https://cloud.google.com/ai-platform-unified/docs/predictions/machine-types.
 """,
   ).AddToParser(parser)
 
+  base.Argument(
+      '--reservation-affinity',
+      type=arg_parsers.ArgDict(
+          spec={
+              'reservation-affinity-type': str,
+              'key': str,
+              'values': arg_parsers.ArgList(),
+          },
+          required_keys=['reservation-affinity-type'],
+      ),
+      help="""\
+A ReservationAffinity can be used to configure a Vertex AI resource (e.g., a
+DeployedModel) to draw its Compute Engine resources from a Shared Reservation,
+or exclusively from on-demand capacity.
+""",
+  ).AddToParser(parser)
+
+  base.Argument(
+      '--spot',
+      action='store_true',
+      default=False,
+      required=False,
+      help="""\
+If true, online prediction access logs are sent to Cloud Logging.
+
+These logs are standard server access logs, containing information like
+timestamp and latency for each prediction request.
+""",
+  ).AddToParser(parser)
+
   if version == constants.BETA_VERSION:
     base.Argument(
         '--tpu-topology',
@@ -1714,6 +1744,52 @@ def GetAcceleratorTypeMapper(version):
       ).GoogleCloudAiplatformV1MachineSpec.AcceleratorTypeValueValuesEnum,
       help_str='The available types of accelerators.',
       include_filter=lambda x: x.startswith('NVIDIA'),
+      required=False,
+  )
+
+
+def ParseReservationAffinityFlag(reservation_affinity, version):
+  """Validates and returns a reservation affinity config message object."""
+  if reservation_affinity is None:
+    return None
+  types = list(c for c in GetReservationAffinityTypeMapper().choices)
+  raw_type = reservation_affinity.get('reservation-affinity-type', None)
+  if raw_type not in types:
+    raise errors.ArgumentError("""\
+The type of the reservation affinity can only be one of the following: {}.
+""".format(', '.join("'{}'".format(c) for c in types)))
+  if version == constants.BETA_VERSION:
+    reservation_affinity_msg = apis.GetMessagesModule(
+        constants.AI_PLATFORM_API_NAME,
+        constants.AI_PLATFORM_API_VERSION[version],
+    ).GoogleCloudAiplatformV1beta1ReservationAffinity
+  else:
+    reservation_affinity_msg = apis.GetMessagesModule(
+        constants.AI_PLATFORM_API_NAME,
+        constants.AI_PLATFORM_API_VERSION[version],
+    ).GoogleCloudAiplatformV1ReservationAffinity
+  reservation_affinity_msg = reservation_affinity_msg(
+      reservationAffinityType=arg_utils.ChoiceToEnum(
+          raw_type,
+          reservation_affinity_msg.ReservationAffinityTypeValueValuesEnum,
+      )
+  )
+  if reservation_affinity.get('values', None) is not None:
+    reservation_affinity_msg.values = reservation_affinity.get('values')
+  if reservation_affinity.get('key', None) is not None:
+    reservation_affinity_msg.key = reservation_affinity.get('key')
+  return reservation_affinity_msg
+
+
+def GetReservationAffinityTypeMapper():
+  """Get a mapper for reservation affinity type to enum value."""
+  return arg_utils.ChoiceEnumMapper(
+      'reservation-affinity-type',
+      apis.GetMessagesModule(
+          constants.AI_PLATFORM_API_NAME,
+          constants.AI_PLATFORM_API_VERSION[constants.GA_VERSION],
+      ).GoogleCloudAiplatformV1ReservationAffinity.ReservationAffinityTypeValueValuesEnum,
+      help_str='The available types of reservation affinity.',
       required=False,
   )
 

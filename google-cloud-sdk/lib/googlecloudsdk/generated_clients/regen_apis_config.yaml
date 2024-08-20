@@ -1022,6 +1022,8 @@ apis:
   memorystore:
     v1alpha:
       discovery_doc: memorystore_v1alpha.json
+    v1beta:
+      discovery_doc: memorystore_v1beta.json
       default: true
   metastore:
     v1alpha:

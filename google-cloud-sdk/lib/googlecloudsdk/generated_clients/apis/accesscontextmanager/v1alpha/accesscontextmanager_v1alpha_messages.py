@@ -91,6 +91,34 @@ class AccessPolicy(_messages.Message):
   title = _messages.StringField(5)
 
 
+class AccessScope(_messages.Message):
+  r"""Access scope represents the client scope, etc. to which the settings
+  will be applied to.
+
+  Fields:
+    clientScope: Optional. Client scope for this access scope.
+  """
+
+  clientScope = _messages.MessageField('ClientScope', 1)
+
+
+class AccessSettings(_messages.Message):
+  r"""Access settings represent the set of conditions that must be met for
+  access to be granted. At least one of the fields must be set.
+
+  Fields:
+    accessLevels: Optional. Access level that a user must have to be granted
+      access. Only one access level is supported, not multiple. This repeated
+      field must have exactly one element. Example:
+      "accessPolicies/9522/accessLevels/device_trusted"
+    reauthSettings: Optional. Reauth settings applied to user access on a
+      given AccessScope.
+  """
+
+  accessLevels = _messages.StringField(1, repeated=True)
+  reauthSettings = _messages.MessageField('ReauthSettings', 2)
+
+
 class AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest(_messages.Message):
   r"""A AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest object.
 
@@ -1012,6 +1040,18 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class ClientScope(_messages.Message):
+  r"""Client scope represents the application, etc. subject to this binding's
+  restrictions.
+
+  Fields:
+    restrictedClientApplication: Optional. The application that is subject to
+      this binding's scope.
+  """
+
+  restrictedClientApplication = _messages.MessageField('Application', 1)
+
+
 class CommitServicePerimetersRequest(_messages.Message):
   r"""A request to commit dry-run specs in all Service Perimeters belonging to
   an Access Policy.
@@ -1398,6 +1438,9 @@ class GcpUserAccessBinding(_messages.Message):
     restrictedClientApplications: Optional. A list of applications that are
       subject to this binding's restrictions. If the list is empty, the
       binding restrictions will universally apply to all applications.
+    scopedAccessSettings: Optional. A list of scoped access settings that set
+      this binding's restrictions on a subset of applications. This field
+      cannot be set if restricted_client_applications is set.
   """
 
   accessLevels = _messages.StringField(1, repeated=True)
@@ -1407,6 +1450,7 @@ class GcpUserAccessBinding(_messages.Message):
   principal = _messages.MessageField('Principal', 5)
   reauthSettings = _messages.MessageField('ReauthSettings', 6)
   restrictedClientApplications = _messages.MessageField('Application', 7, repeated=True)
+  scopedAccessSettings = _messages.MessageField('ScopedAccessSettings', 8, repeated=True)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -2017,6 +2061,24 @@ class ReplaceServicePerimetersResponse(_messages.Message):
   """
 
   servicePerimeters = _messages.MessageField('ServicePerimeter', 1, repeated=True)
+
+
+class ScopedAccessSettings(_messages.Message):
+  r"""A relationship between access settings and its scope.
+
+  Fields:
+    activeSettings: Optional. Access settings for this scoped access settings.
+      This field may be empty if dry_run_settings is set.
+    dryRunSettings: Optional. Dry-run access settings for this scoped access
+      settings. This field may be empty if active_settings is set.
+    scope: Optional. Application, etc. to which the access settings will be
+      applied to. Implicitly, this is the scoped access settings key; as such,
+      it must be unique and non-empty.
+  """
+
+  activeSettings = _messages.MessageField('AccessSettings', 1)
+  dryRunSettings = _messages.MessageField('AccessSettings', 2)
+  scope = _messages.MessageField('AccessScope', 3)
 
 
 class ServicePerimeter(_messages.Message):

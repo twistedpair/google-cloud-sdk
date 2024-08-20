@@ -787,6 +787,12 @@ version [{1}].  To clear your fixed version setting, run:
     if not show_hidden:
       to_print = [c for c in to_print if not c.is_hidden]
 
+    if (
+        properties.VALUES.core.universe_domain.Get()
+        != properties.VALUES.core.universe_domain.default
+    ):
+      to_print = [c for c in to_print if not c.gdu_only]
+
     return to_print, current_version, latest_version
 
   def _GetPrintListOnlyLocal(self):

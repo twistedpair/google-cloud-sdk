@@ -45,6 +45,39 @@ _SPANNER_API_NAME = 'spanner'
 _SPANNER_API_VERSION = 'v1'
 
 
+def MaybeGetAutoscalingOverride(msgs, asymmetric_autoscaling_option):
+  """Returns AutoscalingConfigOverrides object if any override is found in the parsed command-line flag key-value pairs, otherwise returns None."""
+  if (
+      'min_nodes' not in asymmetric_autoscaling_option
+      and 'max_nodes' not in asymmetric_autoscaling_option
+      and 'min_processing_units' not in asymmetric_autoscaling_option
+      and 'max_processing_units' not in asymmetric_autoscaling_option
+      and 'high_priority_cpu_target' not in asymmetric_autoscaling_option
+  ):
+    return None
+
+  obj = msgs.AutoscalingConfigOverrides(
+      autoscalingLimits=msgs.AutoscalingLimits()
+  )
+  if 'min_nodes' in asymmetric_autoscaling_option:
+    obj.autoscalingLimits.minNodes = asymmetric_autoscaling_option['min_nodes']
+  if 'max_nodes' in asymmetric_autoscaling_option:
+    obj.autoscalingLimits.maxNodes = asymmetric_autoscaling_option['max_nodes']
+  if 'min_processing_units' in asymmetric_autoscaling_option:
+    obj.autoscalingLimits.minProcessingUnits = asymmetric_autoscaling_option[
+        'min_processing_units'
+    ]
+  if 'max_processing_units' in asymmetric_autoscaling_option:
+    obj.autoscalingLimits.maxProcessingUnits = asymmetric_autoscaling_option[
+        'max_processing_units'
+    ]
+  if 'high_priority_cpu_target' in asymmetric_autoscaling_option:
+    obj.autoscalingTargetHighPriorityCpuUtilizationPercent = (
+        asymmetric_autoscaling_option['high_priority_cpu_target']
+    )
+  return obj
+
+
 def Create(
     instance,
     config,
@@ -57,23 +90,52 @@ def Create(
     autoscaling_max_processing_units=None,
     autoscaling_high_priority_cpu_target=None,
     autoscaling_storage_target=None,
+    asymmetric_autoscaling_options=None,
     instance_type=None,
     expire_behavior=None,
     ssd_cache=None,
     edition=None,
 ):
-  """Create a new instance."""
+  """Create a new instance.
+
+  Args:
+    instance: The instance to create.
+    config: The instance config to use.
+    description: The instance description.
+    nodes: The number of nodes to use.
+    processing_units: The number of processing units to use.
+    autoscaling_min_nodes: The minimum number of nodes to use.
+    autoscaling_max_nodes: The maximum number of nodes to use.
+    autoscaling_min_processing_units: The minimum number of processing units to
+      use.
+    autoscaling_max_processing_units: The maximum number of processing units to
+      use.
+    autoscaling_high_priority_cpu_target: The high priority CPU target to use.
+    autoscaling_storage_target: The storage target to use.
+    asymmetric_autoscaling_options: A list of ordered dict of key-value pairs
+      representing the asymmetric autoscaling options.
+    instance_type: The instance type to use.
+    expire_behavior: The expire behavior to use.
+    ssd_cache: The ssd cache to use.
+    edition: The edition to use.
+
+  Returns:
+    The created instance.
+  """
   client = apis.GetClientInstance(_SPANNER_API_NAME, _SPANNER_API_VERSION)
   # Module containing the definitions of messages for the specified API.
   msgs = apis.GetMessagesModule(_SPANNER_API_NAME, _SPANNER_API_VERSION)
   config_ref = resources.REGISTRY.Parse(
       config,
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
-      collection='spanner.projects.instanceConfigs')
+      collection='spanner.projects.instanceConfigs',
+  )
   project_ref = resources.REGISTRY.Create(
-      'spanner.projects', projectsId=properties.VALUES.core.project.GetOrFail)
+      'spanner.projects', projectsId=properties.VALUES.core.project.GetOrFail
+  )
   instance_obj = msgs.Instance(
-      config=config_ref.RelativeName(), displayName=description)
+      config=config_ref.RelativeName(), displayName=description
+  )
   if nodes:
     instance_obj.nodeCount = nodes
   elif processing_units:
@@ -102,17 +164,31 @@ def Create(
     instance_obj.instanceType = instance_type
   if expire_behavior is not None:
     instance_obj.freeInstanceMetadata = msgs.FreeInstanceMetadata(
-        expireBehavior=expire_behavior)
+        expireBehavior=expire_behavior
+    )
   if ssd_cache and ssd_cache.strip():
     instance_obj.ssdCache = (
         config_ref.RelativeName() + '/ssdCaches/' + ssd_cache.strip()
     )
   if edition is not None:
     instance_obj.edition = msgs.Instance.EditionValueValuesEnum(edition)
+  # Add asymmetric autoscaling options, if present.
+  if asymmetric_autoscaling_options is not None:
+    for asym_option in asymmetric_autoscaling_options:
+      instance_obj.autoscalingConfig.asymmetricAutoscalingOptions.append(
+          msgs.AsymmetricAutoscalingOption(
+              overrides=MaybeGetAutoscalingOverride(msgs, asym_option),
+              replicaSelection=msgs.InstanceReplicaSelection(
+                  location=asym_option['location']
+              ),
+          )
+      )
   req = msgs.SpannerProjectsInstancesCreateRequest(
       parent=project_ref.RelativeName(),
       createInstanceRequest=msgs.CreateInstanceRequest(
-          instanceId=instance, instance=instance_obj))
+          instanceId=instance, instance=instance_obj
+      ),
+  )
   return client.projects_instances.Create(req)
 
 

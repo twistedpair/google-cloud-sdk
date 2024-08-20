@@ -2670,7 +2670,7 @@ def AddMaintenancePolicyArgs(parser, deprecate=False):
 def AddAcceleratorArgs(parser):
   """Adds Accelerator-related args."""
   # Attaches accelerators (e.g. GPUs) to the instances. e.g. --accelerator
-  # type=nvidia-tesla-k80,count=4
+  # type=nvidia-tesla-t4,count=4
   parser.add_argument(
       '--accelerator',
       type=arg_parsers.ArgDict(spec={
@@ -2680,7 +2680,7 @@ def AddAcceleratorArgs(parser):
       help="""\
       Attaches accelerators (e.g. GPUs) to the instances.
 
-      *type*::: The specific type (e.g. nvidia-tesla-k80 for nVidia Tesla K80)
+      *type*::: The specific type (e.g. nvidia-tesla-t4 for NVIDIA T4)
       of accelerator to attach to the instances. Use 'gcloud compute
       accelerator-types list' to learn about all available accelerator types.
 
@@ -2707,7 +2707,7 @@ def ValidateAcceleratorArgs(args):
     if not accelerator_type_name:
       raise exceptions.InvalidArgumentException(
           '--accelerator', 'accelerator type must be specified. '
-          'e.g. --accelerator type=nvidia-tesla-k80,count=2')
+          'e.g. --accelerator type=nvidia-tesla-t4,count=2')
 
 
 def AddKonletArgs(parser):

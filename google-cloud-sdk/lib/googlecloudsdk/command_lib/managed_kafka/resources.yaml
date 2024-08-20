@@ -16,7 +16,7 @@ location:
     parameter_name: locationsId
     attribute_name: location
     help: |
-      ID of the location of the Apache Kafka for BigQuery resource. See
+      ID of the location of the Managed Service for Apache Kafka resource. See
       https://cloud.google.com/managed-kafka/docs/locations for a list of supported
       locations.
 

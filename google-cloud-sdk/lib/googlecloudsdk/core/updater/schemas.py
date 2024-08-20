@@ -451,6 +451,7 @@ class Component(object):
     version: ComponentVersion, Information about the version of this component.
     is_hidden: bool, True if this should be hidden from the user.
     is_required: bool, True if this component must always be installed.
+    gdu_only: bool, True if this component is only available in GDU.
     is_configuration: bool, True if this should be displayed in the packages
       section of the component manager.
     data: ComponentData, Information about where to get the component from.
@@ -477,6 +478,7 @@ class Component(object):
     p.Parse('version', required=True, func=ComponentVersion.FromDictionary)
     p.Parse('is_hidden', default=False)
     p.Parse('is_required', default=False)
+    p.Parse('gdu_only', default=True)
     p.Parse('is_configuration', default=False)
     p.Parse('data', func=ComponentData.FromDictionary)
     p.Parse('platform', default={}, func=ComponentPlatform.FromDictionary)
@@ -496,6 +498,7 @@ class Component(object):
     w.Write('version', func=ComponentVersion.ToDictionary)
     w.Write('is_hidden')
     w.Write('is_required')
+    w.Write('gdu_only')
     w.Write('is_configuration')
     w.Write('data', func=ComponentData.ToDictionary)
     w.Write('platform', func=ComponentPlatform.ToDictionary)
@@ -505,12 +508,14 @@ class Component(object):
 
   # pylint: disable=redefined-builtin, params must match JSON names
   def __init__(self, id, details, version, dependencies, data, is_hidden,
-               is_required, is_configuration, platform, platform_required):
+               is_required, gdu_only, is_configuration, platform,
+               platform_required):
     self.id = id
     self.details = details
     self.version = version
     self.is_hidden = is_hidden
     self.is_required = is_required
+    self.gdu_only = gdu_only
     self.is_configuration = is_configuration
     self.platform = platform
     self.data = data

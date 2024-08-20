@@ -64,6 +64,12 @@ class ComputeUtil(object):
       message = client_messages.NetworkInterface()
       access_config = client_messages.AccessConfig()
       access_config_ipv6 = client_messages.AccessConfig()
+      access_config_ipv6.type = (
+          client_messages.AccessConfig.TypeValueValuesEnum.DIRECT_IPV6
+      )
+      access_config.type = (
+          client_messages.AccessConfig.TypeValueValuesEnum.ONE_TO_ONE_NAT
+      )
       if "network" in network_interface:
         message.network = network_interface["network"]
       if "subnet" in network_interface:

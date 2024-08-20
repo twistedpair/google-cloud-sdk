@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import string
 import textwrap
 
 from googlecloudsdk.calliope import arg_parsers
@@ -258,6 +259,53 @@ def AddRecurrenceFlag(parser):
       type=arg_parsers.DayOfWeek.Parse,
       help=help_text,
       required=False,
+  )
+
+
+def AddEncryptionConfigGroup(parser, source_type):
+  """Adds flags for the database's encryption configuration to the given parser.
+
+  Args:
+    parser: The argparse parser.
+    source_type: The type of source being restored, for example "backup".
+  """
+  encryption_config = parser.add_argument_group(
+      required=False,
+      help=textwrap.dedent(string.Template("""\
+            The encryption configuration of the new database being created from the $source_type.
+            If not specified, the same encryption settings as the $source_type will be used.
+
+            To create a CMEK-enabled database:
+
+              $$ {command} --encryption-type=customer-managed-encryption --kms-key-name=projects/PROJECT_ID/locations/LOCATION_ID/keyRings/KEY_RING_ID/cryptoKeys/CRYPTO_KEY_ID
+
+            To create a Google-default-encrypted database:
+
+              $$ {command} --encryption-type=google-default-encryption
+
+            To create a database using the same encryption settings as the $source_type:
+
+              $$ {command} --encryption-type=use-source-encryption
+            """).substitute(source_type=source_type)),
+  )
+  encryption_config.add_argument(
+      '--encryption-type',
+      metavar='ENCRYPTION_TYPE',
+      type=str,
+      required=True,
+      choices=[
+          'use-source-encryption',
+          'customer-managed-encryption',
+          'google-default-encryption',
+      ],
+      help=textwrap.dedent("""\
+          The encryption type of the destination database.
+          """),
+  )
+  AddKmsKeyNameFlag(
+      encryption_config,
+      'This flag must only be specified when encryption-type is'
+      ' `customer-managed-encryption`.',
   )
 
 

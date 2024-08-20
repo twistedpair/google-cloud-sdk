@@ -23,6 +23,7 @@ from googlecloudsdk.api_lib.container.fleet import util
 from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.command_lib.container.fleet.features import info
 
+CONFIG_MANAGEMENT_FEATURE_NAME = 'configmanagement'
 
 APPLY_SPEC_VERSION_1 = """
 applySpecVersion: 1

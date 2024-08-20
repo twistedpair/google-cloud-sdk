@@ -391,12 +391,13 @@ class UniverseDescriptor:
     try:
       try:
         response = requests.get(descriptor_data_uri)
-      except requests.exceptions.RequestException:
+        return response.json()
+      except Exception:  # pylint: disable=broad-except
         # Try backup bucket
         descriptor_data_uri = (
             f'https://storage.{os.path.join(universe_domain, DESCRIPTOR_DATA_BUCKET_BACKUP_NAME, DESCRIPTOR_DATA_FILE_NAME)}'
         )
         response = requests.get(descriptor_data_uri)
-    except requests.exceptions.RequestException as e:
+        return response.json()
+    except Exception as e:  # pylint: disable=broad-except
       raise UniverseDescriptorFetchError(universe_domain, e)
-    return response.json()

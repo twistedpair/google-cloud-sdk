@@ -538,6 +538,19 @@ def AddSecurityProfileGroup(parser):
   )
 
 
+def AddMirroringSecurityProfileGroup(parser):
+  """Adds security profile group to this rule."""
+  parser.add_argument(
+      '--security-profile-group',
+      metavar='SECURITY_PROFILE_GROUP',
+      required=False,
+      help=(
+          'A security profile group to be used with'
+          ' mirror action.'
+      ),
+  )
+
+
 def AddTlsInspect(parser):
   """Adds the option to turn on TLS decryption on the rule."""
   parser.add_argument(

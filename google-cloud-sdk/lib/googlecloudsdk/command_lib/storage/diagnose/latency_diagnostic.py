@@ -16,6 +16,7 @@
 """Latency Diagnostic."""
 
 import math
+import os
 from typing import List
 import uuid
 
@@ -85,6 +86,7 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
     # Make sure the prefix is unique to avoid collisions with other diagnostics
     # and previous runs of this diagnostic.
     self.object_prefix = 'latency_diagnostics_' + str(uuid.uuid4())
+    self._should_clean_up_objects = False
 
   @property
   def name(self) -> str:
@@ -126,7 +128,7 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
     """
     self._create_result_entry(_UPLOAD_OPERATION_TITLE, object_number)
 
-    with self._time_recorder(
+    with diagnostic.time_recorder(
         iteration, self._result[_UPLOAD_OPERATION_TITLE][object_number]
     ):
       with file_utils.FileReader(file_path) as file:
@@ -142,7 +144,7 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
     """
     self._create_result_entry(_METADATA_OPERATION_TITLE, object_number)
 
-    with self._time_recorder(
+    with diagnostic.time_recorder(
         iteration,
         self._result[_METADATA_OPERATION_TITLE][object_number],
     ):
@@ -163,7 +165,7 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
     """
     self._create_result_entry(_DOWNLOAD_OPERATION_TITLE, object_number)
 
-    with self._time_recorder(
+    with diagnostic.time_recorder(
         iteration, self._result[_DOWNLOAD_OPERATION_TITLE][object_number]
     ):
       self._api_client.download_object(
@@ -186,7 +188,7 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
     """
     self._create_result_entry(_DELETE_OPERATION_TITLE, object_number)
 
-    with self._time_recorder(
+    with diagnostic.time_recorder(
         iteration, self._result[_DELETE_OPERATION_TITLE][object_number]
     ):
       self._api_client.delete_object(object_url, request_config)
@@ -205,12 +207,16 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
         for object_number in range(self.object_count):
           file_path = self._files[object_number]
           file_size = self.object_sizes[object_number]
+          # Extract the object name from the file path. Object name is the last
+          # part of the file path.
+          object_name = file_path.split(os.path.sep)[-1]
 
           object_url = storage_url.CloudUrl(
               storage_url.ProviderPrefix.GCS,
               self.bucket_url.bucket_name,
-              file_path,
+              object_name,
           )
+
           object_resource = resource_reference.ObjectResource(
               object_url, size=file_size
           )
@@ -228,6 +234,7 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
                 request_config,
                 iteration,
             )
+            self._should_clean_up_objects = True
             self._fetch_object_metadata(
                 object_number, object_resource.name, iteration
             )
@@ -237,6 +244,8 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
             self._delete_object(
                 object_number, object_url, request_config, iteration
             )
+            # Only clean up objects if delete could not be performed.
+            self._should_clean_up_objects = False
           except api_errors.CloudApiError as e:
             raise diagnostic.DiagnosticIgnorableError(
                 'Failed to run operation for object'
@@ -249,6 +258,9 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
         self.temp_dir.Close()
       except OSError as e:
         log.warning(f'{self.name} : Failed to clean up temp files. {e}')
+
+      if self._should_clean_up_objects:
+        self._clean_up_objects(self.bucket_url.url_string, self.object_prefix)
 
   @property
   def result(self) -> diagnostic.DiagnosticResult:

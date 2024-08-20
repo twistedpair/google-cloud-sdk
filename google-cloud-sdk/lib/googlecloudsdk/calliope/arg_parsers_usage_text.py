@@ -138,6 +138,15 @@ def _FormatBasicTypeStr(arg_type):
   return 'string'
 
 
+def _Punctuate(text):
+  """Adds punctuation to text if it doesn't already exist."""
+  clean_text = text.rstrip()
+  if clean_text.endswith('.'):
+    return clean_text
+  else:
+    return clean_text + '.'
+
+
 def FormatHelpText(field_name, required, help_text=None):
   """Defaults and formats specific attribute of help text.
 
@@ -150,7 +159,7 @@ def FormatHelpText(field_name, required, help_text=None):
     help text formatted as `{type} {required}, {help}`
   """
   if help_text:
-    defaulted_help_text = help_text
+    defaulted_help_text = _Punctuate(help_text)
   elif field_name:
     defaulted_help_text = 'Sets `{}` value.'.format(field_name)
   else:

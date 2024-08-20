@@ -1073,7 +1073,8 @@ class JsonClient(cloud_api.CloudApi):
               'prefixes,items/name,items/etag,items/size,items/generation,'
               'items/storageClass,items/timeCreated,items/metadata/{},'
               'items/metadata/{},items/metadata/{},items/metadata/{},'
-              'items/metadata/{},items/crc32c,items/md5Hash,nextPageToken'
+              'items/metadata/{},items/crc32c,items/md5Hash,nextPageToken,'
+              'items/kmsKeyName'
           ).format(
               posix_util.ATIME_METADATA_KEY,
               posix_util.GID_METADATA_KEY,

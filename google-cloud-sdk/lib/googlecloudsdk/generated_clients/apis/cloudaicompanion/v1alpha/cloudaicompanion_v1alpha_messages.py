@@ -729,7 +729,7 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesPatchRequest(_messag
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
+    updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the CodeRepositoryIndex resource by the update. The
       fields specified in the update_mask are relative to the resource, not
       the full request. A field will be overwritten if it is in the mask. If
@@ -873,7 +873,7 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesRepositoryGroupsPatc
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
+    updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the RepositoryGroup resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the user
@@ -1540,8 +1540,13 @@ class CodeRepositoryIndex(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     ipRanges: Output only. Ranges of possible IP addresses from which the RAG
       index service will attempt to access linked Git repositories.
+    kmsKey: Optional. Immutable. Customer-managed encryption key name, in the
+      format projects/*/locations/*/keyRings/*/cryptoKeys/*.
     labels: Optional. Labels as key value pairs
     name: Immutable. Identifier. name of resource
+    requestIpRanges: Optional. Whether to request reservation of IP addresses
+      from which the RAG index service will attempt to access linked Git
+      repositories
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -1571,9 +1576,11 @@ class CodeRepositoryIndex(_messages.Message):
 
   createTime = _messages.StringField(1)
   ipRanges = _messages.StringField(2, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  kmsKey = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  requestIpRanges = _messages.BooleanField(6)
+  updateTime = _messages.StringField(7)
 
 
 class Column(_messages.Message):
@@ -2223,6 +2230,7 @@ class GenerateDataInsightsRequest(_messages.Message):
   Fields:
     chartData: Chart data.
     clientType: Required. Client ID assigned for the incoming request.
+    requestContext: Context information for better tailored insights.
   """
 
   class ClientTypeValueValuesEnum(_messages.Enum):
@@ -2247,6 +2255,7 @@ class GenerateDataInsightsRequest(_messages.Message):
 
   chartData = _messages.MessageField('ChartData', 1)
   clientType = _messages.EnumField('ClientTypeValueValuesEnum', 2)
+  requestContext = _messages.MessageField('RequestContext', 3)
 
 
 class GenerateDataInsightsResponse(_messages.Message):
@@ -3290,9 +3299,12 @@ class ReplaceTaskResponse(_messages.Message):
 
   Fields:
     taskConfigs: The list of recommended tasks.
+    taskResponseStatus: The list of task response status based on the
+      task_types in the request.
   """
 
   taskConfigs = _messages.MessageField('TaskConfig', 1, repeated=True)
+  taskResponseStatus = _messages.MessageField('TaskResponseStatus', 2, repeated=True)
 
 
 class Repository(_messages.Message):
@@ -3355,6 +3367,17 @@ class RepositoryGroup(_messages.Message):
   name = _messages.StringField(3)
   repositories = _messages.MessageField('Repository', 4, repeated=True)
   updateTime = _messages.StringField(5)
+
+
+class RequestContext(_messages.Message):
+  r"""Context information for the request.
+
+  Fields:
+    userQuestion: Optional. Question context over which the data was
+      generated.
+  """
+
+  userQuestion = _messages.StringField(1)
 
 
 class ResponseChunk(_messages.Message):
@@ -3756,6 +3779,8 @@ class SummarizeDataRequest(_messages.Message):
   Fields:
     chartData: Chart data.
     clientType: Required. Client ID assigned for the incoming request.
+    requestContext: Optional. Context information for better tailored
+      insights.
   """
 
   class ClientTypeValueValuesEnum(_messages.Enum):
@@ -3780,6 +3805,7 @@ class SummarizeDataRequest(_messages.Message):
 
   chartData = _messages.MessageField('ChartData', 1)
   clientType = _messages.EnumField('ClientTypeValueValuesEnum', 2)
+  requestContext = _messages.MessageField('RequestContext', 3)
 
 
 class SummarizeDataResponse(_messages.Message):
@@ -3995,6 +4021,35 @@ class TaskConfig(_messages.Message):
   parameters = _messages.MessageField('ParametersValue', 6)
   task = _messages.StringField(7)
   taskId = _messages.StringField(8)
+
+
+class TaskResponseStatus(_messages.Message):
+  r"""Message for task response status.
+
+  Enums:
+    TaskTypeValueValuesEnum: The task type.
+
+  Fields:
+    errorMessage: The error message of the task response in case of failure.
+    httpCode: The http code of the task response.
+    taskType: The task type.
+  """
+
+  class TaskTypeValueValuesEnum(_messages.Enum):
+    r"""The task type.
+
+    Values:
+      TASK_TYPE_UNSPECIFIED: Unspecified.
+      CONNECTOR_TASK: Connector Task.
+      REST_TASK: Rest task.
+    """
+    TASK_TYPE_UNSPECIFIED = 0
+    CONNECTOR_TASK = 1
+    REST_TASK = 2
+
+  errorMessage = _messages.StringField(1)
+  httpCode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  taskType = _messages.EnumField('TaskTypeValueValuesEnum', 3)
 
 
 class TestIamPermissionsRequest(_messages.Message):

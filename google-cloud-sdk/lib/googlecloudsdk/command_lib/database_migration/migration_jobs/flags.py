@@ -56,6 +56,13 @@ def AddTypeFlag(parser, required=False):
   )
 
 
+def AddDumpGroupFlag(parser):
+  """Adds a --dump-path or --dump-flags flag to the given parser."""
+  dump_group = parser.add_group(mutex=True)
+  AddDumpPathFlag(dump_group)
+  AddDumpFlagsFlag(dump_group)
+
+
 def AddDumpPathFlag(parser):
   """Adds a --dump-path flag to the given parser."""
   help_text = """\
@@ -63,6 +70,20 @@ def AddDumpPathFlag(parser):
     `gs://[BUCKET_NAME]/[OBJECT_NAME]`.
     """
   parser.add_argument('--dump-path', help=help_text)
+
+
+def AddDumpFlagsFlag(parser):
+  """Adds a --dump-flags flag to the given parser."""
+  help_text = """\
+    A list of dump flags. An object containing a list of "key": "value" pairs.
+    """
+  parser.add_argument(
+      '--dump-flags',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help=help_text,
+      hidden=True,
+  )
 
 
 def AddConnectivityGroupFlag(parser, api_type, required=False):

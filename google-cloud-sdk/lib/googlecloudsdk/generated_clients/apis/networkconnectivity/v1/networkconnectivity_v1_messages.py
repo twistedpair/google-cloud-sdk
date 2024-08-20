@@ -1146,6 +1146,7 @@ class InternalRange(_messages.Message):
     description: A description of this resource.
     ipCidrRange: The IP range that this internal range defines.
     labels: User-defined labels.
+    migration: Optional. Should be present if usage is set to FOR_MIGRATION.
     name: Immutable. The name of an internal range. Format:
       projects/{project}/locations/{location}/internalRanges/{internal_range}
       See: https://google.aip.dev/122#fields-representing-resource-names
@@ -1237,10 +1238,15 @@ class InternalRange(_messages.Message):
         associated with VPC resources and are meant to block out address
         ranges for various use cases, like for example, usage on-prem, with
         dynamic route announcements via interconnect.
+      FOR_MIGRATION: Ranges created FOR_MIGRATION can be used to lock a CIDR
+        range between a source and target subnet. If usage is set to
+        FOR_MIGRATION the peering value has to be set to FOR_SELF or default
+        to FOR_SELF when unset.
     """
     USAGE_UNSPECIFIED = 0
     FOR_VPC = 1
     EXTERNAL_TO_VPC = 2
+    FOR_MIGRATION = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1270,15 +1276,16 @@ class InternalRange(_messages.Message):
   description = _messages.StringField(2)
   ipCidrRange = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  network = _messages.StringField(6)
-  overlaps = _messages.EnumField('OverlapsValueListEntryValuesEnum', 7, repeated=True)
-  peering = _messages.EnumField('PeeringValueValuesEnum', 8)
-  prefixLength = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  targetCidrRange = _messages.StringField(10, repeated=True)
-  updateTime = _messages.StringField(11)
-  usage = _messages.EnumField('UsageValueValuesEnum', 12)
-  users = _messages.StringField(13, repeated=True)
+  migration = _messages.MessageField('Migration', 5)
+  name = _messages.StringField(6)
+  network = _messages.StringField(7)
+  overlaps = _messages.EnumField('OverlapsValueListEntryValuesEnum', 8, repeated=True)
+  peering = _messages.EnumField('PeeringValueValuesEnum', 9)
+  prefixLength = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  targetCidrRange = _messages.StringField(11, repeated=True)
+  updateTime = _messages.StringField(12)
+  usage = _messages.EnumField('UsageValueValuesEnum', 13)
+  users = _messages.StringField(14, repeated=True)
 
 
 class IpRangeReservation(_messages.Message):
@@ -1398,12 +1405,16 @@ class LinkedVpcNetwork(_messages.Message):
       excluded from peering.
     includeExportRanges: Optional. IP ranges allowed to be included from
       peering.
+    producerVpcSpokes: Output only. The list of Producer VPC spokes that this
+      VPC spoke is a service consumer VPC spoke for. These producer VPCs are
+      connected through VPC peering to this spoke's backing VPC network.
     uri: Required. The URI of the VPC network resource.
   """
 
   excludeExportRanges = _messages.StringField(1, repeated=True)
   includeExportRanges = _messages.StringField(2, repeated=True)
-  uri = _messages.StringField(3)
+  producerVpcSpokes = _messages.StringField(3, repeated=True)
+  uri = _messages.StringField(4)
 
 
 class LinkedVpnTunnels(_messages.Message):
@@ -1752,12 +1763,32 @@ class LocationMetadata(_messages.Message):
       SITE_TO_CLOUD_SPOKES: Site-to-cloud spokes are supported in this
         location
       SITE_TO_SITE_SPOKES: Site-to-site spokes are supported in this location
+      GATEWAY_SPOKES: Gateway spokes are supported in this location.
     """
     LOCATION_FEATURE_UNSPECIFIED = 0
     SITE_TO_CLOUD_SPOKES = 1
     SITE_TO_SITE_SPOKES = 2
+    GATEWAY_SPOKES = 3
 
   locationFeatures = _messages.EnumField('LocationFeaturesValueListEntryValuesEnum', 1, repeated=True)
+
+
+class Migration(_messages.Message):
+  r"""Specification for migration with source and target resource names.
+
+  Fields:
+    source: Immutable. Resource path as an URI of the source resource, for
+      example a subnet. The project for the source resource should match the
+      project for the InternalRange. An example:
+      /projects/{project}/regions/{region}/subnetworks/{subnet}
+    target: Immutable. Resource path of the target resource. The target
+      project can be different, as in the cases when migrating to peer
+      networks. The resource For example:
+      /projects/{project}/regions/{region}/subnetworks/{subnet}
+  """
+
+  source = _messages.StringField(1)
+  target = _messages.StringField(2)
 
 
 class NetworkconnectivityProjectsLocationsGetRequest(_messages.Message):

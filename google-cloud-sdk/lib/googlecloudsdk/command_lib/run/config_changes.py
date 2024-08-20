@@ -44,6 +44,7 @@ from googlecloudsdk.command_lib.run import secrets_mapping
 from googlecloudsdk.command_lib.run import volumes
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import repeated
+from googlecloudsdk.generated_clients.apis.run.v1 import run_v1_messages
 import six
 
 
@@ -932,6 +933,94 @@ class ResourceChanges(ContainerConfigChanger):
         container.resource_limits.pop('nvidia.com/gpu', None)
       else:
         container.resource_limits['nvidia.com/gpu'] = self.gpu
+
+
+def _MakeProbe(
+    messages: types.ModuleType, settings: dict[str, str]
+) -> run_v1_messages.Probe:
+  """Creates a probe from the given settings.
+
+  Args:
+    messages: Run v1 messages module.
+    settings: a dict of settings for the probe.
+
+  Returns:
+    A new Run v1 probe.
+  """
+
+  def _ParseInt(settings, key):
+    if not settings[key]:
+      return None
+    try:
+      return int(settings[key])
+    except ValueError:
+      raise exceptions.ArgumentError(
+          'Value for key [{}] must be an integer.'.format(key)
+      )
+
+  probe = messages.Probe()
+  for key in settings:
+    if key.startswith('tcpSocket'):
+      probe.tcpSocket = messages.TCPSocketAction()
+    elif key.startswith('httpGet'):
+      probe.httpGet = messages.HTTPGetAction()
+    elif key.startswith('grpc'):
+      probe.grpc = messages.GRPCAction()
+    else:
+      # Set the basic fields directly.
+      setattr(probe, key, _ParseInt(settings, key))
+  # TCP
+  if 'tcpSocket.port' in settings:
+    probe.tcpSocket.port = _ParseInt(settings, 'tcpSocket.port')
+  # HTTP
+  if 'httpGet.port' in settings:
+    probe.httpGet.port = _ParseInt(settings, 'httpGet.port')
+  if 'httpGet.path' in settings:
+    probe.httpGet.path = settings['httpGet.path']
+  # gRPC
+  if 'grpc.port' in settings:
+    probe.grpc.port = _ParseInt(settings, 'grpc.port')
+  if 'grpc.service' in settings:
+    probe.grpc.service = settings['grpc.service']
+  return probe
+
+
+@dataclasses.dataclass(frozen=True)
+class StartupProbeChanges(ContainerConfigChanger):
+  """Represents the user intent to update startup probe settings.
+
+  Attributes:
+    settings: Values to set in the probe.
+    clear: If true, clear the startup probe.
+  """
+
+  settings: dict[str, str] = dataclasses.field(default_factory=dict)
+  clear: bool = False
+
+  def AdjustContainer(self, container, messages_mod):
+    if self.clear:
+      container.startupProbe = None
+      return
+    container.startupProbe = _MakeProbe(messages_mod, self.settings)
+
+
+@dataclasses.dataclass(frozen=True)
+class LivenessProbeChanges(ContainerConfigChanger):
+  """Represents the user intent to update liveness probe settings.
+
+  Attributes:
+    settings: values to set in the probe.
+    clear: If true, clear the liveness probe.
+  """
+
+  settings: dict[str, str] = dataclasses.field(default_factory=dict)
+  clear: bool = False
+
+  def AdjustContainer(self, container, messages_mod):
+    if self.clear:
+      container.livenessProbe = None
+      return
+    container.livenessProbe = _MakeProbe(messages_mod, self.settings)
 
 
 @dataclasses.dataclass(frozen=True)

@@ -54,6 +54,11 @@ class SubnetOption(enum.Enum):
   CUSTOM_RANGES = 2
 
 
+class SubnetIpv6Option(enum.Enum):
+  ALL_IPV6_SUBNETS = 0
+  LIST_OF_IPV6_SUBNETS = 1
+
+
 DEFAULT_LIST_FORMAT = """\
     table(
       name,
@@ -124,11 +129,13 @@ def AddEndpointTypesArg(parser):
   )
 
 
-def AddCommonNatArgs(parser, for_create=False):
+def AddCommonNatArgs(parser, for_create=False, with_nat64=False):
   """Adds common arguments for creating and updating NATs."""
   _AddAutoNetworkTier(parser)
   _AddIpAllocationArgs(parser)
-  _AddSubnetworkArgs(parser, for_create)
+  _AddSubnetworkArgs(parser, for_create, with_nat64)
+  if with_nat64:
+    _AddSubnetworkNat64Args(parser, for_create)
   _AddTimeoutsArgs(parser, for_create)
   _AddMinPortsPerVmArg(parser, for_create)
   _AddLoggingArgs(parser)
@@ -188,27 +195,39 @@ def _AddIpAllocationArgs(parser):
       parser, mutex_group=ip_allocation, cust_metavar='IP_ADDRESS')
 
 
-def _AddSubnetworkArgs(parser, for_create):
+def _AddSubnetworkArgs(parser, for_create, with_nat64):
   """Adds a mutually exclusive group to specify subnet options."""
-  subnetwork = parser.add_mutually_exclusive_group(required=for_create)
+  is_group_required = False if with_nat64 else for_create
+  group_help_text = 'IPv4 subnetwork range options.'
+  if for_create:
+    group_help_text += (
+        ' If they are not specified, one of IPv6 subnetwork range option has to'
+        ' be provided.'
+    )
+  subnetwork = parser.add_mutually_exclusive_group(
+      required=is_group_required,
+      help=group_help_text if with_nat64 else None,
+  )
   subnetwork.add_argument(
       '--nat-all-subnet-ip-ranges',
       help=textwrap.dedent("""\
-          Allow all IP ranges of all subnetworks in the region, including
-          primary and secondary ranges, to use NAT."""),
+            Allow all IP ranges of all subnetworks in the region, including
+            primary and secondary ranges, to use NAT."""),
       action='store_const',
       dest='subnet_option',
       const=SubnetOption.ALL_RANGES,
-      default=SubnetOption.CUSTOM_RANGES)
+      default=SubnetOption.CUSTOM_RANGES,
+  )
   subnetwork.add_argument(
       '--nat-primary-subnet-ip-ranges',
       help=textwrap.dedent("""\
-          Allow only primary IP ranges of all subnetworks in the region to use
-          NAT."""),
+            Allow only primary IP ranges of all subnetworks in the region to use
+            NAT."""),
       action='store_const',
       dest='subnet_option',
       const=SubnetOption.PRIMARY_RANGES,
-      default=SubnetOption.CUSTOM_RANGES)
+      default=SubnetOption.CUSTOM_RANGES,
+  )
   custom_subnet_help_text = """\
     List of subnetwork primary and secondary IP ranges to be allowed to
     use NAT.
@@ -227,6 +246,55 @@ def _AddSubnetworkArgs(parser, for_create):
       help=custom_subnet_help_text,
       type=arg_parsers.ArgList(min_length=1),
   )
+  if not for_create and with_nat64:
+    subnetwork.add_argument(
+        '--clear-nat-subnet-ip-ranges',
+        help=textwrap.dedent("""\
+            Clear options related to the NAT's subnet ranges."""),
+        action='store_true',
+        default=False,
+        dest='clear_nat_subnet_ip_ranges',
+    )
+
+
+def _AddSubnetworkNat64Args(parser, for_create):
+  """Adds a mutually exclusive group to specify subnet options."""
+  group_help_text = 'IPv6 subnetwork range options.'
+  if for_create:
+    group_help_text += (
+        ' If they are not specified, one of IPv4 subnetwork range option has to'
+        ' be provided.'
+    )
+  subnetwork = parser.add_mutually_exclusive_group(
+      help=group_help_text,
+  )
+  subnetwork.add_argument(
+      '--nat64-all-v6-subnet-ip-ranges',
+      help=textwrap.dedent("""\
+          Allow all ip ranges of ipv6 subnetworks in the region to use NAT."""),
+      action='store_const',
+      dest='subnet_ipv6_option',
+      const=SubnetIpv6Option.ALL_IPV6_SUBNETS,
+      default=SubnetIpv6Option.LIST_OF_IPV6_SUBNETS,
+  )
+  custom_subnet_help_text = """\
+    List of ipv6 subnetworks to be allowed tp use NAT.
+    """
+  subnetwork.add_argument(
+      '--nat64-custom-v6-subnet-ip-ranges',
+      metavar='SUBNETWORK',
+      help=custom_subnet_help_text,
+      type=arg_parsers.ArgList(min_length=1),
+  )
+  if not for_create:
+    subnetwork.add_argument(
+        '--clear-nat64-subnet-ip-ranges',
+        help=textwrap.dedent("""\
+            Clear options related to the NAT64's subnet ranges."""),
+        action='store_true',
+        default=False,
+        dest='clear_nat64_subnet_ip_ranges',
+    )
 
 
 def _AddTimeoutsArgs(parser, for_create=False):

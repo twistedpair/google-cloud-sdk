@@ -21,6 +21,7 @@ with the storage system.
 from __future__ import annotations
 
 import abc
+from collections.abc import MutableMapping
 import contextlib
 import dataclasses
 import io
@@ -34,6 +35,7 @@ from typing import Dict, List, Tuple
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files as file_utils
 
@@ -41,6 +43,24 @@ _THREAD_COUNT_ENV_VAR = 'CLOUDSDK_STORAGE_THREAD_COUNT'
 _PROCESS_COUNT_ENV_VAR = 'CLOUDSDK_STORAGE_PROCESS_COUNT'
 # Placeholder value for metrics that are not available or cannot be calculated.
 PLACEHOLDER_METRIC_VALUE = 'N/A'
+
+
+@contextlib.contextmanager
+def time_recorder(key: str, result: MutableMapping[str, float]) -> None:
+  """A context manager that records the time it takes to run a block of code.
+
+  Args:
+    key: The key to use in the result dictionary.
+    result: The dictionary to store the result in. The time taken to run the
+      block of code will be stored in this dictionary with the given key.
+
+  Yields:
+    None
+  """
+  t0 = time.time()
+  yield
+  t1 = time.time()
+  result[key] = t1 - t0
 
 
 class DiagnosticIgnorableError(errors.Error):
@@ -107,13 +127,14 @@ class Diagnostic(abc.ABC):
   The execute method is the entry point for running the diagnostic.
   """
 
+  _old_env_vars = None
+
   @property
   @abc.abstractmethod
   def name(self) -> str:
     """The name of the diagnostic."""
     pass
 
-  @abc.abstractmethod
   def _pre_process(self):
     """Pre-processing step for the diagnostic.
 
@@ -121,7 +142,7 @@ class Diagnostic(abc.ABC):
     classes can override this method to perform actions necessary for
     running diagnostics like file creation, setting configurations etc.
     """
-    pass
+    self._old_env_vars = os.environ.copy()
 
   @abc.abstractmethod
   def _run(self):
@@ -132,7 +153,6 @@ class Diagnostic(abc.ABC):
     """
     pass
 
-  @abc.abstractmethod
   def _post_process(self):
     """Post-processing step for the diagnostic.
 
@@ -140,36 +160,22 @@ class Diagnostic(abc.ABC):
     classes can override this method to perform clean up actions, aggregating
     metrics, etc.
     """
-    pass
+    if self._old_env_vars is not None:
+      os.environ = self._old_env_vars
 
   def execute(self):
     """Executes the diagnostic."""
     log.status.Print(f'Running diagnostic: {self.name}...')
-    try:
-      self._pre_process()
-      self._run()
-    # TODO(b/338905869): Add support to optionaly suppress the exception.
-    except DiagnosticIgnorableError as e:
-      log.error(f'{self.name} Diagnostic execution failed: {e}')
-    finally:
-      self._post_process()
-    log.status.Print(f'Finished running diagnostic: {self.name}')
-
-  @contextlib.contextmanager
-  def _time_recorder(self, key: str, result: Dict[str, float]) -> None:
-    """Records the time it takes to run a block of code.
-
-    Args:
-      key: The key to use in the result dictionary.
-      result: The dictionary to store the result in.
-
-    Yields:
-      None
-    """
-    t0 = time.time()
-    yield
-    t1 = time.time()
-    result[key] = t1 - t0
+    with execution_utils.RaisesKeyboardInterrupt():
+      try:
+        self._pre_process()
+        self._run()
+        # TODO(b/338905869): Add support to optionaly suppress the exception.
+      except DiagnosticIgnorableError as e:
+        log.error(f'{self.name} Diagnostic execution failed: {e}')
+      finally:
+        self._post_process()
+      log.status.Print(f'Finished running diagnostic: {self.name}')
 
   def _create_test_files(
       self,
@@ -210,7 +216,7 @@ class Diagnostic(abc.ABC):
               bytes_remaining -= current_chunk_size
           self._files.append(f.name)
       return True
-    except (OSError, EnvironmentError) as e:
+    except (OSError, EnvironmentError, console_io.OperationCancelledError) as e:
       log.warning('Failed to create test files: {}'.format(e))
     return False
 
@@ -246,11 +252,17 @@ class Diagnostic(abc.ABC):
         in_str=in_str,
     )
 
-    if returncode != 0 and not err.getvalue():
-      err.write('gcloud exited with return code {}'.format(returncode))
+    stdout = out.getvalue()
+    stderr = err.getvalue()
+
+    log.debug('stdout: %s', stdout)
+    log.debug('stderr: %s', stderr)
+
+    if returncode != 0 and not stderr:
+      stderr = f'gcloud exited with return code {returncode}'
     return (
-        out.getvalue() if returncode == 0 else None,
-        err.getvalue() if returncode != 0 else None,
+        stdout if returncode == 0 else None,
+        stderr if returncode != 0 else None,
     )
 
   def _run_cp(self, source_url: str, destination_url: str, in_str=None):
@@ -271,8 +283,7 @@ class Diagnostic(abc.ABC):
         destination_url,
         '--verbosity=debug',
     ]
-    output, err = self._run_gcloud(args, in_str=in_str)
-    del output  # unused
+    _, err = self._run_gcloud(args, in_str=in_str)
     if err:
       raise DiagnosticIgnorableError(
           'Failed to copy objects from source {} to {} : {}'.format(
@@ -287,8 +298,7 @@ class Diagnostic(abc.ABC):
         'rm',
         f'{bucket_url}{object_prefix}*',
     ]
-    output, err = self._run_gcloud(args)
-    del output  # unused
+    _, err = self._run_gcloud(args)
     if err:
       log.warning(
           f'Failed to clean up objects in {bucket_url} with prefix'

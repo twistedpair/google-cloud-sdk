@@ -2083,6 +2083,7 @@ class ImportContext(_messages.Message):
         certPath: Path to the Certificate (.cer) in Cloud Storage, in the form
           `gs://bucketName/fileName`. The instance must have write permissions
           to the bucket and read access to the file.
+        keepEncrypted: Optional. Whether the imported file remains encrypted.
         pvkPassword: Password that encrypts the private key
         pvkPath: Path to the Certificate Private Key (.pvk) in Cloud Storage,
           in the form `gs://bucketName/fileName`. The instance must have write
@@ -2090,8 +2091,9 @@ class ImportContext(_messages.Message):
       """
 
       certPath = _messages.StringField(1)
-      pvkPassword = _messages.StringField(2)
-      pvkPath = _messages.StringField(3)
+      keepEncrypted = _messages.BooleanField(2)
+      pvkPassword = _messages.StringField(3)
+      pvkPath = _messages.StringField(4)
 
     bakType = _messages.EnumField('BakTypeValueValuesEnum', 1)
     encryptionOptions = _messages.MessageField('EncryptionOptionsValue', 2)
@@ -2337,6 +2339,24 @@ class InstancesListServerCasResponse(_messages.Message):
   activeVersion = _messages.StringField(1)
   certs = _messages.MessageField('SslCert', 2, repeated=True)
   kind = _messages.StringField(3)
+
+
+class InstancesListServerCertificatesResponse(_messages.Message):
+  r"""Instances ListServerCertificatess response.
+
+  Fields:
+    activeVersion: The `sha1_fingerprint` of the active certificate from
+      `server_certs`.
+    caCerts: List of server CA certificates for the instance.
+    kind: This is always `sql#instancesListServerCertificates`.
+    serverCerts: List of server certificates for the instance, signed by the
+      corresponding CA from the `ca_certs` list.
+  """
+
+  activeVersion = _messages.StringField(1)
+  caCerts = _messages.MessageField('SslCert', 2, repeated=True)
+  kind = _messages.StringField(3)
+  serverCerts = _messages.MessageField('SslCert', 4, repeated=True)
 
 
 class InstancesReencryptRequest(_messages.Message):
@@ -4014,6 +4034,10 @@ class SqlExternalSyncSettingError(_messages.Message):
       UNSUPPORTED_COLUMNS: The source database has generated columns that
         can't be migrated. Please change them to regular columns before
         migration.
+      USERS_NOT_CREATED_IN_REPLICA: The source database has users that aren't
+        created in the replica. First, create all users, which are in the
+        pg_user_mappings table of the source database, in the destination
+        instance. Then, perform the migration.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -4065,6 +4089,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     PG_CRON_FLAG_ENABLED_IN_REPLICA = 47
     EXTENSIONS_NOT_ENABLED_IN_REPLICA = 48
     UNSUPPORTED_COLUMNS = 49
+    USERS_NOT_CREATED_IN_REPLICA = 50
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)
@@ -4171,7 +4196,7 @@ class SqlInstancesDeleteRequest(_messages.Message):
       bucket is not retained yet. By default, it is turned off.
     retainBackupsExpiryTime: Expiration timestamp in UTC.
     retainBackupsTtlDays: Retention period in days.
-    skipFinalBackup: Deprecated field, please use enable_final_backup
+    skipFinalBackup: Deprecated field, please use enable_final_backup.
   """
 
   enableFinalBackup = _messages.BooleanField(1)
@@ -4356,6 +4381,19 @@ class SqlInstancesListServerCasRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
+class SqlInstancesListServerCertificatesRequest(_messages.Message):
+  r"""A SqlInstancesListServerCertificatesRequest object.
+
+  Fields:
+    instance: Required. Cloud SQL instance ID. This does not include the
+      project ID.
+    project: Required. Project ID of the project that contains the instance.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
 class SqlInstancesPatchRequest(_messages.Message):
   r"""A SqlInstancesPatchRequest object.
 
@@ -4504,10 +4542,17 @@ class SqlInstancesRotateServerCertificateRequest(_messages.Message):
   r"""A SqlInstancesRotateServerCertificateRequest object.
 
   Fields:
-    body: Required. Rotate server certificate request body.
+    instance: Required. Cloud SQL instance ID. This does not include the
+      project ID.
+    instancesRotateServerCertificateRequest: A
+      InstancesRotateServerCertificateRequest resource to be passed as the
+      request body.
+    project: Required. Project ID of the project that contains the instance.
   """
 
-  body = _messages.MessageField('InstancesRotateServerCertificateRequest', 1)
+  instance = _messages.StringField(1, required=True)
+  instancesRotateServerCertificateRequest = _messages.MessageField('InstancesRotateServerCertificateRequest', 2)
+  project = _messages.StringField(3, required=True)
 
 
 class SqlInstancesStartExternalSyncRequest(_messages.Message):

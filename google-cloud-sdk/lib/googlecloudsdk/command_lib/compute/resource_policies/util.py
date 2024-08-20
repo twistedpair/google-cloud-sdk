@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2018 Google LLC. All Rights Reserved.
+# Copyright 2024 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -218,6 +218,44 @@ def MakeInstanceSchedulePolicy(policy_ref, args, messages):
       description=args.description,
       region=policy_ref.region,
       instanceSchedulePolicy=instance_schedule_policy)
+
+
+def MakeInstanceSchedulePolicyForUpdate(policy_ref, args, messages):
+  """Creates an Instance Schedule Policy message from args for update."""
+
+  vm_start_schedule = None
+  if args.vm_start_schedule:
+    vm_start_schedule = messages.ResourcePolicyInstanceSchedulePolicySchedule(
+        schedule=args.vm_start_schedule
+    )
+
+  vm_stop_schedule = None
+  if args.vm_stop_schedule:
+    vm_stop_schedule = messages.ResourcePolicyInstanceSchedulePolicySchedule(
+        schedule=args.vm_stop_schedule
+    )
+
+  instance_schedule_policy = messages.ResourcePolicyInstanceSchedulePolicy(
+      timeZone=args.timezone,
+      vmStartSchedule=vm_start_schedule,
+      vmStopSchedule=vm_stop_schedule,
+  )
+
+  if args.initiation_date:
+    instance_schedule_policy.startTime = times.FormatDateTime(
+        args.initiation_date
+    )
+
+  if args.end_date:
+    instance_schedule_policy.expirationTime = times.FormatDateTime(
+        args.end_date
+    )
+
+  return messages.ResourcePolicy(
+      name=policy_ref.Name(),
+      description=args.description,
+      instanceSchedulePolicy=instance_schedule_policy,
+  )
 
 
 def MakeGroupPlacementPolicy(policy_ref, args, messages, track):

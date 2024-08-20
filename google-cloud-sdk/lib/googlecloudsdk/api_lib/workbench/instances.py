@@ -283,6 +283,7 @@ def CreateInstance(args, messages):
       enableIpForwarding=args.enable_ip_forwarding,
       gpuDriverConfig=CreateGPUDriverConfigMessage(args, messages),
       machineType=args.machine_type,
+      minCpuPlatform=args.min_cpu_platform,
       metadata=GetMetadataFromArgs(args, messages),
       networkInterfaces=[CreateNetworkConfigMessage(args, messages)],
       serviceAccounts=[CreateServiceAccountConfigMessage(args, messages)],

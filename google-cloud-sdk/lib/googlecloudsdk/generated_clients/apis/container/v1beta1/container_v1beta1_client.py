@@ -190,6 +190,33 @@ class ContainerV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def FetchNodePoolUpgradeInfo(self, request, global_params=None):
+      r"""Fetch upgrade information of a specific nodepool.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersNodePoolsFetchNodePoolUpgradeInfoRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NodePoolUpgradeInfo) The response message.
+      """
+      config = self.GetMethodConfig('FetchNodePoolUpgradeInfo')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchNodePoolUpgradeInfo.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:fetchNodePoolUpgradeInfo',
+        http_method='GET',
+        method_id='container.projects.locations.clusters.nodePools.fetchNodePoolUpgradeInfo',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['version'],
+        relative_path='v1beta1/{+name}:fetchNodePoolUpgradeInfo',
+        request_field='',
+        request_type_name='ContainerProjectsLocationsClustersNodePoolsFetchNodePoolUpgradeInfoRequest',
+        response_type_name='NodePoolUpgradeInfo',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Retrieves the requested node pool.
 
@@ -558,6 +585,33 @@ class ContainerV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ContainerProjectsLocationsClustersDeleteRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def FetchClusterUpgradeInfo(self, request, global_params=None):
+      r"""Fetch upgrade information of a specific cluster.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersFetchClusterUpgradeInfoRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ClusterUpgradeInfo) The response message.
+      """
+      config = self.GetMethodConfig('FetchClusterUpgradeInfo')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchClusterUpgradeInfo.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:fetchClusterUpgradeInfo',
+        http_method='GET',
+        method_id='container.projects.locations.clusters.fetchClusterUpgradeInfo',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['version'],
+        relative_path='v1beta1/{+name}:fetchClusterUpgradeInfo',
+        request_field='',
+        request_type_name='ContainerProjectsLocationsClustersFetchClusterUpgradeInfoRequest',
+        response_type_name='ClusterUpgradeInfo',
         supports_download=False,
     )
 
@@ -1209,6 +1263,33 @@ class ContainerV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def FetchNodePoolUpgradeInfo(self, request, global_params=None):
+      r"""Fetch upgrade information of a specific nodepool.
+
+      Args:
+        request: (ContainerProjectsZonesClustersNodePoolsFetchNodePoolUpgradeInfoRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NodePoolUpgradeInfo) The response message.
+      """
+      config = self.GetMethodConfig('FetchNodePoolUpgradeInfo')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchNodePoolUpgradeInfo.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/zones/{zonesId}/clusters/{clustersId}/nodePools/{nodePoolsId}:fetchNodePoolUpgradeInfo',
+        http_method='GET',
+        method_id='container.projects.zones.clusters.nodePools.fetchNodePoolUpgradeInfo',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['version'],
+        relative_path='v1beta1/{+name}:fetchNodePoolUpgradeInfo',
+        request_field='',
+        request_type_name='ContainerProjectsZonesClustersNodePoolsFetchNodePoolUpgradeInfoRequest',
+        response_type_name='NodePoolUpgradeInfo',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Retrieves the requested node pool.
 
@@ -1476,6 +1557,33 @@ class ContainerV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ContainerProjectsZonesClustersDeleteRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def FetchClusterUpgradeInfo(self, request, global_params=None):
+      r"""Fetch upgrade information of a specific cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersFetchClusterUpgradeInfoRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ClusterUpgradeInfo) The response message.
+      """
+      config = self.GetMethodConfig('FetchClusterUpgradeInfo')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchClusterUpgradeInfo.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/zones/{zonesId}/clusters/{clustersId}:fetchClusterUpgradeInfo',
+        http_method='GET',
+        method_id='container.projects.zones.clusters.fetchClusterUpgradeInfo',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['version'],
+        relative_path='v1beta1/{+name}:fetchClusterUpgradeInfo',
+        request_field='',
+        request_type_name='ContainerProjectsZonesClustersFetchClusterUpgradeInfoRequest',
+        response_type_name='ClusterUpgradeInfo',
         supports_download=False,
     )
 

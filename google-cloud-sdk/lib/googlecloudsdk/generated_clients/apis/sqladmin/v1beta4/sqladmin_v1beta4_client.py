@@ -585,6 +585,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def ListServerCertificates(self, request, global_params=None):
+      r"""Lists all versions of server certificates and certificate authorities (CAs) for the specified instance. There can be up to three sets of certs listed: the certificate that is currently in use, a future that has been added but not yet used to sign a certificate, and a certificate that has been rotated out.
+
+      Args:
+        request: (SqlInstancesListServerCertificatesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstancesListServerCertificatesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListServerCertificates')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListServerCertificates.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='sql.instances.ListServerCertificates',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/listServerCertificates',
+        request_field='',
+        request_type_name='SqlInstancesListServerCertificatesRequest',
+        response_type_name='InstancesListServerCertificatesResponse',
+        supports_download=False,
+    )
+
     def RotateServerCertificate(self, request, global_params=None):
       r"""Rotates the server certificate version to one previously added with the addServerCertificate method. For instances not using Certificate Authority Service (CAS) server CA, please use RotateServerCa instead.
 
@@ -605,7 +631,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
         path_params=['instance', 'project'],
         query_params=[],
         relative_path='sql/v1beta4/projects/{project}/instances/{instance}/rotateServerCertificate',
-        request_field='sqlInstancesRotateServerCertificateRequest',
+        request_field='instancesRotateServerCertificateRequest',
         request_type_name='SqlInstancesRotateServerCertificateRequest',
         response_type_name='Operation',
         supports_download=False,

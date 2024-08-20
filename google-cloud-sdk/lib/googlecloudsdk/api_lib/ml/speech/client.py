@@ -69,48 +69,6 @@ class SpeechV2Client(object):
         'ALAW': messages.ExplicitDecodingConfig.EncodingValueValuesEnum.ALAW,
     }
     self._messages = messages
-    self._flags_to_feature_setter_map = {
-        'profanity_filter': (
-            'features.profanityFilter',
-            self._DefaultAssignmentFeatureSetter,
-        ),
-        'enable_word_time_offsets': (
-            'features.enableWordTimeOffsets',
-            self._DefaultAssignmentFeatureSetter,
-        ),
-        'enable_word_confidence': (
-            'features.enableWordConfidence',
-            self._DefaultAssignmentFeatureSetter,
-        ),
-        'enable_automatic_punctuation': (
-            'features.enableAutomaticPunctuation',
-            self._DefaultAssignmentFeatureSetter,
-        ),
-        'enable_spoken_punctuation': (
-            'features.enableSpokenPunctuation',
-            self._DefaultAssignmentFeatureSetter,
-        ),
-        'enable_spoken_emojis': (
-            'features.enableSpokenEmojis',
-            self._DefaultAssignmentFeatureSetter,
-        ),
-        'min_speaker_count': (
-            'features.speakerDiarizationConfig.minSpeakerCount',
-            self._SpeakerDiarizationSetter,
-        ),
-        'max_speaker_count': (
-            'features.speakerDiarizationConfig.maxSpeakerCount',
-            self._SpeakerDiarizationSetter,
-        ),
-        'separate_channel_recognition': (
-            'features.multiChannelMode',
-            self._SeparateChannelRecognitionSetter,
-        ),
-        'max_alternatives': (
-            'features.maxAlternatives',
-            self._DefaultAssignmentFeatureSetter,
-        ),
-    }
 
   def _GetClientForLocation(self, location):
     with _OverrideEndpoint('https://{}-{}/'.format(location, self._net_loc)):
@@ -519,51 +477,55 @@ class SpeechV2Client(object):
   ):
     """Collects features from the provided arguments."""
     features_config = self._messages.RecognitionFeatures()
-    for (
-        flag_name,
-        (feature_path, feature_setter),
-    ) in self._flags_to_feature_setter_map.items():
-      flag_value = args.__getattribute__(flag_name)
-      if flag_value is not None:
-        *_, feature_name = feature_path.split('.')
-        features_config = feature_setter(
-            features_config, feature_name, flag_value
-        )
-        if update_mask is not None:
-          update_mask.append(feature_path)
+    inner_update_mask = []
+    if args.profanity_filter is not None:
+      features_config.profanityFilter = args.profanity_filter
+      inner_update_mask.append('features.profanityFilter')
+
+    if args.enable_word_time_offsets is not None:
+      features_config.enableWordTimeOffsets = args.enable_word_time_offsets
+      inner_update_mask.append('features.enableWordTimeOffsets')
+    if args.enable_word_confidence is not None:
+      features_config.enableWordConfidence = args.enable_word_confidence
+      inner_update_mask.append('features.enableWordConfidence')
+    if args.enable_automatic_punctuation is not None:
+      features_config.enableAutomaticPunctuation = (
+          args.enable_automatic_punctuation
+      )
+      inner_update_mask.append('features.enableAutomaticPunctuation')
+    if args.enable_spoken_punctuation is not None:
+      features_config.enableSpokenPunctuation = args.enable_spoken_punctuation
+      inner_update_mask.append('features.enableSpokenPunctuation')
+    if args.enable_spoken_emojis is not None:
+      features_config.enableSpokenEmojis = args.enable_spoken_emojis
+      inner_update_mask.append('features.enableSpokenEmojis')
+    if (
+        args.min_speaker_count is not None
+        and args.max_speaker_count is not None
+    ):
+      features_config.diarizationConfig = (
+          self._messages.SpeakerDiarizationConfig(
+              minSpeakerCount=args.min_speaker_count,
+              maxSpeakerCount=args.max_speaker_count,
+          )
+      )
+      inner_update_mask.append('features.diarizationConfig.minSpeakerCount')
+      inner_update_mask.append('features.diarizationConfig.maxSpeakerCount')
+    if args.separate_channel_recognition:
+      features_config.multiChannelMode = (
+          self._messages.RecognitionFeatures.MultiChannelModeValueValuesEnum.SEPARATE_RECOGNITION_PER_CHANNEL
+      )
+      inner_update_mask.append('features.multiChannelMode')
+    elif args.separate_channel_recognition is not None:
+      features_config.multiChannelMode = (
+          self._messages.RecognitionFeatures.MultiChannelModeValueValuesEnum.MULTI_CHANNEL_MODE_UNSPECIFIED
+      )
+      inner_update_mask.append('features.multiChannelMode')
+    if args.max_alternatives is not None:
+      features_config.maxAlternatives = args.max_alternatives
+      inner_update_mask.append('features.maxAlternatives')
+
+    if update_mask is not None:
+      update_mask.extend(inner_update_mask)
+
     return features_config, update_mask
-
-  def _DefaultAssignmentFeatureSetter(
-      self, features, feature_name, feature_value
-  ):
-    """Sets the feature specified by feature_name using Reflection."""
-    if feature_value is not None:
-      features.__setattr__(feature_name, feature_value)
-    return features
-
-  def _SpeakerDiarizationSetter(self, features, feature_name, feature_value):
-    """Sets the speaker diarization feature using Reflection."""
-    if feature_value is None:
-      return features
-    if features.diarizationConfig is None:
-      features.diarizationConfig = self._messages.SpeakerDiarizationConfig()
-    features.diarizationConfig.__setattr__(feature_name, feature_value)
-    return features
-
-  def _SeparateChannelRecognitionSetter(
-      self, features, feature_name, feature_value
-  ):
-    """Sets the separate channel recognition feature using Reflection."""
-    if feature_value is None:
-      return features
-    if feature_value:
-      features.__setattr__(
-          feature_name,
-          self._messages.RecognitionFeatures.MultiChannelModeValueValuesEnum.SEPARATE_RECOGNITION_PER_CHANNEL,
-      )
-    else:
-      features.__setattr__(
-          feature_name,
-          self._messages.RecognitionFeatures.MultiChannelModeValueValuesEnum.MULTI_CHANNEL_MODE_UNSPECIFIED,
-      )
-    return features

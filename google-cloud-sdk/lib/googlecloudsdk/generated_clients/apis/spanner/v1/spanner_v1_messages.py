@@ -15,16 +15,60 @@ from apitools.base.py import extra_types
 package = 'spanner'
 
 
+class AsymmetricAutoscalingOption(_messages.Message):
+  r"""AsymmetricAutoscalingOption specifies the scaling of replicas identified
+  by the given selection.
+
+  Fields:
+    overrides: Optional. Overrides applied to the top-level autoscaling
+      configuration for the selected replicas.
+    replicaSelection: Required. Selects the replicas to which this
+      AsymmetricAutoscalingOption applies. Only read-only replicas are
+      supported.
+  """
+
+  overrides = _messages.MessageField('AutoscalingConfigOverrides', 1)
+  replicaSelection = _messages.MessageField('InstanceReplicaSelection', 2)
+
+
 class AutoscalingConfig(_messages.Message):
   r"""Autoscaling configuration for an instance.
 
   Fields:
+    asymmetricAutoscalingOptions: Optional. Optional asymmetric autoscaling
+      options. Replicas matching the replica selection criteria will be
+      autoscaled independently from other replicas. The autoscaler will scale
+      the replicas based on the utilization of replicas identified by the
+      replica selection. Replica selections should not overlap with each
+      other. Other replicas (those do not match any replica selection) will be
+      autoscaled together and will have the same compute capacity allocated to
+      them.
     autoscalingLimits: Required. Autoscaling limits for an instance.
     autoscalingTargets: Required. The autoscaling targets for an instance.
   """
 
+  asymmetricAutoscalingOptions = _messages.MessageField('AsymmetricAutoscalingOption', 1, repeated=True)
+  autoscalingLimits = _messages.MessageField('AutoscalingLimits', 2)
+  autoscalingTargets = _messages.MessageField('AutoscalingTargets', 3)
+
+
+class AutoscalingConfigOverrides(_messages.Message):
+  r"""Overrides the top-level autoscaling configuration for the replicas
+  identified by `replica_selection`. All fields in this message are optional.
+  Any unspecified fields will use the corresponding values from the top-level
+  autoscaling configuration.
+
+  Fields:
+    autoscalingLimits: Optional. If specified, overrides the min/max limit in
+      the top-level autoscaling configuration for the selected replicas.
+    autoscalingTargetHighPriorityCpuUtilizationPercent: Optional. If
+      specified, overrides the autoscaling target
+      high_priority_cpu_utilization_percent in the top-level autoscaling
+      configuration for the selected replicas.
+  """
+
   autoscalingLimits = _messages.MessageField('AutoscalingLimits', 1)
-  autoscalingTargets = _messages.MessageField('AutoscalingTargets', 2)
+  autoscalingTargetHighPriorityCpuUtilizationPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class AutoscalingLimits(_messages.Message):
@@ -1957,6 +2001,10 @@ class Instance(_messages.Message):
       instances that are not yet in the `READY` state. For more information,
       see [Compute capacity, nodes and processing
       units](https://cloud.google.com/spanner/docs/compute-capacity).
+    replicaComputeCapacity: Output only. Lists the compute capacity per
+      ReplicaSelection. A replica selection identifies a set of replicas with
+      common properties. Replicas identified by a ReplicaSelection are scaled
+      with the same compute capacity.
     ssdCache: Optional. The name of the SSD cache to be used with this
       `Instance`. SSD cache can reduce the instance's disk I/O requirements.
       Applicable only when `StorageType` is `HDD`. `SsdCache` should exist
@@ -2082,9 +2130,10 @@ class Instance(_messages.Message):
   name = _messages.StringField(11)
   nodeCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
   processingUnits = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  ssdCache = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  updateTime = _messages.StringField(16)
+  replicaComputeCapacity = _messages.MessageField('ReplicaComputeCapacity', 14, repeated=True)
+  ssdCache = _messages.StringField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  updateTime = _messages.StringField(17)
 
 
 class InstanceConfig(_messages.Message):
@@ -2424,6 +2473,17 @@ class InstancePartition(_messages.Message):
   referencingDatabases = _messages.StringField(9, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 10)
   updateTime = _messages.StringField(11)
+
+
+class InstanceReplicaSelection(_messages.Message):
+  r"""ReplicaSelection identifies replicas with common properties.
+
+  Fields:
+    location: Required. Name of the location of the replicas (e.g., "us-
+      central1").
+  """
+
+  location = _messages.StringField(1)
 
 
 class KeyRange(_messages.Message):
@@ -3993,6 +4053,25 @@ class ReadWrite(_messages.Message):
   readLockMode = _messages.EnumField('ReadLockModeValueValuesEnum', 1)
 
 
+class ReplicaComputeCapacity(_messages.Message):
+  r"""ReplicaComputeCapacity describes the amount of server resources that are
+  allocated to each replica identified by the replica selection.
+
+  Fields:
+    nodeCount: The number of nodes allocated to each replica. This may be zero
+      in API responses for instances that are not yet in state `READY`.
+    processingUnits: The number of processing units allocated to each replica.
+      This may be zero in API responses for instances that are not yet in
+      state `READY`.
+    replicaSelection: Required. Identifies replicas by specified properties.
+      All replicas in the selection have the same amount of compute capacity.
+  """
+
+  nodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  processingUnits = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  replicaSelection = _messages.MessageField('InstanceReplicaSelection', 3)
+
+
 class ReplicaInfo(_messages.Message):
   r"""A ReplicaInfo object.
 
@@ -5066,19 +5145,21 @@ class SpannerProjectsInstancesBackupsListRequest(_messages.Message):
       filtering: * `name` * `database` * `state` * `create_time` (and values
       are of the format YYYY-MM-DDTHH:MM:SSZ) * `expire_time` (and values are
       of the format YYYY-MM-DDTHH:MM:SSZ) * `version_time` (and values are of
-      the format YYYY-MM-DDTHH:MM:SSZ) * `size_bytes` You can combine multiple
-      expressions by enclosing each expression in parentheses. By default,
-      expressions are combined with AND logic, but you can specify AND, OR,
-      and NOT logic explicitly. Here are a few examples: * `name:Howl` - The
-      backup's name contains the string "howl". * `database:prod` - The
-      database's name contains the string "prod". * `state:CREATING` - The
-      backup is pending creation. * `state:READY` - The backup is fully
-      created and ready for use. * `(name:howl) AND (create_time <
-      \"2018-03-28T14:50:00Z\")` - The backup name contains the string "howl"
-      and `create_time` of the backup is before 2018-03-28T14:50:00Z. *
-      `expire_time < \"2018-03-28T14:50:00Z\"` - The backup `expire_time` is
-      before 2018-03-28T14:50:00Z. * `size_bytes > 10000000000` - The backup's
-      size is greater than 10GB
+      the format YYYY-MM-DDTHH:MM:SSZ) * `size_bytes` * `backup_schedules` You
+      can combine multiple expressions by enclosing each expression in
+      parentheses. By default, expressions are combined with AND logic, but
+      you can specify AND, OR, and NOT logic explicitly. Here are a few
+      examples: * `name:Howl` - The backup's name contains the string "howl".
+      * `database:prod` - The database's name contains the string "prod". *
+      `state:CREATING` - The backup is pending creation. * `state:READY` - The
+      backup is fully created and ready for use. * `(name:howl) AND
+      (create_time < \"2018-03-28T14:50:00Z\")` - The backup name contains the
+      string "howl" and `create_time` of the backup is before
+      2018-03-28T14:50:00Z. * `expire_time < \"2018-03-28T14:50:00Z\"` - The
+      backup `expire_time` is before 2018-03-28T14:50:00Z. * `size_bytes >
+      10000000000` - The backup's size is greater than 10GB *
+      `backup_schedules:daily` - The backup is created from a schedule with
+      "daily" in its name.
     pageSize: Number of backups to be returned in the response. If 0 or less,
       defaults to the server's maximum allowed page size.
     pageToken: If non-empty, `page_token` should contain a next_page_token

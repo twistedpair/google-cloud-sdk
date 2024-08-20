@@ -552,12 +552,16 @@ class PiAndJailbreakFilterResult(_messages.Message):
   r"""Prompt injection and Jailbreak Filter Result.
 
   Enums:
+    ConfidenceLevelValueValuesEnum: Confidence level identified for Prompt
+      injection and Jailbreak.
     ExecutionStateValueValuesEnum: Output only. Reports whether Prompt
       injection and Jailbreak filter was successfully executed or not.
     MatchStateValueValuesEnum: Output only. Match state for Prompt injection
       and Jailbreak.
 
   Fields:
+    confidenceLevel: Confidence level identified for Prompt injection and
+      Jailbreak.
     executionState: Output only. Reports whether Prompt injection and
       Jailbreak filter was successfully executed or not.
     matchState: Output only. Match state for Prompt injection and Jailbreak.
@@ -565,6 +569,20 @@ class PiAndJailbreakFilterResult(_messages.Message):
       provide warnings or error details. For example, if execution state is
       skipped then this field provides related reason/explanation.
   """
+
+  class ConfidenceLevelValueValuesEnum(_messages.Enum):
+    r"""Confidence level identified for Prompt injection and Jailbreak.
+
+    Values:
+      PI_AND_JAILBREAK_CONFIDENCE_LEVEL_UNSPECIFIED: Unused
+      LOW_AND_ABOVE: Highest chance of a false positive.
+      MEDIUM_AND_ABOVE: Some chance of false positives.
+      HIGH: Low chance of false positives.
+    """
+    PI_AND_JAILBREAK_CONFIDENCE_LEVEL_UNSPECIFIED = 0
+    LOW_AND_ABOVE = 1
+    MEDIUM_AND_ABOVE = 2
+    HIGH = 3
 
   class ExecutionStateValueValuesEnum(_messages.Enum):
     r"""Output only. Reports whether Prompt injection and Jailbreak filter was
@@ -592,9 +610,10 @@ class PiAndJailbreakFilterResult(_messages.Message):
     NO_MATCH_FOUND = 1
     MATCH_FOUND = 2
 
-  executionState = _messages.EnumField('ExecutionStateValueValuesEnum', 1)
-  matchState = _messages.EnumField('MatchStateValueValuesEnum', 2)
-  messageItems = _messages.MessageField('MessageItem', 3, repeated=True)
+  confidenceLevel = _messages.EnumField('ConfidenceLevelValueValuesEnum', 1)
+  executionState = _messages.EnumField('ExecutionStateValueValuesEnum', 2)
+  matchState = _messages.EnumField('MatchStateValueValuesEnum', 3)
+  messageItems = _messages.MessageField('MessageItem', 4, repeated=True)
 
 
 class PiAndJailbreakFilterSettings(_messages.Message):
@@ -975,38 +994,148 @@ class SanitizeUserPromptResponse(_messages.Message):
   sanitizationResult = _messages.MessageField('SanitizationResult', 1)
 
 
+class SdpAdvancedConfig(_messages.Message):
+  r"""SDP Advanced configuration.
+
+  Fields:
+    deidentifyTemplate: Optional. Optional SDP Deidentify template resource
+      name. If provided then DeidentifyContent action is performed during
+      Sanitization using this template and inspect template. The De-identified
+      data will be returned in SdpDeidentifyResult. Note that if only
+      Deidentify template is provided then SDP will perform identification
+      using all SDP built-in info types. e.g. `organizations/{organization}/de
+      identifyTemplates/{deidentify_template}`,
+      `projects/{project}/deidentifyTemplates/{deidentify_template}` `organiza
+      tions/{organization}/locations/{location}/deidentifyTemplates/{deidentif
+      y_template}` `projects/{project}/locations/{location}/deidentifyTemplate
+      s/{deidentify_template}`
+    inspectTemplate: Optional. SDP inspect template resource name If only
+      inspect template is provided (de-identify template not provided), then
+      SDP InspectContent action is performed during Sanitization. All DLP
+      findings identified during inspection will be returned as SdpFinding in
+      SdpInsepctionResult e.g.
+      `organizations/{organization}/inspectTemplates/{inspect_template}`,
+      `projects/{project}/inspectTemplates/{inspect_template}` `organizations/
+      {organization}/locations/{location}/inspectTemplates/{inspect_template}`
+      `projects/{project}/locations/{location}/inspectTemplates/{inspect_templ
+      ate}`
+  """
+
+  deidentifyTemplate = _messages.StringField(1)
+  inspectTemplate = _messages.StringField(2)
+
+
 class SdpBasicConfig(_messages.Message):
   r"""SDP Basic configuration.
 
+  Enums:
+    FilterEnforcementValueValuesEnum: Optional. Tells whether the SDP basic
+      config is enabled or disabled.
+
   Fields:
-    sdpInfoTypes: Required. List of SDP information types enabled for
-      template. For each request, maximum 150 info types can be specified.
+    filterEnforcement: Optional. Tells whether the SDP basic config is enabled
+      or disabled.
   """
 
-  sdpInfoTypes = _messages.MessageField('SdpInfoType', 1, repeated=True)
+  class FilterEnforcementValueValuesEnum(_messages.Enum):
+    r"""Optional. Tells whether the SDP basic config is enabled or disabled.
+
+    Values:
+      SDP_BASIC_CONFIG_ENFORCEMENT_UNSPECIFIED: Same as Disabled
+      ENABLED: Enabled
+      DISABLED: Disabled
+    """
+    SDP_BASIC_CONFIG_ENFORCEMENT_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  filterEnforcement = _messages.EnumField('FilterEnforcementValueValuesEnum', 1)
+
+
+class SdpDeidentifyResult(_messages.Message):
+  r"""SDP Deidentification Result.
+
+  Enums:
+    ExecutionStateValueValuesEnum: Output only. Reports whether SDP
+      deidentification was successfully executed or not.
+    MatchStateValueValuesEnum: Output only. Match state for SDP
+      Deidentification. Value is MATCH_FOUND if content is de-identified.
+
+  Fields:
+    data: De-identified data.
+    executionState: Output only. Reports whether SDP deidentification was
+      successfully executed or not.
+    matchState: Output only. Match state for SDP Deidentification. Value is
+      MATCH_FOUND if content is de-identified.
+    messageItems: Optional messages corresponding to the result. A message can
+      provide warnings or error details. For example, if execution state is
+      skipped then this field provides related reason/explanation.
+    transformedBytes: Total size in bytes that were transformed during
+      deidentification.
+  """
+
+  class ExecutionStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Reports whether SDP deidentification was successfully
+    executed or not.
+
+    Values:
+      FILTER_EXECUTION_STATE_UNSPECIFIED: Unused
+      EXECUTION_SUCCESS: Filter executed successfully
+      EXECUTION_SKIPPED: Filter execution was skipped. This can happen due to
+        server-side error or permission issue.
+    """
+    FILTER_EXECUTION_STATE_UNSPECIFIED = 0
+    EXECUTION_SUCCESS = 1
+    EXECUTION_SKIPPED = 2
+
+  class MatchStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Match state for SDP Deidentification. Value is
+    MATCH_FOUND if content is de-identified.
+
+    Values:
+      FILTER_MATCH_STATE_UNSPECIFIED: Unused
+      NO_MATCH_FOUND: Matching criteria is not achieved for filters.
+      MATCH_FOUND: Matching criteria is achieved for the filter.
+    """
+    FILTER_MATCH_STATE_UNSPECIFIED = 0
+    NO_MATCH_FOUND = 1
+    MATCH_FOUND = 2
+
+  data = _messages.MessageField('DataItem', 1)
+  executionState = _messages.EnumField('ExecutionStateValueValuesEnum', 2)
+  matchState = _messages.EnumField('MatchStateValueValuesEnum', 3)
+  messageItems = _messages.MessageField('MessageItem', 4, repeated=True)
+  transformedBytes = _messages.IntegerField(5)
 
 
 class SdpFilterResult(_messages.Message):
   r"""SDP Filter Result.
 
   Fields:
+    deidentifyResult: SDP Deidentification result if deidentification is
+      performed.
     inspectResult: SDP Inspection result if inspection is performed.
   """
 
-  inspectResult = _messages.MessageField('SdpInspectResult', 1)
+  deidentifyResult = _messages.MessageField('SdpDeidentifyResult', 1)
+  inspectResult = _messages.MessageField('SdpInspectResult', 2)
 
 
 class SdpFilterSettings(_messages.Message):
   r"""Sensitive Data protection settings.
 
   Fields:
-    basicConfig: Optional. Basic SDP configuration which directly stores
-      infotype settings. SDP templates cannot be used with basic
-      configuration. Currently only SDP inspection operation is supported with
-      basic configuration.
+    advancedConfig: Optional. Advanced SDP configuration which enables use of
+      SDP templates. Supports both SDP inspection and de-identification
+      operations.
+    basicConfig: Optional. Basic SDP configuration inspects the content for
+      sensitive data using a fixed set of six info-types. SDP templates cannot
+      be used with basic configuration. Currently only SDP inspection
+      operation is supported with basic configuration.
   """
 
-  basicConfig = _messages.MessageField('SdpBasicConfig', 1)
+  advancedConfig = _messages.MessageField('SdpAdvancedConfig', 1)
+  basicConfig = _messages.MessageField('SdpBasicConfig', 2)
 
 
 class SdpFinding(_messages.Message):
@@ -1061,47 +1190,6 @@ class SdpFindingLocation(_messages.Message):
 
   byteRange = _messages.MessageField('RangeInfo', 1)
   codepointRange = _messages.MessageField('RangeInfo', 2)
-
-
-class SdpInfoType(_messages.Message):
-  r"""Details related to Sensitive Data Protection Info Type.
-
-  Enums:
-    MinLikelihoodValueValuesEnum: Optional. Minimum finding likelihood
-      override per SDP info type. Only returns findings if likelihood equal to
-      or above this threshold.
-
-  Fields:
-    infoType: Required. SDP info type names are listed at
-      https://cloud.google.com/sensitive-data-protection/docs/infotypes-
-      reference The name should conform to the pattern `[A-Za-z0-9$_-]{1,64}`.
-    minLikelihood: Optional. Minimum finding likelihood override per SDP info
-      type. Only returns findings if likelihood equal to or above this
-      threshold.
-  """
-
-  class MinLikelihoodValueValuesEnum(_messages.Enum):
-    r"""Optional. Minimum finding likelihood override per SDP info type. Only
-    returns findings if likelihood equal to or above this threshold.
-
-    Values:
-      SDP_FINDING_LIKELIHOOD_UNSPECIFIED: Default value; same as POSSIBLE.
-      VERY_UNLIKELY: Highest chance of a false positive.
-      UNLIKELY: High chance of a false positive.
-      POSSIBLE: Some matching signals. The default value.
-      LIKELY: Low chance of a false positive.
-      VERY_LIKELY: Confidence level is high. Lowest chance of a false
-        positive.
-    """
-    SDP_FINDING_LIKELIHOOD_UNSPECIFIED = 0
-    VERY_UNLIKELY = 1
-    UNLIKELY = 2
-    POSSIBLE = 3
-    LIKELY = 4
-    VERY_LIKELY = 5
-
-  infoType = _messages.StringField(1)
-  minLikelihood = _messages.EnumField('MinLikelihoodValueValuesEnum', 2)
 
 
 class SdpInspectResult(_messages.Message):

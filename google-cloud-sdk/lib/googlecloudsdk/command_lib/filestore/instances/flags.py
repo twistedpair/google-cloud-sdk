@@ -36,6 +36,7 @@ INSTANCES_LIST_FORMAT = """\
       name.segment(3):label=LOCATION,
       tier,
       fileShares[0].capacityGb:label=CAPACITY_GB,
+      performanceLimits.maxReadIops:label=MAX_READ_IOPS,
       fileShares[0].name.yesno(no="N/A"):label=FILE_SHARE_NAME,
       networks[0].ipAddresses[0]:label=IP_ADDRESS,
       state,
@@ -49,6 +50,19 @@ INSTANCES_LIST_FORMAT_BETA = """\
       tier,
       protocol,
       capacityGb:label=CAPACITY_GB,
+      performanceLimits.maxReadIops:label=MAX_READ_IOPS,
+      fileShares[0].name.yesno(no="N/A"):label=FILE_SHARE_NAME,
+      networks[0].ipAddresses[0]:label=IP_ADDRESS,
+      state,
+      createTime.date()
+    )"""
+
+INSTANCES_LIST_FORMAT_ALPHA = """\
+    table(
+      name.basename():label=INSTANCE_NAME:sort=1,
+      name.segment(3):label=LOCATION,
+      tier,
+      fileShares[0].capacityGb:label=CAPACITY_GB,
       fileShares[0].name.yesno(no="N/A"):label=FILE_SHARE_NAME,
       networks[0].ipAddresses[0]:label=IP_ADDRESS,
       state,

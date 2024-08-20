@@ -78,6 +78,7 @@ DESTINATION_TARGET_ID_FIELD = 'destinationTargetId'
 SOURCE_PHASES_FIELD = 'sourcePhases'
 PHASES_FIELD = 'phases'
 DESTINATION_PHASE_FIELD = 'destinationPhase'
+DISABLE_ROLLBACK_IF_ROLLOUT_PENDING = 'disableRollbackIfRolloutPending'
 TARGET_FIELD = 'target'
 METADATA_FIELDS = [ANNOTATIONS_FIELD, LABELS_FIELD]
 EXCLUDE_FIELDS = [
@@ -258,6 +259,9 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
       if field == 'customTarget' and kind == TARGET_KIND_V1BETA1:
         SetCustomTarget(resource, value, project, region)
         continue
+      if field == 'associatedEntities' and kind == TARGET_KIND_V1BETA1:
+        SetAssociatedEntities(messages, resource, resource_ref, value)
+        continue
       if field == 'serialPipeline' and kind == DELIVERY_PIPELINE_KIND_V1BETA1:
         serial_pipeline = manifest.get('serialPipeline')
         _EnsureIsType(
@@ -349,8 +353,7 @@ def _SetRestrictRollout(
   Args:
     messages: module containing the definitions of messages for Cloud Deploy.
     restrict_rollout_message:
-      googlecloudsdk.generated_clients.apis.clouddeploy.RestrictRollout
-      message.
+      googlecloudsdk.generated_clients.apis.clouddeploy.RestrictRollout message.
     restrict_rollout: value of the restrictRollout field in the manifest.
     policy:  googlecloudsdk.generated_clients.apis.clouddeploy.DeployPolicy
       message.
@@ -678,6 +681,35 @@ def SetDeployParametersForTarget(
   target.deployParameters = dps_value
 
 
+def SetAssociatedEntities(messages, target, target_ref, associated_entities):
+  """Sets the associatedEntities field in the cloud deploy target message.
+
+  Args:
+    messages: module containing the definitions of messages for Cloud Deploy.
+    target: googlecloudsdk.generated_clients.apis.clouddeploy.Target message.
+    target_ref: protorpc.messages.Message, target resource object.
+    associated_entities: dict[str, associated_entities], a dict of associated
+      entities (key,value) pairs.
+  """
+
+  _EnsureIsType(
+      associated_entities,
+      dict,
+      'failed to parse target {}, associatedEntities are defined incorrectly'
+      .format(target_ref.Name()),
+  )
+
+  aes_message = getattr(
+      messages, deploy_util.ResourceType.TARGET.value
+  ).AssociatedEntitiesValue
+  aes_value = aes_message()
+  for key, value in associated_entities.items():
+    aes_value.additionalProperties.append(
+        aes_message.AdditionalProperty(key=key, value=value)
+    )
+  target.associatedEntities = aes_value
+
+
 def SetCustomTarget(target, custom_target, project, region):
   """Sets the customTarget field of cloud deploy target message.
 
@@ -904,6 +936,9 @@ def _ParseRepairPhases(messages, phases):
       rollback = p.get(ROLLBACK_FIELD)
       if rollback:
         phase.rollback.destinationPhase = rollback.get(DESTINATION_PHASE_FIELD)
+        phase.rollback.disableRollbackIfRolloutPending = rollback.get(
+            DISABLE_ROLLBACK_IF_ROLLOUT_PENDING
+        )
     modes_pb.append(phase)
 
   return modes_pb
@@ -946,6 +981,10 @@ def _ExportRepairPhases(repair_phases):
       if getattr(message, DESTINATION_PHASE_FIELD):
         rollback[DESTINATION_PHASE_FIELD] = getattr(
             message, DESTINATION_PHASE_FIELD
+        )
+      if getattr(message, DISABLE_ROLLBACK_IF_ROLLOUT_PENDING):
+        rollback[DISABLE_ROLLBACK_IF_ROLLOUT_PENDING] = getattr(
+            message, DISABLE_ROLLBACK_IF_ROLLOUT_PENDING
         )
     phases.append(phase)
 

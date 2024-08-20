@@ -5,6 +5,82 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 489.0.0 (2024-08-20)
+
+### Cloud Dataplex
+
+* Adjusted `gcloud dataplex entries search` page-size limit to match the public
+  API documentation.
+
+### Cloud Filestore
+
+* Added MAX_READ_IOPS column to `gcloud beta filestore instances list` and
+`gcloud filestore instances list`.
+
+### Cloud Firestore
+
+* Promoted `vector-config` flag of `gcloud firestore indexes composite create`
+  command to beta and GA.
+* Added firestore bulk-delete command in alpha and beta to delete data in bulk.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.19.8
+  * Properly sets transaction in lookup response.
+  * Properly sets `NO_MORE_RESULTS` when there are no more results.
+  * Persistence now supported via import/export flags: <https://cloud.google.com/datastore/docs/emulator#persist_data_in_the_emulator>.
+  * Add support for `FindNearest.distanceResultField` and `FindNearest.distanceThreshold` parameters.
+
+### Cloud Run
+
+* Added `--build-env-vars, --function, --base-image, --automatic-updates, --build-worker-pool, --delegate-builds, --build-service-account` to improve `--source` deployments on beta.
+
+### Cloud Storage
+
+* Fix missing hash validation for CMEK encrypted downloads via rsync.
+
+### Colab Enterprise
+
+* Added `gcloud beta colab-enterprise` to manage colab enterprise resources.
+* Added `gcloud beta colab-enterprise runtime-templates`.
+* Added `gcloud beta colab-enterprise runtime-templates create`.
+* Added `gcloud beta colab-enterprise runtime-templates delete`.
+* Added `gcloud beta colab-enterprise runtime-templates describe`.
+* Added `gcloud beta colab-enterprise runtime-templates list`.
+
+### Compute Engine
+
+* Promoted flags related to the nat64 feature to alpha:
+  - `nat64-all-v6-subnet-ip-ranges` of `gcloud compute routers nats (create|update)`.
+  - `nat64-custom-v6-subnet-ip-ranges` of `gcloud compute routers nats (create|update)`.
+  - `clear-nat64-v6-subnet-ip-ranges` of `gcloud compute routers nats update`.
+  - `clear-nat-subnet-ip-ranges` of `gcloud compute routers nats update`.
+* Added update command for instance-schedule policy: `gcloud compute resource-policies update instance-schedule`.
+*   Added `--reservation-sharing-policy` flag to
+    `gcloud beta compute reservations create` and
+    `gcloud beta compute reservations update`.
+
+### Kubernetes Engine
+
+* Added `--storage-pools` flag on node-pool update.
+* Promoted `--storage-pools` flag on cluster / node-pool create to GA.
+
+### Looker
+
+* Launched Private Services Connect for Looker (Google Cloud core) with General Availability.
+
+### Network Security
+
+*   Added `network-security mirroring-endpoint-group-associations` commands to manage packet-mirroring endpoint group associations, and promoted them to beta.
+
+### Workbench
+
+* Added `--min-cpu-platform` flag to `gcloud workbench instances create`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 488.0.0 (2024-08-13)
 
 ### BigQuery

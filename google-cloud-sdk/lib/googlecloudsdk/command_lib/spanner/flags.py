@@ -360,6 +360,30 @@ def AutoscalingStorageTarget(required=False):
   )
 
 
+def AsymmetricAutoscalingOptionFlag():
+  help_text = (
+      'Specify the asymmetric autoscaling option for the instance. '
+  )
+  return base.Argument(
+      '--asymmetric-autoscaling-option',
+      type=arg_parsers.ArgDict(
+          spec={
+              'location': str,
+              'min_nodes': int,
+              'max_nodes': int,
+              'min_processing_units': int,
+              'max_processing_units': int,
+              'high_priority_cpu_target': int,
+          },
+          required_keys=['location'],
+      ),
+      required=False,
+      action='append',
+      help=help_text,
+      hidden=True,
+  )
+
+
 def SsdCache(
     positional=False,
     required=False,
@@ -383,7 +407,10 @@ def Edition(
 
 
 def AddCapacityArgsForInstance(
-    require_all_autoscaling_args, hide_autoscaling_args, parser
+    require_all_autoscaling_args,
+    hide_autoscaling_args,
+    parser,
+    add_asymmetric_option_flag=False,
 ):
   """Parse the instance capacity arguments, including manual and autoscaling.
 
@@ -436,6 +463,11 @@ def AddCapacityArgsForInstance(
   AutoscalingMaxProcessingUnits(
       required=require_all_autoscaling_args
   ).AddToParser(autoscaling_pu_limits_group_parser)
+  # Asymmetric autoscaling.
+  if add_asymmetric_option_flag:
+    AsymmetricAutoscalingOptionFlag().AddToParser(
+        autoscaling_config_group_parser
+    )
 
 
 def AddCapacityArgsForInstancePartition(parser):

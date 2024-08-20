@@ -226,6 +226,12 @@ def AddCreateInstanceFlags(parser):
           '[Compute Engine machine type](https://cloud.google.com/sdk/gcloud/reference/compute/machine-types) '  # pylint: disable=line-too-long
           'of this instance.'),
       default='n1-standard-4')
+  gce_setup_group.add_argument(
+      '--min-cpu-platform',
+      help=(
+          'The minimum CPU platform to use for this instance. The list of '
+          'valid values can be found in '
+          'https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform#availablezones'))   # pylint: disable=line-too-long
   accelerator_group = gce_setup_group.add_group(
       help=(
           'The hardware accelerator used on this instance. If you use '

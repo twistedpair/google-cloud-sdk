@@ -20,7 +20,6 @@ from __future__ import annotations
 
 import enum
 import math
-import os
 from typing import List
 import uuid
 
@@ -119,7 +118,7 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
 
   def _pre_process(self):
     """Uploads test files to the bucket."""
-    self._old_env_vars = os.environ.copy()
+    super(DownloadThroughputDiagnostic, self)._pre_process()
     is_done = self._create_test_files(self._object_sizes, self.object_prefix)
 
     if not is_done:
@@ -172,7 +171,9 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
           f' {_STREAMING_DOWNLOAD_DESTINATION} with download type: '
           f' {self._download_type.value}'
       )
-      with self._time_recorder(_DOWNLOAD_THROUGHPUT_RESULT_KEY, self._result):
+      with diagnostic.time_recorder(
+          _DOWNLOAD_THROUGHPUT_RESULT_KEY, self._result
+      ):
         self._run_cp(
             self.bucket_url.url_string + self.object_prefix + '*',
             _STREAMING_DOWNLOAD_DESTINATION,
@@ -187,7 +188,9 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
           f' {self._download_dir.path} with download type'
           f' {self._download_type.value}'
       )
-      with self._time_recorder(_DOWNLOAD_THROUGHPUT_RESULT_KEY, self._result):
+      with diagnostic.time_recorder(
+          _DOWNLOAD_THROUGHPUT_RESULT_KEY, self._result
+      ):
         self._run_cp(
             self.bucket_url.url_string + self.object_prefix + '*',
             self._download_dir.path,
@@ -198,10 +201,7 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
       )
 
   def _post_process(self):
-    os.environ = (
-        self._old_env_vars if self._old_env_vars is not None else os.environ
-    )
-
+    super(DownloadThroughputDiagnostic, self)._post_process()
     if self.temp_dir:
       try:
         self.temp_dir.Close()

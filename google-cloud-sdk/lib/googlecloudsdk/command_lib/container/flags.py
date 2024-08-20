@@ -540,7 +540,7 @@ def AddAcceleratorArgs(
       help="""\
       Attaches accelerators (e.g. GPUs) to all nodes.
 
-      *type*::: (Required) The specific type (e.g. nvidia-tesla-k80 for NVIDIA Tesla K80)
+      *type*::: (Required) The specific type (e.g. nvidia-tesla-t4 for NVIDIA T4)
       of accelerator to attach to the instances. Use ```gcloud compute
       accelerator-types list``` to learn about all available accelerator types.
 
@@ -661,7 +661,7 @@ Resource limits are specified in the field 'resourceLimits'.
 Each resource limits definition contains three fields:
 resourceType, maximum and minimum.
 Resource type can be "cpu", "memory" or an accelerator (e.g.
-"nvidia-tesla-k80" for nVidia Tesla K80). Use gcloud compute accelerator-types
+"nvidia-tesla-t4" for NVIDIA T4). Use gcloud compute accelerator-types
 list to learn about available accelerator types.
 Maximum is the maximum allowed amount with the unit of the resource.
 Minimum is the minimum allowed amount with the unit of the resource.
@@ -785,7 +785,7 @@ Minimum number of gigabytes of memory to which the cluster can scale.""",
       help="""\
 Sets maximum limit for a single type of accelerators (e.g. GPUs) in cluster.
 
-*type*::: (Required) The specific type (e.g. nvidia-tesla-k80 for nVidia Tesla K80)
+*type*::: (Required) The specific type (e.g. nvidia-tesla-t4 for NVIDIA T4)
 of accelerator for which the limit is set. Use ```gcloud compute
 accelerator-types list``` to learn about all available accelerator types.
 
@@ -809,7 +809,7 @@ to which the cluster can be scaled.
 Sets minimum limit for a single type of accelerators (e.g. GPUs) in cluster. Defaults
 to 0 for all accelerator types if it isn't set.
 
-*type*::: (Required) The specific type (e.g. nvidia-tesla-k80 for nVidia Tesla K80)
+*type*::: (Required) The specific type (e.g. nvidia-tesla-t4 for NVIDIA T4)
 of accelerator for which the limit is set. Use ```gcloud compute
 accelerator-types list``` to learn about all available accelerator types.
 
@@ -6605,7 +6605,7 @@ the Autopilot conversion during or after workload migration.
   )
 
 
-def AddSecretManagerEnableFlag(parser, hidden=True):
+def AddSecretManagerEnableFlag(parser, hidden=False):
   """Adds --enable-secret-manager flag to the given parser.
 
   Args:

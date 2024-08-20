@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Common utility functions to consturct compute reservations message."""
+"""Common utility functions to construct compute reservations message."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -312,11 +312,11 @@ def MakeReservationMessage(
 
 
 def MakeReservationSharingPolicyMessage(messages, reservation_sharing_policy):
-  if reservation_sharing_policy == 'disallow_all':
+  if reservation_sharing_policy == 'DISALLOW_ALL':
     return messages.AllocationReservationSharingPolicy(
         serviceShareType=messages.AllocationReservationSharingPolicy.ServiceShareTypeValueValuesEnum.DISALLOW_ALL
     )
-  elif reservation_sharing_policy == 'allow_all':
+  elif reservation_sharing_policy == 'ALLOW_ALL':
     return messages.AllocationReservationSharingPolicy(
         serviceShareType=messages.AllocationReservationSharingPolicy.ServiceShareTypeValueValuesEnum.ALLOW_ALL
     )

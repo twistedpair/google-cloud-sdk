@@ -937,7 +937,6 @@ def MutexBuildEnvVarsFlags():
       long_name='build environment variables',
       key_type=env_vars_util.EnvVarKeyType,
       value_type=env_vars_util.EnvVarValueType,
-      hidden=True,
   )
   group.AddArgument(
       base.Argument(
@@ -4302,7 +4301,6 @@ def FunctionArg():
   """Specify that the deployed resource is a function."""
   return base.Argument(
       '--function',
-      hidden=True,
       help=(
           'Specifies that the deployed object is a function. If a value'
           ' is provided, that value is used as the entrypoint.'
@@ -4313,11 +4311,10 @@ def FunctionArg():
 # TODO(b/312784518) link to/list supported values
 def BaseImageArg():
   """Adds automatic base image update related flags."""
-  group = base.ArgumentGroup(mutex=True, hidden=True)
+  group = base.ArgumentGroup(mutex=True)
   group.AddArgument(
       base.Argument(
           '--base-image',
-          hidden=True,
           help=(
               'Specifies the base image to be used for automatic base image'
               ' updates. When deploying from source using the Google Cloud'
@@ -4332,8 +4329,7 @@ def BaseImageArg():
       base.Argument(
           '--clear-base-image',
           action='store_true',
-          hidden=True,
-          help='Opts out of use of automatic base image updates.',
+          help='Opts out of automatic base image updates.',
       )
   )
   return group
@@ -4343,7 +4339,6 @@ def AutomaticUpdatesFlag():
   """Adds automatic base image update related flags."""
   return base.Argument(
       '--automatic-updates',
-      hidden=True,
       action=arg_parsers.StoreTrueFalseAction,
       help=(
           'Indicates whether automatic base image updates should be enabled for'
@@ -4354,11 +4349,10 @@ def AutomaticUpdatesFlag():
 
 def BuildWorkerPoolMutexGroup():
   """Add flags for specifying Cloud Build Custom Build Worker Pool."""
-  group = base.ArgumentGroup(mutex=True, hidden=True)
+  group = base.ArgumentGroup(mutex=True)
   group.AddArgument(
       base.Argument(
           '--build-worker-pool',
-          hidden=True,
           help="""
           Name of the Cloud Build Custom Worker Pool that should be used to build
           the function. The format of this field is
@@ -4372,7 +4366,6 @@ def BuildWorkerPoolMutexGroup():
   group.AddArgument(
       base.Argument(
           '--clear-build-worker-pool',
-          hidden=True,
           action='store_true',
           help="""
           Clears the Cloud Build Custom Worker Pool field.
@@ -4394,7 +4387,6 @@ def AddDelegateBuildsFlag(parser):
   """Adds flag to indicate using Build API for source deploy builds."""
   parser.add_argument(
       '--delegate-builds',
-      hidden=True,
       action='store_true',
       help="""\
       Specifies that the source deploy for run will use the Build API
@@ -4405,7 +4397,7 @@ def AddDelegateBuildsFlag(parser):
 
 def BuildServiceAccountMutexGroup():
   """Adds flags for configuring the build service account for Cloud Function."""
-  group = base.ArgumentGroup(mutex=True, hidden=True)
+  group = base.ArgumentGroup(mutex=True)
   group.AddArgument(BuildServiceAccountFlag())
   group.AddArgument(ClearBuildServiceAccountFlag())
   return group
@@ -4415,7 +4407,6 @@ def BuildServiceAccountFlag():
   """Adds flag to specify a service account to use for the build for source deploy builds."""
   return base.Argument(
       '--build-service-account',
-      hidden=True,
       help="""\
       Specifies the service account to use to execute the build. Applies only
       to source deploy builds using the Build API.
@@ -4427,7 +4418,6 @@ def ClearBuildServiceAccountFlag():
   """Adds flag to clear build service account."""
   return base.Argument(
       '--clear-build-service-account',
-      hidden=True,
       action='store_true',
       help='Clears the Cloud Build service account field.',
   )

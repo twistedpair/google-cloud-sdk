@@ -270,15 +270,22 @@ def GetSourceInstanceTemplateFlag(custom_name=None):
 def GetReservationSharingPolicyFlag(custom_name=None):
   """Gets the --reservation-sharing-policy flag."""
   help_text = """\
-  The reservation sharing policy to use for this reservation. If set to
-  allow_all, the reservation can be shared with first party services. If this
-  flag is ommited, the default value will be disallow_all.
+  The reservation sharing policy to use for this reservation.
   """
   return base.Argument(
       custom_name or '--reservation-sharing-policy',
-      choices=['allow_all', 'disallow_all'],
+      type=lambda x: x.upper(),
+      choices={
+          'ALLOW_ALL': (
+              'The reservation can be shared with Google Cloud services.'
+          ),
+          'DISALLOW_ALL': (
+              "The reservation won't be shared with Google Cloud services. If"
+              ' you omit this flag during creation, the default value is'
+              ' DISALLOW_ALL.'
+          ),
+      },
       help=help_text,
-      hidden=True,
   )
 
 

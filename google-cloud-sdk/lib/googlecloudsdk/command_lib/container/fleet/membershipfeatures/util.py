@@ -23,6 +23,8 @@ MEMBERSHIP_FEATURE_PROJECT_ALLOWLIST = (
     'membershipfeature-project-number',
     'poco-mf-test-project',
     'poco-mf-test-project-number',
+    'cs-mf-test-project',
+    'cs-mf-test-project-number',
 )
 
 

@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import enum
 import math
-import os
 from typing import List
 import uuid
 
@@ -122,7 +121,7 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
 
   def _pre_process(self):
     """Prepares the environment for the diagnostic test."""
-    self._old_env_vars = os.environ.copy()
+    super(UploadThroughputDiagnostic, self)._pre_process()
     if self._upload_type == UploadType.STREAMING:
       self.streaming_size = _DEFAULT_STREAMING_SIZE
       if len(self._object_sizes) > 1:
@@ -178,7 +177,9 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
     self._set_cloud_sdk_env_vars()
 
     if self._upload_type == UploadType.STREAMING:
-      with self._time_recorder(_UPLOAD_THROUGHPUT_RESULT_KEY, self._result):
+      with diagnostic.time_recorder(
+          _UPLOAD_THROUGHPUT_RESULT_KEY, self._result
+      ):
         log.status.Print(
             'Starting streaming upload of {} bytes to : {}'.format(
                 self.streaming_size, self.bucket_url
@@ -197,7 +198,9 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
           f'Starting upload of {self._object_count} objects to :'
           f' {self.bucket_url} with upload type: {self._upload_type.value}'
       )
-      with self._time_recorder(_UPLOAD_THROUGHPUT_RESULT_KEY, self._result):
+      with diagnostic.time_recorder(
+          _UPLOAD_THROUGHPUT_RESULT_KEY, self._result
+      ):
         self._run_cp(
             self.temp_dir.path + '/' + self.object_prefix + '*',
             self.bucket_url.url_string,
@@ -209,9 +212,7 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
 
   def _post_process(self):
     """Restores the environment variables and cleans up temp files."""
-    os.environ = (
-        self._old_env_vars if self._old_env_vars is not None else os.environ
-    )
+    super(UploadThroughputDiagnostic, self)._post_process()
     if self.temp_dir:
       try:
         self.temp_dir.Close()
