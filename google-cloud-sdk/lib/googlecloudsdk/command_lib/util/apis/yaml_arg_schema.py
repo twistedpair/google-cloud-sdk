@@ -609,7 +609,7 @@ def _GenerateFallthroughsMapFromData(fallthroughs_data):
 
 
 def _GenerateFullFallthroughsMap(
-    arg_fallthroughs, attribute_names,
+    arg_fallthroughs, attribute_to_flag_map,
     shared_resource_flags, presentation_flag_name):
   """Generate a map of fallthroughs for the given argument.
 
@@ -619,7 +619,8 @@ def _GenerateFullFallthroughsMap(
 
   Args:
     arg_fallthroughs: A dict of fallthroughs for the given argument.
-    attribute_names: The names of the attributes in the resource spec.
+    attribute_to_flag_map: The names of the attributes in the
+      resource spec.
     shared_resource_flags: Flags that are already generated elsewhere.
     presentation_flag_name: The name of the anchor argument.
 
@@ -629,8 +630,10 @@ def _GenerateFullFallthroughsMap(
   shared = shared_resource_flags or []
   command_level_fallthroughs = {}
   full_arg_fallthroughs = arg_fallthroughs.copy()
-  full_arg_fallthroughs.update(
-      {n: ['--' + n] for n in shared if n in attribute_names})
+  full_arg_fallthroughs.update({
+      attr: [resource_util.FlagNameFormat(flag)]
+      for attr, flag in attribute_to_flag_map.items() if flag in shared
+  })
 
   concept_parsers.UpdateFallthroughsMap(
       command_level_fallthroughs, presentation_flag_name, full_arg_fallthroughs)
@@ -638,7 +641,7 @@ def _GenerateFullFallthroughsMap(
 
 
 def _GenerateIgnoredFlagsMap(
-    shared_resource_flags, removed_flags, attribute_names):
+    shared_resource_flags, ignored_flags, attribute_to_flag_map):
   """Generate a map of flags that should be ignored.
 
   Flags are either ignored because they have already been generated elsewhere
@@ -646,19 +649,28 @@ def _GenerateIgnoredFlagsMap(
 
   Args:
     shared_resource_flags: Flags that are already generated elsewhere
-    removed_flags: Flags that have been explicitly removed in the command
-    attribute_names: The names of the attributes in the resource spec
+    ignored_flags: Flags that have been explicitly removed in the command
+    attribute_to_flag_map: Attributes mapped to flag names
 
   Returns:
     A map of flags to ignore to an empty string.
   """
-  shared = shared_resource_flags or []
-  ignored_fields = (list(concepts.IGNORED_FIELDS.values()) +
-                    removed_flags + shared)
+  all_ignored_flags = ignored_flags + (shared_resource_flags or [])
   return {
-      n: ''
-      for n in ignored_fields if n in attribute_names
+      attr: '' for attr, flag in attribute_to_flag_map.items()
+      if flag in all_ignored_flags
   }
+
+
+def _AllRemovedFlags(removed_attrs, atribute_to_flag_map):
+  """Returns all the flags that need to be removed."""
+  ignored = list(set(
+      resource_util.FlagNameFormat(flag)
+      for flag in concepts.IGNORED_FIELDS.values()))
+  removed_flags = [
+      atribute_to_flag_map[attr] for attr in removed_attrs
+      if attr in atribute_to_flag_map]
+  return ignored + removed_flags
 
 
 class YAMLConceptArgument(YAMLArgument, metaclass=abc.ABCMeta):
@@ -717,7 +729,7 @@ class YAMLConceptArgument(YAMLArgument, metaclass=abc.ABCMeta):
     self._is_positional = is_positional
     self.is_parent_resource = is_parent_resource
     self.is_primary_resource = is_primary_resource
-    self.removed_flags = removed_flags or []
+    self._removed_attrs = removed_flags or []
     self.command_level_fallthroughs = _GenerateFallthroughsMapFromData(
         command_level_fallthroughs)
     # TODO(b/274890004): Remove data.get('request_id_field')
@@ -765,6 +777,18 @@ class YAMLConceptArgument(YAMLArgument, metaclass=abc.ABCMeta):
   @abc.abstractmethod
   def attribute_names(self):
     """Names of attributes in the resource spec."""
+    pass
+
+  @property
+  @abc.abstractmethod
+  def attribute_to_flag_map(self):
+    """Returns a map of attribute name to normalized flag name."""
+    pass
+
+  @property
+  @abc.abstractmethod
+  def ignored_flags(self):
+    """Returns a map of attribute name to normalized flag name."""
     pass
 
   @abc.abstractmethod
@@ -881,7 +905,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
     self.attribute_data = data['attributes']
     self._disable_auto_completers = data.get('disable_auto_completers', True)
 
-    for removed in self.removed_flags:
+    for removed in self._removed_attrs:
       if removed not in self.attribute_names:
         raise util.InvalidSchemaError(
             'Removed flag [{}] for resource arg [{}] references an attribute '
@@ -939,20 +963,27 @@ class YAMLResourceArgument(YAMLConceptArgument):
       return _GetPresentationName(self._resource_spec, self.repeated)
 
   @property
-  def _attribute_to_flag_name_map(self):
-    """Returns a map of attribute name to normalized flag name."""
+  def attribute_to_flag_map(self):
+    """Returns a map of attribute name to flag name."""
     # Not an accurate attribute to flag name map since it does not include
     # positional vs non-positional or skipped flags. However, it is sufficient
     # for the purposes of determining if a flag is specified.
-    approx_attr_to_args = self._GeneratePresentationSpec(
+    return self._GeneratePresentationSpec(
         False, resource_util.FlagNameFormat(self._presentation_name),
-        None, [], None
+        None, {}, None
     ).attribute_to_args_map
 
+  @property
+  def _attribute_to_flag_dest_map(self):
     return {
         attr: resource_util.NormalizeFormat(flag)
-        for attr, flag in approx_attr_to_args.items()
+        for attr, flag in self.attribute_to_flag_map.items()
     }
+
+  @property
+  def ignored_flags(self):
+    """Returns a map of attribute name to flag name."""
+    return _AllRemovedFlags(self._removed_attrs, self.attribute_to_flag_map)
 
   def _GetParentResource(self, resource_collection):
     parent_collection, _, _ = resource_collection.full_name.rpartition('.')
@@ -1006,11 +1037,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
 
   def _GeneratePresentationSpec(
       self, is_required, presentation_flag_name,
-      flag_name_override, shared_resource_flags, group_help=None):
-    ignored_flag_map = _GenerateIgnoredFlagsMap(
-        shared_resource_flags,
-        self.removed_flags,
-        self.attribute_names)
+      flag_name_override, ignored_flag_map, group_help=None):
     return presentation_specs.ResourcePresentationSpec(
         presentation_flag_name,
         self._resource_spec,
@@ -1026,12 +1053,18 @@ class YAMLResourceArgument(YAMLConceptArgument):
     """Generates only the resource arg (no update flags)."""
 
     command_level_fallthroughs = _GenerateFullFallthroughsMap(
-        self.command_level_fallthroughs, self.attribute_names,
+        self.command_level_fallthroughs,
+        self.attribute_to_flag_map,
         shared_resource_flags, presentation_flag_name)
+
+    ignored_flag_map = _GenerateIgnoredFlagsMap(
+        shared_resource_flags,
+        self.ignored_flags,
+        self.attribute_to_flag_map)
 
     presentation_spec = self._GeneratePresentationSpec(
         self.IsRequired(method), presentation_flag_name,
-        flag_name_override, shared_resource_flags, group_help)
+        flag_name_override, ignored_flag_map, group_help)
 
     return concept_parsers.ConceptParser(
         [presentation_spec],
@@ -1058,7 +1091,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
     anchor_specified = _IsAnchorSpecified(
         self._resource_spec,
         namespace,
-        self._attribute_to_flag_name_map,
+        self._attribute_to_flag_dest_map,
         self._presentation_name,
         self.clearable)
     if not anchor_specified and not group_required:
@@ -1076,7 +1109,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
     return _IsAnchorSpecified(
         self._resource_spec,
         namespace,
-        self._attribute_to_flag_name_map,
+        self._attribute_to_flag_dest_map,
         self._presentation_name,
         self.clearable)
 
@@ -1214,20 +1247,27 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
       return _GetPresentationName(self._resource_spec, self.repeated)
 
   @property
-  def _attribute_to_flag_name_map(self):
+  def attribute_to_flag_map(self):
     """Returns a map of attribute name to normalized flag name."""
     # Not an accurate attribute to flag name map since it does not include
     # positional vs non-positional or skipped flags. However, it is sufficient
     # for the purposes of determining if a flag is specified.
-    approx_attr_to_args = self._GeneratePresentationSpec(
+    return self._GeneratePresentationSpec(
         False, resource_util.FlagNameFormat(self._presentation_name),
-        None, [], None
+        None, {}, None
     ).attribute_to_args_map
 
+  @property
+  def _attribute_to_flag_dest_map(self):
     return {
         attr: resource_util.NormalizeFormat(flag)
-        for attr, flag in approx_attr_to_args.items()
+        for attr, flag in self.attribute_to_flag_map.items()
     }
+
+  @property
+  def ignored_flags(self):
+    """Returns a map of attribute name to flag name."""
+    return _AllRemovedFlags(self._removed_attrs, self.attribute_to_flag_map)
 
   @property
   def _resource_spec(self):
@@ -1276,10 +1316,7 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
 
   def _GeneratePresentationSpec(
       self, is_required, presentation_flag_name,
-      flag_name_override, shared_resource_flags, group_help=None):
-    ignored_flag_map = _GenerateIgnoredFlagsMap(
-        shared_resource_flags, self.removed_flags,
-        self.attribute_names)
+      flag_name_override, ignored_flag_map, group_help=None):
     return presentation_specs.MultitypeResourcePresentationSpec(
         presentation_flag_name,
         self._resource_spec,
@@ -1295,12 +1332,18 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
     """Generates only the resource arg (no update flags)."""
 
     command_level_fallthroughs = _GenerateFullFallthroughsMap(
-        self.command_level_fallthroughs, self.attribute_names,
+        self.command_level_fallthroughs,
+        self.attribute_to_flag_map,
         shared_resource_flags, presentation_flag_name)
+
+    ignored_flag_map = _GenerateIgnoredFlagsMap(
+        shared_resource_flags,
+        self.ignored_flags,
+        self.attribute_to_flag_map)
 
     presentation_spec = self._GeneratePresentationSpec(
         self.IsRequired(method), presentation_flag_name,
-        flag_name_override, shared_resource_flags, group_help)
+        flag_name_override, ignored_flag_map, group_help)
 
     return concept_parsers.ConceptParser(
         [presentation_spec],
@@ -1327,7 +1370,7 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
     is_anchor_specified = _IsAnchorSpecified(
         self._resource_spec,
         namespace,
-        self._attribute_to_flag_name_map,
+        self._attribute_to_flag_dest_map,
         self._presentation_name,
         self.clearable)
     if not is_anchor_specified and not group_required:
@@ -1344,7 +1387,7 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
       return False
     return _IsAnchorSpecified(
         self._resource_spec, namespace,
-        self._attribute_to_flag_name_map, self._presentation_name,
+        self._attribute_to_flag_dest_map, self._presentation_name,
         self.clearable)
 
   def GetPresentationFlagName(self, resource_collection, is_list_method):

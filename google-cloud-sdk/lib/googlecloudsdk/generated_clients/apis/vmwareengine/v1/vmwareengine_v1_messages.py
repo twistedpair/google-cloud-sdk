@@ -30,6 +30,7 @@ class Announcement(_messages.Message):
     activityType: Optional. Activity type of the announcement There can be
       only one active announcement for a given activity type and target
       resource.
+    cluster: A Cluster resource name.
     code: Required. Code of the announcement. Indicates the presence of a
       VMware Engine related announcement and corresponds to a related message
       in the `description` field.
@@ -43,7 +44,7 @@ class Announcement(_messages.Message):
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-west1-a/announcements/my-announcement-
       id`
-    privateCloud: A Private Cloud full resource name.
+    privateCloud: A Private Cloud resource name.
     state: Output only. State of the resource. New values may be added to this
       enum when appropriate.
     targetResourceType: Output only. Target Resource Type defines the type of
@@ -93,15 +94,16 @@ class Announcement(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   activityType = _messages.StringField(1)
-  code = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  metadata = _messages.MessageField('MetadataValue', 5)
-  name = _messages.StringField(6)
-  privateCloud = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  targetResourceType = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  cluster = _messages.StringField(2)
+  code = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  metadata = _messages.MessageField('MetadataValue', 6)
+  name = _messages.StringField(7)
+  privateCloud = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  targetResourceType = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class AnyDomainController(_messages.Message):
@@ -1698,6 +1700,8 @@ class NetworkConfig(_messages.Message):
       resource name of the service VPC network this private cloud is attached
       to. The name is specified in the following form:
       `projects/{service_project_number}/global/networks/{network_id}`.
+    serviceSubnets: Optional. UserDefined service subnets of the Private
+      Cloud.
     vmwareEngineNetwork: Optional. The relative resource name of the VMware
       Engine network attached to the private cloud. Specify the name in the
       following form: `projects/{project}/locations/{location}/vmwareEngineNet
@@ -1713,8 +1717,9 @@ class NetworkConfig(_messages.Message):
   managementIpAddressLayoutVersion = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   network = _messages.StringField(4)
   serviceNetwork = _messages.StringField(5)
-  vmwareEngineNetwork = _messages.StringField(6)
-  vmwareEngineNetworkCanonical = _messages.StringField(7)
+  serviceSubnets = _messages.MessageField('Subnet', 6, repeated=True)
+  vmwareEngineNetwork = _messages.StringField(7)
+  vmwareEngineNetworkCanonical = _messages.StringField(8)
 
 
 class NetworkPeering(_messages.Message):
@@ -3289,6 +3294,7 @@ class Upgrade(_messages.Message):
         private cloud.
       SWITCH_UPGRADE: Switch upgrade.
       OTHER: The upgrade type that doesn't fall into any other category.
+      INFRASTRUCTURE_UPGRADE: Infrastructure upgrade in BM node maintenance.
     """
     TYPE_UNSPECIFIED = 0
     VSPHERE_UPGRADE = 1
@@ -3297,6 +3303,7 @@ class Upgrade(_messages.Message):
     FIRMWARE_UPGRADE = 4
     SWITCH_UPGRADE = 5
     OTHER = 6
+    INFRASTRUCTURE_UPGRADE = 7
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)

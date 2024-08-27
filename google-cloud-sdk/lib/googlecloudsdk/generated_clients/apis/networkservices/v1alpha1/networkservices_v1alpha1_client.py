@@ -57,6 +57,7 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
     self.projects_locations_meshes = self.ProjectsLocationsMeshesService(self)
     self.projects_locations_multicastConsumerAssociations = self.ProjectsLocationsMulticastConsumerAssociationsService(self)
     self.projects_locations_multicastDomainActivations = self.ProjectsLocationsMulticastDomainActivationsService(self)
+    self.projects_locations_multicastDomainGroups = self.ProjectsLocationsMulticastDomainGroupsService(self)
     self.projects_locations_multicastDomains = self.ProjectsLocationsMulticastDomainsService(self)
     self.projects_locations_multicastGroupConsumerActivations = self.ProjectsLocationsMulticastGroupConsumerActivationsService(self)
     self.projects_locations_multicastGroupDefinitions = self.ProjectsLocationsMulticastGroupDefinitionsService(self)
@@ -2708,6 +2709,151 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='multicastDomainActivation',
         request_type_name='NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsMulticastDomainGroupsService(base_api.BaseApiService):
+    """Service class for the projects_locations_multicastDomainGroups resource."""
+
+    _NAME = 'projects_locations_multicastDomainGroups'
+
+    def __init__(self, client):
+      super(NetworkservicesV1alpha1.ProjectsLocationsMulticastDomainGroupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new multicast domain group in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMulticastDomainGroupsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/multicastDomainGroups',
+        http_method='POST',
+        method_id='networkservices.projects.locations.multicastDomainGroups.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['multicastDomainGroupId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/multicastDomainGroups',
+        request_field='multicastDomainGroup',
+        request_type_name='NetworkservicesProjectsLocationsMulticastDomainGroupsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single multicast domain.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMulticastDomainGroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/multicastDomainGroups/{multicastDomainGroupsId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.multicastDomainGroups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsMulticastDomainGroupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single multicast domain group.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMulticastDomainGroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MulticastDomainGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/multicastDomainGroups/{multicastDomainGroupsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.multicastDomainGroups.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsMulticastDomainGroupsGetRequest',
+        response_type_name='MulticastDomainGroup',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists multicast domain groups in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMulticastDomainGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMulticastDomainGroupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/multicastDomainGroups',
+        http_method='GET',
+        method_id='networkservices.projects.locations.multicastDomainGroups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/multicastDomainGroups',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsMulticastDomainGroupsListRequest',
+        response_type_name='ListMulticastDomainGroupsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single multicast domain group.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMulticastDomainGroupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/multicastDomainGroups/{multicastDomainGroupsId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.multicastDomainGroups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='multicastDomainGroup',
+        request_type_name='NetworkservicesProjectsLocationsMulticastDomainGroupsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

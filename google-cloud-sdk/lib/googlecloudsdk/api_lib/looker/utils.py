@@ -24,7 +24,7 @@ from googlecloudsdk.calliope import base
 
 DEFAULT_RELEASE_TRACK = base.ReleaseTrack.GA
 VERSION_MAP = {
-    base.ReleaseTrack.ALPHA: 'v1alpha1',
+    base.ReleaseTrack.ALPHA: 'v1alpha2',
     base.ReleaseTrack.GA: 'v1',
 }
 API_VERSION_DEFAULT = VERSION_MAP[DEFAULT_RELEASE_TRACK]

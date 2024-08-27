@@ -1383,6 +1383,9 @@ class Gateway(_messages.Message):
       still be injected. By default, envoy will not insert any debug headers.
     IpVersionValueValuesEnum: Optional. The IP Version that will be used by
       this gateway. Valid options are IPV4 or IPV6. Default is IPV4.
+    RoutingModeValueValuesEnum: Optional. The routing mode of the Gateway.
+      This field is configurable only for gateways of type SECURE_WEB_GATEWAY.
+      This field is required for gateways of type SECURE_WEB_GATEWAY.
     TypeValueValuesEnum: Immutable. The type of the customer managed gateway.
       This field is required. If unspecified, an error is returned.
 
@@ -1428,6 +1431,9 @@ class Gateway(_messages.Message):
       of type 'SECURE_WEB_GATEWAY' are limited to 1 port. Gateways of type
       'OPEN_MESH' listen on 0.0.0.0 for IPv4 and :: for IPv6 and support
       multiple ports.
+    routingMode: Optional. The routing mode of the Gateway. This field is
+      configurable only for gateways of type SECURE_WEB_GATEWAY. This field is
+      required for gateways of type SECURE_WEB_GATEWAY.
     scope: Optional. Scope determines how configuration across multiple
       Gateway instances are merged. The configuration for multiple Gateway
       instances with the same scope will be merged as presented as a single
@@ -1482,6 +1488,23 @@ class Gateway(_messages.Message):
     IPV4 = 1
     IPV6 = 2
 
+  class RoutingModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The routing mode of the Gateway. This field is configurable
+    only for gateways of type SECURE_WEB_GATEWAY. This field is required for
+    gateways of type SECURE_WEB_GATEWAY.
+
+    Values:
+      EXPLICIT_ROUTING_MODE: The routing mode is explicit; clients are
+        configured to send traffic through the gateway. This is the default
+        routing mode.
+      NEXT_HOP_ROUTING_MODE: The routing mode is next-hop. Clients are unaware
+        of the gateway, and a route (advanced route or other route type) can
+        be configured to direct traffic from client to gateway. The gateway
+        then acts as a next-hop to the destination.
+    """
+    EXPLICIT_ROUTING_MODE = 0
+    NEXT_HOP_ROUTING_MODE = 1
+
   class TypeValueValuesEnum(_messages.Enum):
     r"""Immutable. The type of the customer managed gateway. This field is
     required. If unspecified, an error is returned.
@@ -1534,13 +1557,14 @@ class Gateway(_messages.Message):
   name = _messages.StringField(10)
   network = _messages.StringField(11)
   ports = _messages.IntegerField(12, repeated=True, variant=_messages.Variant.INT32)
-  scope = _messages.StringField(13)
-  securityPolicy = _messages.StringField(14)
-  selfLink = _messages.StringField(15)
-  serverTlsPolicy = _messages.StringField(16)
-  subnetwork = _messages.StringField(17)
-  type = _messages.EnumField('TypeValueValuesEnum', 18)
-  updateTime = _messages.StringField(19)
+  routingMode = _messages.EnumField('RoutingModeValueValuesEnum', 13)
+  scope = _messages.StringField(14)
+  securityPolicy = _messages.StringField(15)
+  selfLink = _messages.StringField(16)
+  serverTlsPolicy = _messages.StringField(17)
+  subnetwork = _messages.StringField(18)
+  type = _messages.EnumField('TypeValueValuesEnum', 19)
+  updateTime = _messages.StringField(20)
 
 
 class GrpcRoute(_messages.Message):
@@ -6807,7 +6831,8 @@ class NetworkservicesProjectsLocationsWasmPluginsPatchRequest(_messages.Message)
   r"""A NetworkservicesProjectsLocationsWasmPluginsPatchRequest object.
 
   Fields:
-    name: Required. Name of the `WasmPlugin` resource in the following format:
+    name: Identifier. Name of the `WasmPlugin` resource in the following
+      format:
       `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}`.
     updateMask: Optional. Used to specify the fields to be overwritten in the
       `WasmPlugin` resource by the update. The fields specified in the
@@ -8164,7 +8189,8 @@ class WasmAction(_messages.Message):
     description: Optional. A human-readable description of the resource.
     labels: Optional. Set of label tags associated with the `WasmAction`
       resource.
-    name: Required. Name of the `WasmAction` resource in the following format:
+    name: Identifier. Name of the `WasmAction` resource in the following
+      format:
       `projects/{project}/locations/{location}/wasmActions/{wasm_action}`.
     supportedEvents: Optional. Determines which of portion of the request /
       response is processed by the plugin. Each value translates to a separate
@@ -8259,7 +8285,8 @@ class WasmPlugin(_messages.Message):
     mainVersionId: Optional. The ID of the `WasmPluginVersion` resource that
       is the currently serving one. The version referred to must be a child of
       this `WasmPlugin` resource.
-    name: Required. Name of the `WasmPlugin` resource in the following format:
+    name: Identifier. Name of the `WasmPlugin` resource in the following
+      format:
       `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}`.
     updateTime: Output only. The timestamp when the resource was updated.
     versions: Optional. All versions of this `WasmPlugin` in the key-value
@@ -8435,8 +8462,8 @@ class WasmPluginVersion(_messages.Message):
       used instead of an image tag.
     labels: Optional. Set of labels associated with the `WasmPluginVersion`
       resource.
-    name: Optional. Name of the `WasmPluginVersion` resource in the following
-      format:
+    name: Identifier. Name of the `WasmPluginVersion` resource in the
+      following format:
       `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}/
       versions/{wasm_plugin_version}`.
     pluginConfigData: Configuration for the Wasm plugin. The configuration is

@@ -423,7 +423,7 @@ class StorageV1(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Permanently deletes an empty bucket.
+      r"""Deletes an empty bucket. Deletions are permanent unless soft delete is enabled on the bucket.
 
       Args:
         request: (StorageBucketsDeleteRequest) input message
@@ -466,7 +466,7 @@ class StorageV1(base_api.BaseApiClient):
         method_id='storage.buckets.get',
         ordered_params=['bucket'],
         path_params=['bucket'],
-        query_params=['ifMetagenerationMatch', 'ifMetagenerationNotMatch', 'projection', 'userProject'],
+        query_params=['generation', 'ifMetagenerationMatch', 'ifMetagenerationNotMatch', 'projection', 'softDeleted', 'userProject'],
         relative_path='b/{bucket}',
         request_field='',
         request_type_name='StorageBucketsGetRequest',
@@ -570,7 +570,7 @@ class StorageV1(base_api.BaseApiClient):
         method_id='storage.buckets.list',
         ordered_params=['project'],
         path_params=[],
-        query_params=['maxResults', 'pageToken', 'prefix', 'project', 'projection', 'userProject'],
+        query_params=['maxResults', 'pageToken', 'prefix', 'project', 'projection', 'softDeleted', 'userProject'],
         relative_path='b',
         request_field='',
         request_type_name='StorageBucketsListRequest',
@@ -627,6 +627,32 @@ class StorageV1(base_api.BaseApiClient):
         request_field='bucketResource',
         request_type_name='StorageBucketsPatchRequest',
         response_type_name='Bucket',
+        supports_download=False,
+    )
+
+    def Restore(self, request, global_params=None):
+      r"""Restores a soft-deleted bucket.
+
+      Args:
+        request: (StorageBucketsRestoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StorageBucketsRestoreResponse) The response message.
+      """
+      config = self.GetMethodConfig('Restore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Restore.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='storage.buckets.restore',
+        ordered_params=['bucket', 'generation'],
+        path_params=['bucket'],
+        query_params=['generation', 'userProject'],
+        relative_path='b/{bucket}/restore',
+        request_field='',
+        request_type_name='StorageBucketsRestoreRequest',
+        response_type_name='StorageBucketsRestoreResponse',
         supports_download=False,
     )
 
@@ -2140,7 +2166,7 @@ class StorageV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the state of an HMAC key. See the HMAC Key resource descriptor for valid states.
+      r"""Updates the state of an HMAC key. See the [HMAC Key resource descriptor](https://cloud.google.com/storage/docs/json_api/v1/projects/hmacKeys/update#request-body) for valid states.
 
       Args:
         request: (StorageProjectsHmacKeysUpdateRequest) input message

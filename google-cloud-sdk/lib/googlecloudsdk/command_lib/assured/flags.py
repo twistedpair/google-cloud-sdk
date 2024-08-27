@@ -44,7 +44,12 @@ compliance_regimes = {
     ReleaseTrack.ALPHA: _BETA_COMPLIANCE_REGIMES,
 }
 
-PARTNERS = ['LOCAL_CONTROLS_BY_S3NS', 'SOVEREIGN_CONTROLS_BY_T_SYSTEMS']
+PARTNERS = [
+    'LOCAL_CONTROLS_BY_S3NS',
+    'SOVEREIGN_CONTROLS_BY_T_SYSTEMS',
+    'SOVEREIGN_CONTROLS_BY_CNTXT',
+    'SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM',
+]
 
 ACKNOWLEDGE_TYPE = ['SINGLE_VIOLATION', 'EXISTING_CHILD_RESOURCE_VIOLATIONS']
 
@@ -153,6 +158,18 @@ def AddCreateWorkloadFlags(parser, release_track):
       help=(
           'The partner permissions for the partner regime, for example,'
           ' data-logs-viewer=true/false'
+      ),
+  )
+  parser.add_argument(
+      '--partner-services-billing-account',
+      required=False,
+      help=(
+          'Billing account necessary for purchasing services from Sovereign'
+          ' Partners. This field is required for creating SIA/PSN/CNTXT'
+          ' partner workloads. The caller should have'
+          " 'billing.resourceAssociations.create' IAM permission on this"
+          ' billing-account. The format of this string is'
+          ' billingAccounts/AAAAAA-BBBBBB-CCCCCC'
       ),
   )
   parser.add_argument(

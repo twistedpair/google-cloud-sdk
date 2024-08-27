@@ -21,6 +21,7 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.colab_enterprise import completers
 from googlecloudsdk.command_lib.compute.networks import flags as compute_network_flags
 from googlecloudsdk.command_lib.compute.networks.subnets import flags as compute_subnet_flags
+from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 _accelerator_choices = [
@@ -378,3 +379,26 @@ def AddListRuntimeTemplatesFlags(parser):
   """Construct groups and arguments specific to listing runtime templates."""
   AddRegionResourceArg(parser, 'for which to list all runtime templates')
   parser.display_info.AddUriFunc(runtime_templates_util.GetRuntimeTemplateUri)
+
+
+def AddFlagsToAddIamPolicyBinding(parser):
+  """Construct arguments for adding an IAM policy binding to a runtime template."""
+  AddRuntimeTemplateResourceArg(parser, 'to add IAM policy binding to')
+  iam_util.AddArgsForAddIamPolicyBinding(parser)
+
+
+def AddGetIamPolicyFlags(parser):
+  """Construct arguments for getting the IAM policy for a runtime template."""
+  AddRuntimeTemplateResourceArg(parser, 'to get IAM policy for')
+
+
+def AddSetIamPolicyBindingFlags(parser):
+  """Construct arguments for setting the IAM policy for a runtime template."""
+  AddRuntimeTemplateResourceArg(parser, 'to set IAM policy for')
+  iam_util.AddArgForPolicyFile(parser)
+
+
+def AddRemoveIamPolicyBindingFlags(parser):
+  """Construct arguments for removing an IAM policy binding from a runtime template."""
+  AddRuntimeTemplateResourceArg(parser, 'to remove IAM policy from')
+  iam_util.AddArgsForRemoveIamPolicyBinding(parser)

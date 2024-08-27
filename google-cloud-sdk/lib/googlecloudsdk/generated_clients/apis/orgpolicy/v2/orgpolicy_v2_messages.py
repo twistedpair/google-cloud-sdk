@@ -9,6 +9,7 @@ from __future__ import absolute_import
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'orgpolicy'
@@ -314,6 +315,13 @@ class GoogleCloudOrgpolicyV2PolicySpec(_messages.Message):
 class GoogleCloudOrgpolicyV2PolicySpecPolicyRule(_messages.Message):
   r"""A rule used to express this policy.
 
+  Messages:
+    ParametersValue: Optional. Required for GMCs if parameters defined in
+      constraints. Pass parameter values when policy enforcement is enabled.
+      Ensure that parameter value types match those defined in the constraint
+      definition. For example: { "allowedLocations" : ["us-east1", "us-
+      west1"], "allowAll" : true }
+
   Fields:
     allowAll: Setting this to true means that all values are allowed. This
       field can be set only in policies for list constraints.
@@ -332,15 +340,48 @@ class GoogleCloudOrgpolicyV2PolicySpecPolicyRule(_messages.Message):
     enforce: If `true`, then the policy is enforced. If `false`, then any
       configuration is acceptable. This field can be set only in policies for
       boolean constraints.
+    parameters: Optional. Required for GMCs if parameters defined in
+      constraints. Pass parameter values when policy enforcement is enabled.
+      Ensure that parameter value types match those defined in the constraint
+      definition. For example: { "allowedLocations" : ["us-east1", "us-
+      west1"], "allowAll" : true }
     values: List of values to be used for this policy rule. This field can be
       set only in policies for list constraints.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""Optional. Required for GMCs if parameters defined in constraints. Pass
+    parameter values when policy enforcement is enabled. Ensure that parameter
+    value types match those defined in the constraint definition. For example:
+    { "allowedLocations" : ["us-east1", "us-west1"], "allowAll" : true }
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   allowAll = _messages.BooleanField(1)
   condition = _messages.MessageField('GoogleTypeExpr', 2)
   denyAll = _messages.BooleanField(3)
   enforce = _messages.BooleanField(4)
-  values = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpecPolicyRuleStringValues', 5)
+  parameters = _messages.MessageField('ParametersValue', 5)
+  values = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpecPolicyRuleStringValues', 6)
 
 
 class GoogleCloudOrgpolicyV2PolicySpecPolicyRuleStringValues(_messages.Message):

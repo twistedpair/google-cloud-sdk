@@ -774,6 +774,7 @@ class CreateClusterOptions(object):
       service_account_verification_keys=None,
       control_plane_disk_encryption_key=None,
       gkeops_etcd_backup_encryption_key=None,
+      disable_l4_lb_firewall_reconciliation=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -1023,6 +1024,9 @@ class CreateClusterOptions(object):
     self.service_account_verification_keys = service_account_verification_keys
     self.control_plane_disk_encryption_key = control_plane_disk_encryption_key
     self.gkeops_etcd_backup_encryption_key = gkeops_etcd_backup_encryption_key
+    self.disable_l4_lb_firewall_reconciliation = (
+        disable_l4_lb_firewall_reconciliation
+    )
 
 
 class UpdateClusterOptions(object):
@@ -1181,6 +1185,8 @@ class UpdateClusterOptions(object):
       remove_additional_ip_ranges=None,
       enable_private_nodes=None,
       enable_dns_access=None,
+      disable_l4_lb_firewall_reconciliation=None,
+      enable_l4_lb_firewall_reconciliation=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1356,6 +1362,12 @@ class UpdateClusterOptions(object):
     self.remove_additional_ip_ranges = remove_additional_ip_ranges
     self.enable_private_nodes = enable_private_nodes
     self.enable_dns_access = enable_dns_access
+    self.disable_l4_lb_firewall_reconciliation = (
+        disable_l4_lb_firewall_reconciliation
+    )
+    self.enable_l4_lb_firewall_reconciliation = (
+        enable_l4_lb_firewall_reconciliation
+    )
 
 
 class SetMasterAuthOptions(object):
@@ -1758,6 +1770,31 @@ class APIAdapter(object):
     try:
       return self.client.projects_locations_clusters.Get(
           self.messages.ContainerProjectsLocationsClustersGetRequest(
+              name=ProjectLocationCluster(cluster_ref.projectId, cluster_ref
+                                          .zone, cluster_ref.clusterId)))
+    except apitools_exceptions.HttpNotFoundError as error:
+      api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+      # Cluster couldn't be found, maybe user got the location wrong?
+      self.CheckClusterOtherZones(cluster_ref, api_error)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+
+  def GetClusterUpgradeInfo(self, cluster_ref):
+    """Get cluster upgrade info.
+
+    Args:
+      cluster_ref: cluster Resource to get upgrade info for.
+
+    Returns:
+      Cluster Upgrade Info message.
+    Raises:
+      Error: if cluster cannot be found or caller is missing permissions. Will
+        attempt to find similar clusters in other zones for a more useful error
+        if the user has list permissions.
+    """
+    try:
+      return self.client.projects_locations_clusters.FetchClusterUpgradeInfo(
+          self.messages.ContainerProjectsLocationsClustersFetchClusterUpgradeInfoRequest(
               name=ProjectLocationCluster(cluster_ref.projectId, cluster_ref
                                           .zone, cluster_ref.clusterId)))
     except apitools_exceptions.HttpNotFoundError as error:
@@ -2695,6 +2732,12 @@ class APIAdapter(object):
         cluster.userManagedKeysConfig = self.messages.UserManagedKeysConfig()
       cluster.userManagedKeysConfig.gkeopsEtcdBackupEncryptionKey = (
           options.gkeops_etcd_backup_encryption_key
+      )
+    if options.disable_l4_lb_firewall_reconciliation is not None:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig()
+      cluster.networkConfig.disableL4LbFirewallReconciliation = (
+          options.disable_l4_lb_firewall_reconciliation
       )
 
     return cluster
@@ -4317,6 +4360,15 @@ class APIAdapter(object):
           )
       )
 
+    if options.disable_l4_lb_firewall_reconciliation:
+      update = self.messages.ClusterUpdate(
+          desiredDisableL4LbFirewallReconciliation=True
+      )
+    if options.enable_l4_lb_firewall_reconciliation:
+      update = self.messages.ClusterUpdate(
+          desiredDisableL4LbFirewallReconciliation=False
+      )
+
     return update
 
   def UpdateCluster(self, cluster_ref, options):
@@ -5009,6 +5061,22 @@ class APIAdapter(object):
             node_pool_ref.projectId, node_pool_ref.zone,
             node_pool_ref.clusterId, node_pool_ref.nodePoolId))
     return self.client.projects_locations_clusters_nodePools.Get(req)
+
+  def GetNodePoolUpgradeInfo(self, node_pool_ref):
+    """Get node pool upgrade info.
+
+    Args:
+      node_pool_ref: NodePool Resource to get upgrade info for.
+
+    Returns:
+      NodePool Upgrade Info message.
+    """
+    req = self.messages.ContainerProjectsLocationsClustersNodePoolsFetchNodePoolUpgradeInfoRequest(
+        name=ProjectLocationClusterNodePool(
+            node_pool_ref.projectId, node_pool_ref.zone,
+            node_pool_ref.clusterId, node_pool_ref.nodePoolId))
+    return self.client.projects_locations_clusters_nodePools.FetchNodePoolUpgradeInfo(
+        req)
 
   def UpdateNodePoolNodeManagement(self, node_pool_ref, options):
     """Updates node pool's node management configuration.

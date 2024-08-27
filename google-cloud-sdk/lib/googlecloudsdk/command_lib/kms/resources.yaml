@@ -59,3 +59,14 @@ key:
   - parameter_name: cryptoKeysId
     attribute_name: key
     help: The name of the key.
+
+key_handle:
+  name: key handle
+  collection: cloudkms.projects.locations.keyHandles
+  attributes:
+  - *project
+  - *location
+  - &keyhandle
+    parameter_name: keyHandlesId
+    attribute_name: key_handle
+    help: The name of the key handle.

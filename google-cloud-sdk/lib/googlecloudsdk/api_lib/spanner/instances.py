@@ -78,6 +78,83 @@ def MaybeGetAutoscalingOverride(msgs, asymmetric_autoscaling_option):
   return obj
 
 
+# Merges existing_overrides with new_overrides and returned the merged result.
+def MergeAutoscalingConfigOverride(msgs, existing_overrides, new_overrides):
+  if existing_overrides is None and new_overrides is None:
+    return None
+
+  if existing_overrides is None:
+    return new_overrides
+
+  if new_overrides is None:
+    return existing_overrides
+
+  # First, copy the existing values.
+  result = existing_overrides
+  # Next, assign any new limits overrides if any.
+  if new_overrides.autoscalingLimits is not None:
+    # Make sure autoscalingLimits is not None in the result.
+    if result.autoscalingLimits is None:
+      result.autoscalingLimits = msgs.AutoscalingLimits()
+    if new_overrides.autoscalingLimits.minNodes is not None:
+      result.autoscalingLimits.minNodes = (
+          new_overrides.autoscalingLimits.minNodes
+      )
+    if new_overrides.autoscalingLimits.maxNodes is not None:
+      result.autoscalingLimits.maxNodes = (
+          new_overrides.autoscalingLimits.maxNodes
+      )
+    if new_overrides.autoscalingLimits.minProcessingUnits is not None:
+      result.autoscalingLimits.minProcessingUnits = (
+          new_overrides.autoscalingLimits.minProcessingUnits
+      )
+    if new_overrides.autoscalingLimits.maxProcessingUnits is not None:
+      result.autoscalingLimits.maxProcessingUnits = (
+          new_overrides.autoscalingLimits.maxProcessingUnits
+      )
+
+  # Finally, assign any target overrides if any.
+  if (
+      new_overrides.autoscalingTargetHighPriorityCpuUtilizationPercent
+      is not None
+  ):
+    result.autoscalingTargetHighPriorityCpuUtilizationPercent = (
+        new_overrides.autoscalingTargetHighPriorityCpuUtilizationPercent
+    )
+
+  return result
+
+
+# Set instance_obj.autoscalingConfig.asymmetricAutoscalingOptions by merging
+# options found in the current_instance and patch requested, asym_option_patch.
+def PatchAsymmetricAutoscalingOptions(
+    msgs, instance_obj, current_instance, asym_options_patch
+):
+  option_by_location = {}
+  for (
+      existing_option
+  ) in current_instance.autoscalingConfig.asymmetricAutoscalingOptions:
+    option_by_location[existing_option.replicaSelection.location] = (
+        existing_option
+    )
+
+  for patch_option in asym_options_patch:
+    location = patch_option.replicaSelection.location
+    if location in option_by_location:
+      # Update existing option
+      existing_option = option_by_location[location]
+      option_by_location[location].overrides = MergeAutoscalingConfigOverride(
+          msgs, existing_option.overrides, patch_option.overrides
+      )
+    else:
+      # Add new option
+      option_by_location[location] = patch_option
+
+  instance_obj.autoscalingConfig.asymmetricAutoscalingOptions.clear()
+  for opt in option_by_location.values():
+    instance_obj.autoscalingConfig.asymmetricAutoscalingOptions.append(opt)
+
+
 def Create(
     instance,
     config,
@@ -272,6 +349,8 @@ def Patch(
     autoscaling_max_processing_units=None,
     autoscaling_high_priority_cpu_target=None,
     autoscaling_storage_target=None,
+    asymmetric_autoscaling_options=None,
+    clear_asymmetric_autoscaling_options=None,
     instance_type=None,
     expire_behavior=None,
     ssd_cache_id=None,
@@ -335,6 +414,42 @@ def Patch(
             storageUtilizationPercent=autoscaling_storage_target,
         ),
     )
+
+  if asymmetric_autoscaling_options is not None:
+    fields.append('autoscalingConfig.asymmetricAutoscalingOptions')
+    current_instance = Get(instance)
+    asym_options_patch = []
+    # Create AsymmetricAutoscalingOption objects from the flag value (key-value
+    # pairs).
+    for asym_option in asymmetric_autoscaling_options:
+      asym_options_patch.append(
+          msgs.AsymmetricAutoscalingOption(
+              replicaSelection=msgs.InstanceReplicaSelection(
+                  location=asym_option['location']
+              ),
+              overrides=MaybeGetAutoscalingOverride(msgs, asym_option),
+          )
+      )
+    if instance_obj.autoscalingConfig is None:
+      instance_obj.autoscalingConfig = msgs.AutoscalingConfig()
+    PatchAsymmetricAutoscalingOptions(
+        msgs, instance_obj, current_instance, asym_options_patch
+    )
+
+  if clear_asymmetric_autoscaling_options is not None:
+    fields.append('autoscalingConfig.asymmetricAutoscalingOptions')
+    current_instance = Get(instance)
+    locations_to_remove = set(clear_asymmetric_autoscaling_options)
+    if instance_obj.autoscalingConfig is None:
+      instance_obj.autoscalingConfig = msgs.AutoscalingConfig()
+    instance_obj.autoscalingConfig.asymmetricAutoscalingOptions = []
+    for (
+        asym_option
+    ) in current_instance.autoscalingConfig.asymmetricAutoscalingOptions:
+      if asym_option.replicaSelection.location not in locations_to_remove:
+        instance_obj.autoscalingConfig.asymmetricAutoscalingOptions.append(
+            asym_option
+        )
 
   if instance_type is not None:
     fields.append('instanceType')

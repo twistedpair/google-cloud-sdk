@@ -4,7 +4,6 @@ title: networkservices v1 Gateway export schema
 description: A gcloud export/import command YAML validation schema.
 type: object
 required:
-- name
 - ports
 additionalProperties: false
 properties:
@@ -89,7 +88,7 @@ properties:
     $ref: LabelsValue.yaml
   name:
     description: |-
-      Name of the Gateway resource. It matches pattern
+      Identifier. Name of the Gateway resource. It matches pattern
       `projects/*/locations/*/gateways/`.
     type: string
   network:
@@ -109,6 +108,15 @@ properties:
     type: array
     items:
       type: integer
+  routingMode:
+    description: |-
+      The routing mode of the Gateway. This field is configurable
+      only for gateways of type SECURE_WEB_GATEWAY. This field is
+      required for gateways of type SECURE_WEB_GATEWAY.
+    type: string
+    enum:
+    - EXPLICIT_ROUTING_MODE
+    - NEXT_HOP_ROUTING_MODE
   scope:
     description: |-
       Scope determines how configuration across multiple Gateway

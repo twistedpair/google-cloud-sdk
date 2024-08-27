@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import base
 import six
 
 
@@ -62,13 +61,6 @@ class ExecutionConfigFactory(object):
     if args.subnet:
       kwargs['subnetworkUri'] = args.subnet
 
-    if args.performance_tier:
-      kwargs['performanceTier'] = (
-          self.dataproc.messages.ExecutionConfig.PerformanceTierValueValuesEnum(
-              args.performance_tier.upper()
-          )
-      )
-
     if args.service_account:
       kwargs['serviceAccount'] = args.service_account
 
@@ -92,19 +84,8 @@ class ExecutionConfigFactory(object):
     return self.dataproc.messages.ExecutionConfig(**kwargs)
 
 
-# Supported performance tier choices.
-_PERFORMANCE_TIER = ['economy', 'standard', 'high']
-
-
 def AddArguments(parser):
   """Adds ExecutionConfig related arguments to parser."""
-  base.ChoiceArgument(
-      '--performance-tier',
-      hidden=True,  # Not supported yet.
-      choices=_PERFORMANCE_TIER,
-      help_str=(
-          'Performance tier for a batch/session job performance. '
-          'The default performance level is STANDARD.')).AddToParser(parser)
 
   parser.add_argument(
       '--service-account',

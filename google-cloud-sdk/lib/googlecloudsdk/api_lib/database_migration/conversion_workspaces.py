@@ -237,6 +237,7 @@ class ConversionWorkspacesClient(object):
         tree=self._GetTreeType(args.tree_type),
         pageSize=page_size,
         pageToken=page_token,
+        view=self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest.ViewValueValuesEnum.DATABASE_ENTITY_VIEW_FULL,
     )
     if args.IsKnownAndSpecified('filter'):
       args.filter, server_filter = filter_rewrite.Rewriter().Rewrite(

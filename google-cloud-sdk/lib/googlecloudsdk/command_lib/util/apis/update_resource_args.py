@@ -20,7 +20,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import util as format_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import update_args
@@ -49,24 +48,23 @@ def _GetRelativeNameField(arg_data):
   return api_fields[0]
 
 
-def _GetSharedAttributes(arg_data, shared_resource_args):
+def _GetSharedAttributeFlags(arg_data, shared_resource_flags):
   """Gets a list of all shared resource attributes."""
-  ignored_attributes = set()
+  ignored_flags = set()
   anchor_names = set(attr.name for attr in arg_data.anchors)
 
-  for attr_name in arg_data.attribute_names:
-    if (attr_name in arg_data.removed_flags or
-        concepts.IGNORED_FIELDS.get(attr_name) or
-        attr_name in shared_resource_args or
+  for attr_name, flag_name in arg_data.attribute_to_flag_map.items():
+    if (flag_name in arg_data.ignored_flags or
+        flag_name in shared_resource_flags or
         attr_name in anchor_names):
       continue
-    ignored_attributes.add(attr_name)
+    ignored_flags.add(flag_name)
 
-  return list(ignored_attributes)
+  return list(ignored_flags)
 
 
 def _GetResourceArgGenerator(
-    arg_data, resource_collection, ignored_attributes):
+    arg_data, resource_collection, ignored_flags):
   """Gets a function to generate a resource arg."""
   def ArgGen(name, group_help, flag_name_override):
     group_help += '\n\n'
@@ -77,7 +75,7 @@ def _GetResourceArgGenerator(
         resource_collection,
         presentation_flag_name=name,
         flag_name_override=flag_name_override,
-        shared_resource_flags=ignored_attributes,
+        shared_resource_flags=ignored_flags,
         group_help=group_help)
   return ArgGen
 
@@ -92,13 +90,9 @@ def _GenerateSharedFlags(
   resource_arg_info = arg_gen(
       '--current', '', None).GetInfo('--current')
 
-  shared_flags = set(
-      resource_arg_info.attribute_to_args_map.get(attr)
-      for attr in shared_flag_names)
-
   return [
       arg for arg in resource_arg_info.GetAttributeArgs()
-      if arg.name in shared_flags
+      if arg.name in shared_flag_names
   ]
 
 
@@ -108,7 +102,7 @@ class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
   @classmethod
   def FromArgData(
       cls, arg_data, method_resource_collection, is_list_method=False,
-      shared_resource_args=None
+      shared_resource_flags=None
   ):
     if arg_data.multitype and arg_data.repeated:
       gen_cls = UpdateMultitypeListResourceArgumentGenerator
@@ -137,16 +131,16 @@ class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
           'resource_method_params.'.format(presentation_flag_name)
       )
 
-    shared_args = shared_resource_args or []
-    shared_attribute_names = _GetSharedAttributes(
-        arg_data, shared_args)
+    shared_flags = shared_resource_flags or []
+    shared_attribute_flags = _GetSharedAttributeFlags(
+        arg_data, shared_flags)
     # All of the flags the resource arg should not generate
-    all_shared_attribute_names = shared_attribute_names + shared_args
+    all_shared_flags = shared_attribute_flags + shared_flags
 
     return gen_cls(
         presentation_flag_name=presentation_flag_name,
         arg_gen=_GetResourceArgGenerator(
-            arg_data, method_resource_collection, all_shared_attribute_names),
+            arg_data, method_resource_collection, all_shared_flags),
         api_field=api_field,
         repeated=arg_data.repeated,
         collections=arg_data.collections,
@@ -154,7 +148,7 @@ class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
         # attributes shared between update args we need to generate and
         # add to the root.
         shared_attribute_flags=_GenerateSharedFlags(
-            arg_data, method_resource_collection, shared_attribute_names),
+            arg_data, method_resource_collection, shared_attribute_flags),
         anchor_names=[attr.name for attr in arg_data.anchors],
     )
 

@@ -917,7 +917,6 @@ image's default entrypoint is run.
       '--container-args',
       metavar='ARG',
       type=arg_parsers.ArgList(),
-      action=arg_parsers.UpdateAction,
       help="""\
 Comma-separated arguments passed to the command run by the container
 image. If not specified and no `--command` is provided, the container

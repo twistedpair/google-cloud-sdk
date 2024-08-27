@@ -27,9 +27,9 @@ def GetMessagesModuleForVersion(version):
   return apis.GetMessagesModule('looker', version)
 
 
-def ParseToDateTypeV1Alpha1(date):
-  """Convert the input to Date Type for v1alpha1 Create method."""
-  messages = GetMessagesModuleForVersion('v1alpha1')
+def ParseToDateTypeV1Alpha(date):
+  """Convert the input to Date Type for v1alpha* Create method."""
+  messages = GetMessagesModuleForVersion('v1alpha2')
   return ParseDate(date, messages)
 
 
@@ -47,9 +47,9 @@ def ParseDate(date, messages, fmt='%Y-%m-%d'):
   )
 
 
-def ParseTimeOfDayDenyPeriodV1Alpha1(time_of_day):
-  """Convert input to TimeOfDay type for Deny Main Period v1alpha1."""
-  messages = GetMessagesModuleForVersion('v1alpha1')
+def ParseTimeOfDayDenyPeriodV1Alpha(time_of_day):
+  """Convert input to TimeOfDay type for Deny Main Period v1alpha*."""
+  messages = GetMessagesModuleForVersion('v1alpha2')
   arg = '--deny-maintenance-period-time'
   error_message = (
       "'--deny-maintenance-period-time' must be used in a valid 24-hr UTC Time"
@@ -71,9 +71,9 @@ def ParseTimeOfDayDenyPeriodV1(time_of_day):
   return ParseTimeOfDay(time_of_day, messages)
 
 
-def ParseTimeOfDayMainWindowV1Alpha1(time_of_day):
-  """Convert input to TimeOfDay type for Main Window v1alpha1."""
-  messages = GetMessagesModuleForVersion('v1alpha1')
+def ParseTimeOfDayMainWindowV1Alpha(time_of_day):
+  """Convert input to TimeOfDay type for Main Window v1alpha*."""
+  messages = GetMessagesModuleForVersion('v1alpha2')
   arg = '--maintenance-window-time'
   error_message = (
       "'--maintenance-window-time' must be used in a valid 24-hr UTC Time"

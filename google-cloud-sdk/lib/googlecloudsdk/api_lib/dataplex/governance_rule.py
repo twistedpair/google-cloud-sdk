@@ -23,6 +23,7 @@ import os
 from googlecloudsdk.api_lib.dataplex import util as dataplex_api
 from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
 import six
@@ -197,3 +198,54 @@ def WaitForOperation(operation):
       operation,
       dataplex_api.GetClientInstance().projects_locations_governanceRules,
   )
+
+
+def SetIamPolicy(governance_rule_ref, policy):
+  """Set Iam Policy request."""
+  google_iam_v1_set_iam_policy_request = (
+      dataplex_api.GetMessageModule().GoogleIamV1SetIamPolicyRequest(
+          policy=policy
+      )
+  )
+  set_iam_policy_req = dataplex_api.GetMessageModule().DataplexProjectsLocationsGovernanceRulesSetIamPolicyRequest(
+      resource=governance_rule_ref.RelativeName(),
+      googleIamV1SetIamPolicyRequest=google_iam_v1_set_iam_policy_request,
+  )
+
+  return dataplex_api.GetClientInstance().projects_locations_governanceRules.SetIamPolicy(
+      set_iam_policy_req
+  )
+
+
+def GetIamPolicy(governance_rule_ref):
+  """Get Iam Policy request."""
+  get_iam_policy_req = dataplex_api.GetMessageModule().DataplexProjectsLocationsGovernanceRulesGetIamPolicyRequest(
+      resource=governance_rule_ref.RelativeName()
+  )
+  return dataplex_api.GetClientInstance().projects_locations_governanceRules.GetIamPolicy(
+      get_iam_policy_req
+  )
+
+
+def AddIamPolicyBinding(governance_rule_ref, member, role):
+  """Add IAM policy binding request."""
+  policy = GetIamPolicy(governance_rule_ref)
+  iam_util.AddBindingToIamPolicy(
+      dataplex_api.GetMessageModule().GoogleIamV1Binding, policy, member, role
+  )
+  return SetIamPolicy(governance_rule_ref, policy)
+
+
+def RemoveIamPolicyBinding(governance_rule_ref, member, role):
+  """Remove IAM policy binding request."""
+  policy = GetIamPolicy(governance_rule_ref)
+  iam_util.RemoveBindingFromIamPolicy(policy, member, role)
+  return SetIamPolicy(governance_rule_ref, policy)
+
+
+def SetIamPolicyFromFile(governance_rule_ref, policy_file):
+  """Set IAM policy binding request from file."""
+  policy = iam_util.ParsePolicyFile(
+      policy_file, dataplex_api.GetMessageModule().GoogleIamV1Policy
+  )
+  return SetIamPolicy(governance_rule_ref, policy)

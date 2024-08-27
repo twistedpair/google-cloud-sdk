@@ -5,6 +5,91 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 490.0.0 (2024-08-27)
+
+### App Hub
+
+*   Added `gcloud apphub locations`command group. Commands in this group manage
+ apphub locations.
+
+### Assured Workloads
+
+*   Added `SOVEREIGN_CONTROLS_BY_CNTXT` and `SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM`
+    as options for `--partner` for `gcloud assured workloads create`.
+*   Added `partner-services-billing-account` flag for `gcloud assured workloads
+    create`.
+
+### BigQuery
+
+* Enabled Google Auth by default.
+
+### Cloud Bigtable
+
+* Added support for more aggregate types to the cbt CLI.
+
+### Cloud Run
+
+* Added `--mesh` flag to `gcloud beta run deploy` and `gcloud beta run services update`. Use `gloud beta run deploy --mesh=[MESH] ...` to enable Cloud Service Mesh for a Cloud Run Service.
+* Promoted `--add-volume`, `--remove-volume`, `--clear-volumes`, `--add-volume-mount`, `--remove-volume-mount`,
+and `--clear volume mounts` flags of  `gcloud run deploy`, `gcloud run services update`, `gcloud run jobs deploy`, `gcloud run jobs create`, and
+`gcloud run jobs update` to GA for NFS and Cloud Storage volumes.
+
+### Colab Enterprise
+
+* Added `gcloud beta colab-enterprise runtime-templates add-iam-policy-binding`.
+* Added `gcloud beta colab-enterprise runtime-templates get-iam-policy`.
+* Added `gcloud beta colab-enterprise runtime-templates set-iam-policy`.
+* Added `gcloud beta colab-enterprise runtime-templates remove-iam-policy-binding`.
+
+### Compute Engine
+
+* Promoted flags related to external-managed migration to beta:
+  - '--external-managed-backend-bucket-migration-state' of `gcloud compute forwarding-rules update`.
+  - '--external-managed-backend-bucket-migration-testing-percentage' of `gcloud compute forwarding-rules update`.
+  - '--load-balancing-scheme' of `gcloud compute forwarding-rules update`.
+  - '--external-managed-migration-state' of `gcloud compute backend-services update`.
+  - '--external-managed-migration-testing-percentage' of `gcloud compute backend-services update`.
+  - '--load-balancing-scheme' of `gcloud compute backend-services update`.
+* Promoted `gcloud compute future-reservations` command group to GA.
+
+### Database Migration
+
+* Added `--sqlserver-diff-backup` and `--no-sqlserver-diff-backup` flags to `gcloud database-migrate migration-jobs create` and `gcloud database-migrate migration-jobs update`. The flags enable or disable differential backups in Database Migration Service migration jobs for homogeneous SQL Server to Cloud SQL for SQL Server migrations.
+* Updated `gcloud database-migration connection-profiles create cloudsql` to support MySQL_8_4 major version option for Cloud SQL connection profiles.
+
+### GKE Hub
+
+* Modified `gcloud beta container fleet memberships register` to not populate membership description.
+* Removed `--description` flag of `gcloud beta container fleet memberships update`.
+
+### Kubernetes Engine
+
+*   Added flag option `--[no]-enable-insecure-binding-system-authenticated` to
+    allow/block System RBAC bindings group `system:authenticated` binds to any
+    role.
+*   Added flag option `--[no]-enable-insecure-binding-system-unauthenticated`
+    to allow/block System RBAC bindings group `system:unauthenticated` and
+    user `system:anonymous` binds to any role.
+
+### Memorystore
+
+*   Added `memorystore` command group. Commands in this group allow creating and
+    managing Memorystore instances.
+
+### Notebooks
+
+* Added `NVIDIA_H100_80GB` and `NVIDIA_H100_MEGA_80GB`
+option to `--accelerator-type` flag of `gcloud notebooks instances create`
+and `gcloud notebooks instances update`.
+
+### Workbench
+
+* Added `workbench instances restore` to restore the workbench instance to an existing backup state.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 489.0.0 (2024-08-20)
 
 ### Cloud Dataplex

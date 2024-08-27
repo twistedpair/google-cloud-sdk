@@ -347,73 +347,8 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class CloudRunJobConfig(_messages.Message):
-  r"""Message for Cloud Run job configs.
-
-  Fields:
-    bindings: Bindings to other resources.
-    config: Configuration for the job.
-  """
-
-  bindings = _messages.MessageField('ServiceResourceBindingConfig', 1, repeated=True)
-  config = _messages.MessageField('JobSettingsConfig', 2)
-
-
-class CloudRunServiceConfig(_messages.Message):
-  r"""Message for Cloud Run service configs.
-
-  Fields:
-    config: Configuration for the service.
-    image: The container image to deploy the service with.
-    resources: Bindings to other resources.
-  """
-
-  config = _messages.MessageField('ServiceSettingsConfig', 1)
-  image = _messages.StringField(2)
-  resources = _messages.MessageField('ServiceResourceBindingConfig', 3, repeated=True)
-
-
-class CloudSqlConfig(_messages.Message):
-  r"""Message for a Cloud SQL resource.
-
-  Fields:
-    settings: Settings for the Cloud SQL instance.
-    version: The database version. e.g. "MYSQL_8_0". The version must match
-      one of the values at https://cloud.google.com/sql/docs/mysql/admin-
-      api/rest/v1beta4/SqlDatabaseVersion.
-  """
-
-  settings = _messages.MessageField('CloudSqlSettings', 1)
-  version = _messages.StringField(2)
-
-
-class CloudSqlSettings(_messages.Message):
-  r"""Message for settings for a CloudSql instance.
-
-  Fields:
-    activation_policy: The activation policy of the Cloud SQL instance. e.g.
-      "ALWAYS".
-    availability_type: The availability type of the Cloud SQL instance. e.g.
-      "REGIONAL".
-    disk_size: The disk size of the Cloud SQL instance, in GB. This value
-      cannot be decreased on Update.
-    disk_type: The type of disk for the Cloud SQL instance. e.g. "PD_SSD".
-    tier: Tier of the Cloud SQL instance. e.g. "db-f1-micro".
-  """
-
-  activation_policy = _messages.StringField(1)
-  availability_type = _messages.StringField(2)
-  disk_size = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  disk_type = _messages.StringField(4)
-  tier = _messages.StringField(5)
-
-
 class Config(_messages.Message):
   r"""Message for the Application Config Next tag: 6
-
-  Messages:
-    ResourcesValue: The map of resource configs where the key is the name of
-      resources and the value is the resource config.
 
   Fields:
     config: A byte array encapsulating the contents of the application config.
@@ -421,38 +356,10 @@ class Config(_messages.Message):
       app config, etc.)
     resourceList: Optional. The list of resources defined using the type-
       agnostic Resource definitions.
-    resources: The map of resource configs where the key is the name of
-      resources and the value is the resource config.
   """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ResourcesValue(_messages.Message):
-    r"""The map of resource configs where the key is the name of resources and
-    the value is the resource config.
-
-    Messages:
-      AdditionalProperty: An additional property for a ResourcesValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type ResourcesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ResourcesValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A ResourceConfig attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('ResourceConfig', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   config = _messages.BytesField(1)
   resourceList = _messages.MessageField('Resource', 2, repeated=True)
-  resources = _messages.MessageField('ResourcesValue', 3)
 
 
 class Deployment(_messages.Message):
@@ -631,19 +538,6 @@ class DeploymentStatus(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
-class DomainConfig(_messages.Message):
-  r"""A DomainConfig object.
-
-  Fields:
-    domain: Domain name for this config.
-    routes: A list of route configurations to associate with the domain. Each
-      Route configuration must include a paths configuration.
-  """
-
-  domain = _messages.StringField(1)
-  routes = _messages.MessageField('Route', 2, repeated=True)
-
-
 class DryRun(_messages.Message):
   r"""Message describing the dry run deployment options and outputs.
 
@@ -685,20 +579,6 @@ class Empty(_messages.Message):
 
 
 
-class FirebaseHostingConfig(_messages.Message):
-  r"""Message for defining firebase hosting resource.
-
-  Fields:
-    config: Hosting site configuration.
-    resources: Reference to the target resources to add to the hosting site
-      configuration. The resource binding's "binding-config" has no used
-      fields currently.
-  """
-
-  config = _messages.MessageField('HostingSiteConfig', 1)
-  resources = _messages.MessageField('ServiceResourceBindingConfig', 2, repeated=True)
-
-
 class FirebaseHostingStatus(_messages.Message):
   r"""Detailed status for Firebase Hosting resource.
 
@@ -709,38 +589,6 @@ class FirebaseHostingStatus(_messages.Message):
 
   domains = _messages.StringField(1, repeated=True)
   hostingConfig = _messages.StringField(2)
-
-
-class FirestoreConfig(_messages.Message):
-  r"""Message for defining firestore configuration.
-
-  Fields:
-    config: Database configuration.
-  """
-
-  config = _messages.MessageField('FirestoreDatabaseConfig', 1)
-
-
-class FirestoreDatabaseConfig(_messages.Message):
-  r"""Message for defining firestore database configuration.
-
-  Fields:
-    location_id: LocationID is the location of the database. Available
-      databases locations are listed at
-      https://cloud.google.com/firestore/docs/locations.
-  """
-
-  location_id = _messages.StringField(1)
-
-
-class HostingSiteConfig(_messages.Message):
-  r"""Message for defining the firebase hosting site configuration.
-
-  Fields:
-    site_id: Firebase hosting site-ID.
-  """
-
-  site_id = _messages.StringField(1)
 
 
 class JobComponent(_messages.Message):
@@ -803,70 +651,6 @@ class JobDetails(_messages.Message):
   jobName = _messages.StringField(2)
   jobUri = _messages.StringField(3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
-
-
-class JobSettingsConfig(_messages.Message):
-  r"""Message for Cloud Run Job settings config. Next tag: 8
-
-  Messages:
-    EnvVarsValue: Key-value pairs to set as environment variables. Note that
-      integration bindings will add/update the list of final env vars that are
-      deployed to a job.
-
-  Fields:
-    args: Comma-separated arguments passed to the command run by the container
-      image.
-    cmd: Entrypoint for the container image.
-    envVars: Key-value pairs to set as environment variables. Note that
-      integration bindings will add/update the list of final env vars that are
-      deployed to a job.
-    image: The container image to deploy the job with.
-    maxRetries: Number of times a task is allowed to restart in case of
-      failure before being failed permanently. This applies per-task, not per-
-      job. If set to 0, tasks will only run once and never be retried on
-      failure. Default value is 3.
-    parallelism: Number of tasks that may run concurrently. Must be less than
-      or equal to the number of tasks. When the job is run, if this field is 0
-      or unset, the maximum possible value will be used for that execution.
-      Default is unset.
-    taskCount: Specifies the desired number of tasks the execution should run.
-      Setting to 1 means that parallelism is limited to 1 and the success of
-      that task signals the success of the execution. Default value is 1.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class EnvVarsValue(_messages.Message):
-    r"""Key-value pairs to set as environment variables. Note that integration
-    bindings will add/update the list of final env vars that are deployed to a
-    job.
-
-    Messages:
-      AdditionalProperty: An additional property for a EnvVarsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type EnvVarsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a EnvVarsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  args = _messages.StringField(1, repeated=True)
-  cmd = _messages.StringField(2, repeated=True)
-  envVars = _messages.MessageField('EnvVarsValue', 3)
-  image = _messages.StringField(4)
-  maxRetries = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  parallelism = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  taskCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class ListApplicationsResponse(_messages.Message):
@@ -1138,26 +922,6 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
-class RedisConfig(_messages.Message):
-  r"""Message for Redis configs.
-
-  Fields:
-    instance: Configs for the Redis instance.
-  """
-
-  instance = _messages.MessageField('RedisInstanceConfig', 1)
-
-
-class RedisInstanceConfig(_messages.Message):
-  r"""Message for Redis instance configs.
-
-  Fields:
-    memory_size_gb: The redis instance memory size, in GB.
-  """
-
-  memory_size_gb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-
-
 class Resource(_messages.Message):
   r"""Resource defines a Stacks resource. Next tag: 8
 
@@ -1265,32 +1029,6 @@ class ResourceComponentStatus(_messages.Message):
   selfLink = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
   type = _messages.StringField(7)
-
-
-class ResourceConfig(_messages.Message):
-  r"""Message for the Resource configuration. Next tag: 11
-
-  Fields:
-    cloudsql: CloudSql configuration.
-    firebase_hosting: Firebase hosting configuration.
-    firestore: Firestore configuration.
-    job: Cloud Run job configuration.
-    latestDeployment: Output only. The deployment name for the most recent
-      deployment that has been triggered for a given resource. If a resource
-      was never deployed then this field will be empty.
-    redis: Redis configuration.
-    router: Router configuration.
-    service: Cloud Run service configuration.
-  """
-
-  cloudsql = _messages.MessageField('CloudSqlConfig', 1)
-  firebase_hosting = _messages.MessageField('FirebaseHostingConfig', 2)
-  firestore = _messages.MessageField('FirestoreConfig', 3)
-  job = _messages.MessageField('CloudRunJobConfig', 4)
-  latestDeployment = _messages.StringField(5)
-  redis = _messages.MessageField('RedisConfig', 6)
-  router = _messages.MessageField('RouterConfig', 7)
-  service = _messages.MessageField('CloudRunServiceConfig', 8)
 
 
 class ResourceDeploymentError(_messages.Message):
@@ -1481,47 +1219,6 @@ class ResourceStatus(_messages.Message):
   routerDetails = _messages.MessageField('RouterStatus', 10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
   type = _messages.StringField(12)
-
-
-class Route(_messages.Message):
-  r"""Message for a single routeable resource within a Router.
-
-  Fields:
-    cdn: Whether to enable CDN on the route.
-    paths: List of paths to be routed to this route. e.g. ["/*, /api/*"]. The
-      path must fit the constraints at https://cloud.google.com/load-
-      balancing/docs/url-map-concepts#pm-constraints.
-    ref: Required. A reference to the resource in the config to which this is
-      routing. e.g. "service/hello-service".
-  """
-
-  cdn = _messages.BooleanField(1)
-  paths = _messages.StringField(2, repeated=True)
-  ref = _messages.StringField(3)
-
-
-class RouterConfig(_messages.Message):
-  r"""Message for a Router resource.
-
-  Fields:
-    default_route: Deprecated. Use the DomainConfig instead. The default route
-      config. The URL paths field is not required for this route config.
-    dns_zone: Deprecated. Use the DomainConfig instead. DNSZone represents an
-      existing DNS zone for the router. It's used for bring-your-own-DNSZone
-      case. If empty, a new managed DNS zone shall be created.
-    domain: Deprecated. Use the DomainConfig instead. Domain name to associate
-      with the router.
-    domains: The config for each domain.
-    routes: Deprecated. Use the DomainConfig instead. A list of route
-      configurations to associate with the router. Each Route configuration
-      must include a paths configuration.
-  """
-
-  default_route = _messages.MessageField('Route', 1)
-  dns_zone = _messages.StringField(2)
-  domain = _messages.StringField(3)
-  domains = _messages.MessageField('DomainConfig', 4, repeated=True)
-  routes = _messages.MessageField('Route', 5, repeated=True)
 
 
 class RouterStatus(_messages.Message):
@@ -1823,104 +1520,6 @@ class Selector(_messages.Message):
   matchTypeNames = _messages.MessageField('TypedName', 1, repeated=True)
 
 
-class ServiceResourceBindingConfig(_messages.Message):
-  r"""Message for a resource binding, defined in config of the source
-  resource.
-
-  Messages:
-    BindingConfigValue: Any configs associated with the binding. Supported
-      keys are resource type specific.
-
-  Fields:
-    binding_config: Any configs associated with the binding. Supported keys
-      are resource type specific.
-    ref: Reference to a target resource that is being bound. Format: "/", e.g.
-      "cloudsql/sql_db"
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class BindingConfigValue(_messages.Message):
-    r"""Any configs associated with the binding. Supported keys are resource
-    type specific.
-
-    Messages:
-      AdditionalProperty: An additional property for a BindingConfigValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type BindingConfigValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a BindingConfigValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  binding_config = _messages.MessageField('BindingConfigValue', 1)
-  ref = _messages.StringField(2)
-
-
-class ServiceSettingsConfig(_messages.Message):
-  r"""Message for Cloud Run Service settings config. Next tag: 6
-
-  Messages:
-    EnvVarsValue: Key-value pairs to set as environment variables. Note that
-      integration bindings will add/update the list of final env vars that are
-      deployed to a service.
-
-  Fields:
-    args: Comma-separated arguments passed to the command run by the container
-      image.
-    cmd: Entrypoint for the container image.
-    concurrency: The maximum number of concurrent requests allowed per
-      container instance.
-    cpu: Set a CPU limit in Kubernetes cpu units.
-    env_vars: Key-value pairs to set as environment variables. Note that
-      integration bindings will add/update the list of final env vars that are
-      deployed to a service.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class EnvVarsValue(_messages.Message):
-    r"""Key-value pairs to set as environment variables. Note that integration
-    bindings will add/update the list of final env vars that are deployed to a
-    service.
-
-    Messages:
-      AdditionalProperty: An additional property for a EnvVarsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type EnvVarsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a EnvVarsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  args = _messages.StringField(1, repeated=True)
-  cmd = _messages.StringField(2, repeated=True)
-  concurrency = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  cpu = _messages.StringField(4)
-  env_vars = _messages.MessageField('EnvVarsValue', 5)
-
-
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -2054,30 +1653,6 @@ class TypedName(_messages.Message):
   type = _messages.StringField(3)
 
 
-encoding.AddCustomJsonFieldMapping(
-    CloudSqlSettings, 'activation_policy', 'activation-policy')
-encoding.AddCustomJsonFieldMapping(
-    CloudSqlSettings, 'availability_type', 'availability-type')
-encoding.AddCustomJsonFieldMapping(
-    CloudSqlSettings, 'disk_size', 'disk-size')
-encoding.AddCustomJsonFieldMapping(
-    CloudSqlSettings, 'disk_type', 'disk-type')
-encoding.AddCustomJsonFieldMapping(
-    FirestoreDatabaseConfig, 'location_id', 'location-id')
-encoding.AddCustomJsonFieldMapping(
-    HostingSiteConfig, 'site_id', 'site-id')
-encoding.AddCustomJsonFieldMapping(
-    RedisInstanceConfig, 'memory_size_gb', 'memory-size-gb')
-encoding.AddCustomJsonFieldMapping(
-    ResourceConfig, 'firebase_hosting', 'firebase-hosting')
-encoding.AddCustomJsonFieldMapping(
-    RouterConfig, 'default_route', 'default-route')
-encoding.AddCustomJsonFieldMapping(
-    RouterConfig, 'dns_zone', 'dns-zone')
-encoding.AddCustomJsonFieldMapping(
-    ServiceResourceBindingConfig, 'binding_config', 'binding-config')
-encoding.AddCustomJsonFieldMapping(
-    ServiceSettingsConfig, 'env_vars', 'env-vars')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

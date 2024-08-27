@@ -1142,6 +1142,20 @@ class NotebooksProjectsLocationsInstancesResizeDiskRequest(_messages.Message):
   resizeDiskRequest = _messages.MessageField('ResizeDiskRequest', 2)
 
 
+class NotebooksProjectsLocationsInstancesRestoreRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsInstancesRestoreRequest object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
+    restoreInstanceRequest: A RestoreInstanceRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  restoreInstanceRequest = _messages.MessageField('RestoreInstanceRequest', 2)
+
+
 class NotebooksProjectsLocationsInstancesRollbackRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsInstancesRollbackRequest object.
 
@@ -1556,6 +1570,16 @@ class ResizeDiskRequest(_messages.Message):
   dataDisk = _messages.MessageField('DataDisk', 2)
 
 
+class RestoreInstanceRequest(_messages.Message):
+  r"""Request for restoring the notebook instance from a BackupSource.
+
+  Fields:
+    snapshot: Snapshot to be used for restore.
+  """
+
+  snapshot = _messages.MessageField('Snapshot', 1)
+
+
 class RollbackInstanceRequest(_messages.Message):
   r"""Request for rollbacking a notebook instance
 
@@ -1620,6 +1644,20 @@ class ShieldedInstanceConfig(_messages.Message):
   enableIntegrityMonitoring = _messages.BooleanField(1)
   enableSecureBoot = _messages.BooleanField(2)
   enableVtpm = _messages.BooleanField(3)
+
+
+class Snapshot(_messages.Message):
+  r"""Snapshot represents the snapshot of the data disk used to restore the
+  Workbench Instance from. Refers to:
+  compute/v1/projects/{project_id}/global/snapshots/{snapshot_id}
+
+  Fields:
+    projectId: Required. The project ID of the snapshot.
+    snapshotId: Required. The ID of the snapshot.
+  """
+
+  projectId = _messages.StringField(1)
+  snapshotId = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -95,6 +95,14 @@ class _MajorVersionMatchList(list):
     )
 
 
+# The class for printing a server certificate.
+class ServerCertForPrint:
+
+  def __init__(self, ssl_cert, status):
+    self.ssl_cert = ssl_cert
+    self.status = status
+
+
 def AddInstance(parser, support_wildcard_instances=False):
   parser.add_argument(
       '--instance',
@@ -411,6 +419,15 @@ def AddFinalbackupDescription(parser):
       required=False,
       hidden=True,
       help='Provides description for the final backup going to be taken.'
+  )
+
+
+def AddBackupDescription(parser):
+  parser.add_argument(
+      '--backup-description',
+      required=False,
+      hidden=True,
+      help='Provides description for the backup going to be taken.',
   )
 
 
@@ -1823,7 +1840,7 @@ def AddBackupName(parser):
       'name',
       help=(
           'The NAME of the backup. To find the NAME, run the following command:'
-          ' $ gcloud sql backups list --project-level.'
+          ' $ gcloud sql backups list.'
       ),
   )
 
@@ -1843,7 +1860,7 @@ def AddProjectLevelBackupEndpoint(parser):
       help=(
           "If true, then invoke project level backup endpoint. Use 'Name' as"
           " the value for backup ID. You can find the 'Name' by running $"
-          ' gcloud sql backups list --project-level.'
+          ' gcloud sql backups list.'
       ),
   )
 
@@ -2326,6 +2343,14 @@ SERVER_CA_CERTS_FORMAT = """
   )
 """
 
+SERVER_CERTS_FORMAT = """
+  table(
+    ssl_cert.sha1Fingerprint,
+    ssl_cert.expirationTime.yesno(no="-"):label=EXPIRATION,
+    status
+  )
+"""
+
 TIERS_FORMAT = """
   table(
     tier,
@@ -2483,6 +2508,49 @@ def AddClearAllowedPscProjects(parser):
           ' disallowing all projects from creating new Private Service Connect'
           ' bindings to the instance.'
       ),
+      **kwargs
+  )
+
+
+def AddPscAutoConnections(parser, hidden=False):
+  """Adds --psc-auto-connections argument."""
+  parser.add_argument(
+      '--psc-auto-connections',
+      type=arg_parsers.ArgObject(
+          spec={
+              'project': str,
+              'network': str,
+          },
+          required_keys=['network'],
+      ),
+      required=False,
+      help=(
+          'A comma-separated list of networks or a comma-separated list of'
+          ' pairs of project and network. Each project in this list might be'
+          ' represented by a project number (numeric) or by a project ID'
+          ' (alphanumeric). This allows Private Service Connect connections to'
+          ' be created automatically for the specified networks. For example,'
+          ' this would use the "form:'
+          ' `psc-auto-connections`=`network=projects/testproject1/global/'
+          'networks/testnetwork1`" or "the form'
+          ' `psc-auto-connections`=`project=testproject1,network=projects/'
+          'testproject1/global/networks/testnetwork1`"'
+      ),
+      hidden=hidden,
+      action=arg_parsers.FlattenAction(),
+  )
+
+
+def AddClearPscAutoConnections(parser, hidden=False):
+  kwargs = _GetKwargsForBoolFlag(False)
+  parser.add_argument(
+      '--clear-psc-auto-connections',
+      required=False,
+      help=(
+          'This removes all automatically created connections that Cloud SQL'
+          ' uses to connect to an instance using Private Service Connect.'
+      ),
+      hidden=hidden,
       **kwargs
   )
 

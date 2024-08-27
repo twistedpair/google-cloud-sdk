@@ -20,9 +20,89 @@ from __future__ import unicode_literals
 
 import re
 
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import yaml
+import six
+
+
+class ParseFileError(exceptions.Error):
+  """Error raised when a file could not be parsed."""
+
+  def __init__(self, path, reason):
+    """Initializes a ParseFileError.
+
+    Args:
+      path: The path of the file that could not be parsed.
+      reason: The reason the file could not be parsed.
+    """
+    super(ParseFileError, self).__init__(
+        'Issue parsing file [{}]: {}'.format(path, reason)
+    )
+
+
+class InvalidMessageParseError(ParseFileError):
+  """Error raised when a message could not be parsed from a YAML file."""
+
+  def __init__(self, path, reason, message_class, pluralize_error):
+    """Initializes an InvalidMessageParseError.
+
+    Args:
+      path: The path of the file that could not be parsed.
+      reason: The reason the file could not be parsed.
+      message_class: The message class that could not be parsed.
+      pluralize_error: Whether the error meessage is pluralized.
+    """
+
+    valid_fields = [f.name for f in message_class.all_fields()]
+
+    super(InvalidMessageParseError, self).__init__(
+        path,
+        (
+            'The YAML-compliant file provided contains errors: '
+            '{}\n\n'
+            'The {} in this file can contain the fields'
+            ' [{}].'
+        ).format(
+            reason,
+            'objects' if pluralize_error else 'object',
+            ', '.join(valid_fields),
+        ),
+    )
+
+
+def ParseAccessContextManagerMessagesFromYaml(path, message_class, is_list):
+  """Parse a YAML representation of a message(s).
+
+  Args:
+    path: str, path to YAML file containing data to parse
+    message_class: obj, message type to parse the contents of the yaml file to
+    is_list: bool, whether the file contains a list of messages or a single
+      message
+
+  Returns:
+    list of message object(s).
+
+  Raises:
+    ParseFileError: if the file could not be read into the proper object(s)
+  """
+
+  data = yaml.load_path(path)
+  if not data:
+    raise ParseFileError(path, 'File is empty')
+  try:
+    if is_list:
+      messages = [encoding.DictToMessage(c, message_class) for c in data]
+    else:
+      messages = [encoding.DictToMessage(data, message_class)]
+  except Exception as err:
+    raise InvalidMessageParseError(
+        path, six.text_type(err), message_class, is_list
+    )
+
+  return messages
 
 
 class ParseResponseError(exceptions.Error):
@@ -48,6 +128,7 @@ def GetTitleArg(noun):
 
 class BulkAPIOperationPoller(waiter.CloudOperationPoller):
   """A Poller used by the Bulk API.
+
   Polls ACM Operations endpoint then calls LIST instead of GET.
 
   Attributes:

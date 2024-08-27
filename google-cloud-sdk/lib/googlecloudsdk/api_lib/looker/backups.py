@@ -18,7 +18,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import log
 
 # API version constants
-API_VERSION_DEFAULT = 'v1alpha1'
+API_VERSION_DEFAULT = 'v1alpha2'
 
 
 def GetClient():

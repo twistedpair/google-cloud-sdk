@@ -14,6 +14,7 @@
 # limitations under the License.
 """colab-enterprise runtime-templates api helper."""
 
+from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import resources
 
@@ -372,3 +373,51 @@ def CreateRuntimeTemplateListRequest(args, messages):
           parent=GetParentForRuntimeTemplate(args),
       )
   )
+
+
+def CreateRuntimeTemplateGetIamPolicyRequest(args, messages):
+  """Builds a RuntimeTemplatesGetIamPolicyRequest message.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the specified API.
+
+  Returns:
+    Instance of the RuntimeTemplatesGetIamPolicyRequest message.
+  """
+  return messages.AiplatformProjectsLocationsNotebookRuntimeTemplatesGetIamPolicyRequest(
+      resource=GetRuntimeTemplateResourceName(args))
+
+
+def CreateRuntimeTemplateSetIamPolicyRequest(iam_policy, args, messages):
+  """Builds a RuntimeTemplatesSetIamPolicyRequest message.
+
+  Args:
+    iam_policy: The IAM policy to set.
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the specified API.
+
+  Returns:
+    Instance of the RuntimeTemplatesSetIamPolicyRequest message.
+  """
+  google_iam_set_policy_request = messages.GoogleIamV1SetIamPolicyRequest(
+      policy=iam_policy)
+  return messages.AiplatformProjectsLocationsNotebookRuntimeTemplatesSetIamPolicyRequest(
+      googleIamV1SetIamPolicyRequest=google_iam_set_policy_request,
+      resource=GetRuntimeTemplateResourceName(args)
+  )
+
+
+def CreateRuntimeTemplateSetIamPolicyRequestFromFile(args, messages):
+  """Reads policy file from args to build a RuntimeTemplatesSetIamPolicyRequest.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the specified API.
+
+  Returns:
+    Instance of the RuntimeTemplatesSetIamPolicyRequest message.
+  """
+  policy = iam_util.ParsePolicyFile(
+      args.policy_file, messages.GoogleIamV1Policy)
+  return CreateRuntimeTemplateSetIamPolicyRequest(policy, args, messages)

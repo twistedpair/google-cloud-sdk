@@ -396,6 +396,18 @@ def CreateGetConfigRequest(args, messages):
   return messages.NotebooksProjectsLocationsInstancesGetConfigRequest(name=name)
 
 
+def CreateInstanceRestoreRequest(args, messages):
+  instance = GetInstanceResource(args).RelativeName()
+  restore_request = messages.RestoreInstanceRequest(
+      snapshot=messages.Snapshot(
+          projectId=args.snapshot_project, snapshotId=args.snapshot
+      )
+  )
+  return messages.NotebooksProjectsLocationsInstancesRestoreRequest(
+      name=instance, restoreInstanceRequest=restore_request
+  )
+
+
 def UpdateInstance(args, messages):
   """Creates the Instance message for the update request.
 
@@ -492,6 +504,7 @@ def GetInstanceURI(resource):
 class OperationType(enum.Enum):
   CREATE = (log.CreatedResource, 'created')
   UPDATE = (log.UpdatedResource, 'updated')
+  RESTORE = (log.RestoredResource, 'restored')
   UPGRADE = (log.UpdatedResource, 'upgraded')
   ROLLBACK = (log.UpdatedResource, 'rolled back')
   DELETE = (log.DeletedResource, 'deleted')

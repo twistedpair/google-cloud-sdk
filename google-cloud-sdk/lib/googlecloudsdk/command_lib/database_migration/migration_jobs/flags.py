@@ -284,12 +284,13 @@ def AddSqlServerEncryptedDatabasesFlag(parser):
 def AddSqlServerUseDiffBackupFlag(parser):
   """Adds a --sqlserver-diff-backup flag to the given parser."""
   help_text = """\
-    Use differential backup for the migration job. This flag is used only for
-    SQL Server to Cloud SQL migrations.
+      Enable differential backups. If not specified, differential backups
+      are disabled by default. Use --sqlserver-diff-backup to enable and
+      --no-sqlserver-diff-backup to disable. This flag is used only for
+      homogeneous SQL Server to Cloud SQL for SQL Server migrations.
     """
   parser.add_argument(
       '--sqlserver-diff-backup',
       action='store_true',
       help=help_text,
-      hidden=True,
   )

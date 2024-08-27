@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Creates an image from Source."""
+
+import re
+
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
@@ -27,6 +30,11 @@ from googlecloudsdk.command_lib.run.sourcedeploys import sources
 from googlecloudsdk.command_lib.run.sourcedeploys import types
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+
+
+_BUILD_NAME_PATTERN = re.compile(
+    'projects/(?P<projectId>[^/]*)/locations/(?P<location>[^/]*)/builds/(?P<build>[^/]*)'
+)
 
 
 # TODO(b/313435281): Bundle these "build_" variables into an object
@@ -82,7 +90,6 @@ def CreateImage(
     try:
       response_dict, build_log_url, base_image_from_build = _SubmitBuild(
           tracker,
-          region,
           submit_build_request,
       )
     except apitools_exceptions.HttpNotFoundError as e:
@@ -363,14 +370,12 @@ def _GetBuildTags(resource_ref):
 
 def _SubmitBuild(
     tracker,
-    region,
     submit_build_request,
 ):
   """Call Build API to submit a build.
 
   Arguments:
     tracker: StagedProgressTracker, to report on the progress of releasing.
-    region: str, The region of the control plane.
     submit_build_request: SubmitBuildRequest, the request to submit build.
 
   Returns:
@@ -390,7 +395,8 @@ def _SubmitBuild(
   build = encoding.JsonToMessage(
       build_messages.BuildOperationMetadata, json
   ).build
-  name = f'projects/{build.projectId}/locations/{region}/operations/{build.id}'
+  build_region = _GetBuildRegion(build.name)
+  name = f'projects/{build.projectId}/locations/{build_region}/operations/{build.id}'
 
   build_op_ref = resources.REGISTRY.ParseRelativeName(
       name, collection='cloudbuild.projects.locations.operations'
@@ -415,3 +421,10 @@ def _PollUntilBuildCompletes(build_op_ref):
   )
   operation = waiter.PollUntilDone(poller, build_op_ref)
   return encoding.MessageToPyValue(operation.response)
+
+
+def _GetBuildRegion(build_name):
+  match = _BUILD_NAME_PATTERN.match(build_name)
+  if match:
+    return match.group('location')
+  raise ValueError(f'Invalid build name: {build_name}')

@@ -54,8 +54,11 @@ from googlecloudsdk.core.util import files
 
 SERVICE_MESH_FLAG = base.Argument(
     '--mesh',
-    hidden=True,
-    help='Enables Service Mesh configuration using the specified mesh name.',
+    help=(
+        'Enables Cloud Service Mesh using the specified mesh resource name.'
+        ' Mesh resource name must be in the format of'
+        ' projects/PROJECT/locations/global/meshes/MESH_NAME.'
+    ),
 )
 
 _VISIBILITY_MODES = {
@@ -1062,6 +1065,94 @@ def GpuFlag(hidden=True):
   )
 
 
+_SUPPORTED_LIVENESS_PROBE_KEYS = (
+    'initialDelaySeconds',
+    'timeoutSeconds',
+    'periodSeconds',
+    'failureThreshold',
+    'httpGet.port',
+    'httpGet.path',
+    'grpc.port',
+    'grpc.service',
+)
+_SUPPORTED_STARTUP_PROBE_KEYS = (
+    'initialDelaySeconds',
+    'timeoutSeconds',
+    'periodSeconds',
+    'failureThreshold',
+    'httpGet.port',
+    'httpGet.path',
+    'grpc.port',
+    'grpc.service',
+    'tcpSocket.port',
+)
+
+
+def _ProbeFlag(probe_type, supported_keys):
+  """Create a flag for the given probe type.
+
+  Args:
+    probe_type: Probe type, either 'startup' or 'liveness'
+    supported_keys: supported keys for the given probe type
+
+  Returns:
+    A flag.
+  """
+  tcp_socket_port = ''
+  if 'tcpSocket.port' in supported_keys:
+    tcp_socket_port = '+ tcpSocket.port: integer'
+
+  def _LimitKeys(key):
+    if key not in supported_keys:
+      raise serverless_exceptions.ArgumentError(
+          'Key [{}] not recognized for {} probe.'.format(key, probe_type)
+      )
+    return key
+
+  return base.Argument(
+      '--{}-probe'.format(probe_type),
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(
+          key_type=_LimitKeys,
+      ),
+      help="""\
+          Comma separated settings for {probe_type} probe in the form KEY=VALUE.
+          Each key stands for a field of the probe described in
+          https://cloud.google.com/run/docs/reference/rest/v1/Container#Probe.
+          Currently supported keys are:
+
+            + initialDelaySeconds: integer
+            + timeoutSeconds: integer
+            + periodSeconds: integer
+            + failureThreshold: integer
+            + httpGet.port: integer
+            + httpGet.path: string
+            + grpc.port: integer
+            + grpc.service: string
+            {tcp_socket_port}
+
+          For example, to set a probe with 10s timeout and HTTP probe requests
+          sent to 8080 port of the container:
+
+              $ --{probe_type}-probe=timeoutSeconds=10,httpGet.port=8080
+
+          To remove existing probe:
+
+              $ --{probe_type}-probe=""
+          """.format(probe_type=probe_type, tcp_socket_port=tcp_socket_port),
+  )
+
+
+def StartupProbeFlag():
+  """Create the --startup-probe flag."""
+  return _ProbeFlag('startup', _SUPPORTED_STARTUP_PROBE_KEYS)
+
+
+def LivenessProbeFlag():
+  """Create the --liveness-probe flag."""
+  return _ProbeFlag('liveness', _SUPPORTED_LIVENESS_PROBE_KEYS)
+
+
 def _ConcurrencyValue(value):
   """Returns True if value is an int > 0 or 'default'."""
   try:
@@ -1356,7 +1447,7 @@ def AddGeneralAnnotationFlags(parser):
   )
 
 
-class _ScaleValue(object):
+class _ScaleValue:
   """Type for min/max-instances flag values."""
 
   def __init__(self, value):
@@ -1439,7 +1530,7 @@ def AddMaxInstancesFlag(parser, resource_kind='service'):
   )
 
 
-class _MaxSurgeValue(object):
+class _MaxSurgeValue:
   """Type for max-surge flag values."""
 
   def __init__(self, value):
@@ -1471,6 +1562,45 @@ def AddMaxSurgeFlag(parser, resource_kind='service'):
       type=_MaxSurgeValue,
       help=(
           'A maximum percentage of instances that will be moved in each step of'
+          ' {split_type} split changes. Use "default" to unset the limit and'
+          ' use the platform default.'.format(split_type=split_type)
+      ),
+  )
+
+
+class _MaxUnavailableValue:
+  """Type for max-unavailable flag values."""
+
+  def __init__(self, value):
+    self.restore_default = value == 'default'
+    if not self.restore_default:
+      try:
+        self.unavailable_percent = int(value)
+      except (TypeError, ValueError):
+        raise serverless_exceptions.ArgumentError(
+            "Unavailable percent value %s is not an integer or 'default'."
+            % value
+        )
+
+      if self.unavailable_percent < 0:
+        raise serverless_exceptions.ArgumentError(
+            'Unavailable percent value %s is negative.' % value
+        )
+
+      if self.unavailable_percent > 100:
+        raise serverless_exceptions.ArgumentError(
+            'Unavailable percent value %s is greater than 100.' % value
+        )
+
+
+def AddMaxUnavailableFlag(parser, resource_kind='service'):
+  """Add max unavailable flag."""
+  split_type = 'instance' if resource_kind == 'worker' else 'traffic'
+  parser.add_argument(
+      '--max-unavailable',
+      type=_MaxUnavailableValue,
+      help=(
+          'A maximum percentage of instances that may be unavailable during'
           ' {split_type} split changes. Use "default" to unset the limit and'
           ' use the platform default.'.format(split_type=split_type)
       ),
@@ -2214,6 +2344,21 @@ def _GetServiceScalingChanges(args):
               str(max_surge_value.surge_percent),
           )
       )
+  if 'max_unavailable' in args and args.max_unavailable is not None:
+    max_unav_val = args.max_unavailable
+    if max_unav_val.restore_default or max_unav_val.unavailable_percent == 0:
+      result.append(
+          config_changes.DeleteAnnotationChange(
+              service.SERVICE_MAX_UNAVAILABLE_ANNOTATION
+          )
+      )
+    else:
+      result.append(
+          config_changes.SetAnnotationChange(
+              service.SERVICE_MAX_UNAVAILABLE_ANNOTATION,
+              str(max_unav_val.unavailable_percent),
+          )
+      )
   if 'scaling' in args and args.scaling is not None:
     result.append(
         config_changes.SetAnnotationChange(
@@ -2614,6 +2759,20 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
     changes.append(config_changes.ResourceChanges(gpu=args.gpu))
     if args.gpu == '0':
       changes.append(config_changes.GpuTypeChange(gpu_type=''))
+  if FlagIsExplicitlySet(args, 'startup_probe'):
+    if args.startup_probe:
+      changes.append(
+          config_changes.StartupProbeChanges(settings=args.startup_probe)
+      )
+    else:
+      changes.append(config_changes.StartupProbeChanges(clear=True))
+  if FlagIsExplicitlySet(args, 'liveness_probe'):
+    if args.liveness_probe:
+      changes.append(
+          config_changes.LivenessProbeChanges(settings=args.liveness_probe)
+      )
+    else:
+      changes.append(config_changes.LivenessProbeChanges(clear=True))
   if 'service_account' in args and args.service_account:
     changes.append(
         config_changes.ServiceAccountChanges(
@@ -2830,6 +2989,34 @@ def _GetContainerConfigurationChanges(container_args, container_name=None):
             memory=container_args.memory, container_name=container_name
         )
     )
+  if FlagIsExplicitlySet(container_args, 'startup_probe'):
+    if container_args.startup_probe:
+      changes.append(
+          config_changes.StartupProbeChanges(
+              settings=container_args.startup_probe,
+              container_name=container_name,
+          )
+      )
+    else:
+      changes.append(
+          config_changes.StartupProbeChanges(
+              clear=True, container_name=container_name
+          )
+      )
+  if FlagIsExplicitlySet(container_args, 'liveness_probe'):
+    if container_args.liveness_probe:
+      changes.append(
+          config_changes.LivenessProbeChanges(
+              settings=container_args.liveness_probe,
+              container_name=container_name,
+          )
+      )
+    else:
+      changes.append(
+          config_changes.LivenessProbeChanges(
+              clear=True, container_name=container_name
+          )
+      )
   # TODO(b/332909160): Change to IsKnown when gpu flags goes GA
   if container_args.IsKnownAndSpecified('gpu'):
     changes.append(

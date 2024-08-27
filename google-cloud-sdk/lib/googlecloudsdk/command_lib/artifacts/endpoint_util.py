@@ -31,6 +31,7 @@ _REROUTED_LOCATIONS = frozenset([
     "us",
     "eu",
     "asia",
+    "global"
 ])
 
 # Direct locations are regions and multi-regions that have regional endpoints.

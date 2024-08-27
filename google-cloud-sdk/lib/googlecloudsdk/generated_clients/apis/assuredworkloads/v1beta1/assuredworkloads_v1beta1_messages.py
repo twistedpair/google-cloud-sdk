@@ -798,6 +798,12 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     partner: Optional. Partner regime associated with this workload.
     partnerPermissions: Optional. Permissions granted to the AW Partner SA
       account for the customer workload
+    partnerServicesBillingAccount: Optional. Billing account necessary for
+      purchasing services from Sovereign Partners. This field is required for
+      creating SIA/PSN partner workloads. The caller should have
+      'billing.resourceAssociations.create' IAM permission on this billing-
+      account. The format of this string is billingAccounts/AAAAAA-BBBBBB-
+      CCCCCC
     provisionedResourcesParent: Input only. The parent resource for the
       resources managed by this Assured Workload. May be either empty or a
       folder resource which is a child of the Workload parent. If not
@@ -904,12 +910,18 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       SOVEREIGN_CONTROLS_BY_SIA_MINSAIT: Enum representing SIA_MINSAIT (Indra)
         partner.
       SOVEREIGN_CONTROLS_BY_PSN: Enum representing PSN (TIM) partner.
+      SOVEREIGN_CONTROLS_BY_CNTXT: Enum representing CNTXT (Kingdom of Saudi
+        Arabia) partner.
+      SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM: Enum representing CNTXT (Kingdom of
+        Saudi Arabia) partner offering without EKM.
     """
     PARTNER_UNSPECIFIED = 0
     LOCAL_CONTROLS_BY_S3NS = 1
     SOVEREIGN_CONTROLS_BY_T_SYSTEMS = 2
     SOVEREIGN_CONTROLS_BY_SIA_MINSAIT = 3
     SOVEREIGN_CONTROLS_BY_PSN = 4
+    SOVEREIGN_CONTROLS_BY_CNTXT = 5
+    SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -955,12 +967,13 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
   name = _messages.StringField(18)
   partner = _messages.EnumField('PartnerValueValuesEnum', 19)
   partnerPermissions = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadPartnerPermissions', 20)
-  provisionedResourcesParent = _messages.StringField(21)
-  resourceMonitoringEnabled = _messages.BooleanField(22)
-  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings', 23, repeated=True)
-  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo', 24, repeated=True)
-  saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadSaaEnrollmentResponse', 25)
-  violationNotificationsEnabled = _messages.BooleanField(26)
+  partnerServicesBillingAccount = _messages.StringField(21)
+  provisionedResourcesParent = _messages.StringField(22)
+  resourceMonitoringEnabled = _messages.BooleanField(23)
+  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings', 24, repeated=True)
+  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo', 25, repeated=True)
+  saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadSaaEnrollmentResponse', 26)
+  violationNotificationsEnabled = _messages.BooleanField(27)
 
 
 class GoogleCloudAssuredworkloadsV1beta1WorkloadCJISSettings(_messages.Message):

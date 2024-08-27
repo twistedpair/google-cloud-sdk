@@ -42,6 +42,13 @@ class ComputeUtil(object):
     return False
 
   @staticmethod
+  def _HasIpV4AccessConfig(network_interface: Dict[str, Any]) -> bool:
+    return (
+        "address" in network_interface
+        or "public-ptr-domain" in network_interface
+    )
+
+  @staticmethod
   def ParserNetworkInterface(
       client_messages: types.ModuleType, network_interfaces
   ):
@@ -64,12 +71,6 @@ class ComputeUtil(object):
       message = client_messages.NetworkInterface()
       access_config = client_messages.AccessConfig()
       access_config_ipv6 = client_messages.AccessConfig()
-      access_config_ipv6.type = (
-          client_messages.AccessConfig.TypeValueValuesEnum.DIRECT_IPV6
-      )
-      access_config.type = (
-          client_messages.AccessConfig.TypeValueValuesEnum.ONE_TO_ONE_NAT
-      )
       if "network" in network_interface:
         message.network = network_interface["network"]
       if "subnet" in network_interface:
@@ -151,8 +152,14 @@ class ComputeUtil(object):
         message.networkAttachment = network_interface["network-attachment"]
       # Only one of IPv4 Access config and IPv6 Access Config can exist.
       if ComputeUtil._HasIpV6AccessConfig(network_interface):
+        access_config_ipv6.type = (
+            client_messages.AccessConfig.TypeValueValuesEnum.DIRECT_IPV6
+        )
         message.ipv6AccessConfigs.extend([access_config_ipv6])
-      else:
+      elif ComputeUtil._HasIpV4AccessConfig(network_interface):
+        access_config.type = (
+            client_messages.AccessConfig.TypeValueValuesEnum.ONE_TO_ONE_NAT
+        )
         message.accessConfigs.extend([access_config])
       messages.append(message)
     return messages

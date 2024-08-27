@@ -15,16 +15,13 @@
 
 """Contains shared methods for container and volume printing."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import collections
+import json
 from typing import Mapping, Sequence
 
 from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import k8s_object
+from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.command_lib.run.printers import k8s_object_printer_util as k8s_util
 from googlecloudsdk.core.resource import custom_printer_base as cp
 
@@ -52,15 +49,18 @@ def _FormatConfigMapVolumeSource(v):
 
 
 def GetContainer(
+    container_name: str,
     container: container_resource.Container,
     gpu_type: str,
     labels: Mapping[str, str],
     dependencies: Sequence[str],
+    annotations: Mapping[str, str],
     is_primary: bool,
 ) -> cp.Table:
   limits = GetLimits(container)
   return cp.Labeled([
       ('Image', container.image),
+      ('Base Image', GetBaseImage(annotations, container_name)),
       ('Command', ' '.join(container.command)),
       ('Args', ' '.join(container.args)),
       (
@@ -99,15 +99,25 @@ def GetContainers(record: container_resource.ContainerResource) -> cp.Table:
     for name, container in k8s_util.OrderByKey(record.containers):
       key = 'Container {name}'.format(name=name)
       value = GetContainer(
+          name,
           container,
           gpu_type,
           record.labels,
           dependencies[name],
+          record.annotations,
           len(record.containers) == 1 or container.ports,
       )
       yield (key, value)
 
   return cp.Mapped(Containers())
+
+
+def GetBaseImage(annotations: Mapping[str, str], container_name: str) -> str:
+  if revision.BASE_IMAGES_ANNOTATION not in annotations:
+    return ''
+  container_name = container_name if container_name else ''
+  base_images = json.loads(annotations.get(revision.BASE_IMAGES_ANNOTATION))
+  return base_images.get(container_name, '')
 
 
 def GetLimits(record):

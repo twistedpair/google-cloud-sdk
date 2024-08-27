@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from typing import List
+from typing import List, Union
 
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.container import util as container_util
@@ -115,6 +115,7 @@ class GetCredentialsCommand(hub_base.HubCommand, base.Command):
       membership_id: str,
       arg_location: str,
       force_use_agent: bool = False,
+      arg_namespace: Union[str, None] = None,
   ):
     """RunServerSide generates credentials using server-side kubeconfig generation.
 
@@ -124,6 +125,7 @@ class GetCredentialsCommand(hub_base.HubCommand, base.Command):
       arg_location: The location of the membership to generate credentials for.
       force_use_agent: Whether to force the use of Connect Agent in generated
         credentials.
+      arg_namespace: The namespace to use in the kubeconfig context.
     """
     log.status.Print('Fetching Gateway kubeconfig...')
     container_util.CheckKubectlInstalled()
@@ -146,6 +148,7 @@ class GetCredentialsCommand(hub_base.HubCommand, base.Command):
       resp = client.GenerateCredentials(
           name=f'projects/{project_number}/locations/{arg_location}/memberships/{membership_id}',
           force_use_agent=force_use_agent,
+          kubernetes_namespace=arg_namespace,
           operating_system=operating_system,
       )
 

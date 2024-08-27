@@ -558,6 +558,7 @@ def AddNodeAffinityFileArg(parser, required=False):
       type=arg_parsers.YAMLFileContents(),
       required=required,
       help=helptext,
+      hidden=True,
   )
 
 

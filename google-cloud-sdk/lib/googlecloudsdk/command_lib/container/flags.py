@@ -1108,18 +1108,23 @@ def AddLocationFlags(parser):
       '--location',
       help=(
           'Compute zone or region (e.g. us-central1-a or us-central1) for the '
-          'cluster. Prefer using this flag over the --region or --zone flags.'
+          'cluster. Overrides the default compute/region or compute/zone value '
+          'for this command invocation. Prefer using this flag over the '
+          '--region or --zone flags.'
       ),
   )
   group.add_argument(
       '--zone',
       '-z',
-      help='Compute zone (e.g. us-central1-a) for a zonal cluster.',
+      help='Compute zone (e.g. us-central1-a) for a zonal cluster. Overrides '
+      'the default compute/zone property value for this command invocation.',
       action=actions.StoreProperty(properties.VALUES.compute.zone),
   )
   group.add_argument(
       '--region',
-      help='Compute region (e.g. us-central1) for a regional cluster.'
+      help='Compute region (e.g. us-central1) for a regional cluster. '
+      'Overrides the default compute/region property value for this command '
+      'invocation.'
   )
 
 
@@ -6391,6 +6396,45 @@ def AddEnableCiliumClusterwideNetworkPolicyFlag(parser, is_update=False):
     )
 
 
+def AddDisableL4LbFirewallReconciliationFlag(
+    parser,
+    hidden=True,
+    is_update=False
+):
+  """Adds a disable-l4-lb-firewall-reconciliation to the given cluster parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+    is_update: Whether the flag is used for an update operation.
+  """
+
+  if is_update:
+    group = parser.add_group(mutex=True, hidden=hidden)
+    group.add_argument(
+        '--disable-l4-lb-firewall-reconciliation',
+        action='store_const',
+        const=True,
+        help="""Disable L4 loadbalancer firewall reconciliation on the cluster.""",
+        hidden=hidden,
+    )
+    group.add_argument(
+        '--enable-l4-lb-firewall-reconciliation',
+        action='store_const',
+        const=True,
+        help="""Enable L4 loadbalancer firewall reconciliation on the cluster. L4 LB firewall reconciliation is enabled by default.""",
+        hidden=hidden,
+    )
+  else:
+    parser.add_argument(
+        '--disable-l4-lb-firewall-reconciliation',
+        action='store_const',
+        const=True,
+        help="""Disable L4 loadbalancer firewall reconciliation on the cluster.""",
+        hidden=hidden,
+    )
+
+
 def AddSoleTenantNodeAffinityFileFlag(parser, hidden=False):
   """Adds --sole-tenant-node-affinity-file flag to the given parser.
 
@@ -6743,7 +6787,7 @@ def AddControlPlaneKeysFlags(parser):
   )
 
 
-def AddInsecureRBACBindingFlags(parser, hidden=True):
+def AddInsecureRBACBindingFlags(parser, hidden=False):
   """Adds --enable-insecure-binding-system-authenticated and --enable-insecure-binding-system-unauthenticated flag group to the group.
 
   Args:
@@ -6752,10 +6796,11 @@ def AddInsecureRBACBindingFlags(parser, hidden=True):
   """
   group = parser.add_group(hidden=hidden, mutex=False)
   help_text = """\
-        Allow binding system:authenticated to cluster role binding and role binding
+        Allow using `system:authenticated` as a subject in ClusterRoleBindings and RoleBindings.
+        Allowing bindings that reference `system:authenticated` is a security risk and is not recommended.
 
-        To disable in an existing cluster, explicitly set flag to
-        --no-enable-insecure-binding-system-authenticated
+        To disallow binding `system:authenticated` in a cluster, explicitly set the
+        `--no-enable-insecure-binding-system-authenticated` flag instead.
     """
   group.add_argument(
       '--enable-insecure-binding-system-authenticated',
@@ -6765,10 +6810,11 @@ def AddInsecureRBACBindingFlags(parser, hidden=True):
       hidden=hidden,
   )
   help_text = """\
-        Allow binding system:unauthenticated and system:anonymous to cluster role binding and role binding
+        Allow using `system:unauthenticated` and `system:anonymous` as subjects in ClusterRoleBindings and RoleBindings.
+        Allowing bindings that reference `system:unauthenticated` and `system:anonymous` are a security risk and is not recommended.
 
-        To disable in an existing cluster, explicitly set flag to
-        --no-enable-insecure-binding-system-unauthenticated
+        To disallow binding `system:authenticated` in a cluster, explicitly set the
+        `--no-enable-insecure-binding-system-unauthenticated` flag instead.
     """
   group.add_argument(
       '--enable-insecure-binding-system-unauthenticated',

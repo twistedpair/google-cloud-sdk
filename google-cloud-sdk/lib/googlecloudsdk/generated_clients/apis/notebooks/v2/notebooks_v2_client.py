@@ -378,6 +378,33 @@ class NotebooksV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Restore(self, request, global_params=None):
+      r"""RestoreInstance restores an Instance from a BackupSource.
+
+      Args:
+        request: (NotebooksProjectsLocationsInstancesRestoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Restore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Restore.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:restore',
+        http_method='POST',
+        method_id='notebooks.projects.locations.instances.restore',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:restore',
+        request_field='restoreInstanceRequest',
+        request_type_name='NotebooksProjectsLocationsInstancesRestoreRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Rollback(self, request, global_params=None):
       r"""Rollbacks a notebook instance to the previous version.
 

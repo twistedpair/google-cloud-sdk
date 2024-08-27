@@ -87,8 +87,9 @@ class Bucket(_messages.Message):
       as its underlying objects. Only enforced when the mode is set to
       'Enabled'.
     LabelsValue: User-provided labels, in key/value pairs.
-    LifecycleValue: The bucket's lifecycle configuration. See lifecycle
-      management for more information.
+    LifecycleValue: The bucket's lifecycle configuration. See [Lifecycle
+      Management](https://cloud.google.com/storage/docs/lifecycle) for more
+      information.
     LoggingValue: The bucket's logging configuration, which defines the
       destination bucket and optional name prefix for the current bucket's
       logs.
@@ -110,7 +111,8 @@ class Bucket(_messages.Message):
     VersioningValue: The bucket's versioning configuration.
     WebsiteValue: The bucket's website configuration, controlling how the
       service behaves when accessing bucket contents as a web site. See the
-      Static Website Examples for more information.
+      [Static Website Examples](https://cloud.google.com/storage/docs/static-
+      website) for more information.
 
   Fields:
     acl: Access controls on the bucket.
@@ -136,6 +138,8 @@ class Bucket(_messages.Message):
       ACL is provided.
     encryption: Encryption configuration for a bucket.
     etag: HTTP 1.1 Entity tag for the bucket.
+    generation: The generation of this bucket.
+    hardDeleteTime: The hard delete time of the bucket in RFC 3339 format.
     hierarchicalNamespace: The bucket's hierarchical namespace configuration.
     iamConfiguration: The bucket's IAM configuration.
     id: The ID of the bucket. For buckets, the id and name properties are the
@@ -147,11 +151,14 @@ class Bucket(_messages.Message):
     kind: The kind of item this is. For buckets, this is always
       storage#bucket.
     labels: User-provided labels, in key/value pairs.
-    lifecycle: The bucket's lifecycle configuration. See lifecycle management
-      for more information.
+    lifecycle: The bucket's lifecycle configuration. See [Lifecycle
+      Management](https://cloud.google.com/storage/docs/lifecycle) for more
+      information.
     location: The location of the bucket. Object data for objects in the
       bucket resides in physical storage within this region. Defaults to US.
-      See the developer's guide for the authoritative list.
+      See the [Developer's
+      Guide](https://cloud.google.com/storage/docs/locations) for the
+      authoritative list.
     locationType: The type of the bucket location.
     logging: The bucket's logging configuration, which defines the destination
       bucket and optional name prefix for the current bucket's logs.
@@ -172,24 +179,28 @@ class Bucket(_messages.Message):
       locked retention policy will result in a PERMISSION_DENIED error.
     rpo: The Recovery Point Objective (RPO) of this bucket. Set to ASYNC_TURBO
       to turn on Turbo Replication on a bucket.
+    satisfiesPZI: Reserved for future use.
     satisfiesPZS: Reserved for future use.
     selfLink: The URI of this bucket.
     softDeletePolicy: The bucket's soft delete policy, which defines the
       period of time that soft-deleted objects will be retained, and cannot be
       permanently deleted.
+    softDeleteTime: The soft delete time of the bucket in RFC 3339 format.
     storageClass: The bucket's default storage class, used whenever no
       storageClass is specified for a newly-created object. This defines how
       objects in the bucket are stored and determines the SLA and the cost of
       storage. Values include MULTI_REGIONAL, REGIONAL, STANDARD, NEARLINE,
       COLDLINE, ARCHIVE, and DURABLE_REDUCED_AVAILABILITY. If this value is
       not specified when the bucket is created, it will default to STANDARD.
-      For more information, see storage classes.
+      For more information, see [Storage
+      Classes](https://cloud.google.com/storage/docs/storage-classes).
     timeCreated: The creation time of the bucket in RFC 3339 format.
     updated: The modification time of the bucket in RFC 3339 format.
     versioning: The bucket's versioning configuration.
     website: The bucket's website configuration, controlling how the service
-      behaves when accessing bucket contents as a web site. See the Static
-      Website Examples for more information.
+      behaves when accessing bucket contents as a web site. See the [Static
+      Website Examples](https://cloud.google.com/storage/docs/static-website)
+      for more information.
   """
 
   class AutoclassValue(_messages.Message):
@@ -411,8 +422,9 @@ class Bucket(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   class LifecycleValue(_messages.Message):
-    r"""The bucket's lifecycle configuration. See lifecycle management for
-    more information.
+    r"""The bucket's lifecycle configuration. See [Lifecycle
+    Management](https://cloud.google.com/storage/docs/lifecycle) for more
+    information.
 
     Messages:
       RuleValueListEntry: A RuleValueListEntry object.
@@ -604,8 +616,9 @@ class Bucket(_messages.Message):
 
   class WebsiteValue(_messages.Message):
     r"""The bucket's website configuration, controlling how the service
-    behaves when accessing bucket contents as a web site. See the Static
-    Website Examples for more information.
+    behaves when accessing bucket contents as a web site. See the [Static
+    Website Examples](https://cloud.google.com/storage/docs/static-website)
+    for more information.
 
     Fields:
       mainPageSuffix: If the requested object path is missing, the service
@@ -630,31 +643,35 @@ class Bucket(_messages.Message):
   defaultObjectAcl = _messages.MessageField('ObjectAccessControl', 7, repeated=True)
   encryption = _messages.MessageField('EncryptionValue', 8)
   etag = _messages.StringField(9)
-  hierarchicalNamespace = _messages.MessageField('HierarchicalNamespaceValue', 10)
-  iamConfiguration = _messages.MessageField('IamConfigurationValue', 11)
-  id = _messages.StringField(12)
-  ipFilter = _messages.MessageField('IpFilterValue', 13)
-  kind = _messages.StringField(14, default='storage#bucket')
-  labels = _messages.MessageField('LabelsValue', 15)
-  lifecycle = _messages.MessageField('LifecycleValue', 16)
-  location = _messages.StringField(17)
-  locationType = _messages.StringField(18)
-  logging = _messages.MessageField('LoggingValue', 19)
-  metageneration = _messages.IntegerField(20)
-  name = _messages.StringField(21)
-  objectRetention = _messages.MessageField('ObjectRetentionValue', 22)
-  owner = _messages.MessageField('OwnerValue', 23)
-  projectNumber = _messages.IntegerField(24, variant=_messages.Variant.UINT64)
-  retentionPolicy = _messages.MessageField('RetentionPolicyValue', 25)
-  rpo = _messages.StringField(26)
-  satisfiesPZS = _messages.BooleanField(27)
-  selfLink = _messages.StringField(28)
-  softDeletePolicy = _messages.MessageField('SoftDeletePolicyValue', 29)
-  storageClass = _messages.StringField(30)
-  timeCreated = _message_types.DateTimeField(31)
-  updated = _message_types.DateTimeField(32)
-  versioning = _messages.MessageField('VersioningValue', 33)
-  website = _messages.MessageField('WebsiteValue', 34)
+  generation = _messages.IntegerField(10)
+  hardDeleteTime = _message_types.DateTimeField(11)
+  hierarchicalNamespace = _messages.MessageField('HierarchicalNamespaceValue', 12)
+  iamConfiguration = _messages.MessageField('IamConfigurationValue', 13)
+  id = _messages.StringField(14)
+  ipFilter = _messages.MessageField('IpFilterValue', 15)
+  kind = _messages.StringField(16, default='storage#bucket')
+  labels = _messages.MessageField('LabelsValue', 17)
+  lifecycle = _messages.MessageField('LifecycleValue', 18)
+  location = _messages.StringField(19)
+  locationType = _messages.StringField(20)
+  logging = _messages.MessageField('LoggingValue', 21)
+  metageneration = _messages.IntegerField(22)
+  name = _messages.StringField(23)
+  objectRetention = _messages.MessageField('ObjectRetentionValue', 24)
+  owner = _messages.MessageField('OwnerValue', 25)
+  projectNumber = _messages.IntegerField(26, variant=_messages.Variant.UINT64)
+  retentionPolicy = _messages.MessageField('RetentionPolicyValue', 27)
+  rpo = _messages.StringField(28)
+  satisfiesPZI = _messages.BooleanField(29)
+  satisfiesPZS = _messages.BooleanField(30)
+  selfLink = _messages.StringField(31)
+  softDeletePolicy = _messages.MessageField('SoftDeletePolicyValue', 32)
+  softDeleteTime = _message_types.DateTimeField(33)
+  storageClass = _messages.StringField(34)
+  timeCreated = _message_types.DateTimeField(35)
+  updated = _message_types.DateTimeField(36)
+  versioning = _messages.MessageField('VersioningValue', 37)
+  website = _messages.MessageField('WebsiteValue', 38)
 
 
 class BucketAccessControl(_messages.Message):
@@ -1406,7 +1423,8 @@ class Object(_messages.Message):
       without a Content-Type, it is served as application/octet-stream.
     crc32c: CRC32c checksum, as described in RFC 4960, Appendix B; encoded
       using base64 in big-endian byte order. For more information about using
-      the CRC32c checksum, see Hashes and ETags: Best Practices.
+      the CRC32c checksum, see [Data Validation and Change
+      Detection](https://cloud.google.com/storage/docs/data-validation).
     customTime: A timestamp in RFC 3339 format specified by the user for an
       object.
     customerEncryption: Metadata of customer-supplied encryption key, if the
@@ -1436,7 +1454,8 @@ class Object(_messages.Message):
     kmsKeyName: Not currently supported. Specifying the parameter causes the
       request to fail with status code 400 - Bad Request.
     md5Hash: MD5 hash of the data; encoded using base64. For more information
-      about using the MD5 hash, see Hashes and ETags: Best Practices.
+      about using the MD5 hash, see [Data Validation and Change
+      Detection](https://cloud.google.com/storage/docs/data-validation).
     mediaLink: Media download link.
     metadata: User-provided metadata, in key/value pairs.
     metageneration: The version of the metadata for this object at this
@@ -2053,12 +2072,17 @@ class StorageBucketsGetRequest(_messages.Message):
 
   Fields:
     bucket: Name of a bucket.
+    generation: If present, specifies the generation of the bucket. This is
+      required if softDeleted is true.
     ifMetagenerationMatch: Makes the return of the bucket metadata conditional
       on whether the bucket's current metageneration matches the given value.
     ifMetagenerationNotMatch: Makes the return of the bucket metadata
       conditional on whether the bucket's current metageneration does not
       match the given value.
     projection: Set of properties to return. Defaults to noAcl.
+    softDeleted: If true, return the soft-deleted version of this bucket. The
+      default is false. For more information, see [Soft
+      Delete](https://cloud.google.com/storage/docs/soft-delete).
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
   """
@@ -2074,10 +2098,12 @@ class StorageBucketsGetRequest(_messages.Message):
     noAcl = 1
 
   bucket = _messages.StringField(1, required=True)
-  ifMetagenerationMatch = _messages.IntegerField(2)
-  ifMetagenerationNotMatch = _messages.IntegerField(3)
-  projection = _messages.EnumField('ProjectionValueValuesEnum', 4)
-  userProject = _messages.StringField(5)
+  generation = _messages.IntegerField(2)
+  ifMetagenerationMatch = _messages.IntegerField(3)
+  ifMetagenerationNotMatch = _messages.IntegerField(4)
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 5)
+  softDeleted = _messages.BooleanField(6)
+  userProject = _messages.StringField(7)
 
 
 class StorageBucketsGetStorageLayoutRequest(_messages.Message):
@@ -2199,6 +2225,9 @@ class StorageBucketsListRequest(_messages.Message):
     prefix: Filter results to buckets whose names begin with this prefix.
     project: A valid API project identifier.
     projection: Set of properties to return. Defaults to noAcl.
+    softDeleted: If true, only soft-deleted bucket versions will be returned.
+      The default is false. For more information, see [Soft
+      Delete](https://cloud.google.com/storage/docs/soft-delete).
     userProject: The project to be billed for this request.
   """
 
@@ -2217,7 +2246,8 @@ class StorageBucketsListRequest(_messages.Message):
   prefix = _messages.StringField(3)
   project = _messages.StringField(4, required=True)
   projection = _messages.EnumField('ProjectionValueValuesEnum', 5)
-  userProject = _messages.StringField(6)
+  softDeleted = _messages.BooleanField(6)
+  userProject = _messages.StringField(7)
 
 
 class StorageBucketsLockRetentionPolicyRequest(_messages.Message):
@@ -2373,6 +2403,25 @@ class StorageBucketsPatchRequest(_messages.Message):
   predefinedDefaultObjectAcl = _messages.EnumField('PredefinedDefaultObjectAclValueValuesEnum', 6)
   projection = _messages.EnumField('ProjectionValueValuesEnum', 7)
   userProject = _messages.StringField(8)
+
+
+class StorageBucketsRestoreRequest(_messages.Message):
+  r"""A StorageBucketsRestoreRequest object.
+
+  Fields:
+    bucket: Name of a bucket.
+    generation: Generation of a bucket.
+    userProject: The project to be billed for this request. Required for
+      Requester Pays buckets.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  generation = _messages.IntegerField(2, required=True)
+  userProject = _messages.StringField(3)
+
+
+class StorageBucketsRestoreResponse(_messages.Message):
+  r"""An empty StorageBucketsRestore response."""
 
 
 class StorageBucketsSetIamPolicyRequest(_messages.Message):
@@ -3336,7 +3385,8 @@ class StorageObjectsGetRequest(_messages.Message):
       endpoints#encoding).
     projection: Set of properties to return. Defaults to noAcl.
     softDeleted: If true, only soft-deleted object versions will be listed.
-      The default is false. For more information, see Soft Delete.
+      The default is false. For more information, see [Soft
+      Delete](https://cloud.google.com/storage/docs/soft-delete).
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
   """
@@ -3491,7 +3541,8 @@ class StorageObjectsListRequest(_messages.Message):
     prefix: Filter results to objects whose names begin with this prefix.
     projection: Set of properties to return. Defaults to noAcl.
     softDeleted: If true, only soft-deleted object versions will be listed.
-      The default is false. For more information, see Soft Delete.
+      The default is false. For more information, see [Soft
+      Delete](https://cloud.google.com/storage/docs/soft-delete).
     startOffset: Filter results to objects whose names are lexicographically
       equal to or after startOffset. If endOffset is also set, the objects
       listed will have names between startOffset (inclusive) and endOffset
@@ -3499,7 +3550,8 @@ class StorageObjectsListRequest(_messages.Message):
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
     versions: If true, lists all versions of an object as distinct results.
-      The default is false. For more information, see Object Versioning.
+      The default is false. For more information, see [Object
+      Versioning](https://cloud.google.com/storage/docs/object-versioning).
   """
 
   class ProjectionValueValuesEnum(_messages.Enum):
@@ -3635,7 +3687,9 @@ class StorageObjectsRestoreRequest(_messages.Message):
     ifMetagenerationNotMatch: Makes the operation conditional on whether none
       of the object's live metagenerations match the given value.
     object: Name of the object. For information about how to URL encode object
-      names to be path safe, see Encoding URI Path Parts.
+      names to be path safe, see [Encoding URI Path
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
     projection: Set of properties to return. Defaults to full.
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
@@ -3957,7 +4011,8 @@ class StorageObjectsWatchAllRequest(_messages.Message):
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
     versions: If true, lists all versions of an object as distinct results.
-      The default is false. For more information, see Object Versioning.
+      The default is false. For more information, see [Object
+      Versioning](https://cloud.google.com/storage/docs/object-versioning).
   """
 
   class ProjectionValueValuesEnum(_messages.Enum):

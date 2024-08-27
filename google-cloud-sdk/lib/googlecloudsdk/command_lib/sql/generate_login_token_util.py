@@ -45,6 +45,16 @@ def generate_login_token_from_gcloud_auth(scopes):
       use_google_auth=True,
       with_access_token_cache=False)
 
+  cred_type = c_creds.CredentialTypeGoogleAuth.FromCredentials(cred)
+  if cred_type == c_creds.CredentialTypeGoogleAuth.USER_ACCOUNT:
+    # Make sure the credential has the required scopes before we downscope it.
+    missing_scope = frozenset(scopes) - frozenset(cred.scopes)
+    if missing_scope:
+      raise auth_exceptions.InvalidCredentialsError(
+          f'Missed the following scopes: {list(missing_scope)}. Please run'
+          ' "gcloud auth login", consent the missing scopes and try again.'
+      )
+
   cred = _downscope_credential(cred, scopes)
 
   c_store.Refresh(cred)

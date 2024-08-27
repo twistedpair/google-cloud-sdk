@@ -1568,6 +1568,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'dataprocgdc': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.dataprocgdc.v1',
+                    client_classpath='dataprocgdc_v1_client.DataprocgdcV1',
+                    base_url='https://dataprocgdc.googleapis.com/',
+                    messages_modulepath='dataprocgdc_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1575,7 +1585,7 @@ MAP = {
                     client_classpath='dataprocgdc_v1alpha1_client.DataprocgdcV1alpha1',
                     base_url='https://dataprocgdc.googleapis.com/',
                     messages_modulepath='dataprocgdc_v1alpha1_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
@@ -2114,6 +2124,16 @@ MAP = {
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
+        'v2':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.gkehub.v2',
+                    client_classpath='gkehub_v2_client.GkehubV2',
+                    base_url='https://gkehub.googleapis.com/',
+                    messages_modulepath='gkehub_v2_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v2alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2121,6 +2141,16 @@ MAP = {
                     client_classpath='gkehub_v2alpha_client.GkehubV2alpha',
                     base_url='https://gkehub.googleapis.com/',
                     messages_modulepath='gkehub_v2alpha_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v2beta':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.gkehub.v2beta',
+                    client_classpath='gkehub_v2beta_client.GkehubV2beta',
+                    base_url='https://gkehub.googleapis.com/',
+                    messages_modulepath='gkehub_v2beta_messages'),
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
@@ -2414,13 +2444,13 @@ MAP = {
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
-        'v1alpha1':
+        'v1alpha2':
             APIDef(
                 apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.looker.v1alpha1',
-                    client_classpath='looker_v1alpha1_client.LookerV1alpha1',
+                    class_path='googlecloudsdk.generated_clients.apis.looker.v1alpha2',
+                    client_classpath='looker_v1alpha2_client.LookerV1alpha2',
                     base_url='https://looker.googleapis.com/',
-                    messages_modulepath='looker_v1alpha1_messages'),
+                    messages_modulepath='looker_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

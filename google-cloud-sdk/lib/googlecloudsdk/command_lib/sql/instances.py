@@ -214,8 +214,10 @@ def _ParseSslMode(sql_messages, ssl_mode):
 
 
 def _ParseServerCaMode(sql_messages, server_ca_mode):
-  return sql_messages.IpConfiguration.ServerCaModeValueValuesEnum.lookup_by_name(
-      server_ca_mode.upper()
+  return (
+      sql_messages.IpConfiguration.ServerCaModeValueValuesEnum.lookup_by_name(
+          server_ca_mode.upper()
+      )
   )
 
 
@@ -591,6 +593,11 @@ class _BaseInstances(object):
           settings.ipConfiguration = sql_messages.IpConfiguration()
         settings.ipConfiguration.allocatedIpRange = args.allocated_ip_range_name
 
+      if args.IsSpecified('psc_auto_connections'):
+        settings.ipConfiguration.pscConfig.pscAutoConnections = (
+            reducers.PscAutoConnections(sql_messages, args.psc_auto_connections)
+        )
+
     # ALPHA args.
     if _IsAlpha(release_track):
       pass
@@ -725,6 +732,23 @@ class _BaseInstances(object):
         if not settings.ipConfiguration:
           settings.ipConfiguration = sql_messages.IpConfiguration()
         settings.ipConfiguration.allocatedIpRange = args.allocated_ip_range_name
+
+      if args.IsKnownAndSpecified('psc_auto_connections'):
+        if not settings.ipConfiguration:
+          settings.ipConfiguration = sql_messages.IpConfiguration()
+        if not settings.ipConfiguration.pscConfig:
+          settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
+          settings.ipConfiguration.pscConfig.pscAutoConnections = (
+              reducers.PscAutoConnections(
+                  sql_messages, args.psc_auto_connections
+              )
+          )
+      if args.IsKnownAndSpecified('clear_psc_auto_connections'):
+        if not settings.ipConfiguration:
+          settings.ipConfiguration = sql_messages.IpConfiguration()
+        if not settings.ipConfiguration.pscConfig:
+          settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
+        settings.ipConfiguration.pscConfig.pscAutoConnections = []
 
     # ALPHA args.
     if _IsAlpha(release_track):

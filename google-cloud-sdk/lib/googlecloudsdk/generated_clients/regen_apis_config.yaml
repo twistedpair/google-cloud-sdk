@@ -629,6 +629,11 @@ apis:
   dataprocgdc:
     v1alpha1:
       discovery_doc: dataprocgdc_v1alpha1.json
+      resources:
+        projects.locations.clusters:
+          path: projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}
+    v1:
+      discovery_doc: dataprocgdc_v1.json
       default: true
       resources:
         projects.locations.clusters:
@@ -822,6 +827,10 @@ apis:
           path: projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}
     v2alpha:
       discovery_doc: gkehub_v2alpha.json
+    v2beta:
+      discovery_doc: gkehub_v2beta.json
+    v2:
+      discovery_doc: gkehub_v2.json
   gkemulticloud:
     v1:
       discovery_doc: gkemulticloud_v1.json
@@ -1008,8 +1017,8 @@ apis:
       gcloud_gapic_library: google/logging/v2:logging_v2_py
       default: true
   looker:
-    v1alpha1:
-      discovery_doc: looker_v1alpha1.json
+    v1alpha2:
+      discovery_doc: looker_v1alpha2.json
     v1:
       discovery_doc: looker_v1.json
       default: true

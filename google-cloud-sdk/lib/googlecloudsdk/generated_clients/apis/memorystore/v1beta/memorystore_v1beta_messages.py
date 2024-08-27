@@ -32,8 +32,8 @@ class AOFConfig(_messages.Message):
         this configuration, but it's up to the kernel's exact tuning.
       EVERY_SEC: Fsync every second. You may lose 1 second of data if there is
         a disaster.
-      ALWAYS: Fsync every time new commands are appended to the AOF. The best
-        data loss protection at the cost of performance.
+      ALWAYS: Fsync every time new write commands are appended to the AOF. The
+        best data loss protection at the cost of performance.
     """
     APPEND_FSYNC_UNSPECIFIED = 0
     NEVER = 1
@@ -1233,7 +1233,8 @@ class Instance(_messages.Message):
 
 
 class ListInstancesResponse(_messages.Message):
-  r"""Response message for ListInstances.
+  r"""Response message for ListInstances. The list of instances in the
+  specified location.
 
   Fields:
     instances: If the {location} requested was "-" the response contains a

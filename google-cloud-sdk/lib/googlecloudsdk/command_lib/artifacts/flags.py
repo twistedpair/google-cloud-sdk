@@ -225,6 +225,16 @@ def GetOptionalLocationFlag():
       required=False)
 
 
+def GetOptionalAALocationFlag():
+  return base.Argument(
+      '--location',
+      hidden=True,
+      help=('If specified, all requests to artifact analysis for occurrences'
+            ' will go to location specified'),
+      required=False,
+  )
+
+
 def GetIncludeTagsFlag():
   return base.Argument(
       '--include-tags',

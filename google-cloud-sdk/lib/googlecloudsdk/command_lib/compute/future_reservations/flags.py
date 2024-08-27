@@ -237,6 +237,105 @@ def GetRequireSpecificReservationFlag():
   )
 
 
+def GetReservationNameFlag():
+  """--reservation-name flag."""
+  help_text = """\
+  Name of reservations where the capacity is provisioned at the time of
+  delivery of  future reservations. If the reservation with the given name
+  does not exist already, it is created automatically at the time of Approval
+  with INACTIVE state till specified start-time. Either provide the
+  reservation_name or a name_prefix.
+  """
+  return base.Argument(
+      '--reservation-name',
+      type=str,
+      help=help_text,
+  )
+
+
+def GetDeploymentTypeFlag():
+  """--deployment-type flag."""
+  help_text = """\
+  Indicates if the reservation allocation strategy is static or dynamic. DENSE
+  refers to a fixed size and topology, with deployment expressed in terms of
+  blocks. FLEXIBLE indicates a non-static distribution of capacity that can
+  change over time. Deployment is not expressed in blocks.
+  """
+  return base.Argument(
+      '--deployment-type',
+      choices=['DENSE', 'FLEXIBLE'],
+      help=help_text,
+  )
+
+
+def GetCommitmentNameHelpText():
+  help_text = """\
+  Name of commitment covering the delivered reservation at the time of delivery
+  of future reservations. If not specified, it takes the name of the future
+  reservation.
+  """
+  return help_text
+
+
+def GetCommitmentPlanHelpText():
+  help_text = """\
+  The plan for this commitment to be created, which determines duration and
+  discount rate. The currently supported plans are TWELVE_MONTH (1 year), and
+  THIRTY_SIX_MONTH (3 years).
+  """
+  return help_text
+
+
+def GetPreviousCommitmentTermsHelpText():
+  help_text = """\
+  Applicable only if future reservation will deliver to an existing reservation
+  with a ramp plan. When set to EXTEND, all associated parent Committed Used
+  Discount's end-date/term will be extended to the end-time of this future
+  reservation. Default is to extend previous commitment's time to the end_time
+  of the reservation.
+  """
+  return help_text
+
+
+def GetInstanceTerminationActionFlag():
+  """--instance-termination-action flag."""
+  help_text = """\
+  Specific termination action for running instances at the end of reservation
+  duration, it can be DELETE or STOP.
+  """
+  return base.Argument(
+      '--instance-termination-action',
+      choices=['DELETE', 'STOP'],
+      help=help_text,
+  )
+
+
+def GetSchedulingTypeFlag():
+  """--scheduling-type flag."""
+  help_text = """\
+  Indicates the maintenance type for this group of VMs. This will be set on the
+  reservation via FR, and will be inherited for reservation blocks.
+  """
+  return base.Argument(
+      '--scheduling-type',
+      choices=['GROUPED', 'INDEPENDENT'],
+      help=help_text,
+  )
+
+
+def GetEnableOpportunisticMaintenanceFlag():
+  """--enable-opportunistic-maintenance flag."""
+  help_text = """\
+  Indicates if this group of VMs have opportunistic maintenance enabled.
+  Applicable only to dense coordinated maintenance.
+  """
+  return base.Argument(
+      '--enable-opportunistic-maintenance',
+      type=bool,
+      help=help_text,
+  )
+
+
 def AddCreateFlags(
     parser,
     support_location_hint=False,
@@ -247,6 +346,7 @@ def AddCreateFlags(
     support_local_ssd_count=False,
     support_auto_delete=False,
     support_require_specific_reservation=False,
+    support_gsc=False,
 ):
   """Adds all flags needed for the create command."""
   GetNamePrefixFlag().AddToParser(parser)
@@ -308,6 +408,14 @@ def AddCreateFlags(
   if support_auto_delete:
     AddAutoDeleteFlags(parser)
 
+  if support_gsc:
+    GetReservationNameFlag().AddToParser(parser)
+    GetDeploymentTypeFlag().AddToParser(parser)
+    AddCommitmentInfoFlags(parser)
+    GetInstanceTerminationActionFlag().AddToParser(parser)
+    GetSchedulingTypeFlag().AddToParser(parser)
+    GetEnableOpportunisticMaintenanceFlag().AddToParser(parser)
+
 
 def AddUpdateFlags(
     parser,
@@ -318,6 +426,7 @@ def AddUpdateFlags(
     support_share_setting=False,
     support_auto_delete=False,
     support_require_specific_reservation=False,
+    support_gsc=False,
 ):
   """Adds all flags needed for the update command."""
 
@@ -392,6 +501,14 @@ def AddUpdateFlags(
   if support_require_specific_reservation:
     GetRequireSpecificReservationFlag().AddToParser(parser)
 
+  if support_gsc:
+    GetReservationNameFlag().AddToParser(parser)
+    GetDeploymentTypeFlag().AddToParser(parser)
+    AddCommitmentInfoFlags(parser)
+    GetInstanceTerminationActionFlag().AddToParser(parser)
+    GetSchedulingTypeFlag().AddToParser(parser)
+    GetEnableOpportunisticMaintenanceFlag().AddToParser(parser)
+
 
 def AddAutoDeleteFlags(parser, is_update=False):
   """Adds all flags needed for the modifying the auto-delete properties."""
@@ -433,3 +550,21 @@ def AddTimeWindowFlags(parser, time_window_requird=False):
   end_time_window_group.add_argument(
       '--duration', type=int, help=GetDurationHelpText()
   )
+
+
+def AddCommitmentInfoFlags(parser):
+  """Adds all flags needed for the modifying the commitment info properties."""
+
+  commitment_info_group = parser.add_group(
+      help='Manage the commitment info properties',
+      required=False,
+  )
+  commitment_info_group.add_argument('--commitment-name',
+                                     type=str, help=GetCommitmentNameHelpText())
+  commitment_info_group.add_argument('--commitment-plan',
+                                     choices=['TWELVE_MONTH',
+                                              'THIRTY_SIX_MONTH'],
+                                     help=GetCommitmentPlanHelpText())
+  commitment_info_group.add_argument('--previous-commitment-terms',
+                                     choices=['EXTEND'],
+                                     help=GetPreviousCommitmentTermsHelpText())

@@ -48,6 +48,7 @@ class GatewayClient:
       name: str,
       force_use_agent: bool = False,
       version: Union[str, None] = None,
+      kubernetes_namespace: Union[str, None] = None,
       operating_system: util.TYPES.OperatingSystem = None,
   ) -> util.TYPES.GenerateCredentialsResponse:
     """Retrieve connection information for accessing a membership through Connect Gateway.
@@ -59,6 +60,7 @@ class GatewayClient:
         transport.
       version: The Connect Gateway version to be used in the resulting
         configuration.
+      kubernetes_namespace: The namespace to use in the kubeconfig context.
       operating_system: The operating system for which the kubeconfig should be
         generated. The default value of `None` works for supported operating
         systems other than Windows.
@@ -70,6 +72,7 @@ class GatewayClient:
         name=name,
         forceUseAgent=force_use_agent,
         version=version,
+        kubernetesNamespace=kubernetes_namespace,
         operatingSystem=operating_system,
     )
     return self.client.projects_locations_memberships.GenerateCredentials(req)

@@ -21,13 +21,14 @@ from __future__ import unicode_literals
 
 import abc
 import contextlib
+import os
 import select
 import socket
 import sys
 import webbrowser
 import wsgiref
-from google_auth_oauthlib import flow as google_auth_flow
 
+from google_auth_oauthlib import flow as google_auth_flow
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as c_exceptions
 from googlecloudsdk.core import log
@@ -35,9 +36,7 @@ from googlecloudsdk.core import requests
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import pkg_resources
-
 from oauthlib.oauth2.rfc6749 import errors as rfc6749_errors
-
 from requests import exceptions as requests_exceptions
 import six
 from six.moves import input  # pylint: disable=redefined-builtin
@@ -335,6 +334,8 @@ class FullWebFlow(InstalledAppFlow):
     Raises:
       LocalServerTimeoutError: If the local server handling redirection timeout
         before receiving the request.
+      AuthRequestFailedError: If the user did not consent to the required
+        cloud-platform scope.
     """
     auth_url, _ = self.authorization_url(**kwargs)
 
@@ -355,12 +356,41 @@ class FullWebFlow(InstalledAppFlow):
         'http:', 'https:')
 
     # TODO(b/204953716): Remove verify=None
+    os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
     self.fetch_token(
         authorization_response=authorization_response,
         include_client_id=self.include_client_id,
         verify=None,
     )
+    del os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE']
+    self._CheckScopes()
     return self.credentials
+
+  def _CheckScopes(self):
+    """Checks requested scopes and granted scopes."""
+    orig_scope = list(self.oauth2session.scope)
+    granted_scope = self.oauth2session.token.scope.split(' ')
+    missing_scope = frozenset(orig_scope) - frozenset(granted_scope)
+
+    if 'https://www.googleapis.com/auth/cloud-platform' in missing_scope:
+      raise AuthRequestFailedError(
+          'https://www.googleapis.com/auth/cloud-platform scope is required but'
+          ' not consented. Please run the login command again and consent in'
+          ' the login page.'
+      )
+
+    if missing_scope:
+      log.status.write(
+          'You have consented to only few of the requested scopes, so'
+          ' some features may not work as expected. If you would like to give'
+          ' consent to all scopes, you can run the login command again.'
+          f' Requested scopes: {orig_scope}.\nScopes you consented for:'
+          f' {granted_scope}.\nMissing scopes: {list(missing_scope)}.'
+      )
+      # self.credentials' scope comes from self.oauth2session.scope, so here we
+      # update the oauth2session scope to the granted scope, so self.credentials
+      # will have the correct scope.
+      self.oauth2session.scope = granted_scope
 
 
 # TODO(b/206804357): Remove OOB flow from gcloud.

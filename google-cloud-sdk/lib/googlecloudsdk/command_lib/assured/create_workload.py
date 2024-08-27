@@ -25,10 +25,8 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 
 _DETAILED_HELP = {
-    'DESCRIPTION':
-        'Create a new Assured Workloads environment',
-    'EXAMPLES':
-        """ \
+    'DESCRIPTION': 'Create a new Assured Workloads environment',
+    'EXAMPLES': """ \
     The following example command creates a new Assured Workloads environment with these properties:
 
     * belonging to an organization with ID 123
@@ -42,9 +40,29 @@ _DETAILED_HELP = {
     * with the label: key = 'LabelKey2', value = 'LabelValue2'
     * provisioned resources parent 'folders/789'
     * with custom project id 'my-custom-id' for consumer project
+    * with external identifier for the workload of 'external-id'
 
-      $ {command} --organization=123 --location=us-central1 --display-name=Test-Workload --compliance-regime=FEDRAMP_MODERATE --billing-account=billingAccounts/456 --next-rotation-time=2020-12-30T10:15:00.00Z --rotation-period=172800s --labels=LabelKey1=LabelValue1,LabelKey2=LabelValue2 --provisioned-resources-parent=folders/789 --resource-settings=consumer-project-id=my-custom-id
+      $ {command} --organization=123 --location=us-central1 --display-name=Test-Workload --compliance-regime=FEDRAMP_MODERATE --billing-account=billingAccounts/456 --next-rotation-time=2020-12-30T10:15:00.00Z --rotation-period=172800s --labels=LabelKey1=LabelValue1,LabelKey2=LabelValue2 --provisioned-resources-parent=folders/789 --resource-settings=consumer-project-id=my-custom-id --external-identifier=external-id
 
+
+    The following example command creates a new Partner Assured Workloads, with the following properties:
+
+    * belonging to an organization with ID 123
+    * located in the `me-central2` region
+    * display name `Test-Workload`
+    * partner `CNTXT`
+    * partner services billing account `billingAccounts/789`
+    * billing account `billingAccounts/456`
+    * data logs viewer partner permission enabled
+    * first key rotation set for 10:15am on the December 30, 2020
+    * key rotation interval set for every 48 hours
+    * with the label: key = 'LabelKey1', value = 'LabelValue1'
+    * with the label: key = 'LabelKey2', value = 'LabelValue2'
+    * provisioned resources parent 'folders/789'
+    * with custom project id 'my-custom-id' for consumer project
+    * with external identifier for the workload of 'external-id'
+
+      $ {command} --organization=123 --location=me-central2 --display-name=Test-Workload --compliance-regime=ASSURED_WORKLOADS_FOR_PARTNERS --partner=SOVEREIGN_CONTROLS_BY_CNTXT --partner-services-billing-account=billingAccounts/01BF3F-2C6DE5-30C607 --partner-permissions=data-logs-viewer=true --billing-account=billingAccounts/456 --next-rotation-time=2020-12-30T10:15:00.00Z --rotation-period=172800s --labels=LabelKey1=LabelValue1,LabelKey2=LabelValue2 --provisioned-resources-parent=folders/789 --resource-settings=consumer-project-id=my-custom-id  --external-identifier=external-id
     """,
 }
 
@@ -64,6 +82,7 @@ class CreateWorkload(base.CreateCommand):
           display_name=args.display_name,
           compliance_regime=args.compliance_regime,
           partner=args.partner,
+          partner_services_billing_account=args.partner_services_billing_account,
           partner_permissions=args.partner_permissions,
           billing_account=args.billing_account,
           next_rotation_time=args.next_rotation_time,
@@ -72,7 +91,8 @@ class CreateWorkload(base.CreateCommand):
           provisioned_resources_parent=args.provisioned_resources_parent,
           resource_settings=args.resource_settings,
           enable_sovereign_controls=args.enable_sovereign_controls,
-          release_track=self.ReleaseTrack())
+          release_track=self.ReleaseTrack(),
+      )
       client = apis.WorkloadsClient(release_track=self.ReleaseTrack())
       self.created_resource = client.Create(
           external_id=args.external_identifier,

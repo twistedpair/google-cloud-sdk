@@ -34,10 +34,13 @@ from googlecloudsdk.core import resources
 
 
 DATAPROCGDC_API_NAME = 'dataprocgdc'
-DATAPROCGDC_API_VERSION = 'v1alpha1'
+VERSION_MAP = {
+    base.ReleaseTrack.ALPHA: 'v1alpha1',
+    base.ReleaseTrack.GA: 'v1',
+}
 
 
-@base.ReleaseTracks(base.ReleaseTrack.ALPHA)
+@base.ReleaseTracks(base.ReleaseTrack.ALPHA, base.ReleaseTrack.GA)
 @base.DefaultUniverseOnly
 class BaseGDCSparkApplicationCommand(base.CreateCommand):
   """Create a Dataproc GDC spark application.
@@ -123,7 +126,7 @@ class BaseGDCSparkApplicationCommand(base.CreateCommand):
     create_req.sparkApplicationId = application_id
 
     dataprocgdc_client = apis.GetClientInstance(
-        DATAPROCGDC_API_NAME, DATAPROCGDC_API_VERSION
+        DATAPROCGDC_API_NAME, VERSION_MAP.get(self.ReleaseTrack())
     )
 
     create_op = dataprocgdc_client.projects_locations_serviceInstances_sparkApplications.Create(

@@ -328,12 +328,36 @@ class ArtifactregistryProjectsLocationsRepositoriesFilesListRequest(_messages.Me
   Fields:
     filter: An expression for filtering the results of the request. Filter
       rules are case insensitive. The fields eligible for filtering are: *
-      `name` * `owner` An example of using a filter: *
-      `name="projects/p1/locations/us-
-      central1/repositories/repo1/files/a/b/*"` --> Files with an ID starting
-      with "a/b/". * `owner="projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/versions/1.0"` --> Files owned
-      by the version `1.0` in package `pkg1`.
+      `name` * `owner` * `annotations` Examples of using a filter: To filter
+      the results of your request to files with the name "my_file.txt" in
+      project my-project in the us-central region, in repository my-repo,
+      append the following filter expression to your request: *
+      `name="projects/my-project/locations/us-central1/repositories/my-
+      repo/files/my-file.txt"` You can also use wildcards to match any number
+      of characters before or after the value: * `name="projects/my-
+      project/locations/us-central1/repositories/my-repo/files/my-*"` *
+      `name="projects/my-project/locations/us-central1/repositories/my-
+      repo/files/*file.txt"` * `name="projects/my-project/locations/us-
+      central1/repositories/my-repo/files/*file*"` To filter the results of
+      your request to files owned by the version `1.0` in package `pkg1`,
+      append the following filter expression to your request: *
+      `owner="projects/my-project/locations/us-central1/repositories/my-
+      repo/packages/my-package/versions/1.0"` To filter the results of your
+      request to files with the annotation key-value pair
+      [`external_link`:`external_link_value`], append the following filter
+      expression to your request: *
+      "annotations.external_link:external_link_value" To filter just for a
+      specific annotation key `external_link`, append the following filter
+      expression to your request: * "annotations.external_link" If the
+      annotation key or value contains special characters, you can escape them
+      by surrounding the value with backticks. For example, to filter the
+      results of your request to files with the annotation key-value pair
+      [`external.link`:`https://example.com/my-file`], append the following
+      filter expression to your request: *
+      "annotations.`external.link`:`https://example.com/my-file`" You can also
+      filter with annotations with a wildcard to match any number of
+      characters before or after the value: *
+      "annotations.*_link:`*example.com*`"
     orderBy: The field to order the results by.
     pageSize: The maximum number of files to return. Maximum page size is
       1,000.
@@ -504,7 +528,17 @@ class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message
   r"""A ArtifactregistryProjectsLocationsRepositoriesListRequest object.
 
   Fields:
-    filter: Optional. The filter to apply to the list of repositories.
+    filter: Optional. An expression for filtering the results of the request.
+      Filter rules are case insensitive. The fields eligible for filtering
+      are: * `name` Examples of using a filter: To filter the results of your
+      request to repositories with the name "my-repo" in project my-project in
+      the us-central region, append the following filter expression to your
+      request: * `name="projects/my-project/locations/us-
+      central1/repositories/my-repo` You can also use wildcards to match any
+      number of characters before or after the value: * `name="projects/my-
+      project/locations/us-central1/repositories/my-*"` * `name="projects/my-
+      project/locations/us-central1/repositories/*repo"` * `name="projects/my-
+      project/locations/us-central1/repositories/*repo*"`
     orderBy: Optional. The field to order the results by.
     pageSize: The maximum number of repositories to return. Maximum page size
       is 1,000.
@@ -608,14 +642,32 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest(_messages
   Fields:
     filter: Optional. An expression for filtering the results of the request.
       Filter rules are case insensitive. The fields eligible for filtering
-      are: * `name` Examples of using a filter: *
-      `name="projects/p1/locations/us-
-      central1/repositories/repo1/packages/a%2Fb%2F*"` --> packages with an ID
-      starting with "a/b/". * `name="projects/p1/locations/us-
-      central1/repositories/repo1/packages/*%2Fb%2Fc"` --> packages with an ID
-      ending with "/b/c". * `name="projects/p1/locations/us-
-      central1/repositories/repo1/packages/*%2Fb%2F*"` --> packages with an ID
-      containing "/b/".
+      are: * `name` * `annotations` Examples of using a filter: To filter the
+      results of your request to packages with the name "my-package" in
+      project my-project in the us-central region, in repository my-repo,
+      append the following filter expression to your request: *
+      `name="projects/my-project/locations/us-central1/repositories/my-
+      repo/packages/my-package"` You can also use wildcards to match any
+      number of characters before or after the value: * `name="projects/my-
+      project/locations/us-central1/repositories/my-repo/packages/my-*"` *
+      `name="projects/my-project/locations/us-central1/repositories/my-
+      repo/packages/*package"` * `name="projects/my-project/locations/us-
+      central1/repositories/my-repo/packages/*pack*"` To filter the results of
+      your request to packages with the annotation key-value pair
+      [`external_link`:`external_link_value`], append the following filter
+      expression to your request": *
+      "annotations.external_link:external_link_value" To filter the results
+      just for a specific annotation key `external_link`, append the following
+      filter expression to your request: * "annotations.external_link" If the
+      annotation key or value contains special characters, you can escape them
+      by surrounding the value with backticks. For example, to filter the
+      results of your request to packages with the annotation key-value pair
+      [`external.link`:`https://example.com/my-package`], append the following
+      filter expression to your request: *
+      "annotations.`external.link`:`https://example.com/my-package`" You can
+      also filter with annotations with a wildcard to match any number of
+      characters before or after the value: *
+      "annotations.*_link:`*example.com*`"
     orderBy: Optional. The field to order the results by.
     pageSize: The maximum number of packages to return. Maximum page size is
       1,000.
@@ -695,10 +747,22 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesTagsListRequest(_mess
   Fields:
     filter: An expression for filtering the results of the request. Filter
       rules are case insensitive. The fields eligible for filtering are: *
-      `version` An example of using a filter: *
-      `version="projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/versions/1.0"` --> Tags that
-      are applied to the version `1.0` in package `pkg1`.
+      `name` * `version` Examples of using a filter: To filter the results of
+      your request to tags with the name "my-tag" in package "my-package" in
+      repository "my-repo" in project "my-project" in the us-central region,
+      append the following filter expression to your request: *
+      `name="projects/my-project/locations/us-central1/repositories/my-
+      repo/packages/my-package/tags/my-tag"` You can also use wildcards to
+      match any number of characters before or after the value: *
+      `name="projects/my-project/locations/us-central1/repositories/my-
+      repo/packages/my-package/tags/my*"` * `name="projects/my-
+      project/locations/us-central1/repositories/my-repo/packages/my-
+      package/tags/*tag"` * `name="projects/my-project/locations/us-
+      central1/repositories/my-repo/packages/my-package/tags/*tag*"` To filter
+      the results of your request to tags applied to the version `1.0` in
+      package `my-package`, append the following filter expression to your
+      request: * `version="projects/my-project/locations/us-
+      central1/repositories/my-repo/packages/my-package/versions/1.0"`
     pageSize: The maximum number of tags to return. Maximum page size is
       1,000.
     pageToken: The next_page_token value returned from a previous list
@@ -805,7 +869,35 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest(_
     ViewValueValuesEnum: The view that should be returned in the response.
 
   Fields:
-    filter: Optional. The filter to apply to the list of versions.
+    filter: Optional. An expression for filtering the results of the request.
+      Filter rules are case insensitive. The fields eligible for filtering
+      are: * `name` * `annotations` Examples of using a filter: To filter the
+      results of your request to versions with the name "my-version" in
+      project my-project in the us-central region, in repository my-repo,
+      append the following filter expression to your request: *
+      `name="projects/my-project/locations/us-central1/repositories/my-
+      repo/packages/my-package/versions/my-version"` You can also use
+      wildcards to match any number of characters before or after the value: *
+      `name="projects/my-project/locations/us-central1/repositories/my-
+      repo/packages/my-package/versions/*version"` * `name="projects/my-
+      project/locations/us-central1/repositories/my-repo/packages/my-
+      package/versions/my*"` * `name="projects/my-project/locations/us-
+      central1/repositories/my-repo/packages/my-package/versions/*version*"`
+      To filter the results of your request to versions with the annotation
+      key-value pair [`external_link`:`external_link_value`], append the
+      following filter expression to your request: *
+      "annotations.external_link:external_link_value" To filter just for a
+      specific annotation key `external_link`, append the following filter
+      expression to your request: * "annotations.external_link" If the
+      annotation key or value contains special characters, you can escape them
+      by surrounding the value with backticks. For example, to filter the
+      results of your request to versions with the annotation key-value pair
+      [`external.link`:`https://example.com/my-version`], append the following
+      filter expression to your request: *
+      "annotations.`external.link`:`https://example.com/my-version`" You can
+      also filter with annotations with a wildcard to match any number of
+      characters before or after the value: *
+      "annotations.*_link:`*example.com*`"
     orderBy: Optional. The field to order the results by.
     pageSize: The maximum number of versions to return. Maximum page size is
       1,000.
@@ -1364,6 +1456,16 @@ class CleanupPolicyMostRecentVersions(_messages.Message):
   packageNamePrefixes = _messages.StringField(2, repeated=True)
 
 
+class CommonRemoteRepository(_messages.Message):
+  r"""Common remote repository settings type.
+
+  Fields:
+    uri: A common public repository base for Remote Repository.
+  """
+
+  uri = _messages.StringField(1)
+
+
 class DockerImage(_messages.Message):
   r"""DockerImage represents a docker artifact. The following fields are
   returned as untyped metadata in the Version resource, using camelcase keys
@@ -1871,9 +1973,11 @@ class GoogleDevtoolsArtifactregistryV1Rule(_messages.Message):
     Values:
       OPERATION_UNSPECIFIED: Operation not specified.
       DOWNLOAD: Download operation.
+      MUTABILITY_EXCEPTION: Mutability exception operation.
     """
     OPERATION_UNSPECIFIED = 0
     DOWNLOAD = 1
+    MUTABILITY_EXCEPTION = 2
 
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   condition = _messages.MessageField('Expr', 2)
@@ -2843,6 +2947,9 @@ class RemoteRepositoryConfig(_messages.Message):
 
   Fields:
     aptRepository: Specific settings for an Apt remote repository.
+    commonRepository: Common remote repository settings. Used as the RR
+      upstream URL instead of Predefined and Custom remote repositories. UI
+      and Gcloud will map all the new remote repositories to this field.
     deleteNotFoundCacheFiles: Optional. If files are removed from the remote
       host, should they also be removed from the Artifact Registry repository
       when requested? Only supported for docker, maven, and python
@@ -2875,18 +2982,19 @@ class RemoteRepositoryConfig(_messages.Message):
     CACHE_LAYER = 2
 
   aptRepository = _messages.MessageField('AptRepository', 1)
-  deleteNotFoundCacheFiles = _messages.BooleanField(2)
-  description = _messages.StringField(3)
-  disableUpstreamValidation = _messages.BooleanField(4)
-  dockerRepository = _messages.MessageField('DockerRepository', 5)
-  goRepository = _messages.MessageField('GoRepository', 6)
-  mavenRepository = _messages.MessageField('MavenRepository', 7)
-  npmRepository = _messages.MessageField('NpmRepository', 8)
-  pythonRepository = _messages.MessageField('PythonRepository', 9)
-  remoteType = _messages.EnumField('RemoteTypeValueValuesEnum', 10)
-  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 11)
-  upstreamCredentials = _messages.MessageField('UpstreamCredentials', 12)
-  yumRepository = _messages.MessageField('YumRepository', 13)
+  commonRepository = _messages.MessageField('CommonRemoteRepository', 2)
+  deleteNotFoundCacheFiles = _messages.BooleanField(3)
+  description = _messages.StringField(4)
+  disableUpstreamValidation = _messages.BooleanField(5)
+  dockerRepository = _messages.MessageField('DockerRepository', 6)
+  goRepository = _messages.MessageField('GoRepository', 7)
+  mavenRepository = _messages.MessageField('MavenRepository', 8)
+  npmRepository = _messages.MessageField('NpmRepository', 9)
+  pythonRepository = _messages.MessageField('PythonRepository', 10)
+  remoteType = _messages.EnumField('RemoteTypeValueValuesEnum', 11)
+  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 12)
+  upstreamCredentials = _messages.MessageField('UpstreamCredentials', 13)
+  yumRepository = _messages.MessageField('YumRepository', 14)
 
 
 class Repository(_messages.Message):

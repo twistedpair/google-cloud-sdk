@@ -75,6 +75,30 @@ def MakeFutureReservationMessageFromArgs(messages, resources, args,
       args, 'require_specific_reservation', None
   )
 
+  reservation_name = getattr(args, 'reservation_name', None)
+
+  deployment_type = None
+  if args.IsKnownAndSpecified('deployment_type'):
+    deployment_type = MakeDeploymentType(messages,
+                                         getattr(args, 'deployment_type', None))
+
+  commitment_info = MakeCommitmentInfo(messages, args)
+  instance_termination_action = None
+  if args.IsKnownAndSpecified('instance_termination_action'):
+    instance_termination_action = MakeInstanceTerminationAction(
+        messages, getattr(args, 'instance_termination_action', None)
+    )
+  scheduling_type = None
+  if args.IsKnownAndSpecified('scheduling_type'):
+    scheduling_type = MakeSchedulingType(
+        messages, getattr(args, 'scheduling_type', None)
+    )
+  enable_opportunistic_maintenance = None
+  if args.IsKnownAndSpecified('enable_opportunistic_maintenance'):
+    enable_opportunistic_maintenance = getattr(
+        args, 'enable_opportunistic_maintenance'
+    )
+
   return MakeFutureReservationMessage(
       messages,
       future_reservation_ref.Name(),
@@ -85,7 +109,13 @@ def MakeFutureReservationMessageFromArgs(messages, resources, args,
       enable_auto_delete_reservations,
       auto_created_reservations_delete_time,
       auto_created_reservations_duration,
-      require_specific_reservation
+      require_specific_reservation,
+      reservation_name,
+      deployment_type,
+      commitment_info,
+      instance_termination_action,
+      scheduling_type,
+      enable_opportunistic_maintenance,
   )
 
 
@@ -165,9 +195,21 @@ def MakeShareSettings(messages, args, setting_configs):
       return messages.ShareSettings(
           shareType=messages.ShareSettings.ShareTypeValueValuesEnum
           .SPECIFIC_PROJECTS,
-          projects=getattr(args, 'share_with', None))
+          projectMap=MakeProjectMapFromProjectList(
+              messages, getattr(args, 'share_with', None)))
   else:
     return None
+
+
+def MakeProjectMapFromProjectList(messages, projects):
+  additional_properties = []
+  for project in projects:
+    additional_properties.append(
+        messages.ShareSettings.ProjectMapValue.AdditionalProperty(
+            key=project,
+            value=messages.ShareSettingsProjectConfig(projectId=project)))
+  return messages.ShareSettings.ProjectMapValue(
+      additionalProperties=additional_properties)
 
 
 def MakePlanningStatus(messages, planning_status):
@@ -178,9 +220,85 @@ def MakePlanningStatus(messages, planning_status):
   return None
 
 
+def MakeDeploymentType(messages, deployment_type):
+  """Constructs the deployment type enum value."""
+  if deployment_type:
+    if deployment_type == 'DENSE':
+      return messages.FutureReservation.DeploymentTypeValueValuesEnum.DENSE
+    if deployment_type == 'FLEXIBLE':
+      return messages.FutureReservation.DeploymentTypeValueValuesEnum.FLEXIBLE
+  return None
+
+
+def MakeCommitmentInfo(messages, args):
+  """Constructs the commitment info message object."""
+  commitment_name = getattr(args, 'commitment_name', None)
+  commitment_plan = None
+  if args.IsKnownAndSpecified('commitment_plan'):
+    commitment_plan = MakeCommitmentPlan(messages,
+                                         getattr(args, 'commitment_plan', None))
+  previous_commitment_terms = None
+  if args.IsKnownAndSpecified('previous_commitment_terms'):
+    previous_commitment_terms = MakePreviousCommitmentTerms(
+        messages, getattr(args, 'previous_commitment_terms', None)
+    )
+
+  if any([commitment_name, commitment_plan, previous_commitment_terms]):
+    return messages.FutureReservationCommitmentInfo(
+        commitmentName=commitment_name,
+        commitmentPlan=commitment_plan,
+        previousCommitmentTerms=previous_commitment_terms,
+    )
+  return None
+
+
+def MakeCommitmentPlan(messages, commitment_plan):
+  """Constructs the commitment plan enum value."""
+  if commitment_plan:
+    if commitment_plan == 'TWELVE_MONTH':
+      return (messages.FutureReservationCommitmentInfo.CommitmentPlanValueValuesEnum.
+              TWELVE_MONTH)
+    if commitment_plan == 'THIRTY_SIX_MONTH':
+      return (messages.FutureReservationCommitmentInfo.CommitmentPlanValueValuesEnum
+              .THIRTY_SIX_MONTH)
+  return None
+
+
+def MakePreviousCommitmentTerms(messages, previous_commitment_terms):
+  """Constructs the previous commitment terms enum value."""
+  if previous_commitment_terms:
+    if previous_commitment_terms == 'EXTEND':
+      return (messages.FutureReservationCommitmentInfo.PreviousCommitmentTermsValueValuesEnum
+              .EXTEND)
+  return None
+
+
+def MakeInstanceTerminationAction(messages, instance_termination_action):
+  """Constructs the instance_termination_action enum value."""
+  if instance_termination_action:
+    if instance_termination_action == 'DELETE':
+      return (messages.FutureReservation
+              .InstanceTerminationActionValueValuesEnum.DELETE)
+    if instance_termination_action == 'STOP':
+      return (messages.FutureReservation
+              .InstanceTerminationActionValueValuesEnum.STOP)
+  return None
+
+
+def MakeSchedulingType(messages, scheduling_type):
+  """Constructs the scheduling type enum value."""
+  if scheduling_type:
+    if scheduling_type == 'GROUP':
+      return messages.FutureReservation.SchedulingTypeValueValuesEnum.GROUP
+    if scheduling_type == 'INDEPENDENT':
+      return (messages.FutureReservation.SchedulingTypeValueValuesEnum
+              .INDEPENDENT)
+  return None
+
+
 def MakeFutureReservationMessage(
     messages,
-    reservation_name,
+    future_reservation_name,
     sku_properties,
     time_window,
     share_settings,
@@ -189,10 +307,16 @@ def MakeFutureReservationMessage(
     auto_created_reservations_delete_time=None,
     auto_created_reservations_duration=None,
     require_specific_reservation=None,
+    reservation_name=None,
+    deployment_type=None,
+    commitment_info=None,
+    instance_termination_action=None,
+    scheduling_type=None,
+    enable_opportunistic_maintenance=None,
 ):
   """Constructs a future reservation message object."""
   future_reservation_message = messages.FutureReservation(
-      name=reservation_name,
+      name=future_reservation_name,
       specificSkuProperties=sku_properties,
       timeWindow=time_window,
       planningStatus=planning_status)
@@ -215,5 +339,22 @@ def MakeFutureReservationMessage(
   if require_specific_reservation is not None:
     future_reservation_message.specificReservationRequired = (
         require_specific_reservation
+    )
+
+  if reservation_name is not None:
+    future_reservation_message.reservationName = reservation_name
+  if deployment_type is not None:
+    future_reservation_message.deploymentType = deployment_type
+  if commitment_info is not None:
+    future_reservation_message.commitmentInfo = commitment_info
+  if instance_termination_action is not None:
+    future_reservation_message.instanceTerminationAction = (
+        instance_termination_action
+    )
+  if scheduling_type is not None:
+    future_reservation_message.schedulingType = scheduling_type
+  if enable_opportunistic_maintenance is not None:
+    future_reservation_message.enableOpportunisticMaintenance = (
+        enable_opportunistic_maintenance
     )
   return future_reservation_message

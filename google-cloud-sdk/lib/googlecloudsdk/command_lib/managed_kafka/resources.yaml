@@ -17,7 +17,7 @@ location:
     attribute_name: location
     help: |
       ID of the location of the Managed Service for Apache Kafka resource. See
-      https://cloud.google.com/managed-kafka/docs/locations for a list of supported
+      https://cloud.google.com/managed-service-for-apache-kafka/docs/locations for a list of supported
       locations.
 
 cluster:

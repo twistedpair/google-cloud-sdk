@@ -114,13 +114,13 @@ class _VolumeType(abc.ABC):
   @abc.abstractmethod
   def required_fields(cls, release_track):
     """A dict of field_name: help text for all fields that must be present."""
-    pass
+    return {}
 
   @classmethod
   @abc.abstractmethod
   def optional_fields(cls, release_track):
     """A dict of field_name: help text for all fields that are optional."""
-    pass
+    return {}
 
   @classmethod
   @abc.abstractmethod
@@ -199,6 +199,10 @@ class _InMemoryVolume(_VolumeType):
         'With this type of volume, data is not shared between instances and '
         'all data will be lost when the instance it is on is terminated.'
     )
+
+  @classmethod
+  def release_tracks(cls):
+    return [base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA]
 
   @classmethod
   def required_fields(cls, release_track):

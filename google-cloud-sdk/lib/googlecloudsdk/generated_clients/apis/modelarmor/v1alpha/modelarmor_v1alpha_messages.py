@@ -574,12 +574,12 @@ class PiAndJailbreakFilterResult(_messages.Message):
     r"""Confidence level identified for Prompt injection and Jailbreak.
 
     Values:
-      PI_AND_JAILBREAK_CONFIDENCE_LEVEL_UNSPECIFIED: Unused
+      DETECTION_CONFIDENCE_LEVEL_UNSPECIFIED: Unused
       LOW_AND_ABOVE: Highest chance of a false positive.
       MEDIUM_AND_ABOVE: Some chance of false positives.
       HIGH: Low chance of false positives.
     """
-    PI_AND_JAILBREAK_CONFIDENCE_LEVEL_UNSPECIFIED = 0
+    DETECTION_CONFIDENCE_LEVEL_UNSPECIFIED = 0
     LOW_AND_ABOVE = 1
     MEDIUM_AND_ABOVE = 2
     HIGH = 3
@@ -620,13 +620,40 @@ class PiAndJailbreakFilterSettings(_messages.Message):
   r"""Prompt injection and Jailbreak Filter settings.
 
   Enums:
+    ConfidenceLevelValueValuesEnum: Optional. Confidence level for this
+      filter. Confidence level is used to determine the threshold for the
+      filter. If detection confidence is equal to or greater than the
+      specified level, a positive match is reported. Confidence level will
+      only be used if the filter is enabled.
     FilterEnforcementValueValuesEnum: Optional. Tells whether Prompt injection
       and Jailbreak filter is enabled or disabled.
 
   Fields:
+    confidenceLevel: Optional. Confidence level for this filter. Confidence
+      level is used to determine the threshold for the filter. If detection
+      confidence is equal to or greater than the specified level, a positive
+      match is reported. Confidence level will only be used if the filter is
+      enabled.
     filterEnforcement: Optional. Tells whether Prompt injection and Jailbreak
       filter is enabled or disabled.
   """
+
+  class ConfidenceLevelValueValuesEnum(_messages.Enum):
+    r"""Optional. Confidence level for this filter. Confidence level is used
+    to determine the threshold for the filter. If detection confidence is
+    equal to or greater than the specified level, a positive match is
+    reported. Confidence level will only be used if the filter is enabled.
+
+    Values:
+      DETECTION_CONFIDENCE_LEVEL_UNSPECIFIED: Unused
+      LOW_AND_ABOVE: Highest chance of a false positive.
+      MEDIUM_AND_ABOVE: Some chance of false positives.
+      HIGH: Low chance of false positives.
+    """
+    DETECTION_CONFIDENCE_LEVEL_UNSPECIFIED = 0
+    LOW_AND_ABOVE = 1
+    MEDIUM_AND_ABOVE = 2
+    HIGH = 3
 
   class FilterEnforcementValueValuesEnum(_messages.Enum):
     r"""Optional. Tells whether Prompt injection and Jailbreak filter is
@@ -641,7 +668,8 @@ class PiAndJailbreakFilterSettings(_messages.Message):
     ENABLED = 1
     DISABLED = 2
 
-  filterEnforcement = _messages.EnumField('FilterEnforcementValueValuesEnum', 1)
+  confidenceLevel = _messages.EnumField('ConfidenceLevelValueValuesEnum', 1)
+  filterEnforcement = _messages.EnumField('FilterEnforcementValueValuesEnum', 2)
 
 
 class RaiFilter(_messages.Message):
@@ -674,12 +702,12 @@ class RaiFilter(_messages.Message):
     will use a reasonable default level based on the `filter_type`.
 
     Values:
-      RAI_CONFIDENCE_LEVEL_UNSPECIFIED: Unused
+      DETECTION_CONFIDENCE_LEVEL_UNSPECIFIED: Unused
       LOW_AND_ABOVE: Highest chance of a false positive.
       MEDIUM_AND_ABOVE: Some chance of false positives.
       HIGH: Low chance of false positives.
     """
-    RAI_CONFIDENCE_LEVEL_UNSPECIFIED = 0
+    DETECTION_CONFIDENCE_LEVEL_UNSPECIFIED = 0
     LOW_AND_ABOVE = 1
     MEDIUM_AND_ABOVE = 2
     HIGH = 3
@@ -813,12 +841,12 @@ class RaiFilterTypeResult(_messages.Message):
     r"""Confidence level identified for this RAI filter.
 
     Values:
-      RAI_CONFIDENCE_LEVEL_UNSPECIFIED: Unused
+      DETECTION_CONFIDENCE_LEVEL_UNSPECIFIED: Unused
       LOW_AND_ABOVE: Highest chance of a false positive.
       MEDIUM_AND_ABOVE: Some chance of false positives.
       HIGH: Low chance of false positives.
     """
-    RAI_CONFIDENCE_LEVEL_UNSPECIFIED = 0
+    DETECTION_CONFIDENCE_LEVEL_UNSPECIFIED = 0
     LOW_AND_ABOVE = 1
     MEDIUM_AND_ABOVE = 2
     HIGH = 3

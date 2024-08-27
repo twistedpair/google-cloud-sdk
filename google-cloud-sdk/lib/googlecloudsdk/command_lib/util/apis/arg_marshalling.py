@@ -19,9 +19,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
+
 from apitools.base.protorpclite import messages
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import util as resource_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import update
 from googlecloudsdk.command_lib.util.apis import yaml_arg_schema
@@ -181,6 +183,10 @@ def _GetMethodResourceArgs(resource_args, methods):
   return yaml_methods
 
 
+def _NormalizeNames(attributes):
+  return [resource_util.NormalizeFormat(attr) for attr in attributes]
+
+
 def _DoesDupResourceArgHaveSameAttributes(resource, resource_params):
   """Verify if there is a duplicated resource argument with the same attributes.
 
@@ -193,11 +199,14 @@ def _DoesDupResourceArgHaveSameAttributes(resource, resource_params):
   """
   for res_arg in resource_params:
     if res_arg != resource and res_arg.name == resource.name:
-      return res_arg.attribute_names == resource.attribute_names
-  return False
+      # Normalize the attribute names to account for positional
+      # and non-positional.
+      return(_NormalizeNames(res_arg.attribute_names) ==
+             _NormalizeNames(resource.attribute_names))
+  return True
 
 
-def _GetSharedAttributes(resource_params):
+def _GetSharedFlags(resource_params):
   """Retrieves shared attributes between resource args.
 
   Args:
@@ -207,7 +216,7 @@ def _GetSharedAttributes(resource_params):
     Map of attribute names to list of resources that contain that attribute.
   """
   resource_names = set()
-  attributes = {}
+  flags = collections.defaultdict(list)
   for arg in resource_params:
     if arg.name in resource_names:
       # If we found a duplicate resource arg, make sure it has same attributes.
@@ -224,19 +233,15 @@ def _GetSharedAttributes(resource_params):
     else:
       resource_names.add(arg.name)
 
-    # iterate thorugh attributes, but last one (anchor attribute. i.e, &name).
-    for attribute_name in arg.attribute_names[:-1]:
-      if (
-          attribute_name not in arg.removed_flags
-          and not concepts.IGNORED_FIELDS.get(attribute_name)
-      ):
-        attributes[attribute_name] = attributes.get(attribute_name, [])
-        attributes[attribute_name].append(arg.name)
+    # iterate thorugh attributes flags
+    for flag_name in arg.attribute_to_flag_map.values():
+      if flag_name not in arg.ignored_flags:
+        flags[flag_name].append(arg.name)
 
   # Shared attributes: attribute entries with more than 1 resource args.
   return {
-      attribute: resource_args
-      for attribute, resource_args in attributes.items()
+      flag_name: resource_args
+      for flag_name, resource_args in flags.items()
       if len(resource_args) > 1
   }
 
@@ -291,10 +296,10 @@ class DeclarativeArgumentGenerator(object):
     Returns:
       {str, calliope.base.Action}, A map of field name to the argument.
     """
-    shared_attribute_resource_dict = _GetSharedAttributes(self.resource_args)
-    shared_resource_attributes_list = list(shared_attribute_resource_dict)
+    shared_flag_resource_dict = _GetSharedFlags(self.resource_args)
+    shared_resource_flag_list = list(shared_flag_resource_dict)
 
-    args = [arg.Generate(methods, shared_resource_attributes_list)
+    args = [arg.Generate(methods, shared_resource_flag_list)
             for arg in self.arg_info]
 
     primary_resource_args = _GetMethodResourceArgs(self.resource_args, methods)
@@ -302,17 +307,18 @@ class DeclarativeArgumentGenerator(object):
         arg.primary_resource and arg.primary_resource.name
         for arg in primary_resource_args)
 
-    for attribute, resource_args in shared_attribute_resource_dict.items():
+    for flag_name, resource_args in shared_flag_resource_dict.items():
       resource_names = list(set(resource_args))
       resource_names.sort(
           key=lambda name: '' if name in primary_names else name)
 
       args.append(base.Argument(
-          '--' + attribute,
+          flag_name,
           help='For resources [{}], provides fallback value for resource '
                '{attr} attribute. When the resource\'s full URI path is not '
                'provided, {attr} will fallback to this flag value.'.format(
-                   ', '.join(resource_names), attr=attribute)))
+                   ', '.join(resource_names),
+                   attr=resource_util.StripPrefix(flag_name))))
 
     return args
 

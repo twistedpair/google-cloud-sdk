@@ -102,11 +102,7 @@ def ExecuteUpdateMembershipRequest(ref, args):
   obj = api_util.GetMembership(name, release_track)
   update_fields = []
 
-  description = external_id = infra_type = None
-  if release_track == calliope_base.ReleaseTrack.BETA and args.GetValue(
-      'description'):
-    update_fields.append('description')
-    description = args.GetValue('description')
+  external_id = infra_type = None
   if args.GetValue('external_id'):
     update_fields.append('externalId')
     external_id = args.GetValue('external_id')
@@ -123,7 +119,6 @@ def ExecuteUpdateMembershipRequest(ref, args):
       obj,
       update_mask,
       release_track,
-      description=description,
       external_id=external_id,
       infra_type=infra_type,
       clear_labels=args.GetValue('clear_labels'),

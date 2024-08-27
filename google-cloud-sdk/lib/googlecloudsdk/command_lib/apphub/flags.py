@@ -215,9 +215,20 @@ def CreateApplicationFlags(parser, release_track=base.ReleaseTrack.ALPHA):
   AddAttributesFlags(
       parser, resource_name='application', release_track=release_track
   )
+
+  # Conditional choices based on release track
+  if release_track == base.ReleaseTrack.ALPHA:
+    choices_arg = {
+        'REGIONAL': 'Represents a regional application',
+        'GLOBAL': 'Represents a global application',
+    }
+  else:
+    choices_arg = {
+        'REGIONAL': 'Represents a regional application',
+    }
   parser.add_argument(
       '--scope-type',
-      choices={'REGIONAL': 'Represents a regional application'},
+      choices=choices_arg,
       help='Scope of the Application',
       required=True,
   )

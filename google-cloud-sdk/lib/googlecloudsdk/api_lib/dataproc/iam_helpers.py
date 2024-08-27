@@ -23,6 +23,10 @@ from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import log
 
 
+# This is the maximum version of the IAM policy that Dataproc supports.
+MAX_LIBRARY_IAM_SUPPORTED_VERSION = 3
+
+
 def AddIamPolicyBindings(resource, members, role):
   """Adds IAM policy bindings for members with the role on resource."""
   iam_client, iam_messages = iam_api.GetClientAndMessages()

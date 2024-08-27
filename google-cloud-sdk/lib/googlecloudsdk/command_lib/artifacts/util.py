@@ -322,6 +322,24 @@ def AddRepositoryFormatArgBeta():
   ]
 
 
+def AddTargetForAttachments(unused_repo_ref, repo_args, request):
+  """If the target field is set, adds it to the server side request.
+
+  Args:
+    unused_repo_ref: Repo reference input.
+    repo_args: User input arguments.
+    request: ListAttachments request.
+
+  Returns:
+    ListAttachments request.
+  """
+  if not repo_args.target:
+    return request
+
+  request.filter = 'target="{target}"'.format(target=repo_args.target)
+  return request
+
+
 def CheckServiceAccountPermission(unused_repo_ref, repo_args, request):
   """Checks and grants key encrypt/decrypt permission for service account.
 
@@ -1930,7 +1948,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
         )
     )
     log.status.Print(
-        "\nThis script can be re-run to migrate any projects that haven't"
+        "\nThis script can be re-run to migrate any projects that haven't "
         "finished."
     )
 
@@ -2023,6 +2041,22 @@ def WrappedCopyImagesFromGCR(
       for example_failure in results["example_failures"]:
         log.status.Print(example_failure)
       # Some errors are okay when pre-copying. We'll just try again later
+      # Print out the GCR data loss failures if there's any.
+      if results["manifestsFailedWithNotFound"] > 0:
+        log.status.Print(
+            "\nAmong those failures, there are {not_found} image copy"
+            " failures due to parts of the image missing from GCR."
+            " You may try pulling the images directly from GCR to confirm."
+            " Because the images are already currupted in GCR, there's no"
+            " action required for these images.".format(
+                not_found=results["manifestsFailedWithNotFound"],
+            ),
+        )
+        log.status.Print(
+            "\nExample images that failed to copy due to missing data in GCR:"
+        )
+        for example_not_found in results["not_found_failures"]:
+          log.status.Print(example_not_found)
       return pre_copy
     return True
   except docker_http.V2DiagnosticException as e:
@@ -2091,12 +2125,22 @@ def CopyImagesFromGCR(
   results["manifestsCopied"] += tags_payload.get("manifestsCopied", 0)
   results["tagsCopied"] += tags_payload.get("tagsCopied", 0)
   results["manifestsFailed"] += tags_payload.get("manifestsFailed", 0)
+  results["manifestsFailedWithNotFound"] += tags_payload.get(
+      "manifestsFailedWithNotFound", 0
+  )
   results["tagsFailed"] += tags_payload.get("tagsFailed", 0)
   failures = tags_payload.get("exampleFailures", [])
   if failures:
     if not results["example_failures"]:
       results["example_failures"] = []
     results["example_failures"] = (results["example_failures"] + failures)[0:10]
+  not_found_failures = tags_payload.get("exampleFailuresWithNotFound", [])
+  if not_found_failures:
+    if not results["not_found_failures"]:
+      results["not_found_failures"] = []
+    results["not_found_failures"] = (
+        results["not_found_failures"] + not_found_failures
+    )[0:10]
   for child in tags_payload["child"]:
     copy_args = [
         thread_futures,

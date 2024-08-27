@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from enum import Enum
+
 from argcomplete.completers import FilesCompleter
 from cloudsdk.google.protobuf import descriptor_pb2
 from googlecloudsdk.api_lib.spanner import databases
@@ -384,6 +386,20 @@ def AsymmetricAutoscalingOptionFlag():
   )
 
 
+def ClearAsymmetricAutoscalingOptionsFlag():
+  return base.Argument(
+      '--clear-asymmetric-autoscaling-option',
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='LOCATION',
+      required=False,
+      hidden=True,
+      help=(
+          'Specify a comma separated list of locations from which to remove'
+          ' asymmetric autoscaling options'
+      ),
+  )
+
+
 def SsdCache(
     positional=False,
     required=False,
@@ -411,6 +427,7 @@ def AddCapacityArgsForInstance(
     hide_autoscaling_args,
     parser,
     add_asymmetric_option_flag=False,
+    asymmetric_options_group=False,
 ):
   """Parse the instance capacity arguments, including manual and autoscaling.
 
@@ -463,11 +480,25 @@ def AddCapacityArgsForInstance(
   AutoscalingMaxProcessingUnits(
       required=require_all_autoscaling_args
   ).AddToParser(autoscaling_pu_limits_group_parser)
-  # Asymmetric autoscaling.
+  # Asymmetric autoscaling augument structure is different between create and
+  # update commands.
   if add_asymmetric_option_flag:
-    AsymmetricAutoscalingOptionFlag().AddToParser(
-        autoscaling_config_group_parser
-    )
+    if asymmetric_options_group:
+      asymmetric_options_group_parser = (
+          autoscaling_config_group_parser.add_argument_group(
+              mutex=True, hidden=True
+          )
+      )
+      AsymmetricAutoscalingOptionFlag().AddToParser(
+          asymmetric_options_group_parser
+      )
+      ClearAsymmetricAutoscalingOptionsFlag().AddToParser(
+          asymmetric_options_group_parser
+      )
+    else:
+      AsymmetricAutoscalingOptionFlag().AddToParser(
+          autoscaling_config_group_parser
+      )
 
 
 def AddCapacityArgsForInstancePartition(parser):

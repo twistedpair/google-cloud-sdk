@@ -350,15 +350,16 @@ class _SqlCursor(object):
     self._cursor = None
 
   def __enter__(self):
+    # The default timeout to wait before raising an OperationalError when db is
+    # locked is 5 seconds. Here we pass it explicitly in the constructor for the
+    # ease of future debugging/investigation. Related bug: b/356223015
     self._connection = sqlite3.connect(
         self._store_file,
+        timeout=5.0,
         detect_types=sqlite3.PARSE_DECLTYPES,
         isolation_level=None,  # Use autocommit mode.
         check_same_thread=True  # Only creating thread may use the connection.
     )
-    # Wait up to 1 second for any locks to clear up.
-    # https://sqlite.org/pragma.html#pragma_busy_timeout
-    self._connection.execute('PRAGMA busy_timeout = 1000')
     self._cursor = self._connection.cursor()
     return self
 

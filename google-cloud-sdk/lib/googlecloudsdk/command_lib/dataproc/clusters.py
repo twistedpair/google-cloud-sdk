@@ -223,13 +223,25 @@ def ArgsForClusterRef(
   )
   kms_resource_args.AddKmsKeyResourceArg(parser, 'cluster', name='--kms-key')
 
-  if alpha:
-    parser.add_argument(
-        '--secondary-worker-standard-capacity-base',
-        hidden=False,
-        type=int,
-        help='The number of standard VMs in the Spot and Standard Mix feature.',
-    )
+  parser.add_argument(
+      '--secondary-worker-standard-capacity-base',
+      # hide in non-alpha track.
+      hidden=not alpha,
+      type=int,
+      help='The number of standard VMs in the Spot and Standard Mix feature.',
+  )
+
+  parser.add_argument(
+      '--secondary-worker-standard-capacity-percent-above-base',
+      hidden=True,
+      type=int,
+      help=(
+          'The percentage of target capacity that should use Standard VM. The'
+          ' remaining percentage will use Spot VMs. The percentage applies only'
+          ' to the capacity above standard_capacity_base.'
+      ),
+  )
+
   parser.add_argument(
       '--secondary-worker-machine-types',
       help=(
@@ -1245,7 +1257,7 @@ def GetClusterConfig(
           ),
           minCpuPlatform=args.master_min_cpu_platform,
           instanceFlexibilityPolicy=GetInstanceFlexibilityPolicy(
-              dataproc, None, args.master_machine_types, alpha, 'master'
+              dataproc, None, args.master_machine_types, 'master'
           ),
       ),
       workerConfig=dataproc.messages.InstanceGroupConfig(
@@ -1263,7 +1275,7 @@ def GetClusterConfig(
           ),
           minCpuPlatform=args.worker_min_cpu_platform,
           instanceFlexibilityPolicy=GetInstanceFlexibilityPolicy(
-              dataproc, None, args.worker_machine_types, alpha, 'worker'
+              dataproc, None, args.worker_machine_types, 'worker'
           ),
       ),
       initializationActions=init_actions,
@@ -1435,9 +1447,12 @@ def GetClusterConfig(
   ):
     instance_flexibility_policy = GetInstanceFlexibilityPolicy(
         dataproc,
-        args.secondary_worker_standard_capacity_base if alpha else None,
+        GetProvisioningModelMix(
+            dataproc,
+            args.secondary_worker_standard_capacity_base,
+            args.secondary_worker_standard_capacity_percent_above_base,
+        ),
         args.secondary_worker_machine_types,
-        alpha,
         'secondary-worker',
     )
 
@@ -1694,15 +1709,18 @@ def GetDiskConfig(
 
 
 def GetInstanceFlexibilityPolicy(
-    dataproc, standard_capacity_base, machine_types, alpha, node_type
+    dataproc,
+    provisioning_model_mix,
+    machine_types,
+    node_type,
 ):
   """Get instance flexibility policy.
 
   Args:
     dataproc: Dataproc object that contains client, messages, and resources
-    standard_capacity_base: Standard capacity base for provisioning model mix
+    provisioning_model_mix: Provisioning model mix for instance flexibility
+      policy
     machine_types: Machine types with rank for instance selection
-    alpha: checks if the release track is alpha
     node_type: Type of the dataproc node. One of master, worker,
       secondary-worker
 
@@ -1710,25 +1728,51 @@ def GetInstanceFlexibilityPolicy(
     InstanceFlexibilityPolicy of the secondary worker group.
   """
 
-  if alpha and standard_capacity_base is None:
+  if provisioning_model_mix is None and machine_types is None:
     return None
-  provisioning_model_mix = None
+
   instance_selection_list = []
-  if alpha:
-    provisioning_model_mix = dataproc.messages.ProvisioningModelMix(
-        standardCapacityBase=standard_capacity_base
-    )
-  else:
+
+  if machine_types:
     instance_selection_list = GetInstanceSelectionList(
         dataproc, machine_types, node_type
     )
-  if provisioning_model_mix is None and not instance_selection_list:
-    return None
-  instance_flexibility_policy = dataproc.messages.InstanceFlexibilityPolicy(
+
+  return dataproc.messages.InstanceFlexibilityPolicy(
       instanceSelectionList=instance_selection_list,
       provisioningModelMix=provisioning_model_mix,
   )
-  return instance_flexibility_policy
+
+
+def GetProvisioningModelMix(
+    dataproc,
+    standard_capacity_base,
+    standard_capacity_percent_above_base,
+):
+  """Get provisioning model mix from given parameters.
+
+  Args:
+    dataproc: Dataproc object that contains client, messages, and resources
+    standard_capacity_base: Standard capacity base for provisioning model mix
+    standard_capacity_percent_above_base: Standard capacity percent above base
+      for provisioning model mix
+
+  Returns:
+    ProvisioningModelMix of with given parameters.
+  """
+
+  if (
+      standard_capacity_base is None
+      and standard_capacity_percent_above_base is None
+  ):
+    return None
+
+  return dataproc.messages.ProvisioningModelMix(
+      standardCapacityBase=(standard_capacity_base or 0),
+      standardCapacityPercentAboveBase=(
+          standard_capacity_percent_above_base or 0
+      ),
+  )
 
 
 def GetStartupConfig(dataproc, args):

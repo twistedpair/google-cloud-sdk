@@ -50,6 +50,7 @@ def CreateAssuredWorkload(
     display_name=None,
     compliance_regime=None,
     partner=None,
+    partner_services_billing_account=None,
     partner_permissions=None,
     billing_account=None,
     next_rotation_time=None,
@@ -69,6 +70,8 @@ def CreateAssuredWorkload(
     compliance_regime: str, the compliance regime, which is one of:
       FEDRAMP_MODERATE, FEDRAMP_HIGH, IL4 or CJIS.
     partner: str, the partner regime/controls.
+    partner_services_billing_account: str, the billing account of the partner
+      service in the form: billingAccounts/{BILLING_ACCOUNT_ID}
     partner_permissions: dict, dictionary of permission names and values for the
       partner regime.
     billing_account: str, the billing account of the Assured Workloads
@@ -116,6 +119,8 @@ def CreateAssuredWorkload(
     )
   if partner:
     workload.partner = workload_message.PartnerValueValuesEnum(partner)
+  if partner_services_billing_account:
+    workload.partnerServicesBillingAccount = partner_services_billing_account
   if partner_permissions:
     workload.partnerPermissions = GetPartnerPermissions(release_track)(
         dataLogsViewer=partner_permissions['data-logs-viewer']

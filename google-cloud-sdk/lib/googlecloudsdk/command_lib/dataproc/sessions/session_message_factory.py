@@ -36,7 +36,6 @@ class SessionMessageFactory(object):
   """
 
   INVALID_SESSION_TYPE_ERR_MSG = 'Invalid session type: {}.'
-  INVALID_ENGINE_TYPE_ERR_MSG = 'Invalid engine type: {}.'
 
   def __init__(self, dataproc, runtime_config_factory_override=None,
                environment_config_factory_override=None,
@@ -60,7 +59,6 @@ class SessionMessageFactory(object):
 
     # Construct available session type to keyword mapping.
     self._session2key = {self.dataproc.messages.JupyterConfig: 'jupyterSession'}
-    self._engine2key = {self.dataproc.messages.SparkConfig: 'spark'}
 
     self.runtime_config_factory = (
         runtime_config_factory_override or
@@ -92,9 +90,7 @@ class SessionMessageFactory(object):
     """
     kwargs = {}
     session_config = self.jupyter_config_factory.GetMessage(args)
-    engine_config = self.dataproc.messages.SparkConfig()
     kwargs[self._session2key[type(session_config)]] = session_config
-    kwargs[self._engine2key[type(engine_config)]] = engine_config
 
     if args.labels:
       kwargs['labels'] = labels_util.ParseCreateArgs(

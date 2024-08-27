@@ -29,7 +29,7 @@ _CIDR_REGEX = r'{addr_part}(\.{addr_part}){{3}}(\/{prefix_part})?$'.format(
     addr_part=_IP_ADDRESS_PART, prefix_part=_CIDR_PREFIX_PART)
 
 
-def AddDatabaseVersionFlag(parser, support_minor_version):
+def AddDatabaseVersionFlag(parser, support_new_versions):
   """Adds a --database-version flag to the given parser."""
   help_text = """\
     Database engine type and version.
@@ -50,6 +50,7 @@ def AddDatabaseVersionFlag(parser, support_minor_version):
       'MYSQL_8_0_35',
       'MYSQL_8_0_36',
       'MYSQL_8_0_37',
+      'MYSQL_8_4',
       'POSTGRES_9_6',
       'POSTGRES_10',
       'POSTGRES_11',
@@ -59,7 +60,7 @@ def AddDatabaseVersionFlag(parser, support_minor_version):
       'POSTGRES_15',
       'POSTGRES_16',
   ]
-  if not support_minor_version:
+  if not support_new_versions:
     choices = [
         'MYSQL_5_7',
         'MYSQL_5_6',

@@ -2722,6 +2722,33 @@ class NetworksecurityProjectsLocationsAuthzPoliciesDeleteRequest(_messages.Messa
   requestId = _messages.StringField(2)
 
 
+class NetworksecurityProjectsLocationsAuthzPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAuthzPoliciesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class NetworksecurityProjectsLocationsAuthzPoliciesGetRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsAuthzPoliciesGetRequest object.
 
@@ -2787,6 +2814,41 @@ class NetworksecurityProjectsLocationsAuthzPoliciesPatchRequest(_messages.Messag
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsAuthzPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAuthzPoliciesSetIamPolicyRequest
+  object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsAuthzPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAuthzPoliciesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class NetworksecurityProjectsLocationsClientTlsPoliciesCreateRequest(_messages.Message):
@@ -4477,6 +4539,8 @@ encoding.AddCustomJsonFieldMapping(
     NetworksecurityProjectsLocationsAddressGroupsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     NetworksecurityProjectsLocationsAuthorizationPoliciesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    NetworksecurityProjectsLocationsAuthzPoliciesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     NetworksecurityProjectsLocationsClientTlsPoliciesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(

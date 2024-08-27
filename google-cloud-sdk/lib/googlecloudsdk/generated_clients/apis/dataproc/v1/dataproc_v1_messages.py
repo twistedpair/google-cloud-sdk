@@ -4545,7 +4545,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class EncryptionConfig(_messages.Message):
   r"""Encryption settings for the cluster.
 
@@ -4646,10 +4645,6 @@ class EnvironmentConfig(_messages.Message):
 class ExecutionConfig(_messages.Message):
   r"""Execution configuration for a workload.
 
-  Enums:
-    PerformanceTierValueValuesEnum: Optional. Performance tier for workload
-      execution.
-
   Fields:
     authenticationConfig: Optional. Authentication configuration used to set
       the default identity for the workload execution. The config specifies
@@ -4668,7 +4663,6 @@ class ExecutionConfig(_messages.Message):
     kmsKey: Optional. The Cloud KMS key to use for encryption.
     networkTags: Optional. Tags used for network traffic control.
     networkUri: Optional. Network URI to connect workload to.
-    performanceTier: Optional. Performance tier for workload execution.
     serviceAccount: Optional. Service account that used to execute workload.
     stagingBucket: Optional. A Cloud Storage bucket used to stage workload
       dependencies, config files, and store workload output and other
@@ -4695,30 +4689,15 @@ class ExecutionConfig(_messages.Message):
       first.
   """
 
-  class PerformanceTierValueValuesEnum(_messages.Enum):
-    r"""Optional. Performance tier for workload execution.
-
-    Values:
-      PERFORMANCE_TIER_UNSPECIFIED: Performance tier unknown.
-      ECONOMY: Economy performance tier.
-      STANDARD: Standard performance tier.
-      HIGH: High performance tier.
-    """
-    PERFORMANCE_TIER_UNSPECIFIED = 0
-    ECONOMY = 1
-    STANDARD = 2
-    HIGH = 3
-
   authenticationConfig = _messages.MessageField('AuthenticationConfig', 1)
   idleTtl = _messages.StringField(2)
   kmsKey = _messages.StringField(3)
   networkTags = _messages.StringField(4, repeated=True)
   networkUri = _messages.StringField(5)
-  performanceTier = _messages.EnumField('PerformanceTierValueValuesEnum', 6)
-  serviceAccount = _messages.StringField(7)
-  stagingBucket = _messages.StringField(8)
-  subnetworkUri = _messages.StringField(9)
-  ttl = _messages.StringField(10)
+  serviceAccount = _messages.StringField(6)
+  stagingBucket = _messages.StringField(7)
+  subnetworkUri = _messages.StringField(8)
+  ttl = _messages.StringField(9)
 
 
 class ExecutorMetrics(_messages.Message):
@@ -6605,33 +6584,6 @@ class KerberosConfig(_messages.Message):
   truststoreUri = _messages.StringField(15)
 
 
-class Key(_messages.Message):
-  r"""The key that can be used to share data with the workload.
-
-  Enums:
-    TypeValueValuesEnum: Output only. The type of the key.
-
-  Fields:
-    content: Output only. The content of the key.
-    type: Output only. The type of the key.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Output only. The type of the key.
-
-    Values:
-      KEY_TYPE_UNSPECIFIED: Unspecified
-      RSA: RSA public-key type
-      ECIES: ECIES public-key type
-    """
-    KEY_TYPE_UNSPECIFIED = 0
-    RSA = 1
-    ECIES = 2
-
-  content = _messages.StringField(1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
-
-
 class KubernetesClusterConfig(_messages.Message):
   r"""The configuration for running the Dataproc cluster on Kubernetes.
 
@@ -8013,16 +7965,6 @@ class ProvisioningModelMix(_messages.Message):
   standardCapacityPercentAboveBase = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
-class PublicKeys(_messages.Message):
-  r"""The public keys informations from the workload.
-
-  Fields:
-    keys: Output only. The list of keys.
-  """
-
-  keys = _messages.MessageField('Key', 1, repeated=True)
-
-
 class PyFlinkJob(_messages.Message):
   r"""A Dataproc job for running Apache PyFlink (https://flink.apache.org/)
   applications on YARN.
@@ -8739,8 +8681,6 @@ class RuntimeInfo(_messages.Message):
     outputUri: Output only. A URI pointing to the location of the stdout and
       stderr of the workload.
     propertiesInfo: Optional. Properties of the workload organized by origin.
-    publicKeys: Output only. The public keys used for sharing data with this
-      workload.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -8774,7 +8714,6 @@ class RuntimeInfo(_messages.Message):
   endpoints = _messages.MessageField('EndpointsValue', 4)
   outputUri = _messages.StringField(5)
   propertiesInfo = _messages.MessageField('PropertiesInfo', 6)
-  publicKeys = _messages.MessageField('PublicKeys', 7)
 
 
 class SearchSessionSparkApplicationExecutorStageSummaryResponse(_messages.Message):
@@ -9068,7 +9007,6 @@ class Session(_messages.Message):
       ataproc_region]/sessionTemplates/[template_id] * projects/[project_id]/l
       ocations/[dataproc_region]/sessionTemplates/[template_id]The template
       must be in the same project and Dataproc region as the session.
-    spark: Optional. Spark engine config.
     sparkConnectSession: Optional. Spark connect session config.
     state: Output only. A state of the session.
     stateHistory: Output only. Historical state information for the session.
@@ -9137,14 +9075,15 @@ class Session(_messages.Message):
   runtimeConfig = _messages.MessageField('RuntimeConfig', 7)
   runtimeInfo = _messages.MessageField('RuntimeInfo', 8)
   sessionTemplate = _messages.StringField(9)
-  spark = _messages.MessageField('SparkConfig', 10)
-  sparkConnectSession = _messages.MessageField('SparkConnectConfig', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  stateHistory = _messages.MessageField('SessionStateHistory', 13, repeated=True)
-  stateMessage = _messages.StringField(14)
-  stateTime = _messages.StringField(15)
-  user = _messages.StringField(16)
-  uuid = _messages.StringField(17)
+  sparkConnectSession = _messages.MessageField('SparkConnectConfig', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  stateHistory = _messages.MessageField(
+      'SessionStateHistory', 12, repeated=True
+  )
+  stateMessage = _messages.StringField(13)
+  stateTime = _messages.StringField(14)
+  user = _messages.StringField(15)
+  uuid = _messages.StringField(16)
 
 
 class SessionOperationMetadata(_messages.Message):
@@ -9282,7 +9221,6 @@ class SessionTemplate(_messages.Message):
       can be associated with a session.
     name: Required. The resource name of the session template.
     runtimeConfig: Optional. Runtime configuration for session execution.
-    spark: Optional. Spark engine config.
     sparkConnectSession: Optional. Spark connect session config.
     updateTime: Output only. The time the template was last updated.
     uuid: Output only. A session template UUID (Unique Universal Identifier).
@@ -9326,10 +9264,9 @@ class SessionTemplate(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
   runtimeConfig = _messages.MessageField('RuntimeConfig', 8)
-  spark = _messages.MessageField('SparkConfig', 9)
-  sparkConnectSession = _messages.MessageField('SparkConnectConfig', 10)
-  updateTime = _messages.StringField(11)
-  uuid = _messages.StringField(12)
+  sparkConnectSession = _messages.MessageField('SparkConnectConfig', 9)
+  updateTime = _messages.StringField(10)
+  uuid = _messages.StringField(11)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -9751,25 +9688,6 @@ class SparkBatch(_messages.Message):
   jarFileUris = _messages.StringField(4, repeated=True)
   mainClass = _messages.StringField(5)
   mainJarFileUri = _messages.StringField(6)
-
-
-class SparkConfig(_messages.Message):
-  r"""Apache Spark (https://spark.apache.org) engine for an interactive
-  session.
-
-  Fields:
-    archiveUris: Optional. HCFS URIs of archives to be extracted into the
-      working directory of each executor. Supported file types: .jar, .tar,
-      .tar.gz, .tgz, and .zip.
-    fileUris: Optional. HCFS URIs of files to be placed in the working
-      directory of each executor.
-    jarFileUris: Optional. HCFS URIs of jar files to add to the classpath of
-      the Spark driver and tasks.
-  """
-
-  archiveUris = _messages.StringField(1, repeated=True)
-  fileUris = _messages.StringField(2, repeated=True)
-  jarFileUris = _messages.StringField(3, repeated=True)
 
 
 class SparkConnectConfig(_messages.Message):

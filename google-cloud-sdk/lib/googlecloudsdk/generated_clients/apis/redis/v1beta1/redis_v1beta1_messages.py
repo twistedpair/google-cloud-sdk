@@ -33,8 +33,8 @@ class AOFConfig(_messages.Message):
         this configuration, but it's up to the kernel's exact tuning.
       EVERYSEC: fsync every second. Fast enough, and you may lose 1 second of
         data if there is a disaster
-      ALWAYS: fsync every time new commands are appended to the AOF. It has
-        the best data loss protection at the cost of performance
+      ALWAYS: fsync every time new write commands are appended to the AOF. It
+        has the best data loss protection at the cost of performance
     """
     APPEND_FSYNC_UNSPECIFIED = 0
     NO = 1
@@ -54,6 +54,10 @@ class AvailabilityConfiguration(_messages.Message):
       data from more than one zone in a region (it is highly available).
 
   Fields:
+    automaticFailoverRoutingConfigured: Checks for existence of (multi-
+      cluster) routing configuration that allows automatic failover to a
+      different zone/region in case of an outage. Applicable to Bigtable
+      resources.
     availabilityType: Availability type. Potential values: * `ZONAL`: The
       instance serves data from only one zone. Outages in that zone affect
       data accessibility. * `REGIONAL`: The instance can serve data from more
@@ -83,10 +87,11 @@ class AvailabilityConfiguration(_messages.Message):
     MULTI_REGIONAL = 3
     AVAILABILITY_TYPE_OTHER = 4
 
-  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 1)
-  crossRegionReplicaConfigured = _messages.BooleanField(2)
-  externalReplicaConfigured = _messages.BooleanField(3)
-  promotableReplicaConfigured = _messages.BooleanField(4)
+  automaticFailoverRoutingConfigured = _messages.BooleanField(1)
+  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 2)
+  crossRegionReplicaConfigured = _messages.BooleanField(3)
+  externalReplicaConfigured = _messages.BooleanField(4)
+  promotableReplicaConfigured = _messages.BooleanField(5)
 
 
 class BackupConfiguration(_messages.Message):
@@ -1083,8 +1088,11 @@ class DatabaseResourceId(_messages.Message):
     resourceType: Required. The type of resource this ID is identifying. Ex
       redis.googleapis.com/Instance, redis.googleapis.com/Cluster,
       alloydb.googleapis.com/Cluster, alloydb.googleapis.com/Instance,
-      spanner.googleapis.com/Instance, firestore.googleapis.com/Database,
-      REQUIRED Please refer go/condor-common-datamodel
+      spanner.googleapis.com/Instance, spanner.googleapis.com/Database,
+      firestore.googleapis.com/Database, sqladmin.googleapis.com/Instance,
+      bigtableadmin.googleapis.com/Cluster,
+      bigtableadmin.googleapis.com/Instance REQUIRED Please refer go/condor-
+      common-datamodel
     uniqueId: Required. A service-local token that distinguishes this resource
       from other resources within the same service.
   """

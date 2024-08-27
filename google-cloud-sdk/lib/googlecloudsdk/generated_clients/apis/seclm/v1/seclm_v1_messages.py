@@ -13,18 +13,6 @@ from apitools.base.py import extra_types
 package = 'seclm'
 
 
-class BasicAuth(_messages.Message):
-  r"""Basic HTTP authentication information.
-
-  Fields:
-    id: Required. Unique identifier associated with a user account.
-    password: Required. Password associated with ID.
-  """
-
-  id = _messages.StringField(1)
-  password = _messages.StringField(2)
-
-
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -150,32 +138,6 @@ class Empty(_messages.Message):
 
 
 
-class ExtensionUse(_messages.Message):
-  r"""Message describing ExtensionUse object.
-
-  Fields:
-    extensionName: Output only. Name of the extension to execute.
-    hasResults: Output only. Indicates the presence of results.
-    value: Output only. Parameters for the extension to execute.
-  """
-
-  extensionName = _messages.StringField(1)
-  hasResults = _messages.BooleanField(2)
-  value = _messages.StringField(3)
-
-
-class Key(_messages.Message):
-  r"""API keys to be used for MATI and VT in the HTTP authentication header.
-
-  Fields:
-    mati: MATI API key.
-    virusTotal: VirusTotal API key.
-  """
-
-  mati = _messages.MessageField('BasicAuth', 1)
-  virusTotal = _messages.MessageField('BasicAuth', 2)
-
-
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -215,18 +177,6 @@ class ListWorkbenchesResponse(_messages.Message):
   nextPageToken = _messages.StringField(1)
   unreachable = _messages.StringField(2, repeated=True)
   workbenches = _messages.MessageField('Workbench', 3, repeated=True)
-
-
-class LlmTraceInfo(_messages.Message):
-  r"""Trace information about LLM calls.
-
-  Fields:
-    prompt: Output only. The prompt for this LLM call.
-    result: Output only. The result for this LLM call.
-  """
-
-  prompt = _messages.StringField(1)
-  result = _messages.StringField(2)
 
 
 class Location(_messages.Message):
@@ -565,22 +515,6 @@ class SafetySetting(_messages.Message):
   threshold = _messages.EnumField('ThresholdValueValuesEnum', 2)
 
 
-class SeclmContext(_messages.Message):
-  r"""Represents SecLM backend context for a Duet request. This is used to
-  pass the full qualified SecLM workbench name to the duet
-  TaskCompletionRequest.
-
-  Fields:
-    fullyQualifiedWorkbenchName: The fully qualified SecLM workbench name.
-      Format:
-      `projects/{project}/locations/{location}/workbenches/{workbench_name}`
-      e.g. `projects/seclm-playground/locations/us-
-      central1/workbenches/logging-enabled`
-  """
-
-  fullyQualifiedWorkbenchName = _messages.StringField(1)
-
-
 class SeclmProjectsLocationsGetRequest(_messages.Message):
   r"""A SeclmProjectsLocationsGetRequest object.
 
@@ -898,7 +832,7 @@ class Status(_messages.Message):
 
 
 class Workbench(_messages.Message):
-  r"""Message describing Workbench object.
+  r"""Message describing Workbench object. Next ID: 9
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs.
@@ -907,9 +841,6 @@ class Workbench(_messages.Message):
     createTime: Output only. Create time stamp.
     labels: Optional. Labels as key value pairs.
     name: Identifier. Name of resource.
-    presetConfig: Optional. Configuration to use pre-defined query execution
-      logic. Values include: - passthrough (gemini-1.0-pro) - passthrough-
-      gemini-1.5-pro - passthrough-gemini-1.5-flash - passthrough-secpalm-v3
     updateTime: Output only. Update time stamp.
   """
 
@@ -940,8 +871,7 @@ class Workbench(_messages.Message):
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
-  presetConfig = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  updateTime = _messages.StringField(4)
 
 
 class WorkbenchQueryRequest(_messages.Message):
@@ -952,21 +882,12 @@ class WorkbenchQueryRequest(_messages.Message):
       model. For single-turn queries, this is a single instance. For multi-
       turn queries, this is a repeated field that contains conversation
       history + latest request.
-    includeLlmTraceInfo: Optional. Indicates whether tracing information about
-      LLM calls should be included in the response.
-    keys: Optional. API keys to be used for MATI and VT, if they are provided.
-    outputHint: Optional. An output hint enables us to skip the planning stage
-      and jump directly to the sub-method. Values include: [XQL, ICD, XHP,
-      CHRONICLE]
     safetySettings: Optional. Per request settings for blocking unsafe
       content. Enforced on GenerateContentResponse.candidates.
   """
 
   contents = _messages.MessageField('Content', 1, repeated=True)
-  includeLlmTraceInfo = _messages.BooleanField(2)
-  keys = _messages.MessageField('Key', 3, repeated=True)
-  outputHint = _messages.StringField(4)
-  safetySettings = _messages.MessageField('SafetySetting', 5, repeated=True)
+  safetySettings = _messages.MessageField('SafetySetting', 2, repeated=True)
 
 
 class WorkbenchQueryResponse(_messages.Message):
@@ -974,14 +895,9 @@ class WorkbenchQueryResponse(_messages.Message):
 
   Fields:
     candidates: Output only. Candidate responses from the model.
-    extensionsUsed: Output only. Extensions used.
-    llmTraceInfos: Output only. Trace information about LLM calls, if
-      requested.
   """
 
   candidates = _messages.MessageField('Candidate', 1, repeated=True)
-  extensionsUsed = _messages.MessageField('ExtensionUse', 2, repeated=True)
-  llmTraceInfos = _messages.MessageField('LlmTraceInfo', 3, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -33,8 +33,8 @@ class AOFConfig(_messages.Message):
         this configuration, but it's up to the kernel's exact tuning.
       EVERYSEC: fsync every second. Fast enough, and you may lose 1 second of
         data if there is a disaster
-      ALWAYS: fsync every time new commands are appended to the AOF. It has
-        the best data loss protection at the cost of performance
+      ALWAYS: fsync every time new write commands are appended to the AOF. It
+        has the best data loss protection at the cost of performance
     """
     APPEND_FSYNC_UNSPECIFIED = 0
     NO = 1
@@ -54,6 +54,10 @@ class AvailabilityConfiguration(_messages.Message):
       data from more than one zone in a region (it is highly available).
 
   Fields:
+    automaticFailoverRoutingConfigured: Checks for existence of (multi-
+      cluster) routing configuration that allows automatic failover to a
+      different zone/region in case of an outage. Applicable to Bigtable
+      resources.
     availabilityType: Availability type. Potential values: * `ZONAL`: The
       instance serves data from only one zone. Outages in that zone affect
       data accessibility. * `REGIONAL`: The instance can serve data from more
@@ -83,10 +87,11 @@ class AvailabilityConfiguration(_messages.Message):
     MULTI_REGIONAL = 3
     AVAILABILITY_TYPE_OTHER = 4
 
-  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 1)
-  crossRegionReplicaConfigured = _messages.BooleanField(2)
-  externalReplicaConfigured = _messages.BooleanField(3)
-  promotableReplicaConfigured = _messages.BooleanField(4)
+  automaticFailoverRoutingConfigured = _messages.BooleanField(1)
+  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 2)
+  crossRegionReplicaConfigured = _messages.BooleanField(3)
+  externalReplicaConfigured = _messages.BooleanField(4)
+  promotableReplicaConfigured = _messages.BooleanField(5)
 
 
 class BackupConfiguration(_messages.Message):
@@ -195,6 +200,10 @@ class Cluster(_messages.Message):
     discoveryEndpoints: Output only. Endpoints created on each given network,
       for Redis clients to connect to the cluster. Currently only one
       discovery endpoint is supported.
+    maintenancePolicy: Optional. ClusterMaintenancePolicy determines when to
+      allow or deny updates.
+    maintenanceSchedule: Output only. ClusterMaintenanceSchedule Output only
+      Published maintenance schedule.
     name: Required. Identifier. Unique name of the resource in this scope
       including project and location using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
@@ -319,21 +328,58 @@ class Cluster(_messages.Message):
   crossClusterReplicationConfig = _messages.MessageField('CrossClusterReplicationConfig', 3)
   deletionProtectionEnabled = _messages.BooleanField(4)
   discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 5, repeated=True)
-  name = _messages.StringField(6)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 7)
-  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 8)
-  preciseSizeGb = _messages.FloatField(9)
-  pscConfigs = _messages.MessageField('PscConfig', 10, repeated=True)
-  pscConnections = _messages.MessageField('PscConnection', 11, repeated=True)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 12)
-  replicaCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  sizeGb = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  stateInfo = _messages.MessageField('StateInfo', 17)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 18)
-  uid = _messages.StringField(19)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 20)
+  maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 6)
+  maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 7)
+  name = _messages.StringField(8)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 9)
+  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 10)
+  preciseSizeGb = _messages.FloatField(11)
+  pscConfigs = _messages.MessageField('PscConfig', 12, repeated=True)
+  pscConnections = _messages.MessageField('PscConnection', 13, repeated=True)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 14)
+  replicaCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  stateInfo = _messages.MessageField('StateInfo', 19)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 20)
+  uid = _messages.StringField(21)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 22)
+
+
+class ClusterMaintenancePolicy(_messages.Message):
+  r"""Maintenance policy per cluster.
+
+  Fields:
+    createTime: Output only. The time when the policy was created i.e.
+      Maintenance Window or Deny Period was assigned.
+    updateTime: Output only. The time when the policy was updated i.e.
+      Maintenance Window or Deny Period was updated.
+    weeklyMaintenanceWindow: Optional. Maintenance window that is applied to
+      resources covered by this policy. Minimum 1. For the current version,
+      the maximum number of weekly_maintenance_window is expected to be one.
+  """
+
+  createTime = _messages.StringField(1)
+  updateTime = _messages.StringField(2)
+  weeklyMaintenanceWindow = _messages.MessageField('ClusterWeeklyMaintenanceWindow', 3, repeated=True)
+
+
+class ClusterMaintenanceSchedule(_messages.Message):
+  r"""Upcoming maitenance schedule.
+
+  Fields:
+    endTime: Output only. The end time of any upcoming scheduled maintenance
+      for this instance.
+    scheduleDeadlineTime: Output only. The deadline that the maintenance
+      schedule start time can not go beyond, including reschedule.
+    startTime: Output only. The start time of any upcoming scheduled
+      maintenance for this instance.
+  """
+
+  endTime = _messages.StringField(1)
+  scheduleDeadlineTime = _messages.StringField(2)
+  startTime = _messages.StringField(3)
 
 
 class ClusterPersistenceConfig(_messages.Message):
@@ -367,6 +413,46 @@ class ClusterPersistenceConfig(_messages.Message):
   aofConfig = _messages.MessageField('AOFConfig', 1)
   mode = _messages.EnumField('ModeValueValuesEnum', 2)
   rdbConfig = _messages.MessageField('RDBConfig', 3)
+
+
+class ClusterWeeklyMaintenanceWindow(_messages.Message):
+  r"""Time window specified for weekly operations.
+
+  Enums:
+    DayValueValuesEnum: Allows to define schedule that runs specified day of
+      the week.
+
+  Fields:
+    day: Allows to define schedule that runs specified day of the week.
+    duration: Duration of the time window.
+    startTime: Start time of the window in UTC.
+  """
+
+  class DayValueValuesEnum(_messages.Enum):
+    r"""Allows to define schedule that runs specified day of the week.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  day = _messages.EnumField('DayValueValuesEnum', 1)
+  duration = _messages.StringField(2)
+  startTime = _messages.MessageField('TimeOfDay', 3)
 
 
 class Compliance(_messages.Message):
@@ -958,8 +1044,11 @@ class DatabaseResourceId(_messages.Message):
     resourceType: Required. The type of resource this ID is identifying. Ex
       redis.googleapis.com/Instance, redis.googleapis.com/Cluster,
       alloydb.googleapis.com/Cluster, alloydb.googleapis.com/Instance,
-      spanner.googleapis.com/Instance, firestore.googleapis.com/Database,
-      REQUIRED Please refer go/condor-common-datamodel
+      spanner.googleapis.com/Instance, spanner.googleapis.com/Database,
+      firestore.googleapis.com/Database, sqladmin.googleapis.com/Instance,
+      bigtableadmin.googleapis.com/Cluster,
+      bigtableadmin.googleapis.com/Instance REQUIRED Please refer go/condor-
+      common-datamodel
     uniqueId: Required. A service-local token that distinguishes this resource
       from other resources within the same service.
   """
@@ -3009,6 +3098,22 @@ class RedisProjectsLocationsClustersPatchRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class RedisProjectsLocationsClustersRescheduleClusterMaintenanceRequest(_messages.Message):
+  r"""A RedisProjectsLocationsClustersRescheduleClusterMaintenanceRequest
+  object.
+
+  Fields:
+    name: Required. Redis Cluster instance resource name using the form:
+      `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
+      where `location_id` refers to a GCP region.
+    rescheduleClusterMaintenanceRequest: A RescheduleClusterMaintenanceRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rescheduleClusterMaintenanceRequest = _messages.MessageField('RescheduleClusterMaintenanceRequest', 2)
+
+
 class RedisProjectsLocationsGetRequest(_messages.Message):
   r"""A RedisProjectsLocationsGetRequest object.
 
@@ -3273,6 +3378,39 @@ class RemoteCluster(_messages.Message):
 
   cluster = _messages.StringField(1)
   uid = _messages.StringField(2)
+
+
+class RescheduleClusterMaintenanceRequest(_messages.Message):
+  r"""Request for rescheduling a cluster maintenance.
+
+  Enums:
+    RescheduleTypeValueValuesEnum: Required. If reschedule type is
+      SPECIFIC_TIME, must set up schedule_time as well.
+
+  Fields:
+    rescheduleType: Required. If reschedule type is SPECIFIC_TIME, must set up
+      schedule_time as well.
+    scheduleTime: Optional. Timestamp when the maintenance shall be
+      rescheduled to if reschedule_type=SPECIFIC_TIME, in RFC 3339 format, for
+      example `2012-11-15T16:19:00.094Z`.
+  """
+
+  class RescheduleTypeValueValuesEnum(_messages.Enum):
+    r"""Required. If reschedule type is SPECIFIC_TIME, must set up
+    schedule_time as well.
+
+    Values:
+      RESCHEDULE_TYPE_UNSPECIFIED: Not set.
+      IMMEDIATE: If the user wants to schedule the maintenance to happen now.
+      SPECIFIC_TIME: If the user wants to reschedule the maintenance to a
+        specific time.
+    """
+    RESCHEDULE_TYPE_UNSPECIFIED = 0
+    IMMEDIATE = 1
+    SPECIFIC_TIME = 2
+
+  rescheduleType = _messages.EnumField('RescheduleTypeValueValuesEnum', 1)
+  scheduleTime = _messages.StringField(2)
 
 
 class RescheduleMaintenanceRequest(_messages.Message):

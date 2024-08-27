@@ -558,6 +558,7 @@ class CommandGroup(CommandCommon):
 
     group_infos, command_infos = command_loading.FindSubElements(impl_paths,
                                                                  path)
+    self._RemoveInitExtensionsFileIfNeeded(command_infos)
     self._groups_to_load.update(group_infos)
     self._commands_to_load.update(command_infos)
 
@@ -757,6 +758,21 @@ class CommandGroup(CommandCommon):
         _GroupSubElementsOfSameTypeByCategory(self.groups))
 
     return categories
+
+  def _RemoveInitExtensionsFileIfNeeded(self, command_infos):
+    """Removes _init_extensions.py file from command_infos dict if present.
+
+    It prevents loading _init_extensions.py as a command file.
+    This additional file is used by CLI Autogen to extend the functionality of
+    an __init__.py file by allowing to add no-auto-generated custom code.
+
+    Args:
+      command_infos: dict, A dictionary of command names to a list of file
+        paths that implement that command.
+    """
+    init_extensions_file = '_init_extensions'
+    if init_extensions_file in command_infos:
+      command_infos.pop(init_extensions_file)
 
 
 class Command(CommandCommon):

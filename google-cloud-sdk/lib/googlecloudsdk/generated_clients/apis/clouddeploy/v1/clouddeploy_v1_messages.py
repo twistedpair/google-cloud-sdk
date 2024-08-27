@@ -3307,11 +3307,11 @@ class GatewayServiceMesh(_messages.Message):
     podSelectorLabel: Optional. The label to use when selecting Pods for the
       Deployment and Service resources. This label must already be present in
       both resources.
-    routeDestinations: Optional. The clusters where the HTTPRoute resource
-      will be deployed. Valid entries include the associated entity IDs
-      configured in the `Target` and "@self" to include the `Target`s
-      deployment cluster. If unspecified, the HTTPRoute will be deployed to
-      the `Target`s deployment cluster.
+    routeDestinations: Optional. Route destinations allow configuring the
+      Gateway API HTTPRoute to be deployed to additional clusters. This option
+      is available for multi-cluster service mesh set ups that require the
+      route to exist in the clusters that call the service. If unspecified,
+      the HTTPRoute will only be deployed to the Target cluster.
     routeUpdateWaitTime: Optional. The time to wait for route updates to
       propagate. The maximum configurable time is 3 hours, in seconds format.
       If unspecified, there is no wait time.
@@ -3325,7 +3325,7 @@ class GatewayServiceMesh(_messages.Message):
   deployment = _messages.StringField(1)
   httpRoute = _messages.StringField(2)
   podSelectorLabel = _messages.StringField(3)
-  routeDestinations = _messages.StringField(4, repeated=True)
+  routeDestinations = _messages.MessageField('RouteDestinations', 4)
   routeUpdateWaitTime = _messages.StringField(5)
   service = _messages.StringField(6)
   stableCutbackDuration = _messages.StringField(7)
@@ -5686,6 +5686,25 @@ class RolloutUpdateEvent(_messages.Message):
   rolloutUpdateType = _messages.EnumField('RolloutUpdateTypeValueValuesEnum', 6)
   targetId = _messages.StringField(7)
   type = _messages.EnumField('TypeValueValuesEnum', 8)
+
+
+class RouteDestinations(_messages.Message):
+  r"""Information about route destinations for the Gateway API service mesh.
+
+  Fields:
+    destinationIds: Required. The clusters where the Gateway API HTTPRoute
+      resource will be deployed to. Valid entries include the associated
+      entities IDs configured in the Target resource and "@self" to include
+      the Target cluster.
+    propagateService: Optional. Whether to propagate the Kubernetes Service to
+      the route destination clusters. The Service will always be deployed to
+      the Target cluster even if the HTTPRoute is not. This option may be used
+      to facilitiate successful DNS lookup in the route destination clusters.
+      Can only be set to true if destinations are specified.
+  """
+
+  destinationIds = _messages.StringField(1, repeated=True)
+  propagateService = _messages.BooleanField(2)
 
 
 class RuntimeConfig(_messages.Message):

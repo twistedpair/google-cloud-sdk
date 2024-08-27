@@ -652,3 +652,22 @@ def AddResizeDiskFlags(parser):
           'a maximum of 64000 GB (64 TB). '
       ),
   )
+
+
+def AddRestoreInstanceFlags(parser):
+  """Adds snapshot flags to the parser for restore."""
+  AddInstanceResource(parser)
+  snapshot_group = parser.add_group(
+      help=(
+          'Snapshot source to be restored from'
+      ),
+      required=True,
+  )
+  snapshot_group.add_argument(
+      '--snapshot-project',
+      help='The project id of the snapshot to be restored from.',
+      required=True)
+  snapshot_group.add_argument(
+      '--snapshot',
+      help='The snapshot name to be restored from.',
+      required=True)

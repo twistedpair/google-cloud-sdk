@@ -281,7 +281,6 @@ class ExternallyModified(_messages.Message):
   """
 
 
-
 class Finding(_messages.Message):
   r"""Finding represents an issue which prevents PAM from functioning properly
   for this resource.
@@ -319,9 +318,9 @@ class GoogleProtobufEmpty(_messages.Message):
   """
 
 
-
 class Grant(_messages.Message):
   r"""This is to ensure that the `Grants` and `ProducerGrants` proto are byte
+
   compatible. A grant represents a request from a user for obtaining the
   access specified in an entitlement they are eligible for.
 
@@ -334,6 +333,11 @@ class Grant(_messages.Message):
     auditTrail: Output only. Audit trail of access provided by this grant. If
       unspecified then access was never granted.
     createTime: Output only. Create time stamp.
+    externallyModified: Output only. Flag set by the PAM system to indicate
+      that policy bindings made by this grant have been modified from outside
+      PAM. After it is set, this flag remains set forever irrespective of the
+      grant state. A `true` value here indicates that PAM no longer has any
+      certainty on the access a user has because of this grant.
     justification: Optional. Justification of why this access is needed.
     name: Identifier. Name of this grant. Possible formats: *
       `organizations/{organization-
@@ -393,14 +397,15 @@ class Grant(_messages.Message):
   additionalEmailRecipients = _messages.StringField(1, repeated=True)
   auditTrail = _messages.MessageField('AuditTrail', 2)
   createTime = _messages.StringField(3)
-  justification = _messages.MessageField('Justification', 4)
-  name = _messages.StringField(5)
-  privilegedAccess = _messages.MessageField('PrivilegedAccess', 6)
-  requestedDuration = _messages.StringField(7)
-  requester = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  timeline = _messages.MessageField('Timeline', 10)
-  updateTime = _messages.StringField(11)
+  externallyModified = _messages.BooleanField(4)
+  justification = _messages.MessageField('Justification', 5)
+  name = _messages.StringField(6)
+  privilegedAccess = _messages.MessageField('PrivilegedAccess', 7)
+  requestedDuration = _messages.StringField(8)
+  requester = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  timeline = _messages.MessageField('Timeline', 11)
+  updateTime = _messages.StringField(12)
 
 
 class IAMAccessDenied(_messages.Message):
@@ -592,7 +597,6 @@ class NotMandatory(_messages.Message):
   r"""The justification is not mandatory but can be provided in any of the
   supported formats.
   """
-
 
 
 class Operation(_messages.Message):

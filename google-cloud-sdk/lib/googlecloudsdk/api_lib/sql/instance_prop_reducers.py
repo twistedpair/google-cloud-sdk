@@ -177,7 +177,8 @@ def BackupConfiguration(sql_messages,
         'Argument --retained-transaction-log-days only valid when '
         'transaction logs are enabled. To enable transaction logs, use '
         '--enable-bin-log for MySQL, and use --enable-point-in-time-recovery '
-        'for Postgres.')
+        'for Postgres and SQL Server.'
+    )
 
   return backup_config
 
@@ -646,3 +647,48 @@ def PasswordPolicy(
     password_policy.enablePasswordPolicy = enable_password_policy
 
   return password_policy
+
+
+def PscAutoConnections(
+    sql_messages,
+    psc_auto_connections=None,
+):
+  """Generates PSC auto connections for the instance.
+
+  Args:
+    sql_messages: module, The messages module that should be used.
+    psc_auto_connections: dict of the allowed consumer projects and networks.
+
+  Returns:
+    list of sql_messages.PscAutoConnectionConfig objects
+
+  Raises:
+    exceptions.InvalidArgumentException when there is no valid network or
+    project specified.
+  """
+  updated_psc_auto_connections = []
+  for connection in psc_auto_connections:
+    current_psc_auto_connection = sql_messages.PscAutoConnectionConfig()
+    current_psc_auto_connection.consumerNetwork = connection.get('network')
+
+    if project := connection.get('project'):
+      current_psc_auto_connection.consumerProject = project
+    else:
+      client = common_api_util.SqlClient(common_api_util.API_VERSION_DEFAULT)
+      network_ref = client.resource_parser.ParseRelativeName(
+          current_psc_auto_connection.consumerNetwork,
+          collection='compute.networks',
+      )
+      current_psc_auto_connection.consumerProject = network_ref.project
+
+    if (
+        current_psc_auto_connection.consumerProject
+        and current_psc_auto_connection.consumerNetwork
+    ):
+      updated_psc_auto_connections.append(current_psc_auto_connection)
+    else:
+      raise exceptions.InvalidArgumentException(
+          '--psc-auto-connections', 'PSC auto connection must have network '
+          'specified.'
+      )
+  return updated_psc_auto_connections

@@ -821,6 +821,46 @@ class DetachAppNetworkRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
+class DomainFilter(_messages.Message):
+  r"""A domain filter defines an action to take for some domain name match.
+
+  Enums:
+    FilteringActionValueValuesEnum: Required. The action taken when this
+      filter is applied.
+
+  Fields:
+    domains: Required. The list of strings that a domain name must match with
+      for this filter to be applied.
+    filteringAction: Required. The action taken when this filter is applied.
+  """
+
+  class FilteringActionValueValuesEnum(_messages.Enum):
+    r"""Required. The action taken when this filter is applied.
+
+    Values:
+      DOMAIN_FILTERING_ACTION_UNSPECIFIED: Filtering action not specified.
+      ALLOW: The connection matching this filter will be allowed to transmit.
+      DENY: The connection matching this filter will be dropped.
+    """
+    DOMAIN_FILTERING_ACTION_UNSPECIFIED = 0
+    ALLOW = 1
+    DENY = 2
+
+  domains = _messages.StringField(1, repeated=True)
+  filteringAction = _messages.EnumField('FilteringActionValueValuesEnum', 2)
+
+
+class DomainFilteringProfile(_messages.Message):
+  r"""DomainFilteringProfile defines filters based on domain name.
+
+  Fields:
+    domainFilters: Optional. The list of filtering configs in which each
+      config defines an action to take for some domain name match.
+  """
+
+  domainFilters = _messages.MessageField('DomainFilter', 1, repeated=True)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -2555,11 +2595,20 @@ class MirroringDeployment(_messages.Message):
       ACTIVE: Ready.
       CREATING: Being created.
       DELETING: Being deleted.
+      OUT_OF_SYNC: The underlying data plane is out of sync with the
+        deployment. The deployment is not expected to be usable. This state
+        can result in undefined behavior.
+      DELETE_FAILED: An attempt to delete the deployment has failed. This is a
+        terminal state and the deployment is not expected to be usable as some
+        of its resources have been deleted. The only permitted operation is to
+        retry deleting the deployment.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     CREATING = 2
     DELETING = 3
+    OUT_OF_SYNC = 4
+    DELETE_FAILED = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2670,13 +2719,10 @@ class MirroringDeploymentGroupConnectedEndpointGroup(_messages.Message):
   r"""An endpoint group connected to this deployment group.
 
   Fields:
-    associations: Output only. The list of Mirroring Endpoint Group
-      Associations.
     name: Output only. A connected mirroring endpoint group.
   """
 
-  associations = _messages.StringField(1, repeated=True)
-  name = _messages.StringField(2)
+  name = _messages.StringField(1)
 
 
 class MirroringEndpointGroup(_messages.Message):
@@ -2707,16 +2753,18 @@ class MirroringEndpointGroup(_messages.Message):
     Values:
       STATE_UNSPECIFIED: Not set.
       ACTIVE: Ready.
-      REJECTED: The deployment group has been deleted and mirroring is
-        disabled.
+      CLOSED: The deployment group has been deleted and mirroring is disabled.
       CREATING: Being created.
       DELETING: Being deleted.
+      OUT_OF_SYNC: The underlying data plane is out of sync with the endpoint
+        group. Some associations might not be usable.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
-    REJECTED = 2
+    CLOSED = 2
     CREATING = 3
     DELETING = 4
+    OUT_OF_SYNC = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2785,16 +2833,25 @@ class MirroringEndpointGroupAssociation(_messages.Message):
     Values:
       STATE_UNSPECIFIED: Not set.
       ACTIVE: Ready.
-      INACTIVE: The resource is partially not ready, some associations might
-        not be in a valid state.
       CREATING: Being created.
       DELETING: Being deleted.
+      CLOSED: Mirroring is disabled due to an operation on another resource.
+      OUT_OF_SYNC: The underlying data plane is out of sync with the
+        association. The association is not expected to be usable. This state
+        can result in undefined behavior. See the `locations_details` field
+        for more details.
+      DELETE_FAILED: An attempt to delete the association has failed. This is
+        a terminal state and the association is not expected to be usable as
+        some of its resources have been deleted. The only permitted operation
+        is to retry deleting the association.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
-    INACTIVE = 2
-    CREATING = 3
-    DELETING = 4
+    CREATING = 2
+    DELETING = 3
+    CLOSED = 4
+    OUT_OF_SYNC = 5
+    DELETE_FAILED = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2839,7 +2896,6 @@ class MirroringEndpointGroupAssociationLocationDetails(_messages.Message):
 
   Fields:
     location: Output only. The cloud location.
-    reason: Output only. The reason for an invalid state, if one is available.
     state: Output only. The association state in this location.
   """
 
@@ -2849,15 +2905,15 @@ class MirroringEndpointGroupAssociationLocationDetails(_messages.Message):
     Values:
       STATE_UNSPECIFIED: Not set.
       ACTIVE: Ready.
-      FAILED: Failed to actuate the association.
+      OUT_OF_SYNC: The data plane is out of sync with the association in this
+        location.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
-    FAILED = 2
+    OUT_OF_SYNC = 2
 
   location = _messages.StringField(1)
-  reason = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class NetworksecurityOrganizationsLocationsAddressGroupsAddItemsRequest(_messages.Message):
@@ -3837,6 +3893,33 @@ class NetworksecurityProjectsLocationsAuthzPoliciesDeleteRequest(_messages.Messa
   requestId = _messages.StringField(2)
 
 
+class NetworksecurityProjectsLocationsAuthzPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAuthzPoliciesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class NetworksecurityProjectsLocationsAuthzPoliciesGetRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsAuthzPoliciesGetRequest object.
 
@@ -3902,6 +3985,41 @@ class NetworksecurityProjectsLocationsAuthzPoliciesPatchRequest(_messages.Messag
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsAuthzPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAuthzPoliciesSetIamPolicyRequest
+  object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsAuthzPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAuthzPoliciesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class NetworksecurityProjectsLocationsClientTlsPoliciesCreateRequest(_messages.Message):
@@ -6799,8 +6917,6 @@ class PartnerSSEEnvironment(_messages.Message):
   Enums:
     SecurityServiceValueValuesEnum: Immutable. Only SYMANTEC_CLOUD_SWG uses
       PartnerSSEEnvironment today.
-    SseServiceValueValuesEnum: Immutable. Only SYMANTEC_CLOUD_SWG uses
-      PartnerSSEEnvironment today. Deprecated; use security_service instead.
 
   Messages:
     LabelsValue: Optional. Labels as key value pair
@@ -6825,8 +6941,8 @@ class PartnerSSEEnvironment(_messages.Message):
       Should be at least a /20.
     sseProject: Output only. Google-owned project created for this
       environment.
-    sseService: Immutable. Only SYMANTEC_CLOUD_SWG uses PartnerSSEEnvironment
-      today. Deprecated; use security_service instead.
+    sseProjectNumber: Output only. [Output only] CDEN owned project owning
+      sse_network.
     symantecOptions: Optional. Required iff sse_service is SYMANTEC_CLOUD_SWG.
     updateTime: Output only. [Output only] Update time stamp
   """
@@ -6842,22 +6958,6 @@ class PartnerSSEEnvironment(_messages.Message):
       SYMANTEC_CLOUD_SWG: Symantec Cloud SWG is not fully supported yet.
     """
     SECURITY_SERVICE_UNSPECIFIED = 0
-    PALO_ALTO_PRISMA_ACCESS = 1
-    SYMANTEC_CLOUD_SWG = 2
-
-  class SseServiceValueValuesEnum(_messages.Enum):
-    r"""Immutable. Only SYMANTEC_CLOUD_SWG uses PartnerSSEEnvironment today.
-    Deprecated; use security_service instead.
-
-    Values:
-      SSE_SERVICE_UNSPECIFIED: The default value. This value is used if the
-        state is omitted.
-      PALO_ALTO_PRISMA_ACCESS: [Palo Alto Networks Prisma
-        Access](https://www.paloaltonetworks.com/sase/access).
-      SYMANTEC_CLOUD_SWG: Symantec Cloud SWG is not fully supported yet - see
-        b/323856877.
-    """
-    SSE_SERVICE_UNSPECIFIED = 0
     PALO_ALTO_PRISMA_ACCESS = 1
     SYMANTEC_CLOUD_SWG = 2
 
@@ -6895,7 +6995,7 @@ class PartnerSSEEnvironment(_messages.Message):
   sseNetwork = _messages.StringField(8)
   sseNetworkingRanges = _messages.StringField(9, repeated=True)
   sseProject = _messages.StringField(10)
-  sseService = _messages.EnumField('SseServiceValueValuesEnum', 11)
+  sseProjectNumber = _messages.IntegerField(11)
   symantecOptions = _messages.MessageField('PartnerSSEEnvironmentSymantecEnvironmentOptions', 12)
   updateTime = _messages.StringField(13)
 
@@ -6924,13 +7024,10 @@ class PartnerSSEEnvironmentSymantecEnvironmentOptions(_messages.Message):
       manually connected to the Symantec backend. If false (the default), the
       Google backend will call api_endpoint to provision resources for Partner
       Gateways created in this environment.
-    useNccgwFlow: Optional. If true, only SAC Realms can reference this
-      environment; if false, only SSE Realms can reference this environment.
   """
 
   apiEndpoint = _messages.StringField(1)
   testOnlyStandaloneMode = _messages.BooleanField(2)
-  useNccgwFlow = _messages.BooleanField(3)
 
 
 class PartnerSSEGateway(_messages.Message):
@@ -7424,7 +7521,11 @@ class SACRealmSACRealmSymantecOptions(_messages.Message):
     secretId: Optional. API Key used to call Symantec APIs on the user's
       behalf. Required if using SYMANTEC_CLOUD_SWG. ID of the Secret
       containing the Symantec API Key which will be used to call the Symantec
-      API on the customer's behalf. Required if using SYMANTEC_CLOUD_SWG.
+      API on the customer's behalf. Required if using SYMANTEC_CLOUD_SWG. A
+      secret or secret version name (URI) can be specified, but it will be
+      parsed and stored as just the ID. For example, if the user inputs
+      "projects/my-project/secrets/my-secret/versions/1", the SAC Realm will
+      hold just "my-secret".
   """
 
   apiKey = _messages.StringField(1)
@@ -7735,6 +7836,8 @@ class SecurityProfile(_messages.Message):
       the SecurityProfile.
     description: Optional. An optional description of the profile. Max length
       512 characters.
+    domainFilteringProfile: The domain filtering configuration for the
+      SecurityProfile.
     etag: Output only. This checksum is computed by the server based on the
       value of other fields, and may be sent on update and delete requests to
       ensure the client has an up-to-date value before proceeding.
@@ -7758,11 +7861,13 @@ class SecurityProfile(_messages.Message):
       THREAT_PREVENTION: Profile type for threat prevention.
       CUSTOM_MIRRORING: Profile type for packet mirroring v2
       CUSTOM_INTERCEPT: Profile type for TPPI.
+      DOMAIN_FILTERING: Profile type for domain filtering.
     """
     PROFILE_TYPE_UNSPECIFIED = 0
     THREAT_PREVENTION = 1
     CUSTOM_MIRRORING = 2
     CUSTOM_INTERCEPT = 3
+    DOMAIN_FILTERING = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -7792,12 +7897,13 @@ class SecurityProfile(_messages.Message):
   customInterceptProfile = _messages.MessageField('CustomInterceptProfile', 2)
   customMirroringProfile = _messages.MessageField('CustomMirroringProfile', 3)
   description = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  threatPreventionProfile = _messages.MessageField('ThreatPreventionProfile', 8)
-  type = _messages.EnumField('TypeValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  domainFilteringProfile = _messages.MessageField('DomainFilteringProfile', 5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  threatPreventionProfile = _messages.MessageField('ThreatPreventionProfile', 9)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class SecurityProfileGroup(_messages.Message):
@@ -7815,6 +7921,8 @@ class SecurityProfileGroup(_messages.Message):
       CustomMirroring configuration.
     description: Optional. An optional description of the profile group. Max
       length 2048 characters.
+    domainFilteringProfile: Optional. Reference to a SecurityProfile with the
+      DomainFiltering configuration.
     etag: Output only. This checksum is computed by the server based on the
       value of other fields, and may be sent on update and delete requests to
       ensure the client has an up-to-date value before proceeding.
@@ -7855,11 +7963,12 @@ class SecurityProfileGroup(_messages.Message):
   customInterceptProfile = _messages.StringField(2)
   customMirroringProfile = _messages.StringField(3)
   description = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  threatPreventionProfile = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  domainFilteringProfile = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  threatPreventionProfile = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class ServerTlsPolicy(_messages.Message):
@@ -8431,6 +8540,8 @@ encoding.AddCustomJsonFieldMapping(
     NetworksecurityProjectsLocationsAddressGroupsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     NetworksecurityProjectsLocationsAuthorizationPoliciesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    NetworksecurityProjectsLocationsAuthzPoliciesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     NetworksecurityProjectsLocationsClientTlsPoliciesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
