@@ -428,6 +428,8 @@ class Templates:
                                      'java11-template-launcher-base:latest')
   FLEX_TEMPLATE_JAVA17_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
                                      'java17-template-launcher-base:latest')
+  FLEX_TEMPLATE_JAVA21_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
+                                     'java21-template-launcher-base:latest')
   FLEX_TEMPLATE_JAVA8_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
                                     'java8-template-launcher-base:latest')
   FLEX_TEMPLATE_PYTHON3_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
@@ -833,6 +835,8 @@ class Templates:
       return Templates.FLEX_TEMPLATE_JAVA11_BASE_IMAGE
     elif flex_template_base_image == 'JAVA17':
       return Templates.FLEX_TEMPLATE_JAVA17_BASE_IMAGE
+    elif flex_template_base_image == 'JAVA21':
+      return Templates.FLEX_TEMPLATE_JAVA21_BASE_IMAGE
     elif flex_template_base_image == 'JAVA8':
       return Templates.FLEX_TEMPLATE_JAVA8_BASE_IMAGE
     elif flex_template_base_image == 'PYTHON3':

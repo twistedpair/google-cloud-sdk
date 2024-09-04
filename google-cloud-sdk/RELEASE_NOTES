@@ -5,6 +5,61 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 491.0.0 (2024-09-04)
+
+### Breaking Changes
+
+*   **(GKE Hub)** `gcloud container fleet scopes namespaces get-credentials` now requires the
+    permission `gkehub.gateway.generateCredentials` (automatically included in
+    roles `gkehub.gatewayReader`, `gkehub.gatewayEditor`, and
+    `gkehub.gatewayAdmin`), as well as network access to
+    `*connectgateway.googleapis.com`.
+*   **(Kubernetes Engine)** Changed `gcloud container clusters update` to use current cluster DNS config as base for changes rather than default DNS config. In addition, the user will only be prompted about the necessary node pool upgrade when specified cluster DNS provider is different than the current value in the cluster.
+
+
+### Google Cloud CLI
+
+* Updated Windows bundled Python for the `gcloud` CLI to 3.11.9.
+
+### Artifact Registry
+
+* Fixed issue where `gcloud artifacts docker images describe` fails when no
+metadata flag is specified and API enablement check is denied.
+
+### Cloud Dataflow
+
+* Allow JAVA21 in `--flex-template-base-image` option for
+`gcloud dataflow flex-template build`.
+
+### Cloud Firestore
+
+* Promoted `--encryption-type` and `--kms-key-name` flag of `gcloud firestore databases restore` command to beta and GA.
+
+### Cloud Identity-Aware Proxy
+
+* Added `--resource-type=forwarding-rule` to `gcloud iap setting` and `gcloud iap web` in ALPHA.
+
+### Cloud NetApp
+
+* Added `--hybrid-replication-parameters` flag to `gcloud netapp volumes {create}`.
+
+### Cloud Workstations
+
+* Deprecated `--disable-ssh-to-vm` flag in `gcloud workstations
+  config create` command. Use `--enable-ssh-to-vm` flag instead.
+
+### Compute Engine
+
+* Fix incorrect padding issues for `gcloud add_signed_url_key` method.
+
+### Kpt
+
+* Updated kpt to v1.0.0-beta.50. See <https://github.com/kptdev/kpt/releases/tag/v1.0.0-beta.55> for more details.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 490.0.0 (2024-08-27)
 
 ### App Hub

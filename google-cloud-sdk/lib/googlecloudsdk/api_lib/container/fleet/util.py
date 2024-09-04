@@ -20,8 +20,6 @@ from __future__ import unicode_literals
 
 import re
 
-from typing import Union
-
 from googlecloudsdk.api_lib.container.fleet import types
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
@@ -29,7 +27,6 @@ from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
 from googlecloudsdk.generated_clients.apis.gkehub.v1alpha import gkehub_v1alpha_messages as alpha_messages
-from googlecloudsdk.generated_clients.apis.gkehub.v2alpha import gkehub_v2alpha_client as v2_alpha_client
 
 
 VERSION_MAP = {
@@ -38,9 +35,10 @@ VERSION_MAP = {
     base.ReleaseTrack.GA: 'v1',
 }
 
-# TODO(b/349197714): Add v2beta and v2 before promote to GA.
 V2_VERSION_MAP = {
     base.ReleaseTrack.ALPHA: 'v2alpha',
+    base.ReleaseTrack.BETA: 'v2beta',
+    base.ReleaseTrack.GA: 'v2',
 }
 
 
@@ -82,9 +80,7 @@ def GetClientInstance(
 
 def GetV2ClientInstance(
     release_track=base.ReleaseTrack.ALPHA,
-) -> Union[
-    v2_alpha_client.GkehubV2alpha
-]:
+) -> types.V2TrackClient:
   return apis.GetClientInstance('gkehub', V2_VERSION_MAP[release_track])
 
 

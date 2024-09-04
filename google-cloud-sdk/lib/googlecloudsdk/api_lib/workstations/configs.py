@@ -125,7 +125,10 @@ class Configs:
         args.enable_nested_virtualization
     )
     config.host.gceInstance.bootDiskSizeGb = args.boot_disk_size
-    config.host.gceInstance.disableSsh = args.disable_ssh_to_vm
+    if args.IsSpecified('disable_ssh_to_vm'):
+      config.host.gceInstance.disableSsh = args.disable_ssh_to_vm
+    else:
+      config.host.gceInstance.disableSsh = not args.enable_ssh_to_vm
     if args.accelerator_type and args.accelerator_count:
       accelerators = [
           self.messages.Accelerator(

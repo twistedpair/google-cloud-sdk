@@ -1733,11 +1733,15 @@ apis:
   cloudaicompanion:
     v1alpha:
       discovery_doc: cloudaicompanion_v1alpha.json
+    v1:
+      discovery_doc: cloudaicompanion_v1.json
       default: true
   oracledatabase:
+    v1:
+      discovery_doc: oracledatabase_v1.json
+      default: true
     v1alpha:
       discovery_doc: oracledatabase_v1alpha.json
-      default: true
 canonical_surfaces:
   accessapproval:
     name: accessapproval

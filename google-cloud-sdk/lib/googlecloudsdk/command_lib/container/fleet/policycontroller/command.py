@@ -167,7 +167,7 @@ class PocoCommand:
         policycontroller=spec.policycontroller
     )
 
-  def update_specs(self, specs: SpecMapping) -> None:
+  def update_specs(self, specs: SpecMapping, use_default_cfg=False) -> None:
     """Merges spec changes and sends and update to the API.
 
     Specs refer to PolicyControllerMembershipSpec objects defined here:
@@ -179,6 +179,7 @@ class PocoCommand:
     Args:
       specs: Specs with updates. These are merged with the existing spec (new
         values overriding) and the merged result is sent to the Update api.
+      use_default_cfg: If true, use the default config for the update.
 
     Returns:
       None
@@ -187,12 +188,14 @@ class PocoCommand:
         membershipSpecs=self.hubclient.ToMembershipSpecs(specs)
     )
 
-    if util.UseMembershipFeatureV2(self.Project(), self.ReleaseTrack()):
+    if not use_default_cfg and util.UseMembershipFeatureV2(
+        self.Project(), self.ReleaseTrack()
+    ):
       for spec in feature.membershipSpecs.additionalProperties:
         membership_path = spec.key
         v1_spec = spec.value
         membershipfeature = convert.ToV2MembershipFeature(
-            membership_path, 'policycontroller', v1_spec
+            self, membership_path, 'policycontroller', v1_spec
         )
         self.UpdateV2(membership_path, ['spec'], membershipfeature)
     else:

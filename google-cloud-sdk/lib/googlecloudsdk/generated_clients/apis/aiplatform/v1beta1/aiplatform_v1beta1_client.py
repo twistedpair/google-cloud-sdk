@@ -39,6 +39,9 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.datasets_datasetVersions = self.DatasetsDatasetVersionsService(self)
+    self.datasets = self.DatasetsService(self)
+    self.endpoints = self.EndpointsService(self)
     self.media = self.MediaService(self)
     self.projects_locations_agents_operations = self.ProjectsLocationsAgentsOperationsService(self)
     self.projects_locations_agents = self.ProjectsLocationsAgentsService(self)
@@ -164,6 +167,439 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     self.projects = self.ProjectsService(self)
     self.publishers_models = self.PublishersModelsService(self)
     self.publishers = self.PublishersService(self)
+
+  class DatasetsDatasetVersionsService(base_api.BaseApiService):
+    """Service class for the datasets_datasetVersions resource."""
+
+    _NAME = 'datasets_datasetVersions'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.DatasetsDatasetVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a version from a Dataset.
+
+      Args:
+        request: (AiplatformDatasetsDatasetVersionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/datasets/{datasetsId}/datasetVersions',
+        http_method='POST',
+        method_id='aiplatform.datasets.datasetVersions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/datasetVersions',
+        request_field='googleCloudAiplatformV1beta1DatasetVersion',
+        request_type_name='AiplatformDatasetsDatasetVersionsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a Dataset version.
+
+      Args:
+        request: (AiplatformDatasetsDatasetVersionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/datasets/{datasetsId}/datasetVersions/{datasetVersionsId}',
+        http_method='DELETE',
+        method_id='aiplatform.datasets.datasetVersions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformDatasetsDatasetVersionsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a Dataset version.
+
+      Args:
+        request: (AiplatformDatasetsDatasetVersionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1DatasetVersion) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/datasets/{datasetsId}/datasetVersions/{datasetVersionsId}',
+        http_method='GET',
+        method_id='aiplatform.datasets.datasetVersions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['readMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformDatasetsDatasetVersionsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1DatasetVersion',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists DatasetVersions in a Dataset.
+
+      Args:
+        request: (AiplatformDatasetsDatasetVersionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListDatasetVersionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/datasets/{datasetsId}/datasetVersions',
+        http_method='GET',
+        method_id='aiplatform.datasets.datasetVersions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'readMask'],
+        relative_path='v1beta1/{+parent}/datasetVersions',
+        request_field='',
+        request_type_name='AiplatformDatasetsDatasetVersionsListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListDatasetVersionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a DatasetVersion.
+
+      Args:
+        request: (AiplatformDatasetsDatasetVersionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1DatasetVersion) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/datasets/{datasetsId}/datasetVersions/{datasetVersionsId}',
+        http_method='PATCH',
+        method_id='aiplatform.datasets.datasetVersions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudAiplatformV1beta1DatasetVersion',
+        request_type_name='AiplatformDatasetsDatasetVersionsPatchRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1DatasetVersion',
+        supports_download=False,
+    )
+
+    def Restore(self, request, global_params=None):
+      r"""Restores a dataset version.
+
+      Args:
+        request: (AiplatformDatasetsDatasetVersionsRestoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Restore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Restore.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/datasets/{datasetsId}/datasetVersions/{datasetVersionsId}:restore',
+        http_method='GET',
+        method_id='aiplatform.datasets.datasetVersions.restore',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:restore',
+        request_field='',
+        request_type_name='AiplatformDatasetsDatasetVersionsRestoreRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class DatasetsService(base_api.BaseApiService):
+    """Service class for the datasets resource."""
+
+    _NAME = 'datasets'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.DatasetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Dataset.
+
+      Args:
+        request: (AiplatformDatasetsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='aiplatform.datasets.create',
+        ordered_params=[],
+        path_params=[],
+        query_params=['parent'],
+        relative_path='v1beta1/datasets',
+        request_field='googleCloudAiplatformV1beta1Dataset',
+        request_type_name='AiplatformDatasetsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a Dataset.
+
+      Args:
+        request: (AiplatformDatasetsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/datasets/{datasetsId}',
+        http_method='DELETE',
+        method_id='aiplatform.datasets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformDatasetsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a Dataset.
+
+      Args:
+        request: (AiplatformDatasetsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1Dataset) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/datasets/{datasetsId}',
+        http_method='GET',
+        method_id='aiplatform.datasets.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['readMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformDatasetsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1Dataset',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Datasets in a Location.
+
+      Args:
+        request: (AiplatformDatasetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListDatasetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='aiplatform.datasets.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'parent', 'readMask'],
+        relative_path='v1beta1/datasets',
+        request_field='',
+        request_type_name='AiplatformDatasetsListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListDatasetsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a Dataset.
+
+      Args:
+        request: (AiplatformDatasetsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1Dataset) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/datasets/{datasetsId}',
+        http_method='PATCH',
+        method_id='aiplatform.datasets.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudAiplatformV1beta1Dataset',
+        request_type_name='AiplatformDatasetsPatchRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1Dataset',
+        supports_download=False,
+    )
+
+  class EndpointsService(base_api.BaseApiService):
+    """Service class for the endpoints resource."""
+
+    _NAME = 'endpoints'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.EndpointsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def ComputeTokens(self, request, global_params=None):
+      r"""Return a list of tokens based on the input text.
+
+      Args:
+        request: (AiplatformEndpointsComputeTokensRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ComputeTokensResponse) The response message.
+      """
+      config = self.GetMethodConfig('ComputeTokens')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ComputeTokens.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/endpoints/{endpointsId}:computeTokens',
+        http_method='POST',
+        method_id='aiplatform.endpoints.computeTokens',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:computeTokens',
+        request_field='googleCloudAiplatformV1beta1ComputeTokensRequest',
+        request_type_name='AiplatformEndpointsComputeTokensRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ComputeTokensResponse',
+        supports_download=False,
+    )
+
+    def CountTokens(self, request, global_params=None):
+      r"""Perform a token counting.
+
+      Args:
+        request: (AiplatformEndpointsCountTokensRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1CountTokensResponse) The response message.
+      """
+      config = self.GetMethodConfig('CountTokens')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CountTokens.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/endpoints/{endpointsId}:countTokens',
+        http_method='POST',
+        method_id='aiplatform.endpoints.countTokens',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:countTokens',
+        request_field='googleCloudAiplatformV1beta1CountTokensRequest',
+        request_type_name='AiplatformEndpointsCountTokensRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1CountTokensResponse',
+        supports_download=False,
+    )
+
+    def GenerateContent(self, request, global_params=None):
+      r"""Generate content with multimodal inputs.
+
+      Args:
+        request: (AiplatformEndpointsGenerateContentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1GenerateContentResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateContent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateContent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/endpoints/{endpointsId}:generateContent',
+        http_method='POST',
+        method_id='aiplatform.endpoints.generateContent',
+        ordered_params=['model'],
+        path_params=['model'],
+        query_params=[],
+        relative_path='v1beta1/{+model}:generateContent',
+        request_field='googleCloudAiplatformV1beta1GenerateContentRequest',
+        request_type_name='AiplatformEndpointsGenerateContentRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1GenerateContentResponse',
+        supports_download=False,
+    )
+
+    def StreamGenerateContent(self, request, global_params=None):
+      r"""Generate content with multimodal inputs with streaming support.
+
+      Args:
+        request: (AiplatformEndpointsStreamGenerateContentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1GenerateContentResponse) The response message.
+      """
+      config = self.GetMethodConfig('StreamGenerateContent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StreamGenerateContent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/endpoints/{endpointsId}:streamGenerateContent',
+        http_method='POST',
+        method_id='aiplatform.endpoints.streamGenerateContent',
+        ordered_params=['model'],
+        path_params=['model'],
+        query_params=[],
+        relative_path='v1beta1/{+model}:streamGenerateContent',
+        request_field='googleCloudAiplatformV1beta1GenerateContentRequest',
+        request_type_name='AiplatformEndpointsStreamGenerateContentRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1GenerateContentResponse',
+        supports_download=False,
+    )
 
   class MediaService(base_api.BaseApiService):
     """Service class for the media resource."""
@@ -1732,7 +2168,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists Annotations belongs to a dataitem.
+      r"""Lists Annotations belongs to a dataitem This RPC is only available in InternalDatasetService. It is only used for exporting conversation data to CCAI Insights.
 
       Args:
         request: (AiplatformProjectsLocationsDatasetsDataItemsAnnotationsListRequest) input message
@@ -18508,6 +18944,87 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def ComputeTokens(self, request, global_params=None):
+      r"""Return a list of tokens based on the input text.
+
+      Args:
+        request: (AiplatformPublishersModelsComputeTokensRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ComputeTokensResponse) The response message.
+      """
+      config = self.GetMethodConfig('ComputeTokens')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ComputeTokens.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/publishers/{publishersId}/models/{modelsId}:computeTokens',
+        http_method='POST',
+        method_id='aiplatform.publishers.models.computeTokens',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:computeTokens',
+        request_field='googleCloudAiplatformV1beta1ComputeTokensRequest',
+        request_type_name='AiplatformPublishersModelsComputeTokensRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ComputeTokensResponse',
+        supports_download=False,
+    )
+
+    def CountTokens(self, request, global_params=None):
+      r"""Perform a token counting.
+
+      Args:
+        request: (AiplatformPublishersModelsCountTokensRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1CountTokensResponse) The response message.
+      """
+      config = self.GetMethodConfig('CountTokens')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CountTokens.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/publishers/{publishersId}/models/{modelsId}:countTokens',
+        http_method='POST',
+        method_id='aiplatform.publishers.models.countTokens',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:countTokens',
+        request_field='googleCloudAiplatformV1beta1CountTokensRequest',
+        request_type_name='AiplatformPublishersModelsCountTokensRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1CountTokensResponse',
+        supports_download=False,
+    )
+
+    def GenerateContent(self, request, global_params=None):
+      r"""Generate content with multimodal inputs.
+
+      Args:
+        request: (AiplatformPublishersModelsGenerateContentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1GenerateContentResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateContent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateContent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/publishers/{publishersId}/models/{modelsId}:generateContent',
+        http_method='POST',
+        method_id='aiplatform.publishers.models.generateContent',
+        ordered_params=['model'],
+        path_params=['model'],
+        query_params=[],
+        relative_path='v1beta1/{+model}:generateContent',
+        request_field='googleCloudAiplatformV1beta1GenerateContentRequest',
+        request_type_name='AiplatformPublishersModelsGenerateContentRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1GenerateContentResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets a Model Garden publisher model.
 
@@ -18559,6 +19076,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformPublishersModelsListRequest',
         response_type_name='GoogleCloudAiplatformV1beta1ListPublisherModelsResponse',
+        supports_download=False,
+    )
+
+    def StreamGenerateContent(self, request, global_params=None):
+      r"""Generate content with multimodal inputs with streaming support.
+
+      Args:
+        request: (AiplatformPublishersModelsStreamGenerateContentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1GenerateContentResponse) The response message.
+      """
+      config = self.GetMethodConfig('StreamGenerateContent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StreamGenerateContent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/publishers/{publishersId}/models/{modelsId}:streamGenerateContent',
+        http_method='POST',
+        method_id='aiplatform.publishers.models.streamGenerateContent',
+        ordered_params=['model'],
+        path_params=['model'],
+        query_params=[],
+        relative_path='v1beta1/{+model}:streamGenerateContent',
+        request_field='googleCloudAiplatformV1beta1GenerateContentRequest',
+        request_type_name='AiplatformPublishersModelsStreamGenerateContentRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1GenerateContentResponse',
         supports_download=False,
     )
 

@@ -21,12 +21,16 @@ intended to be used in type hints when the specific track is not known.
 """
 
 from typing import Generator, Union
+
 from googlecloudsdk.generated_clients.apis.gkehub.v1 import gkehub_v1_client as ga_client
 from googlecloudsdk.generated_clients.apis.gkehub.v1 import gkehub_v1_messages as ga_messages
 from googlecloudsdk.generated_clients.apis.gkehub.v1alpha import gkehub_v1alpha_client as alpha_client
 from googlecloudsdk.generated_clients.apis.gkehub.v1alpha import gkehub_v1alpha_messages as alpha_messages
 from googlecloudsdk.generated_clients.apis.gkehub.v1beta import gkehub_v1beta_client as beta_client
 from googlecloudsdk.generated_clients.apis.gkehub.v1beta import gkehub_v1beta_messages as beta_messages
+from googlecloudsdk.generated_clients.apis.gkehub.v2 import gkehub_v2_client as v2_ga_client
+from googlecloudsdk.generated_clients.apis.gkehub.v2alpha import gkehub_v2alpha_client as v2_alpha_client
+from googlecloudsdk.generated_clients.apis.gkehub.v2beta import gkehub_v2beta_client as v2_beta_client
 
 
 BinaryAuthorizationConfig = Union[
@@ -166,4 +170,10 @@ SecurityPostureConfigVulnerabilityModeValueValuesEnum = Union[
 
 TrackClient = Union[
     alpha_client.GkehubV1alpha, beta_client.GkehubV1beta, ga_client.GkehubV1
+]
+
+V2TrackClient = Union[
+    v2_alpha_client.GkehubV2alpha,
+    v2_beta_client.GkehubV2beta,
+    v2_ga_client.GkehubV2,
 ]

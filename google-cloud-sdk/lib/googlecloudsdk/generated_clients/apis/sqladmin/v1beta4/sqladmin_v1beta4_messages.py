@@ -135,6 +135,8 @@ class Backup(_messages.Message):
     expiryTime: Backup expiration time. Timestamp in UTC of when this resource
       is considered expired.
     instance: Name of the database instance.
+    instanceDeletionTime: Optional. Output only. Timestamp in UTC of when the
+      instance associated with this backup is deleted.
     kind: Output only. This is always `sql#backup`.
     kmsKey: Output only. Encryption configuration specific to a backup.
       Resource name of KMS key for disk encryption
@@ -209,17 +211,18 @@ class Backup(_messages.Message):
   error = _messages.MessageField('OperationError', 4)
   expiryTime = _messages.StringField(5)
   instance = _messages.StringField(6)
-  kind = _messages.StringField(7)
-  kmsKey = _messages.StringField(8)
-  kmsKeyVersion = _messages.StringField(9)
-  location = _messages.StringField(10)
-  maxChargeableBytes = _messages.IntegerField(11)
-  name = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  timeZone = _messages.StringField(15)
-  ttlDays = _messages.IntegerField(16)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  instanceDeletionTime = _messages.StringField(7)
+  kind = _messages.StringField(8)
+  kmsKey = _messages.StringField(9)
+  kmsKeyVersion = _messages.StringField(10)
+  location = _messages.StringField(11)
+  maxChargeableBytes = _messages.IntegerField(12)
+  name = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  timeZone = _messages.StringField(16)
+  ttlDays = _messages.IntegerField(17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
 
 
 class BackupConfiguration(_messages.Message):
@@ -652,6 +655,7 @@ class ConnectSettings(_messages.Message):
       POSTGRES_14: The database version is PostgreSQL 14.
       POSTGRES_15: The database version is PostgreSQL 15.
       POSTGRES_16: The database version is PostgreSQL 16.
+      POSTGRES_17: The database version is PostgreSQL 17.
       MYSQL_8_0: The database version is MySQL 8.
       MYSQL_8_0_18: The database major version is MySQL 8.0 and the minor
         version is 18.
@@ -716,32 +720,33 @@ class ConnectSettings(_messages.Message):
     POSTGRES_14 = 14
     POSTGRES_15 = 15
     POSTGRES_16 = 16
-    MYSQL_8_0 = 17
-    MYSQL_8_0_18 = 18
-    MYSQL_8_0_26 = 19
-    MYSQL_8_0_27 = 20
-    MYSQL_8_0_28 = 21
-    MYSQL_8_0_29 = 22
-    MYSQL_8_0_30 = 23
-    MYSQL_8_0_31 = 24
-    MYSQL_8_0_32 = 25
-    MYSQL_8_0_33 = 26
-    MYSQL_8_0_34 = 27
-    MYSQL_8_0_35 = 28
-    MYSQL_8_0_36 = 29
-    MYSQL_8_0_37 = 30
-    MYSQL_8_0_38 = 31
-    MYSQL_8_0_39 = 32
-    MYSQL_8_0_40 = 33
-    MYSQL_8_4 = 34
-    SQLSERVER_2019_STANDARD = 35
-    SQLSERVER_2019_ENTERPRISE = 36
-    SQLSERVER_2019_EXPRESS = 37
-    SQLSERVER_2019_WEB = 38
-    SQLSERVER_2022_STANDARD = 39
-    SQLSERVER_2022_ENTERPRISE = 40
-    SQLSERVER_2022_EXPRESS = 41
-    SQLSERVER_2022_WEB = 42
+    POSTGRES_17 = 17
+    MYSQL_8_0 = 18
+    MYSQL_8_0_18 = 19
+    MYSQL_8_0_26 = 20
+    MYSQL_8_0_27 = 21
+    MYSQL_8_0_28 = 22
+    MYSQL_8_0_29 = 23
+    MYSQL_8_0_30 = 24
+    MYSQL_8_0_31 = 25
+    MYSQL_8_0_32 = 26
+    MYSQL_8_0_33 = 27
+    MYSQL_8_0_34 = 28
+    MYSQL_8_0_35 = 29
+    MYSQL_8_0_36 = 30
+    MYSQL_8_0_37 = 31
+    MYSQL_8_0_38 = 32
+    MYSQL_8_0_39 = 33
+    MYSQL_8_0_40 = 34
+    MYSQL_8_4 = 35
+    SQLSERVER_2019_STANDARD = 36
+    SQLSERVER_2019_ENTERPRISE = 37
+    SQLSERVER_2019_EXPRESS = 38
+    SQLSERVER_2019_WEB = 39
+    SQLSERVER_2022_STANDARD = 40
+    SQLSERVER_2022_ENTERPRISE = 41
+    SQLSERVER_2022_EXPRESS = 42
+    SQLSERVER_2022_WEB = 43
 
   class ServerCaModeValueValuesEnum(_messages.Enum):
     r"""Specify what type of CA is used for the server certificate.
@@ -994,6 +999,7 @@ class DatabaseInstance(_messages.Message):
       POSTGRES_14: The database version is PostgreSQL 14.
       POSTGRES_15: The database version is PostgreSQL 15.
       POSTGRES_16: The database version is PostgreSQL 16.
+      POSTGRES_17: The database version is PostgreSQL 17.
       MYSQL_8_0: The database version is MySQL 8.
       MYSQL_8_0_18: The database major version is MySQL 8.0 and the minor
         version is 18.
@@ -1058,32 +1064,33 @@ class DatabaseInstance(_messages.Message):
     POSTGRES_14 = 14
     POSTGRES_15 = 15
     POSTGRES_16 = 16
-    MYSQL_8_0 = 17
-    MYSQL_8_0_18 = 18
-    MYSQL_8_0_26 = 19
-    MYSQL_8_0_27 = 20
-    MYSQL_8_0_28 = 21
-    MYSQL_8_0_29 = 22
-    MYSQL_8_0_30 = 23
-    MYSQL_8_0_31 = 24
-    MYSQL_8_0_32 = 25
-    MYSQL_8_0_33 = 26
-    MYSQL_8_0_34 = 27
-    MYSQL_8_0_35 = 28
-    MYSQL_8_0_36 = 29
-    MYSQL_8_0_37 = 30
-    MYSQL_8_0_38 = 31
-    MYSQL_8_0_39 = 32
-    MYSQL_8_0_40 = 33
-    MYSQL_8_4 = 34
-    SQLSERVER_2019_STANDARD = 35
-    SQLSERVER_2019_ENTERPRISE = 36
-    SQLSERVER_2019_EXPRESS = 37
-    SQLSERVER_2019_WEB = 38
-    SQLSERVER_2022_STANDARD = 39
-    SQLSERVER_2022_ENTERPRISE = 40
-    SQLSERVER_2022_EXPRESS = 41
-    SQLSERVER_2022_WEB = 42
+    POSTGRES_17 = 17
+    MYSQL_8_0 = 18
+    MYSQL_8_0_18 = 19
+    MYSQL_8_0_26 = 20
+    MYSQL_8_0_27 = 21
+    MYSQL_8_0_28 = 22
+    MYSQL_8_0_29 = 23
+    MYSQL_8_0_30 = 24
+    MYSQL_8_0_31 = 25
+    MYSQL_8_0_32 = 26
+    MYSQL_8_0_33 = 27
+    MYSQL_8_0_34 = 28
+    MYSQL_8_0_35 = 29
+    MYSQL_8_0_36 = 30
+    MYSQL_8_0_37 = 31
+    MYSQL_8_0_38 = 32
+    MYSQL_8_0_39 = 33
+    MYSQL_8_0_40 = 34
+    MYSQL_8_4 = 35
+    SQLSERVER_2019_STANDARD = 36
+    SQLSERVER_2019_ENTERPRISE = 37
+    SQLSERVER_2019_EXPRESS = 38
+    SQLSERVER_2019_WEB = 39
+    SQLSERVER_2022_STANDARD = 40
+    SQLSERVER_2022_ENTERPRISE = 41
+    SQLSERVER_2022_EXPRESS = 42
+    SQLSERVER_2022_WEB = 43
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""Stores the current database version including minor version such as
@@ -1109,6 +1116,7 @@ class DatabaseInstance(_messages.Message):
       POSTGRES_14: The database version is PostgreSQL 14.
       POSTGRES_15: The database version is PostgreSQL 15.
       POSTGRES_16: The database version is PostgreSQL 16.
+      POSTGRES_17: The database version is PostgreSQL 17.
       MYSQL_8_0: The database version is MySQL 8.
       MYSQL_8_0_18: The database major version is MySQL 8.0 and the minor
         version is 18.
@@ -1173,32 +1181,33 @@ class DatabaseInstance(_messages.Message):
     POSTGRES_14 = 14
     POSTGRES_15 = 15
     POSTGRES_16 = 16
-    MYSQL_8_0 = 17
-    MYSQL_8_0_18 = 18
-    MYSQL_8_0_26 = 19
-    MYSQL_8_0_27 = 20
-    MYSQL_8_0_28 = 21
-    MYSQL_8_0_29 = 22
-    MYSQL_8_0_30 = 23
-    MYSQL_8_0_31 = 24
-    MYSQL_8_0_32 = 25
-    MYSQL_8_0_33 = 26
-    MYSQL_8_0_34 = 27
-    MYSQL_8_0_35 = 28
-    MYSQL_8_0_36 = 29
-    MYSQL_8_0_37 = 30
-    MYSQL_8_0_38 = 31
-    MYSQL_8_0_39 = 32
-    MYSQL_8_0_40 = 33
-    MYSQL_8_4 = 34
-    SQLSERVER_2019_STANDARD = 35
-    SQLSERVER_2019_ENTERPRISE = 36
-    SQLSERVER_2019_EXPRESS = 37
-    SQLSERVER_2019_WEB = 38
-    SQLSERVER_2022_STANDARD = 39
-    SQLSERVER_2022_ENTERPRISE = 40
-    SQLSERVER_2022_EXPRESS = 41
-    SQLSERVER_2022_WEB = 42
+    POSTGRES_17 = 17
+    MYSQL_8_0 = 18
+    MYSQL_8_0_18 = 19
+    MYSQL_8_0_26 = 20
+    MYSQL_8_0_27 = 21
+    MYSQL_8_0_28 = 22
+    MYSQL_8_0_29 = 23
+    MYSQL_8_0_30 = 24
+    MYSQL_8_0_31 = 25
+    MYSQL_8_0_32 = 26
+    MYSQL_8_0_33 = 27
+    MYSQL_8_0_34 = 28
+    MYSQL_8_0_35 = 29
+    MYSQL_8_0_36 = 30
+    MYSQL_8_0_37 = 31
+    MYSQL_8_0_38 = 32
+    MYSQL_8_0_39 = 33
+    MYSQL_8_0_40 = 34
+    MYSQL_8_4 = 35
+    SQLSERVER_2019_STANDARD = 36
+    SQLSERVER_2019_ENTERPRISE = 37
+    SQLSERVER_2019_EXPRESS = 38
+    SQLSERVER_2019_WEB = 39
+    SQLSERVER_2022_STANDARD = 40
+    SQLSERVER_2022_ENTERPRISE = 41
+    SQLSERVER_2022_EXPRESS = 42
+    SQLSERVER_2022_WEB = 43
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -1784,6 +1793,7 @@ class Flag(_messages.Message):
       POSTGRES_14: The database version is PostgreSQL 14.
       POSTGRES_15: The database version is PostgreSQL 15.
       POSTGRES_16: The database version is PostgreSQL 16.
+      POSTGRES_17: The database version is PostgreSQL 17.
       MYSQL_8_0: The database version is MySQL 8.
       MYSQL_8_0_18: The database major version is MySQL 8.0 and the minor
         version is 18.
@@ -1848,32 +1858,33 @@ class Flag(_messages.Message):
     POSTGRES_14 = 14
     POSTGRES_15 = 15
     POSTGRES_16 = 16
-    MYSQL_8_0 = 17
-    MYSQL_8_0_18 = 18
-    MYSQL_8_0_26 = 19
-    MYSQL_8_0_27 = 20
-    MYSQL_8_0_28 = 21
-    MYSQL_8_0_29 = 22
-    MYSQL_8_0_30 = 23
-    MYSQL_8_0_31 = 24
-    MYSQL_8_0_32 = 25
-    MYSQL_8_0_33 = 26
-    MYSQL_8_0_34 = 27
-    MYSQL_8_0_35 = 28
-    MYSQL_8_0_36 = 29
-    MYSQL_8_0_37 = 30
-    MYSQL_8_0_38 = 31
-    MYSQL_8_0_39 = 32
-    MYSQL_8_0_40 = 33
-    MYSQL_8_4 = 34
-    SQLSERVER_2019_STANDARD = 35
-    SQLSERVER_2019_ENTERPRISE = 36
-    SQLSERVER_2019_EXPRESS = 37
-    SQLSERVER_2019_WEB = 38
-    SQLSERVER_2022_STANDARD = 39
-    SQLSERVER_2022_ENTERPRISE = 40
-    SQLSERVER_2022_EXPRESS = 41
-    SQLSERVER_2022_WEB = 42
+    POSTGRES_17 = 17
+    MYSQL_8_0 = 18
+    MYSQL_8_0_18 = 19
+    MYSQL_8_0_26 = 20
+    MYSQL_8_0_27 = 21
+    MYSQL_8_0_28 = 22
+    MYSQL_8_0_29 = 23
+    MYSQL_8_0_30 = 24
+    MYSQL_8_0_31 = 25
+    MYSQL_8_0_32 = 26
+    MYSQL_8_0_33 = 27
+    MYSQL_8_0_34 = 28
+    MYSQL_8_0_35 = 29
+    MYSQL_8_0_36 = 30
+    MYSQL_8_0_37 = 31
+    MYSQL_8_0_38 = 32
+    MYSQL_8_0_39 = 33
+    MYSQL_8_0_40 = 34
+    MYSQL_8_4 = 35
+    SQLSERVER_2019_STANDARD = 36
+    SQLSERVER_2019_ENTERPRISE = 37
+    SQLSERVER_2019_EXPRESS = 38
+    SQLSERVER_2019_WEB = 39
+    SQLSERVER_2022_STANDARD = 40
+    SQLSERVER_2022_ENTERPRISE = 41
+    SQLSERVER_2022_EXPRESS = 42
+    SQLSERVER_2022_WEB = 43
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being `BOOLEAN`, `STRING`,
@@ -3460,6 +3471,8 @@ class Settings(_messages.Message):
     replicationType: The type of replication this instance uses. This can be
       either `ASYNCHRONOUS` or `SYNCHRONOUS`. (Deprecated) This property was
       only applicable to First Generation instances.
+    retainBackupsOnDelete: Optional. When this parameter is set to true, Cloud
+      SQL retains backups of the instance even after the instance is deleted.
     settingsVersion: The version of instance settings. This is a required
       field for update method to make sure concurrent updates are handled
       properly. During update, use the most recent settingsVersion value for
@@ -3653,13 +3666,14 @@ class Settings(_messages.Message):
   recreateReplicasOnPrimaryCrash = _messages.BooleanField(29)
   replicationLagMaxSeconds = _messages.IntegerField(30, variant=_messages.Variant.INT32)
   replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 31)
-  settingsVersion = _messages.IntegerField(32)
-  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 33)
-  storageAutoResize = _messages.BooleanField(34)
-  storageAutoResizeLimit = _messages.IntegerField(35)
-  tier = _messages.StringField(36)
-  timeZone = _messages.StringField(37)
-  userLabels = _messages.MessageField('UserLabelsValue', 38)
+  retainBackupsOnDelete = _messages.BooleanField(32)
+  settingsVersion = _messages.IntegerField(33)
+  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 34)
+  storageAutoResize = _messages.BooleanField(35)
+  storageAutoResizeLimit = _messages.IntegerField(36)
+  tier = _messages.StringField(37)
+  timeZone = _messages.StringField(38)
+  userLabels = _messages.MessageField('UserLabelsValue', 39)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):
@@ -4038,6 +4052,8 @@ class SqlExternalSyncSettingError(_messages.Message):
         created in the replica. First, create all users, which are in the
         pg_user_mappings table of the source database, in the destination
         instance. Then, perform the migration.
+      UNSUPPORTED_SYSTEM_OBJECTS: The selected objects include system objects
+        that aren't supported for migration.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -4090,6 +4106,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     EXTENSIONS_NOT_ENABLED_IN_REPLICA = 48
     UNSUPPORTED_COLUMNS = 49
     USERS_NOT_CREATED_IN_REPLICA = 50
+    UNSUPPORTED_SYSTEM_OBJECTS = 51
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)

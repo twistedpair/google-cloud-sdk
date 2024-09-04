@@ -98,11 +98,6 @@ _PUBSUB_NOTICE_URL = (
 )
 
 
-def _DefaultToFastUpdate():
-  # TODO(b/153353954): Clean this up.
-  return True
-
-
 def Stringize(value):
   if isinstance(value, six.string_types):
     return value
@@ -2672,9 +2667,6 @@ class _SectionExperimental(_Section):
 
   def __init__(self):
     super(_SectionExperimental, self).__init__('experimental', hidden=True)
-    self.fast_component_update = self._AddBool(
-        'fast_component_update',
-        callbacks=[_DefaultToFastUpdate])
 
 
 class _SectionFilestore(_Section):

@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.iap import util as iap_api
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exc
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.iap import exceptions as iap_exc
@@ -32,12 +33,36 @@ WEB_RESOURCE_TYPE = 'iap_web'
 COMPUTE_RESOURCE_TYPE = 'compute'
 ORG_RESOURCE_TYPE = 'organization'
 FOLDER_RESOURCE_TYPE = 'folder'
-RESOURCE_TYPE_ENUM = (APP_ENGINE_RESOURCE_TYPE, BACKEND_SERVICES_RESOURCE_TYPE)
-IAM_RESOURCE_TYPE_ENUM = (APP_ENGINE_RESOURCE_TYPE,
-                          BACKEND_SERVICES_RESOURCE_TYPE)
-SETTING_RESOURCE_TYPE_ENUM = (APP_ENGINE_RESOURCE_TYPE, WEB_RESOURCE_TYPE,
-                              COMPUTE_RESOURCE_TYPE, ORG_RESOURCE_TYPE,
-                              FOLDER_RESOURCE_TYPE)
+FORWARDING_RULE_RESOURCE_TYPE = 'forwarding-rule'
+RESOURCE_TYPE_ENUM = (
+    APP_ENGINE_RESOURCE_TYPE,
+    BACKEND_SERVICES_RESOURCE_TYPE,
+)
+RESOURCE_TYPE_ENUM_ALPHA = (
+    APP_ENGINE_RESOURCE_TYPE,
+    BACKEND_SERVICES_RESOURCE_TYPE,
+    FORWARDING_RULE_RESOURCE_TYPE,
+)
+IAM_RESOURCE_TYPE_ENUM = (
+    APP_ENGINE_RESOURCE_TYPE,
+    BACKEND_SERVICES_RESOURCE_TYPE,
+)
+SETTING_RESOURCE_TYPE_ENUM = (
+    APP_ENGINE_RESOURCE_TYPE,
+    WEB_RESOURCE_TYPE,
+    COMPUTE_RESOURCE_TYPE,
+    ORG_RESOURCE_TYPE,
+    FOLDER_RESOURCE_TYPE,
+)
+
+SETTING_RESOURCE_TYPE_ENUM_ALPHA = (
+    APP_ENGINE_RESOURCE_TYPE,
+    WEB_RESOURCE_TYPE,
+    COMPUTE_RESOURCE_TYPE,
+    ORG_RESOURCE_TYPE,
+    FOLDER_RESOURCE_TYPE,
+    FORWARDING_RULE_RESOURCE_TYPE,
+)
 
 
 def AddIamDestGroupArgs(parser):
@@ -120,20 +145,28 @@ def AddDestGroupListRegionArgs(parser):
       default='-')
 
 
-def AddIapIamResourceArgs(parser):
+def AddIapIamResourceArgs(parser, use_forwarding_rule=False):
   """Adds flags for an IAP IAM resource.
 
   Args:
     parser: An argparse.ArgumentParser-like object. It is mocked out in order to
       capture some information, but behaves like an ArgumentParser.
+    use_forwarding_rule: bool, whether to use forwarding rule resource type.
   """
   group = parser.add_group()
-  group.add_argument(
-      '--resource-type',
-      required=True,
-      choices=RESOURCE_TYPE_ENUM,
-      help='Resource type of the IAP resource.',
-  )
+
+  if use_forwarding_rule:
+    group.add_argument(
+        '--resource-type',
+        choices=RESOURCE_TYPE_ENUM_ALPHA,
+        help='Resource type of the IAP resource.',
+    )
+  else:
+    group.add_argument(
+        '--resource-type',
+        choices=RESOURCE_TYPE_ENUM,
+        help='Resource type of the IAP resource.',
+    )
   group.add_argument('--service', help='Service name.')
   group.add_argument(
       '--region',
@@ -170,22 +203,33 @@ def AddIapResourceArgs(parser):
       help='Service name. Required with `--resource-type=backend-services`.')
 
 
-def AddIapSettingArg(parser):
+def AddIapSettingArg(parser, use_forwarding_rule=False):
   """Adds flags for an IAP settings resource.
 
   Args:
     parser: An argparse.ArgumentParser-like object. It is mocked out in order to
       capture some information, but behaves like an ArgumentParser.
+    use_forwarding_rule: bool, whether to use forwarding rule resource type.
+
   """
   group = parser.add_group()
   group.add_argument('--organization', help='Organization ID.')
   group.add_argument('--folder', help='Folder ID.')
   group.add_argument('--project', help='Project ID.')
-  group.add_argument(
-      '--resource-type',
-      choices=SETTING_RESOURCE_TYPE_ENUM,
-      help='Resource type of the IAP resource.',
-  )
+
+  if use_forwarding_rule:
+    group.add_argument(
+        '--resource-type',
+        choices=SETTING_RESOURCE_TYPE_ENUM_ALPHA,
+        help='Resource type of the IAP resource.',
+    )
+  else:
+    group.add_argument(
+        '--resource-type',
+        choices=SETTING_RESOURCE_TYPE_ENUM,
+        help='Resource type of the IAP resource.',
+    )
+
   group.add_argument(
       '--service',
       help=(
@@ -378,6 +422,21 @@ def ParseIapIamResource(release_track, args):
     elif args.service:
       return iap_api.BackendService(release_track, project, None, args.service)
     return iap_api.BackendServices(release_track, project, None)
+  elif (
+      release_track == base.ReleaseTrack.ALPHA
+      and args.resource_type == FORWARDING_RULE_RESOURCE_TYPE
+  ):
+    if args.version:
+      raise calliope_exc.InvalidArgumentException(
+          '--version',
+          '`--version` cannot be specified for '
+          '`--resource-type=forwarding-rule`.',
+      )
+    if args.service:
+      return iap_api.ForwardingRule(release_track, project, args.region,
+                                    args.service)
+    else:
+      return iap_api.ForwardingRules(release_track, project, args.region)
 
   # This shouldn't be reachable, based on the IAP IAM resource parsing logic.
   raise iap_exc.InvalidIapIamResourceError('Could not parse IAP IAM resource.')
@@ -502,6 +561,22 @@ def ParseIapSettingsResource(release_track, args):
           path.append('compute-{}'.format(args.region))
         else:
           path.append('compute')
+        if args.service:
+          path.extend(['services', args.service])
+        return iap_api.IapSettingsResource(release_track, '/'.join(path))
+      elif (release_track == base.ReleaseTrack.ALPHA and
+            args.resource_type == FORWARDING_RULE_RESOURCE_TYPE):
+        path = ['projects', args.project, 'iap_web']
+        if args.version:
+          raise calliope_exc.InvalidArgumentException(
+              '--version',
+              '`--version` cannot be specified for '
+              '`--resource-type=forwarding-rule`.',
+          )
+        if args.region:
+          path.append('forwarding_rule-{}'.format(args.region))
+        else:
+          path.append('forwarding_rule')
         if args.service:
           path.extend(['services', args.service])
         return iap_api.IapSettingsResource(release_track, '/'.join(path))

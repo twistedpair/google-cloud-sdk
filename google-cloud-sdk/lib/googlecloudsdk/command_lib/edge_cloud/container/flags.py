@@ -493,3 +493,18 @@ def AddOfflineRebootTtL(parser):
         should be an ISO 8601 duration string, for example, "P1DT1H2M3S".
       """,
   )
+
+
+def AddZoneStorageKMSKey(parser):
+  parser.add_argument(
+      '--zone-storage-kms-key',
+      help="""
+      Google Cloud KMS key that will be used to encrypt and decrypt the root key
+      for zone storage encryption. The zone storage KMS key is only
+      applicable to the storage infra cluster. The Edge Container service
+      account for this project must have
+      `roles/cloudkms.cryptoKeyEncrypterDecrypter` on the key.
+
+      If not provided, a Google-managed key will be used by default.
+      """,
+  )

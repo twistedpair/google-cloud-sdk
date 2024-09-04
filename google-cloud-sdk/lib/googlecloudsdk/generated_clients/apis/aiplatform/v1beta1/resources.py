@@ -24,6 +24,26 @@ DOCS_URL = 'https://cloud.google.com/vertex-ai/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  DATASETS = (
+      'datasets',
+      '{+name}',
+      {
+          '':
+              'datasets/{datasetsId}',
+      },
+      ['name'],
+      True
+  )
+  DATASETS_DATASETVERSIONS = (
+      'datasets.datasetVersions',
+      '{+name}',
+      {
+          '':
+              'datasets/{datasetsId}/datasetVersions/{datasetVersionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',

@@ -1,0 +1,54 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networksecurity v1beta1 AuthzPolicyAuthzRuleStringMatch export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  contains:
+    description: |-
+      The input string must have the substring specified here. Note: empty
+      contains match is not allowed, please use regex instead. Examples: *
+      ``abc`` matches the value ``xyz.abc.def``
+    type: string
+  exact:
+    description: The input string must match exactly the string specified here.
+    type: string
+  ignoreCase:
+    description: |-
+      If true, indicates the exact/prefix/suffix/contains matching should be
+      case insensitive. For example, the matcher ``data`` will match both input
+      string ``Data`` and ``data`` if set to true.
+    type: boolean
+  prefix:
+    description: |-
+      The input string must have the prefix specified here. Note: empty prefix
+      is not allowed, please use regex instead. Examples: * ``abc`` matches the
+      value ``abc.xyz``
+    type: string
+  suffix:
+    description: |-
+      The input string must have the suffix specified here. Note: empty prefix
+      is not allowed, please use regex instead. Examples: * ``abc`` matches the
+      value ``xyz.abc``
+    type: string

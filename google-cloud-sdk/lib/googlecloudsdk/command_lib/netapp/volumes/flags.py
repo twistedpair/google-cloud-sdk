@@ -521,6 +521,50 @@ can be range from 7-183. Default is 31.
       help=tiering_policy_help,
       hidden=hidden
   )
+
+
+def AddVolumeHybridReplicationParametersArg(parser):
+  """Adds the --hybrid-replication-parameters arg to the arg parser."""
+  hybrid_replication_parameters_arg_spec = {
+      'replication': str,
+      'peer-volume-name': str,
+      'peer-cluster-name': str,
+      'peer-svm-name': str,
+      'peer-ip-addresses': arg_parsers.ArgList(
+          min_length=1, element_type=str, custom_delim_char='#'
+      ),
+      'cluster-location': str,
+      'description': str,
+      'labels': arg_parsers.ArgList(
+          min_length=1, element_type=str, custom_delim_char='#'
+      ),
+  }
+  hybrid_replication_parameters_help = """\
+  Hybrid Replication Parameters contains hybrid replication parameters on a volume.
+
+      Hybrid Replication Parameters will have the following format
+      --hybrid-replication-parameters=replication=REPLICATION,
+      peer-volume-name=PEER_VOLUME_NAME,
+      peer-cluster-name=PEER_CLUSTER_NAME,
+      peer-svm-name=PEER_SVM_NAME,
+      peer-ip-addresses=[PEER-IP-ADDRESS1#PEER-IP-ADDRESS2#...],
+      cluster-location=CLUSTER_LOCATION,
+      description=DESCRIPTION,
+      labels=[KEY1:VALUE1#KEY2:VALUE2#...]
+
+  replication is the desired name for the replication of the volume,
+  peer-volume-name is the name of the user's local source volume, peer-cluster-name is the name of the user's local source cluster,
+  peer-svm-name is the name of the user's local source vserver svm, peer-ip-addresses is a ampersand-separated(#) list of ip addresses,
+  cluster-location is the name of the source cluster location, description is the description of the replication and
+  labels is an hashtag-separated(#) key value pair of labels with key and value separated by colon(:) for the replication.
+      """
+  parser.add_argument(
+      '--hybrid-replication-parameters',
+      type=arg_parsers.ArgDict(spec=hybrid_replication_parameters_arg_spec),
+      help=hybrid_replication_parameters_help,
+  )
+
+
 ## Helper functions to combine Volumes args / flags for gcloud commands #
 
 
@@ -561,6 +605,7 @@ def AddVolumeCreateArgs(parser, release_track):
     AddVolumeTieringPolicyArg(parser, messages, False)
   else:
     AddVolumeTieringPolicyArg(parser, messages, True)
+  AddVolumeHybridReplicationParametersArg(parser)
   labels_util.AddCreateLabelsFlags(parser)
 
 

@@ -302,6 +302,10 @@ class GenerationConfig(proto.Message):
             Optional. Frequency penalties.
 
             This field is a member of `oneof`_ ``_frequency_penalty``.
+        seed (int):
+            Optional. Seed.
+
+            This field is a member of `oneof`_ ``_seed``.
         response_mime_type (str):
             Optional. Output response mimetype of the generated
             candidate text. Supported mimetype:
@@ -329,7 +333,8 @@ class GenerationConfig(proto.Message):
     """
 
     class RoutingConfig(proto.Message):
-        r"""Routing config.
+        r"""The configuration for routing the request to a specific
+        model.
 
         This message has `oneof`_ fields (mutually exclusive fields).
         For each oneof, at most one member field can be set at the same time.
@@ -398,7 +403,7 @@ class GenerationConfig(proto.Message):
             Attributes:
                 model_name (str):
                     The model name to use. Only the public LLM
-                    models are accepted. e.g. gemini-1.5-pro-001.
+                    models are accepted. e.g. 'gemini-1.5-pro-001'.
 
                     This field is a member of `oneof`_ ``_model_name``.
             """
@@ -459,6 +464,11 @@ class GenerationConfig(proto.Message):
     frequency_penalty: float = proto.Field(
         proto.FLOAT,
         number=9,
+        optional=True,
+    )
+    seed: int = proto.Field(
+        proto.INT32,
+        number=12,
         optional=True,
     )
     response_mime_type: str = proto.Field(
@@ -750,10 +760,10 @@ class Candidate(proto.Message):
                 Token generation reached the configured
                 maximum output tokens.
             SAFETY (3):
-                Token generation stopped because the content
-                potentially contains safety violations. NOTE:
-                When streaming, Candidate.content is empty if
-                content filters blocks the output.
+                Token generation stopped because the content potentially
+                contains safety violations. NOTE: When streaming,
+                [content][google.cloud.aiplatform.v1beta1.Candidate.content]
+                is empty if content filters blocks the output.
             RECITATION (4):
                 Token generation stopped because the content
                 potentially contains copyright violations.

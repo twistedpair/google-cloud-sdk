@@ -83,7 +83,6 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.networkEdgeSecurityServices = self.NetworkEdgeSecurityServicesService(self)
     self.networkEndpointGroups = self.NetworkEndpointGroupsService(self)
     self.networkFirewallPolicies = self.NetworkFirewallPoliciesService(self)
-    self.networkPlacements = self.NetworkPlacementsService(self)
     self.networkProfiles = self.NetworkProfilesService(self)
     self.networks = self.NetworksService(self)
     self.nodeGroups = self.NodeGroupsService(self)
@@ -124,6 +123,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regionUrlMaps = self.RegionUrlMapsService(self)
     self.regionZones = self.RegionZonesService(self)
     self.regions = self.RegionsService(self)
+    self.reservationBlocks = self.ReservationBlocksService(self)
     self.reservations = self.ReservationsService(self)
     self.resourcePolicies = self.ResourcePoliciesService(self)
     self.routers = self.RoutersService(self)
@@ -11122,68 +11122,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class NetworkPlacementsService(base_api.BaseApiService):
-    """Service class for the networkPlacements resource."""
-
-    _NAME = 'networkPlacements'
-
-    def __init__(self, client):
-      super(ComputeAlpha.NetworkPlacementsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Returns the specified network placement.
-
-      Args:
-        request: (ComputeNetworkPlacementsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (NetworkPlacement) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.networkPlacements.get',
-        ordered_params=['project', 'networkPlacement'],
-        path_params=['networkPlacement', 'project'],
-        query_params=[],
-        relative_path='projects/{project}/global/networkPlacements/{networkPlacement}',
-        request_field='',
-        request_type_name='ComputeNetworkPlacementsGetRequest',
-        response_type_name='NetworkPlacement',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Retrieves a list of network placements available to the specified project.
-
-      Args:
-        request: (ComputeNetworkPlacementsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (NetworkPlacementsListResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.networkPlacements.list',
-        ordered_params=['project'],
-        path_params=['project'],
-        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
-        relative_path='projects/{project}/global/networkPlacements',
-        request_field='',
-        request_type_name='ComputeNetworkPlacementsListRequest',
-        response_type_name='NetworkPlacementsListResponse',
-        supports_download=False,
-    )
-
   class NetworkProfilesService(base_api.BaseApiService):
     """Service class for the networkProfiles resource."""
 
@@ -15482,6 +15420,58 @@ class ComputeAlpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Cancel(self, request, global_params=None):
+      r"""Cancels the specified resize request. Cancelled resize request no longer waits for the resources to be provisioned. Cancel is only possible for requests that are in accepted state.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagerResizeRequestsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagerResizeRequests.cancel',
+        ordered_params=['project', 'region', 'instanceGroupManager', 'resizeRequest'],
+        path_params=['instanceGroupManager', 'project', 'region', 'resizeRequest'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/resizeRequests/{resizeRequest}/cancel',
+        request_field='',
+        request_type_name='ComputeRegionInstanceGroupManagerResizeRequestsCancelRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified, inactive resize request. Requests that are still active cannot be deleted. Deleting request does not delete instances that were provisioned previously.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagerResizeRequestsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.regionInstanceGroupManagerResizeRequests.delete',
+        ordered_params=['project', 'region', 'instanceGroupManager', 'resizeRequest'],
+        path_params=['instanceGroupManager', 'project', 'region', 'resizeRequest'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/resizeRequests/{resizeRequest}',
+        request_field='',
+        request_type_name='ComputeRegionInstanceGroupManagerResizeRequestsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Returns all of the details about the specified resize request.
 
@@ -15531,6 +15521,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='instanceGroupManagerResizeRequest',
         request_type_name='ComputeRegionInstanceGroupManagerResizeRequestsInsertRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of Resize Requests that are contained in the managed instance group.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagerResizeRequestsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionInstanceGroupManagerResizeRequestsListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionInstanceGroupManagerResizeRequests.list',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/resizeRequests',
+        request_field='',
+        request_type_name='ComputeRegionInstanceGroupManagerResizeRequestsListRequest',
+        response_type_name='RegionInstanceGroupManagerResizeRequestsListResponse',
         supports_download=False,
     )
 
@@ -19537,6 +19553,68 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeRegionsListRequest',
         response_type_name='RegionList',
+        supports_download=False,
+    )
+
+  class ReservationBlocksService(base_api.BaseApiService):
+    """Service class for the reservationBlocks resource."""
+
+    _NAME = 'reservationBlocks'
+
+    def __init__(self, client):
+      super(ComputeAlpha.ReservationBlocksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves information about the specified reservation block.
+
+      Args:
+        request: (ComputeReservationBlocksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ReservationBlocksGetResponse) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.reservationBlocks.get',
+        ordered_params=['project', 'zone', 'reservation', 'reservationBlock'],
+        path_params=['project', 'reservation', 'reservationBlock', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/reservations/{reservation}/reservationBlocks/{reservationBlock}',
+        request_field='',
+        request_type_name='ComputeReservationBlocksGetRequest',
+        response_type_name='ReservationBlocksGetResponse',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of reservation blocks under a single reservation.
+
+      Args:
+        request: (ComputeReservationBlocksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ReservationBlocksListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.reservationBlocks.list',
+        ordered_params=['project', 'zone', 'reservation'],
+        path_params=['project', 'reservation', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/reservations/{reservation}/reservationBlocks',
+        request_field='',
+        request_type_name='ComputeReservationBlocksListRequest',
+        response_type_name='ReservationBlocksListResponse',
         supports_download=False,
     )
 

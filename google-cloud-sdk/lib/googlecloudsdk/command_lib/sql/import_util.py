@@ -14,9 +14,6 @@
 # limitations under the License.
 """Common utility functions for sql import commands."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.sql import import_util
 from googlecloudsdk.api_lib.sql import operations
@@ -109,10 +106,16 @@ def RunImportCommand(args, client, import_context):
       import_context.fileType
       == sql_messages.ImportContext.FileTypeValueValuesEnum.BAK
   )
+  is_tde_import = (
+      import_context.fileType
+      == sql_messages.ImportContext.FileTypeValueValuesEnum.TDE
+  )
+
+  import_source = args.cert_path if is_tde_import else args.uri
 
   validate.ValidateInstanceName(args.instance)
   if is_bak_import:
-    validate.ValidateURI(args.uri, args.recovery_only)
+    validate.ValidateURI(import_source, args.recovery_only)
   instance_ref = client.resource_parser.Parse(
       args.instance,
       params={'project': properties.VALUES.core.project.GetOrFail},
@@ -132,7 +135,7 @@ def RunImportCommand(args, client, import_context):
   else:
     console_io.PromptContinue(
         message='Data from [{uri}] will be imported to [{instance}].'.format(
-            uri=args.uri, instance=args.instance
+            uri=import_source, instance=args.instance
         ),
         default=True,
         cancel_on_no=True,
@@ -178,7 +181,7 @@ def RunImportCommand(args, client, import_context):
   else:
     log.status.write(
         'Imported data from [{bucket}] into [{instance}].\n'.format(
-            instance=instance_ref, bucket=args.uri
+            instance=instance_ref, bucket=import_source
         )
     )
 
@@ -264,3 +267,25 @@ def RunBakImportCommand(args, client):
       args.stop_at_mark,
   )
   return RunImportCommand(args, client, sql_import_context)
+
+
+def RunTdeImportCommand(args, client):
+  """Imports data from a TDE certificate file into Cloud SQL instance.
+
+  Args:
+    args: argparse.Namespace, The arguments that this command was invoked with.
+    client: SqlClient instance, with sql_client and sql_messages props, for use
+      in generating messages and making API calls.
+
+  Returns:
+    A dict representing the import operation resource, if '--async' is used,
+    or else None.
+  """
+  tde_import_context = import_util.TdeImportContext(
+      client.sql_messages,
+      args.certificate,
+      args.cert_path,
+      args.pvk_path,
+      args.pvk_password,
+  )
+  return RunImportCommand(args, client, tde_import_context)

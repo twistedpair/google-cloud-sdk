@@ -354,6 +354,7 @@ def Patch(
     instance_type=None,
     expire_behavior=None,
     ssd_cache_id=None,
+    edition=None,
 ):
   """Update an instance."""
   fields = []
@@ -466,6 +467,9 @@ def Patch(
       instance_res = Get(instance)
       ssd_cache = instance_res.config + '/ssdCaches/' + ssd_cache_id.strip()
     instance_obj.ssdCache = ssd_cache
+  if edition is not None:
+    fields.append('edition')
+    instance_obj.edition = msgs.Instance.EditionValueValuesEnum(edition)
 
   ref = resources.REGISTRY.Parse(
       instance,

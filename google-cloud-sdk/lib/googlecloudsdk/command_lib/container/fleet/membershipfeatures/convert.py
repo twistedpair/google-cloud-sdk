@@ -20,30 +20,30 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import encoding
-from googlecloudsdk.generated_clients.apis.gkehub.v1alpha import gkehub_v1alpha_messages as message_v1
-from googlecloudsdk.generated_clients.apis.gkehub.v2alpha import gkehub_v2alpha_messages as message_v2
+from googlecloudsdk.calliope import base
 
 
 def ToV2MembershipFeature(
+    self,
     membership_path: str,
     feature_name: str,
-    v1_membership_feature_spec: message_v1.MembershipFeatureSpec,
-) -> message_v2.MembershipFeature:
+    v1_membership_feature_spec,
+):
   """Converts a v1alpha MembershipFeature to a v2alpha MembershipFeature."""
-  v2_membershipfeature = message_v2.MembershipFeature()
+  v2_membershipfeature = self.messages_v2.MembershipFeature()
   v2_membershipfeature.name = f'{membership_path}/features/{feature_name}'
-  v2_membershipfeature.spec = message_v2.FeatureSpec()
+  v2_membershipfeature.spec = self.messages_v2.FeatureSpec()
   v2_membershipfeature.spec.origin = _ToV2Origin(
-      v1_membership_feature_spec.origin
+      self, v1_membership_feature_spec.origin
   )
 
   if feature_name == 'policycontroller':
     v2_membershipfeature.spec.policycontroller = _ToV2PolicyControllerSpec(
-        v1_membership_feature_spec.policycontroller
+        self, v1_membership_feature_spec.policycontroller
     )
   elif feature_name == 'configmanagement':
     v2_membershipfeature.spec.configmanagement = _ToV2ConfigManagementSpec(
-        v1_membership_feature_spec.configmanagement
+        self, v1_membership_feature_spec.configmanagement
     )
   else:
     raise ValueError(
@@ -53,33 +53,39 @@ def ToV2MembershipFeature(
 
 
 def _ToV2ConfigManagementSpec(
-    v1_configmanagement_spec: message_v1.ConfigManagementMembershipSpec,
-) -> message_v2.ConfigManagementSpec:
+    self,
+    v1_configmanagement_spec,
+):
   """Converts a v1alpha ConfigManagementMembershipSpec to a v2alpha ConfigManagementSpec."""
   if v1_configmanagement_spec is None:
     return None
 
-  v2_configmanagement_spec = message_v2.ConfigManagementSpec()
-  v2_configmanagement_spec.binauthz = _ToV2ConfigManagementBinauthzConfig(
-      v1_configmanagement_spec.binauthz
-  )
+  v2_configmanagement_spec = self.messages_v2.ConfigManagementSpec()
+  if (
+      self.ReleaseTrack() is base.ReleaseTrack.ALPHA
+      or self.ReleaseTrack() is base.ReleaseTrack.BETA
+  ):
+    v2_configmanagement_spec.binauthz = _ToV2ConfigManagementBinauthzConfig(
+        self, v1_configmanagement_spec.binauthz
+    )
+
   v2_configmanagement_spec.cluster = v1_configmanagement_spec.cluster
   v2_configmanagement_spec.configSync = _ToV2ConfigManagementConfigSync(
-      v1_configmanagement_spec.configSync
+      self, v1_configmanagement_spec.configSync
   )
   v2_configmanagement_spec.hierarchyController = (
       _ToV2ConfigManagementHierarchyController(
-          v1_configmanagement_spec.hierarchyController
+          self, v1_configmanagement_spec.hierarchyController
       )
   )
   v2_configmanagement_spec.management = (
       _ToV2ConfigManagementManagementValueValuesEnum(
-          v1_configmanagement_spec.management
+          self, v1_configmanagement_spec.management
       )
   )
   v2_configmanagement_spec.policyController = (
       _ToV2ConfigManagementPolicyController(
-          v1_configmanagement_spec.policyController
+          self, v1_configmanagement_spec.policyController
       )
   )
   v2_configmanagement_spec.version = v1_configmanagement_spec.version
@@ -87,45 +93,49 @@ def _ToV2ConfigManagementSpec(
 
 
 def _ToV2ConfigManagementBinauthzConfig(
-    v1_binauthz_config: message_v1.ConfigManagementBinauthzConfig,
-) -> message_v2.ConfigManagementBinauthzConfig:
+    self,
+    v1_binauthz_config,
+):
   """Converts a v1alpha ConfigManagementBinauthzConfig to a v2alpha ConfigManagementBinauthzConfig."""
   if v1_binauthz_config is None:
     return None
 
-  v2_binauthz_config = message_v2.ConfigManagementBinauthzConfig()
+  v2_binauthz_config = self.messages_v2.ConfigManagementBinauthzConfig()
   v2_binauthz_config.enabled = v1_binauthz_config.enabled
   return v2_binauthz_config
 
 
 def _ToV2ConfigManagementConfigSync(
-    v1_configsync: message_v1.ConfigManagementConfigSync,
-) -> message_v2.ConfigManagementConfigSync:
+    self,
+    v1_configsync,
+):
   """Converts a v1alpha ConfigManagementConfigSync to a v2alpha ConfigManagementConfigSync."""
   if v1_configsync is None:
     return None
 
-  v2_configsync = message_v2.ConfigManagementConfigSync()
+  v2_configsync = self.messages_v2.ConfigManagementConfigSync()
   v2_configsync.allowVerticalScale = v1_configsync.allowVerticalScale
   v2_configsync.enabled = v1_configsync.enabled
-  v2_configsync.git = _ToV2ConfigManagementGitConfig(v1_configsync.git)
+  v2_configsync.git = _ToV2ConfigManagementGitConfig(self, v1_configsync.git)
   v2_configsync.metricsGcpServiceAccountEmail = (
       v1_configsync.metricsGcpServiceAccountEmail
   )
-  v2_configsync.oci = _ToV2ConfigManagementOciConfig(v1_configsync.oci)
+  v2_configsync.oci = _ToV2ConfigManagementOciConfig(self, v1_configsync.oci)
   v2_configsync.preventDrift = v1_configsync.preventDrift
   v2_configsync.sourceFormat = v1_configsync.sourceFormat
+  v2_configsync.stopSyncing = v1_configsync.stopSyncing
   return v2_configsync
 
 
 def _ToV2ConfigManagementGitConfig(
-    v1_git_config: message_v1.ConfigManagementGitConfig,
-) -> message_v2.ConfigManagementGitConfig:
+    self,
+    v1_git_config,
+):
   """Converts a v1alpha ConfigManagementGitConfig to a v2alpha ConfigManagementGitConfig."""
   if v1_git_config is None:
     return None
 
-  v2_git_config = message_v2.ConfigManagementGitConfig()
+  v2_git_config = self.messages_v2.ConfigManagementGitConfig()
   v2_git_config.gcpServiceAccountEmail = v1_git_config.gcpServiceAccountEmail
   v2_git_config.httpsProxy = v1_git_config.httpsProxy
   v2_git_config.policyDir = v1_git_config.policyDir
@@ -138,13 +148,14 @@ def _ToV2ConfigManagementGitConfig(
 
 
 def _ToV2ConfigManagementOciConfig(
-    v1_oci_config: message_v1.ConfigManagementOciConfig,
-) -> message_v2.ConfigManagementOciConfig:
+    self,
+    v1_oci_config,
+):
   """Converts a v1alpha ConfigManagementOciConfig to a v2alpha ConfigManagementOciConfig."""
   if v1_oci_config is None:
     return None
 
-  v2_oci_config = message_v2.ConfigManagementOciConfig()
+  v2_oci_config = self.messages_v2.ConfigManagementOciConfig()
   v2_oci_config.gcpServiceAccountEmail = v1_oci_config.gcpServiceAccountEmail
   v2_oci_config.policyDir = v1_oci_config.policyDir
   v2_oci_config.secretType = v1_oci_config.secretType
@@ -154,14 +165,15 @@ def _ToV2ConfigManagementOciConfig(
 
 
 def _ToV2ConfigManagementHierarchyController(
-    v1_hierarchy_controller: message_v1.ConfigManagementHierarchyControllerConfig,
-) -> message_v2.ConfigManagementHierarchyControllerConfig:
+    self,
+    v1_hierarchy_controller,
+):
   """Converts a v1alpha ConfigManagementHierarchyController to a v2alpha ConfigManagementHierarchyController."""
   if v1_hierarchy_controller is None:
     return None
 
   v2_hierarchy_controller = (
-      message_v2.ConfigManagementHierarchyControllerConfig()
+      self.messages_v2.ConfigManagementHierarchyControllerConfig()
   )
   v2_hierarchy_controller.enableHierarchicalResourceQuota = (
       v1_hierarchy_controller.enableHierarchicalResourceQuota
@@ -174,45 +186,47 @@ def _ToV2ConfigManagementHierarchyController(
 
 
 def _ToV2ConfigManagementManagementValueValuesEnum(
-    v1_management: message_v1.ConfigManagementMembershipSpec.ManagementValueValuesEnum,
-) -> message_v2.ConfigManagementSpec.ManagementValueValuesEnum:
+    self,
+    v1_management,
+):
   """Converts a v1alpha ConfigManagementMembershipSpec.ManagementValueValuesEnum to a v2alpha ConfigManagementManagementValueValuesEnum."""
   if v1_management is None:
     return None
 
   if (
       v1_management
-      is message_v1.ConfigManagementMembershipSpec.ManagementValueValuesEnum.MANAGEMENT_UNSPECIFIED
+      is self.messages.ConfigManagementMembershipSpec.ManagementValueValuesEnum.MANAGEMENT_UNSPECIFIED
   ):
     return (
-        message_v2.ConfigManagementSpec.ManagementValueValuesEnum.MANAGEMENT_UNSPECIFIED
+        self.messages_v2.ConfigManagementSpec.ManagementValueValuesEnum.MANAGEMENT_UNSPECIFIED
     )
   elif (
       v1_management
-      is message_v1.ConfigManagementMembershipSpec.ManagementValueValuesEnum.MANAGEMENT_AUTOMATIC
+      is self.messages.ConfigManagementMembershipSpec.ManagementValueValuesEnum.MANAGEMENT_AUTOMATIC
   ):
     return (
-        message_v2.ConfigManagementSpec.ManagementValueValuesEnum.MANAGEMENT_AUTOMATIC
+        self.messages_v2.ConfigManagementSpec.ManagementValueValuesEnum.MANAGEMENT_AUTOMATIC
     )
   elif (
       v1_management
-      is message_v1.ConfigManagementMembershipSpec.ManagementValueValuesEnum.MANAGEMENT_MANUAL
+      is self.messages.ConfigManagementMembershipSpec.ManagementValueValuesEnum.MANAGEMENT_MANUAL
   ):
     return (
-        message_v2.ConfigManagementSpec.ManagementValueValuesEnum.MANAGEMENT_MANUAL
+        self.messages_v2.ConfigManagementSpec.ManagementValueValuesEnum.MANAGEMENT_MANUAL
     )
   else:
     raise ValueError(f'Unsupported management value: {v1_management}')
 
 
 def _ToV2ConfigManagementPolicyController(
-    v1_policycontroller: message_v1.ConfigManagementPolicyController,
-) -> message_v2.ConfigManagementPolicyController:
+    self,
+    v1_policycontroller,
+):
   """Converts a v1alpha ConfigManagementPolicyController to a v2alpha ConfigManagementPolicyController."""
   if v1_policycontroller is None:
     return None
 
-  v2_policycontroller = message_v2.ConfigManagementPolicyController()
+  v2_policycontroller = self.messages_v2.ConfigManagementPolicyController()
   v2_policycontroller.auditIntervalSeconds = (
       v1_policycontroller.auditIntervalSeconds
   )
@@ -223,7 +237,7 @@ def _ToV2ConfigManagementPolicyController(
   v2_policycontroller.logDeniesEnabled = v1_policycontroller.logDeniesEnabled
   v2_policycontroller.monitoring = (
       _ToV2ConfigManagementPolicyControllerMonitoring(
-          v1_policycontroller.monitoring
+          self, v1_policycontroller.monitoring
       )
   )
   v2_policycontroller.mutationEnabled = v1_policycontroller.mutationEnabled
@@ -238,16 +252,17 @@ def _ToV2ConfigManagementPolicyController(
 
 
 def _ToV2ConfigManagementPolicyControllerMonitoring(
-    v1_monitoring: message_v1.ConfigManagementPolicyControllerMonitoring,
-) -> message_v2.ConfigManagementPolicyControllerMonitoring:
+    self,
+    v1_monitoring,
+):
   """Converts a v1alpha ConfigManagementPolicyControllerMonitoring to a v2alpha ConfigManagementPolicyControllerMonitoring."""
   if v1_monitoring is None:
     return None
 
-  v2_monitoring = message_v2.ConfigManagementPolicyControllerMonitoring()
+  v2_monitoring = self.messages_v2.ConfigManagementPolicyControllerMonitoring()
   v2_monitoring.backends = [
       _ToV2ConfigManagementPolicyControllerMonitoringBackendsValueListEntryValuesEnum(
-          backend
+          self, backend
       )
       for backend in v1_monitoring.backends
   ]
@@ -255,9 +270,8 @@ def _ToV2ConfigManagementPolicyControllerMonitoring(
 
 
 def _ToV2ConfigManagementPolicyControllerMonitoringBackendsValueListEntryValuesEnum(
-    v1_monitoring_backend: message_v1.ConfigManagementPolicyControllerMonitoring.BackendsValueListEntryValuesEnum,
-) -> (
-    message_v2.ConfigManagementPolicyControllerMonitoring.BackendsValueListEntryValuesEnum
+    self,
+    v1_monitoring_backend,
 ):
   """Converts a v1alpha ConfigManagementPolicyControllerMonitoring.BackendsValueListEntryValuesEnum to a v2alpha ConfigManagementPolicyControllerMonitoring.BackendsValueListEntryValuesEnum."""
   if v1_monitoring_backend is None:
@@ -265,107 +279,111 @@ def _ToV2ConfigManagementPolicyControllerMonitoringBackendsValueListEntryValuesE
 
   if (
       v1_monitoring_backend
-      is message_v1.ConfigManagementPolicyControllerMonitoring.BackendsValueListEntryValuesEnum.MONITORING_BACKEND_UNSPECIFIED
+      is self.messages.ConfigManagementPolicyControllerMonitoring.BackendsValueListEntryValuesEnum.MONITORING_BACKEND_UNSPECIFIED
   ):
     return (
-        message_v2.ConfigManagementPolicyControllerMonitoring.BackendsValueListEntryValuesEnum.MONITORING_BACKEND_UNSPECIFIED
+        self.messages_v2.ConfigManagementPolicyControllerMonitoring.BackendsValueListEntryValuesEnum.MONITORING_BACKEND_UNSPECIFIED
     )
   elif (
       v1_monitoring_backend
-      is message_v1.ConfigManagementPolicyControllerMonitoring.BackendsValueListEntryValuesEnum.PROMETHEUS
+      is self.messages.ConfigManagementPolicyControllerMonitoring.BackendsValueListEntryValuesEnum.PROMETHEUS
   ):
     return (
-        message_v2.ConfigManagementPolicyControllerMonitoring.BackendsValueListEntryValuesEnum.PROMETHEUS
+        self.messages_v2.ConfigManagementPolicyControllerMonitoring.BackendsValueListEntryValuesEnum.PROMETHEUS
     )
   elif (
       v1_monitoring_backend
-      is message_v1.ConfigManagementPolicyControllerMonitoring.BackendsValueListEntryValuesEnum.CLOUD_MONITORING
+      is self.messages.ConfigManagementPolicyControllerMonitoring.BackendsValueListEntryValuesEnum.CLOUD_MONITORING
   ):
     return (
-        message_v2.ConfigManagementPolicyControllerMonitoring.BackendsValueListEntryValuesEnum.CLOUD_MONITORING
+        self.messages_v2.ConfigManagementPolicyControllerMonitoring.BackendsValueListEntryValuesEnum.CLOUD_MONITORING
     )
   else:
     raise ValueError(f'Unsupported monitoring backend: {v1_monitoring_backend}')
 
 
 def _ToV2Origin(
-    v1_origin: message_v1.Origin,
-) -> message_v2.Origin:
+    self,
+    v1_origin,
+):
   """Converts a v1alpha Origin to a v2alpha Origin."""
   if v1_origin is None:
     return None
 
-  v2_origin = message_v2.Origin()
-  v2_origin.type = _ToV2OriginTypeValueValuesEnum(v1_origin.type)
+  v2_origin = self.messages_v2.Origin()
+  v2_origin.type = _ToV2OriginTypeValueValuesEnum(self, v1_origin.type)
   return v2_origin
 
 
 def _ToV2OriginTypeValueValuesEnum(
-    v1_origin_type: message_v1.Origin.TypeValueValuesEnum,
-) -> message_v2.Origin.TypeValueValuesEnum:
+    self,
+    v1_origin_type,
+):
   """Converts a v1alpha OriginTypeValueValuesEnum to a v2alpha OriginTypeValueValuesEnum."""
   if v1_origin_type is None:
     return None
 
   if (
       v1_origin_type
-      is message_v1.Origin.TypeValueValuesEnum.TYPE_UNSPECIFIED
+      is self.messages.Origin.TypeValueValuesEnum.TYPE_UNSPECIFIED
   ):
     return (
-        message_v2.Origin.TypeValueValuesEnum.TYPE_UNSPECIFIED
+        self.messages_v2.Origin.TypeValueValuesEnum.TYPE_UNSPECIFIED
     )
   elif (
       v1_origin_type
-      is message_v1.Origin.TypeValueValuesEnum.FLEET
+      is self.messages.Origin.TypeValueValuesEnum.FLEET
   ):
     return (
-        message_v2.Origin.TypeValueValuesEnum.FLEET
+        self.messages_v2.Origin.TypeValueValuesEnum.FLEET
     )
   elif (
       v1_origin_type
-      is message_v1.Origin.TypeValueValuesEnum.FLEET_OUT_OF_SYNC
+      is self.messages.Origin.TypeValueValuesEnum.FLEET_OUT_OF_SYNC
   ):
     return (
-        message_v2.Origin.TypeValueValuesEnum.FLEET_OUT_OF_SYNC
+        self.messages_v2.Origin.TypeValueValuesEnum.FLEET_OUT_OF_SYNC
     )
   elif (
       v1_origin_type
-      is message_v1.Origin.TypeValueValuesEnum.USER
+      is self.messages.Origin.TypeValueValuesEnum.USER
   ):
     return (
-        message_v2.Origin.TypeValueValuesEnum.USER
+        self.messages_v2.Origin.TypeValueValuesEnum.USER
     )
   else:
     raise ValueError(f'Unsupported origin type: {v1_origin_type}')
 
 
 def _ToV2PolicyControllerSpec(
-    v1_policycontroller_spec: message_v1.PolicyControllerMembershipSpec,
-) -> message_v2.PolicyControllerSpec:
+    self,
+    v1_policycontroller_spec,
+):
   """Converts a v1alpha PolicyControllerSpec to a v2alpha PolicyControllerSpec."""
   if v1_policycontroller_spec is None:
     return None
 
-  v2_policycontroller_spec = message_v2.PolicyControllerSpec()
+  v2_policycontroller_spec = self.messages_v2.PolicyControllerSpec()
   v2_policycontroller_spec.version = v1_policycontroller_spec.version
   v2_policycontroller_spec.policyControllerHubConfig = (
       _ToV2PolicyControllerHubConfig(
-          v1_policycontroller_spec.policyControllerHubConfig
+          self, v1_policycontroller_spec.policyControllerHubConfig
       )
   )
   return v2_policycontroller_spec
 
 
 def _ToV2PolicyControllerHubConfig(
-    v1_policycontroller_hub_config: message_v1.PolicyControllerHubConfig,
-) -> message_v2.PolicyControllerHubConfig:
+    self,
+    v1_policycontroller_hub_config,
+):
   """Converts a v1alpha PolicyControllerHubConfig to a v2alpha PolicyControllerHubConfig."""
   if v1_policycontroller_hub_config is None:
     return None
 
-  v2_policycontroller_hub_config = message_v2.PolicyControllerHubConfig()
+  v2_policycontroller_hub_config = self.messages_v2.PolicyControllerHubConfig()
   v2_policycontroller_hub_config.installSpec = _ToV2InstallSpecValueValuesEnum(
-      v1_policycontroller_hub_config.installSpec
+      self, v1_policycontroller_hub_config.installSpec
   )
   v2_policycontroller_hub_config.auditIntervalSeconds = (
       v1_policycontroller_hub_config.auditIntervalSeconds
@@ -383,85 +401,87 @@ def _ToV2PolicyControllerHubConfig(
       v1_policycontroller_hub_config.mutationEnabled
   )
   v2_policycontroller_hub_config.monitoring = _ToV2Monitoring(
-      v1_policycontroller_hub_config.monitoring
+      self, v1_policycontroller_hub_config.monitoring
   )
   v2_policycontroller_hub_config.policyContent = _ToV2PolicyContentSpec(
-      v1_policycontroller_hub_config.policyContent
+      self, v1_policycontroller_hub_config.policyContent
   )
   v2_policycontroller_hub_config.constraintViolationLimit = (
       v1_policycontroller_hub_config.constraintViolationLimit
   )
   v2_policycontroller_hub_config.deploymentConfigs = _ToV2DeploymentConfigs(
-      v1_policycontroller_hub_config.deploymentConfigs
+      self, v1_policycontroller_hub_config.deploymentConfigs
   )
 
   return v2_policycontroller_hub_config
 
 
 def _ToV2InstallSpecValueValuesEnum(
-    v1_install_spec_value: message_v1.PolicyControllerHubConfig.InstallSpecValueValuesEnum,
-) -> message_v2.PolicyControllerHubConfig.InstallSpecValueValuesEnum:
+    self,
+    v1_install_spec_value,
+):
   """Converts a v1alpha InstallSpecValueValuesEnum to a v2alpha InstallSpecValueValuesEnum."""
   if v1_install_spec_value is None:
     return None
 
   if (
       v1_install_spec_value
-      is message_v1.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_UNSPECIFIED
+      is self.messages.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_UNSPECIFIED
   ):
     return (
-        message_v2.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_UNSPECIFIED
+        self.messages_v2.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_UNSPECIFIED
     )
   elif (
       v1_install_spec_value
-      is message_v1.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_NOT_INSTALLED
+      is self.messages.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_NOT_INSTALLED
   ):
     return (
-        message_v2.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_NOT_INSTALLED
+        self.messages_v2.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_NOT_INSTALLED
     )
   elif (
       v1_install_spec_value
-      is message_v1.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_ENABLED
+      is self.messages.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_ENABLED
   ):
     return (
-        message_v2.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_ENABLED
+        self.messages_v2.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_ENABLED
     )
   elif (
       v1_install_spec_value
-      is message_v1.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_SUSPENDED
+      is self.messages.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_SUSPENDED
   ):
     return (
-        message_v2.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_SUSPENDED
+        self.messages_v2.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_SUSPENDED
     )
   elif (
       v1_install_spec_value
-      is message_v1.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_DETACHED
+      is self.messages.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_DETACHED
   ):
     return (
-        message_v2.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_DETACHED
+        self.messages_v2.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_DETACHED
     )
   else:
     raise ValueError(f'Unsupported install spec value: {v1_install_spec_value}')
 
 
 def _ToV2Monitoring(
-    v1_monitoring: message_v1.PolicyControllerMonitoringConfig,
-) -> message_v2.PolicyControllerMonitoringConfig:
+    self,
+    v1_monitoring,
+):
   """Converts a v1alpha PolicyControllerMonitoringConfig to a v2alpha PolicyControllerMonitoringConfig."""
   if v1_monitoring is None:
     return None
 
-  v2_monitoring = message_v2.PolicyControllerMonitoringConfig()
+  v2_monitoring = self.messages_v2.PolicyControllerMonitoringConfig()
   v2_monitoring.backends = [
-      _ToV2MonitoringBackend(backend) for backend in v1_monitoring.backends
+      _ToV2MonitoringBackend(self, backend)
+      for backend in v1_monitoring.backends
   ]
   return v2_monitoring
 
 
 def _ToV2MonitoringBackend(
-    v1_monitoring_backend: message_v1.PolicyControllerMonitoringConfig.BackendsValueListEntryValuesEnum,
-) -> (
-    message_v2.PolicyControllerMonitoringConfig.BackendsValueListEntryValuesEnum
+    self,
+    v1_monitoring_backend,
 ):
   """Converts a v1alpha MonitoringBackend to a v2alpha MonitoringBackend."""
   if v1_monitoring_backend is None:
@@ -469,70 +489,75 @@ def _ToV2MonitoringBackend(
 
   if (
       v1_monitoring_backend
-      is message_v1.PolicyControllerMonitoringConfig.BackendsValueListEntryValuesEnum.MONITORING_BACKEND_UNSPECIFIED
+      is self.messages.PolicyControllerMonitoringConfig.BackendsValueListEntryValuesEnum.MONITORING_BACKEND_UNSPECIFIED
   ):
     return (
-        message_v2.PolicyControllerMonitoringConfig.BackendsValueListEntryValuesEnum.MONITORING_BACKEND_UNSPECIFIED
+        self.messages_v2.PolicyControllerMonitoringConfig.BackendsValueListEntryValuesEnum.MONITORING_BACKEND_UNSPECIFIED
     )
   elif (
       v1_monitoring_backend
-      is message_v1.PolicyControllerMonitoringConfig.BackendsValueListEntryValuesEnum.PROMETHEUS
+      is self.messages.PolicyControllerMonitoringConfig.BackendsValueListEntryValuesEnum.PROMETHEUS
   ):
     return (
-        message_v2.PolicyControllerMonitoringConfig.BackendsValueListEntryValuesEnum.PROMETHEUS
+        self.messages_v2.PolicyControllerMonitoringConfig.BackendsValueListEntryValuesEnum.PROMETHEUS
     )
   elif (
       v1_monitoring_backend
-      is message_v1.PolicyControllerMonitoringConfig.BackendsValueListEntryValuesEnum.CLOUD_MONITORING
+      is self.messages.PolicyControllerMonitoringConfig.BackendsValueListEntryValuesEnum.CLOUD_MONITORING
   ):
     return (
-        message_v2.PolicyControllerMonitoringConfig.BackendsValueListEntryValuesEnum.CLOUD_MONITORING
+        self.messages_v2.PolicyControllerMonitoringConfig.BackendsValueListEntryValuesEnum.CLOUD_MONITORING
     )
   else:
     raise ValueError(f'Unsupported monitoring backend: {v1_monitoring_backend}')
 
 
 def _ToV2PolicyContentSpec(
-    v1_policy_content_spec: message_v1.PolicyControllerPolicyContentSpec,
-) -> message_v2.PolicyControllerPolicyContentSpec:
+    self,
+    v1_policy_content_spec,
+):
   """Converts a v1alpha PolicyControllerPolicyContentSpec to a v2alpha PolicyControllerPolicyContentSpec."""
-  v2_policy_content_spec = message_v2.PolicyControllerPolicyContentSpec()
+  v2_policy_content_spec = self.messages_v2.PolicyControllerPolicyContentSpec()
   if v1_policy_content_spec is None:
     return v2_policy_content_spec
 
-  v2_policy_content_spec.bundles = _ToV2Bundles(v1_policy_content_spec.bundles)
+  v2_policy_content_spec.bundles = _ToV2Bundles(
+      self, v1_policy_content_spec.bundles
+  )
   v2_policy_content_spec.templateLibrary = _ToV2TemplateLibraryConfig(
-      v1_policy_content_spec.templateLibrary
+      self, v1_policy_content_spec.templateLibrary
   )
   return v2_policy_content_spec
 
 
 def _ToV2Bundles(
-    v1_bundles: message_v1.PolicyControllerPolicyContentSpec.BundlesValue,
-) -> message_v2.PolicyControllerPolicyContentSpec.BundlesValue:
+    self,
+    v1_bundles,
+):
   """Converts a v1alpha Bundles to a v2alpha Bundles."""
   if v1_bundles is None:
     return None
 
   v2_bundles_dict = {}
   for bundle in v1_bundles.additionalProperties:
-    v2_bundles_dict[bundle.key] = _ToV2BundleInstallSpec(bundle.value)
+    v2_bundles_dict[bundle.key] = _ToV2BundleInstallSpec(self, bundle.value)
 
   return encoding.DictToAdditionalPropertyMessage(
       v2_bundles_dict,
-      message_v2.PolicyControllerPolicyContentSpec.BundlesValue,
+      self.messages_v2.PolicyControllerPolicyContentSpec.BundlesValue,
       sort_items=True,
   )
 
 
 def _ToV2BundleInstallSpec(
-    v1_bundle_install_spec: message_v1.PolicyControllerBundleInstallSpec,
-) -> message_v2.PolicyControllerBundleInstallSpec:
+    self,
+    v1_bundle_install_spec,
+):
   """Converts a v1alpha BundleInstallSpec to a v2alpha BundleInstallSpec."""
   if v1_bundle_install_spec is None:
     return None
 
-  v2_bundle_install_spec = message_v2.PolicyControllerBundleInstallSpec()
+  v2_bundle_install_spec = self.messages_v2.PolicyControllerBundleInstallSpec()
   v2_bundle_install_spec.exemptedNamespaces = (
       v1_bundle_install_spec.exemptedNamespaces
   )
@@ -540,25 +565,25 @@ def _ToV2BundleInstallSpec(
 
 
 def _ToV2TemplateLibraryConfig(
-    v1_template_library_config: message_v1.PolicyControllerTemplateLibraryConfig,
-) -> message_v2.PolicyControllerTemplateLibraryConfig:
+    self,
+    v1_template_library_config,
+):
   """Converts a v1alpha TemplateLibraryConfig to a v2alpha TemplateLibraryConfig."""
   if v1_template_library_config is None:
     return None
 
   v2_template_library_config = (
-      message_v2.PolicyControllerTemplateLibraryConfig()
+      self.messages_v2.PolicyControllerTemplateLibraryConfig()
   )
   v2_template_library_config.installation = _ToV2InstallationValueValuesEnum(
-      v1_template_library_config.installation
+      self, v1_template_library_config.installation
   )
   return v2_template_library_config
 
 
 def _ToV2InstallationValueValuesEnum(
-    v1_installation_value: message_v1.PolicyControllerTemplateLibraryConfig.InstallationValueValuesEnum,
-) -> (
-    message_v2.PolicyControllerTemplateLibraryConfig.InstallationValueValuesEnum
+    self,
+    v1_installation_value,
 ):
   """Converts a v1alpha InstallationValueValuesEnum to a v2alpha InstallationValueValuesEnum."""
   if v1_installation_value is None:
@@ -566,32 +591,33 @@ def _ToV2InstallationValueValuesEnum(
 
   if (
       v1_installation_value
-      is message_v1.PolicyControllerTemplateLibraryConfig.InstallationValueValuesEnum.INSTALLATION_UNSPECIFIED
+      is self.messages.PolicyControllerTemplateLibraryConfig.InstallationValueValuesEnum.INSTALLATION_UNSPECIFIED
   ):
     return (
-        message_v2.PolicyControllerTemplateLibraryConfig.InstallationValueValuesEnum.INSTALLATION_UNSPECIFIED
+        self.messages_v2.PolicyControllerTemplateLibraryConfig.InstallationValueValuesEnum.INSTALLATION_UNSPECIFIED
     )
   elif (
       v1_installation_value
-      is message_v1.PolicyControllerTemplateLibraryConfig.InstallationValueValuesEnum.NOT_INSTALLED
+      is self.messages.PolicyControllerTemplateLibraryConfig.InstallationValueValuesEnum.NOT_INSTALLED
   ):
     return (
-        message_v2.PolicyControllerTemplateLibraryConfig.InstallationValueValuesEnum.NOT_INSTALLED
+        self.messages_v2.PolicyControllerTemplateLibraryConfig.InstallationValueValuesEnum.NOT_INSTALLED
     )
   elif (
       v1_installation_value
-      is message_v1.PolicyControllerTemplateLibraryConfig.InstallationValueValuesEnum.ALL
+      is self.messages.PolicyControllerTemplateLibraryConfig.InstallationValueValuesEnum.ALL
   ):
     return (
-        message_v2.PolicyControllerTemplateLibraryConfig.InstallationValueValuesEnum.ALL
+        self.messages_v2.PolicyControllerTemplateLibraryConfig.InstallationValueValuesEnum.ALL
     )
   else:
     raise ValueError(f'Unsupported installation value: {v1_installation_value}')
 
 
 def _ToV2DeploymentConfigs(
-    v1_deployment_configs: message_v1.PolicyControllerHubConfig.DeploymentConfigsValue,
-) -> message_v2.PolicyControllerHubConfig.DeploymentConfigsValue:
+    self,
+    v1_deployment_configs,
+):
   """Converts a v1alpha DeploymentConfigs to a v2alpha DeploymentConfigs."""
   if v1_deployment_configs is None:
     return None
@@ -599,77 +625,81 @@ def _ToV2DeploymentConfigs(
   v2_deployment_configs_dict = {}
   for deployment in v1_deployment_configs.additionalProperties:
     v2_deployment_configs_dict[deployment.key] = (
-        _ToV2PolicyControllerDeploymentConfig(deployment.value)
+        _ToV2PolicyControllerDeploymentConfig(self, deployment.value)
     )
 
   return encoding.DictToAdditionalPropertyMessage(
       v2_deployment_configs_dict,
-      message_v2.PolicyControllerHubConfig.DeploymentConfigsValue,
+      self.messages_v2.PolicyControllerHubConfig.DeploymentConfigsValue,
       sort_items=True,
   )
 
 
 def _ToV2PolicyControllerDeploymentConfig(
-    v1_deployment_config: message_v1.PolicyControllerPolicyControllerDeploymentConfig,
-) -> message_v2.PolicyControllerPolicyControllerDeploymentConfig:
+    self,
+    v1_deployment_config,
+):
   """Converts a v1alpha PolicyControllerDeploymentConfig to a v2alpha PolicyControllerDeploymentConfig."""
   if v1_deployment_config is None:
     return None
 
   v2_deployment_config = (
-      message_v2.PolicyControllerPolicyControllerDeploymentConfig()
+      self.messages_v2.PolicyControllerPolicyControllerDeploymentConfig()
   )
   v2_deployment_config.replicaCount = v1_deployment_config.replicaCount
   v2_deployment_config.containerResources = (
       _ToV2PolicyControllerResourceRequirements(
-          v1_deployment_config.containerResources
+          self, v1_deployment_config.containerResources
       )
   )
   v2_deployment_config.podAntiAffinity = v1_deployment_config.podAntiAffinity
   v2_deployment_config.podTolerations = [
-      _ToV2PolicyControllerToleration(pod_tolerations)
+      _ToV2PolicyControllerToleration(self, pod_tolerations)
       for pod_tolerations in v1_deployment_config.podTolerations
   ]
   v2_deployment_config.podAffinity = _ToV2PodAffinity(
-      v1_deployment_config.podAffinity
+      self, v1_deployment_config.podAffinity
   )
   return v2_deployment_config
 
 
 def _ToV2PolicyControllerResourceRequirements(
-    v1_resource_requirements: message_v1.PolicyControllerResourceRequirements,
-) -> message_v2.PolicyControllerResourceRequirements:
+    self,
+    v1_resource_requirements,
+):
   """Converts a v1alpha PolicyControllerResourceRequirements to a v2alpha PolicyControllerResourceRequirements."""
   if v1_resource_requirements is None:
     return None
 
-  v2_resource_requirements = message_v2.PolicyControllerResourceRequirements()
+  v2_resource_requirements = (
+      self.messages_v2.PolicyControllerResourceRequirements()
+  )
   v2_resource_requirements.limits = _ToV2PolicyControllerResourceList(
-      v1_resource_requirements.limits
+      self, v1_resource_requirements.limits
   )
   v2_resource_requirements.requests = _ToV2PolicyControllerResourceList(
-      v1_resource_requirements.requests
+      self, v1_resource_requirements.requests
   )
   return v2_resource_requirements
 
 
 def _ToV2PolicyControllerResourceList(
-    v1_resource_list: message_v1.PolicyControllerResourceList,
-) -> message_v2.PolicyControllerResourceList:
+    self,
+    v1_resource_list,
+):
   """Converts a v1alpha PolicyControllerResourceList to a v2alpha PolicyControllerResourceList."""
   if v1_resource_list is None:
     return None
 
-  v2_resource_list = message_v2.PolicyControllerResourceList()
+  v2_resource_list = self.messages_v2.PolicyControllerResourceList()
   v2_resource_list.cpu = v1_resource_list.cpu
   v2_resource_list.memory = v1_resource_list.memory
   return v2_resource_list
 
 
 def _ToV2PodAffinity(
-    v1_pod_affinity: message_v1.PolicyControllerPolicyControllerDeploymentConfig.PodAffinityValueValuesEnum,
-) -> (
-    message_v2.PolicyControllerPolicyControllerDeploymentConfig.PodAffinityValueValuesEnum
+    self,
+    v1_pod_affinity,
 ):
   """Converts a v1alpha PodAffinity to a v2alpha PodAffinity."""
   if v1_pod_affinity is None:
@@ -677,37 +707,38 @@ def _ToV2PodAffinity(
 
   if (
       v1_pod_affinity
-      is message_v1.PolicyControllerPolicyControllerDeploymentConfig.PodAffinityValueValuesEnum.AFFINITY_UNSPECIFIED
+      is self.messages.PolicyControllerPolicyControllerDeploymentConfig.PodAffinityValueValuesEnum.AFFINITY_UNSPECIFIED
   ):
     return (
-        message_v2.PolicyControllerPolicyControllerDeploymentConfig.PodAffinityValueValuesEnum.AFFINITY_UNSPECIFIED
+        self.messages_v2.PolicyControllerPolicyControllerDeploymentConfig.PodAffinityValueValuesEnum.AFFINITY_UNSPECIFIED
     )
   elif (
       v1_pod_affinity
-      is message_v1.PolicyControllerPolicyControllerDeploymentConfig.PodAffinityValueValuesEnum.NO_AFFINITY
+      is self.messages.PolicyControllerPolicyControllerDeploymentConfig.PodAffinityValueValuesEnum.NO_AFFINITY
   ):
     return (
-        message_v2.PolicyControllerPolicyControllerDeploymentConfig.PodAffinityValueValuesEnum.NO_AFFINITY
+        self.messages_v2.PolicyControllerPolicyControllerDeploymentConfig.PodAffinityValueValuesEnum.NO_AFFINITY
     )
   elif (
       v1_pod_affinity
-      is message_v1.PolicyControllerPolicyControllerDeploymentConfig.PodAffinityValueValuesEnum.ANTI_AFFINITY
+      is self.messages.PolicyControllerPolicyControllerDeploymentConfig.PodAffinityValueValuesEnum.ANTI_AFFINITY
   ):
     return (
-        message_v2.PolicyControllerPolicyControllerDeploymentConfig.PodAffinityValueValuesEnum.ANTI_AFFINITY
+        self.messages_v2.PolicyControllerPolicyControllerDeploymentConfig.PodAffinityValueValuesEnum.ANTI_AFFINITY
     )
   else:
     raise ValueError(f'Unsupported pod affinity: {v1_pod_affinity}')
 
 
 def _ToV2PolicyControllerToleration(
-    v1_toleration: message_v1.PolicyControllerToleration,
-) -> message_v2.PolicyControllerToleration:
+    self,
+    v1_toleration,
+):
   """Converts a v1alpha PolicyControllerToleration to a v2alpha PolicyControllerToleration."""
   if v1_toleration is None:
     return None
 
-  v2_toleration = message_v2.PolicyControllerToleration()
+  v2_toleration = self.messages_v2.PolicyControllerToleration()
   v2_toleration.key = v1_toleration.key
   v2_toleration.operator = v1_toleration.operator
   v2_toleration.value = v1_toleration.value

@@ -4307,6 +4307,9 @@ class MulticastDomain(_messages.Message):
     description: Optional. An optional text description of the multicast
       domain.
     labels: Optional. Labels as key-value pairs.
+    multicastDomainGroup: Optional. The multicast domain group this domain
+      should be associated with. Use the following format: `projects/{project}
+      /locations/global/multicastDomainGroups/{multicast_domain_group}`.
     name: Identifier. The resource name of the multicast domain. Use the
       following format: `projects/*/locations/global/multicastDomains/*`
     network: Optional. [Deprecated] Use `admin_network` instead. The resource
@@ -4349,10 +4352,11 @@ class MulticastDomain(_messages.Message):
   createTime = _messages.StringField(3)
   description = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  uniqueId = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  multicastDomainGroup = _messages.StringField(6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  uniqueId = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class MulticastDomainActivation(_messages.Message):
@@ -4436,6 +4440,8 @@ class MulticastDomainGroup(_messages.Message):
     description: Optional. An optional text description of the multicast
       domain group.
     labels: Optional. Labels as key-value pairs.
+    multicastDomains: Output only. [Output only] Multicast domains associated
+      with the group. There can be at most 2 multicast domains in a group.
     name: Identifier. The resource name of the multicast domain group. Use the
       following format: `projects/*/locations/global/multicastDomainGroups/*`
     uniqueId: Output only. [Output only] The Google-generated UUID for the
@@ -4473,9 +4479,10 @@ class MulticastDomainGroup(_messages.Message):
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  uniqueId = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  multicastDomains = _messages.StringField(4, repeated=True)
+  name = _messages.StringField(5)
+  uniqueId = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class MulticastGroup(_messages.Message):

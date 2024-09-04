@@ -1390,6 +1390,21 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListVpcFlowLogsConfigsResponse(_messages.Message):
+  r"""Response for the `ListVpcFlowLogsConfigs` method.
+
+  Fields:
+    nextPageToken: Page token to fetch the next set of configurations.
+    unreachable: Locations that could not be reached (when querying all
+      locations with `-`).
+    vpcFlowLogsConfigs: List of VPC Flow Log configurations.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  unreachable = _messages.StringField(2, repeated=True)
+  vpcFlowLogsConfigs = _messages.MessageField('VpcFlowLogsConfig', 3, repeated=True)
+
+
 class LoadBalancerBackend(_messages.Message):
   r"""For display only. Metadata associated with a specific load balancer
   backend.
@@ -1980,6 +1995,91 @@ class NetworkmanagementProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsCreateRequest(_messages.Message):
+  r"""A NetworkmanagementProjectsLocationsVpcFlowLogsConfigsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent resource of the VPC Flow Logs configuration
+      to create: `projects/{project_id}/locations/global`
+    vpcFlowLogsConfig: A VpcFlowLogsConfig resource to be passed as the
+      request body.
+    vpcFlowLogsConfigId: Required. ID of the `VpcFlowLogsConfig`.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  vpcFlowLogsConfig = _messages.MessageField('VpcFlowLogsConfig', 2)
+  vpcFlowLogsConfigId = _messages.StringField(3)
+
+
+class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsDeleteRequest(_messages.Message):
+  r"""A NetworkmanagementProjectsLocationsVpcFlowLogsConfigsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. `VpcFlowLogsConfig` resource name using the form: `project
+      s/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config
+      }`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsGetRequest(_messages.Message):
+  r"""A NetworkmanagementProjectsLocationsVpcFlowLogsConfigsGetRequest object.
+
+  Fields:
+    name: Required. `VpcFlowLogsConfig` resource name using the form: `project
+      s/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config
+      }`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsListRequest(_messages.Message):
+  r"""A NetworkmanagementProjectsLocationsVpcFlowLogsConfigsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Lists the `VpcFlowLogsConfigs` that match the filter
+      expression. A filter expression must use the supported [CEL logic
+      operators] (https://cloud.google.com/vpc/docs/about-flow-logs-
+      records#supported_cel_logic_operators).
+    orderBy: Optional. Field to use to sort the list.
+    pageSize: Optional. Number of `VpcFlowLogsConfigs` to return.
+    pageToken: Optional. Page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource of the VpcFlowLogsConfig:
+      `projects/{project_id}/locations/global`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsPatchRequest(_messages.Message):
+  r"""A NetworkmanagementProjectsLocationsVpcFlowLogsConfigsPatchRequest
+  object.
+
+  Fields:
+    name: Identifier. Unique name of the configuration using the form: `projec
+      ts/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_confi
+      g_id}`
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field.
+    vpcFlowLogsConfig: A VpcFlowLogsConfig resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  vpcFlowLogsConfig = _messages.MessageField('VpcFlowLogsConfig', 3)
 
 
 class Operation(_messages.Message):
@@ -2885,6 +2985,148 @@ class VpcConnectorInfo(_messages.Message):
   displayName = _messages.StringField(1)
   location = _messages.StringField(2)
   uri = _messages.StringField(3)
+
+
+class VpcFlowLogsConfig(_messages.Message):
+  r"""A configuration to generate VPC Flow Logs.
+
+  Enums:
+    AggregationIntervalValueValuesEnum: Optional. The aggregation interval for
+      the logs. Default value is INTERVAL_5_SEC.
+    MetadataValueValuesEnum: Optional. Configures whether all, none or a
+      subset of metadata fields should be added to the reported VPC flow logs.
+      Default value is INCLUDE_ALL_METADATA.
+    StateValueValuesEnum: Optional. The state of the VPC Flow Log
+      configuration. Default value is ENABLED. When creating a new
+      configuration, it must be enabled.
+
+  Messages:
+    LabelsValue: Optional. Resource labels to represent user-provided
+      metadata.
+
+  Fields:
+    aggregationInterval: Optional. The aggregation interval for the logs.
+      Default value is INTERVAL_5_SEC.
+    createTime: Output only. The time the config was created.
+    description: Optional. The user-supplied description of the VPC Flow Logs
+      configuration. Maximum of 512 characters.
+    filterExpr: Optional. Export filter used to define which VPC Flow Logs
+      should be logged.
+    flowSampling: Optional. The value of the field must be in (0, 1]. The
+      sampling rate of VPC Flow Logs where 1.0 means all collected logs are
+      reported. Setting the sampling rate to 0.0 is not allowed. If you want
+      to disable VPC Flow Logs, use the state field instead. Default value is
+      1.0.
+    interconnectAttachment: Traffic will be logged from the Interconnect
+      Attachment. Format:
+      projects/{project_id}/regions/{region}/interconnectAttachments/{name}
+    labels: Optional. Resource labels to represent user-provided metadata.
+    metadata: Optional. Configures whether all, none or a subset of metadata
+      fields should be added to the reported VPC flow logs. Default value is
+      INCLUDE_ALL_METADATA.
+    metadataFields: Optional. Custom metadata fields to include in the
+      reported VPC flow logs. Can only be specified if "metadata" was set to
+      CUSTOM_METADATA.
+    name: Identifier. Unique name of the configuration using the form: `projec
+      ts/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_confi
+      g_id}`
+    state: Optional. The state of the VPC Flow Log configuration. Default
+      value is ENABLED. When creating a new configuration, it must be enabled.
+    updateTime: Output only. The time the config was updated.
+    vpnTunnel: Traffic will be logged from the VPN Tunnel. Format:
+      projects/{project_id}/regions/{region}/vpnTunnels/{name}
+  """
+
+  class AggregationIntervalValueValuesEnum(_messages.Enum):
+    r"""Optional. The aggregation interval for the logs. Default value is
+    INTERVAL_5_SEC.
+
+    Values:
+      AGGREGATION_INTERVAL_UNSPECIFIED: If not specified, will default to
+        INTERVAL_5_SEC.
+      INTERVAL_5_SEC: Aggregate logs in 5s intervals.
+      INTERVAL_30_SEC: Aggregate logs in 30s intervals.
+      INTERVAL_1_MIN: Aggregate logs in 1m intervals.
+      INTERVAL_5_MIN: Aggregate logs in 5m intervals.
+      INTERVAL_10_MIN: Aggregate logs in 10m intervals.
+      INTERVAL_15_MIN: Aggregate logs in 15m intervals.
+    """
+    AGGREGATION_INTERVAL_UNSPECIFIED = 0
+    INTERVAL_5_SEC = 1
+    INTERVAL_30_SEC = 2
+    INTERVAL_1_MIN = 3
+    INTERVAL_5_MIN = 4
+    INTERVAL_10_MIN = 5
+    INTERVAL_15_MIN = 6
+
+  class MetadataValueValuesEnum(_messages.Enum):
+    r"""Optional. Configures whether all, none or a subset of metadata fields
+    should be added to the reported VPC flow logs. Default value is
+    INCLUDE_ALL_METADATA.
+
+    Values:
+      METADATA_UNSPECIFIED: If not specified, will default to
+        INCLUDE_ALL_METADATA.
+      INCLUDE_ALL_METADATA: Include all metadata fields.
+      EXCLUDE_ALL_METADATA: Exclude all metadata fields.
+      CUSTOM_METADATA: Include only custom fields (specified in
+        metadata_fields).
+    """
+    METADATA_UNSPECIFIED = 0
+    INCLUDE_ALL_METADATA = 1
+    EXCLUDE_ALL_METADATA = 2
+    CUSTOM_METADATA = 3
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Optional. The state of the VPC Flow Log configuration. Default value
+    is ENABLED. When creating a new configuration, it must be enabled.
+
+    Values:
+      STATE_UNSPECIFIED: If not specified, will default to ENABLED.
+      ENABLED: When ENABLED, this configuration will generate logs.
+      DISABLED: When DISABLED, this configuration will not generate logs.
+    """
+    STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Resource labels to represent user-provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  aggregationInterval = _messages.EnumField('AggregationIntervalValueValuesEnum', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  filterExpr = _messages.StringField(4)
+  flowSampling = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  interconnectAttachment = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  metadata = _messages.EnumField('MetadataValueValuesEnum', 8)
+  metadataFields = _messages.StringField(9, repeated=True)
+  name = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
+  vpnTunnel = _messages.StringField(13)
 
 
 class VpnGatewayInfo(_messages.Message):

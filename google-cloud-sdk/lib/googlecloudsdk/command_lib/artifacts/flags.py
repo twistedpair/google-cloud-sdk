@@ -91,6 +91,16 @@ def GetFileResourceSpec():
       repositoriesId=RepoAttributeConfig())
 
 
+def GetAttachmentResourceSpec():
+  return concepts.ResourceSpec(
+      'artifactregistry.projects.locations.repositories.attachments',
+      resource_name='attachment',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      repositoriesId=RepoAttributeConfig(),
+  )
+
+
 def GetScopeFlag():
   return base.Argument(
       '--scope',
@@ -181,9 +191,18 @@ def GetRequiredFileFlag():
   return concept_parsers.ConceptParser.ForResource(
       'file',
       GetFileResourceSpec(),
-      ('The Artifact Registry file name. If not specified, '
-       'the current artifacts/location is used.'),
-      required=True)
+      'The Artifact Registry file name.',
+      required=True,
+  )
+
+
+def GetRequiredAttachmentFlag():
+  return concept_parsers.ConceptParser.ForResource(
+      'attachment',
+      GetAttachmentResourceSpec(),
+      'The Artifact Registry attachment name.',
+      required=True,
+  )
 
 
 def GetAllowOverwriteFlag():

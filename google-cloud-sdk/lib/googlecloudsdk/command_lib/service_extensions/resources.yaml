@@ -74,6 +74,19 @@ lbObservabilityExtension:
     help: |
       The ID of the `LbObservabilityExtension`.
 
+authzExtension:
+  name: AuthzExtension
+  collection: networkservices.projects.locations.authzExtensions
+  request_id_field: authzExtensionId
+  attributes:
+  - *project
+  - *location
+  - &authzExtension:
+    parameter_name: authzExtensionsId
+    attribute_name: authz_extension
+    help: |
+      The ID of the `AuthzExtension`.
+
 wasmAction:
   name: WasmAction
   collection: networkservices.projects.locations.wasmActions

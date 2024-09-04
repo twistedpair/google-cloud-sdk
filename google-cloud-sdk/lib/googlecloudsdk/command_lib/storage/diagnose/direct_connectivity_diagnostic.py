@@ -48,8 +48,8 @@ def _get_ips(dns_path, service_name):
   return res
 
 
-def _get_string_or_not_found(s):
-  return s if s else '[Not Found]'
+def _get_region_string_or_not_found(s):
+  return '"{}"'.format(s.lower()) if s else '[Not Found]'
 
 
 def _exec_and_return_stdout(command):
@@ -290,14 +290,14 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
     if (
         bucket_response
         and vm_response
-        and bucket_response.startswith(vm_response.lower())
+        and vm_response.lower().startswith(bucket_response.lower())
     ):
       return _SUCCESS
-    return 'Bucket {} region {} does not match VM {} zone {}'.format(
+    return 'Bucket "{}" region {} does not match VM "{}" zone {}'.format(
         self._bucket_url,
-        _get_string_or_not_found(bucket_response),
+        _get_region_string_or_not_found(bucket_response),
         socket.gethostname(),
-        _get_string_or_not_found(vm_response),
+        _get_region_string_or_not_found(vm_response),
     )
 
   def _run(self):

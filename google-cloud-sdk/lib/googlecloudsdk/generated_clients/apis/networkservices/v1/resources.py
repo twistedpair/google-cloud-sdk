@@ -174,6 +174,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_MULTICASTDOMAINGROUPS = (
+      'projects.locations.multicastDomainGroups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'multicastDomainGroups/{multicastDomainGroupsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MULTICASTDOMAINS = (
       'projects.locations.multicastDomains',
       '{+name}',

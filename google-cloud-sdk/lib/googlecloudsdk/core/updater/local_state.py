@@ -283,66 +283,6 @@ class InstallationState(object):
                                       platform_filter=platform_filter)
 
   @_RaisesPermissionsError
-  def CloneToStaging(self, progress_callback=None):
-    """Clones this state to the temporary staging area.
-
-    This is used for making temporary copies of the entire Cloud SDK
-    installation when doing updates.  The entire installation is cloned, but
-    doing so removes any backups and trash from this state before doing the
-    copy.
-
-    Args:
-      progress_callback: f(float), A function to call with the fraction of
-        completeness.
-
-    Returns:
-      An InstallationState object for the cloned install.
-    """
-    self._CreateStateDir()
-    (rm_staging_cb, rm_backup_cb, rm_trash_cb, copy_cb) = (
-        console_io.SplitProgressBar(progress_callback, [1, 1, 1, 7]))
-
-    self._ClearStaging(progress_callback=rm_staging_cb)
-    self.ClearBackup(progress_callback=rm_backup_cb)
-    self.ClearTrash(progress_callback=rm_trash_cb)
-
-    class Counter(object):
-
-      def __init__(self, progress_callback, total):
-        self.count = 0
-        self.progress_callback = progress_callback
-        self.total = total
-
-      # This function must match the signature that shutil expects for the
-      # ignore function.
-      def Tick(self, *unused_args):
-        self.count += 1
-        self.progress_callback(self.count / self.total)
-        return []
-
-    if progress_callback:
-      # This takes a little time, so only do it if we are going to report
-      # progress.
-      dirs = set()
-      for _, manifest in six.iteritems(self.InstalledComponents()):
-        dirs.update(manifest.InstalledDirectories())
-      # There is always the root directory itself and the .install directory.
-      # In general, there could be in the SDK (if people just put stuff in there
-      # but this is fine for an estimate.  The progress bar will at worst stay
-      # at 100% for slightly longer.
-      total_dirs = len(dirs) + 2
-      ticker = Counter(copy_cb, total_dirs).Tick if total_dirs else None
-    else:
-      ticker = None
-
-    shutil.copytree(self.__sdk_root, self.__sdk_staging_root, symlinks=True,
-                    ignore=ticker)
-    staging_state = InstallationState(self.__sdk_staging_root)
-    # pylint: disable=protected-access, This is an instance of InstallationState
-    staging_state._CreateStateDir()
-    return staging_state
-
-  @_RaisesPermissionsError
   def CreateStagingFromDownload(self, url, progress_callback=None):
     """Creates a new staging area from a fresh download of the Cloud SDK.
 
@@ -783,24 +723,6 @@ class InstallationManifest(object):
     with file_utils.FileReader(self.manifest_file) as f:
       files = [line.rstrip() for line in f]
     return files
-
-  def InstalledDirectories(self):
-    """Gets the set of directories created by installing this component.
-
-    Returns:
-      set(str), The directories installed by this component.
-    """
-    with file_utils.FileReader(self.manifest_file) as f:
-      dirs = set()
-      for line in f:
-        norm_file_path = os.path.dirname(line.rstrip())
-        prev_file = norm_file_path + '/'
-        while len(prev_file) > len(norm_file_path) and norm_file_path:
-          dirs.add(norm_file_path)
-          prev_file = norm_file_path
-          norm_file_path = os.path.dirname(norm_file_path)
-
-    return dirs
 
 
 def _NormalizeFileList(file_list):

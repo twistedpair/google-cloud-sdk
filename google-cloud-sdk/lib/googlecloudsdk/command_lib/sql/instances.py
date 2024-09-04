@@ -482,6 +482,9 @@ class _BaseInstances(object):
             sql_messages, args.server_ca_mode
         )
 
+      if args.retain_backups_on_delete is not None:
+        settings.retainBackupsOnDelete = args.retain_backups_on_delete
+
     return settings
 
   @classmethod

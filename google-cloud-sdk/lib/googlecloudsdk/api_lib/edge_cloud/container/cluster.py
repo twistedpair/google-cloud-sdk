@@ -199,6 +199,10 @@ def PopulateClusterAlphaMessage(req, args):
     req.cluster.controlPlane.local.controlPlaneNodeStorageSchema = (
         args.control_plane_node_storage_schema
     )
+  messages = util.GetMessagesModule(base.ReleaseTrack.ALPHA)
+  if flags.FlagIsExplicitlySet(args, 'zone_storage_kms_key'):
+    req.cluster.zoneStorageEncryption = messages.ZoneStorageEncryption()
+    req.cluster.zoneStorageEncryption.kmsKey = args.zone_storage_kms_key
 
 
 def IsLCPCluster(args):

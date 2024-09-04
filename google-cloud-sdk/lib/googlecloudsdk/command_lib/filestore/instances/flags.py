@@ -582,11 +582,12 @@ instance-zone will be used.
     )
 
 
-def AddPerformanceArg(parser):
+def AddPerformanceArg(parser, hidden=False):
   """Adds a --performance flag to the given parser.
 
   Args:
     parser: argparse parser.
+    hidden: if hidden or not.
   """
   performance_help = """\
         Performance configuration for the instance. This flag is used
@@ -636,14 +637,16 @@ def AddPerformanceArg(parser):
           spec=performance_arg_spec, max_length=1
       ),
       help=performance_help,
+      hidden=hidden,
   )
 
 
-def AddClearPerformanceArg(parser):
+def AddClearPerformanceArg(parser, hidden=False):
   """Adds a --clear-performance flag to the given parser.
 
   Args:
     parser: argparse parser.
+    hidden: if hidden or not.
   """
   clear_performance_help = """\
         Clear the performance configuration of the instance and set it to the
@@ -659,19 +662,21 @@ def AddClearPerformanceArg(parser):
       action='store_true',
       required=False,
       help=clear_performance_help,
+      hidden=hidden,
   )
 
 
-def AddPerformanceArgs(parser):
+def AddPerformanceArgs(parser, hidden=False):
   """Adds performance mutually exclusive args group to the parser.
 
   Args:
     parser: argparse parser.
+    hidden: if hidden or not.
   """
 
-  performance_arg_group = parser.add_mutually_exclusive_group()
-  AddPerformanceArg(performance_arg_group)
-  AddClearPerformanceArg(performance_arg_group)
+  performance_arg_group = parser.add_mutually_exclusive_group(hidden=hidden)
+  AddPerformanceArg(performance_arg_group, hidden=hidden)
+  AddClearPerformanceArg(performance_arg_group, hidden=hidden)
 
 
 def AddInstanceCreateArgs(parser, api_version):
@@ -700,7 +705,9 @@ def AddInstanceCreateArgs(parser, api_version):
                      filestore_client.V1_API_VERSION]:
     AddKmsKeyArg(parser)
     AddSourceInstanceArg(parser)
-    AddPerformanceArg(parser)
+
+    # TODO(b/362786746): Expose (hidden=False) when Negba-lite is in AGA.
+    AddPerformanceArg(parser, hidden=True)
     GetTagsArg().AddToParser(parser)
 
 
@@ -725,4 +732,5 @@ def AddInstanceUpdateArgs(parser, api_version):
       required=False)
   if api_version in [filestore_client.BETA_API_VERSION,
                      filestore_client.V1_API_VERSION]:
-    AddPerformanceArgs(parser)
+    # TODO(b/362786746): Expose (hidden=False) when Negba-lite is in AGA.
+    AddPerformanceArgs(parser, hidden=True)

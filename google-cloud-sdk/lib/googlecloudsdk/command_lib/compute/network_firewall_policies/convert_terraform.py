@@ -57,6 +57,7 @@ def ConvertFirewallPolicyRule(rule):
   firewall_policy         = google_compute_network_firewall_policy.auto_generated_firewall_policy.name
   priority                = {priority}
   rule_name               = "{rule_name}"
+  target_service_accounts = [{target_service_accounts}]
 
   match {{
     dest_ip_ranges = [{dest_ip_ranges}]
@@ -71,6 +72,7 @@ def ConvertFirewallPolicyRule(rule):
       enable_logging=_ConvertBoolean(rule.enableLogging),
       priority=rule.priority,
       rule_name=rule.ruleName,
+      target_service_accounts=_ConvertArray(rule.targetServiceAccounts),
       dest_ip_ranges=_ConvertArray(rule.match.destIpRanges),
       src_ip_ranges=_ConvertArray(rule.match.srcIpRanges),
       src_secure_tags=_ConvertSrcTags(rule.match.srcSecureTags),

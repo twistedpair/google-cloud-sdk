@@ -780,6 +780,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'cloudaicompanion': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.cloudaicompanion.v1',
+                    client_classpath='cloudaicompanion_v1_client.CloudaicompanionV1',
+                    base_url='https://cloudaicompanion.googleapis.com/',
+                    messages_modulepath='cloudaicompanion_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -787,7 +797,7 @@ MAP = {
                     client_classpath='cloudaicompanion_v1alpha_client.CloudaicompanionV1alpha',
                     base_url='https://cloudaicompanion.googleapis.com/',
                     messages_modulepath='cloudaicompanion_v1alpha_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
@@ -2896,6 +2906,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'oracledatabase': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.oracledatabase.v1',
+                    client_classpath='oracledatabase_v1_client.OracledatabaseV1',
+                    base_url='https://oracledatabase.googleapis.com/',
+                    messages_modulepath='oracledatabase_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2903,7 +2923,7 @@ MAP = {
                     client_classpath='oracledatabase_v1alpha_client.OracledatabaseV1alpha',
                     base_url='https://oracledatabase.googleapis.com/',
                     messages_modulepath='oracledatabase_v1alpha_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

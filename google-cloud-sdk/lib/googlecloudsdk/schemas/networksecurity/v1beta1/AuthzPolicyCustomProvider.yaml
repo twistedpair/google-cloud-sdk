@@ -1,0 +1,40 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networksecurity v1beta1 AuthzPolicyCustomProvider export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  authzExtension:
+    description: |-
+      Delegate authorization decision to user authored Service Extension. Only
+      one of cloudIap or authzExtension can be specified.
+    $ref: AuthzPolicyCustomProviderAuthzExtension.yaml
+  cloudIap:
+    description: |-
+      Delegates authorization decisions to Cloud IAP. Applicable only for
+      managed load balancers. Enabling Cloud IAP at the AuthzPolicy level is not
+      compatible with Cloud IAP settings in the BackendService. Enabling IAP in
+      both places will result in request failure. Ensure that IAP is enabled in
+      either the AuthzPolicy or the BackendService but not in both places.
+    type: authzpolicycustomprovidercloudiap

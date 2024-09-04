@@ -85,6 +85,18 @@ project_location_autonomous_database_character_set:
     attribute_name: autonomous_database_character_set
     help: The autonomousDatabaseCharacterSet id of the {resource} resource.
   disable_auto_completers: false
+project_location_autonomous_database_backup:
+  name: autonomousDatabaseBackup
+  plural_name: autonomousDatabaseBackups
+  collection: oracledatabase.projects.locations.autonomousDatabaseBackups
+  attributes:
+  - *project
+  - *location
+  - &autonomousDatabaseBackup
+    parameter_name: autonomousDatabaseBackupsId
+    attribute_name: autonomous_database_backup
+    help: The autonomousDatabaseBackup id of the {resource} resource.
+  disable_auto_completers: false
 project_location_autonomous_db_version:
   name: autonomousDbVersion
   plural_name: autonomousDbVersions

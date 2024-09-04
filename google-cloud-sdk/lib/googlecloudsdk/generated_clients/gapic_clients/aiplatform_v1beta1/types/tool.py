@@ -287,7 +287,11 @@ class FunctionResponse(proto.Message):
             [FunctionDeclaration.name] and [FunctionCall.name].
         response (google.protobuf.struct_pb2.Struct):
             Required. The function response in JSON
-            object format.
+            object format. Use "output" key to specify
+            function output and "error" key to specify error
+            details (if any). If "output" and "error" keys
+            are not specified, then whole "response" is
+            treated as function output.
     """
 
     name: str = proto.Field(
@@ -417,11 +421,11 @@ class VertexRagStore(proto.Message):
 
 class VertexAISearch(proto.Message):
     r"""Retrieve from Vertex AI Search datastore for grounding.
-    See https://cloud.google.com/vertex-ai-search-and-conversation
+    See https://cloud.google.com/products/agent-builder
 
     Attributes:
         datastore (str):
-            Required. Fully-qualified Vertex AI Search's datastore
+            Required. Fully-qualified Vertex AI Search data store
             resource ID. Format:
             ``projects/{project}/locations/{location}/collections/{collection}/dataStores/{dataStore}``
     """
@@ -476,16 +480,16 @@ class FunctionCallingConfig(proto.Message):
                 should not be used.
             AUTO (1):
                 Default model behavior, model decides to
-                predict either a function call or a natural
+                predict either function calls or natural
                 language response.
             ANY (2):
-                Model is constrained to always predicting a function call
+                Model is constrained to always predicting function calls
                 only. If "allowed_function_names" are set, the predicted
-                function call will be limited to any one of
-                "allowed_function_names", else the predicted function call
+                function calls will be limited to any one of
+                "allowed_function_names", else the predicted function calls
                 will be any one of the provided "function_declarations".
             NONE (3):
-                Model will not predict any function call.
+                Model will not predict any function calls.
                 Model behavior is same as when not passing any
                 function declarations.
         """

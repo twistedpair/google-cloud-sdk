@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import argparse
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
@@ -841,24 +842,11 @@ def AddReplicaZones(parser):
   )
 
 
-def AddDisableSSHToVM(parser, use_default=True):
+def AddDisableSSHToVM(parser):
   """Adds a --disable-ssh-to-vm flag to the given parser."""
-  help_text = """\
-  Default value is False.
-  If set, workstations disable SSH connections to the root VM."""
-  parser.add_argument(
-      '--disable-ssh-to-vm',
-      action='store_true',
-      default=False if use_default else False,
-      help=help_text,
-  )
-
-
-def AddEnableSSHToVM(parser):
-  """Adds a --enable-ssh-to-vm flag to the given parser."""
-  help_text = """\
-  If set, workstations disable SSH connections to the root VM."""
   group = parser.add_mutually_exclusive_group()
+  help_text = """\
+  If set, workstations disable SSH connections to the root VM."""
   group.add_argument(
       '--disable-ssh-to-vm',
       action='store_true',
@@ -869,6 +857,40 @@ def AddEnableSSHToVM(parser):
   group.add_argument(
       '--enable-ssh-to-vm',
       action='store_true',
+      help=help_text,
+  )
+
+
+def AddEnableSSHToVM(parser, use_default=False):
+  """Adds a --enable-ssh-to-vm flag to the given parser."""
+  help_text = """\
+  Default value is False.
+  If set, workstations enable SSH connections to the root VM."""
+  parser.add_argument(
+      '--enable-ssh-to-vm',
+      default=False if use_default else None,
+      action='store_true',
+      help=help_text,
+  )
+
+
+def AddDeprecatedDisableSSHToVM(parser, use_default=True):
+  """Adds a --disable-ssh-to-vm flag to the given parser."""
+  help_text = """\
+  Default value is False.
+  If set, workstations disable SSH connections to the root VM."""
+  parser.add_argument(
+      '--disable-ssh-to-vm',
+      action=actions.DeprecationAction(
+          '--disable-ssh-to-vm',
+          warn=(
+              'The {flag_name} option is deprecated; use --enable-ssh-to-vm'
+              ' instead.'
+          ),
+          removed=False,
+          action='store_true',
+      ),
+      default=False if use_default else False,
       help=help_text,
   )
 

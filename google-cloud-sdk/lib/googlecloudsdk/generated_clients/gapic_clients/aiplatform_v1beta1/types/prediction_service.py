@@ -824,9 +824,14 @@ class GenerateContentRequest(proto.Message):
 
     Attributes:
         model (str):
-            Required. The name of the publisher model requested to serve
-            the prediction. Format:
+            Required. The fully qualified name of the publisher model or
+            tuned model endpoint to use.
+
+            Publisher model format:
             ``projects/{project}/locations/{location}/publishers/*/models/*``
+
+            Tuned model endpoint format:
+            ``projects/{project}/locations/{location}/endpoints/{endpoint}``
         contents (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Content]):
             Required. The content of the current
             conversation with the model.
@@ -981,7 +986,11 @@ class GenerateContentResponse(proto.Message):
             candidates_token_count (int):
                 Number of tokens in the response(s).
             total_token_count (int):
-
+                Total token count for prompt and response
+                candidates.
+            cached_content_token_count (int):
+                Output only. Number of tokens in the cached
+                part in the input (the cached content).
         """
 
         prompt_token_count: int = proto.Field(
@@ -995,6 +1004,10 @@ class GenerateContentResponse(proto.Message):
         total_token_count: int = proto.Field(
             proto.INT32,
             number=3,
+        )
+        cached_content_token_count: int = proto.Field(
+            proto.INT32,
+            number=5,
         )
 
     candidates: MutableSequence[content.Candidate] = proto.RepeatedField(
@@ -1019,9 +1032,9 @@ class ChatCompletionsRequest(proto.Message):
 
     Attributes:
         endpoint (str):
-            Required. The name of the Endpoint requested to serve the
+            Required. The name of the endpoint requested to serve the
             prediction. Format:
-            ``projects/{project}/locations/{location}/endpoints/openapi``
+            ``projects/{project}/locations/{location}/endpoints/{endpoint}``
         http_body (google.api.httpbody_pb2.HttpBody):
             Optional. The prediction input. Supports HTTP
             headers and arbitrary data payload.

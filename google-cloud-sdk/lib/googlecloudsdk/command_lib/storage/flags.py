@@ -38,6 +38,24 @@ ALL_INVENTORY_REPORTS_METADATA_FIELDS = (
     REQUIRED_INVENTORY_REPORTS_METADATA_FIELDS +
     OPTIONAL_INVENTORY_REPORTS_METADATA_FIELDS)
 
+_IP_FILTER_HELP_TEXT = """
+Sets the IP filter for the bucket. The IP filter is a list of ip
+ranges that are allowed to access the bucket. For example,
+The following example JSON document shows the IP filter configuration with mode
+enabled and list of public network sources and vpc network sources with  :
+
+  {
+    "mode": "Enabled",
+    "publicNetworkSource": { "allowedIpCidrRanges": ["0.0.0.0/0"] },
+    "vpcNetworkSources": [
+        {
+            "network": "projects/PROJECT_NAME/global/networks/NETWORK_NAME",
+            "allowedIpCidrRanges": ["0.0.0.0/0"]
+        },
+    ]
+  }
+"""
+
 
 class ReplicationStrategy(enum.Enum):
   """Enum class for specifying the replication setting."""
@@ -678,6 +696,19 @@ def add_recovery_point_objective_flag(parser):
             ' buckets. For more information, see'
             ' [replication in Cloud Storage](https://cloud.google.com/storage'
             '/docs/availability-durability#cross-region-redundancy).'))
+
+
+def add_ip_filter_file_flag(parser):
+  """Adds the ip filter file flag for buckets commands.
+
+  Args:
+    parser (parser_arguments.ArgumentInterceptor): Parser passed to surface.
+  """
+  parser.add_argument(
+      '--ip-filter-file',
+      help=_IP_FILTER_HELP_TEXT,
+      hidden=True
+  )
 
 
 def check_if_use_gsutil_style(args):

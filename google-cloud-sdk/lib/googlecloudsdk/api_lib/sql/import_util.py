@@ -14,10 +14,6 @@
 # limitations under the License.
 """Common command-agnostic utility functions for sql import commands."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 
 def ParseBakType(sql_messages, bak_type):
   if bak_type is None:
@@ -202,3 +198,38 @@ def BakImportContext(
       database=database,
       fileType=sql_messages.ImportContext.FileTypeValueValuesEnum.BAK,
       bakImportOptions=bak_import_options)
+
+
+def TdeImportContext(
+    sql_messages,
+    certificate,
+    cert_path,
+    pvk_path,
+    pvk_password,
+):
+  """Generates the ImportContext for the given args, for importing from TDE.
+
+  Args:
+    sql_messages: module, The messages module that should be used.
+    certificate: The certificate name; the output of the
+      `--certificate` flag.
+    cert_path: The certificate path in Google Cloud Storage; the output of the
+      `--cert-path` flag.
+    pvk_path: The private key path in Google Cloud Storage; the output of the
+      `--pvk-path` flag.
+    pvk_password: The password that encrypts the private key; the output
+      of the `--pvk-password` or `--prompt-for-pvk-password` flag.
+
+  Returns:
+    ImportContext, for use in InstancesImportRequest.importContext.
+  """
+  tde_import_options = sql_messages.ImportContext.TdeImportOptionsValue(
+      name=certificate,
+      certificatePath=cert_path,
+      privateKeyPath=pvk_path,
+      privateKeyPassword=pvk_password)
+
+  return sql_messages.ImportContext(
+      kind='sql#importContext',
+      fileType=sql_messages.ImportContext.FileTypeValueValuesEnum.TDE,
+      tdeImportOptions=tde_import_options)

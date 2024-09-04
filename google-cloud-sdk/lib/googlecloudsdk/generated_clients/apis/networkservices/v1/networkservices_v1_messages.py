@@ -1798,7 +1798,8 @@ class GrpcRouteMethodMatch(_messages.Message):
 
 
 class GrpcRouteRetryPolicy(_messages.Message):
-  r"""The specifications for retries.
+  r"""The specifications for retries. Specifies one or more conditions for
+  which this retry rule applies. Valid values are:
 
   Fields:
     numRetries: Specifies the allowed number of retries. This number must be >
@@ -3152,6 +3153,21 @@ class ListMulticastDomainActivationsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListMulticastDomainGroupsResponse(_messages.Message):
+  r"""Response message for ListMulticastDomainGroups.
+
+  Fields:
+    multicastDomainGroups: The list of multicast domain groups.
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastDomainGroups = _messages.MessageField('MulticastDomainGroup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListMulticastDomainsResponse(_messages.Message):
   r"""Response message for ListMulticastDomains.
 
@@ -3620,6 +3636,11 @@ class MulticastConsumerAssociation(_messages.Message):
       `projects/{project}/locations/global/networks/{network}`.
     resourceState: Output only. The resource state of the multicast consumer
       association.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all multicast consumer association
+      resources. If a consumer association is deleted and another with the
+      same name is created, the new consumer association is assigned a
+      different unique_id.
     updateTime: Output only. [Output only] The timestamp when the Multicast
       Consumer Association was most recently updated.
   """
@@ -3670,7 +3691,8 @@ class MulticastConsumerAssociation(_messages.Message):
   name = _messages.StringField(6)
   network = _messages.StringField(7)
   resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
+  uniqueId = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class MulticastDomain(_messages.Message):
@@ -3689,11 +3711,18 @@ class MulticastDomain(_messages.Message):
     description: Optional. An optional text description of the multicast
       domain.
     labels: Optional. Labels as key-value pairs.
+    multicastDomainGroup: Optional. The multicast domain group this domain
+      should be associated with. Use the following format: `projects/{project}
+      /locations/global/multicastDomainGroups/{multicast_domain_group}`.
     name: Identifier. The resource name of the multicast domain. Use the
       following format: `projects/*/locations/global/multicastDomains/*`
     network: Optional. [Deprecated] Use `admin_network` instead. The resource
       name of the multicast producer VPC network. Use following format:
       `projects/{project}/locations/global/networks/{network}`.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all multicast domain resources. If
+      a domain is deleted and another with the same name is created, the new
+      domain is assigned a different unique_id.
     updateTime: Output only. [Output only] The timestamp when the multicast
       domain was most recently updated.
   """
@@ -3727,9 +3756,11 @@ class MulticastDomain(_messages.Message):
   createTime = _messages.StringField(3)
   description = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  multicastDomainGroup = _messages.StringField(6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  uniqueId = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class MulticastDomainActivation(_messages.Message):
@@ -3756,6 +3787,11 @@ class MulticastDomainActivation(_messages.Message):
     name: Identifier. The resource name of the multicast domain activation.
       Use the following format:
       `projects/*/locations/*/multicastDomainActivations/*`.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all multicast domain activation
+      resources. If a domain activation is deleted and another with the same
+      name is created, the new domain activation is assigned a different
+      unique_id.
     updateTime: Output only. [Output only] The timestamp when the multicast
       domain activation was most recently updated.
   """
@@ -3792,7 +3828,65 @@ class MulticastDomainActivation(_messages.Message):
   multicastConsumerAssociations = _messages.StringField(6, repeated=True)
   multicastDomain = _messages.StringField(7)
   name = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  uniqueId = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class MulticastDomainGroup(_messages.Message):
+  r"""Multicast domain group resource.
+
+  Messages:
+    LabelsValue: Optional. Labels as key-value pairs.
+
+  Fields:
+    createTime: Output only. [Output only] The timestamp when the multicast
+      domain group was created.
+    description: Optional. An optional text description of the multicast
+      domain group.
+    labels: Optional. Labels as key-value pairs.
+    multicastDomains: Output only. [Output only] Multicast domains associated
+      with the group. There can be at most 2 multicast domains in a group.
+    name: Identifier. The resource name of the multicast domain group. Use the
+      following format: `projects/*/locations/global/multicastDomainGroups/*`
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all multicast domain group
+      resources. If a domain is deleted and another with the same name is
+      created, the new domain is assigned a different unique_id.
+    updateTime: Output only. [Output only] The timestamp when the multicast
+      domain group was most recently updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key-value pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  multicastDomains = _messages.StringField(4, repeated=True)
+  name = _messages.StringField(5)
+  uniqueId = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class MulticastGroup(_messages.Message):
@@ -3825,6 +3919,10 @@ class MulticastGroup(_messages.Message):
       `projects/*/locations/global/multicastGroupDefinitions/*`
     name: Identifier. The resource name of the multicast group. Use the
       following format: `projects/*/locations/*/multicastGroups/*`.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all multicast group resources. If
+      a group is deleted and another with the same name is created, the new
+      group is assigned a different unique_id.
     updateTime: Output only. [Output only] The timestamp when the multicast
       group was most recently updated.
   """
@@ -3863,7 +3961,8 @@ class MulticastGroup(_messages.Message):
   multicastGroupConsumerActivations = _messages.StringField(8, repeated=True)
   multicastGroupDefinition = _messages.StringField(9)
   name = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  uniqueId = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class MulticastGroupConsumerActivation(_messages.Message):
@@ -3895,6 +3994,11 @@ class MulticastGroupConsumerActivation(_messages.Message):
       `projects/*/locations/*/multicastGroupConsumerActivations/*`.
     resourceState: Output only. The resource state of the multicast group
       consumer activation.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all multicast group consumer
+      activation resources. If a group consumer activation is deleted and
+      another with the same name is created, the new group consumer activation
+      is assigned a different unique_id.
     updateTime: Output only. [Output only] The timestamp when the multicast
       group consumer activation was most recently updated.
   """
@@ -3945,7 +4049,8 @@ class MulticastGroupConsumerActivation(_messages.Message):
   multicastGroup = _messages.StringField(5)
   name = _messages.StringField(6)
   resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  uniqueId = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class MulticastGroupDefinition(_messages.Message):
@@ -3973,6 +4078,11 @@ class MulticastGroupDefinition(_messages.Message):
       a Class D address (224.0.0.0 to 239.255.255.255) and have a prefix
       length >= 23. Use the following format:
       `projects/*/locations/global/internalRanges/*`.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all multicast group definition
+      resources. If a group definition is deleted and another with the same
+      name is created, the new group definition is assigned a different
+      unique_id.
     updateTime: Output only. [Output only] The timestamp whenthe multicast
       group definition was most recently updated.
   """
@@ -4008,7 +4118,8 @@ class MulticastGroupDefinition(_messages.Message):
   multicastDomain = _messages.StringField(5)
   name = _messages.StringField(6)
   reservedInternalRange = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  uniqueId = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class MulticastGroupProducerActivation(_messages.Message):
@@ -4034,6 +4145,11 @@ class MulticastGroupProducerActivation(_messages.Message):
     name: Identifier. The resource name of the multicast group producer
       activation. Use the following format:
       `projects/*/locations/*/multicastGroupProducerActivations/*`.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all multicast group producer
+      activation resources. If a group producer activation is deleted and
+      another with the same name is created, the new group producer activation
+      is assigned a different unique_id.
     updateTime: Output only. [Output only] The timestamp when the multicast
       group producer activation was most recently updated.
   """
@@ -4068,7 +4184,8 @@ class MulticastGroupProducerActivation(_messages.Message):
   multicastGroup = _messages.StringField(4)
   multicastProducerAssociation = _messages.StringField(5)
   name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  uniqueId = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class MulticastProducerAssociation(_messages.Message):
@@ -4093,6 +4210,11 @@ class MulticastProducerAssociation(_messages.Message):
     network: Required. The resource name of the multicast producer VPC
       network. Use following format:
       `projects/{project}/locations/global/networks/{network}`.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all multicast producer association
+      resources. If a producer association is deleted and another with the
+      same name is created, the new producer association is assigned a
+      different unique_id.
     updateTime: Output only. [Output only] The timestamp when the Multicast
       Producer Association was most recently updated.
   """
@@ -4127,7 +4249,8 @@ class MulticastProducerAssociation(_messages.Message):
   multicastDomainActivation = _messages.StringField(4)
   name = _messages.StringField(5)
   network = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  uniqueId = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class NetworkservicesProjectsLocationsEdgeCacheKeysetsCreateRequest(_messages.Message):
@@ -5346,7 +5469,7 @@ class NetworkservicesProjectsLocationsMulticastConsumerAssociationsPatchRequest(
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. The field mask specifies the fields to overwrite in
+    updateMask: Optional. The field mask specifies the fields to overwrite in
       the MulticastConsumerAssociation resource by the update. The fields
       specified in the `update_mask` are relative to the resource, not the
       full request. If a field is in the mask, then it is overwritten. If the
@@ -5482,7 +5605,7 @@ class NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest(_me
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. The field mask specifies the fields to overwrite in
+    updateMask: Optional. The field mask specifies the fields to overwrite in
       the MulticastDomainActivation resource by the update. The fields
       specified in the `update_mask` are relative to the resource, not the
       full request. If a field is in the mask, then it is overwritten. If the
@@ -5490,6 +5613,138 @@ class NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest(_me
   """
 
   multicastDomainActivation = _messages.MessageField('MulticastDomainActivation', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainGroupsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainGroupsCreateRequest
+  object.
+
+  Fields:
+    multicastDomainGroup: A MulticastDomainGroup resource to be passed as the
+      request body.
+    multicastDomainGroupId: Required. A unique name for the multicast group.
+      The name is restricted to letters, numbers, and hyphen, with the first
+      character a letter, and the last a letter or a number. The name must not
+      exceed 48 characters.
+    parent: Required. The parent resource of the multicast domain group. Use
+      the following format: `projects/*/locations/global`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastDomainGroup = _messages.MessageField('MulticastDomainGroup', 1)
+  multicastDomainGroupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainGroupsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainGroupsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the multicast domain to delete. Use
+      the following format: `projects/*/locations/global/multicastDomains/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainGroupsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainGroupsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the multicast domain group to get.
+      Use the following format:
+      `projects/*/locations/global/multicastDomainGroups/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainGroupsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainGroupsListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of multicast domain groups to
+      return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast domain
+      groups. Use the following format: `projects/*/locations/global`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainGroupsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainGroupsPatchRequest
+  object.
+
+  Fields:
+    multicastDomainGroup: A MulticastDomainGroup resource to be passed as the
+      request body.
+    name: Identifier. The resource name of the multicast domain group. Use the
+      following format: `projects/*/locations/global/multicastDomainGroups/*`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. The field mask specifies the fields to overwrite in
+      the multicast domain resource by the update. The fields specified in the
+      `update_mask` are relative to the resource, not the full request. If a
+      field is in the mask, then it is overwritten. If the you do not provide
+      a mask, then all fields are overwritten.
+  """
+
+  multicastDomainGroup = _messages.MessageField('MulticastDomainGroup', 1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
@@ -5608,7 +5863,7 @@ class NetworkservicesProjectsLocationsMulticastDomainsPatchRequest(_messages.Mes
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. The field mask specifies the fields to overwrite in
+    updateMask: Optional. The field mask specifies the fields to overwrite in
       the multicast domain resource by the update. The fields specified in the
       `update_mask` are relative to the resource, not the full request. If a
       field is in the mask, then it is overwritten. If the you do not provide
@@ -5745,7 +6000,7 @@ class NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsPatchRequ
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. The field mask specifies the fields to overwrite in
+    updateMask: Optional. The field mask specifies the fields to overwrite in
       the MulticastGroupConsumerActivationresource by the update. The fields
       specified in the `update_mask` are relative to the resource, not the
       full request. If a field is in the mask, then it is overwritten. If the
@@ -5879,7 +6134,7 @@ class NetworkservicesProjectsLocationsMulticastGroupDefinitionsPatchRequest(_mes
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. The field mask specifies the fields to overwrite in
+    updateMask: Optional. The field mask specifies the fields to overwrite in
       the multicast group definition resource by the update. The fields
       specified in the `update_mask` are relative to the resource, not the
       full request. If a field is in the mask, then it is overwritten. If the
@@ -6016,7 +6271,7 @@ class NetworkservicesProjectsLocationsMulticastGroupProducerActivationsPatchRequ
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. The field mask specifies the fields to overwrite in
+    updateMask: Optional. The field mask specifies the fields to overwrite in
       the MulticastGroupProducerActivationresource by the update. The fields
       specified in the `update_mask` are relative to the resource, not the
       full request. If a field is in the mask, then it is overwritten. If the
@@ -6142,7 +6397,7 @@ class NetworkservicesProjectsLocationsMulticastGroupsPatchRequest(_messages.Mess
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. The field mask specifies the fields to overwrite in
+    updateMask: Optional. The field mask specifies the fields to overwrite in
       the multicast group resource by the update. The fields specified in the
       `update_mask` are relative to the resource, not the full request. If a
       field is in the mask, then it is overwritten. If the you do not provide
@@ -6281,7 +6536,7 @@ class NetworkservicesProjectsLocationsMulticastProducerAssociationsPatchRequest(
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. The field mask specifies the fields to overwrite in
+    updateMask: Optional. The field mask specifies the fields to overwrite in
       the MulticastProducerAssociation resource by the update. The fields
       specified in the `update_mask` are relative to the resource, not the
       full request. If a field is in the mask, then it is overwritten. If the
@@ -7375,7 +7630,7 @@ class Routing(_messages.Message):
     hostRules: Required. A list of HostRule rules to match against.
       `RouteRule` rules support advanced routing behavior, and can match on
       paths, headers and query parameters, as well as status codes and HTTP
-      methods. You can specify up to 20 host rules.
+      methods. You can specify up to 50 host rules.
     pathMatchers: Required. A list of PathMatcher values referenced by name by
       HostRule values. `PathMatcher` is used to match the path portion of the
       URL when a`HostRule` value matches the URL's host portion. You can

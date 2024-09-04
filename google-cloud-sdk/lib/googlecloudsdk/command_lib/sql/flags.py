@@ -26,10 +26,6 @@ def AddFlagName(parser):
   )
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 import sys
 
 from googlecloudsdk.api_lib.compute import utils as compute_utils
@@ -2787,4 +2783,75 @@ def AddSwitchTransactionLogsToCloudStorage(
       ),
       hidden=hidden,
       **kwargs
+  )
+
+
+def AddTdeFlags(parser):
+  """Add the flags for importing TDE certificate files.
+
+  Add the --certificate, --cert-path, --pvk-path, --pvk-password and
+  --prompt-for-pvk-password flags to the parser
+
+  Args:
+    parser: The current argparse parser to add these database flags to.
+  """
+  enc_group = parser.add_group(
+      mutex=False,
+      required=True,
+      help='Encryption info to support importing a TDE certificate file',
+  )
+  enc_group.add_argument(
+      '--certificate',
+      required=True,
+      help=(
+          'Name of the encryption certificate.'
+      ),
+  )
+  enc_group.add_argument(
+      '--cert-path',
+      required=True,
+      help=(
+          'Path to the encryption certificate file in Google Cloud Storage. '
+          'The URI is in the form `gs://bucketName/fileName`.'
+      ),
+  )
+  enc_group.add_argument(
+      '--pvk-path',
+      required=True,
+      help=(
+          'Path to the encryption private key file in Google Cloud Storage. '
+          'The URI is in the form `gs://bucketName/fileName`.'
+      ),
+  )
+  password_group = enc_group.add_group(mutex=True, required=True)
+  password_group.add_argument(
+      '--pvk-password',
+      help='The private key password associated with the certificate file.',
+  )
+  password_group.add_argument(
+      '--prompt-for-pvk-password',
+      action='store_true',
+      help=(
+          'Prompt for the private key password associated with the certificate '
+          'file with character echo disabled. The password is all typed '
+          'characters up to but not including the RETURN or ENTER key.'
+      ),
+  )
+
+
+def AddRetainBackupsOnDelete(parser):
+  """Adds --retain-backups-on-delete flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--retain-backups-on-delete',
+      required=False,
+      hidden=True,
+      help=(
+          'Enable retaining existing automated/ondemand backups of the instance'
+          ' even after the instance is deleted.'
+      ),
+      action=arg_parsers.StoreTrueFalseAction,
   )

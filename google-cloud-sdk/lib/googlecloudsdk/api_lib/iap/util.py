@@ -390,6 +390,69 @@ class BackendService(IapIamResource):
     return self._SetBackendServiceIap(False)
 
 
+FORWARDING_RULE = 'forwarding_rule'
+
+
+class ForwardingRules(IapIamResource):
+  """IAP IAM forwarding rules resource.
+  """
+
+  def __init__(self, release_track, project, region_id):
+    super(ForwardingRules, self).__init__(release_track, project)
+    self.region_id = region_id
+
+  def _Name(self):
+    return 'forwarding rules'
+
+  def _IapWebId(self):
+    if self.region_id:
+      return '%s-%s' % (FORWARDING_RULE, self.region_id)
+    else:
+      return FORWARDING_RULE
+
+  def _Parse(self):
+    project = _GetProject(self.project)
+    iap_web_id = self._IapWebId()
+    return self.registry.Parse(
+        None,
+        params={
+            'project': project.projectNumber,
+            'iapWebId': iap_web_id,
+        },
+        collection=IAP_WEB_COLLECTION)
+
+
+class ForwardingRule(IapIamResource):
+  """IAP IAM forwarding rule resource.
+  """
+
+  def __init__(self, release_track, project, region_id, service_id):
+    super(ForwardingRule, self).__init__(release_track, project)
+    self.region_id = region_id
+    self.service_id = service_id
+
+  def _Name(self):
+    return 'forwarding rule'
+
+  def _IapWebId(self):
+    if self.region_id:
+      return '%s-%s' % (FORWARDING_RULE, self.region_id)
+    else:
+      return FORWARDING_RULE
+
+  def _Parse(self):
+    project = _GetProject(self.project)
+    iap_web_id = self._IapWebId()
+    return self.registry.Parse(
+        None,
+        params={
+            'project': project.projectNumber,
+            'iapWebId': iap_web_id,
+            'serviceId': self.service_id,
+        },
+        collection=IAP_WEB_SERVICES_COLLECTION)
+
+
 def _MakeIAPKwargs(is_backend_service, existing_iap_settings, enabled,
                    oauth2_client_id, oauth2_client_secret):
   """Make IAP kwargs for IAP settings.
@@ -535,34 +598,43 @@ class IapTunnelDestGroupResource(IapIamResource):
     """Creates a TunnelDestGroup."""
 
     tunnel_dest_group = self._CreateTunnelDestGroupObject(cidr_list, fqdn_list)
-    request = self.messages.IapProjectsIapTunnelLocationsDestGroupsCreateRequest(
-        parent=self._ParseWithoutGroupId().RelativeName(),
-        tunnelDestGroup=tunnel_dest_group,
-        tunnelDestGroupId=self.group_name)
+    request = (
+        self.messages.IapProjectsIapTunnelLocationsDestGroupsCreateRequest(
+            parent=self._ParseWithoutGroupId().RelativeName(),
+            tunnelDestGroup=tunnel_dest_group,
+            tunnelDestGroupId=self.group_name,
+        )
+    )
     return self.ResourceService().Create(request)
 
   def Delete(self):
     """Deletes the TunnelDestGroup."""
-    request = self.messages.IapProjectsIapTunnelLocationsDestGroupsDeleteRequest(
-        name=self._Parse().RelativeName())
+    request = (
+        self.messages.IapProjectsIapTunnelLocationsDestGroupsDeleteRequest(
+            name=self._Parse().RelativeName()
+        )
+    )
     return self.ResourceService().Delete(request)
 
   def List(self, page_size=None, limit=None, list_filter=None):
     """Yields TunnelDestGroups."""
     list_req = self.messages.IapProjectsIapTunnelLocationsDestGroupsListRequest(
-        parent=self._ParseWithoutGroupId().RelativeName())
+        parent=self._ParseWithoutGroupId().RelativeName()
+    )
     return list_pager.YieldFromList(
         self.ResourceService(),
         list_req,
         batch_size=page_size,
         limit=limit,
         field='tunnelDestGroups',
-        batch_size_attribute='pageSize')
+        batch_size_attribute='pageSize',
+    )
 
   def Get(self):
     """Get TunnelDestGroup."""
     request = self.messages.IapProjectsIapTunnelLocationsDestGroupsGetRequest(
-        name=self._Parse().RelativeName())
+        name=self._Parse().RelativeName()
+    )
     return self.ResourceService().Get(request)
 
   def Update(self, cidr_list, fqdn_list, update_mask):

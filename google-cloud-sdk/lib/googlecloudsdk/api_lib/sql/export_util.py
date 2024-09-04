@@ -14,10 +14,6 @@
 # limitations under the License.
 """Common command-agnostic utility functions for sql export commands."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 
 def ParseBakType(sql_messages, bak_type):
   if bak_type is None:
@@ -179,3 +175,38 @@ def BakExportContext(
       databases=database,
       fileType=sql_messages.ExportContext.FileTypeValueValuesEnum.BAK,
       bakExportOptions=bak_export_options)
+
+
+def TdeExportContext(
+    sql_messages,
+    certificate,
+    cert_path,
+    pvk_path,
+    pvk_password,
+):
+  """Generates the ExportContext for the given args, for exporting to TDE.
+
+  Args:
+    sql_messages: module, The messages module that should be used.
+    certificate: The certificate name; the output of the
+      `--certificate` flag.
+    cert_path: The certificate path in Google Cloud Storage; the output of the
+      `--cert-path` flag.
+    pvk_path: The private key path in Google Cloud Storage; the output of the
+      `--pvk-path` flag.
+    pvk_password: The password that encrypts the private key; the output
+      of the `--pvk-password` or `--prompt-for-pvk-password` flag.
+
+  Returns:
+    ExportContext, for use in InstancesImportRequest.exportContext.
+  """
+  tde_export_options = sql_messages.ExportContext.TdeExportOptionsValue(
+      name=certificate,
+      certificatePath=cert_path,
+      privateKeyPath=pvk_path,
+      privateKeyPassword=pvk_password)
+
+  return sql_messages.ExportContext(
+      kind='sql#exportContext',
+      fileType=sql_messages.ExportContext.FileTypeValueValuesEnum.TDE,
+      tdeExportOptions=tde_export_options)

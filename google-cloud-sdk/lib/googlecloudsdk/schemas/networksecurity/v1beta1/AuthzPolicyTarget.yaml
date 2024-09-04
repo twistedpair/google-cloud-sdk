@@ -1,0 +1,50 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networksecurity v1beta1 AuthzPolicyTarget export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- loadBalancingScheme
+- resources
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  loadBalancingScheme:
+    description: |-
+      All gateways and forwarding rules referenced by this policy and extensions
+      must share the same load balancing scheme. Supported values:
+      `INTERNAL_MANAGED` and `EXTERNAL_MANAGED`. For more information, refer to
+      [Choosing a load balancer](https://cloud.google.com/load-
+      balancing/docs/backend-service).
+    type: string
+    enum:
+    - EXTERNAL_MANAGED
+    - INTERNAL_MANAGED
+    - INTERNAL_SELF_MANAGED
+    - LOAD_BALANCING_SCHEME_UNSPECIFIED
+  resources:
+    description: |-
+      A list of references to the Forwarding Rules on which this policy will be
+      applied.
+    type: array
+    items:
+      type: string

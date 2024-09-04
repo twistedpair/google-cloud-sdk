@@ -1660,9 +1660,14 @@ class PredictionServiceAsyncClient:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GenerateContentRequest, dict]]):
                 The request object. Request message for [PredictionService.GenerateContent].
             model (:class:`str`):
-                Required. The name of the publisher model requested to
-                serve the prediction. Format:
+                Required. The fully qualified name of the publisher
+                model or tuned model endpoint to use.
+
+                Publisher model format:
                 ``projects/{project}/locations/{location}/publishers/*/models/*``
+
+                Tuned model endpoint format:
+                ``projects/{project}/locations/{location}/endpoints/{endpoint}``
 
                 This corresponds to the ``model`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -1783,9 +1788,14 @@ class PredictionServiceAsyncClient:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GenerateContentRequest, dict]]):
                 The request object. Request message for [PredictionService.GenerateContent].
             model (:class:`str`):
-                Required. The name of the publisher model requested to
-                serve the prediction. Format:
+                Required. The fully qualified name of the publisher
+                model or tuned model endpoint to use.
+
+                Publisher model format:
                 ``projects/{project}/locations/{location}/publishers/*/models/*``
+
+                Tuned model endpoint format:
+                ``projects/{project}/locations/{location}/endpoints/{endpoint}``
 
                 This corresponds to the ``model`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -1902,9 +1912,9 @@ class PredictionServiceAsyncClient:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ChatCompletionsRequest, dict]]):
                 The request object. Request message for [PredictionService.ChatCompletions]
             endpoint (:class:`str`):
-                Required. The name of the Endpoint requested to serve
+                Required. The name of the endpoint requested to serve
                 the prediction. Format:
-                ``projects/{project}/locations/{location}/endpoints/openapi``
+                ``projects/{project}/locations/{location}/endpoints/{endpoint}``
 
                 This corresponds to the ``endpoint`` field
                 on the ``request`` instance; if ``request`` is provided, this

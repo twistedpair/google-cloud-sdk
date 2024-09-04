@@ -3208,7 +3208,7 @@ class APIAdapter(object):
       cluster.masterAuthorizedNetworksConfig.gcpPublicCidrsAccessEnabled = (
           options.enable_google_cloud_access)
 
-  def ParseClusterDNSOptions(self, options, is_update=False):
+  def ParseClusterDNSOptions(self, options, is_update=False, cluster_ref=None):
     """Parses the options for ClusterDNS."""
     if options.cluster_dns is None:
       if options.cluster_dns_scope:
@@ -3231,15 +3231,32 @@ class APIAdapter(object):
       return
 
     dns_config = self.messages.DNSConfig()
+    # Use current config as base for updates
+    if is_update:
+      cluster = self.GetCluster(cluster_ref)
+      if cluster.networkConfig and cluster.networkConfig.dnsConfig:
+        dns_config = cluster.networkConfig.dnsConfig
 
     if options.cluster_dns is not None:
       provider_enum = self.messages.DNSConfig.ClusterDnsValueValuesEnum
       if options.cluster_dns.lower() == 'clouddns':
-        dns_config.clusterDns = provider_enum.CLOUD_DNS
+        desired_cluster_dns = provider_enum.CLOUD_DNS
       elif options.cluster_dns.lower() == 'kubedns':
-        dns_config.clusterDns = provider_enum.KUBE_DNS
+        desired_cluster_dns = provider_enum.KUBE_DNS
       else:  # 'default' or not specified
-        dns_config.clusterDns = provider_enum.PLATFORM_DEFAULT
+        desired_cluster_dns = provider_enum.PLATFORM_DEFAULT
+
+      if desired_cluster_dns != dns_config.clusterDns:
+        console_io.PromptContinue(
+            message=(
+                'All the node-pools in the cluster need to be re-created '
+                'by the user to start using the new DNS provider. It is '
+                'highly recommended to perform this step shortly after '
+                'completing the update.'
+            ),
+            cancel_on_no=True,
+        )
+        dns_config.clusterDns = desired_cluster_dns
 
     if options.cluster_dns_scope is not None:
       scope_enum = self.messages.DNSConfig.ClusterDnsScopeValueValuesEnum
@@ -3915,7 +3932,8 @@ class APIAdapter(object):
               self.messages, hidden=False).GetEnumForChoice(
                   options.private_ipv6_google_access_type))
 
-    dns_config = self.ParseClusterDNSOptions(options, is_update=True)
+    dns_config = self.ParseClusterDNSOptions(
+        options, is_update=True, cluster_ref=cluster_ref)
     if dns_config is not None:
       update = self.messages.ClusterUpdate(desiredDnsConfig=dns_config)
 

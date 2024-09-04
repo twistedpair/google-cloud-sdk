@@ -27,8 +27,10 @@ import json
 import mimetypes
 import multiprocessing
 import os
+import random
 import re
 import sys
+import time
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
@@ -1667,6 +1669,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
           "Skipping project {} because it has no Artifact Registry repos to"
           " migrate to".format(project)
       )
+      continue
     # If we're missing any repos, check if they're repos with GCR buckets
     missing_bucket_repos = []
     repos_with_gcr_buckets = GetGCRRepos(_GCR_BUCKETS, project)
@@ -2093,6 +2096,7 @@ def CopyImagesFromGCR(
   http_obj = util.Http(timeout=10 * 60)
   repository = docker_name.Repository(repo_path)
   next_page = ""
+  backoff = 5
   while True:
     try:
       with docker_image.FromRegistry(
@@ -2120,6 +2124,13 @@ def CopyImagesFromGCR(
     except docker_http.V2DiagnosticException as e:
       # Gateway Timeout
       if e.status == 504:
+        continue
+      # Too Many Requests
+      if e.status == 429:
+        # All requests will likely hit quota at ~same time, so randomize backoff
+        # to spread them out
+        backoff += random.randrange(5, 20)
+        time.sleep(backoff)
         continue
       raise
   results["manifestsCopied"] += tags_payload.get("manifestsCopied", 0)

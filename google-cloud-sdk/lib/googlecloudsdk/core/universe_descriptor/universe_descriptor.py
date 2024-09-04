@@ -32,7 +32,7 @@ implement their own calls to fetch / update the descriptors.
 import json
 import os
 import sqlite3
-from typing import Any, Dict, Mapping, Set, TypedDict
+from typing import Any, Dict, List, Mapping, Set, TypedDict
 
 from cloudsdk.google.protobuf import json_format
 from googlecloudsdk.core import config
@@ -383,21 +383,58 @@ class UniverseDescriptor:
       The universe descriptor data JSON dictionary.
 
     Raises:
-      UniverseDescriptorFetchError: An error occurred fetching the descriptor.
+      UniverseDescriptorFetchError: The request to fetch the descriptor data
+      failed.
     """
+
+    def _GetDescriptorFromJsonList(
+        json_list: List[Any],
+    ) -> Dict[str, Any]:
+      """Gets the descriptor from the JSON list."""
+      for descriptor in json_list:
+        if (
+            descriptor_universe_domain := descriptor.get('universeDomain')
+        ) and (descriptor_universe_domain == universe_domain):
+          return descriptor
+      raise UniverseDescriptorDataError(
+          universe_domain, 'Descriptor not found in JSON array'
+      )
+
+    def _GetDescriptorFromJson(
+        json_obj: Any,
+    ) -> Dict[str, Any]:
+      """Gets the descriptor from the JSON object.
+
+      Args:
+        json_obj: The JSON object to search for the descriptor.
+
+      Returns:
+        The descriptor if found.
+      Raises:
+        UniverseDescriptorDataError: The descriptor was not found in the JSON
+        array.
+      """
+      if not json_obj:
+        raise UniverseDescriptorDataError(
+            universe_domain, 'Invalid JSON object'
+        )
+      if isinstance(json_obj, List):
+        return _GetDescriptorFromJsonList(json_obj)
+      return json_obj
+
     descriptor_data_uri = (
         f'https://storage.{os.path.join(universe_domain, DESCRIPTOR_DATA_BUCKET_NAME, DESCRIPTOR_DATA_FILE_NAME)}'
     )
     try:
       try:
         response = requests.get(descriptor_data_uri)
-        return response.json()
+        return _GetDescriptorFromJson(response.json())
       except Exception:  # pylint: disable=broad-except
         # Try backup bucket
         descriptor_data_uri = (
             f'https://storage.{os.path.join(universe_domain, DESCRIPTOR_DATA_BUCKET_BACKUP_NAME, DESCRIPTOR_DATA_FILE_NAME)}'
         )
         response = requests.get(descriptor_data_uri)
-        return response.json()
+        return _GetDescriptorFromJson(response.json())
     except Exception as e:  # pylint: disable=broad-except
       raise UniverseDescriptorFetchError(universe_domain, e)

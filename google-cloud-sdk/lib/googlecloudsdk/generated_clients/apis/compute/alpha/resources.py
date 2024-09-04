@@ -341,13 +341,6 @@ class Collections(enum.Enum):
       ['project', 'firewallPolicy'],
       True
   )
-  NETWORKPLACEMENTS = (
-      'networkPlacements',
-      'projects/{project}/global/networkPlacements/{networkPlacement}',
-      {},
-      ['project', 'networkPlacement'],
-      True
-  )
   NETWORKPROFILES = (
       'networkProfiles',
       'projects/{project}/global/networkProfiles/{networkProfile}',
@@ -652,6 +645,14 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}',
       {},
       ['project', 'region'],
+      True
+  )
+  RESERVATIONBLOCKS = (
+      'reservationBlocks',
+      'projects/{project}/zones/{zone}/reservations/{reservation}/'
+      'reservationBlocks/{reservationBlock}',
+      {},
+      ['project', 'zone', 'reservation', 'reservationBlock'],
       True
   )
   RESERVATIONS = (

@@ -24,6 +24,7 @@ import re
 from googlecloudsdk.api_lib.containeranalysis import filter_util
 from googlecloudsdk.api_lib.containeranalysis import requests as ca_requests
 from googlecloudsdk.api_lib.services import enable_api
+from googlecloudsdk.api_lib.services import exceptions as serviceusage_exceptions
 import six
 
 
@@ -384,9 +385,14 @@ def GetImageSummaryMetadata(docker_version):
     The build and SBOM metadata for the given image.
   """
   metadata = ContainerAnalysisMetadata()
-  ca_enabled = enable_api.IsServiceEnabled(
-      docker_version.project, 'containeranalysis.googleapis.com'
-  )
+  try:
+    ca_enabled = enable_api.IsServiceEnabled(
+        docker_version.project, 'containeranalysis.googleapis.com'
+    )
+  except serviceusage_exceptions.GetServicePermissionDeniedException:
+    # Do not raise the exception, as it will break the command.
+    ca_enabled = False
+
   if not ca_enabled:
     return metadata
 

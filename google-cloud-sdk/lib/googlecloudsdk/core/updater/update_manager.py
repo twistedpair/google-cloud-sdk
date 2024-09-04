@@ -100,6 +100,11 @@ BUNDLED_PYTHON_REMOVAL_WARNING = (
     'If you remove it, you may have no way to run this command.\n'
 )
 
+_DONT_CANCEL_MESSAGE = (
+    'Once started, canceling this operation may leave your SDK '
+    'installation in an inconsistent state.'
+)
+
 
 def _HaltIfBundledPythonUnix():
   current_os = platforms.OperatingSystem.Current()
@@ -402,36 +407,20 @@ class UpdateManager(object):
     stream.write(msg + '\n')
     stream.flush()
 
-  def _ShouldDoFastUpdate(self, allow_no_backup=False,
-                          fast_mode_impossible=False,
-                          has_components_to_remove=False):
-    """Determine whether we should do an in-place fast update or make a backup.
-
-    This method also ensures the CWD is valid for the mode we are going to use.
+  def _CheckCWD(self, in_place=True, has_components_to_remove=False):
+    """Ensures that the CWD is valid for the update being performed.
 
     Args:
-      allow_no_backup: bool, True if we want to allow the updater to run
-        without creating a backup.  This lets us be in the root directory of the
-        SDK and still do an update.  It is more fragile if there is a failure,
-        so we only do it if necessary.
-      fast_mode_impossible: bool, True if we can't do a fast update for this
-        particular operation (overrides forced fast mode).
+      in_place: bool, Whether we're performing an in-place update vs. replacing
+        with another install state.
       has_components_to_remove: bool, Whether the update operation involves
         removing any components. Affects whether we can perform an in-place
         update from inside the root dir.
 
-    Returns:
-      bool, True if allow_no_backup was True and we are under the SDK root (so
-        we should do a no backup update).
-
     Raises:
       InvalidCWDError: If the command is run from a directory within the SDK
-        root.
+        root that would cause problems when updating.
     """
-    force_fast = properties.VALUES.experimental.fast_component_update.GetBool()
-    if fast_mode_impossible:
-      force_fast = False
-
     cwd = None
     try:
       cwd = os.path.realpath(file_utils.GetCWD())
@@ -440,14 +429,14 @@ class UpdateManager(object):
                 'under SDK root.')
     if not (cwd and file_utils.IsDirAncestorOf(self.__sdk_root, cwd)):
       # Outside of the root entirely, this is always fine.
-      return force_fast
+      return
 
     # We are somewhere under the install root.
-    if ((allow_no_backup or force_fast) and not has_components_to_remove):
-      # If backups are disabled, we can update in place as long as the current
-      # working directory in the install doesn't get deleted out from underneath
-      # us. We know this will be safe if we're not removing any components.
-      return True
+    if in_place and not has_components_to_remove:
+      # We can update in place as long as the current working directory in the
+      # install doesn't get deleted out from underneath us. We know this will be
+      # safe if we're not removing any components.
+      return
 
     # 1) On linux it usually works ok, but then your CWD ends up being in the
     #    backup directory of the SDK, and not in the actual SDK anymore.
@@ -460,21 +449,6 @@ class UpdateManager(object):
         'Your current working directory is inside the Google Cloud CLI install root:'
         ' {root}.  In order to perform this update, run the command from '
         'outside of this directory.'.format(root=self.__sdk_root))
-
-  def _GetDontCancelMessage(self, disable_backup):
-    """Get the message to print before udpates.
-
-    Args:
-      disable_backup: bool, True if we are doing an in place update.
-
-    Returns:
-      str, The message to print, or None.
-    """
-    if disable_backup:
-      return ('Once started, canceling this operation may leave your SDK '
-              'installation in an inconsistent state.')
-    else:
-      return None
 
   def _GetMappingFile(self, filename):
     """Checks if mapping files are present and loads them for further use.
@@ -962,16 +936,11 @@ version [{1}].  To clear your fixed version setting, run:
           progress_callback=progress_callback)
     return Inner
 
-  def Install(self, components, allow_no_backup=False,
-              throw_if_unattended=False, restart_args=None):
+  def Install(self, components, throw_if_unattended=False, restart_args=None):
     """Installs the given components at the version you are current on.
 
     Args:
       components: [str], A list of component ids to install.
-      allow_no_backup: bool, True if we want to allow the updater to run
-        without creating a backup.  This lets us be in the root directory of the
-        SDK and still do an update.  It is more fragile if there is a failure,
-        so we only do it if necessary.
       throw_if_unattended: bool, True to throw an exception on prompts when
         not running in interactive mode.
       restart_args: list of str or None. If given, this gcloud command should be
@@ -996,13 +965,12 @@ version [{1}].  To clear your fixed version setting, run:
 
     return self.Update(
         components,
-        allow_no_backup=allow_no_backup,
         throw_if_unattended=throw_if_unattended,
         version=version,
         restart_args=restart_args)
 
-  def Update(self, update_seed=None, allow_no_backup=False,
-             throw_if_unattended=False, version=None, restart_args=None):
+  def Update(self, update_seed=None, throw_if_unattended=False, version=None,
+             restart_args=None):
     """Performs an update of the given components.
 
     If no components are provided, it will attempt to update everything you have
@@ -1010,10 +978,6 @@ version [{1}].  To clear your fixed version setting, run:
 
     Args:
       update_seed: list of str, A list of component ids to update.
-      allow_no_backup: bool, True if we want to allow the updater to run
-        without creating a backup.  This lets us be in the root directory of the
-        SDK and still do an update.  It is more fragile if there is a failure,
-        so we only do it if necessary.
       throw_if_unattended: bool, True to throw an exception on prompts when
         not running in interactive mode.
       version: str, The SDK version to update to instead of latest.
@@ -1082,9 +1046,7 @@ version [{1}].  To clear your fixed version setting, run:
     current_version, _ = self._PrintVersions(
         diff, latest_msg=latest_msg)
 
-    disable_backup = self._ShouldDoFastUpdate(
-        allow_no_backup=allow_no_backup,
-        has_components_to_remove=bool(to_remove))
+    self._CheckCWD(in_place=True, has_components_to_remove=bool(to_remove))
     self._PrintPendingAction(
         FilterMetaComponents(
             diff.DetailsForCurrent(to_remove - to_install)), 'removed')
@@ -1101,9 +1063,8 @@ version [{1}].  To clear your fixed version setting, run:
         config.INSTALLATION_CONFIG.version,
         diff.latest.version)
 
-    message = self._GetDontCancelMessage(disable_backup)
     if not console_io.PromptContinue(
-        message=message, throw_if_unattended=throw_if_unattended):
+        message=_DONT_CANCEL_MESSAGE, throw_if_unattended=throw_if_unattended):
       return False
 
     components_to_install = diff.DetailsForLatest(to_install)
@@ -1112,37 +1073,20 @@ version [{1}].  To clear your fixed version setting, run:
     for c in components_to_install:
       metrics.Installs(c.id, c.version.version_string)
 
-    if disable_backup:
-      with execution_utils.UninterruptibleSection(stream=log.status):
-        self.__Write(log.status, 'Performing in place update...\n')
-        downloads_map = self._UpdateWithProgressBar(
-            components_to_install, 'Downloading',
-            self._DownloadFunction(install_state, diff),
-            first=True, last=False)
-        self._UpdateWithProgressBar(
-            components_to_remove, 'Uninstalling',
-            install_state.Uninstall,
-            first=not components_to_install, last=not components_to_install)
-        self._UpdateWithProgressBar(
-            components_to_install, 'Installing',
-            self._InstallFunction(install_state, diff, downloads_map),
-            first=False, last=True)
-    else:
-      with console_io.ProgressBar(
-          label='Creating update staging area', stream=log.status,
-          last=False) as pb:
-        staging_state = install_state.CloneToStaging(pb.SetProgress)
-      self._UpdateWithProgressBar(components_to_remove, 'Uninstalling',
-                                  staging_state.Uninstall, first=False,
-                                  last=False)
-      self._UpdateWithProgressBar(components_to_install, 'Installing',
-                                  self._DownloadAndInstallFunction(
-                                      staging_state, diff),
-                                  first=False, last=False)
-      with console_io.ProgressBar(
-          label='Creating backup and activating new installation',
-          stream=log.status, first=False) as pb:
-        install_state.ReplaceWith(staging_state, pb.SetProgress)
+    with execution_utils.UninterruptibleSection(stream=log.status):
+      self.__Write(log.status, 'Performing in place update...\n')
+      downloads_map = self._UpdateWithProgressBar(
+          components_to_install, 'Downloading',
+          self._DownloadFunction(install_state, diff),
+          first=True, last=False)
+      self._UpdateWithProgressBar(
+          components_to_remove, 'Uninstalling',
+          install_state.Uninstall,
+          first=not components_to_install, last=not components_to_install)
+      self._UpdateWithProgressBar(
+          components_to_install, 'Installing',
+          self._InstallFunction(install_state, diff, downloads_map),
+          first=False, last=True)
 
     # Clear deprecated directories for new state
     install_state.ClearDeprecatedDirs()
@@ -1336,15 +1280,11 @@ To revert your CLI to the previously installed version, you may run:
     """
     return self._FindToolsOnPath(path=path, duplicates=True, other=False)
 
-  def Remove(self, ids, allow_no_backup=False):
+  def Remove(self, ids):
     """Uninstalls the given components.
 
     Args:
       ids: list of str, The component ids to uninstall.
-      allow_no_backup: bool, True if we want to allow the updater to run
-        without creating a backup.  This lets us be in the root directory of the
-        SDK and still do an update.  It is more fragile if there is a failure,
-        so we only do it if necessary.
 
     Raises:
       InvalidComponentError: If any of the given component ids are not
@@ -1382,8 +1322,7 @@ To revert your CLI to the previously installed version, you may run:
       self.__Write(log.status, 'No components to remove.\n')
       return
 
-    disable_backup = self._ShouldDoFastUpdate(
-        allow_no_backup=allow_no_backup, has_components_to_remove=True)
+    self._CheckCWD(in_place=True, has_components_to_remove=True)
     components_to_remove = sorted(snapshot.ComponentsFromIds(to_remove),
                                   key=lambda c: c.details.display_name)
     components_to_display = FilterMetaComponents(
@@ -1400,28 +1339,14 @@ To revert your CLI to the previously installed version, you may run:
       log.warning(BUNDLED_PYTHON_REMOVAL_WARNING)
     self._RestartIfUsingBundledPython()
 
-    message = self._GetDontCancelMessage(disable_backup)
-    if not console_io.PromptContinue(message):
+    if not console_io.PromptContinue(_DONT_CANCEL_MESSAGE):
       return
 
-    if disable_backup:
-      with execution_utils.UninterruptibleSection(stream=log.status):
-        self.__Write(log.status, 'Performing in place update...\n')
-        self._UpdateWithProgressBar(components_to_remove, 'Uninstalling',
-                                    install_state.Uninstall, first=True,
-                                    last=True)
-    else:
-      with console_io.ProgressBar(
-          label='Creating update staging area', stream=log.status,
-          last=False) as pb:
-        staging_state = install_state.CloneToStaging(pb.SetProgress)
+    with execution_utils.UninterruptibleSection(stream=log.status):
+      self.__Write(log.status, 'Performing in place update...\n')
       self._UpdateWithProgressBar(components_to_remove, 'Uninstalling',
-                                  staging_state.Uninstall, first=False,
-                                  last=False)
-      with console_io.ProgressBar(
-          label='Creating backup and activating new installation',
-          stream=log.status, first=False) as pb:
-        install_state.ReplaceWith(staging_state, pb.SetProgress)
+                                  install_state.Uninstall, first=True,
+                                  last=True)
 
     self._PostProcess()
 
@@ -1438,9 +1363,7 @@ To revert your CLI to the previously installed version, you may run:
     if not install_state.HasBackup():
       raise NoBackupError('There is currently no backup to restore.')
 
-    self._ShouldDoFastUpdate(
-        allow_no_backup=False, fast_mode_impossible=True,
-        has_components_to_remove=False)
+    self._CheckCWD(in_place=False, has_components_to_remove=False)
     # Ensure we have the rights to update the SDK now that we know an update is
     # necessary.
     config.EnsureSDKWriteAccess(self.__sdk_root)
@@ -1530,9 +1453,7 @@ To revert your CLI to the previously installed version, you may run:
     if not answer:
       return False
 
-    self._ShouldDoFastUpdate(
-        allow_no_backup=False, fast_mode_impossible=True,
-        has_components_to_remove=False)
+    self._CheckCWD(in_place=False, has_components_to_remove=False)
     install_state = self._GetInstallState()
 
     try:

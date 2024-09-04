@@ -1,0 +1,48 @@
+project:
+  name: project
+  collection: cloudaicompanion.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: Cloud Project ID
+  disable_auto_completers: false
+
+location:
+  name: location
+  collection: cloudaicompanion.projects.locations
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      Location of the Gemini resource.
+
+code_repository_index:
+  name: code_repository_index
+  collection: cloudaicompanion.projects.locations.codeRepositoryIndexes
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - &code_repository_index
+    parameter_name: codeRepositoryIndexesId
+    attribute_name: code-repository-index
+    help: |
+      ID of the code repository index resource.
+
+repository_group:
+  name: repository_group
+  collection:  cloudaicompanion.projects.locations.codeRepositoryIndexes.repositoryGroups
+  attributes:
+  - *project
+  - *location
+  - *code_repository_index
+  - &repository_group
+    parameter_name: repositoryGroupsId
+    attribute_name: repository_group
+    help: |
+      ID of the repository group resource.
+  disable_auto_completers: false

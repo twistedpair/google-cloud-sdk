@@ -131,6 +131,7 @@ class VolumesClient(object):
       large_capacity=None,
       multiple_endpoints=None,
       tiering_policy=None,
+      hybrid_replication_parameters=None,
       labels=None,
   ):
     """Parses the command line arguments for Create Volume into a config."""
@@ -156,6 +157,7 @@ class VolumesClient(object):
         large_capacity=large_capacity,
         multiple_endpoints=multiple_endpoints,
         tiering_policy=tiering_policy,
+        hybrid_replication_parameters=hybrid_replication_parameters,
         labels=labels,
     )
 
@@ -241,7 +243,8 @@ class VolumesClient(object):
         backup_config=backup_config,
         large_capacity=large_capacity,
         multiple_endpoints=multiple_endpoints,
-        tiering_policy=tiering_policy)
+        tiering_policy=tiering_policy,
+    )
 
   def UpdateVolume(self, volume_ref, volume_config, update_mask, async_):
     """Updates a Cloud NetApp Volume.
@@ -406,6 +409,7 @@ class VolumesAdapter(object):
       large_capacity=None,
       multiple_endpoints=None,
       tiering_policy=None,
+      hybrid_replication_parameters=None,
       labels=None,
   ):
     """Parses the command line arguments for Create Volume into a config.
@@ -432,6 +436,8 @@ class VolumesAdapter(object):
       large_capacity: Bool on whether to use large capacity for Volume
       multiple_endpoints: Bool on whether to use multiple endpoints for Volume
       tiering_policy: the tiering policy for the volume.
+      hybrid_replication_parameters: the hybrid replication parameters for the
+        volume.
       labels: the parsed labels value.
 
     Returns:
@@ -471,6 +477,10 @@ class VolumesAdapter(object):
       volume.multipleEndpoints = multiple_endpoints
     if tiering_policy is not None:
       self.ParseTieringPolicy(volume, tiering_policy)
+    if hybrid_replication_parameters is not None:
+      self.ParseHybridReplicationParameters(
+          volume, hybrid_replication_parameters
+      )
     return volume
 
   def ParseUpdatedVolumeConfig(
@@ -591,6 +601,56 @@ class VolumesAdapter(object):
     )
     volume.tieringPolicy = tiering_policy_message
 
+  def ParseHybridReplicationParameters(
+      self, volume, hybrid_replication_parameters
+  ):
+    """Parses Hybrid Replication Parameters for Volume into a config.
+
+    Args:
+      volume: The Cloud NetApp Volume message object.
+      hybrid_replication_parameters: The hybrid replication params message
+        object.
+
+    Returns:
+      Volume message populated with Hybrid Replication Parameters
+    """
+    hybrid_replication_parameters_message = (
+        self.messages.HybridReplicationParameters()
+    )
+    hybrid_replication_parameters_message.replication = (
+        hybrid_replication_parameters.get('replication')
+    )
+    hybrid_replication_parameters_message.peerVolumeName = (
+        hybrid_replication_parameters.get('peer-volume-name')
+    )
+    hybrid_replication_parameters_message.peerClusterName = (
+        hybrid_replication_parameters.get('peer-cluster-name')
+    )
+    hybrid_replication_parameters_message.peerSvmName = (
+        hybrid_replication_parameters.get('peer-svm-name')
+    )
+    for ip_address in hybrid_replication_parameters.get(
+        'peer-ip-addresses', []):
+      hybrid_replication_parameters_message.peerIpAddresses.append(ip_address)
+    hybrid_replication_parameters_message.clusterLocation = (
+        hybrid_replication_parameters.get('cluster-location')
+    )
+    hybrid_replication_parameters_message.description = (
+        hybrid_replication_parameters.get('description')
+    )
+    hybrid_replication_parameters_message.labels = self.messages.HybridReplicationParameters.LabelsValue(
+        additionalProperties=[
+            self.messages.HybridReplicationParameters.LabelsValue.AdditionalProperty(
+                key=key_value_pair.split(':')[0],
+                value=key_value_pair.split(':')[1],
+            )
+            for key_value_pair in hybrid_replication_parameters.get(
+                'labels', []
+            )
+        ]
+    )
+    volume.hybridReplicationParameters = hybrid_replication_parameters_message
+
 
 class BetaVolumesAdapter(VolumesAdapter):
   """Adapter for the Beta Cloud NetApp Files API Volume resource."""
@@ -610,4 +670,3 @@ class AlphaVolumesAdapter(BetaVolumesAdapter):
     self.release_track = base.ReleaseTrack.ALPHA
     self.client = util.GetClientInstance(release_track=self.release_track)
     self.messages = util.GetMessagesModule(release_track=self.release_track)
-

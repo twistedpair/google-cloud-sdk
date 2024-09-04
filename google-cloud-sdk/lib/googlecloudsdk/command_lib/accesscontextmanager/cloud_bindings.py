@@ -63,6 +63,8 @@ def AddUpdateMaskAlpha(ref, args, req):
     update_mask.append('restricted_client_applications')
   if args.IsKnownAndSpecified('session_length'):
     update_mask.append('reauth_settings')
+  if args.IsKnownAndSpecified('binding_file'):
+    update_mask.append('scoped_access_settings')
 
   if not update_mask:
     raise calliope_exceptions.MinimumArgumentException([
@@ -71,6 +73,7 @@ def AddUpdateMaskAlpha(ref, args, req):
         '--restricted_client_application_names',
         '--restricted_client_application_client_ids',
         '--session-length',
+        '--binding-file',
     ])
 
   req.updateMask = ','.join(update_mask)

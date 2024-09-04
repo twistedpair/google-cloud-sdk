@@ -119,6 +119,19 @@ authorizationPolicy:
     attribute_name: authorization_policy
     help: Id of the authorization policy.
 
+authzPolicy:
+  name: AuthzPolicy
+  collection: networksecurity.projects.locations.authzPolicies
+  request_id_field: authzPolicyId
+  attributes:
+  - *project
+  - *location
+  - &authzPolicy:
+    parameter_name: authzPoliciesId
+    attribute_name: authz_policy
+    help: |
+      The ID of the `AuthzPolicy`.
+
 addressGroup:
   name: address group
   collection: networksecurity.projects.locations.addressGroups

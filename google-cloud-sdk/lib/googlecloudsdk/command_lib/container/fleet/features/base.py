@@ -339,7 +339,9 @@ def ListMemberships():
   Returns:
     A list of Membership resource IDs in the fleet.
   """
-  client = core_apis.GetClientInstance('gkehub', 'v1beta1')
+  # TODO(b/296872066): Match the version of the client to the release track. It
+  # doesn't make much sense to use the Hub beta API for all tracks.
+  client = core_apis.GetClientInstance('gkehub', 'v1beta')
   response = client.projects_locations_memberships.List(
       client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsListRequest(
           parent=hub_base.HubCommand.LocationResourceName()))

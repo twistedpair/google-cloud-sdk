@@ -153,6 +153,197 @@ class AuthorizationLoggingOptions(_messages.Message):
   permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
 
 
+class AuthzExtension(_messages.Message):
+  r"""`AuthzExtension` is a resource that allows traffic forwarding to a
+  callout backend to make an authorization decision.
+
+  Enums:
+    LoadBalancingSchemeValueValuesEnum: Required. All backend services and
+      forwarding rules referenced by this extension must share the same load
+      balancing scheme. Supported values: `INTERNAL_MANAGED`,
+      `EXTERNAL_MANAGED`. For more information, refer to [Choosing a load
+      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+    WireFormatValueValuesEnum: Optional. The format of communication supported
+      by the callout extension. If not specified, the default is
+      `EXT_PROC_GRPC`.
+
+  Messages:
+    LabelsValue: Optional. Set of labels associated with the `AuthzExtension`
+      resource. The format must comply with [the requirements for
+      labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+      resources.
+    MetadataValue: Optional. The metadata provided here is included as part of
+      the `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      is available under the namespace `com.google.authz_extension.`. The
+      following variables are supported in the metadata Struct:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name.
+
+  Fields:
+    authority: Required. The `:authority` header in the gRPC request sent from
+      Envoy to the extension service.
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A human-readable description of the resource.
+    failOpen: Optional. Determines how the proxy behaves if the call to the
+      extension fails or times out. When set to `TRUE`, request or response
+      processing continues without error. Any subsequent extensions in the
+      extension chain are also executed. When set to `FALSE` or the default
+      setting of `FALSE` is used, one of the following happens: * If response
+      headers have not been delivered to the downstream client, a generic 500
+      error is returned to the client. The error response can be tailored by
+      configuring a custom error response in the load balancer. * If response
+      headers have been delivered, then the HTTP stream to the downstream
+      client is reset.
+    forwardAttributes: Optional. List of the Envoy attributes to forward to
+      the extension server. The attributes provided here are included as part
+      of the `ProcessingRequest.attributes` field (of type `map`), where the
+      keys are the attribute names. Refer to the
+      [documentation](https://cloud.google.com/service-extensions/docs/cel-
+      matcher-language-reference#attributes) for the names of attributes that
+      can be forwarded. If omitted, no attributes are sent. Each element is a
+      string indicating the attribute name.
+    forwardHeaders: Optional. List of the HTTP headers to forward to the
+      extension (from the client). If omitted, all headers are sent. Each
+      element is a string indicating the header name.
+    labels: Optional. Set of labels associated with the `AuthzExtension`
+      resource. The format must comply with [the requirements for
+      labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+      resources.
+    loadBalancingScheme: Required. All backend services and forwarding rules
+      referenced by this extension must share the same load balancing scheme.
+      Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
+      information, refer to [Choosing a load
+      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+    metadata: Optional. The metadata provided here is included as part of the
+      `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      is available under the namespace `com.google.authz_extension.`. The
+      following variables are supported in the metadata Struct:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name.
+    name: Required. Identifier. Name of the `AuthzExtension` resource in the
+      following format: `projects/{project}/locations/{location}/authzExtensio
+      ns/{authz_extension}`.
+    service: Required. The reference to the service that runs the extension.
+      Currently only callout extensions are supported here. To configure a
+      callout extension, `service` must be a fully-qualified reference to a
+      [backend service](https://cloud.google.com/compute/docs/reference/rest/v
+      1/backendServices) in the format: `https://www.googleapis.com/compute/v1
+      /projects/{project}/regions/{region}/backendServices/{backendService}`
+      or `https://www.googleapis.com/compute/v1/projects/{project}/global/back
+      endServices/{backendService}`.
+    timeout: Required. Specifies the timeout for each individual message on
+      the stream. The timeout must be between 10-10000 milliseconds.
+    updateTime: Output only. The timestamp when the resource was updated.
+    wireFormat: Optional. The format of communication supported by the callout
+      extension. If not specified, the default is `EXT_PROC_GRPC`.
+  """
+
+  class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
+    r"""Required. All backend services and forwarding rules referenced by this
+    extension must share the same load balancing scheme. Supported values:
+    `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more information, refer to
+    [Choosing a load balancer](https://cloud.google.com/load-
+    balancing/docs/backend-service).
+
+    Values:
+      LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Do not use.
+      INTERNAL_MANAGED: Signifies that this is used for Internal HTTP(S) Load
+        Balancing.
+      EXTERNAL_MANAGED: Signifies that this is used for External Managed
+        HTTP(S) Load Balancing.
+      INTERNAL_SELF_MANAGED: Signifies that this is used for Cloud Service
+        Mesh.
+    """
+    LOAD_BALANCING_SCHEME_UNSPECIFIED = 0
+    INTERNAL_MANAGED = 1
+    EXTERNAL_MANAGED = 2
+    INTERNAL_SELF_MANAGED = 3
+
+  class WireFormatValueValuesEnum(_messages.Enum):
+    r"""Optional. The format of communication supported by the callout
+    extension. If not specified, the default is `EXT_PROC_GRPC`.
+
+    Values:
+      WIRE_FORMAT_UNSPECIFIED: Not specified.
+      EXT_PROC_GRPC: The extension service uses ExtProc GRPC API.
+    """
+    WIRE_FORMAT_UNSPECIFIED = 0
+    EXT_PROC_GRPC = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of labels associated with the `AuthzExtension` resource.
+    The format must comply with [the requirements for
+    labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+    resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Optional. The metadata provided here is included as part of the
+    `metadata_context` (of type `google.protobuf.Struct`) in the
+    `ProcessingRequest` message sent to the extension server. The metadata is
+    available under the namespace `com.google.authz_extension.`. The following
+    variables are supported in the metadata Struct: `{forwarding_rule_id}` -
+    substituted with the forwarding rule's fully qualified resource name.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  authority = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  failOpen = _messages.BooleanField(4)
+  forwardAttributes = _messages.StringField(5, repeated=True)
+  forwardHeaders = _messages.StringField(6, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 7)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 8)
+  metadata = _messages.MessageField('MetadataValue', 9)
+  name = _messages.StringField(10)
+  service = _messages.StringField(11)
+  timeout = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
+  wireFormat = _messages.EnumField('WireFormatValueValuesEnum', 14)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -282,15 +473,23 @@ class Condition(_messages.Message):
         cloud region) - 'self:prod-region' (i.e., allow connections from
         clients that are in the same prod region) - 'guardians' (i.e., allow
         connections from its guardian realms. See go/security-realms-
-        glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e.,
-        allow connections from clients that are in the same security realm,
-        which is currently but not guaranteed to be campus-sized) - a realm
-        (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
-        see: go/realm-groups) A match is determined by a realm group
-        membership check performed by a RealmAclRep object (go/realm-acl-
-        howto). It is not permitted to grant access based on the *absence* of
-        a realm, so realm conditions can only be used in a "positive" context
-        (e.g., ALLOW/IN or DENY/NOT_IN).
+        glossary#guardian for more information.) - 'cryto_core_guardians'
+        (i.e., allow connections from its crypto core guardian realms. See
+        go/security-realms-glossary#guardian for more information.) Crypto
+        Core coverage is a super-set of Default coverage, containing
+        information about coverage between higher tier data centers (e.g.,
+        YAWNs). Most services should use Default coverage and only use Crypto
+        Core coverage if the service is involved in greenfield turnup of new
+        higher tier data centers (e.g., credential infrastructure, machine/job
+        management systems, etc.). - 'self' [DEPRECATED] (i.e., allow
+        connections from clients that are in the same security realm, which is
+        currently but not guaranteed to be campus-sized) - a realm (e.g.,
+        'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see:
+        go/realm-groups) A match is determined by a realm group membership
+        check performed by a RealmAclRep object (go/realm-acl-howto). It is
+        not permitted to grant access based on the *absence* of a realm, so
+        realm conditions can only be used in a "positive" context (e.g.,
+        ALLOW/IN or DENY/NOT_IN).
       APPROVER: An approver (distinct from the requester) that has authorized
         this request. When used with IN, the condition indicates that one of
         the approvers associated with the request matches the specified
@@ -457,6 +656,9 @@ class EndpointPolicy(_messages.Message):
       inbound traffic at the matched endpoints. Refer to Authorization. If
       this field is not specified, authorization is disabled(no authz checks)
       for this endpoint.
+    authzPolicies: Optional. Specifies the GCP AuthzPolicies that this
+      endpoint policy is associated with. If both the authorization_policy are
+      authz_policies are set, then authz_policies will take the precedence.
     clientTlsPolicy: Optional. A URL referring to a ClientTlsPolicy resource.
       ClientTlsPolicy can be set to specify the authentication for traffic
       from the proxy to the actual endpoints. More specifically, it is applied
@@ -479,7 +681,7 @@ class EndpointPolicy(_messages.Message):
     meshes: Optional. Specifies the meshes that this policy is applicable for.
       Applies to all meshes in the project if left empty. Mesh will be of the
       form "projects/*/meshes/locations/global/".
-    name: Required. Name of the EndpointPolicy resource. It matches pattern
+    name: Identifier. Name of the EndpointPolicy resource. It matches pattern
       `projects/{project}/locations/global/endpointPolicies/{endpoint_policy}`
       .
     scopes: Optional. Specifies the gateway scopes that this policy is
@@ -550,23 +752,24 @@ class EndpointPolicy(_messages.Message):
   accessLoggingConfigs = _messages.MessageField('AccessLoggingConfig', 1, repeated=True)
   authentication = _messages.StringField(2)
   authorizationPolicy = _messages.StringField(3)
-  clientTlsPolicy = _messages.StringField(4)
-  createTime = _messages.StringField(5)
-  description = _messages.StringField(6)
-  endpointMatcher = _messages.MessageField('EndpointMatcher', 7)
-  internalCaller = _messages.BooleanField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  meshes = _messages.StringField(10, repeated=True)
-  name = _messages.StringField(11)
-  scopes = _messages.StringField(12, repeated=True)
-  serverTlsPolicy = _messages.StringField(13)
-  targets = _messages.StringField(14, repeated=True)
-  tcpFilters = _messages.MessageField('TcpFilters', 15)
-  telemetryProviders = _messages.MessageField('TelemetryProvider', 16, repeated=True)
-  tracingConfigs = _messages.MessageField('TracingConfig', 17, repeated=True)
-  trafficPortSelector = _messages.MessageField('TrafficPortSelector', 18)
-  type = _messages.EnumField('TypeValueValuesEnum', 19)
-  updateTime = _messages.StringField(20)
+  authzPolicies = _messages.StringField(4, repeated=True)
+  clientTlsPolicy = _messages.StringField(5)
+  createTime = _messages.StringField(6)
+  description = _messages.StringField(7)
+  endpointMatcher = _messages.MessageField('EndpointMatcher', 8)
+  internalCaller = _messages.BooleanField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  meshes = _messages.StringField(11, repeated=True)
+  name = _messages.StringField(12)
+  scopes = _messages.StringField(13, repeated=True)
+  serverTlsPolicy = _messages.StringField(14)
+  targets = _messages.StringField(15, repeated=True)
+  tcpFilters = _messages.MessageField('TcpFilters', 16)
+  telemetryProviders = _messages.MessageField('TelemetryProvider', 17, repeated=True)
+  tracingConfigs = _messages.MessageField('TracingConfig', 18, repeated=True)
+  trafficPortSelector = _messages.MessageField('TrafficPortSelector', 19)
+  type = _messages.EnumField('TypeValueValuesEnum', 20)
+  updateTime = _messages.StringField(21)
 
 
 class Expr(_messages.Message):
@@ -649,12 +852,13 @@ class ExtensionChainExtension(_messages.Message):
       headers have been delivered, then the HTTP stream to the downstream
       client is reset.
     forwardAttributes: Optional. List of the Envoy attributes to forward to
-      the extension server. The attributes provided here will be included as
-      part of the `ProcessingRequest.attributes` field (of type `map`), where
-      the keys are the attribute names. Refer to the [documentation](/service-
-      extensions/docs/cel-matcher-language-reference#attributes) for the names
-      of attributes that can be forwarded. If omitted, no attributes will be
-      sent. Each element is a string indicating the attribute name.
+      the extension server. The attributes provided here are included as part
+      of the `ProcessingRequest.attributes` field (of type `map`), where the
+      keys are the attribute names. Refer to the
+      [documentation](https://cloud.google.com/service-extensions/docs/cel-
+      matcher-language-reference#attributes) for the names of attributes that
+      can be forwarded. If omitted, no attributes are sent. Each element is a
+      string indicating the attribute name.
     forwardHeaders: Optional. List of the HTTP headers to forward to the
       extension (from the client or backend). If omitted, all headers are
       sent. Each element is a string indicating the header name.
@@ -673,7 +877,7 @@ class ExtensionChainExtension(_messages.Message):
       endServices/{backendService}`.
     supportedEvents: Optional. A set of events during request or response
       processing for which this extension is called. This field is required
-      for the `LbTrafficExtension` resource. It's not relevant for the
+      for the `LbTrafficExtension` resource. It must not be set for the
       `LbRouteExtension` resource.
     timeout: Optional. Specifies the timeout for each individual message on
       the stream. The timeout must be between 10-1000 milliseconds. Required
@@ -723,7 +927,8 @@ class ExtensionChainMatchCondition(_messages.Message):
     celExpression: Required. A Common Expression Language (CEL) expression
       that is used to match requests for which the extension chain is
       executed. For more information, see [CEL matcher language
-      reference](/service-extensions/docs/cel-matcher-language-reference).
+      reference](https://cloud.google.com/service-extensions/docs/cel-matcher-
+      language-reference).
   """
 
   celExpression = _messages.StringField(1)
@@ -734,7 +939,7 @@ class Gateway(_messages.Message):
   balancer. It captures the ip:port over which the services are exposed by the
   proxy, along with any policy configurations. Routes have reference to to
   Gateways to dictate how requests should be routed by this Gateway. Next id:
-  32
+  33
 
   Enums:
     EnvoyHeadersValueValuesEnum: Optional. Determines if envoy will insert
@@ -742,6 +947,9 @@ class Gateway(_messages.Message):
       still be injected. By default, envoy will not insert any debug headers.
     IpVersionValueValuesEnum: Optional. The IP Version that will be used by
       this gateway. Valid options are IPV4 or IPV6. Default is IPV4.
+    RoutingModeValueValuesEnum: Optional. The routing mode of the Gateway.
+      This field is configurable only for gateways of type SECURE_WEB_GATEWAY.
+      This field is required for gateways of type SECURE_WEB_GATEWAY.
     TypeValueValuesEnum: Immutable. The type of the customer managed gateway.
       This field is required. If unspecified, an error is returned.
 
@@ -810,7 +1018,7 @@ class Gateway(_messages.Message):
     metadata: Optional. Used by CSM only, containing details from the original
       Istio Gateway such as Gateway namespace, Gateway name, Gateway server
       port name, to generate an identical RDS name as Istio.
-    name: Required. Name of the Gateway resource. It matches pattern
+    name: Identifier. Name of the Gateway resource. It matches pattern
       `projects/*/locations/*/gateways/`.
     network: Optional. The relative resource name identifying the VPC network
       that is using this configuration. For example:
@@ -821,6 +1029,9 @@ class Gateway(_messages.Message):
       of type 'SECURE_WEB_GATEWAY' are limited to 1 port. Gateways of type
       'OPEN_MESH' listen on 0.0.0.0 for IPv4 and :: for IPv6 and support
       multiple ports.
+    routingMode: Optional. The routing mode of the Gateway. This field is
+      configurable only for gateways of type SECURE_WEB_GATEWAY. This field is
+      required for gateways of type SECURE_WEB_GATEWAY.
     scope: Optional. Scope determines how configuration across multiple
       Gateway instances are merged. The configuration for multiple Gateway
       instances with the same scope will be merged as presented as a single
@@ -910,6 +1121,23 @@ class Gateway(_messages.Message):
     IPV4 = 1
     IPV6 = 2
 
+  class RoutingModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The routing mode of the Gateway. This field is configurable
+    only for gateways of type SECURE_WEB_GATEWAY. This field is required for
+    gateways of type SECURE_WEB_GATEWAY.
+
+    Values:
+      EXPLICIT_ROUTING_MODE: The routing mode is explicit; clients are
+        configured to send traffic through the gateway. This is the default
+        routing mode.
+      NEXT_HOP_ROUTING_MODE: The routing mode is next-hop. Clients are unaware
+        of the gateway, and a route (advanced route or other route type) can
+        be configured to direct traffic from client to gateway. The gateway
+        then acts as a next-hop to the destination.
+    """
+    EXPLICIT_ROUTING_MODE = 0
+    NEXT_HOP_ROUTING_MODE = 1
+
   class TypeValueValuesEnum(_messages.Enum):
     r"""Immutable. The type of the customer managed gateway. This field is
     required. If unspecified, an error is returned.
@@ -921,10 +1149,15 @@ class Gateway(_messages.Message):
         Open Mesh.
       SECURE_WEB_GATEWAY: The type of the customer managed gateway is
         SecureWebGateway (SWG).
+      INGRESS_MESSAGE_GATEWAY: The type of the gateway is
+        IngressMessageGateway
+      EGRESS_MESSAGE_GATEWAY: Gateway for MessageIntegration Egress.
     """
     TYPE_UNSPECIFIED = 0
     OPEN_MESH = 1
     SECURE_WEB_GATEWAY = 2
+    INGRESS_MESSAGE_GATEWAY = 3
+    EGRESS_MESSAGE_GATEWAY = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1032,18 +1265,19 @@ class Gateway(_messages.Message):
   name = _messages.StringField(15)
   network = _messages.StringField(16)
   ports = _messages.IntegerField(17, repeated=True, variant=_messages.Variant.INT32)
-  scope = _messages.StringField(18)
-  securityPolicy = _messages.StringField(19)
-  selfLink = _messages.StringField(20)
-  serverTlsPolicy = _messages.StringField(21)
-  sniHosts = _messages.StringField(22, repeated=True)
-  sniServerTlsPolicies = _messages.MessageField('SniServerTlsPoliciesValue', 23)
-  subnetwork = _messages.StringField(24)
-  telemetryProviders = _messages.MessageField('TelemetryProvider', 25, repeated=True)
-  tracingConfigs = _messages.MessageField('TracingConfig', 26, repeated=True)
-  type = _messages.EnumField('TypeValueValuesEnum', 27)
-  updateTime = _messages.StringField(28)
-  workloadContextSelectors = _messages.MessageField('WorkloadContextSelector', 29, repeated=True)
+  routingMode = _messages.EnumField('RoutingModeValueValuesEnum', 18)
+  scope = _messages.StringField(19)
+  securityPolicy = _messages.StringField(20)
+  selfLink = _messages.StringField(21)
+  serverTlsPolicy = _messages.StringField(22)
+  sniHosts = _messages.StringField(23, repeated=True)
+  sniServerTlsPolicies = _messages.MessageField('SniServerTlsPoliciesValue', 24)
+  subnetwork = _messages.StringField(25)
+  telemetryProviders = _messages.MessageField('TelemetryProvider', 26, repeated=True)
+  tracingConfigs = _messages.MessageField('TracingConfig', 27, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 28)
+  updateTime = _messages.StringField(29)
+  workloadContextSelectors = _messages.MessageField('WorkloadContextSelector', 30, repeated=True)
 
 
 class GetReferenceRequest(_messages.Message):
@@ -1290,21 +1524,33 @@ class GoogleApiExprExprComprehension(_messages.Message):
   of this macro depend on the type of `m`. For proto2 messages `has(m.x)` is
   defined as 'defined, but not set`. For proto3, the macro tests whether the
   property is set to its default. For map and struct types, the macro tests
-  whether the property `x` is defined on `m`. Comprehension evaluation can be
-  best visualized as the following pseudocode: ``` let `accu_var` =
-  `accu_init` for (let `iter_var` in `iter_range`) { if (!`loop_condition`) {
-  break } `accu_var` = `loop_step` } return `result` ```
+  whether the property `x` is defined on `m`. Comprehensions for the standard
+  environment macros evaluation can be best visualized as the following
+  pseudocode: ``` let `accu_var` = `accu_init` for (let `iter_var` in
+  `iter_range`) { if (!`loop_condition`) { break } `accu_var` = `loop_step` }
+  return `result` ``` Comprehensions for the optional V2 macros which support
+  map-to-map translation differ slightly from the standard environment macros
+  in that they expose both the key or index in addition to the value for each
+  list or map entry: ``` let `accu_var` = `accu_init` for (let `iter_var`,
+  `iter_var2` in `iter_range`) { if (!`loop_condition`) { break } `accu_var` =
+  `loop_step` } return `result` ```
 
   Fields:
     accuInit: The initial value of the accumulator.
     accuVar: The name of the variable used for accumulation of the result.
-    iterRange: The range over which var iterates.
-    iterVar: The name of the iteration variable.
-    loopCondition: An expression which can contain iter_var and accu_var.
-      Returns false when the result has been computed and may be used as a
-      hint to short-circuit the remainder of the comprehension.
-    loopStep: An expression which can contain iter_var and accu_var. Computes
-      the next value of accu_var.
+    iterRange: The range over which the comprehension iterates.
+    iterVar: The name of the first iteration variable. When the iter_range is
+      a list, this variable is the list element. When the iter_range is a map,
+      this variable is the map entry key.
+    iterVar2: The name of the second iteration variable, empty if not set.
+      When the iter_range is a list, this variable is the integer index. When
+      the iter_range is a map, this variable is the map entry value. This
+      field is only set for comprehension v2 macros.
+    loopCondition: An expression which can contain iter_var, iter_var2, and
+      accu_var. Returns false when the result has been computed and may be
+      used as a hint to short-circuit the remainder of the comprehension.
+    loopStep: An expression which can contain iter_var, iter_var2, and
+      accu_var. Computes the next value of accu_var.
     result: An expression which can contain accu_var. Computes the result.
   """
 
@@ -1312,9 +1558,10 @@ class GoogleApiExprExprComprehension(_messages.Message):
   accuVar = _messages.StringField(2)
   iterRange = _messages.MessageField('GoogleApiExprExpr', 3)
   iterVar = _messages.StringField(4)
-  loopCondition = _messages.MessageField('GoogleApiExprExpr', 5)
-  loopStep = _messages.MessageField('GoogleApiExprExpr', 6)
-  result = _messages.MessageField('GoogleApiExprExpr', 7)
+  iterVar2 = _messages.StringField(5)
+  loopCondition = _messages.MessageField('GoogleApiExprExpr', 6)
+  loopStep = _messages.MessageField('GoogleApiExprExpr', 7)
+  result = _messages.MessageField('GoogleApiExprExpr', 8)
 
 
 class GoogleApiExprExprCreateList(_messages.Message):
@@ -1788,7 +2035,7 @@ class GrpcRoute(_messages.Message):
       attached to, as one of the routing rules to route the requests served by
       the mesh. Each mesh reference should match the pattern:
       `projects/*/locations/global/meshes/`
-    name: Required. Name of the GrpcRoute resource. It matches pattern
+    name: Identifier. Name of the GrpcRoute resource. It matches pattern
       `projects/*/locations/global/grpcRoutes/`
     routers: Optional. Routers define a list of routers this GrpcRoute should
       be served by. Each router reference should match the pattern:
@@ -2067,7 +2314,8 @@ class GrpcRouteRequestMirrorPolicy(_messages.Message):
 
 
 class GrpcRouteRetryPolicy(_messages.Message):
-  r"""The specifications for retries.
+  r"""The specifications for retries. Specifies one or more conditions for
+  which this retry rule applies. Valid values are:
 
   Fields:
     numRetries: Specifies the allowed number of retries. This number must be >
@@ -2220,11 +2468,18 @@ class HttpRoute(_messages.Message):
   Messages:
     LabelsValue: Optional. Set of label tags associated with the HttpRoute
       resource.
+    MetadataValue: Optional. Set of metadata associated with the HTTPRoute
+      resource.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
+    downstreamHttpFilters: Optional. Downstream HTTP filters configuration for
+      Message Streams. Should match pattern
+      projects/*/locations/*/httpFilters/. These filters work in conjunction
+      with a default set of HTTP filters that may already be configured by
+      Traffic Director. Currently, only Message Streams SA can set this field.
     gateways: Optional. Gateways defines a list of gateways this HttpRoute is
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
@@ -2253,16 +2508,15 @@ class HttpRoute(_messages.Message):
       allowlisted service's P4SA even if other optional fields are unset.
     labels: Optional. Set of label tags associated with the HttpRoute
       resource.
-    listenOn: The address to listen on. This can be either an IP address and
-      port number, or a Unix domain socket name. When attached to a Mesh,
-      defaults to 0.0.0.0:Mesh.InterceptionPort (which is 15001 by default).
-      Should not be set when attached to a Gateway.
+    listenOn: A Address attribute.
     meshes: Optional. Meshes defines a list of meshes this HttpRoute is
       attached to, as one of the routing rules to route the requests served by
       the mesh. Each mesh reference should match the pattern:
       `projects/*/locations/global/meshes/` The attached Mesh should be of a
       type SIDECAR
-    name: Required. Name of the HttpRoute resource. It matches pattern
+    metadata: Optional. Set of metadata associated with the HTTPRoute
+      resource.
+    name: Identifier. Name of the HttpRoute resource. It matches pattern
       `projects/*/locations/global/httpRoutes/http_route_name>`.
     requireTls: Optional. If enabled, a 301 error will be returned for HTTP
       traffic to this host. This field is only valid for gateway use cases and
@@ -2276,6 +2530,11 @@ class HttpRoute(_messages.Message):
       the rule.
     selfLink: Output only. Server-defined URL of this resource
     updateTime: Output only. The timestamp when the resource was updated.
+    upstreamHttpFilters: Optional. Upstream HTTP filters configuration for
+      Message Streams. Should match pattern
+      projects/*/locations/*/httpFilters/. These filters work in conjunction
+      with a default set of HTTP filters that may already be configured by
+      Traffic Director. Currently, only Message Streams SA can set this field.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2302,20 +2561,47 @@ class HttpRoute(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Optional. Set of metadata associated with the HTTPRoute resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  gateways = _messages.StringField(3, repeated=True)
-  hostnames = _messages.StringField(4, repeated=True)
-  internalCaller = _messages.BooleanField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  listenOn = _messages.MessageField('Address', 7)
-  meshes = _messages.StringField(8, repeated=True)
-  name = _messages.StringField(9)
-  requireTls = _messages.BooleanField(10)
-  routers = _messages.StringField(11, repeated=True)
-  rules = _messages.MessageField('HttpRouteRouteRule', 12, repeated=True)
-  selfLink = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  downstreamHttpFilters = _messages.StringField(3, repeated=True)
+  gateways = _messages.StringField(4, repeated=True)
+  hostnames = _messages.StringField(5, repeated=True)
+  internalCaller = _messages.BooleanField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  listenOn = _messages.MessageField('Address', 8)
+  meshes = _messages.StringField(9, repeated=True)
+  metadata = _messages.MessageField('MetadataValue', 10)
+  name = _messages.StringField(11)
+  requireTls = _messages.BooleanField(12)
+  routers = _messages.StringField(13, repeated=True)
+  rules = _messages.MessageField('HttpRouteRouteRule', 14, repeated=True)
+  selfLink = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
+  upstreamHttpFilters = _messages.StringField(17, repeated=True)
 
 
 class HttpRouteCorsPolicy(_messages.Message):
@@ -2948,13 +3234,13 @@ class LbRouteExtension(_messages.Message):
   Messages:
     LabelsValue: Optional. Set of labels associated with the
       `LbRouteExtension` resource. The format must comply with [the
-      requirements for labels](/compute/docs/labeling-resources#requirements)
-      for Google Cloud resources.
-    MetadataValue: Optional. The metadata provided here will be included as
-      part of the `metadata_context` (of type `google.protobuf.Struct`) in the
+      requirements for labels](https://cloud.google.com/compute/docs/labeling-
+      resources#requirements) for Google Cloud resources.
+    MetadataValue: Optional. The metadata provided here is included as part of
+      the `metadata_context` (of type `google.protobuf.Struct`) in the
       `ProcessingRequest` message sent to the extension server. The metadata
-      will be available under the namespace `com.google.service_extensions`.
-      The following variables are supported in the metadata Struct:
+      is available under the namespace `com.google.lb_route_extension.`. The
+      following variables are supported in the metadata Struct:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
       qualified resource name.
 
@@ -2977,18 +3263,18 @@ class LbRouteExtension(_messages.Message):
       resource per gateway.
     labels: Optional. Set of labels associated with the `LbRouteExtension`
       resource. The format must comply with [the requirements for
-      labels](/compute/docs/labeling-resources#requirements) for Google Cloud
-      resources.
+      labels](https://cloud.google.com/compute/docs/labeling-
+      resources#requirements) for Google Cloud resources.
     loadBalancingScheme: Required. All backend services and forwarding rules
       referenced by this extension must share the same load balancing scheme.
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
       information, refer to [Choosing a load
       balancer](https://cloud.google.com/load-balancing/docs/backend-service).
-    metadata: Optional. The metadata provided here will be included as part of
-      the `metadata_context` (of type `google.protobuf.Struct`) in the
+    metadata: Optional. The metadata provided here is included as part of the
+      `metadata_context` (of type `google.protobuf.Struct`) in the
       `ProcessingRequest` message sent to the extension server. The metadata
-      will be available under the namespace `com.google.service_extensions`.
-      The following variables are supported in the metadata Struct:
+      is available under the namespace `com.google.lb_route_extension.`. The
+      following variables are supported in the metadata Struct:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
       qualified resource name.
     name: Required. Identifier. Name of the `LbRouteExtension` resource in the
@@ -3010,17 +3296,20 @@ class LbRouteExtension(_messages.Message):
         Balancing.
       EXTERNAL_MANAGED: Signifies that this is used for External Managed
         HTTP(S) Load Balancing.
+      INTERNAL_SELF_MANAGED: Signifies that this is used for Cloud Service
+        Mesh.
     """
     LOAD_BALANCING_SCHEME_UNSPECIFIED = 0
     INTERNAL_MANAGED = 1
     EXTERNAL_MANAGED = 2
+    INTERNAL_SELF_MANAGED = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. Set of labels associated with the `LbRouteExtension`
     resource. The format must comply with [the requirements for
-    labels](/compute/docs/labeling-resources#requirements) for Google Cloud
-    resources.
+    labels](https://cloud.google.com/compute/docs/labeling-
+    resources#requirements) for Google Cloud resources.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -3044,10 +3333,10 @@ class LbRouteExtension(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Optional. The metadata provided here will be included as part of the
+    r"""Optional. The metadata provided here is included as part of the
     `metadata_context` (of type `google.protobuf.Struct`) in the
-    `ProcessingRequest` message sent to the extension server. The metadata
-    will be available under the namespace `com.google.service_extensions`. The
+    `ProcessingRequest` message sent to the extension server. The metadata is
+    available under the namespace `com.google.lb_route_extension.`. The
     following variables are supported in the metadata Struct:
     `{forwarding_rule_id}` - substituted with the forwarding rule's fully
     qualified resource name.
@@ -3100,14 +3389,14 @@ class LbTrafficExtension(_messages.Message):
   Messages:
     LabelsValue: Optional. Set of labels associated with the
       `LbTrafficExtension` resource. The format must comply with [the
-      requirements for labels](/compute/docs/labeling-resources#requirements)
-      for Google Cloud resources.
-    MetadataValue: Optional. The metadata provided here will be included in
-      the `ProcessingRequest.metadata_context.filter_metadata` map field. The
-      metadata will be available under the key
-      `com.google.service_extensions`. The following variables are supported
-      in the metadata: `{forwarding_rule_id}` - substituted with the
-      forwarding rule's fully qualified resource name.
+      requirements for labels](https://cloud.google.com/compute/docs/labeling-
+      resources#requirements) for Google Cloud resources.
+    MetadataValue: Optional. The metadata provided here is included in the
+      `ProcessingRequest.metadata_context.filter_metadata` map field. The
+      metadata is available under the key `com.google.lb_traffic_extension.`.
+      The following variables are supported in the metadata:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -3128,19 +3417,19 @@ class LbTrafficExtension(_messages.Message):
       resource per gateway.
     labels: Optional. Set of labels associated with the `LbTrafficExtension`
       resource. The format must comply with [the requirements for
-      labels](/compute/docs/labeling-resources#requirements) for Google Cloud
-      resources.
+      labels](https://cloud.google.com/compute/docs/labeling-
+      resources#requirements) for Google Cloud resources.
     loadBalancingScheme: Required. All backend services and forwarding rules
       referenced by this extension must share the same load balancing scheme.
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
       information, refer to [Choosing a load
       balancer](https://cloud.google.com/load-balancing/docs/backend-service).
-    metadata: Optional. The metadata provided here will be included in the
+    metadata: Optional. The metadata provided here is included in the
       `ProcessingRequest.metadata_context.filter_metadata` map field. The
-      metadata will be available under the key
-      `com.google.service_extensions`. The following variables are supported
-      in the metadata: `{forwarding_rule_id}` - substituted with the
-      forwarding rule's fully qualified resource name.
+      metadata is available under the key `com.google.lb_traffic_extension.`.
+      The following variables are supported in the metadata:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name.
     name: Required. Identifier. Name of the `LbTrafficExtension` resource in
       the following format: `projects/{project}/locations/{location}/lbTraffic
       Extensions/{lb_traffic_extension}`.
@@ -3160,17 +3449,20 @@ class LbTrafficExtension(_messages.Message):
         Balancing.
       EXTERNAL_MANAGED: Signifies that this is used for External Managed
         HTTP(S) Load Balancing.
+      INTERNAL_SELF_MANAGED: Signifies that this is used for Cloud Service
+        Mesh.
     """
     LOAD_BALANCING_SCHEME_UNSPECIFIED = 0
     INTERNAL_MANAGED = 1
     EXTERNAL_MANAGED = 2
+    INTERNAL_SELF_MANAGED = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. Set of labels associated with the `LbTrafficExtension`
     resource. The format must comply with [the requirements for
-    labels](/compute/docs/labeling-resources#requirements) for Google Cloud
-    resources.
+    labels](https://cloud.google.com/compute/docs/labeling-
+    resources#requirements) for Google Cloud resources.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -3194,9 +3486,9 @@ class LbTrafficExtension(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Optional. The metadata provided here will be included in the
+    r"""Optional. The metadata provided here is included in the
     `ProcessingRequest.metadata_context.filter_metadata` map field. The
-    metadata will be available under the key `com.google.service_extensions`.
+    metadata is available under the key `com.google.lb_traffic_extension.`.
     The following variables are supported in the metadata:
     `{forwarding_rule_id}` - substituted with the forwarding rule's fully
     qualified resource name.
@@ -3231,6 +3523,21 @@ class LbTrafficExtension(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 8)
   name = _messages.StringField(9)
   updateTime = _messages.StringField(10)
+
+
+class ListAuthzExtensionsResponse(_messages.Message):
+  r"""Message for response to listing `AuthzExtension` resources.
+
+  Fields:
+    authzExtensions: The list of `AuthzExtension` resources.
+    nextPageToken: A token identifying a page of results that the server
+      returns.
+    unreachable: Locations that could not be reached.
+  """
+
+  authzExtensions = _messages.MessageField('AuthzExtension', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListEndpointPoliciesResponse(_messages.Message):
@@ -3683,6 +3990,7 @@ class LogConfigDataAccessOptions(_messages.Message):
     LogModeValueValuesEnum:
 
   Fields:
+    isDirectAuth: Indicates that access was granted by a regular grant policy
     logMode: A LogModeValueValuesEnum attribute.
   """
 
@@ -3707,7 +4015,8 @@ class LogConfigDataAccessOptions(_messages.Message):
     LOG_MODE_UNSPECIFIED = 0
     LOG_FAIL_CLOSED = 1
 
-  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
+  isDirectAuth = _messages.BooleanField(1)
+  logMode = _messages.EnumField('LogModeValueValuesEnum', 2)
 
 
 class Mesh(_messages.Message):
@@ -3727,6 +4036,8 @@ class Mesh(_messages.Message):
   Fields:
     accessLoggingConfigs: Optional. Specifies access logging configuration for
       outgoing requests from mesh workloads.
+    clientTlsSettings: Optional. Defines the tls setting applied on all
+      services under the current mesh.
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
@@ -3743,11 +4054,11 @@ class Mesh(_messages.Message):
       Setting this will trigger a P4SA check to validate the caller is from an
       allowlisted service's P4SA even if other optional fields are unset.
     labels: Optional. Set of label tags associated with the Mesh resource.
-    name: Required. Name of the Mesh resource. It matches pattern
+    name: Identifier. Name of the Mesh resource. It matches pattern
       `projects/*/locations/global/meshes/`.
     selfLink: Output only. Server-defined URL of this resource
-    sidecarEgressPolicies: Optional. Egress polices represents the restriction
-      we apply to the egress traffic.
+    sidecarEgressPolicies: Optional. Egress policies represents the
+      restriction we apply to the egress traffic.
     telemetryProviders: Optional. Specifies configuration for telemetry
       providers.
     tracingConfigs: Optional. Specifies tracing configurations for outgoing
@@ -3797,18 +4108,34 @@ class Mesh(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   accessLoggingConfigs = _messages.MessageField('AccessLoggingConfig', 1, repeated=True)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  envoyHeaders = _messages.EnumField('EnvoyHeadersValueValuesEnum', 4)
-  interceptionPort = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  internalCaller = _messages.BooleanField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
-  sidecarEgressPolicies = _messages.MessageField('MeshSidecarEgressPolicy', 10, repeated=True)
-  telemetryProviders = _messages.MessageField('TelemetryProvider', 11, repeated=True)
-  tracingConfigs = _messages.MessageField('TracingConfig', 12, repeated=True)
-  updateTime = _messages.StringField(13)
+  clientTlsSettings = _messages.MessageField('MeshClientTLSSettings', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  envoyHeaders = _messages.EnumField('EnvoyHeadersValueValuesEnum', 5)
+  interceptionPort = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  internalCaller = _messages.BooleanField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+  sidecarEgressPolicies = _messages.MessageField('MeshSidecarEgressPolicy', 11, repeated=True)
+  telemetryProviders = _messages.MessageField('TelemetryProvider', 12, repeated=True)
+  tracingConfigs = _messages.MessageField('TracingConfig', 13, repeated=True)
+  updateTime = _messages.StringField(14)
+
+
+class MeshClientTLSSettings(_messages.Message):
+  r"""ClientTLSSettings defines the tls setting applied on all services under
+  the current mesh. this field is used exclusively for Service Mesh Istio. It
+  is unsupported in any other Service Mesh variant. Also, this field may be
+  *deprecated* in the future when Service Mesh Istio stops support for MTLS
+  with MeshCA certs completely.
+
+  Fields:
+    disable: Optional. If set to true, disable TLS connection to the upstream
+      endpoints regardless if clientTlsPolicy is configured under the mesh.
+  """
+
+  disable = _messages.BooleanField(1)
 
 
 class MeshSidecarEgressPolicy(_messages.Message):
@@ -3847,6 +4174,10 @@ class MessagePublishingRoute(_messages.Message):
 
   Messages:
     LabelsValue: Optional. Labels of the resource.
+    TypedPerFilterConfigValue: Optional. This field can be used to provide
+      route specific per filter config. It maps to https://www.envoyproxy.io/d
+      ocs/envoy/latest/api-v3/config/route/v3/route_components.proto#envoy-v3-
+      api-field-config-route-v3-virtualhost-typed-per-filter-config.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -3856,9 +4187,32 @@ class MessagePublishingRoute(_messages.Message):
       MessagePublishRoute is attached to, as one of the routes to publish
       messages to. Each gateway reference should match the pattern:
       `projects/*/locations/*/gateways/`
+    hostnames: Required. Hostnames define a set of hosts that should match
+      against the HTTP host/authority header to select a Route to process the
+      request. Hostname is the fully qualified domain name of a network host,
+      as defined by RFC 1123 with the exception that: - IPs are not allowed. -
+      A hostname may be prefixed with a wildcard label (`*.`). The wildcard
+      label must appear by itself as the first label. Hostname can be
+      "precise" which is a domain name without the terminating dot of a
+      network host (e.g. `foo.example.com`) or "wildcard", which is a domain
+      name prefixed with a single wildcard label (e.g. `*.example.com`). Note
+      that as per RFC1035 and RFC1123, a label must consist of lower case
+      alphanumeric characters or '-', and must start and end with an
+      alphanumeric character. No other punctuation is allowed. The routes
+      associated with a Mesh or Gateways must have unique hostnames. If you
+      attempt to attach multiple routes with conflicting hostnames, the
+      configuration will be rejected. For example, while it is acceptable for
+      routes for the hostnames `*.foo.bar.com` and `*.bar.com` to be
+      associated with the same Mesh (or Gateways under the same scope), it is
+      not possible to associate two routes both with `*.bar.com` or both with
+      `bar.com`.
     labels: Optional. Labels of the resource.
     name: Identifier. Name of the MessagePublishRoute resource. It matches
       pattern `projects/*/locations/*/messagePublishingRoutes/`.
+    typedPerFilterConfig: Optional. This field can be used to provide route
+      specific per filter config. It maps to https://www.envoyproxy.io/docs/en
+      voy/latest/api-v3/config/route/v3/route_components.proto#envoy-v3-api-
+      field-config-route-v3-virtualhost-typed-per-filter-config.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -3886,12 +4240,71 @@ class MessagePublishingRoute(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TypedPerFilterConfigValue(_messages.Message):
+    r"""Optional. This field can be used to provide route specific per filter
+    config. It maps to https://www.envoyproxy.io/docs/envoy/latest/api-
+    v3/config/route/v3/route_components.proto#envoy-v3-api-field-config-
+    route-v3-virtualhost-typed-per-filter-config.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        TypedPerFilterConfigValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        TypedPerFilterConfigValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TypedPerFilterConfigValue object.
+
+      Messages:
+        ValueValue: A ValueValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ValueValue attribute.
+      """
+
+      @encoding.MapUnrecognizedFields('additionalProperties')
+      class ValueValue(_messages.Message):
+        r"""A ValueValue object.
+
+        Messages:
+          AdditionalProperty: An additional property for a ValueValue object.
+
+        Fields:
+          additionalProperties: Properties of the object. Contains field @type
+            with type URL.
+        """
+
+        class AdditionalProperty(_messages.Message):
+          r"""An additional property for a ValueValue object.
+
+          Fields:
+            key: Name of the additional property.
+            value: A extra_types.JsonValue attribute.
+          """
+
+          key = _messages.StringField(1)
+          value = _messages.MessageField('extra_types.JsonValue', 2)
+
+        additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ValueValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   gateways = _messages.StringField(3, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  hostnames = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  typedPerFilterConfig = _messages.MessageField('TypedPerFilterConfigValue', 7)
+  updateTime = _messages.StringField(8)
 
 
 class MessageSubscription(_messages.Message):
@@ -3900,6 +4313,8 @@ class MessageSubscription(_messages.Message):
 
   Messages:
     LabelsValue: Optional. Labels of the resource.
+    MetadataValue: Set of metadata associated with the MessageSubscription
+      resource.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -3909,6 +4324,8 @@ class MessageSubscription(_messages.Message):
     messagePublishingRoute: Required. The MessagePublishingRoute resource name
       it's attached to. It matches pattern
       `projects/*/locations/*/messagePublishingRoutes/`.
+    metadata: Set of metadata associated with the MessageSubscription
+      resource.
     name: Identifier. Name of the MessageSubscription resource. It matches
       pattern `projects/*/locations/*/MessageSubscriptions/`.
     rules: Required. Rules that define how traffic is routed and handled. Each
@@ -3941,13 +4358,38 @@ class MessageSubscription(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Set of metadata associated with the MessageSubscription resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   messagePublishingRoute = _messages.StringField(4)
-  name = _messages.StringField(5)
-  rules = _messages.MessageField('MessageSubscriptionRouteRule', 6, repeated=True)
-  updateTime = _messages.StringField(7)
+  metadata = _messages.MessageField('MetadataValue', 5)
+  name = _messages.StringField(6)
+  rules = _messages.MessageField('MessageSubscriptionRouteRule', 7, repeated=True)
+  updateTime = _messages.StringField(8)
 
 
 class MessageSubscriptionCelMatch(_messages.Message):
@@ -4097,6 +4539,127 @@ class MetadataLabels(_messages.Message):
   labelValue = _messages.StringField(2)
 
 
+class NetworkservicesProjectsLocationsAuthzExtensionsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsAuthzExtensionsCreateRequest object.
+
+  Fields:
+    authzExtension: A AuthzExtension resource to be passed as the request
+      body.
+    authzExtensionId: Required. User-provided ID of the `AuthzExtension`
+      resource to be created.
+    parent: Required. The parent resource of the `AuthzExtension` resource.
+      Must be in the format `projects/{project}/locations/{location}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  authzExtension = _messages.MessageField('AuthzExtension', 1)
+  authzExtensionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsAuthzExtensionsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsAuthzExtensionsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the `AuthzExtension` resource to delete. Must
+      be in the format `projects/{project}/locations/{location}/authzExtension
+      s/{authz_extension}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsAuthzExtensionsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsAuthzExtensionsGetRequest object.
+
+  Fields:
+    name: Required. A name of the `AuthzExtension` resource to get. Must be in
+      the format `projects/{project}/locations/{location}/authzExtensions/{aut
+      hz_extension}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsAuthzExtensionsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsAuthzExtensionsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
+    pageSize: Optional. Requested page size. The server might return fewer
+      items than requested. If unspecified, the server picks an appropriate
+      default.
+    pageToken: Optional. A token identifying a page of results that the server
+      returns.
+    parent: Required. The project and location from which the `AuthzExtension`
+      resources are listed, specified in the following format:
+      `projects/{project}/locations/{location}`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsAuthzExtensionsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsAuthzExtensionsPatchRequest object.
+
+  Fields:
+    authzExtension: A AuthzExtension resource to be passed as the request
+      body.
+    name: Required. Identifier. Name of the `AuthzExtension` resource in the
+      following format: `projects/{project}/locations/{location}/authzExtensio
+      ns/{authz_extension}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Used to specify the fields to be overwritten in the
+      `AuthzExtension` resource by the update. The fields specified in the
+      update_mask are relative to the resource, not the full request. A field
+      is overwritten if it is in the mask. If the user does not specify a
+      mask, then all fields are overwritten.
+  """
+
+  authzExtension = _messages.MessageField('AuthzExtension', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class NetworkservicesProjectsLocationsEdgeCacheServicesInvalidateCacheRequest(_messages.Message):
   r"""A
   NetworkservicesProjectsLocationsEdgeCacheServicesInvalidateCacheRequest
@@ -4142,33 +4705,6 @@ class NetworkservicesProjectsLocationsEndpointPoliciesDeleteRequest(_messages.Me
   name = _messages.StringField(1, required=True)
 
 
-class NetworkservicesProjectsLocationsEndpointPoliciesGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsEndpointPoliciesGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
 class NetworkservicesProjectsLocationsEndpointPoliciesGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsEndpointPoliciesGetRequest object.
 
@@ -4203,7 +4739,7 @@ class NetworkservicesProjectsLocationsEndpointPoliciesPatchRequest(_messages.Mes
   Fields:
     endpointPolicy: A EndpointPolicy resource to be passed as the request
       body.
-    name: Required. Name of the EndpointPolicy resource. It matches pattern
+    name: Identifier. Name of the EndpointPolicy resource. It matches pattern
       `projects/{project}/locations/global/endpointPolicies/{endpoint_policy}`
       .
     updateMask: Optional. Field mask is used to specify the fields to be
@@ -4216,41 +4752,6 @@ class NetworkservicesProjectsLocationsEndpointPoliciesPatchRequest(_messages.Mes
   endpointPolicy = _messages.MessageField('EndpointPolicy', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class NetworkservicesProjectsLocationsEndpointPoliciesSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsEndpointPoliciesSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsEndpointPoliciesTestIamPermissionsRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsEndpointPoliciesTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsGatewaysCreateRequest(_messages.Message):
@@ -4277,32 +4778,6 @@ class NetworkservicesProjectsLocationsGatewaysDeleteRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class NetworkservicesProjectsLocationsGatewaysGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsGatewaysGetIamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
 
 
 class NetworkservicesProjectsLocationsGatewaysGetRequest(_messages.Message):
@@ -4338,7 +4813,7 @@ class NetworkservicesProjectsLocationsGatewaysPatchRequest(_messages.Message):
 
   Fields:
     gateway: A Gateway resource to be passed as the request body.
-    name: Required. Name of the Gateway resource. It matches pattern
+    name: Identifier. Name of the Gateway resource. It matches pattern
       `projects/*/locations/*/gateways/`.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Gateway resource by the update. The fields specified
@@ -4350,39 +4825,6 @@ class NetworkservicesProjectsLocationsGatewaysPatchRequest(_messages.Message):
   gateway = _messages.MessageField('Gateway', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class NetworkservicesProjectsLocationsGatewaysSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsGatewaysSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsGatewaysTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsGatewaysTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsGetRequest(_messages.Message):
@@ -4454,7 +4896,7 @@ class NetworkservicesProjectsLocationsGrpcRoutesPatchRequest(_messages.Message):
 
   Fields:
     grpcRoute: A GrpcRoute resource to be passed as the request body.
-    name: Required. Name of the GrpcRoute resource. It matches pattern
+    name: Identifier. Name of the GrpcRoute resource. It matches pattern
       `projects/*/locations/global/grpcRoutes/`
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the GrpcRoute resource by the update. The fields
@@ -4527,7 +4969,7 @@ class NetworkservicesProjectsLocationsHttpRoutesPatchRequest(_messages.Message):
 
   Fields:
     httpRoute: A HttpRoute resource to be passed as the request body.
-    name: Required. Name of the HttpRoute resource. It matches pattern
+    name: Identifier. Name of the HttpRoute resource. It matches pattern
       `projects/*/locations/global/httpRoutes/http_route_name>`.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the HttpRoute resource by the update. The fields
@@ -4649,7 +5091,7 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest(_messages.Me
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Used to specify the fields to be overwritten in the
+    updateMask: Optional. Used to specify the fields to be overwritten in the
       `LbRouteExtension` resource by the update. The fields specified in the
       update_mask are relative to the resource, not the full request. A field
       is overwritten if it is in the mask. If the user does not specify a
@@ -4774,7 +5216,7 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsPatchRequest(_messages.
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Used to specify the fields to be overwritten in the
+    updateMask: Optional. Used to specify the fields to be overwritten in the
       `LbTrafficExtension` resource by the update. The fields specified in the
       update_mask are relative to the resource, not the full request. A field
       is overwritten if it is in the mask. If the user does not specify a
@@ -4836,32 +5278,6 @@ class NetworkservicesProjectsLocationsMeshesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class NetworkservicesProjectsLocationsMeshesGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMeshesGetIamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
 class NetworkservicesProjectsLocationsMeshesGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsMeshesGetRequest object.
 
@@ -4895,7 +5311,7 @@ class NetworkservicesProjectsLocationsMeshesPatchRequest(_messages.Message):
 
   Fields:
     mesh: A Mesh resource to be passed as the request body.
-    name: Required. Name of the Mesh resource. It matches pattern
+    name: Identifier. Name of the Mesh resource. It matches pattern
       `projects/*/locations/global/meshes/`.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Mesh resource by the update. The fields specified in
@@ -4907,39 +5323,6 @@ class NetworkservicesProjectsLocationsMeshesPatchRequest(_messages.Message):
   mesh = _messages.MessageField('Mesh', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class NetworkservicesProjectsLocationsMeshesSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMeshesSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsMeshesTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsMeshesTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsMessagePublishingRoutesCreateRequest(_messages.Message):
@@ -5186,33 +5569,6 @@ class NetworkservicesProjectsLocationsServiceBindingsDeleteRequest(_messages.Mes
   name = _messages.StringField(1, required=True)
 
 
-class NetworkservicesProjectsLocationsServiceBindingsGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsServiceBindingsGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
 class NetworkservicesProjectsLocationsServiceBindingsGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsServiceBindingsGetRequest object.
 
@@ -5245,7 +5601,7 @@ class NetworkservicesProjectsLocationsServiceBindingsPatchRequest(_messages.Mess
   r"""A NetworkservicesProjectsLocationsServiceBindingsPatchRequest object.
 
   Fields:
-    name: Required. Name of the ServiceBinding resource. It matches pattern
+    name: Identifier. Name of the ServiceBinding resource. It matches pattern
       `projects/*/locations/global/serviceBindings/service_binding_name`.
     serviceBinding: A ServiceBinding resource to be passed as the request
       body.
@@ -5259,41 +5615,6 @@ class NetworkservicesProjectsLocationsServiceBindingsPatchRequest(_messages.Mess
   name = _messages.StringField(1, required=True)
   serviceBinding = _messages.MessageField('ServiceBinding', 2)
   updateMask = _messages.StringField(3)
-
-
-class NetworkservicesProjectsLocationsServiceBindingsSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsServiceBindingsSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsServiceBindingsTestIamPermissionsRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsServiceBindingsTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsServiceLbPoliciesCreateRequest(_messages.Message):
@@ -5496,7 +5817,7 @@ class NetworkservicesProjectsLocationsTcpRoutesPatchRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsTcpRoutesPatchRequest object.
 
   Fields:
-    name: Required. Name of the TcpRoute resource. It matches pattern
+    name: Identifier. Name of the TcpRoute resource. It matches pattern
       `projects/*/locations/global/tcpRoutes/tcp_route_name>`.
     tcpRoute: A TcpRoute resource to be passed as the request body.
     updateMask: Optional. Field mask is used to specify the fields to be
@@ -5569,7 +5890,7 @@ class NetworkservicesProjectsLocationsTlsRoutesPatchRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsTlsRoutesPatchRequest object.
 
   Fields:
-    name: Required. Name of the TlsRoute resource. It matches pattern
+    name: Identifier. Name of the TlsRoute resource. It matches pattern
       `projects/*/locations/global/tlsRoutes/tls_route_name>`.
     tlsRoute: A TlsRoute resource to be passed as the request body.
     updateMask: Optional. Field mask is used to specify the fields to be
@@ -5935,7 +6256,7 @@ class ServiceBinding(_messages.Message):
       Binding. The syntax is described in ResolveServiceRequest.
     labels: Optional. Set of label tags associated with the ServiceBinding
       resource.
-    name: Required. Name of the ServiceBinding resource. It matches pattern
+    name: Identifier. Name of the ServiceBinding resource. It matches pattern
       `projects/*/locations/global/serviceBindings/service_binding_name`.
     service: Required. The full Service Directory Service name of the format
       projects/*/locations/*/namespaces/*/services/*
@@ -6280,7 +6601,7 @@ class TcpRoute(_messages.Message):
       the mesh. Each mesh reference should match the pattern:
       `projects/*/locations/global/meshes/` The attached Mesh should be of a
       type SIDECAR
-    name: Required. Name of the TcpRoute resource. It matches pattern
+    name: Identifier. Name of the TcpRoute resource. It matches pattern
       `projects/*/locations/global/tcpRoutes/tcp_route_name>`.
     routers: Optional. Routers define a list of routers this TcpRoute should
       be served by. Each router reference should match the pattern:
@@ -6290,6 +6611,8 @@ class TcpRoute(_messages.Message):
       least one RouteRule must be supplied. If there are multiple rules then
       the action taken will be the first rule to match.
     selfLink: Output only. Server-defined URL of this resource
+    skipIpPortUniquenessCheck: Optional. If true, ip:port uniqueness check
+      will be skipped. Default is false.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -6328,7 +6651,8 @@ class TcpRoute(_messages.Message):
   routers = _messages.StringField(9, repeated=True)
   rules = _messages.MessageField('TcpRouteRouteRule', 10, repeated=True)
   selfLink = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  skipIpPortUniquenessCheck = _messages.BooleanField(12)
+  updateTime = _messages.StringField(13)
 
 
 class TcpRouteRouteAction(_messages.Message):
@@ -6558,7 +6882,7 @@ class TlsRoute(_messages.Message):
       the mesh. Each mesh reference should match the pattern:
       `projects/*/locations/global/meshes/` The attached Mesh should be of a
       type SIDECAR
-    name: Required. Name of the TlsRoute resource. It matches pattern
+    name: Identifier. Name of the TlsRoute resource. It matches pattern
       `projects/*/locations/global/tlsRoutes/tls_route_name>`.
     rules: Required. Rules that define how traffic is routed and handled. At
       least one RouteRule must be supplied. If there are multiple rules then
@@ -6662,7 +6986,7 @@ class TlsRouteRouteMatch(_messages.Message):
       first matched against `www.example.com`, then `*.example.com`, then
       `*.com.` Partial wildcards are not supported, and values like
       *w.example.com are invalid. At least one of sni_host and alpn is
-      required. Up to 5 sni hosts across all matches can be set.
+      required. Up to 100 sni hosts across all matches can be set.
   """
 
   alpn = _messages.StringField(1, repeated=True)
@@ -6787,13 +7111,5 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
-encoding.AddCustomJsonFieldMapping(
-    NetworkservicesProjectsLocationsEndpointPoliciesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
-    NetworkservicesProjectsLocationsGatewaysGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
-    NetworkservicesProjectsLocationsMeshesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
-    NetworkservicesProjectsLocationsServiceBindingsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     NetworkservicesProjectsLocationsServiceLbPoliciesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

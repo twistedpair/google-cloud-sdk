@@ -40,33 +40,36 @@ class ModelsClient(object):
     self.messages = messages or self.client.MESSAGES_MODULE
     self._service = self.client.projects_locations_models
 
-  def UploadV1Beta1(self,
-                    region_ref=None,
-                    display_name=None,
-                    description=None,
-                    version_description=None,
-                    artifact_uri=None,
-                    container_image_uri=None,
-                    container_command=None,
-                    container_args=None,
-                    container_env_vars=None,
-                    container_ports=None,
-                    container_grpc_ports=None,
-                    container_predict_route=None,
-                    container_health_route=None,
-                    container_deployment_timeout_seconds=None,
-                    container_shared_memory_size_mb=None,
-                    container_startup_probe_exec=None,
-                    container_startup_probe_period_seconds=None,
-                    container_startup_probe_timeout_seconds=None,
-                    container_health_probe_exec=None,
-                    container_health_probe_period_seconds=None,
-                    container_health_probe_timeout_seconds=None,
-                    explanation_spec=None,
-                    parent_model=None,
-                    model_id=None,
-                    version_aliases=None,
-                    labels=None):
+  def UploadV1Beta1(
+      self,
+      region_ref=None,
+      display_name=None,
+      description=None,
+      version_description=None,
+      artifact_uri=None,
+      container_image_uri=None,
+      container_command=None,
+      container_args=None,
+      container_env_vars=None,
+      container_ports=None,
+      container_grpc_ports=None,
+      container_predict_route=None,
+      container_health_route=None,
+      container_deployment_timeout_seconds=None,
+      container_shared_memory_size_mb=None,
+      container_startup_probe_exec=None,
+      container_startup_probe_period_seconds=None,
+      container_startup_probe_timeout_seconds=None,
+      container_health_probe_exec=None,
+      container_health_probe_period_seconds=None,
+      container_health_probe_timeout_seconds=None,
+      explanation_spec=None,
+      parent_model=None,
+      model_id=None,
+      version_aliases=None,
+      labels=None,
+      base_model_source=None,
+  ):
     """Constructs, sends an UploadModel request and returns the LRO to be done.
 
     Args:
@@ -277,6 +280,10 @@ class ModelsClient(object):
         codepoints), can only contain lowercase letters, numeric characters,
         underscores and dashes. International characters are allowed. See
         https://goo.gl/xmQnxf for more information and examples of labels.
+      base_model_source: A GoogleCloudAiplatformV1beta1ModelBaseModelSource
+        object that indicates the source of the model. Currently it only
+        supports specifying the Model Garden models and Generative AI Studio
+        models.
 
     Returns:
       Response from calling upload model with given request arguments.
@@ -358,7 +365,9 @@ class ModelsClient(object):
         description=description,
         versionDescription=version_description,
         displayName=display_name,
-        explanationSpec=explanation_spec)
+        explanationSpec=explanation_spec,
+        baseModelSource=base_model_source,
+    )
     if version_aliases:
       model.versionAliases = version_aliases
     if labels:

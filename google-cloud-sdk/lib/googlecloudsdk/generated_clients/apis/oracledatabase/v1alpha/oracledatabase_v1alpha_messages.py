@@ -41,6 +41,8 @@ class AutonomousDatabase(_messages.Message):
   Fields:
     adminPassword: Optional. Password for the default ADMIN user.
     cidr: Required. The subnet CIDR for the autonomous database.
+    createTime: Output only. The date and time that the Autonomous Database
+      was created.
     database: Optional. The name of the Autonomous Database. The database name
       must be unique in the tenancy. The name must begin with an alphabetic
       character and can contain a maximum of 30 alphanumeric characters.
@@ -55,8 +57,12 @@ class AutonomousDatabase(_messages.Message):
     network: Required. The name of the VPC network. Format:
       projects/{project}/locations/global/networks/{network} or
       projects/{project}/global/networks/{network} https://google.aip.dev/122
+    peerAutonomousDatabases: Output only. The peer autonomous database names
+      of the given autonomous database.
     properties: Optional. Various properties of the database.
-    zone: Optional. Zone where the DB resides.
+    sourceConfig: Optional. The Source ADB config for the standby autonomous
+      database. Source ADB field is configured while creating the Peer
+      Autonomous Database it must not be updated after creation
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -85,14 +91,16 @@ class AutonomousDatabase(_messages.Message):
 
   adminPassword = _messages.StringField(1)
   cidr = _messages.StringField(2)
-  database = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  entitlementId = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  properties = _messages.MessageField('AutonomousDatabaseProperties', 9)
-  zone = _messages.StringField(10)
+  createTime = _messages.StringField(3)
+  database = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  entitlementId = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  peerAutonomousDatabases = _messages.StringField(10, repeated=True)
+  properties = _messages.MessageField('AutonomousDatabaseProperties', 11)
+  sourceConfig = _messages.MessageField('SourceConfig', 12)
 
 
 class AutonomousDatabaseApex(_messages.Message):
@@ -118,6 +126,8 @@ class AutonomousDatabaseCharacterSet(_messages.Message):
       Autonomous Database.
 
   Fields:
+    characterSet: Output only. The character set name. This is the id part of
+      the resource name.
     characterSetType: Output only. An Oracle character set for Autonomous
       Database.
     name: Identifier. The name of the Autonomous Database Character Set
@@ -138,8 +148,9 @@ class AutonomousDatabaseCharacterSet(_messages.Message):
     DATABASE = 1
     NATIONAL = 2
 
-  characterSetType = _messages.EnumField('CharacterSetTypeValueValuesEnum', 1)
-  name = _messages.StringField(2)
+  characterSet = _messages.StringField(1)
+  characterSetType = _messages.EnumField('CharacterSetTypeValueValuesEnum', 2)
+  name = _messages.StringField(3)
 
 
 class AutonomousDatabaseConnectionStrings(_messages.Message):
@@ -206,7 +217,7 @@ class AutonomousDatabaseConnectionUrls(_messages.Message):
 
 
 class AutonomousDatabaseProperties(_messages.Message):
-  r"""Various properties of AutonomousDatabase.
+  r"""Various properties of AutonomousDatabase. Next Tag: 63
 
   Enums:
     DataSafeStateValueValuesEnum: Output only. State of the Data Safe
@@ -243,10 +254,9 @@ class AutonomousDatabaseProperties(_messages.Message):
       use for user and system data, in terabytes.
     allocatedStorageSizeTb: Output only. The amount of storage currently
       allocated for the database tables and billed for, rounded up.
-    allowlistedIps: Optional. The client IP access control list (ACL).
     apexDetails: Output only. Information about Oracle APEX Application
       Development.
-    arePrimaryWhitelistedIpsUsed: Output only. This field will be null if the
+    arePrimaryAllowlistedIpsUsed: Output only. This field will be null if the
       Autonomous Database is not Data Guard enabled or Access Control is
       disabled. Its value would be TRUE if Autonomous Database is Data Guard
       enabled and Access Control is enabled and if the Autonomous Database
@@ -258,6 +268,9 @@ class AutonomousDatabaseProperties(_messages.Message):
       Database OCID.
     availableUpgradeVersions: Output only. List of Oracle Database versions
       available for a database upgrade.
+    backupRetentionPeriodDays: Optional. The retention period in days for
+      automatic backups. The default is 60 days. The minimum value is 1 day
+      and the maximum value is 60 days.
     characterSet: Optional. The character set for the autonomous database. The
       default is AL32UTF8.
     computeCount: Optional. The number of compute servers for the autonomous
@@ -267,9 +280,9 @@ class AutonomousDatabaseProperties(_messages.Message):
     connectionUrls: Output only. Oracle Connection URLS.
     cpuCoreCount: Optional. The number of CPU cores to be made available to
       the database.
-    createTime: Output only. The date and time the Autonomous Database was
-      created.
     customerContacts: Optional. The list of customer contacts.
+    dataGuardRoleChangedTime: Output only. The date and time the Autonomous
+      Data Guard role was switched for the standby Autonomous Database.
     dataSafeState: Output only. State of the Data Safe registration for this
       Autonomous Database.
     dataStorageSizeTb: Optional. The quantity of data in the database, in
@@ -281,16 +294,15 @@ class AutonomousDatabaseProperties(_messages.Message):
     dbVersion: Optional. A valid Oracle Database version for Autonomous
       Database.
     dbWorkload: Required. The Autonomous Database workload type.
+    disasterRecoveryRoleChangedTime: Output only. The date and time the
+      Disaster Recovery role was switched for the standby Autonomous Database.
     failedDataRecoveryDuration: Output only. Indicates the number of seconds
       of data loss for a Data Guard failover.
-    isAccessControlEnabled: Optional. Indicates if the database-level access
-      control is enabled.
+    hostnamePrefix: Optional. Prefix for autonomous database host names.
     isAutoScalingEnabled: Optional. Indicates if auto scaling is enabled for
       the Autonomous Database CPU core count.
     isLocalDataGuardEnabled: Output only. Indicates whether the Autonomous
       Database has local (in-region) Data Guard enabled.
-    isMtlsConnectionRequired: Output only. Specifies if the Autonomous
-      Database requires mTLS connections.
     isStorageAutoScalingEnabled: Optional. Indicates if auto scaling is
       enabled for the Autonomous Database storage.
     licenseType: Required. License type of the autonomous database
@@ -308,8 +320,13 @@ class AutonomousDatabaseProperties(_messages.Message):
       enabled per ECPU.
     memoryTableGbs: Output only. The area assigned to In-Memory tables in
       Autonomous Database.
+    mtlsConnectionRequired: Optional. Specifies if the Autonomous Database
+      requires mTLS connections.
     nCharacterSet: Optional. The national character set for the autonomous
       database. The default is AL16UTF16.
+    nextLongTermBackupTime: Output only. The long term backup schedule of
+      Autonomous Database.
+    ociUrl: Output only. Deep link to the OCI console to view this resource.
     ocid: Output only. OCID of the autonomous database.
       https://docs.oracle.com/en-
       us/iaas/Content/General/Concepts/identifiers.htm#Oracle
@@ -337,6 +354,8 @@ class AutonomousDatabaseProperties(_messages.Message):
       Database.
     supportedCloneRegions: Output only. The list of regions that support the
       creation of an Autonomous Database clone.
+    totalAutoBackupStorageSizeGbs: Output only. The storage space consumed by
+      automatic backups of Autonomous Database in GBs.
     usedDataStorageSizeTbs: Output only. The storage space consumed by
       Autonomous Database in GBs.
     vaultId: Optional. The vault id of the Oracle Cloud Infrastructure.
@@ -594,29 +613,29 @@ class AutonomousDatabaseProperties(_messages.Message):
 
   actualUsedDataStorageSizeTb = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   allocatedStorageSizeTb = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  allowlistedIps = _messages.StringField(3, repeated=True)
-  apexDetails = _messages.MessageField('AutonomousDatabaseApex', 4)
-  arePrimaryWhitelistedIpsUsed = _messages.BooleanField(5)
-  autonomousContainerDatabaseId = _messages.StringField(6)
-  availableUpgradeVersions = _messages.StringField(7, repeated=True)
+  apexDetails = _messages.MessageField('AutonomousDatabaseApex', 3)
+  arePrimaryAllowlistedIpsUsed = _messages.BooleanField(4)
+  autonomousContainerDatabaseId = _messages.StringField(5)
+  availableUpgradeVersions = _messages.StringField(6, repeated=True)
+  backupRetentionPeriodDays = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   characterSet = _messages.StringField(8)
   computeCount = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
   connectionStrings = _messages.MessageField('AutonomousDatabaseConnectionStrings', 10)
   connectionUrls = _messages.MessageField('AutonomousDatabaseConnectionUrls', 11)
   cpuCoreCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  createTime = _messages.StringField(13)
-  customerContacts = _messages.MessageField('CustomerContact', 14, repeated=True)
+  customerContacts = _messages.MessageField('CustomerContact', 13, repeated=True)
+  dataGuardRoleChangedTime = _messages.StringField(14)
   dataSafeState = _messages.EnumField('DataSafeStateValueValuesEnum', 15)
   dataStorageSizeTb = _messages.FloatField(16, variant=_messages.Variant.FLOAT)
   databaseManagementState = _messages.EnumField('DatabaseManagementStateValueValuesEnum', 17)
   dbEdition = _messages.EnumField('DbEditionValueValuesEnum', 18)
   dbVersion = _messages.StringField(19)
   dbWorkload = _messages.EnumField('DbWorkloadValueValuesEnum', 20)
-  failedDataRecoveryDuration = _messages.StringField(21)
-  isAccessControlEnabled = _messages.BooleanField(22)
-  isAutoScalingEnabled = _messages.BooleanField(23)
-  isLocalDataGuardEnabled = _messages.BooleanField(24)
-  isMtlsConnectionRequired = _messages.BooleanField(25)
+  disasterRecoveryRoleChangedTime = _messages.StringField(21)
+  failedDataRecoveryDuration = _messages.StringField(22)
+  hostnamePrefix = _messages.StringField(23)
+  isAutoScalingEnabled = _messages.BooleanField(24)
+  isLocalDataGuardEnabled = _messages.BooleanField(25)
   isStorageAutoScalingEnabled = _messages.BooleanField(26)
   licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 27)
   lifecycleDetails = _messages.StringField(28)
@@ -626,25 +645,29 @@ class AutonomousDatabaseProperties(_messages.Message):
   maintenanceScheduleType = _messages.EnumField('MaintenanceScheduleTypeValueValuesEnum', 32)
   memoryPerOracleComputeUnitGbs = _messages.IntegerField(33, variant=_messages.Variant.INT32)
   memoryTableGbs = _messages.IntegerField(34, variant=_messages.Variant.INT32)
-  nCharacterSet = _messages.StringField(35)
-  ocid = _messages.StringField(36)
-  openMode = _messages.EnumField('OpenModeValueValuesEnum', 37)
-  operationsInsightsState = _messages.EnumField('OperationsInsightsStateValueValuesEnum', 38)
-  peerDbIds = _messages.StringField(39, repeated=True)
-  permissionLevel = _messages.EnumField('PermissionLevelValueValuesEnum', 40)
-  privateEndpoint = _messages.StringField(41)
-  privateEndpointIp = _messages.StringField(42)
-  privateEndpointLabel = _messages.StringField(43)
-  refreshableMode = _messages.EnumField('RefreshableModeValueValuesEnum', 44)
-  refreshableState = _messages.EnumField('RefreshableStateValueValuesEnum', 45)
-  role = _messages.EnumField('RoleValueValuesEnum', 46)
-  scheduledOperations = _messages.MessageField('ScheduledOperationDetails', 47)
-  secretId = _messages.StringField(48)
-  sqlWebDeveloperUrl = _messages.StringField(49)
-  state = _messages.EnumField('StateValueValuesEnum', 50)
-  supportedCloneRegions = _messages.StringField(51, repeated=True)
-  usedDataStorageSizeTbs = _messages.IntegerField(52, variant=_messages.Variant.INT32)
-  vaultId = _messages.StringField(53)
+  mtlsConnectionRequired = _messages.BooleanField(35)
+  nCharacterSet = _messages.StringField(36)
+  nextLongTermBackupTime = _messages.StringField(37)
+  ociUrl = _messages.StringField(38)
+  ocid = _messages.StringField(39)
+  openMode = _messages.EnumField('OpenModeValueValuesEnum', 40)
+  operationsInsightsState = _messages.EnumField('OperationsInsightsStateValueValuesEnum', 41)
+  peerDbIds = _messages.StringField(42, repeated=True)
+  permissionLevel = _messages.EnumField('PermissionLevelValueValuesEnum', 43)
+  privateEndpoint = _messages.StringField(44)
+  privateEndpointIp = _messages.StringField(45)
+  privateEndpointLabel = _messages.StringField(46)
+  refreshableMode = _messages.EnumField('RefreshableModeValueValuesEnum', 47)
+  refreshableState = _messages.EnumField('RefreshableStateValueValuesEnum', 48)
+  role = _messages.EnumField('RoleValueValuesEnum', 49)
+  scheduledOperations = _messages.MessageField('ScheduledOperationDetails', 50)
+  secretId = _messages.StringField(51)
+  sqlWebDeveloperUrl = _messages.StringField(52)
+  state = _messages.EnumField('StateValueValuesEnum', 53)
+  supportedCloneRegions = _messages.StringField(54, repeated=True)
+  totalAutoBackupStorageSizeGbs = _messages.FloatField(55, variant=_messages.Variant.FLOAT)
+  usedDataStorageSizeTbs = _messages.IntegerField(56, variant=_messages.Variant.INT32)
+  vaultId = _messages.StringField(57)
 
 
 class AutonomousDatabaseStandbySummary(_messages.Message):
@@ -809,6 +832,8 @@ class CloudExadataInfrastructure(_messages.Message):
     LabelsValue: Optional. labels or tags associated with the resource.
 
   Fields:
+    createTime: Output only. The date and time that the Exadata Infrastructure
+      was created.
     displayName: Optional. User friendly name for this resource.
     entitlementId: Output only. Entitlement ID of the private offer against
       which this infrastructure resource is provisioned.
@@ -844,12 +869,13 @@ class CloudExadataInfrastructure(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  displayName = _messages.StringField(1)
-  entitlementId = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  properties = _messages.MessageField('CloudExadataInfrastructureProperties', 5)
-  zone = _messages.StringField(6)
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  entitlementId = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  properties = _messages.MessageField('CloudExadataInfrastructureProperties', 6)
+  zone = _messages.StringField(7)
 
 
 class CloudExadataInfrastructureProperties(_messages.Message):
@@ -1022,8 +1048,7 @@ class CloudVmCluster(_messages.Message):
 
 
 class CloudVmClusterProperties(_messages.Message):
-  r"""Various properties and settings associated with Exadata VM cluster. Next
-  Tag: 37
+  r"""Various properties and settings associated with Exadata VM cluster.
 
   Enums:
     DiskRedundancyValueValuesEnum: Optional. The type of redundancy
@@ -2108,7 +2133,9 @@ class OracledatabaseProjectsLocationsAutonomousDatabasesCreateRequest(_messages.
       request body.
     autonomousDatabaseId: Required. The ID to use for the AutonomousDatabase,
       which will become the final component of the resource name. This value
-      should be 4-63 characters, and valid characters are /a-z-/.
+      is restricted to letters, numbers, and hyphen, with the first character
+      a letter, the last a letter or a number, and a 63 character maximum
+      (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
     parent: Required. Value for parent. Format:
       projects/{project}/locations/{location}
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -2226,8 +2253,9 @@ class OracledatabaseProjectsLocationsCloudExadataInfrastructuresCreateRequest(_m
       passed as the request body.
     cloudExadataInfrastructureId: Required. The ID to use for the
       CloudExadataInfrastructure, which will become the final component of the
-      resource name. This value should be 4-63 characters, and valid
-      characters are /a-z-/.
+      resource name. This value is restricted to letters, numbers, and hyphen,
+      with the first character a letter, the last a letter or a number, and a
+      63 character maximum (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
     parent: Required. Value for parent. Format:
       projects/{project}/locations/{location}
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -2382,8 +2410,10 @@ class OracledatabaseProjectsLocationsCloudVmClustersCreateRequest(_messages.Mess
     cloudVmCluster: A CloudVmCluster resource to be passed as the request
       body.
     cloudVmClusterId: Required. The ID to use for the vmCluster, which will
-      become the final component of the resource name. This value should be
-      4-63 characters, and valid characters are /a-z-/.
+      become the final component of the resource name. This value is
+      restricted to letters, numbers, and hyphen, with the first character a
+      letter, the last a letter or a number, and a 63 character maximum
+      (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
     parent: Required. Value for parent. Format:
       projects/{project}/locations/{location}
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -2632,8 +2662,6 @@ class OracledatabaseProjectsLocationsListRequest(_messages.Message):
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
-    includeUnrevealedLocations: If true, the returned list will include
-      locations which are not yet revealed.
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
       selects a default.
@@ -2642,10 +2670,9 @@ class OracledatabaseProjectsLocationsListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  includeUnrevealedLocations = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class OracledatabaseProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -2735,6 +2762,25 @@ class ScheduledOperationDetails(_messages.Message):
   dayOfWeek = _messages.EnumField('DayOfWeekValueValuesEnum', 1)
   scheduledStartTime = _messages.StringField(2)
   scheduledStopTime = _messages.StringField(3)
+
+
+class SourceConfig(_messages.Message):
+  r"""The Source ADB config for the standby autonomous database.
+
+  Fields:
+    automaticBackupsReplicationEnabled: Optional. Specifies if replication of
+      automatic backups is enabled in the data guard. This field should only
+      be used with autonomous_database field while creating a Data Guard.
+    autonomousDatabase: Optional. Primary Autonomous database name while
+      creating an autonomous database with a source. This field should only be
+      used when a Peer Autonomous Database is created Format: projects/{projec
+      t}/locations/{region}/autonomousDatabases/{autonomous_database} This
+      field should be validated such that the Peer Autonomous Database does
+      not create a cycle with its Source Autonomous Database.
+  """
+
+  automaticBackupsReplicationEnabled = _messages.BooleanField(1)
+  autonomousDatabase = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

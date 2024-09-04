@@ -1490,7 +1490,7 @@ def GetNetworkArg():
 
 
 def GetPublicEndpointEnabledArg():
-  """Add arguments for pubic endpoint enabled."""
+  """Add arguments for public endpoint enabled."""
   return base.Argument(
       '--public-endpoint-enabled',
       action='store_true',
