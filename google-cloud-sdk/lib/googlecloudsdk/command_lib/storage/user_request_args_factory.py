@@ -108,6 +108,7 @@ class _UserBucketArgs(_UserResourceArgs):
       enable_autoclass=None,
       enable_per_object_retention=None,
       enable_hierarchical_namespace=None,
+      ip_filter_file_path=None,
       labels_file_path=None,
       labels_to_append=None,
       labels_to_remove=None,
@@ -144,6 +145,7 @@ class _UserBucketArgs(_UserResourceArgs):
     self.enable_autoclass = enable_autoclass
     self.enable_per_object_retention = enable_per_object_retention
     self.enable_hierarchical_namespace = enable_hierarchical_namespace
+    self.ip_filter_file_path = ip_filter_file_path
     self.labels_file_path = labels_file_path
     self.labels_to_append = labels_to_append
     self.labels_to_remove = labels_to_remove
@@ -185,6 +187,7 @@ class _UserBucketArgs(_UserResourceArgs):
         == other.enable_per_object_retention
         and self.enable_hierarchical_namespace
         == other.enable_hierarchical_namespace
+        and self.ip_filter_file_path == other.ip_filter_file_path
         and self.labels_file_path == other.labels_file_path
         and self.labels_to_append == other.labels_to_append
         and self.labels_to_remove == other.labels_to_remove
@@ -358,6 +361,9 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           args, 'clear_default_encryption_key', 'default_encryption_key')
       default_storage_class = _get_value_or_clear_from_flag(
           args, 'clear_default_storage_class', 'default_storage_class')
+      ip_filter_file_path = _get_value_or_clear_from_flag(
+          args, 'clear_ip_filter', 'ip_filter_file'
+      )
       labels_file_path = _get_value_or_clear_from_flag(args, 'clear_labels',
                                                        'labels_file')
       lifecycle_file_path = _get_value_or_clear_from_flag(
@@ -403,6 +409,7 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           enable_hierarchical_namespace=getattr(
               args, 'enable_hierarchical_namespace', None
           ),
+          ip_filter_file_path=ip_filter_file_path,
           labels_file_path=labels_file_path,
           labels_to_append=getattr(args, 'update_labels', None),
           labels_to_remove=getattr(args, 'remove_labels', None),

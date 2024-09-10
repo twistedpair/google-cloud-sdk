@@ -160,6 +160,7 @@ class GcsBucketResource(resource_reference.BucketResource):
       default_kms_key=None,
       default_storage_class=None,
       etag=None,
+      ip_filter_config=None,
       labels=None,
       lifecycle_config=None,
       location=None,
@@ -206,6 +207,7 @@ class GcsBucketResource(resource_reference.BucketResource):
     self.custom_placement_config = custom_placement_config
     self.default_acl = default_acl
     self.default_kms_key = default_kms_key
+    self.ip_filter_config = ip_filter_config
     self.location_type = location_type
     self.per_object_retention = per_object_retention
     self.project_number = project_number
@@ -240,6 +242,7 @@ class GcsBucketResource(resource_reference.BucketResource):
         and self.custom_placement_config == other.custom_placement_config
         and self.default_acl == other.default_acl
         and self.default_kms_key == other.default_kms_key
+        and self.ip_filter_config == other.ip_filter_config
         and self.location_type == other.location_type
         and self.per_object_retention == other.per_object_retention
         and self.project_number == other.project_number

@@ -44,6 +44,8 @@ UNREACHABLE_INSTANCE_TIMEOUT = datetime.timedelta(seconds=20)
 _SPANNER_API_NAME = 'spanner'
 _SPANNER_API_VERSION = 'v1'
 
+_FIELD_MASK_AUTOSCALING_CONFIG = 'autoscalingConfig'
+
 
 def MaybeGetAutoscalingOverride(msgs, asymmetric_autoscaling_option):
   """Returns AutoscalingConfigOverrides object if any override is found in the parsed command-line flag key-value pairs, otherwise returns None."""
@@ -131,12 +133,11 @@ def PatchAsymmetricAutoscalingOptions(
     msgs, instance_obj, current_instance, asym_options_patch
 ):
   option_by_location = {}
-  for (
-      existing_option
-  ) in current_instance.autoscalingConfig.asymmetricAutoscalingOptions:
-    option_by_location[existing_option.replicaSelection.location] = (
-        existing_option
-    )
+  if config := current_instance.autoscalingConfig:
+    for existing_option in config.asymmetricAutoscalingOptions:
+      option_by_location[existing_option.replicaSelection.location] = (
+          existing_option
+      )
 
   for patch_option in asym_options_patch:
     location = patch_option.replicaSelection.location
@@ -369,7 +370,7 @@ def Patch(
       (autoscaling_min_nodes and autoscaling_max_nodes)
       or (autoscaling_min_processing_units and autoscaling_max_processing_units)
   ) and (autoscaling_high_priority_cpu_target and autoscaling_storage_target):
-    fields.append('autoscalingConfig')
+    fields.append(_FIELD_MASK_AUTOSCALING_CONFIG)
   else:
     if autoscaling_min_nodes:
       fields.append('autoscalingConfig.autoscalingLimits.minNodes')
@@ -417,7 +418,8 @@ def Patch(
     )
 
   if asymmetric_autoscaling_options is not None:
-    fields.append('autoscalingConfig.asymmetricAutoscalingOptions')
+    if _FIELD_MASK_AUTOSCALING_CONFIG not in fields:
+      fields.append('autoscalingConfig.asymmetricAutoscalingOptions')
     current_instance = Get(instance)
     asym_options_patch = []
     # Create AsymmetricAutoscalingOption objects from the flag value (key-value
@@ -438,7 +440,8 @@ def Patch(
     )
 
   if clear_asymmetric_autoscaling_options is not None:
-    fields.append('autoscalingConfig.asymmetricAutoscalingOptions')
+    if _FIELD_MASK_AUTOSCALING_CONFIG not in fields:
+      fields.append('autoscalingConfig.asymmetricAutoscalingOptions')
     current_instance = Get(instance)
     locations_to_remove = set(clear_asymmetric_autoscaling_options)
     if instance_obj.autoscalingConfig is None:

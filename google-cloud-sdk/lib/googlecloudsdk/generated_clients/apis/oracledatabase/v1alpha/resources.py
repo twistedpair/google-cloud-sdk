@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://oracledatabase.googleapis.com/v1alpha/'
-DOCS_URL = 'https://cloud.google.com/blog/products/databases/accelerating-cloud-transformation-with-google-cloud-and-oracle'
+DOCS_URL = 'https://cloud.google.com/oracle/database/docs'
 
 
 class Collections(enum.Enum):
@@ -39,6 +39,14 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}',
       },
       ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_AUTONOMOUSDATABASEBACKUPS = (
+      'projects.locations.autonomousDatabaseBackups',
+      'projects/{projectsId}/locations/{locationsId}/'
+      'autonomousDatabaseBackups/{autonomousDatabaseBackupsId}',
+      {},
+      ['projectsId', 'locationsId', 'autonomousDatabaseBackupsId'],
       True
   )
   PROJECTS_LOCATIONS_AUTONOMOUSDATABASECHARACTERSETS = (
@@ -162,6 +170,13 @@ class Collections(enum.Enum):
               '{operationsId}',
       },
       ['name'],
+      True
+  )
+  PROJECTS_NETWORKS = (
+      'projects.networks',
+      'projects/{projectsId}/global/networks/{networksId}',
+      {},
+      ['projectsId', 'networksId'],
       True
   )
 

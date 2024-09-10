@@ -4274,6 +4274,34 @@ def GetAndValidatePlatform(args, release_track, product):
   return platform
 
 
+def ValidateManagedPlatform(args, release_track, product):
+  """Validates the platform being 'managed' only and specified flags.
+
+  A given command only supports 'managed' platform, but not every flag is
+  supported by every platform. This method validates that platform set for the
+  given command is 'managed' and all specified flags
+  are supported by the 'managed' platform.
+
+  Args:
+    args: Namespace, The args namespace.
+    release_track: base.ReleaseTrack, calliope release track.
+    product: Product, which product the command was executed for (e.g. Run or
+      Events).
+
+  Raises:
+    ArgumentError if the platform type is not 'managed'.
+  """
+  platform = platforms.GetPlatform()
+  if platform != platforms.PLATFORM_MANAGED:
+    raise serverless_exceptions.ArgumentError(
+        'Invalid target platform specified: [{}].\n'
+        'This command is only supported for platform "managed".\n'.format(
+            platform
+        )
+    )
+  VerifyManagedFlags(args, release_track, product)
+
+
 def AddTaskFilterFlags(parser):
   """Add filter flags for task list."""
   parser.add_argument(

@@ -225,11 +225,11 @@ def _AddDefaultPort(parser):
 def _AddProducerPort(parser):
   """Adds psc producer port argument for creating network endpoint groups."""
   help_text = """\
-    The psc producer port to use when consumer PSC NEG connects to a producer.
-
-    If this flag isn't specified for a PSC NEG with endpoint type
-    `private-service-connect`, then PSC NEG will be connected to a first port
-    in the available pcs producer port range.
+    The producer port to use when a consumer PSC NEG connects to a producer's
+    internal network load balancer. If this flag isn't specified for a NEG with
+    endpoint type `private-service-connect`, the PSC NEG will connect to port
+    443 or the first available port in the PSC producer port range, or to port 1
+    if the PSC producer's forwarding rule ports flag is set to all-ports.
 
     This flag is not supported for NEGs with endpoint type other than
     `private-service-connect`.

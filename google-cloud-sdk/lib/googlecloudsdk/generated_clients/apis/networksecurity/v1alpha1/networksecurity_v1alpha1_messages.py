@@ -1615,11 +1615,20 @@ class InterceptDeployment(_messages.Message):
       ACTIVE: Ready.
       CREATING: Being created.
       DELETING: Being deleted.
+      OUT_OF_SYNC: The underlying data plane is out of sync with the
+        deployment. The deployment is not expected to be usable. This state
+        can result in undefined behavior.
+      DELETE_FAILED: An attempt to delete the deployment has failed. This is a
+        terminal state and the deployment is not expected to be usable as some
+        of its resources have been deleted. The only permitted operation is to
+        retry deleting the deployment.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     CREATING = 2
     DELETING = 3
+    OUT_OF_SYNC = 4
+    DELETE_FAILED = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1730,13 +1739,10 @@ class InterceptDeploymentGroupConnectedEndpointGroup(_messages.Message):
   r"""An endpoint group connected to this deployment group.
 
   Fields:
-    associations: Output only. The list of Intercept Endpoint Group
-      Associations.
     name: Output only. A connected intercept endpoint group.
   """
 
-  associations = _messages.StringField(1, repeated=True)
-  name = _messages.StringField(2)
+  name = _messages.StringField(1)
 
 
 class InterceptEndpointGroup(_messages.Message):
@@ -1767,16 +1773,23 @@ class InterceptEndpointGroup(_messages.Message):
     Values:
       STATE_UNSPECIFIED: Not set.
       ACTIVE: Ready.
-      REJECTED: The deployment group has been deleted and intercept is
-        disabled.
+      CLOSED: The deployment group has been deleted and intercept is disabled.
       CREATING: Being created.
       DELETING: Being deleted.
+      OUT_OF_SYNC: The underlying data plane is out of sync with the endpoint
+        group. Some associations might not be usable.
+      DELETE_FAILED: An attempt to delete the endpoint group has failed. This
+        is a terminal state and the endpoint group is not expected to be
+        usable as some of its resources have been deleted. The only permitted
+        operation is to retry deleting the endpoint group.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
-    REJECTED = 2
+    CLOSED = 2
     CREATING = 3
     DELETING = 4
+    OUT_OF_SYNC = 5
+    DELETE_FAILED = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1845,16 +1858,25 @@ class InterceptEndpointGroupAssociation(_messages.Message):
     Values:
       STATE_UNSPECIFIED: Not set.
       ACTIVE: Ready.
-      INACTIVE: The resource is partially not ready, some associations might
-        not be in a valid state.
       CREATING: Being created.
       DELETING: Being deleted.
+      CLOSED: Intercept is disabled due to an operation on another resource.
+      OUT_OF_SYNC: The underlying data plane is out of sync with the
+        association. The association is not expected to be usable. This state
+        can result in undefined behavior. See the `locations_details` field
+        for more details.
+      DELETE_FAILED: An attempt to delete the association has failed. This is
+        a terminal state and the association is not expected to be usable as
+        some of its resources have been deleted. The only permitted operation
+        is to retry deleting the association.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
-    INACTIVE = 2
-    CREATING = 3
-    DELETING = 4
+    CREATING = 2
+    DELETING = 3
+    CLOSED = 4
+    OUT_OF_SYNC = 5
+    DELETE_FAILED = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1892,14 +1914,13 @@ class InterceptEndpointGroupAssociation(_messages.Message):
 
 
 class InterceptEndpointGroupAssociationLocationDetails(_messages.Message):
-  r"""Details about the association status in a specific location.
+  r"""Details about the association status in a specific cloud location.
 
   Enums:
     StateValueValuesEnum: Output only. The association state in this location.
 
   Fields:
-    location: Output only. The location.
-    reason: Output only. The reason for an invalid state, if one is available.
+    location: Output only. The cloud location.
     state: Output only. The association state in this location.
   """
 
@@ -1909,15 +1930,15 @@ class InterceptEndpointGroupAssociationLocationDetails(_messages.Message):
     Values:
       STATE_UNSPECIFIED: Not set.
       ACTIVE: Ready.
-      FAILED: Failed to actuate the association.
+      OUT_OF_SYNC: The data plane is out of sync with the association in this
+        location.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
-    FAILED = 2
+    OUT_OF_SYNC = 2
 
   location = _messages.StringField(1)
-  reason = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class ListAddressGroupReferencesResponse(_messages.Message):
@@ -2758,6 +2779,10 @@ class MirroringEndpointGroup(_messages.Message):
       DELETING: Being deleted.
       OUT_OF_SYNC: The underlying data plane is out of sync with the endpoint
         group. Some associations might not be usable.
+      DELETE_FAILED: An attempt to delete the endpoint group has failed. This
+        is a terminal state and the endpoint group is not expected to be
+        usable as some of its resources have been deleted. The only permitted
+        operation is to retry deleting the endpoint group.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -2765,6 +2790,7 @@ class MirroringEndpointGroup(_messages.Message):
     CREATING = 3
     DELETING = 4
     OUT_OF_SYNC = 5
+    DELETE_FAILED = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -7181,7 +7207,10 @@ class PartnerSSERealm(_messages.Message):
       instead.
     sseNetwork: Output only. [Output only] CDEN-owned network to be peered
       with partner_network
-    sseProject: Output only. [Output only] CDEN owned project owning sse_vpc
+    sseProject: Output only. [Output only] CDEN owned project owning sse_vpc.
+      It stores project id in the TTM flow, but project number in the NCCGW
+      flow. This field will be deprecated after the partner migrates from
+      using sse_project to using sse_project_number.
     sseProjectNumber: Output only. [Output only] CDEN owned project owning
       sse_vpc
     sseVpc: Output only. [Output only] CDEN owned VPC to be peered with

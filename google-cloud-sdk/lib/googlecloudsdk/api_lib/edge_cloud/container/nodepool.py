@@ -16,6 +16,7 @@
 
 from googlecloudsdk.api_lib.edge_cloud.container import util
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import resources
@@ -96,6 +97,8 @@ def GetNodePoolUpdateRequest(args, release_track, existing_node_pool):
   PopulateNodePoolUpdateMessage(
       req, messages, args, update_mask_pieces, existing_node_pool
   )
+  if release_track == base.ReleaseTrack.ALPHA:
+    PopulateNodePoolUpdateAlphaMessage(req, messages, update_mask_pieces, args)
   req.updateMask = ','.join(update_mask_pieces)
   return req
 
@@ -146,6 +149,34 @@ def PopulateNodePoolCreateAlphaMessage(req, messages, args):
     if not req.nodePool.nodeConfig:
       req.nodePool.nodeConfig = messages.NodeConfig()
     req.nodePool.nodeConfig.nodeStorageSchema = args.node_storage_schema
+
+
+def PopulateNodePoolUpdateAlphaMessage(req, messages, update_mask_pieces, args):
+  """Filled the Alpha node pool message from command arguments.
+
+  Args:
+    req: create node pool request message.
+    messages: message module of edgecontainer node pool.
+    update_mask_pieces: update masks.
+    args: command line arguments.
+  """
+  if flags.FlagIsExplicitlySet(
+      args, 'use_google_managed_key'
+  ) and flags.FlagIsExplicitlySet(args, 'local_disk_kms_key'):
+    raise exceptions.InvalidArgumentException(
+        '--use-google-managed-key, --local-disk-kms-key',
+        'cannot be specified at the same time',
+    )
+  if flags.FlagIsExplicitlySet(args, 'use_google_managed_key'):
+    update_mask_pieces.append('localDiskEncryption')
+    req.nodePool.localDiskEncryption = messages.LocalDiskEncryption()
+    req.nodePool.localDiskEncryption.kmsKey = ''
+    return
+  if flags.FlagIsExplicitlySet(args, 'local_disk_kms_key'):
+    update_mask_pieces.append('localDiskEncryption')
+    req.nodePool.localDiskEncryption = messages.LocalDiskEncryption()
+    req.nodePool.localDiskEncryption.kmsKey = args.local_disk_kms_key
+    return
 
 
 def PopulateNodePoolUpdateMessage(

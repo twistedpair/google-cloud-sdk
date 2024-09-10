@@ -30,6 +30,7 @@ from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
+from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_util
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_task_factory
@@ -73,25 +74,128 @@ def _expand_destination_wildcards(destination_string, folders_only=False):
   )
 
   if destination_iterator.is_plural():
-    raise errors.InvalidUrlError(
-        'Destination ({}) must match exactly one URL.'.format(
-            destination_string
+    # If the result is plural, we are bound to throw an error.
+    # But we also should check if this is a case of duplicate results due to a
+    # placeholder folder which was created through the UI.
+    # If it is not the case, we continue with raising the Error and not moving
+    # further with the method.
+    # If it is the case of duplicates, we do not raise the Error, and rather
+    # continue with method execution as planned.
+    resolved_resource = _resolve_duplicate_ui_folder_destination(
+        destination_string, destination_iterator
+    )
+    if not resolved_resource:
+      raise errors.InvalidUrlError(
+          f'Destination ({destination_string}) must match exactly one URL.'
+      )
+    destination_iterator = (
+        plurality_checkable_iterator.PluralityCheckableIterator(
+            [resolved_resource]
         )
     )
 
   contains_unexpanded_wildcard = (
-      destination_iterator.is_empty() and
-      wildcard_iterator.contains_wildcard(destination_string))
+      destination_iterator.is_empty()
+      and wildcard_iterator.contains_wildcard(destination_string)
+  )
 
   if contains_unexpanded_wildcard:
     raise errors.InvalidUrlError(
-        'Destination ({}) contains an unexpected wildcard.'.format(
-            destination_string
-        )
+        f'Destination ({destination_string}) contains an unexpected wildcard.'
     )
 
   if not destination_iterator.is_empty():
     return next(destination_iterator)
+
+
+def _resolve_duplicate_ui_folder_destination(
+    destination_string, destination_iterator
+):
+  """Resolves duplicate resource results for placeholder folders created through the UI.
+
+  In the scenario where a user creates a placeholder folder
+  (which is actually an object ending with a '/' rather than a true folder as in
+  the case of HNS buckets), the CLI, when resolving for destination gets
+  two results as part of the ListObjects API call. One of these is of type
+  GCSObjectResource, while the other is PrefixResource. Technically both results
+  are correct and expected. But in our logic, we end up interpretting this case
+  as multiple destinations which we do not support.
+
+  This method determines if the given results come under the above scenario.
+
+  Args:
+    destination_string (str): A string representing the destination url.
+    destination_iterator (PluralityCheckableIterator): Contains results from the
+      destination search through the wildcard iterator.
+
+  Returns:
+    PrefixResource out of the two results of duplicate resources due to UI
+    folder creation, None otherwise.
+  """
+  # The first condition would be to make sure that the destination string
+  # is of the type CloudURL and a GCS schema, because this case does not apply
+  # to any other type of destination.
+  destination_storage_url = storage_url.storage_url_from_string(
+      destination_string
+  )
+  if (
+      not isinstance(destination_storage_url, storage_url.CloudUrl)
+      or destination_storage_url.scheme != storage_url.ProviderPrefix.GCS
+  ):
+    return None
+
+  destination_resource_1 = next(destination_iterator)
+  destination_resource_2 = next(destination_iterator)
+
+  # In case of a Folder created through the UI, we expect two resources.
+  # We never expect more than that to exist. So if we do encounter that case,
+  # then this is not the scenario of a UI created folder.
+  if not destination_iterator.is_empty():
+    return None
+
+  # Types of both resources cannot be the same since we expect a mix of
+  # GCSResourceReference and PrefixResource to be returned
+  # from the WildcardIterator in the case of Folders which are a part of the UI.
+  if isinstance(destination_resource_1, type(destination_resource_2)):
+    return None
+
+  # At least one of the resource has to be of type GcsObjectResource.
+  if not (
+      isinstance(
+          destination_resource_1, gcs_resource_reference.GcsObjectResource
+      )
+      or isinstance(
+          destination_resource_2, gcs_resource_reference.GcsObjectResource
+      )
+  ):
+    return None
+
+  # Once we have determined that at least one of the resource is of type
+  # GcsObjectResource, we need to ensure that one of them is PrefixResource.
+  # In the case where we have two GcsObjectResource or one of them is not of
+  # type PrefixResource, we will return False as this is not a UI created folder
+  # case for sure.
+  if not (
+      isinstance(destination_resource_1, resource_reference.PrefixResource)
+      or isinstance(destination_resource_2, resource_reference.PrefixResource)
+  ):
+    return None
+
+  if (
+      destination_resource_1.storage_url.versionless_url_string.endswith('/')
+      and destination_resource_2.storage_url.versionless_url_string.endswith(
+          '/'
+      )
+  ) and (
+      destination_resource_1.storage_url.versionless_url_string
+      == destination_resource_2.storage_url.versionless_url_string
+  ):
+    return (
+        destination_resource_1
+        if isinstance(destination_resource_1, resource_reference.PrefixResource)
+        else destination_resource_2
+    )
+  return None
 
 
 def _get_raw_destination(destination_string, folders_only=False):

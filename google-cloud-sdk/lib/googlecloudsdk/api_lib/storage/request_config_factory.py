@@ -46,6 +46,7 @@ S3_RESOURCE_ERROR_FIELDS = {
     'default_object_acl_file': 'Setting Default Object ACL',
     'enable_autoclass': 'Enabling Autoclass',
     'enable_hierarchical_namespace': 'Enabling Hierarchical Namespace',
+    'ip_filter_file_path': 'Setting IP Filter',
     'predefined_default_object_acl': 'Setting Predefined Default ACL',
     'public_access_prevention': 'Public Access Prevention',
     'recovery_point_objective': 'Setting Recovery Point Objective',
@@ -230,6 +231,7 @@ class _GcsBucketConfig(_BucketConfig):
       enable_autoclass=None,
       enable_per_object_retention=None,
       enable_hierarchical_namespace=None,
+      ip_filter_file_path=None,
       labels_file_path=None,
       labels_to_append=None,
       labels_to_remove=None,
@@ -249,12 +251,23 @@ class _GcsBucketConfig(_BucketConfig):
       web_error_page=None,
       web_main_page_suffix=None,
   ):
-    super(_GcsBucketConfig,
-          self).__init__(acl_file_path, acl_grants_to_add, acl_grants_to_remove,
-                         cors_file_path, labels_file_path, labels_to_append,
-                         labels_to_remove, lifecycle_file_path, location,
-                         log_bucket, log_object_prefix, requester_pays,
-                         versioning, web_error_page, web_main_page_suffix)
+    super(_GcsBucketConfig, self).__init__(
+        acl_file_path,
+        acl_grants_to_add,
+        acl_grants_to_remove,
+        cors_file_path,
+        labels_file_path,
+        labels_to_append,
+        labels_to_remove,
+        lifecycle_file_path,
+        location,
+        log_bucket,
+        log_object_prefix,
+        requester_pays,
+        versioning,
+        web_error_page,
+        web_main_page_suffix,
+    )
     self.autoclass_terminal_storage_class = autoclass_terminal_storage_class
     self.default_encryption_key = default_encryption_key
     self.default_event_based_hold = default_event_based_hold
@@ -267,6 +280,7 @@ class _GcsBucketConfig(_BucketConfig):
     self.enable_autoclass = enable_autoclass
     self.enable_per_object_retention = enable_per_object_retention
     self.enable_hierarchical_namespace = enable_hierarchical_namespace
+    self.ip_filter_file_path = ip_filter_file_path
     self.placement = placement
     self.public_access_prevention = public_access_prevention
     self.recovery_point_objective = recovery_point_objective
@@ -295,6 +309,7 @@ class _GcsBucketConfig(_BucketConfig):
         == other.enable_per_object_retention
         and self.enable_hierarchical_namespace
         == other.enable_hierarchical_namespace
+        and self.ip_filter_file_path == other.ip_filter_file_path
         and self.placement == other.placement
         and self.public_access_prevention == other.public_access_prevention
         and self.recovery_point_objective == other.recovery_point_objective
@@ -664,6 +679,9 @@ def _get_request_config_resource_args(url,
           )
           new_resource_args.enable_hierarchical_namespace = (
               user_resource_args.enable_hierarchical_namespace
+          )
+          new_resource_args.ip_filter_file_path = (
+              user_resource_args.ip_filter_file_path
           )
           new_resource_args.placement = user_resource_args.placement
           new_resource_args.public_access_prevention = (

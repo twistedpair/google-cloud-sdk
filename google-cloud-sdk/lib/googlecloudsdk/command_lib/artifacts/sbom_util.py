@@ -899,7 +899,6 @@ def ExportSbom(args):
     raise ar_exceptions.InvalidInputValueError(
         '--uri is required.',
     )
-
   uri = _RemovePrefix(args.uri, 'https://')
   if docker_util.IsARDockerImage(uri):
     artifact = _GetARDockerImage(uri)
@@ -919,12 +918,12 @@ def ExportSbom(args):
     raise ar_exceptions.InvalidInputValueError(
         '{} is not an Artifact Registry image.'.format(uri)
     )
-
   project = util.GetProject(args)
   if artifact.project:
     project = artifact.project
+  parent = util.GetParent(project, args.location)
   resp = ca_requests.ExportSbomV1beta1(
-      project, 'https://{}'.format(artifact.resource_uri)
+      parent, 'https://{}'.format(artifact.resource_uri)
   )
   log.status.Print(
       'Exporting the SBOM file for resource {}. Discovery occurrence ID: {}'

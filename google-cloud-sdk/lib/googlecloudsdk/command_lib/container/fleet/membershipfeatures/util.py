@@ -17,20 +17,6 @@
 from googlecloudsdk.calliope import base
 
 
-MEMBERSHIP_FEATURE_PROJECT_ALLOWLIST = (
-    'yufans-test',
-    'membershipfeature-project',
-    'membershipfeature-project-number',
-    'poco-mf-test-project',
-    'poco-mf-test-project-number',
-    'cs-mf-test-project',
-    'cs-mf-test-project-number',
-)
-
-
-def UseMembershipFeatureV2(project, release_track):
+def UseMembershipFeatureV2(release_track):
   """Returns whether to use MembershipFeature v2 API."""
-  return (
-      release_track is base.ReleaseTrack.ALPHA
-      and project in MEMBERSHIP_FEATURE_PROJECT_ALLOWLIST
-  )
+  return release_track is base.ReleaseTrack.ALPHA

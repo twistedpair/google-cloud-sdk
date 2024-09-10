@@ -1782,10 +1782,23 @@ class CsvExportOptions(_messages.Message):
   query to get the data that needs to be exported.
 
   Fields:
+    escapeCharacter: Optional. Specifies the character that should appear
+      before a data character that needs to be escaped. The default is double-
+      quote. The value of this argument has to be a character in Hex ASCII
+      Code.
+    fieldDelimiter: Optional. Specifies the character that separates columns
+      within each row (line) of the file. The default is comma. The value of
+      this argument has to be a character in Hex ASCII Code.
+    quoteCharacter: Optional. Specifies the quoting character to be used when
+      a data value is quoted. The default is double-quote. The value of this
+      argument has to be a character in Hex ASCII Code.
     selectQuery: Required. The select_query used to extract the data.
   """
 
-  selectQuery = _messages.StringField(1)
+  escapeCharacter = _messages.StringField(1)
+  fieldDelimiter = _messages.StringField(2)
+  quoteCharacter = _messages.StringField(3)
+  selectQuery = _messages.StringField(4)
 
 
 class DenyMaintenancePeriod(_messages.Message):
@@ -1869,16 +1882,20 @@ class ExportClusterRequest(_messages.Message):
   r"""Export cluster request.
 
   Fields:
-    csvExportOptions: Required. Options for exporting data in CSV format.
+    csvExportOptions: Options for exporting data in CSV format. Required field
+      to be set for CSV file type.
     database: Required. Name of the database where the query will be executed.
       Note - Value provided should be the same as expected from `SELECT
       current_database();` and NOT as a resource reference.
     gcsDestination: Required. Option to export data to cloud storage.
+    sqlExportOptions: Options for exporting data in SQL format. Required field
+      to be set for SQL file type.
   """
 
   csvExportOptions = _messages.MessageField('CsvExportOptions', 1)
   database = _messages.StringField(2)
   gcsDestination = _messages.MessageField('GcsDestination', 3)
+  sqlExportOptions = _messages.MessageField('SqlExportOptions', 4)
 
 
 class FailoverInstanceRequest(_messages.Message):
@@ -3129,6 +3146,26 @@ class SecondaryConfig(_messages.Message):
   """
 
   primaryClusterName = _messages.StringField(1)
+
+
+class SqlExportOptions(_messages.Message):
+  r"""Options for exporting data in SQL format.
+
+  Fields:
+    cleanTargetObjects: Optional. If true, output commands to DROP all the
+      dumped database objects prior to outputting the commands for creating
+      them.
+    ifExistTargetObjects: Optional. If true, use DROP ... IF EXISTS commands
+      to check for the object's existence before dropping it in
+      clean_target_objects mode.
+    schemaOnly: Optional. If true, only export the schema.
+    tables: Optional. Tables to export from.
+  """
+
+  cleanTargetObjects = _messages.BooleanField(1)
+  ifExistTargetObjects = _messages.BooleanField(2)
+  schemaOnly = _messages.BooleanField(3)
+  tables = _messages.StringField(4, repeated=True)
 
 
 class SslConfig(_messages.Message):

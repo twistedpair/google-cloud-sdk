@@ -341,6 +341,15 @@ class StoragePoolsAdapter(object):
     )
     return update_op
 
+  def SwitchStoragePool(self, storagepool_ref):
+    """Send a switch zone request for the Cloud NetApp storage pool."""
+    switch_request = (
+        self.messages.NetappProjectsLocationsStoragePoolsSwitchRequest(
+            name=storagepool_ref.RelativeName(),
+        )
+    )
+    return self.client.projects_locations_storagePools.Switch(switch_request)
+
 
 class BetaStoragePoolsAdapter(StoragePoolsAdapter):
   """Adapter for the Beta Cloud NetApp Files API for Storage Pools."""
@@ -355,15 +364,6 @@ class BetaStoragePoolsAdapter(StoragePoolsAdapter):
         release_track=self.release_track
     )
 
-  def SwitchStoragePool(self, storagepool_ref):
-    """Send a switch zone request for the Cloud NetApp storage pool."""
-    switch_request = (
-        self.messages.NetappProjectsLocationsStoragePoolsSwitchRequest(
-            name=storagepool_ref.RelativeName(),
-        )
-    )
-    return self.client.projects_locations_storagePools.Switch(switch_request)
-
 
 class AlphaStoragePoolsAdapter(BetaStoragePoolsAdapter):
   """Adapter for the Alpha Cloud NetApp Files API for Storage Pools."""
@@ -377,12 +377,3 @@ class AlphaStoragePoolsAdapter(BetaStoragePoolsAdapter):
     self.messages = netapp_api_util.GetMessagesModule(
         release_track=self.release_track
     )
-
-  def SwitchStoragePool(self, storagepool_ref):
-    """Send a switch zone request for the Cloud NetApp storage pool."""
-    switch_request = (
-        self.messages.NetappProjectsLocationsStoragePoolsSwitchRequest(
-            name=storagepool_ref.RelativeName(),
-        )
-    )
-    return self.client.projects_locations_storagePools.Switch(switch_request)

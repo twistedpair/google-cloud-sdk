@@ -37,17 +37,17 @@ _API_NAME = 'networksecurity'
 
 
 def GetMessagesModule(release_track=base.ReleaseTrack.GA):
-  api_version = _API_VERSION_FOR_TRACK.get(release_track)
+  api_version = GetApiVersion(release_track)
   return apis.GetMessagesModule(_API_NAME, api_version)
 
 
 def GetClientInstance(release_track=base.ReleaseTrack.GA):
-  api_version = _API_VERSION_FOR_TRACK.get(release_track)
+  api_version = GetApiVersion(release_track)
   return apis.GetClientInstance(_API_NAME, api_version)
 
 
 def GetApiBaseUrl(release_track=base.ReleaseTrack.GA):
-  api_version = _API_VERSION_FOR_TRACK.get(release_track)
+  api_version = GetApiVersion(release_track)
   return resources.GetApiBaseUrlOrThrow(_API_NAME, api_version)
 
 
@@ -160,3 +160,31 @@ class Client(abc.ABC):
         field='securityProfiles',
         batch_size_attribute='pageSize',
     )
+
+  def UpdateSecurityProfile(self, name, description=None, labels=None):
+    """Calls the Update Security Profile API to update a Security Profile.
+
+    Args:
+      name: The name of the Security Profile, e.g.
+        "organizations/123/locations/global/securityProfiles/my-profile".
+      description: The user-specified description of the Security Profile.
+      labels: The labels of the Security Profile.
+
+    Returns:
+      Updated Security Profile object.
+    """
+    updated_sp = self.messages.SecurityProfile()
+    update_mask = []
+    if description:
+      updated_sp.description = description
+      update_mask.append('description')
+    if labels:
+      updated_sp.labels = labels
+      update_mask.append('labels')
+
+    api_request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesPatchRequest(
+        name=name,
+        securityProfile=updated_sp,
+        updateMask=','.join(update_mask),
+    )
+    return self._security_profile_client.Patch(api_request)

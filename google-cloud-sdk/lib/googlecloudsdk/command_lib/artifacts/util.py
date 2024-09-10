@@ -39,6 +39,7 @@ from containerregistry.client.v2_2 import docker_http
 from containerregistry.client.v2_2 import docker_image
 from googlecloudsdk.api_lib import artifacts
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
+from googlecloudsdk.api_lib.artifacts import filter_rewriter
 from googlecloudsdk.api_lib.container.images import util
 from googlecloudsdk.api_lib.util import common_args
 from googlecloudsdk.api_lib.util import waiter
@@ -190,6 +191,13 @@ def _IsValidRuleName(rule_name):
 def GetProject(args):
   """Gets project resource from either argument flag or attribute."""
   return args.project or properties.VALUES.core.project.GetOrFail()
+
+
+def GetParent(project, location):
+  parent = "{}".format(project)
+  if location is not None:
+    parent = f"{project}/locations/{location}"
+  return parent
 
 
 def GetRepo(args):
@@ -593,118 +601,108 @@ def ListRepositories(args):
   if platforms.OperatingSystem.Current() is platforms.OperatingSystem.WINDOWS:
     pool_size = multiprocessing.cpu_count() if loc_paths else 1
 
-  pool = parallel.GetPool(pool_size)
   page_size = args.page_size
-  try:
-    pool.Start()
-    results = pool.Map(
-        lambda x: ar_requests.ListRepositories(x, page_size=page_size),
-        loc_paths)
-  except parallel.MultiError as e:
-    error_set = set(err.content for err in e.errors)
-    msg = "\n".join(error_set)
-    raise ar_exceptions.ArtifactRegistryError(msg)
-  finally:
-    pool.Join()
+  order_by = common_args.ParseSortByArg(args.sort_by)
+  _, server_filter = filter_rewriter.Rewriter().Rewrite(args.filter)
+
+  if order_by is not None:
+    if "," in order_by:
+      # Multi-ordering is not supported yet on backend, fall back to client-side
+      # sort-by.
+      order_by = None
+
+  if args.limit is not None and args.filter is not None:
+    if server_filter is not None:
+      # Use server-side paging with server-side filtering.
+      page_size = args.limit
+      args.page_size = args.limit
+    else:
+      # Fall back to client-side paging with client-side filtering.
+      page_size = None
+
+  def ListRepos(page_size=None, order_by=None, server_filter=None):
+    pool = parallel.GetPool(pool_size)
+    try:
+      pool.Start()
+      results = pool.Map(
+          lambda x: ar_requests.ListRepositories(
+              x, page_size=page_size,
+              order_by=order_by,
+              server_filter=server_filter),
+          loc_paths)
+    except parallel.MultiError as e:
+      if server_filter or order_by:
+        for err in e.errors:
+          if err.status_code == 400:
+            raise apitools_exceptions.HttpBadRequestError(
+                err.content, err.status_code, err.url
+            )
+      error_set = set(err.content for err in e.errors)
+      msg = "\n".join(error_set)
+      raise ar_exceptions.ArtifactRegistryError(msg)
+    finally:
+      pool.Join()
+    return results
 
   repos = []
-  for sublist in results:
+  server_args = {
+      "server_filter": server_filter,
+      "page_size": page_size,
+      "order_by": order_by
+  }
+  server_args_skipped, result = RetryOnInvalidArguments(
+      ListRepos,
+      **server_args)
+  for sublist in result:
     repos.extend(sublist)
-  repos.sort(key=lambda x: x.name.split("/")[-1])
+
+  # If server-side filter or sort-by is parsed correctly and the request
+  # succeeds, remove the client-side filter and sort-by.
+  if not server_args_skipped:
+    if server_args["order_by"]:
+      args.sort_by = None
+    if (
+        server_args["server_filter"]
+        and server_args["server_filter"] == args.filter
+    ):
+      args.filter = None
 
   return repos
 
 
-def ListFiles(args):
-  """Lists files in a given project.
+def RetryOnInvalidArguments(func, **kwargs):
+  """Retry the request on invalid arguments error.
+
+  If the request fails with 400 because of unsupported server-side filter or
+  sort-by, retry the request with no filter or sort-by.
 
   Args:
-    args: User input arguments.
+    func: Retry function.
+    **kwargs: User input arguments.
 
   Returns:
-    List of files.
+    retried: If the request is retried without server-side filter or sort-by.
+    results: List of results.
+
   """
-  client = ar_requests.GetClient()
-  messages = ar_requests.GetMessages()
-  project = GetProject(args)
-  location = args.location or properties.VALUES.artifacts.location.Get()
-  repo = GetRepo(args)
-  package = args.package
-  version = args.version
-  tag = args.tag
-  page_size = args.page_size
-  arg_filters = ""
+  try:
+    results = func(**kwargs)
+    return False, results
+  except apitools_exceptions.HttpBadRequestError:
+    if kwargs["server_filter"]:
+      kwargs["server_filter"] = None
+      # If server-side filter is not supported, discard the server-side paging
+      # in retry.
+      if kwargs.get("page_size"):
+        kwargs["page_size"] = None
+      if kwargs.get("limit"):
+        kwargs["limit"] = None
 
-  if args.filter:
-    arg_filters = args.filter
-    if package or version or tag:
-      raise ar_exceptions.InvalidInputValueError(
-          "Cannot specify --filter with --package, --version or --tag.")
-
-  # Parse fully qualified path in package argument
-  if package:
-    if re.match(r"projects\/.*\/locations\/.*\/repositories\/.*\/packages\/.*",
-                package):
-      params = package.replace("projects/", "", 1).replace(
-          "/locations/", " ", 1).replace("/repositories/", " ",
-                                         1).replace("/packages/", " ",
-                                                    1).split(" ")
-      project, location, repo, package = [params[i] for i in range(len(params))]
-
-  # Escape slashes, pluses and carets in package name
-  if package:
-    package = package.replace("/", "%2F").replace("+", "%2B")
-    package = package.replace("^", "%5E")
-
-  # Retrieve version from tag name
-  if version and tag:
-    raise ar_exceptions.InvalidInputValueError(
-        "Specify either --version or --tag with --package argument.")
-  if package and tag:
-    tag_path = resources.Resource.RelativeName(
-        resources.REGISTRY.Create(
-            "artifactregistry.projects.locations.repositories.packages.tags",
-            projectsId=project,
-            locationsId=location,
-            repositoriesId=repo,
-            packagesId=package,
-            tagsId=tag))
-    version = ar_requests.GetVersionFromTag(client, messages, tag_path)
-
-  if package and version:
-    version_path = resources.Resource.RelativeName(
-        resources.REGISTRY.Create(
-            "artifactregistry.projects.locations.repositories.packages.versions",
-            projectsId=project,
-            locationsId=location,
-            repositoriesId=repo,
-            packagesId=package,
-            versionsId=version))
-    arg_filters = 'owner="{}"'.format(version_path)
-  elif package:
-    package_path = resources.Resource.RelativeName(
-        resources.REGISTRY.Create(
-            "artifactregistry.projects.locations.repositories.packages",
-            projectsId=project,
-            locationsId=location,
-            repositoriesId=repo,
-            packagesId=package))
-    arg_filters = 'owner="{}"'.format(package_path)
-  elif version or tag:
-    raise ar_exceptions.InvalidInputValueError(
-        "Package name is required when specifying version or tag.")
-
-  repo_path = resources.Resource.RelativeName(
-      resources.REGISTRY.Create(
-          "artifactregistry.projects.locations.repositories",
-          projectsId=project,
-          locationsId=location,
-          repositoriesId=repo))
-  lfiles = ar_requests.ListFiles(
-      client, messages, repo_path, arg_filters, page_size
-  )
-
-  return lfiles
+    if kwargs.get("order_by"):
+      kwargs["order_by"] = None
+    return True, func(**kwargs)
+  except Exception as e:
+    raise ar_exceptions.ArtifactRegistryError(e)
 
 
 def AddEncryptionLogToRepositoryInfo(response, unused_args):
@@ -947,40 +945,6 @@ def GetExistingRepos(project):
 def UpdateSettingsResource(unused_ref, unused_args, req):
   req.name = req.name + "/projectSettings"
   return req
-
-
-def CheckRedirectionPermission(projects):
-  """Checks redirection permission for the projects."""
-  for project in projects:
-    con = console_attr.GetConsoleAttr()
-    authorized = ar_requests.TestRedirectionIAMPermission(project)
-    if not authorized:
-      if len(projects) == 1:
-        log.status.Print(
-            con.Colorize("FAIL: ", "red")
-            + "This operation requires the"
-            f" {','.join(ar_requests.REDIRECT_PERMISSIONS)} permission(s) on"
-            f" project {project}."
-        )
-      else:
-        log.status.Print(
-            con.Colorize("FAIL: ", "red")
-            + "This operation requires the"
-            f" {','.join(ar_requests.REDIRECT_PERMISSIONS)} permission(s) on"
-            f" each project to migrate, including {project}."
-        )
-      user = properties.VALUES.core.account.Get()
-      if user.endswith("gserviceaccount.com"):
-        prefix = "serviceAccount"
-      else:
-        prefix = "user"
-      log.status.Print(
-          "You can set this permission with the following command:"
-          f"\n  gcloud projects add-iam-policy-binding {project} "
-          f"--member={prefix}:{user} --role='roles/storage.admin'"
-      )
-      return False
-  return True
 
 
 def GetVPCSCConfig(unused_ref, args):
@@ -1438,6 +1402,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
   canary_reads = args.canary_reads
   skip_iam = args.skip_iam_update
   ar_location = args.pkg_dev_location
+  skip_pre_copy = args.skip_pre_copy
   if ar_location and not to_pkg_dev:
     log.status.Print(
         "--pkg-dev-location is only used when migrating to pkg.dev repos"
@@ -1468,8 +1433,8 @@ def MigrateToArtifactRegistry(unused_ref, args):
     if not os.path.isdir(files.ExpandHomeDir(input_iam_policy_dir)):
       log.status.Print("--input-iam-policy-dir must be a directory")
       sys.exit(1)
-  if canary_reads is not None and (canary_reads < 1 or canary_reads > 100):
-    log.status.Print("--canary-reads must be between 1 and 100 inclusive")
+  if canary_reads is not None and (canary_reads < 0 or canary_reads > 100):
+    log.status.Print("--canary-reads must be between 0 and 100 inclusive")
     sys.exit(1)
   if args.projects and (from_gcr or to_pkg_dev):
     log.status.Print(
@@ -1591,8 +1556,6 @@ def MigrateToArtifactRegistry(unused_ref, args):
     invalid_projects = []
     partial_projects = []
   else:
-    if not CheckRedirectionPermission(projects):
-      sys.exit(1)
     redirection_state = GetRedirectionStates(projects)
     enabled_projects = []
     disabled_projects = []
@@ -1714,7 +1677,12 @@ def MigrateToArtifactRegistry(unused_ref, args):
   # 1) A smoke test such that if something breaks, it breaks BEFORE we redirect
   # 2) Gets most of the commonly used images copied ahead of time to avoid
   # a load/quota spike at redirection time
-  if not copy_only and not output_iam_policy_dir and projects_to_redirect:
+  if (
+      not copy_only
+      and not output_iam_policy_dir
+      and projects_to_redirect
+      and not skip_pre_copy
+  ):
     pre_copied_projects = []
     log.status.Print(
         "\nCopying initial images (additional images will be copied later)...\n"
@@ -1795,7 +1763,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
 
   projects_to_redirect.extend(partial_projects)
 
-  if canary_reads and projects_to_redirect:
+  if canary_reads is not None and projects_to_redirect:
     log.status.Print(
         f"\nThe next step will redirect {canary_reads}% of *gcr.io read"
         " traffic to Artifact Registry. All pushes will still write to"
@@ -2279,8 +2247,6 @@ def EnableUpgradeRedirection(unused_ref, args):
   dry_run = args.dry_run
 
   log.status.Print("Performing redirection enablement checks...\n")
-  if not CheckRedirectionPermission([project]):
-    sys.exit(1)
 
   messages = ar_requests.GetMessages()
   settings = ar_requests.GetProjectSettings(project)
@@ -2327,8 +2293,6 @@ def DisableUpgradeRedirection(unused_ref, args):
   con = console_attr.GetConsoleAttr()
 
   log.status.Print("Disabling upgrade redirection...\n")
-  if not CheckRedirectionPermission([project]):
-    sys.exit(1)
 
   # If the current state is finalized, then disabling is not possible
   log.status.Print("Checking current redirection status...\n")

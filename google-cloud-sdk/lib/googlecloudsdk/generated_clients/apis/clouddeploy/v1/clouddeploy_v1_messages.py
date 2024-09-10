@@ -3202,7 +3202,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class ExecutionConfig(_messages.Message):
   r"""Configuration of the environment to use when calling Skaffold.
 
@@ -3838,6 +3837,27 @@ class MultiTarget(_messages.Message):
   targetIds = _messages.StringField(1, repeated=True)
 
 
+class OneTimeWindow(_messages.Message):
+  r"""One-time window within which actions are restricted.
+
+  For example, blocking actions over New Year's Eve from December 31st at 5pm to
+  January 1st at 9am.
+
+  Fields:
+    endDate: Required. End date.
+    endTime: Required. End time (exclusive). You may use 24:00 for the end of
+      the day.
+    startDate: Required. Start date.
+    startTime: Required. Start time (inclusive). Use 00:00 for the beginning
+      of the day.
+  """
+
+  endDate = _messages.MessageField('Date', 1)
+  endTime = _messages.MessageField('TimeOfDay', 2)
+  startDate = _messages.MessageField('Date', 3)
+  startTime = _messages.MessageField('TimeOfDay', 4)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -4175,13 +4195,15 @@ class Policy(_messages.Message):
 
 
 class PolicyRule(_messages.Message):
-  r"""Rule to apply.
+  r"""Deploy Policy rule.
 
   Fields:
     restrictRollouts: Rollout restrictions.
+    rolloutRestriction: Rollout restrictions.
   """
 
   restrictRollouts = _messages.MessageField('RestrictRollout', 1)
+  rolloutRestriction = _messages.MessageField('RolloutRestriction', 2)
 
 
 class PolicyViolation(_messages.Message):
@@ -5596,6 +5618,72 @@ class RolloutNotificationEvent(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 8)
 
 
+class RolloutRestriction(_messages.Message):
+  r"""Rollout restrictions.
+
+  Enums:
+    ActionsValueListEntryValuesEnum:
+    InvokersValueListEntryValuesEnum:
+
+  Fields:
+    actions: Optional. Rollout actions to be restricted as part of the policy.
+      If left empty, all actions will be restricted.
+    id: Required. Restriction rule ID. Required and must be unique within a
+      DeployPolicy. The format is `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`.
+    invokers: Optional. What invoked the action. If left empty, all invoker
+      types will be restricted.
+    timeWindows: Required. Time window within which actions are restricted.
+  """
+
+  class ActionsValueListEntryValuesEnum(_messages.Enum):
+    r"""ActionsValueListEntryValuesEnum enum type.
+
+    Values:
+      ROLLOUT_ACTIONS_UNSPECIFIED: Unspecified.
+      ADVANCE: Advance the rollout to the next phase.
+      APPROVE: Approve the rollout.
+      CANCEL: Cancel the rollout.
+      CREATE: Create a rollout.
+      IGNORE_JOB: Ignore a job result on the rollout.
+      RETRY_JOB: Retry a job for a rollout.
+      ROLLBACK: Rollback a rollout.
+      TERMINATE_JOBRUN: Terminate a jobrun.
+    """
+
+    ROLLOUT_ACTIONS_UNSPECIFIED = 0
+    ADVANCE = 1
+    APPROVE = 2
+    CANCEL = 3
+    CREATE = 4
+    IGNORE_JOB = 5
+    RETRY_JOB = 6
+    ROLLBACK = 7
+    TERMINATE_JOBRUN = 8
+
+  class InvokersValueListEntryValuesEnum(_messages.Enum):
+    r"""InvokersValueListEntryValuesEnum enum type.
+
+    Values:
+      INVOKER_UNSPECIFIED: Unspecified.
+      USER: The action is user-driven. For example, creating a rollout
+        manually via a gcloud create command.
+      DEPLOY_AUTOMATION: Automated action by Cloud Deploy.
+    """
+
+    INVOKER_UNSPECIFIED = 0
+    USER = 1
+    DEPLOY_AUTOMATION = 2
+
+  actions = _messages.EnumField(
+      'ActionsValueListEntryValuesEnum', 1, repeated=True
+  )
+  id = _messages.StringField(2)
+  invokers = _messages.EnumField(
+      'InvokersValueListEntryValuesEnum', 3, repeated=True
+  )
+  timeWindows = _messages.MessageField('TimeWindows', 4)
+
+
 class RolloutUpdateEvent(_messages.Message):
   r"""Payload proto for "clouddeploy.googleapis.com/rollout_update" Platform
   Log event that describes the rollout update event.
@@ -6605,6 +6693,23 @@ class TimeWindow(_messages.Message):
   timeZone = _messages.StringField(2)
 
 
+class TimeWindows(_messages.Message):
+  r"""Time windows within which actions are restricted.
+
+  Fields:
+    oneTimeWindows: Optional. One-time windows within which actions are
+      restricted.
+    timeZone: Required. The time zone in IANA format [IANA Time Zone
+      Database](https://www.iana.org/time-zones) (e.g. America/New_York).
+    weeklyWindows: Optional. Recurring weekly windows within which actions are
+      restricted.
+  """
+
+  oneTimeWindows = _messages.MessageField('OneTimeWindow', 1, repeated=True)
+  timeZone = _messages.StringField(2)
+  weeklyWindows = _messages.MessageField('WeeklyWindow', 3, repeated=True)
+
+
 class VerifyJob(_messages.Message):
   r"""A verify Job."""
 
@@ -6662,6 +6767,57 @@ class VerifyJobRun(_messages.Message):
   eventLogPath = _messages.StringField(3)
   failureCause = _messages.EnumField('FailureCauseValueValuesEnum', 4)
   failureMessage = _messages.StringField(5)
+
+
+class WeeklyWindow(_messages.Message):
+  r"""Weekly windows. For example, blocking actions every Saturday and Sunday.
+
+  Another example would be blocking actions every weekday from 5pm to midnight.
+
+  Enums:
+    DaysOfWeekValueListEntryValuesEnum:
+
+  Fields:
+    daysOfWeek: Optional. Days of week. If left empty, all days of the week
+      will be included.
+    endTime: Optional. End time (exclusive). Use 24:00 to indicate midnight.
+      If you specify end_time you must also specify start_time. If left empty,
+      this will block for the entire day for the days specified in
+      days_of_week.
+    startTime: Optional. Start time (inclusive). Use 00:00 for the beginning
+      of the day. If you specify start_time you must also specify end_time. If
+      left empty, this will block for the entire day for the days specified in
+      days_of_week.
+  """
+
+  class DaysOfWeekValueListEntryValuesEnum(_messages.Enum):
+    r"""DaysOfWeekValueListEntryValuesEnum enum type.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  daysOfWeek = _messages.EnumField(
+      'DaysOfWeekValueListEntryValuesEnum', 1, repeated=True
+  )
+  endTime = _messages.MessageField('TimeOfDay', 2)
+  startTime = _messages.MessageField('TimeOfDay', 3)
 
 
 encoding.AddCustomJsonFieldMapping(

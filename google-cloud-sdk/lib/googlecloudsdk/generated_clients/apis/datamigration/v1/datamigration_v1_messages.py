@@ -73,10 +73,12 @@ class AlloyDbSettings(_messages.Message):
       DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
       POSTGRES_14: The database version is Postgres 14.
       POSTGRES_15: The database version is Postgres 15.
+      POSTGRES_16: The database version is Postgres 16.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_14 = 1
     POSTGRES_15 = 2
+    POSTGRES_16 = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -227,6 +229,17 @@ class AuditLogConfig(_messages.Message):
 
   exemptedMembers = _messages.StringField(1, repeated=True)
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
+class AuthorizedNetwork(_messages.Message):
+  r"""AuthorizedNetwork contains metadata for an authorized network.
+
+  Fields:
+    cidrRange: Optional. CIDR range for one authorzied network of the
+      instance.
+  """
+
+  cidrRange = _messages.StringField(1)
 
 
 class BackgroundJobLogEntry(_messages.Message):
@@ -474,6 +487,7 @@ class CloudSqlSettings(_messages.Message):
       startup. An object containing a list of "key": value pairs. Example: {
       "name": "wrench", "mass": "1.3kg", "count": "3" }.
     databaseVersion: The database engine type and version.
+    databaseVersionName: Optional. The database engine type and version name.
     edition: Optional. The edition of the given Cloud SQL instance.
     ipConfig: The settings for IP Management. This allows to enable or disable
       the instance IP and manage which external networks can connect to the
@@ -689,16 +703,17 @@ class CloudSqlSettings(_messages.Message):
   dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 8)
   databaseFlags = _messages.MessageField('DatabaseFlagsValue', 9)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 10)
-  edition = _messages.EnumField('EditionValueValuesEnum', 11)
-  ipConfig = _messages.MessageField('SqlIpConfig', 12)
-  rootPassword = _messages.StringField(13)
-  rootPasswordSet = _messages.BooleanField(14)
-  secondaryZone = _messages.StringField(15)
-  sourceId = _messages.StringField(16)
-  storageAutoResizeLimit = _messages.IntegerField(17)
-  tier = _messages.StringField(18)
-  userLabels = _messages.MessageField('UserLabelsValue', 19)
-  zone = _messages.StringField(20)
+  databaseVersionName = _messages.StringField(11)
+  edition = _messages.EnumField('EditionValueValuesEnum', 12)
+  ipConfig = _messages.MessageField('SqlIpConfig', 13)
+  rootPassword = _messages.StringField(14)
+  rootPasswordSet = _messages.BooleanField(15)
+  secondaryZone = _messages.StringField(16)
+  sourceId = _messages.StringField(17)
+  storageAutoResizeLimit = _messages.IntegerField(18)
+  tier = _messages.StringField(19)
+  userLabels = _messages.MessageField('UserLabelsValue', 20)
+  zone = _messages.StringField(21)
 
 
 class ColumnEntity(_messages.Message):
@@ -842,6 +857,7 @@ class ConnectionProfile(_messages.Message):
 
   Enums:
     ProviderValueValuesEnum: The database provider.
+    RoleValueValuesEnum: Optional. The connection profile role.
     StateValueValuesEnum: The current connection profile state (e.g. DRAFT,
       READY, or FAILED).
 
@@ -869,6 +885,7 @@ class ConnectionProfile(_messages.Message):
     oracle: An Oracle database connection profile.
     postgresql: A PostgreSQL database connection profile.
     provider: The database provider.
+    role: Optional. The connection profile role.
     spanner: A Spanner database connection profile.
     sqlserver: Connection profile for a SQL Server data source.
     state: The current connection profile state (e.g. DRAFT, READY, or
@@ -883,7 +900,7 @@ class ConnectionProfile(_messages.Message):
 
     Values:
       DATABASE_PROVIDER_UNSPECIFIED: Use this value for on-premise source
-        database instances.
+        database instances and ORACLE.
       CLOUDSQL: Cloud SQL is the source instance provider.
       RDS: Amazon RDS is the source instance provider.
       AURORA: Amazon Aurora is the source instance provider.
@@ -897,6 +914,18 @@ class ConnectionProfile(_messages.Message):
     AURORA = 3
     ALLOYDB = 4
     AZURE = 5
+
+  class RoleValueValuesEnum(_messages.Enum):
+    r"""Optional. The connection profile role.
+
+    Values:
+      ROLE_UNSPECIFIED: The role is unspecified.
+      SOURCE: The role is source.
+      DESTINATION: The role is destination.
+    """
+    ROLE_UNSPECIFIED = 0
+    SOURCE = 1
+    DESTINATION = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The current connection profile state (e.g. DRAFT, READY, or FAILED).
@@ -958,10 +987,11 @@ class ConnectionProfile(_messages.Message):
   oracle = _messages.MessageField('OracleConnectionProfile', 9)
   postgresql = _messages.MessageField('PostgreSqlConnectionProfile', 10)
   provider = _messages.EnumField('ProviderValueValuesEnum', 11)
-  spanner = _messages.MessageField('SpannerConnectionProfile', 12)
-  sqlserver = _messages.MessageField('SqlServerConnectionProfile', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  updateTime = _messages.StringField(15)
+  role = _messages.EnumField('RoleValueValuesEnum', 12)
+  spanner = _messages.MessageField('SpannerConnectionProfile', 13)
+  sqlserver = _messages.MessageField('SqlServerConnectionProfile', 14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  updateTime = _messages.StringField(16)
 
 
 class ConstraintEntity(_messages.Message):
@@ -1411,7 +1441,7 @@ class DatabaseType(_messages.Message):
 
     Values:
       DATABASE_PROVIDER_UNSPECIFIED: Use this value for on-premise source
-        database instances.
+        database instances and ORACLE.
       CLOUDSQL: Cloud SQL is the source instance provider.
       RDS: Amazon RDS is the source instance provider.
       AURORA: Amazon Aurora is the source instance provider.
@@ -2182,6 +2212,18 @@ class DatamigrationProjectsLocationsMigrationJobsDemoteDestinationRequest(_messa
   name = _messages.StringField(2, required=True)
 
 
+class DatamigrationProjectsLocationsMigrationJobsFetchSourceObjectsRequest(_messages.Message):
+  r"""A DatamigrationProjectsLocationsMigrationJobsFetchSourceObjectsRequest
+  object.
+
+  Fields:
+    name: Required. The resource name for the migration job for which source
+      objects should be returned.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class DatamigrationProjectsLocationsMigrationJobsGenerateSshScriptRequest(_messages.Message):
   r"""A DatamigrationProjectsLocationsMigrationJobsGenerateSshScriptRequest
   object.
@@ -2308,6 +2350,51 @@ class DatamigrationProjectsLocationsMigrationJobsObjectsGetIamPolicyRequest(_mes
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class DatamigrationProjectsLocationsMigrationJobsObjectsGetRequest(_messages.Message):
+  r"""A DatamigrationProjectsLocationsMigrationJobsObjectsGetRequest object.
+
+  Fields:
+    name: Required. The name of the migration job object resource to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DatamigrationProjectsLocationsMigrationJobsObjectsListRequest(_messages.Message):
+  r"""A DatamigrationProjectsLocationsMigrationJobsObjectsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of objects to return. Default is 50. The maximum
+      value is 1000; values above 1000 will be coerced to 1000.
+    pageToken: Page token received from a previous
+      `ListMigrationJObObjectsRequest` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListMigrationJobObjectsRequest` must match the call that provided the
+      page token.
+    parent: Required. The parent migration job that owns the collection of
+      objects.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DatamigrationProjectsLocationsMigrationJobsObjectsLookupRequest(_messages.Message):
+  r"""A DatamigrationProjectsLocationsMigrationJobsObjectsLookupRequest
+  object.
+
+  Fields:
+    lookupMigrationJobObjectRequest: A LookupMigrationJobObjectRequest
+      resource to be passed as the request body.
+    parent: Required. The parent migration job that owns the collection of
+      objects.
+  """
+
+  lookupMigrationJobObjectRequest = _messages.MessageField('LookupMigrationJobObjectRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class DatamigrationProjectsLocationsMigrationJobsObjectsSetIamPolicyRequest(_messages.Message):
@@ -3372,6 +3459,22 @@ class IndexEntity(_messages.Message):
   unique = _messages.BooleanField(6)
 
 
+class InstanceNetworkConfig(_messages.Message):
+  r"""Metadata related to instance level network configuration.
+
+  Fields:
+    authorizedExternalNetworks: Optional. A list of external network
+      authorized to access this instance.
+    enableOutboundPublicIp: Optional. Enabling an outbound public IP address
+      to support a database server sending requests out into the internet.
+    enablePublicIp: Optional. Enabling public ip for the instance.
+  """
+
+  authorizedExternalNetworks = _messages.MessageField('AuthorizedNetwork', 1, repeated=True)
+  enableOutboundPublicIp = _messages.BooleanField(2)
+  enablePublicIp = _messages.BooleanField(3)
+
+
 class IntComparisonFilter(_messages.Message):
   r"""Filter based on relation between source value and compare value of type
   integer in ConditionalColumnSetValue
@@ -3462,6 +3565,19 @@ class ListMappingRulesResponse(_messages.Message):
   """
 
   mappingRules = _messages.MessageField('MappingRule', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListMigrationJobObjectsResponse(_messages.Message):
+  r"""Response containing the objects for a migration job.
+
+  Fields:
+    migrationJobObjects: List of migration job objects.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page.
+  """
+
+  migrationJobObjects = _messages.MessageField('MigrationJobObject', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -3586,6 +3702,18 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LookupMigrationJobObjectRequest(_messages.Message):
+  r"""Request for looking up a specific migration job object by its source
+  object identifier.
+
+  Fields:
+    sourceObjectIdentifier: Required. The source object identifier which maps
+      to the migration job object.
+  """
+
+  sourceObjectIdentifier = _messages.MessageField('SourceObjectIdentifier', 1)
 
 
 class MachineConfig(_messages.Message):
@@ -3848,6 +3976,7 @@ class MigrationJob(_messages.Message):
       "mass": "1.3kg", "count": "3" }`.
     name: The name (URI) of this migration job resource, in the form of:
       projects/{project}/locations/{location}/migrationJobs/{migrationJob}.
+    objectsConfig: Optional. The objects that need to be migrated.
     performanceConfig: Optional. Data dump parallelism settings used by the
       migration.
     phase: Output only. The current migration job phase.
@@ -3997,17 +4126,98 @@ class MigrationJob(_messages.Message):
   filter = _messages.StringField(13)
   labels = _messages.MessageField('LabelsValue', 14)
   name = _messages.StringField(15)
-  performanceConfig = _messages.MessageField('PerformanceConfig', 16)
-  phase = _messages.EnumField('PhaseValueValuesEnum', 17)
-  reverseSshConnectivity = _messages.MessageField('ReverseSshConnectivity', 18)
-  source = _messages.StringField(19)
-  sourceDatabase = _messages.MessageField('DatabaseType', 20)
-  sqlserverHomogeneousMigrationJobConfig = _messages.MessageField('SqlServerHomogeneousMigrationJobConfig', 21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 23)
-  type = _messages.EnumField('TypeValueValuesEnum', 24)
-  updateTime = _messages.StringField(25)
-  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 26)
+  objectsConfig = _messages.MessageField('MigrationJobObjectsConfig', 16)
+  performanceConfig = _messages.MessageField('PerformanceConfig', 17)
+  phase = _messages.EnumField('PhaseValueValuesEnum', 18)
+  reverseSshConnectivity = _messages.MessageField('ReverseSshConnectivity', 19)
+  source = _messages.StringField(20)
+  sourceDatabase = _messages.MessageField('DatabaseType', 21)
+  sqlserverHomogeneousMigrationJobConfig = _messages.MessageField('SqlServerHomogeneousMigrationJobConfig', 22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 24)
+  type = _messages.EnumField('TypeValueValuesEnum', 25)
+  updateTime = _messages.StringField(26)
+  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 27)
+
+
+class MigrationJobObject(_messages.Message):
+  r"""A specific Migration Job Object (e.g. a specifc DB Table)
+
+  Enums:
+    PhaseValueValuesEnum: Output only. The phase of the migration job object.
+    StateValueValuesEnum: The state of the migration job object.
+
+  Fields:
+    createTime: Output only. The creation time of the migration job object.
+    error: Output only. The error details in case of failure.
+    name: The object's name.
+    phase: Output only. The phase of the migration job object.
+    sourceObject: The object identifier in the data source.
+    state: The state of the migration job object.
+    updateTime: Output only. The last update time of the migration job object.
+  """
+
+  class PhaseValueValuesEnum(_messages.Enum):
+    r"""Output only. The phase of the migration job object.
+
+    Values:
+      PHASE_UNSPECIFIED: The phase of the migration job is unknown.
+      FULL_DUMP: The migration job object is in the full dump phase.
+      CDC: The migration job object is in CDC phase.
+      READY_FOR_PROMOTE: The migration job object is ready to be promoted.
+      PROMOTE_IN_PROGRESS: The migration job object is in running the promote
+        phase.
+      PROMOTED: The migration job is promoted.
+      DIFF_BACKUP: The migration job object is in the differential backup
+        phase.
+    """
+    PHASE_UNSPECIFIED = 0
+    FULL_DUMP = 1
+    CDC = 2
+    READY_FOR_PROMOTE = 3
+    PROMOTE_IN_PROGRESS = 4
+    PROMOTED = 5
+    DIFF_BACKUP = 6
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of the migration job object.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the migration job object is unknown.
+      NOT_STARTED: The migration job object is not started.
+      RUNNING: The migration job object is running.
+      STOPPING: The migration job object is being stopped.
+      STOPPED: The migration job object is currently stopped.
+      RESTARTING: The migration job object is restarting.
+      FAILED: The migration job object failed.
+      REMOVING: The migration job object is deleting.
+    """
+    STATE_UNSPECIFIED = 0
+    NOT_STARTED = 1
+    RUNNING = 2
+    STOPPING = 3
+    STOPPED = 4
+    RESTARTING = 5
+    FAILED = 6
+    REMOVING = 7
+
+  createTime = _messages.StringField(1)
+  error = _messages.MessageField('Status', 2)
+  name = _messages.StringField(3)
+  phase = _messages.EnumField('PhaseValueValuesEnum', 4)
+  sourceObject = _messages.MessageField('SourceObjectIdentifier', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+
+
+class MigrationJobObjectsConfig(_messages.Message):
+  r"""Configuration for the objects to be migrated.
+
+  Fields:
+    sourceObjectsConfig: The list of the migration job objects.
+  """
+
+  sourceObjectsConfig = _messages.MessageField('SourceObjectsConfig', 1)
 
 
 class MigrationJobVerificationError(_messages.Message):
@@ -4387,6 +4597,29 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class OracleAsmConfig(_messages.Message):
+  r"""Configuration for Oracle Automatic Storage Management (ASM) connection.
+
+  Fields:
+    asmService: Required. ASM service name for the Oracle ASM connection.
+    hostname: Required. Hostname for the Oracle ASM connection.
+    password: Required. Input only. Password for the Oracle ASM connection.
+    passwordSet: Output only. Indicates whether a new password is included in
+      the request.
+    port: Required. Port for the Oracle ASM connection.
+    ssl: Optional. SSL configuration for the Oracle connection.
+    username: Required. Username for the Oracle ASM connection.
+  """
+
+  asmService = _messages.StringField(1)
+  hostname = _messages.StringField(2)
+  password = _messages.StringField(3)
+  passwordSet = _messages.BooleanField(4)
+  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  ssl = _messages.MessageField('SslConfig', 6)
+  username = _messages.StringField(7)
+
+
 class OracleConnectionProfile(_messages.Message):
   r"""Specifies connection parameters required specifically for Oracle
   databases.
@@ -4395,6 +4628,7 @@ class OracleConnectionProfile(_messages.Message):
     databaseService: Required. Database service for the Oracle connection.
     forwardSshConnectivity: Forward SSH tunnel connectivity.
     host: Required. The IP or hostname of the source Oracle database.
+    oracleAsmConfig: Optional. Configuration for Oracle ASM connection.
     password: Required. Input only. The password for the user that Database
       Migration Service will be using to connect to the database. This field
       is not returned on request, and the value is encrypted when stored in
@@ -4415,13 +4649,14 @@ class OracleConnectionProfile(_messages.Message):
   databaseService = _messages.StringField(1)
   forwardSshConnectivity = _messages.MessageField('ForwardSshTunnelConnectivity', 2)
   host = _messages.StringField(3)
-  password = _messages.StringField(4)
-  passwordSet = _messages.BooleanField(5)
-  port = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  privateConnectivity = _messages.MessageField('PrivateConnectivity', 7)
-  ssl = _messages.MessageField('SslConfig', 8)
-  staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 9)
-  username = _messages.StringField(10)
+  oracleAsmConfig = _messages.MessageField('OracleAsmConfig', 4)
+  password = _messages.StringField(5)
+  passwordSet = _messages.BooleanField(6)
+  port = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  privateConnectivity = _messages.MessageField('PrivateConnectivity', 8)
+  ssl = _messages.MessageField('SslConfig', 9)
+  staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 10)
+  username = _messages.StringField(11)
 
 
 class PackageEntity(_messages.Message):
@@ -4604,6 +4839,7 @@ class PostgreSqlConnectionProfile(_messages.Message):
       this field to provide the AlloyDB cluster ID.
     cloudSqlId: If the source is a Cloud SQL database, use this field to
       provide the Cloud SQL instance ID of the source.
+    database: Optional. The name of the specific database within the host.
     host: Required. The IP or hostname of the source PostgreSQL database.
     networkArchitecture: Output only. If the source is a Cloud SQL database,
       this field indicates the network architecture it's associated with.
@@ -4641,15 +4877,16 @@ class PostgreSqlConnectionProfile(_messages.Message):
 
   alloydbClusterId = _messages.StringField(1)
   cloudSqlId = _messages.StringField(2)
-  host = _messages.StringField(3)
-  networkArchitecture = _messages.EnumField('NetworkArchitectureValueValuesEnum', 4)
-  password = _messages.StringField(5)
-  passwordSet = _messages.BooleanField(6)
-  port = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  privateServiceConnectConnectivity = _messages.MessageField('PrivateServiceConnectConnectivity', 8)
-  ssl = _messages.MessageField('SslConfig', 9)
-  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 10)
-  username = _messages.StringField(11)
+  database = _messages.StringField(3)
+  host = _messages.StringField(4)
+  networkArchitecture = _messages.EnumField('NetworkArchitectureValueValuesEnum', 5)
+  password = _messages.StringField(6)
+  passwordSet = _messages.BooleanField(7)
+  port = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  privateServiceConnectConnectivity = _messages.MessageField('PrivateServiceConnectConnectivity', 9)
+  ssl = _messages.MessageField('SslConfig', 10)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 11)
+  username = _messages.StringField(12)
 
 
 class PrimaryInstanceSettings(_messages.Message):
@@ -4668,10 +4905,14 @@ class PrimaryInstanceSettings(_messages.Message):
       these can be used.
     id: Required. The ID of the AlloyDB primary instance. The ID must satisfy
       the regex expression "[a-z0-9-]+".
+    instanceNetworkConfig: Optional. Metadata related to instance level
+      network configuration.
     labels: Labels for the AlloyDB primary instance created by DMS. An object
       containing a list of 'key', 'value' pairs.
     machineConfig: Configuration for the machines that host the underlying
       database engine.
+    outboundPublicIpAddresses: Output only. All outbound public IP addresses
+      configured for the instance.
     privateIp: Output only. The private IP address for the Instance. This is
       the connection endpoint for an end-user application.
   """
@@ -4730,9 +4971,11 @@ class PrimaryInstanceSettings(_messages.Message):
 
   databaseFlags = _messages.MessageField('DatabaseFlagsValue', 1)
   id = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  machineConfig = _messages.MessageField('MachineConfig', 4)
-  privateIp = _messages.StringField(5)
+  instanceNetworkConfig = _messages.MessageField('InstanceNetworkConfig', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  machineConfig = _messages.MessageField('MachineConfig', 5)
+  outboundPublicIpAddresses = _messages.StringField(6, repeated=True)
+  privateIp = _messages.StringField(7)
 
 
 class PrivateConnection(_messages.Message):
@@ -5243,6 +5486,63 @@ class SourceNumericFilter(_messages.Message):
   sourceMinScaleFilter = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
+class SourceObjectConfig(_messages.Message):
+  r"""Config for a single migration job object.
+
+  Fields:
+    objectIdentifier: The object identifier.
+  """
+
+  objectIdentifier = _messages.MessageField('SourceObjectIdentifier', 1)
+
+
+class SourceObjectIdentifier(_messages.Message):
+  r"""An identifier for the Migration Job Object.
+
+  Enums:
+    TypeValueValuesEnum: Required. The type of the migration job object.
+
+  Fields:
+    database: The database name. This will be required only if the object uses
+      a database name as part of its unique identifier.
+    name: The migration job object name. This will be required only if the
+      object is a level below database or schema.
+    schema: The schema name. This will be required only if the object uses a
+      schema name as part of its unique identifier.
+    type: Required. The type of the migration job object.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of the migration job object.
+
+    Values:
+      MIGRATION_JOB_OBJECT_TYPE_UNSPECIFIED: The type of the migration job
+        object is unknown.
+      DATABASE: The migration job object is a database.
+      SCHEMA: The migration job object is a schema.
+      TABLE: The migration job object is a table.
+    """
+    MIGRATION_JOB_OBJECT_TYPE_UNSPECIFIED = 0
+    DATABASE = 1
+    SCHEMA = 2
+    TABLE = 3
+
+  database = _messages.StringField(1)
+  name = _messages.StringField(2)
+  schema = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+
+
+class SourceObjectsConfig(_messages.Message):
+  r"""List of configurations for the source objects to be migrated.
+
+  Fields:
+    objectConfigs: The list of the objects to be migrated.
+  """
+
+  objectConfigs = _messages.MessageField('SourceObjectConfig', 1, repeated=True)
+
+
 class SourceSqlChange(_messages.Message):
   r"""Options to configure rule type SourceSqlChange. The rule is used to
   alter the sql code for database entities. The rule filter field can refer to
@@ -5543,10 +5843,15 @@ class SslConfig(_messages.Message):
       SERVER_ONLY: Only 'ca_certificate' specified.
       SERVER_CLIENT: Both server ('ca_certificate'), and client ('client_key',
         'client_certificate') specified.
+      REQUIRED: Mandates SSL encryption for all connections. This doesn't
+        require certificate verification.
+      NONE: Connection is not encrypted.
     """
     SSL_TYPE_UNSPECIFIED = 0
     SERVER_ONLY = 1
     SERVER_CLIENT = 2
+    REQUIRED = 3
+    NONE = 4
 
   caCertificate = _messages.StringField(1)
   clientCertificate = _messages.StringField(2)

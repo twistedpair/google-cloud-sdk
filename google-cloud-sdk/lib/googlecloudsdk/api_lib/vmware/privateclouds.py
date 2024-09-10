@@ -75,6 +75,7 @@ class PrivateCloudsClient(util.VmwareClientBase):
       secondary_zone=None,
       preferred_zone=None,
       autoscaling_settings=None,
+      service_subnet=None,
   ):
     parent = resource.Parent().RelativeName()
     project = resource.Parent().Parent().Name()
@@ -82,8 +83,14 @@ class PrivateCloudsClient(util.VmwareClientBase):
     private_cloud = self.messages.PrivateCloud(description=description)
     private_cloud.type = self.GetPrivateCloudType(private_cloud_type)
     ven = self.networks_client.GetByID(project, vmware_engine_network_id)
+    new_subnets = []
+    if service_subnet:
+      new_subnets = [
+          self.messages.Subnet(ipCidrRange=cidr) for cidr in service_subnet
+      ]
     network_config = self.messages.NetworkConfig(
-        managementCidr=network_cidr, vmwareEngineNetwork=ven.name
+        managementCidr=network_cidr, vmwareEngineNetwork=ven.name,
+        serviceSubnets=new_subnets,
     )
 
     management_cluster = self.messages.ManagementCluster(clusterId=cluster_id)

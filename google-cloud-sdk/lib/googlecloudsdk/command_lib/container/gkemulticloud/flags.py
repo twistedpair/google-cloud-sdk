@@ -1165,7 +1165,6 @@ def AddSecurityPosture(parser):
       '--security-posture',
       choices=['disabled', 'enterprise'],
       default=None,
-      hidden=True,
       help=textwrap.dedent("""\
       Sets the mode of the Kubernetes security posture API's off-cluster features.
 

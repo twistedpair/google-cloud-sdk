@@ -47,11 +47,13 @@ def AddDatabaseParamsFlags(parser, require_password=True):
   AddPortFlag(database_params_group, required=True)
 
 
-def AddUsernameFlag(parser, required=False):
+def AddUsernameFlag(parser, required=False, help_text=None):
   """Adds a --username flag to the given parser."""
-  help_text = """\
-    Username that Database Migration Service uses to connect to the
-    database. Database Migration Service encrypts the value when storing it.
+  if not help_text:
+    help_text = """\
+        Username that Database Migration Service uses to connect to
+        the database. Database Migration Service encrypts the value when storing
+        it.
     """
   parser.add_argument('--username', help=help_text, required=required)
 

@@ -291,13 +291,15 @@ class CloudApi(object):
     """
     raise NotImplementedError('delete_bucket must be overridden.')
 
-  def get_bucket(self, bucket_name, fields_scope=None):
+  def get_bucket(self, bucket_name, fields_scope=None, soft_deleted=False):
     """Gets bucket metadata.
 
     Args:
       bucket_name (str): Name of the bucket.
       fields_scope (FieldsScope): Determines the fields and projection
         parameters of API call.
+      soft_deleted (bool): If true, return the soft-deleted version of this
+        bucket.
 
     Returns:
       resource_reference.BucketResource containing the bucket metadata.
@@ -328,12 +330,14 @@ class CloudApi(object):
     """
     raise NotImplementedError('get_bucket_iam_policy must be overridden.')
 
-  def list_buckets(self, fields_scope=None):
+  def list_buckets(self, fields_scope=None, soft_deleted=False):
     """Lists bucket metadata for the given project.
 
     Args:
       fields_scope (FieldsScope): Determines the fields and projection
         parameters of API call.
+      soft_deleted (bool): If true, only soft-deleted bucket versions will be
+        returned.
 
     Yields:
       Iterator over resource_reference.BucketResource objects
@@ -1195,6 +1199,23 @@ class CloudApi(object):
       ObjectResource of restored resource.
     """
     raise NotImplementedError('restore_object must be overridden.')
+
+  def restore_bucket(self, url):
+    """Restores a soft-deleted bucket.
+
+    Args:
+      url (storage_url.CloudUrl): Bucket URL with generation.
+
+    Raises:
+      CloudApiError: API returned an error.
+      InvalidUrlError: Received invalid Bucket URL.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+
+    Returns:
+      BucketResource of restored resource.
+    """
+    raise NotImplementedError('restore_bucket must be overridden.')
 
   def bulk_restore_objects(
       self,

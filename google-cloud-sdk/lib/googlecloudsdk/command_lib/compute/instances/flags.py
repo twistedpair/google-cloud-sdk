@@ -4039,5 +4039,13 @@ def AddAvailabilityDomainAgrs(parser):
 def AddTurboModeArgs(parser):
   parser.add_argument(
       '--turbo-mode',
-      help='Specifies the turbo frequency of the instance.',
+      type=str,
+      help="""
+      Turbo mode to use for the instance. Supported modes include:
+      * ALL_CORE_MAX
+
+      To achieve all-core-turbo frequency for more consistent CPU
+      performance, set the field to ALL_CORE_MAX. The field is unset by
+      default, which results in maximum performance single-core boosting.
+      """,
   )

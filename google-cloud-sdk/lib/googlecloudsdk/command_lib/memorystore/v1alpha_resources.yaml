@@ -26,17 +26,6 @@ project:
     help: The project id of the {resource} resource.
     property: core/project
   disable_auto_completers: true
-project_network:
-  name: network
-  plural_name: networks
-  collection: memorystore.projects.networks
-  attributes:
-  - *project
-  - &network
-    parameter_name: networksId
-    attribute_name: network
-    help: The network id of the {resource} resource.
-  disable_auto_completers: true
 project_region:
   name: region
   plural_name: regions
@@ -71,6 +60,17 @@ project_region_forwarding_rule:
     attribute_name: forwarding_rule
     help: The forwardingRule id of the {resource} resource.
   disable_auto_completers: true
+project_global_network:
+  name: network
+  plural_name: networks
+  collection: memorystore.projects.networks
+  attributes:
+  - *project
+  - &network
+    parameter_name: networksId
+    attribute_name: network
+    help: The network id of the {resource} resource.
+  disable_auto_completers: true
 project_region_service_attachment:
   name: serviceAttachment
   plural_name: serviceAttachments
@@ -94,13 +94,4 @@ project_location_instance:
     parameter_name: instancesId
     attribute_name: instance
     help: The instance id of the {resource} resource.
-  disable_auto_completers: false
-project_location_certificate_authority:
-  name: instance
-  plural_name: instances
-  collection: memorystore.projects.locations.instances
-  attributes:
-  - *project
-  - *location
-  - *instance
   disable_auto_completers: false

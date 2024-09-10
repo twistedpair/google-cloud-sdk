@@ -271,6 +271,10 @@ COMPLIANCE_DISABLED_CONFIGURATION = """\
 Cannot specify --compliance-standards with --compliance=disabled
 """
 
+AUTO_MONITORING_NOT_SUPPORTED_WITHOUT_MANAGED_PROMETHEUS = """\
+Cannot enable Auto Monitoring without enabling Managed Prometheus.
+"""
+
 COMPLIANCE_INVALID_STANDARDS_CONFIGURATION = """\
 Invalid value '{standards}' for --compliance-standards: must provide a list of standards separated by commas.
 """
@@ -721,6 +725,7 @@ class CreateClusterOptions(object):
       logging=None,
       monitoring=None,
       enable_managed_prometheus=None,
+      auto_monitoring_scope=None,
       maintenance_interval=None,
       disable_pod_cidr_overprovision=None,
       stack_type=None,
@@ -955,6 +960,7 @@ class CreateClusterOptions(object):
     self.logging = logging
     self.monitoring = monitoring
     self.enable_managed_prometheus = enable_managed_prometheus
+    self.auto_monitoring_scope = auto_monitoring_scope
     self.maintenance_interval = maintenance_interval
     self.disable_pod_cidr_overprovision = disable_pod_cidr_overprovision
     self.stack_type = stack_type
@@ -1131,6 +1137,7 @@ class UpdateClusterOptions(object):
       enable_image_streaming=None,
       enable_managed_prometheus=None,
       disable_managed_prometheus=None,
+      auto_monitoring_scope=None,
       maintenance_interval=None,
       dataplane_v2=None,
       enable_dataplane_v2_metrics=None,
@@ -1286,6 +1293,7 @@ class UpdateClusterOptions(object):
     self.enable_image_streaming = enable_image_streaming
     self.enable_managed_prometheus = enable_managed_prometheus
     self.disable_managed_prometheus = disable_managed_prometheus
+    self.auto_monitoring_scope = auto_monitoring_scope
     self.maintenance_interval = maintenance_interval
     self.dataplane_v2 = dataplane_v2
     self.enable_dataplane_v2_metrics = enable_dataplane_v2_metrics
@@ -2416,7 +2424,9 @@ class APIAdapter(object):
     _AddNotificationConfigToCluster(cluster, options, self.messages)
 
     cluster.loggingConfig = _GetLoggingConfig(options, self.messages)
-    cluster.monitoringConfig = _GetMonitoringConfig(options, self.messages)
+    cluster.monitoringConfig = _GetMonitoringConfig(
+        options, self.messages, False, None
+    )
 
     if options.enable_service_externalips is not None:
       if cluster.networkConfig is None:
@@ -3705,14 +3715,18 @@ class APIAdapter(object):
         update.desiredMonitoringService = options.monitoring_service
       if options.logging_service:
         update.desiredLoggingService = options.logging_service
-    elif (options.logging or options.monitoring or
-          options.enable_managed_prometheus or
-          options.disable_managed_prometheus or
-          options.enable_dataplane_v2_metrics or
-          options.disable_dataplane_v2_metrics or
-          options.enable_dataplane_v2_flow_observability or
-          options.disable_dataplane_v2_flow_observability or
-          options.dataplane_v2_observability_mode):
+    elif (
+        options.logging
+        or options.monitoring
+        or options.enable_managed_prometheus
+        or options.disable_managed_prometheus
+        or options.auto_monitoring_scope
+        or options.enable_dataplane_v2_metrics
+        or options.disable_dataplane_v2_metrics
+        or options.enable_dataplane_v2_flow_observability
+        or options.disable_dataplane_v2_flow_observability
+        or options.dataplane_v2_observability_mode
+    ):
       logging = _GetLoggingConfig(options, self.messages)
       # Fix incorrectly omitting required field.
       if ((options.dataplane_v2_observability_mode or
@@ -3727,7 +3741,32 @@ class APIAdapter(object):
             options.enable_dataplane_v2_metrics = True
           else:
             options.disable_dataplane_v2_metrics = True
-      monitoring = _GetMonitoringConfig(options, self.messages)
+
+      monitoring = None
+      if options.auto_monitoring_scope:
+        cluster = self.GetCluster(cluster_ref)
+
+        if cluster is None:
+          raise util.Error(
+              'Cannot enable Auto Monitoring. The cluster does not exist.'
+          )
+
+        if (
+            cluster.monitoringConfig.managedPrometheusConfig is None
+            or not cluster.monitoringConfig.managedPrometheusConfig.enabled
+        ) and options.auto_monitoring_scope == 'ALL':
+
+          raise util.Error(
+              AUTO_MONITORING_NOT_SUPPORTED_WITHOUT_MANAGED_PROMETHEUS
+          )
+
+        if cluster.monitoringConfig.managedPrometheusConfig.enabled:
+          monitoring = _GetMonitoringConfig(options, self.messages, True, True)
+        else:
+          monitoring = _GetMonitoringConfig(options, self.messages, True, False)
+      else:
+        monitoring = _GetMonitoringConfig(options, self.messages, False, None)
+
       update = self.messages.ClusterUpdate()
       if logging:
         update.desiredLoggingConfig = logging
@@ -7621,7 +7660,7 @@ def _GetHostMaintenancePolicy(options, messages):
     )
 
 
-def _GetMonitoringConfig(options, messages):
+def _GetMonitoringConfig(options, messages, is_update, is_prometheus_enabled):
   """Gets the MonitoringConfig from create and update options."""
 
   comp = None
@@ -7632,15 +7671,61 @@ def _GetMonitoringConfig(options, messages):
   if options.enable_managed_prometheus is not None:
     prom = messages.ManagedPrometheusConfig(
         enabled=options.enable_managed_prometheus)
+    if options.auto_monitoring_scope is not None:
+      scope = None
+      if options.auto_monitoring_scope == 'ALL':
+        scope = messages.AutoMonitoringConfig.ScopeValueValuesEnum.ALL
+      elif options.auto_monitoring_scope == 'NONE':
+        scope = messages.AutoMonitoringConfig.ScopeValueValuesEnum.NONE
+      prom.autoMonitoringConfig = messages.AutoMonitoringConfig(scope=scope)
+    config.managedPrometheusConfig = prom
+  # for update or when auto_monitoring_scope is set without
+  # managed_prometheus enabled
+  if (
+      options.enable_managed_prometheus is None
+      and options.auto_monitoring_scope is not None
+  ):
+    if (
+        not is_update
+        and options.enable_managed_prometheus is None
+        and options.auto_monitoring_scope != 'NONE'
+        and not options.autopilot
+    ):
+      raise util.Error(AUTO_MONITORING_NOT_SUPPORTED_WITHOUT_MANAGED_PROMETHEUS)
+    elif is_update:
+      scope = None
+      if options.auto_monitoring_scope == 'ALL':
+        scope = messages.AutoMonitoringConfig.ScopeValueValuesEnum.ALL
+      elif options.auto_monitoring_scope == 'NONE':
+        scope = messages.AutoMonitoringConfig.ScopeValueValuesEnum.NONE
+
+      prom = messages.ManagedPrometheusConfig(enabled=is_prometheus_enabled)
+      prom.autoMonitoringConfig = messages.AutoMonitoringConfig(scope=scope)
+    elif options.autopilot:
+      prom = messages.ManagedPrometheusConfig(enabled=True)
+      scope = None
+      if options.auto_monitoring_scope == 'ALL':
+        scope = messages.AutoMonitoringConfig.ScopeValueValuesEnum.ALL
+      elif options.auto_monitoring_scope == 'NONE':
+        scope = messages.AutoMonitoringConfig.ScopeValueValuesEnum.NONE
+      prom.autoMonitoringConfig = messages.AutoMonitoringConfig(scope=scope)
+    else:  # when prometheus is not enabled and user it trying to set scope to
+      # NONE in a create cluster command.
+      prom = messages.ManagedPrometheusConfig(enabled=False)
+      prom.autoMonitoringConfig = messages.AutoMonitoringConfig(
+          scope=messages.AutoMonitoringConfig.ScopeValueValuesEnum.NONE
+      )
+
     config.managedPrometheusConfig = prom
 
   # Disable flag only on cluster updates, check first.
   if hasattr(options, 'disable_managed_prometheus'):
     if options.disable_managed_prometheus is not None:
       prom = messages.ManagedPrometheusConfig(
-          enabled=(not options.disable_managed_prometheus))
+          enabled=(not options.disable_managed_prometheus)
+      )
+      prom.autoMonitoringConfig = None
       config.managedPrometheusConfig = prom
-
   if options.monitoring is not None:
     # TODO(b/195524749): Validate the input in flags.py after Control Plane
     # Signals is GA.

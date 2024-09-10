@@ -18,8 +18,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
+from googlecloudsdk.api_lib.artifacts import exceptions
+from googlecloudsdk.api_lib.artifacts import filter_rewriter
+from googlecloudsdk.api_lib.util import common_args
 from googlecloudsdk.command_lib.artifacts import requests
 from googlecloudsdk.command_lib.artifacts import util
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
@@ -89,3 +95,130 @@ def ListGenericFiles(args):
   files = requests.ListFiles(client, messages, repo_path, arg_filters)
 
   return files
+
+
+def ListFiles(args):
+  """Lists files in a given project.
+
+  Args:
+    args: User input arguments.
+
+  Returns:
+    List of files.
+  """
+  client = requests.GetClient()
+  messages = requests.GetMessages()
+  project = util.GetProject(args)
+  location = args.location or properties.VALUES.artifacts.location.Get()
+  repo = util.GetRepo(args)
+  package = args.package
+  version = args.version
+  tag = args.tag
+  page_size = args.page_size
+  order_by = common_args.ParseSortByArg(args.sort_by)
+  _, server_filter = filter_rewriter.Rewriter().Rewrite(args.filter)
+
+  if order_by is not None:
+    if "," in order_by:
+      # Multi-ordering is not supported yet on backend, fall back to client-side
+      # sort-by.
+      order_by = None
+    if package or version or tag:
+      # Cannot use server-side sort-by with --package, --version or --tag,
+      # fall back to client-side sort-by.
+      order_by = None
+
+  if args.limit is not None and args.filter is not None:
+    if server_filter is not None:
+      # Use server-side paging with server-side filtering.
+      page_size = args.limit
+      args.page_size = args.limit
+    else:
+      # Fall back to client-side paging with client-side filtering.
+      page_size = None
+
+  if server_filter:
+    if package or version or tag:
+      # Cannot use server-side filter with --package, --version or --tag,
+      # fallback to client-side filter.
+      server_filter = None
+
+  # Parse fully qualified path in package argument
+  if package:
+    if re.match(r"projects\/.*\/locations\/.*\/repositories\/.*\/packages\/.*",
+                package):
+      params = package.replace("projects/", "", 1).replace(
+          "/locations/", " ", 1).replace("/repositories/", " ",
+                                         1).replace("/packages/", " ",
+                                                    1).split(" ")
+      project, location, repo, package = [params[i] for i in range(len(params))]
+
+  # Escape slashes, pluses and carets in package name
+  if package:
+    package = package.replace("/", "%2F").replace("+", "%2B")
+    package = package.replace("^", "%5E")
+
+  # Retrieve version from tag name
+  if version and tag:
+    raise exceptions.InvalidInputValueError(
+        "Specify either --version or --tag with --package argument.")
+  if package and tag:
+    tag_path = resources.Resource.RelativeName(
+        resources.REGISTRY.Create(
+            "artifactregistry.projects.locations.repositories.packages.tags",
+            projectsId=project,
+            locationsId=location,
+            repositoriesId=repo,
+            packagesId=package,
+            tagsId=tag))
+    version = requests.GetVersionFromTag(client, messages, tag_path)
+
+  if package and version:
+    version_path = resources.Resource.RelativeName(
+        resources.REGISTRY.Create(
+            "artifactregistry.projects.locations.repositories.packages.versions",
+            projectsId=project,
+            locationsId=location,
+            repositoriesId=repo,
+            packagesId=package,
+            versionsId=version))
+    server_filter = 'owner="{}"'.format(version_path)
+  elif package:
+    package_path = resources.Resource.RelativeName(
+        resources.REGISTRY.Create(
+            "artifactregistry.projects.locations.repositories.packages",
+            projectsId=project,
+            locationsId=location,
+            repositoriesId=repo,
+            packagesId=package))
+    server_filter = 'owner="{}"'.format(package_path)
+  elif version or tag:
+    raise exceptions.InvalidInputValueError(
+        "Package name is required when specifying version or tag.")
+
+  repo_path = resources.Resource.RelativeName(
+      resources.REGISTRY.Create(
+          "artifactregistry.projects.locations.repositories",
+          projectsId=project,
+          locationsId=location,
+          repositoriesId=repo))
+  server_args = {
+      "client": client,
+      "messages": messages,
+      "repo": repo_path,
+      "server_filter": server_filter,
+      "page_size": page_size,
+      "order_by": order_by
+  }
+  server_args_skipped, lfiles = util.RetryOnInvalidArguments(
+      requests.ListFiles,
+      **server_args)
+
+  if not server_args_skipped:
+    # If server-side filter or sort-by is parsed correctly and the request
+    # succeeds, remove the client-side filter and sort-by.
+    if server_filter and server_filter == args.filter:
+      args.filter = None
+    if order_by:
+      args.sort_by = None
+  return lfiles

@@ -1396,6 +1396,23 @@ def AddManagedPrometheusFlags(parser, for_create=False):
     )
 
 
+def AddAutoMonitoringScopeFlags(parser, hidden=True):
+  """Adds --auto-monitoring-scope flags to parser."""
+  help_text = """
+  Enables Auto-Monitoring for a specific scope within the cluster.
+  ALL: Enables Auto-Monitoring for all supported workloads within the cluster.
+  NONE: Disables Auto-Monitoring.
+  """
+  choices = ['ALL', 'NONE']
+  parser.add_argument(
+      '--auto-monitoring-scope',
+      choices=choices,
+      default=None,
+      help=help_text,
+      hidden=hidden,
+  )
+
+
 def AddEnableMasterSignalsFlags(parser, for_create=False):
   """Adds --master-logs and --enable-master-metrics flags to parser."""
 

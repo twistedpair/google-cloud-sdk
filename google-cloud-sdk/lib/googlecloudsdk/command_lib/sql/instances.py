@@ -585,6 +585,15 @@ class _BaseInstances(object):
       settings.advancedMachineFeatures = sql_messages.AdvancedMachineFeatures()
       settings.advancedMachineFeatures.threadsPerCore = args.threads_per_core
 
+    if args.IsSpecified('psc_auto_connections'):
+      if not settings.ipConfiguration:
+        settings.ipConfiguration = sql_messages.IpConfiguration()
+      if not settings.ipConfiguration.pscConfig:
+        settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
+      settings.ipConfiguration.pscConfig.pscAutoConnections = (
+          reducers.PscAutoConnections(sql_messages, args.psc_auto_connections)
+      )
+
     # BETA args.
     if IsBetaOrNewer(release_track):
       settings.userLabels = labels_util.ParseCreateArgs(
@@ -595,11 +604,6 @@ class _BaseInstances(object):
         if not settings.ipConfiguration:
           settings.ipConfiguration = sql_messages.IpConfiguration()
         settings.ipConfiguration.allocatedIpRange = args.allocated_ip_range_name
-
-      if args.IsSpecified('psc_auto_connections'):
-        settings.ipConfiguration.pscConfig.pscAutoConnections = (
-            reducers.PscAutoConnections(sql_messages, args.psc_auto_connections)
-        )
 
     # ALPHA args.
     if _IsAlpha(release_track):

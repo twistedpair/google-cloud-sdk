@@ -32,6 +32,17 @@ def MakeSnapshotArg(plural=False):
   )
 
 
+def MakeSnapshotArgAlpha(plural=False):
+  return compute_flags.ResourceArgument(
+      resource_name='snapshot',
+      name='snapshot_name',
+      completer=compute_completers.RoutesCompleter,
+      plural=plural,
+      regional_collection='compute.regionSnapshots',
+      global_collection='compute.snapshots',
+  )
+
+
 def AddChainArg(parser):
   parser.add_argument(
       '--chain-name',

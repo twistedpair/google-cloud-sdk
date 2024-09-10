@@ -188,9 +188,7 @@ class PocoCommand:
         membershipSpecs=self.hubclient.ToMembershipSpecs(specs)
     )
 
-    if not use_default_cfg and util.UseMembershipFeatureV2(
-        self.Project(), self.ReleaseTrack()
-    ):
+    if not use_default_cfg and util.UseMembershipFeatureV2(self.ReleaseTrack()):
       for spec in feature.membershipSpecs.additionalProperties:
         membership_path = spec.key
         v1_spec = spec.value

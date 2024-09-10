@@ -219,12 +219,12 @@ def AddStoragePoolCreateArgs(parser, release_track):
   AddStoragePoolActiveDirectoryArg(parser)
   AddStoragePoolKmsConfigArg(parser)
   AddStoragePoolEnableLdapArg(parser)
+  AddStoragePoolZoneArg(parser)
+  AddStoragePoolReplicaZoneArg(parser)
   # TODO(b/354772678):Remove the release track condition when auto tiering GA.
   if (release_track == base.ReleaseTrack.ALPHA or
       release_track == base.ReleaseTrack.BETA):
     AddStoragePoolAllowAutoTieringArg(parser, False)
-    AddStoragePoolZoneArg(parser)
-    AddStoragePoolReplicaZoneArg(parser)
   else:
     AddStoragePoolAllowAutoTieringArg(parser, True)
 
@@ -248,11 +248,11 @@ def AddStoragePoolUpdateArgs(parser, release_track):
   labels_util.AddUpdateLabelsFlags(parser)
   AddStoragePoolActiveDirectoryArg(parser)
   # TODO(b/354772678):Remove the release track condition when auto tiering GA.
+  AddStoragePoolZoneArg(parser)
+  AddStoragePoolReplicaZoneArg(parser)
   if (release_track == base.ReleaseTrack.ALPHA or
       release_track == base.ReleaseTrack.BETA):
     AddStoragePoolAllowAutoTieringArg(parser, False)
-    AddStoragePoolZoneArg(parser)
-    AddStoragePoolReplicaZoneArg(parser)
   else:
     AddStoragePoolAllowAutoTieringArg(parser, True)
 

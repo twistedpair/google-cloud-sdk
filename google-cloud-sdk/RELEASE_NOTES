@@ -5,6 +5,113 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 492.0.0 (2024-09-10)
+
+### Anthos Multi-Cloud
+
+* Added `--security-posture` flag to `gcloud container attached clusters` to
+  set the mode of the Kubernetes security posture API's off-cluster features.
+
+### Artifact Registry
+
+* Supported `--filter` and `--sort-by` on resource list apis.
+* Added update commands for annotations on Files, Packages and Package Versions.
+
+### Assured Workloads
+
+*   Added `SOVEREIGN_CONTROLS_BY_SIA_MINSAIT` and `SOVEREIGN_CONTROLS_BY_PSN`
+     as options for `--partner` flag of `gcloud assured workloads create` for
+     both beta and GA.
+*   Added support for the following Compliance Regimes for
+     `gcloud assured workloads create`: `AU_REGIONS_AND_US_SUPPORT`,
+     `ISR_REGIONS`, `ISR_REGIONS_AND_SUPPORT`, `CA_PROTECTED_B`, `IL5`, `IL2`,
+     `JP_REGIONS_AND_SUPPORT`,
+     `KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS`, and
+     `REGIONAL_CONTROLS`.
+*   The `gcloud assured workloads create` command will now automatically receive
+     new Compliance Regime and Partner options as they are added to the Assured
+     Workloads API.
+
+### Cloud Filestore
+
+* Added `--deletion-protection` and `--deletion-protection-reason` flags to
+  `gcloud filestore instances create`.
+* Added
+  `--deletion-protection`, `--no-deletion-protection` and
+  `--deletion-protection-reason` flags to `gcloud filestore instances update`.
+
+### Cloud Functions
+
+* Changed `gcloud functions deploy` to deploy _new_ functions via
+  Cloud Functions (2nd gen) by default. 1st gen
+  functions can still be created by specifying `--no-gen2` or by setting the
+  `functions/gen2` property to `off`. This change will be applied in the GA
+  release track to match beta and alpha.
+
+### Cloud NetApp
+
+* Added `--zone` and `--replica-zone` flag to `gcloud netapp [volumes|storage-pools] create` commands.
+
+### Cloud Run
+
+* Promoted `gcloud run services logs read` and `gcloud run jobs logs read` to GA.
+
+### Cloud SQL
+
+* Added `--server_ca_mode` flag to `gcloud beta sql instances create` for
+    creation of instances using CAS server CA.
+* Added `sql ssl server_certs` group for CAS server cert management and
+    rotation with the commands `create`, `list`, `rotate`, and `rollback`.
+
+### Colab Enterprise
+
+*   Fixed output in `gcloud beta colab-enterprise runtime-templates` commands
+    involving LROs to correctly show resource name rather than operation name.
+
+### Compute Engine
+
+* Promoting `--turbo-mode` in `gcloud compute instances create` to beta. It lets
+instances run at supported turbo frequency. Only supported on C4 VM families
+with possible value "ALL_CORE_MAX".
+
+### Database Migration
+
+* Added `--username` and `--password` flags to `gcloud database-migration connection-profiles create sqlserver`.
+* Added `gcloud database-migrate connection-profiles test` to validate a Database Migration Service connection profile.
+
+### GKE Hub
+
+* Removed `--description` flag of `gcloud beta container fleet memberships create`.
+
+### Kubernetes Engine
+
+* Updates default kubectl from 1.28.12 to 1.29.8.
+* Additional kubectl versions:
+  * kubectl.1.27 (1.27.16)
+  * kubectl.1.28 (1.28.13)
+  * kubectl.1.29 (1.29.8)
+  * kubectl.1.30 (1.30.4)
+  * kubectl.1.31 (1.31.0)
+* Added `--accelerators` flag to `gcloud container node-pools update` to enable accelerator config update on nodepools.
+
+### Network Management
+
+* Added `gcloud beta network-management vpc-flow-logs-configs` command group
+ which is manage the VPC Flow Logs configurations.
+
+### Network Security
+
+*   New commands for network-security resources - AuthzPolicy.
+*   Added `security-profiles custom-mirroring` commands to manage custom mirroring security profiles and promoted them to beta.
+
+### Service Extensions
+
+* New commands for service-extensions resources - AuthzExtensions.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 491.0.0 (2024-09-04)
 
 ### Breaking Changes

@@ -264,7 +264,10 @@ class FilestoreClient(object):
                            nfs_export_options=None,
                            kms_key_name=None,
                            managed_ad=None,
-                           source_instance=None):
+                           source_instance=None,
+                           deletion_protection_enabled=None,
+                           deletion_protection_reason=None,
+                           ):
     """Parses the command line arguments for Create into a config.
 
     Args:
@@ -281,6 +284,8 @@ class FilestoreClient(object):
       kms_key_name: The kms key for instance encryption.
       managed_ad: The Managed Active Directory settings of the instance.
       source_instance: The replication source of the instance.
+      deletion_protection_enabled: bool, whether to enable deletion protection.
+      deletion_protection_reason: The reason for enabling deletion protection.
 
     Returns:
       The configuration that will be used as the request body for creating a
@@ -326,6 +331,13 @@ class FilestoreClient(object):
       connect_mode = network.get('connect-mode', 'DIRECT_PEERING')
       self._adapter.ParseConnectMode(network_config, connect_mode)
       instance.networks.append(network_config)
+
+    if deletion_protection_enabled is not None:
+      instance.deletionProtectionEnabled = deletion_protection_enabled
+
+    if deletion_protection_reason is not None:
+      instance.deletionProtectionReason = deletion_protection_reason
+
     return instance
 
   def ParseUpdatedInstanceConfig(self,
@@ -337,7 +349,10 @@ class FilestoreClient(object):
                                  clear_performance=False,
                                  managed_ad=None,
                                  disconnect_managed_ad=None,
-                                 clear_nfs_export_options=False):
+                                 clear_nfs_export_options=False,
+                                 deletion_protection_enabled=None,
+                                 deletion_protection_reason=None,
+                                 ):
     """Parses updates into an instance config.
 
     Args:
@@ -350,6 +365,8 @@ class FilestoreClient(object):
       managed_ad: The Managed Active Directory settings of the instance.
       disconnect_managed_ad: Disconnect from Managed Active Directory.
       clear_nfs_export_options: bool, whether to clear the NFS export options.
+      deletion_protection_enabled: bool, whether to enable deletion protection.
+      deletion_protection_reason: The reason for enabling deletion protection.
 
     Raises:
       InvalidCapacityError, if an invalid capacity value is provided.
@@ -358,6 +375,7 @@ class FilestoreClient(object):
     Returns:
       The instance message.
     """
+
     instance = self._adapter.ParseUpdatedInstanceConfig(
         instance_config,
         description=description,
@@ -367,7 +385,10 @@ class FilestoreClient(object):
         clear_performance=clear_performance,
         managed_ad=managed_ad,
         disconnect_managed_ad=disconnect_managed_ad,
-        clear_nfs_export_options=clear_nfs_export_options)
+        clear_nfs_export_options=clear_nfs_export_options,
+        deletion_protection_enabled=deletion_protection_enabled,
+        deletion_protection_reason=deletion_protection_reason,
+        )
     return instance
 
   def UpdateInstance(self, instance_ref, instance_config, update_mask, async_):
@@ -620,6 +641,8 @@ class AlphaFilestoreAdapter(object):
       managed_ad=None,
       disconnect_managed_ad=None,
       clear_nfs_export_options=False,
+      deletion_protection_enabled=None,
+      deletion_protection_reason=None,
   ):
     """Parse update information into an updated Instance message."""
     if description:
@@ -660,6 +683,13 @@ class AlphaFilestoreAdapter(object):
       self.ParseManagedADIntoInstance(instance_config, managed_ad)
     if disconnect_managed_ad:
       instance_config.directoryServices = None
+
+    if deletion_protection_enabled is not None:
+      instance_config.deletionProtectionEnabled = deletion_protection_enabled
+
+    if deletion_protection_reason is not None:
+      instance_config.deletionProtectionReason = deletion_protection_reason
+
     return instance_config
 
   def ValidateFileShareForUpdate(self, instance_config, file_share):

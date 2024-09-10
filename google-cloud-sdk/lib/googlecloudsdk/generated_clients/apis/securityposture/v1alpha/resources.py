@@ -41,6 +41,14 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_IACVALIDATIONREPORTMETRICS = (
+      'organizations.locations.iacValidationReportMetrics',
+      'organizations/{organizationsId}/locations/{locationsId}/'
+      'iacValidationReportMetrics',
+      {},
+      ['organizationsId', 'locationsId'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_OPERATIONS = (
       'organizations.locations.operations',
       '{+name}',

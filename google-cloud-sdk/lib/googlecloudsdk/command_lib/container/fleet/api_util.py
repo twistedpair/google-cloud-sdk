@@ -192,7 +192,6 @@ def UpdateMembership(name,
 
 def CreateMembership(project,
                      membership_id,
-                     description=None,
                      location=None,
                      gke_cluster_self_link=None,
                      external_id=None,
@@ -205,7 +204,6 @@ def CreateMembership(project,
   Args:
     project: the project in which to create the membership
     membership_id: the value to use for the membership_id
-    description: the value to put in the description field
     location: the location for the membership
     gke_cluster_self_link: the selfLink for the cluster if it is a GKE cluster,
       or None if it is not
@@ -232,7 +230,7 @@ def CreateMembership(project,
   parent_ref = ParentRef(project, location)
 
   request = messages.GkehubProjectsLocationsMembershipsCreateRequest(
-      membership=messages.Membership(description=description),
+      membership=messages.Membership(),
       parent=parent_ref,
       membershipId=membership_id,
   )

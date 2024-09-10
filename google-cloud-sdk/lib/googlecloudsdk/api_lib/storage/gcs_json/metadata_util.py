@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import copy
+from typing import List
 
 from apitools.base.py import encoding
 from apitools.base.py import encoding_helper
@@ -160,6 +161,7 @@ def get_bucket_resource_from_metadata(metadata):
       default_storage_class=metadata.storageClass,
       etag=metadata.etag,
       labels=_message_to_dict(metadata.labels),
+      ip_filter_config=_message_to_dict(metadata.ipFilter),
       lifecycle_config=_message_to_dict(metadata.lifecycle),
       location=metadata.location,
       location_type=metadata.locationType,
@@ -501,6 +503,12 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
     bucket_metadata.storageClass = (
         metadata_field_converters.process_default_storage_class(
             resource_args.default_storage_class))
+  if (
+      resource_args.ip_filter_file_path is not None
+  ):
+    bucket_metadata.ipFilter = metadata_field_converters.process_ip_filter(
+        resource_args.ip_filter_file_path
+    )
   if resource_args.lifecycle_file_path is not None:
     bucket_metadata.lifecycle = (
         metadata_field_converters.process_lifecycle(
@@ -640,6 +648,32 @@ def get_cleared_bucket_fields(request_config):
   elif resource_args.web_main_page_suffix == user_request_args_factory.CLEAR:
     cleared_fields.append('website.mainPageSuffix')
 
+  return cleared_fields
+
+
+def get_cleared_ip_filter_fields(
+    ip_filter
+) -> List[str]:
+  """Returns cleared IP filter fields for the bucket.
+
+  Args:
+    ip_filter: IP filter object.
+
+  Returns:
+    List of IP filter fields to be cleared.
+  """
+  cleared_fields = []
+  if ip_filter.mode is None:
+    cleared_fields.append('ipFilter.mode')
+  if ip_filter.publicNetworkSource is None:
+    cleared_fields.append('ipFilter.publicNetworkSource')
+  elif (
+      ip_filter.publicNetworkSource is not None
+      and not ip_filter.publicNetworkSource.allowedIpCidrRanges
+  ):
+    cleared_fields.append('ipFilter.publicNetworkSource.allowedIpCidrRanges')
+  if not ip_filter.vpcNetworkSources:
+    cleared_fields.append('ipFilter.vpcNetworkSources')
   return cleared_fields
 
 

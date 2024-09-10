@@ -75,6 +75,12 @@ def Args():
           remote repository upstream.
           """,
       ),
+      base.Argument(
+          "--service-directory-config", help="""\
+          Service Directory config link for using Private Networks. Format:
+          projects/<project>/locations/<location>/namespaces/<namespace>/services/<service>
+          """, hidden=True
+      ),
   ]
 
 
@@ -105,6 +111,12 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
   # Disable Remote Validation
   if repo_args.disable_remote_validation:
     remote_cfg.disableUpstreamValidation = True
+
+  # Service Directory config for Private networks
+  sd_config = repo_args.service_directory_config
+  if sd_config:
+    remote_cfg.serviceDirectoryConfig = messages.ServiceDirectoryConfig()
+    remote_cfg.serviceDirectoryConfig.service = sd_config
 
   # MAVEN
   if repo_args.remote_mvn_repo:

@@ -414,6 +414,17 @@ def AddOfflineCredential(parser):
   )
 
 
+def AddUseGoogleManagedKey(parser):
+  parser.add_argument(
+      '--use-google-managed-key',
+      action='store_true',
+      help="""
+      Once specified, a Google-managed key will be used for the control plane
+      disk encryption.
+      """,
+  )
+
+
 def AddNodeCount(parser, required=True):
   parser.add_argument(
       '--node-count',

@@ -2765,7 +2765,7 @@ def AddServerCaMode(parser):
       required=False,
       default=None,
       help=help_text,
-      hidden=True,
+      hidden=False,
   )
 
 

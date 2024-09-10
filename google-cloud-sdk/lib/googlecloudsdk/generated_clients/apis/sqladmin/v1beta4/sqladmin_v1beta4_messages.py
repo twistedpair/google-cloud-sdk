@@ -2854,6 +2854,7 @@ class Operation(_messages.Message):
       [RFC 3339](https://tools.ietf.org/html/rfc3339) format, for example
       `2012-11-15T16:19:00.094Z`.
     status: The status of an operation.
+    subOperationType: Optional. The sub operation based on the operation type.
     targetId: Name of the database instance related to this operation.
     targetLink: A string attribute.
     targetProject: The project ID of the target instance related to this
@@ -3036,10 +3037,11 @@ class Operation(_messages.Message):
   selfLink = _messages.StringField(13)
   startTime = _messages.StringField(14)
   status = _messages.EnumField('StatusValueValuesEnum', 15)
-  targetId = _messages.StringField(16)
-  targetLink = _messages.StringField(17)
-  targetProject = _messages.StringField(18)
-  user = _messages.StringField(19)
+  subOperationType = _messages.MessageField('SqlSubOperationType', 16)
+  targetId = _messages.StringField(17)
+  targetLink = _messages.StringField(18)
+  targetProject = _messages.StringField(19)
+  user = _messages.StringField(20)
 
 
 class OperationError(_messages.Message):
@@ -3182,6 +3184,8 @@ class PscAutoConnectionConfig(_messages.Message):
       name. For example, `projects/project1/global/networks/network1`. The
       consumer host project of this network might be different from the
       consumer service project.
+    consumerNetworkStatus: The connection policy status of the consumer
+      network.
     consumerProject: This is the project ID of consumer service project of
       this consumer endpoint. Optional. This is only applicable if
       consumer_network is a shared vpc network.
@@ -3190,9 +3194,10 @@ class PscAutoConnectionConfig(_messages.Message):
   """
 
   consumerNetwork = _messages.StringField(1)
-  consumerProject = _messages.StringField(2)
-  ipAddress = _messages.StringField(3)
-  status = _messages.StringField(4)
+  consumerNetworkStatus = _messages.StringField(2)
+  consumerProject = _messages.StringField(3)
+  ipAddress = _messages.StringField(4)
+  status = _messages.StringField(5)
 
 
 class PscConfig(_messages.Message):
@@ -3423,6 +3428,12 @@ class Settings(_messages.Message):
       are enabled. This property was only applicable to First Generation
       instances.
     dataCacheConfig: Configuration for data cache.
+    dataDiskProvisionedIops: Optional. Provisioned number of I/O operations
+      per second for the data disk. This field is only used for hyperdisk-
+      balanced disk types.
+    dataDiskProvisionedThroughput: Optional. Provisioned throughput measured
+      in MiB per second for the data disk. This field is only used for
+      hyperdisk-balanced disk types.
     dataDiskSizeGb: The size of data disk, in GB. The data disk size minimum
       is 10GB.
     dataDiskType: The type of data disk: `PD_SSD` (default) or `PD_HDD`. Not
@@ -3645,35 +3656,37 @@ class Settings(_messages.Message):
   connectorEnforcement = _messages.EnumField('ConnectorEnforcementValueValuesEnum', 8)
   crashSafeReplicationEnabled = _messages.BooleanField(9)
   dataCacheConfig = _messages.MessageField('DataCacheConfig', 10)
-  dataDiskSizeGb = _messages.IntegerField(11)
-  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 12)
-  databaseFlags = _messages.MessageField('DatabaseFlags', 13, repeated=True)
-  databaseReplicationEnabled = _messages.BooleanField(14)
-  deletionProtectionEnabled = _messages.BooleanField(15)
-  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 16, repeated=True)
-  edition = _messages.EnumField('EditionValueValuesEnum', 17)
-  enableDataplexIntegration = _messages.BooleanField(18)
-  enableGoogleMlIntegration = _messages.BooleanField(19)
-  insightsConfig = _messages.MessageField('InsightsConfig', 20)
-  instanceVersion = _messages.StringField(21)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 22)
-  kind = _messages.StringField(23)
-  locationPreference = _messages.MessageField('LocationPreference', 24)
-  maintenanceVersion = _messages.StringField(25)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 26)
-  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 27)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 28)
-  recreateReplicasOnPrimaryCrash = _messages.BooleanField(29)
-  replicationLagMaxSeconds = _messages.IntegerField(30, variant=_messages.Variant.INT32)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 31)
-  retainBackupsOnDelete = _messages.BooleanField(32)
-  settingsVersion = _messages.IntegerField(33)
-  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 34)
-  storageAutoResize = _messages.BooleanField(35)
-  storageAutoResizeLimit = _messages.IntegerField(36)
-  tier = _messages.StringField(37)
-  timeZone = _messages.StringField(38)
-  userLabels = _messages.MessageField('UserLabelsValue', 39)
+  dataDiskProvisionedIops = _messages.IntegerField(11)
+  dataDiskProvisionedThroughput = _messages.IntegerField(12)
+  dataDiskSizeGb = _messages.IntegerField(13)
+  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 14)
+  databaseFlags = _messages.MessageField('DatabaseFlags', 15, repeated=True)
+  databaseReplicationEnabled = _messages.BooleanField(16)
+  deletionProtectionEnabled = _messages.BooleanField(17)
+  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 18, repeated=True)
+  edition = _messages.EnumField('EditionValueValuesEnum', 19)
+  enableDataplexIntegration = _messages.BooleanField(20)
+  enableGoogleMlIntegration = _messages.BooleanField(21)
+  insightsConfig = _messages.MessageField('InsightsConfig', 22)
+  instanceVersion = _messages.StringField(23)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 24)
+  kind = _messages.StringField(25)
+  locationPreference = _messages.MessageField('LocationPreference', 26)
+  maintenanceVersion = _messages.StringField(27)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 28)
+  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 29)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 30)
+  recreateReplicasOnPrimaryCrash = _messages.BooleanField(31)
+  replicationLagMaxSeconds = _messages.IntegerField(32, variant=_messages.Variant.INT32)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 33)
+  retainBackupsOnDelete = _messages.BooleanField(34)
+  settingsVersion = _messages.IntegerField(35)
+  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 36)
+  storageAutoResize = _messages.BooleanField(37)
+  storageAutoResizeLimit = _messages.IntegerField(38)
+  tier = _messages.StringField(39)
+  timeZone = _messages.StringField(40)
+  userLabels = _messages.MessageField('UserLabelsValue', 41)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):
@@ -3980,7 +3993,8 @@ class SqlExternalSyncSettingError(_messages.Message):
         MySQL.
       SQLSERVER_AGENT_NOT_RUNNING: SQL Server Agent is not running.
       UNSUPPORTED_TABLE_DEFINITION: The table definition is not support due to
-        missing primary key or replica identity, applicable for postgres.
+        missing primary key or replica identity, applicable for postgres. Note
+        that this is a warning and won't block the migration.
       UNSUPPORTED_DEFINER: The customer has a definer that will break EM
         setup.
       SQLSERVER_SERVERNAME_MISMATCH: SQL Server @@SERVERNAME does not match
@@ -4054,6 +4068,10 @@ class SqlExternalSyncSettingError(_messages.Message):
         instance. Then, perform the migration.
       UNSUPPORTED_SYSTEM_OBJECTS: The selected objects include system objects
         that aren't supported for migration.
+      UNSUPPORTED_TABLES_WITH_REPLICA_IDENTITY: The source database has tables
+        with the FULL or NOTHING replica identity. Before starting your
+        migration, either remove the identity or change it to DEFAULT. Note
+        that this is an error and will block the migration.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -4107,6 +4125,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     UNSUPPORTED_COLUMNS = 49
     USERS_NOT_CREATED_IN_REPLICA = 50
     UNSUPPORTED_SYSTEM_OBJECTS = 51
+    UNSUPPORTED_TABLES_WITH_REPLICA_IDENTITY = 52
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)
@@ -5129,6 +5148,40 @@ class SqlSslCertsListRequest(_messages.Message):
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+
+
+class SqlSubOperationType(_messages.Message):
+  r"""The sub operation type based on the operation type.
+
+  Enums:
+    MaintenanceTypeValueValuesEnum: The type of maintenance to be performed on
+      the instance.
+
+  Fields:
+    maintenanceType: The type of maintenance to be performed on the instance.
+  """
+
+  class MaintenanceTypeValueValuesEnum(_messages.Enum):
+    r"""The type of maintenance to be performed on the instance.
+
+    Values:
+      SQL_MAINTENANCE_TYPE_UNSPECIFIED: Maintenance type is unspecified.
+      INSTANCE_MAINTENANCE: Maintenance type is standalone instance
+        maintenance.
+      CLUSTER_BASED_MAINTENANCE: Maintenance type is cluster-based
+        maintenance.
+      INSTANCE_SELF_SERVICE_MAINTENANCE: Maintenance type is standalone
+        instance self-service maintenance.
+      CLUSTER_BASED_SELF_SERVICE_MAINTENANCE: Maintenance type is cluster-
+        based self-service maintenance.
+    """
+    SQL_MAINTENANCE_TYPE_UNSPECIFIED = 0
+    INSTANCE_MAINTENANCE = 1
+    CLUSTER_BASED_MAINTENANCE = 2
+    INSTANCE_SELF_SERVICE_MAINTENANCE = 3
+    CLUSTER_BASED_SELF_SERVICE_MAINTENANCE = 4
+
+  maintenanceType = _messages.EnumField('MaintenanceTypeValueValuesEnum', 1)
 
 
 class SqlTiersListRequest(_messages.Message):

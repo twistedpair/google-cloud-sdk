@@ -26,7 +26,24 @@ def AddCpDetailsFlag(parser):
 
   cp_params_group = parser.add_group(required=True, mutex=True)
   AddSourceDetailsFlag(cp_params_group)
-  cp_flags.AddCloudSQLInstanceFlag(cp_params_group)
+  AddDestinationDetailsFlag(cp_params_group)
+
+
+def AddDestinationDetailsFlag(parser):
+  """Adds the destination connection profile parameters to the given parser."""
+  destination_cp_params_group = parser.add_group()
+  cp_flags.AddCloudSQLInstanceFlag(destination_cp_params_group, required=True)
+  cp_flags.AddUsernameFlag(
+      destination_cp_params_group,
+      required=True,
+      help_text="""\
+          Username that Database Migration Service uses to connect to the
+          database for metrics and observability. We highly recommend that you
+          use the sqlserver user for this. Database Migration Service encrypts
+          the value when storing it.
+      """,
+  )
+  cp_flags.AddPasswordFlagGroup(destination_cp_params_group, required=True)
 
 
 def AddSourceDetailsFlag(parser):

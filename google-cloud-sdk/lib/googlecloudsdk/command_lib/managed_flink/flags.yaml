@@ -35,3 +35,38 @@ secrets-path:
   arg_name: secrets-path
   help_text: |
     path to the secrets manager for the Flink deployment. (ie. projects/{my-project}/secrets/{my-secret}/versions/{1})
+
+## Job Specific Flags
+
+deployment:
+  arg_name: deployment
+  help_text: |
+    deployment name.
+
+staging-location:
+  arg_name: staging-location
+  help_text: |
+    staging location for artifacts related to Flink jobs. For example:
+    `gs://staging-bucket/flink`
+
+args:
+  arg_name: args
+  type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
+  help_text: |
+    List of arguments to pass to the Flink job.
+
+class:
+  arg_name: class
+  help_text: |
+    Class with the program entry point (`main()` method). Only needed if the
+    JAR files does not specify the class in its manifest.
+
+# GCP "Better Together" Flags
+
+managed-kafka-clusters:
+  api_field: job.jobSpec.managedKafkaConfig.managedKafkaClusters
+  arg_name: managed-kafka-clusters
+  type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
+  help_text: |
+    a list of Managed Kafka clusters for the Flink job to connect to. For example:
+    `projects/123456789/locations/us-central1/clusters/my-cluster`.

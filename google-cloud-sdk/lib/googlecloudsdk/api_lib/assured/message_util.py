@@ -19,7 +19,38 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.assured import util
-from googlecloudsdk.calliope.base import ReleaseTrack
+from googlecloudsdk.calliope import base as calliope_base
+from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.generated_clients.apis.assuredworkloads.v1 import assuredworkloads_v1_messages
+from googlecloudsdk.generated_clients.apis.assuredworkloads.v1beta1 import assuredworkloads_v1beta1_messages
+
+ReleaseTrack = calliope_base.ReleaseTrack
+
+V1ComplianceRegimes = (
+    assuredworkloads_v1_messages.GoogleCloudAssuredworkloadsV1Workload.ComplianceRegimeValueValuesEnum
+)
+V1beta1ComplianceRegimes = (
+    assuredworkloads_v1beta1_messages.GoogleCloudAssuredworkloadsV1beta1Workload.ComplianceRegimeValueValuesEnum
+)
+
+compliance_regimes_enum = {
+    ReleaseTrack.GA: V1ComplianceRegimes,
+    ReleaseTrack.BETA: V1beta1ComplianceRegimes,
+    ReleaseTrack.ALPHA: V1beta1ComplianceRegimes,
+}
+
+V1Partners = (
+    assuredworkloads_v1_messages.GoogleCloudAssuredworkloadsV1Workload.PartnerValueValuesEnum
+)
+V1beta1Partners = (
+    assuredworkloads_v1beta1_messages.GoogleCloudAssuredworkloadsV1beta1Workload.PartnerValueValuesEnum
+)
+
+partners_enum = {
+    ReleaseTrack.GA: V1Partners,
+    ReleaseTrack.BETA: V1beta1Partners,
+    ReleaseTrack.ALPHA: V1beta1Partners,
+}
 
 
 def GetMessages(release_track):
@@ -114,11 +145,13 @@ def CreateAssuredWorkload(
   if labels:
     workload.labels = CreateLabels(labels, workload_message)
   if compliance_regime:
-    workload.complianceRegime = (
-        workload_message.ComplianceRegimeValueValuesEnum(compliance_regime)
+    workload.complianceRegime = arg_utils.ChoiceToEnum(
+        compliance_regime, compliance_regimes_enum[release_track]
     )
   if partner:
-    workload.partner = workload_message.PartnerValueValuesEnum(partner)
+    workload.partner = arg_utils.ChoiceToEnum(
+        partner, partners_enum[release_track]
+    )
   if partner_services_billing_account:
     workload.partnerServicesBillingAccount = partner_services_billing_account
   if partner_permissions:

@@ -72,6 +72,11 @@ properties:
       routing actions like URL rewrites, header transformations, and so
       forth prior to forwarding the request to the selected origin.
     $ref: RouteAction.yaml
+  routeMethods:
+    description: |-
+      Allow overriding the set of methods that are allowed for this route.
+      When not set, Media CDN allows only `GET`, `HEAD`, and `OPTIONS`.
+    $ref: RouteRuleRouteMethods.yaml
   urlRedirect:
     description: |-
       The URL redirect configuration for requests that match this route.

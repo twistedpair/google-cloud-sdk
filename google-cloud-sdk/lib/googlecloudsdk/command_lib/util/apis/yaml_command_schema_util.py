@@ -192,6 +192,7 @@ def ImportPythonHook(path):
   return Hook(attr, kwargs)
 
 
+TRUE_FALSE_ACTION = 'store_true_false'
 STATIC_ACTIONS = frozenset(('store', 'store_true', 'append'))
 
 
@@ -213,9 +214,12 @@ def ParseAction(action, flag_name):
     return None
 
   if isinstance(action, str):
-    if action in STATIC_ACTIONS:
+    if action == TRUE_FALSE_ACTION:
+      return arg_parsers.StoreTrueFalseAction
+    elif action in STATIC_ACTIONS:
       return action
-    return Hook.FromPath(action)
+    else:
+      return Hook.FromPath(action)
 
   deprecation = action.get('deprecated')
   if deprecation:

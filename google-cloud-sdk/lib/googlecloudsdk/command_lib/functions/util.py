@@ -36,7 +36,7 @@ class FunctionResourceCommand(six.with_metaclass(abc.ABCMeta, base.Command)):
   Which version of the command to run is determined by the following precedence:
   1. Explicit setting via the --gen2/--no-gen2 flags or functions/gen2 property.
   2. The generation of the function if it exists.
-  2. The v1 API by default in GA, the v2 API in Beta/Alpha.
+  3. The v2 API by default if the function doesn't exist.
 
   Subclasses should add the function resource arg and --gen2 flag.
   """
@@ -82,10 +82,6 @@ class FunctionResourceCommand(six.with_metaclass(abc.ABCMeta, base.Command)):
         return self._RunV2(args)
       else:
         return self._RunV1(args)
-
-    # TODO(b/286788716): Call v2 by default for functions not found in GA track
-    if self.ReleaseTrack() == base.ReleaseTrack.GA:
-      return self._RunV1(args)
 
     return self._RunV2(args)
 

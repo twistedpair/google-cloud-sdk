@@ -185,7 +185,12 @@ class S3XmlClient(cloud_api.CloudApi):
     del request_config  # Unused.
     return self.client.delete_bucket(Bucket=bucket_name)
 
-  def get_bucket(self, bucket_name, fields_scope=cloud_api.FieldsScope.NO_ACL):
+  def get_bucket(
+      self,
+      bucket_name,
+      fields_scope=cloud_api.FieldsScope.NO_ACL,
+      soft_deleted=False,
+  ):
     """See super class."""
     metadata = {'Name': bucket_name}
     # TODO(b/168716392) As new commands are implemented, they may want

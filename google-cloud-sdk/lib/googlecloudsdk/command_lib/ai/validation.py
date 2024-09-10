@@ -123,3 +123,34 @@ def ValidateEndpointArgs(network=None, public_endpoint_enabled=None):
         ' --public-endpoint-enabled',
         'for public enpdoint.',
     )
+
+
+def ValidateModelGardenModelArgs(args):
+  """Validates the model garden model args."""
+  if args.model is not None and not args.model:
+    raise exceptions.InvalidArgumentException(
+        '--model',
+        'Model name should not be empty.',
+    )
+  if args.hugging_face_model is not None and not args.hugging_face_model:
+    raise exceptions.InvalidArgumentException(
+        '--hugging-face-model',
+        'Hugging Face model should not be empty.',
+    )
+
+  if args.hugging_face_model is not None:
+    if len(args.hugging_face_model.split('/')) != 2:
+      raise exceptions.InvalidArgumentException(
+          '--hugging-face-model',
+          'Hugging Face model should be in the format of Hugging Face URL path,'
+          ' e.g. `meta-llama/Meta-Llama-3-8B`.',
+      )
+  elif args.model is not None:
+    if len(args.model.split('/')) != 3:
+      raise exceptions.InvalidArgumentException(
+          '--model',
+          'Model name should be in the format of'
+          ' `{publisher_name}/{model_name}/{model_version_name}, e.g.'
+          ' `google/gemma2/gemma-2-2b`. You can use the `gcloud ai model-garden'
+          ' models list` command to find supported models.',
+      )

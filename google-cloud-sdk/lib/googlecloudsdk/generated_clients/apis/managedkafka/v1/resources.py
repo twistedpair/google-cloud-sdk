@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://managedkafka.googleapis.com/v1/'
-DOCS_URL = 'https://cloud.google.com/managed-kafka'
+DOCS_URL = 'https://cloud.google.com/managed-service-for-apache-kafka/docs'
 
 
 class Collections(enum.Enum):

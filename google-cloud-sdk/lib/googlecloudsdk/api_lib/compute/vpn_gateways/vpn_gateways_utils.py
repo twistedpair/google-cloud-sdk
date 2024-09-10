@@ -198,7 +198,8 @@ class VpnGatewayHelper(object):
     next_page_token = None
     while True:
       request = self._messages.ComputeVpnGatewaysAggregatedListRequest(
-          project=project, filter=filter_expr, pageToken=next_page_token)
+          project=project, filter=filter_expr, pageToken=next_page_token,
+          returnPartialSuccess=True)
       response = self._service.AggregatedList(request)
       next_page_token = response.nextPageToken
       for scoped_vpn_gateways in response.items.additionalProperties:

@@ -37,30 +37,17 @@ project_location:
     attribute_name: location
     help: The location id of the {resource} resource.
   disable_auto_completers: true
-project_location_cloud_exadata_infrastructure:
-  name: cloudExadataInfrastructure
-  plural_name: cloudExadataInfrastructures
-  collection: oracledatabase.projects.locations.cloudExadataInfrastructures
+project_global_network:
+  name: network
+  plural_name: networks
+  collection: oracledatabase.projects.networks
   attributes:
   - *project
-  - *location
-  - &cloudExadataInfrastructure
-    parameter_name: cloudExadataInfrastructuresId
-    attribute_name: cloud_exadata_infrastructure
-    help: The cloudExadataInfrastructure id of the {resource} resource.
-  disable_auto_completers: false
-project_location_cloud_vm_cluster:
-  name: cloudVmCluster
-  plural_name: cloudVmClusters
-  collection: oracledatabase.projects.locations.cloudVmClusters
-  attributes:
-  - *project
-  - *location
-  - &cloudVmCluster
-    parameter_name: cloudVmClustersId
-    attribute_name: cloud_vm_cluster
-    help: The cloudVmCluster id of the {resource} resource.
-  disable_auto_completers: false
+  - &network
+    parameter_name: networksId
+    attribute_name: network
+    help: The network id of the {resource} resource.
+  disable_auto_completers: true
 project_location_autonomous_database:
   name: autonomousDatabase
   plural_name: autonomousDatabases
@@ -133,6 +120,18 @@ project_location_entitlement:
     attribute_name: entitlement
     help: The entitlement id of the {resource} resource.
   disable_auto_completers: false
+project_location_cloud_exadata_infrastructure:
+  name: cloudExadataInfrastructure
+  plural_name: cloudExadataInfrastructures
+  collection: oracledatabase.projects.locations.cloudExadataInfrastructures
+  attributes:
+  - *project
+  - *location
+  - &cloudExadataInfrastructure
+    parameter_name: cloudExadataInfrastructuresId
+    attribute_name: cloud_exadata_infrastructure
+    help: The cloudExadataInfrastructure id of the {resource} resource.
+  disable_auto_completers: false
 project_location_gi_version:
   name: giVersion
   plural_name: giVersions
@@ -144,6 +143,18 @@ project_location_gi_version:
     parameter_name: giVersionsId
     attribute_name: gi_version
     help: The giVersion id of the {resource} resource.
+  disable_auto_completers: false
+project_location_cloud_vm_cluster:
+  name: cloudVmCluster
+  plural_name: cloudVmClusters
+  collection: oracledatabase.projects.locations.cloudVmClusters
+  attributes:
+  - *project
+  - *location
+  - &cloudVmCluster
+    parameter_name: cloudVmClustersId
+    attribute_name: cloud_vm_cluster
+    help: The cloudVmCluster id of the {resource} resource.
   disable_auto_completers: false
 project_location_cloud_vm_cluster_db_node:
   name: dbNode

@@ -140,7 +140,7 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
     self._chunk_size = scaled_integer.ParseInteger(
         properties.VALUES.storage.download_chunk_size.Get())
     # If progress callbacks is called more frequently than every 512 KB, it
-    # can degrate performance.
+    # can degrade performance.
     self._progress_callback_threshold = max(MINIMUM_PROGRESS_CALLBACK_THRESHOLD,
                                             self._chunk_size)
 
@@ -535,13 +535,22 @@ class JsonClient(cloud_api.CloudApi):
     self.client.buckets.Delete(request)
 
   @error_util.catch_http_error_raise_gcs_api_error()
-  def get_bucket(self, bucket_name, fields_scope=cloud_api.FieldsScope.NO_ACL):
+  def get_bucket(
+      self,
+      bucket_name,
+      fields_scope=cloud_api.FieldsScope.NO_ACL,
+      soft_deleted=False,
+  ):
     """See super class."""
-    projection = self._get_projection(fields_scope,
-                                      self.messages.StorageBucketsGetRequest)
+    projection = self._get_projection(
+        fields_scope, self.messages.StorageBucketsGetRequest
+    )
     request = self.messages.StorageBucketsGetRequest(
         bucket=bucket_name,
-        projection=projection)
+        projection=projection,
+        # Avoid needlessly appending "&softDeleted=False" to URL.
+        softDeleted=True if soft_deleted else None,
+    )
 
     metadata = self.client.buckets.Get(request)
     return metadata_util.get_bucket_resource_from_metadata(metadata)
@@ -557,13 +566,19 @@ class JsonClient(cloud_api.CloudApi):
             optionsRequestedPolicyVersion=gcs_iam_util.IAM_POLICY_VERSION),
         global_params=global_params)
 
-  def list_buckets(self, fields_scope=cloud_api.FieldsScope.NO_ACL):
+  def list_buckets(
+      self, fields_scope=cloud_api.FieldsScope.NO_ACL, soft_deleted=False
+  ):
     """See super class."""
-    projection = self._get_projection(fields_scope,
-                                      self.messages.StorageBucketsListRequest)
+    projection = self._get_projection(
+        fields_scope, self.messages.StorageBucketsListRequest
+    )
     request = self.messages.StorageBucketsListRequest(
         project=properties.VALUES.core.project.GetOrFail(),
-        projection=projection)
+        projection=projection,
+        # Avoid needlessly appending "&softDeleted=False" to URL.
+        softDeleted=True if soft_deleted else None,
+    )
 
     global_params = None
     if fields_scope == cloud_api.FieldsScope.SHORT:
@@ -613,6 +628,12 @@ class JsonClient(cloud_api.CloudApi):
         == metadata_util.PRIVATE_DEFAULT_OBJECT_ACL):
       cleared_fields.append('defaultObjectAcl')
       metadata.defaultObjectAcl = []
+
+    # IP Filtering properties should be passed as empty values to get cleared.
+    if metadata.ipFilter:
+      cleared_fields.extend(
+          metadata_util.get_cleared_ip_filter_fields(metadata.ipFilter)
+      )
 
     # Must null out existing ACLs to apply new ones.
     if request_config.predefined_acl_string:
@@ -1599,6 +1620,26 @@ class JsonClient(cloud_api.CloudApi):
         )
     )
     return metadata_util.get_object_resource_from_metadata(object_metadata)
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def restore_bucket(self, url):
+    """See CloudApi class."""
+    if not url.is_bucket():
+      raise command_errors.InvalidUrlError(
+          'Restore bucket endpoint accepts only bucket URLs.'
+      )
+
+    if not url.generation:
+      raise command_errors.InvalidUrlError(
+          'Restore bucket endpoint requires a generation.'
+      )
+
+    return self.client.buckets.Restore(
+        self.messages.StorageBucketsRestoreRequest(
+            bucket=url.bucket_name,
+            generation=int(url.generation),
+        )
+    )
 
   @error_util.catch_http_error_raise_gcs_api_error()
   def bulk_restore_objects(

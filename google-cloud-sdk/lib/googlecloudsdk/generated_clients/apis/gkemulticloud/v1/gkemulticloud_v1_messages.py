@@ -3216,7 +3216,7 @@ class GoogleCloudGkemulticloudV1ImportAttachedClusterRequest(_messages.Message):
 
   Fields:
     distribution: Required. The Kubernetes distribution of the underlying
-      attached cluster. Supported values: ["eks", "aks"].
+      attached cluster. Supported values: ["eks", "aks", "generic"].
     fleetMembership: Required. The name of the fleet membership resource to
       import.
     platformVersion: Required. The platform version for the cluster (e.g.
@@ -3420,11 +3420,15 @@ class GoogleCloudGkemulticloudV1MonitoringConfig(_messages.Message):
   r"""Parameters that describe the Monitoring configuration in a cluster.
 
   Fields:
+    kubernetesMetadataEndpointOverride: Optional. Override of the default
+      (prod) Kubernetes metadata endpoint. Only supported for Attached
+      clusters now.
     managedPrometheusConfig: Enable Google Cloud Managed Service for
       Prometheus in the cluster.
   """
 
-  managedPrometheusConfig = _messages.MessageField('GoogleCloudGkemulticloudV1ManagedPrometheusConfig', 1)
+  kubernetesMetadataEndpointOverride = _messages.StringField(1)
+  managedPrometheusConfig = _messages.MessageField('GoogleCloudGkemulticloudV1ManagedPrometheusConfig', 2)
 
 
 class GoogleCloudGkemulticloudV1NodeTaint(_messages.Message):

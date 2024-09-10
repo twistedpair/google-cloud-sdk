@@ -53,10 +53,11 @@ VALID_SCHEMES = frozenset([scheme.value for scheme in ProviderPrefix])
 CLOUD_URL_DELIMITER = '/'
 AZURE_DOMAIN = 'blob.core.windows.net'
 
-# Matches versioned object strings of the form 'gs://bucket/obj#1234'
-GS_GENERATION_REGEX = re.compile(r'(?P<object>.+)#(?P<generation>[0-9]+)$')
-# Matches versioned object strings of the form 's3://bucket/obj#NULL'
-S3_VERSION_REGEX = re.compile(r'(?P<object>.+)#(?P<version_id>.+)$')
+# Matches versioned object strings of the form 'gs://bucket/object#1234'
+# Matches versioned bucket strings of the form 'gs://bucket#1234'
+GS_GENERATION_REGEX = re.compile(r'(?P<name>.+)#(?P<generation>[0-9]+)$')
+# Matches versioned object strings of the form 's3://bucket/object#NULL'
+S3_VERSION_REGEX = re.compile(r'(?P<name>.+)#(?P<version_id>.+)$')
 # Matches the accesspoint part of S3 MRAP ARN of the form
 # 'arn:aws:s3::account-id:accesspoint/mrap_alias'
 _S3_MRAP_ARN_REGEX_ACCESS_POINT = re.compile(
@@ -372,11 +373,13 @@ class CloudUrl(StorageUrl):
     self._validate_object_name()
 
   @classmethod
-  def from_url_string(cls, url_string):
+  def from_url_string(cls, url_string, is_bucket_gen_parsing_allowed=False):
     """Parse the url string and return the storage url object.
 
     Args:
-      url_string (str): Cloud storage url of the form gs://bucket/object
+      url_string (str): Cloud storage url of the form gs://bucket/object.
+      is_bucket_gen_parsing_allowed (bool): If true, bucket generation parsing
+        is allowed in the url.
 
     Returns:
       CloudUrl object
@@ -412,15 +415,23 @@ class CloudUrl(StorageUrl):
       )
       generation = None
     else:
-      # a/b/c/d#num => a, b/c/d#num
+      # a#bnum/b/c/d#onum => a#bnum, b/c/d#onum
       bucket_name, _, object_name = schemeless_url_string.partition(
           CLOUD_URL_DELIMITER
       )
-
-      # b/c/d#num => b/c/d, num
-      object_name, generation = get_generation_number_from_object_name(
+      # object generation: b/c/d#num => b/c/d, num
+      object_name, generation = get_generation_number_from_name(
           scheme, object_name
       )
+      # If the object_name isn't set, this URL must refer to a bucket.
+      if object_name is None and is_bucket_gen_parsing_allowed:
+        # Parse generation number from bucket name only if parsing is allowed.
+        # Otherwise, assume generation number is part of the bucket name itself.
+        # Parsed bucket generation: a#num => a, num
+        bucket_name, generation = get_generation_number_from_name(
+            scheme,
+            bucket_name,
+        )
 
     return cls(scheme, bucket_name, object_name, generation)
 
@@ -445,10 +456,18 @@ class CloudUrl(StorageUrl):
 
   @property
   def url_string(self):
-    url_str = self.versionless_url_string
     if self.generation:
-      url_str += '#%s' % self.generation
-    return url_str
+      # If bucket generation is present for the bucket url.
+      if self.is_bucket():
+        return '{}{}{}#{}/'.format(
+            self.scheme.value,
+            SCHEME_DELIMITER,
+            self.bucket_name,
+            self.generation,
+        )
+      return '{}#{}'.format(self.versionless_url_string, self.generation)
+    else:
+      return self.versionless_url_string
 
   @property
   def versionless_url_string(self):
@@ -625,11 +644,13 @@ def _get_scheme_from_url_string(url_string):
     return ProviderPrefix(prefix_string)
 
 
-def storage_url_from_string(url_string):
+def storage_url_from_string(url_string, is_bucket_gen_parsing_allowed=False):
   """Static factory function for creating a StorageUrl from a string.
 
   Args:
     url_string (str): Cloud url or local filepath.
+    is_bucket_gen_parsing_allowed (bool): If true, bucket generation parsing
+        is allowed in the url.
 
   Returns:
      StorageUrl object.
@@ -648,7 +669,9 @@ def storage_url_from_string(url_string):
     # Azure's scheme breaks from other clouds.
     return AzureUrl.from_url_string(url_string)
   if scheme in VALID_CLOUD_SCHEMES:
-    return CloudUrl.from_url_string(url_string)
+    return CloudUrl.from_url_string(
+        url_string, is_bucket_gen_parsing_allowed=is_bucket_gen_parsing_allowed
+    )
   raise errors.InvalidUrlError('Unrecognized URL scheme.')
 
 
@@ -716,21 +739,25 @@ def add_gcs_scheme_if_missing(url_string):
   return ProviderPrefix.GCS.value + SCHEME_DELIMITER + url_string
 
 
-def get_generation_number_from_object_name(scheme, object_name):
-  """Parses object_name into generation number and object name without trailing # symbol.
-
-  Aplicable for gs:// and s3:// style objects, if the object_name does not
-  contain a
-  generation number, it will return the object_name as is.
+def get_generation_number_from_name(
+    scheme,
+    resource_name,
+):
+  """Parses a cloud storage resource name (bucket or object) into its components.
 
   Args:
-    scheme (str): Scheme of URL such as gs and s3.
-    object_name (str): Name of a Cloud storage object in the form of object_name
-      or object_name#generation_number.
+      scheme (str): Scheme of URL such as gs and s3.
+      resource_name (str): Name of the resource (bucket or object) in the format
+        'name' or 'name#generation'.
 
   Returns:
-    Object name and generation number if available.
+      A tuple containing the parsed resource name and generation number (or None
+      if not present).
   """
+
+  if not resource_name:
+    return None, None
+
   if scheme == ProviderPrefix.GCS:
     pattern_to_match = GS_GENERATION_REGEX
     group_name = 'generation'
@@ -738,10 +765,12 @@ def get_generation_number_from_object_name(scheme, object_name):
     pattern_to_match = S3_VERSION_REGEX
     group_name = 'version_id'
   else:
-    return object_name, None
+    return resource_name, None
 
-  generation_match = pattern_to_match.match(object_name)
+  generation_match = pattern_to_match.match(resource_name)
   if generation_match is not None:
-    return generation_match.group('object'), generation_match.group(group_name)
+    name = generation_match.group('name')
+    generation = generation_match.group(group_name)
+    return name, generation
 
-  return object_name, None
+  return resource_name, None

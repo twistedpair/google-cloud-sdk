@@ -371,6 +371,14 @@ def GenerateChoices(field, attributes):
   return choices
 
 
+STORE_TRUE = 'store_true'
+
+
+def _IsStoreBoolAction(action):
+  return (action == STORE_TRUE or
+          action == arg_parsers.StoreTrueFalseAction)
+
+
 def GenerateFlagType(field, attributes, fix_bools=True):
   """Generates the type and action for a flag.
 
@@ -403,7 +411,7 @@ def GenerateFlagType(field, attributes, fix_bools=True):
     # For boolean flags, we want to create a flag with action 'store_true'
     # rather than a flag that takes a value and converts it to a boolean. Only
     # do this if not using a custom action.
-    action = 'store_true'
+    action = STORE_TRUE
 
   append_action = 'append'
   repeated = (field and field.repeated) and attributes.repeated is not False  # repeated as None should default to True, so pylint: disable=g-bool-id-comparison
@@ -520,7 +528,7 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
   )
   if attributes.default != UNSPECIFIED:
     arg.kwargs['default'] = attributes.default
-  if action != 'store_true':
+  if not _IsStoreBoolAction(action):
     # For this special action type, it won't accept a bunch of the common
     # kwargs, so we can only add them if not generating a boolean flag.
     metavar = GetMetavar(attributes.metavar, flag_type, name)

@@ -145,6 +145,26 @@ def process_bucket_iam_configuration(existing_iam_metadata,
   return iam_metadata
 
 
+def process_ip_filter(file_path):
+  """Converts IP filter file to Apitools object."""
+  messages = apis.GetMessagesModule('storage', 'v1')
+
+  if file_path == user_request_args_factory.CLEAR:
+    return messages.Bucket.IpFilterValue(
+        mode='Disabled'
+        )
+  ip_filter_dict = metadata_util.cached_read_yaml_json_file(file_path)
+  ip_filter = ip_filter_dict.get('ip_filter_config', ip_filter_dict)
+  try:
+    return messages_util.DictToMessageWithErrorCheck(
+        ip_filter, messages.Bucket.IpFilterValue
+    )
+  except messages_util.DecodeError:
+    raise errors.InvalidUrlError(
+        'Found invalid JSON/YAML for the IP filter rule.'
+    )
+
+
 def process_labels(existing_labels_object, file_path):
   """Converts labels file to Apitools objects."""
   if file_path == user_request_args_factory.CLEAR:

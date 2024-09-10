@@ -24,6 +24,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.filestore import flags
+from googlecloudsdk.command_lib.filestore.instances import dp_util
 from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
@@ -709,6 +710,7 @@ def AddInstanceCreateArgs(parser, api_version):
     # TODO(b/362786746): Expose (hidden=False) when Negba-lite is in AGA.
     AddPerformanceArg(parser, hidden=True)
     GetTagsArg().AddToParser(parser)
+    dp_util.AddDeletionProtectionCreateArgs(parser)
 
 
 def AddInstanceUpdateArgs(parser, api_version):
@@ -734,3 +736,4 @@ def AddInstanceUpdateArgs(parser, api_version):
                      filestore_client.V1_API_VERSION]:
     # TODO(b/362786746): Expose (hidden=False) when Negba-lite is in AGA.
     AddPerformanceArgs(parser, hidden=True)
+    dp_util.AddDeletionProtectionUpdateArgs(parser)

@@ -19,37 +19,40 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope.base import ReleaseTrack
+from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.command_lib.assured import resource_args
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.generated_clients.apis.assuredworkloads.v1 import assuredworkloads_v1_messages
+from googlecloudsdk.generated_clients.apis.assuredworkloads.v1beta1 import assuredworkloads_v1beta1_messages
 
-_GA_COMPLIANCE_REGIMES = [
-    'CJIS',
-    'FEDRAMP_HIGH',
-    'FEDRAMP_MODERATE',
-    'IL4',
-    'US_REGIONAL_ACCESS',
-    'HIPAA',
-    'HITRUST',
-    'EU_REGIONS_AND_SUPPORT',
-    'CA_REGIONS_AND_SUPPORT',
-    'ITAR',
-    'ASSURED_WORKLOADS_FOR_PARTNERS',
-]
-_BETA_COMPLIANCE_REGIMES = _GA_COMPLIANCE_REGIMES
+ReleaseTrack = calliope_base.ReleaseTrack
 
-compliance_regimes = {
-    ReleaseTrack.GA: _GA_COMPLIANCE_REGIMES,
-    ReleaseTrack.BETA: _BETA_COMPLIANCE_REGIMES,
-    ReleaseTrack.ALPHA: _BETA_COMPLIANCE_REGIMES,
+V1ComplianceRegimes = (
+    assuredworkloads_v1_messages.GoogleCloudAssuredworkloadsV1Workload.ComplianceRegimeValueValuesEnum
+)
+V1beta1ComplianceRegimes = (
+    assuredworkloads_v1beta1_messages.GoogleCloudAssuredworkloadsV1beta1Workload.ComplianceRegimeValueValuesEnum
+)
+
+compliance_regimes_enum = {
+    ReleaseTrack.GA: V1ComplianceRegimes,
+    ReleaseTrack.BETA: V1beta1ComplianceRegimes,
+    ReleaseTrack.ALPHA: V1beta1ComplianceRegimes,
 }
 
-PARTNERS = [
-    'LOCAL_CONTROLS_BY_S3NS',
-    'SOVEREIGN_CONTROLS_BY_T_SYSTEMS',
-    'SOVEREIGN_CONTROLS_BY_CNTXT',
-    'SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM',
-]
+V1Partners = (
+    assuredworkloads_v1_messages.GoogleCloudAssuredworkloadsV1Workload.PartnerValueValuesEnum
+)
+V1beta1Partners = (
+    assuredworkloads_v1beta1_messages.GoogleCloudAssuredworkloadsV1beta1Workload.PartnerValueValuesEnum
+)
+
+partners_enum = {
+    ReleaseTrack.GA: V1Partners,
+    ReleaseTrack.BETA: V1beta1Partners,
+    ReleaseTrack.ALPHA: V1beta1Partners,
+}
 
 ACKNOWLEDGE_TYPE = ['SINGLE_VIOLATION', 'EXISTING_CHILD_RESOURCE_VIOLATIONS']
 
@@ -133,20 +136,22 @@ def AddCreateWorkloadFlags(parser, release_track):
       required=True,
       help='The display name of the new Assured Workloads environment',
   )
-  parser.add_argument(
+  arg_utils.ChoiceEnumMapper(
       '--compliance-regime',
+      compliance_regimes_enum[release_track],
+      include_filter=lambda regime: regime != 'COMPLIANCE_REGIME_UNSPECIFIED',
       required=True,
-      choices=compliance_regimes.get(release_track),
-      help='The compliance regime of the new Assured Workloads environment',
-  )
-  parser.add_argument(
+      help_str='The compliance regime of the new Assured Workloads environment',
+  ).choice_arg.AddToParser(parser)
+  arg_utils.ChoiceEnumMapper(
       '--partner',
-      choices=PARTNERS,
-      help=(
+      partners_enum[release_track],
+      include_filter=lambda regime: regime != 'PARTNER_UNSPECIFIED',
+      help_str=(
           'The partner choice when creating a workload managed by local trusted'
           ' partners.'
       ),
-  )
+  ).choice_arg.AddToParser(parser)
   parser.add_argument(
       '--partner-permissions',
       type=arg_parsers.ArgDict(

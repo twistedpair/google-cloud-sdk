@@ -295,8 +295,8 @@ def AddForceDeleteFlag(parser):
       ' the backup vault instance can be overridden:'
       ' * deletion of a backup vault instance containing no backups,'
       'but still contains empty datasources.'
-      ' * deletion of a backup vault instance containing no backups,'
-      'but still contains empty datasources.'
+      ' * deletion of a backup vault instance being actively referenced'
+      ' by a backup plan.'
   )
   parser.add_argument('--force-delete', action='store_true', help=help_text)
 

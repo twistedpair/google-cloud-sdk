@@ -14,6 +14,7 @@
 # limitations under the License.
 """A library that is used to support trace commands."""
 
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.core import log
 
@@ -54,6 +55,7 @@ def WaitForOpMaybe(
     kind,
     asynchronous=False,
     message=None,
+    resource=None,
 ):
   """Waits for an operation if asynchronous flag is off.
 
@@ -64,10 +66,11 @@ def WaitForOpMaybe(
     op_ref: The operation reference to the operation resource. It's the result
       by calling resources.REGISTRY.Parse
     log_method: Logging method used for operation.
-    kind: str, the resource kind (eg runtime template), which will
-      be passed to logging function.
+    kind: str, the resource kind (eg runtime template), which will be passed to
+      logging function.
     asynchronous: bool, whether to wait for the operation or return immediately
     message: str, the message to display while waiting for the operation.
+    resource: str, name of the resource the operation is acting on
 
   Returns:
     The result of the operation if asynchronous is true, or the Operation
@@ -75,15 +78,21 @@ def WaitForOpMaybe(
   """
   logging_function = {
       'create': log.CreatedResource,
-      'delete': log.DeletedResource
+      'delete': log.DeletedResource,
   }
   if asynchronous:
     logging_function[log_method](resource=op.name, kind=kind, is_async=True)
     return op
   # Using AIPlatform API lib to wait since the poller in gcloud sdk operations
   # lib doesn't support simple_uri.
-  response = operations_client.WaitForOperation(
+  response_msg = operations_client.WaitForOperation(
       op, op_ref, message=message
   ).response
-  logging_function[log_method](resource=op.name, kind=kind, is_async=False)
-  return response
+  if response_msg is not None:
+    response = encoding.MessageToPyValue(response_msg)
+    if 'name' in response:
+      resource = response['name']
+  logging_function[log_method](
+      resource=resource, kind=kind, is_async=False
+  )
+  return response_msg

@@ -25,7 +25,7 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
-  from_:
+  from:
     description: Describes properties of one or more sources of a request.
     $ref: AuthzPolicyAuthzRuleFrom.yaml
   to:

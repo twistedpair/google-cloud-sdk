@@ -180,8 +180,8 @@ def AddFunctionMemoryAndCpuFlags(parser):
   memory limit unless you specify this flag."""
   group = parser.add_group(required=False)
   cpu_help_text = """\
-    The number of available CPUs to set. Only valid when `--gen2`
-    and `--memory=MEMORY` are specified.
+    The number of available CPUs to set. Only valid when
+    `--memory=MEMORY` is specified.
 
     Examples: .5, 2, 2.0, 2000m.
 
@@ -273,8 +273,7 @@ def AddAllowUnauthenticatedFlag(parser):
 
 def AddServeAllTrafficLatestRevisionFlag(parser):
   help_text = (
-      'If specified, latest function revision will be served all traffic. '
-      'This is only relevant when `--gen2` is provided.'
+      'If specified, latest function revision will be served all traffic.'
   )
   parser.add_argument(
       '--serve-all-traffic-latest-revision',
@@ -660,7 +659,7 @@ def AddTriggerFlagGroup(parser):
               eventarc_flags.ChannelResourceSpec(),
               """\
               The channel to use in the trigger for third-party event sources.
-              This is only relevant when `--gen2` is provided.""",
+              """,
               flag_name_overrides={'location': ''},
               group=eventarc_trigger_group,
               hidden=True,
@@ -679,8 +678,7 @@ def AddTriggerFlagGroup(parser):
       The Eventarc matching criteria for the trigger. The criteria can be
       specified either as a single comma-separated argument or as multiple
       arguments. The filters must include the ``type'' attribute, as well as any
-      other attributes that are expected for the chosen type. This is only
-      relevant when `--gen2` is provided.
+      other attributes that are expected for the chosen type.
       """,
   )
   eventarc_trigger_group.add_argument(
@@ -691,7 +689,7 @@ def AddTriggerFlagGroup(parser):
       help="""\
       The Eventarc matching criteria for the trigger in path pattern format.
       The criteria can be specified as a single comma-separated argument or as
-      multiple arguments. This is only relevant when `--gen2` is provided.
+      multiple arguments.
 
       The provided attribute/value pair will be used with the
       `match-path-pattern` operator to configure the trigger, see
@@ -804,8 +802,7 @@ def AddTriggerLocationFlag(parser):
       '--trigger-location',
       help=(
           'The location of the trigger, which must be a region or multi-'
-          'region where the relevant events originate. This is only '
-          'relevant when `--gen2` is provided.'
+          'region where the relevant events originate.'
       ),
       completer=LocationsCompleter,
   )
@@ -880,8 +877,6 @@ def AddRunServiceAccountFlag(parser):
 
       If not provided, the function will use the project's default service
       account for Compute Engine.
-
-      This is only relevant when `--gen2` is provided.
       """,
   )
 
@@ -895,8 +890,6 @@ def AddTriggerServiceAccountFlag(parser):
 
       If not provided, the function will use the project's default service
       account for Compute Engine.
-
-      This is only relevant when `--gen2` is provided.
       """,
   )
 
@@ -1076,8 +1069,7 @@ def AddConcurrencyFlag(parser):
       help=(
           'Set the maximum number of concurrent requests allowed per'
           ' container instance. Leave concurrency unspecified to receive the'
-          ' server default value. Only applicable when the `--gen2` flag is'
-          ' provided.'
+          ' server default value.'
       ),
   )
 

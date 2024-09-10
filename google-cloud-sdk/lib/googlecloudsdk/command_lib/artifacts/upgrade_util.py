@@ -27,6 +27,8 @@ from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.api_lib.asset import client_util as asset
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api as crm
 from googlecloudsdk.command_lib.artifacts import requests as artifacts
+from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_attr
 
 _DOMAIN_TO_BUCKET_PREFIX = frozendict.frozendict({
     "gcr.io": "",
@@ -206,7 +208,14 @@ def iam_map(
   if not analysis.fullyExplored or not analysis.mainAnalysis.fullyExplored:
     errors = list(err.cause for err in analysis.mainAnalysis.nonCriticalErrors)
     error_msg = "\n".join(errors)
-    raise ar_exceptions.ArtifactRegistryError(error_msg)
+    if not best_effort:
+      raise ar_exceptions.ArtifactRegistryError(error_msg)
+    warning_msg = (
+        "Encountered errors when analyzing IAM policy. This may result in"
+        f" incomplete bindings: {error_msg}"
+    )
+    con = console_attr.GetConsoleAttr()
+    log.status.Print(f"{con.Colorize('Warning:','red')} {warning_msg}")
 
   perm_to_members = collections.defaultdict(set)
   for result in analysis.mainAnalysis.analysisResults:

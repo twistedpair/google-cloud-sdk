@@ -270,10 +270,10 @@ class EndpointsClient(object):
     )
     return self.client.projects_locations_endpoints.Get(req)
 
-  def List(self, location_ref):
+  def List(self, location_ref, filter_str=None):
     """Lists endpoints in the project."""
     req = self.messages.AiplatformProjectsLocationsEndpointsListRequest(
-        parent=location_ref.RelativeName()
+        parent=location_ref.RelativeName(), filter=filter_str
     )
     return list_pager.YieldFromList(
         self.client.projects_locations_endpoints,

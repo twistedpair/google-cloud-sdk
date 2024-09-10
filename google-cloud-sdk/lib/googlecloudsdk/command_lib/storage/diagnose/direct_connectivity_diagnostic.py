@@ -24,8 +24,8 @@ import tempfile
 import uuid
 
 from googlecloudsdk.command_lib.storage import path_util
-from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.diagnose import diagnostic
+from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import gce_cache
@@ -73,17 +73,18 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
 
   def __init__(
       self,
-      test_bucket_url: storage_url.CloudUrl,
+      bucket_resource: gcs_resource_reference.GcsBucketResource,
       logs_path=None,
   ):
     """Initializes the Direct Connectivity Diagnostic."""
-    self._bucket_url = test_bucket_url
+    self._bucket_resource = bucket_resource
     self._cleaned_up = False
     self._object_path = 'direct_connectivity_diagnostics_' + str(uuid.uuid4())
     self._process_count = 1
     self._results = []
     self._retain_logs = bool(logs_path)
     self._thread_count = 1
+    self._vm_zone = None
 
     if logs_path is None:
       self._logs_path = os.path.join(
@@ -103,7 +104,9 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
     """Restores environment variables and cleans up temporary cloud object."""
     if not self._cleaned_up:
       super(DirectConnectivityDiagnostic, self)._post_process()
-      self._clean_up_objects(self._bucket_url.url_string, self._object_path)
+      self._clean_up_objects(
+          self._bucket_resource.storage_url.url_string, self._object_path
+      )
       self._cleaned_up = True
 
   def _generic_check_for_string_in_logs(
@@ -133,7 +136,7 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
           'storage',
           'cp',
           '-',
-          self._bucket_url.join(self._object_path).url_string,
+          self._bucket_resource.storage_url.join(self._object_path).url_string,
       ]
 
       return_code = execution_utils.Exec(
@@ -253,51 +256,47 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
 
   def _check_bucket_region_type(self):
     """Checks if bucket has incompatible region type."""
-    bucket_response = _exec_and_return_stdout([
-        'storage',
-        'buckets',
-        'describe',
-        '--format=table[csv,no-heading](location_type)',
-        self._bucket_url.url_string,
-    ])
-    if bucket_response == 'dual-region':
+    if self._bucket_resource.location_type == 'dual-region':
       return 'Found bucket {} is in incompatible dual-region.'.format(
-          self._bucket_url
+          self._bucket_resource
       )
-    if bucket_response == 'multi-region':
+    if self._bucket_resource.location_type == 'multi-region':
       return (
           'Found bucket {} is in multi-region. Direct Connectivity support is'
-          ' not yet available for all multi-regions.'.format(self._bucket_url)
+          ' not yet available for all multi-regions.'.format(
+              self._bucket_resource
+          )
       )
     return _SUCCESS
 
   def _check_bucket_vm_region(self):
     """Checks if bucket location matches VM zone."""
-    bucket_response = _exec_and_return_stdout([
-        'storage',
-        'buckets',
-        'describe',
-        '--format=table[csv,no-heading](location)',
-        self._bucket_url.url_string,
-    ])
-    vm_response = _exec_and_return_stdout([
-        'compute',
-        'instances',
-        'list',
-        '--filter=name:{}'.format(socket.gethostname()),
-        '--format=table[csv,no-heading](zone)',
-    ])
-    if (
-        bucket_response
-        and vm_response
-        and vm_response.lower().startswith(bucket_response.lower())
-    ):
+    bucket_location = self._bucket_resource.location.lower()
+    if self._vm_zone and self._vm_zone.lower().startswith(bucket_location):
       return _SUCCESS
     return 'Bucket "{}" region {} does not match VM "{}" zone {}'.format(
-        self._bucket_url,
-        _get_region_string_or_not_found(bucket_response),
+        self._bucket_resource,
+        _get_region_string_or_not_found(bucket_location),
         socket.gethostname(),
-        _get_region_string_or_not_found(vm_response),
+        _get_region_string_or_not_found(self._vm_zone),
+    )
+
+  def _check_vm_has_service_account(self):
+    """Checks if VM has a service account."""
+    service_accounts = _exec_and_return_stdout([
+        'compute',
+        'instances',
+        'describe',
+        socket.gethostname(),
+        '--zone={}'.format(self._vm_zone),
+        '--format=table[csv,no-heading](serviceAccounts)',
+    ])
+    if service_accounts and service_accounts.startswith('[{'):
+      # VM with SA will respond with a string like: "[{'email': ..."
+      return _SUCCESS
+    return (
+        'Compute VM missing service account. See: '
+        'https://cloud.google.com/compute/docs/instances/change-service-account'
     )
 
   def _run(self):
@@ -325,6 +324,14 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
         os.remove(self._logs_path)
       self._clean_up()
       return
+
+    self._vm_zone = _exec_and_return_stdout([
+        'compute',
+        'instances',
+        'list',
+        '--filter=name:{}'.format(socket.gethostname()),
+        '--format=table[csv,no-heading](zone)',
+    ])
 
     for check, name, description in [
         (
@@ -380,6 +387,11 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
                 'Direct Connectivity requires bucket be in the same region as'
                 ' the VM.'
             ),
+        ),
+        (
+            self._check_vm_has_service_account,
+            'VM has Service Account',
+            'Direct Connectivity requires the VM have a service account.',
         ),
     ]:
       try:

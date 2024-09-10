@@ -579,6 +579,10 @@ apis:
           path: projects/{projectId}
         projects.locations:
           path: projects/{projectId}/locations/{location}
+  dataform:
+    v1beta1:
+      discovery_doc: dataform_v1beta1.json
+      default: true
   datafusion:
     v1beta1:
       discovery_doc: datafusion_v1beta1.json
@@ -1309,6 +1313,7 @@ apis:
           path: projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}
     v2:
       discovery_doc: run_v2.json
+      gcloud_gapic_library: google/cloud/run/v2:run_v2_py
   runapps:
     v1alpha1:
       discovery_doc: runapps_v1alpha1.json
@@ -1387,6 +1392,8 @@ apis:
       resources:
         organizations.locations.predictions:
           path: organizations/{organization}/locations/{location}/predictions/{predictionID}
+        organizations.locations.iacValidationReportMetrics:
+          path: organizations/{organizationsId}/locations/{locationsId}/iacValidationReportMetrics
     v1:
       discovery_doc: securityposture_v1.json
       default: true
@@ -1742,6 +1749,11 @@ apis:
       default: true
     v1alpha:
       discovery_doc: oracledatabase_v1alpha.json
+      resources:
+        projects.locations.autonomousDatabaseBackups:
+          path: projects/{projectsId}/locations/{locationsId}/autonomousDatabaseBackups/{autonomousDatabaseBackupsId}
+        projects.networks:
+          path: projects/{projectsId}/global/networks/{networksId}
 canonical_surfaces:
   accessapproval:
     name: accessapproval

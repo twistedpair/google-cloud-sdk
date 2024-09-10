@@ -13,11 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for `gcloud network-connectivity`."""
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
 import argparse
+
+from googlecloudsdk.core import exceptions
+
+
+class NetworkConnectivityError(exceptions.Error):
+  """Top-level exception for all Network Connectivity errors."""
+
+
+class InvalidInputError(NetworkConnectivityError):
+  """Exception for invalid input."""
 
 
 # Table format for spokes list
@@ -95,6 +106,40 @@ def ClearLabels(unused_ref, args, patch_request):
     else:
       patch_request.updateMask = "labels"
   return patch_request
+
+
+def ValidateMigration(unused_ref, args, request):
+  """Validates migration parameters."""
+  if not args.IsSpecified("usage") or args.usage != "for-migration":
+    if args.IsSpecified("migration_source") or args.IsSpecified(
+        "migration_target"
+    ):
+      raise InvalidInputError(
+          "migration_source and migration_target can only be specified when"
+          " usage is set to for-migration."
+      )
+    else:
+      return request
+  # We are now in the for-migration usage case.
+  if not args.IsSpecified("migration_source") or not args.IsSpecified(
+      "migration_target"
+  ):
+    raise InvalidInputError(
+        "Both migration_source and migration_target must be specified."
+    )
+  if args.IsSpecified("peering") and args.peering != "for-self":
+    raise InvalidInputError(
+        "Peering must be set to for-self when usage is set to for-migration."
+    )
+  if not args.migration_source:
+    raise InvalidInputError("migration_source cannot be empty.")
+  if not args.migration_target:
+    raise InvalidInputError("migration_target cannot be empty.")
+  if args.migration_source == args.migration_target:
+    raise InvalidInputError(
+        "migration_source and migration_target cannot be the same."
+    )
+  return request
 
 
 class StoreGlobalAction(argparse._StoreConstAction):

@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import re
+from typing import Any
 
 from apitools.base.py import list_pager
 
@@ -315,6 +316,12 @@ class ConnectionProfilesClient(object):
           self._InstanceArgName()
       )
       update_fields.append('sqlserver.cloudSqlId')
+    if args.IsSpecified('username'):
+      connection_profile.sqlserver.username = args.username
+      update_fields.append('sqlserver.username')
+    if args.IsSpecified('password'):
+      connection_profile.sqlserver.password = args.password
+      update_fields.append('sqlserver.password')
     if args.IsSpecified('gcs_bucket'):
       if connection_profile.sqlserver.backups is None:
         raise calliope_exceptions.InvalidArgumentException(
@@ -573,6 +580,8 @@ class ConnectionProfilesClient(object):
     connection_profile_obj = self.messages.SqlServerConnectionProfile()
     if args.IsKnownAndSpecified('cloudsql_instance'):
       connection_profile_obj.cloudSqlId = args.GetValue(self._InstanceArgName())
+      connection_profile_obj.username = args.username
+      connection_profile_obj.password = args.password
     else:
       connection_profile_obj.backups = self._GetSqlServerBackups(args)
 
@@ -727,6 +736,32 @@ class ConnectionProfilesClient(object):
         name=updated_cp.name,
         updateMask=','.join(update_fields),
         requestId=request_id
+    )
+
+    return self._service.Patch(update_req)
+
+  def Test(self, name: str) -> Any:
+    """Test a connection profile.
+
+    Args:
+      name: str, the reference of the connection profile to test.
+
+    Returns:
+      Operation: the operation for testing the connection profile.
+    """
+    current_cp = self._GetExistingConnectionProfile(name)
+
+    request_id = api_util.GenerateRequestId()
+    update_req_type = (
+        self.messages.DatamigrationProjectsLocationsConnectionProfilesPatchRequest
+    )
+    # In DMS backend validators, updateMask is mandatory.
+    update_req = update_req_type(
+        connectionProfile=current_cp,
+        name=current_cp.name,
+        updateMask='displayName',
+        validateOnly=True,
+        requestId=request_id,
     )
 
     return self._service.Patch(update_req)

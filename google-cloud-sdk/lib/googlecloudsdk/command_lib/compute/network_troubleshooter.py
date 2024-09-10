@@ -21,18 +21,14 @@ from __future__ import unicode_literals
 import random
 import socket
 import string
-
 import time
 
 from dns import resolver
-
 from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.compute import ssh_troubleshooter
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.console.console_io import OperationCancelledError
-
 import six
 
 _NUM_RANDOM_CHARACTERS = 5
@@ -84,7 +80,10 @@ class NetworkTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
     log.status.Print('---- Checking network connectivity ----')
     msg = ('The Network Management API is needed to check the VM\'s network '
            'connectivity.')
-    prompt = 'Is it OK to enable it and check the VM\'s network connectivity?'
+    prompt = (
+        "If not already enabled, is it OK to enable it and check the VM's"
+        ' network connectivity?'
+    )
     cancel = ('Test skipped.\n'
               'To manually test network connectivity, try reaching another '
               'device on the same network.\n')
@@ -95,14 +94,14 @@ class NetworkTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
           cancel_on_no=True,
           cancel_string=cancel)
       self.skip_troubleshoot = not prompt_continue
-    except OperationCancelledError:
+    except console_io.OperationCancelledError:
       self.skip_troubleshoot = True
 
     if self.skip_troubleshoot:
       return
 
     # Enable API
-    enable_api.EnableService(self.project.name, NETWORK_API)
+    enable_api.EnableServiceIfDisabled(self.project.name, NETWORK_API)
     # Test IAM Permission
     missing_permissions = self._CheckNetworkManagementPermissions()
 

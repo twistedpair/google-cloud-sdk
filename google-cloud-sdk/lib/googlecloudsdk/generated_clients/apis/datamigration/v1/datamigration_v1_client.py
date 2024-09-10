@@ -872,6 +872,33 @@ class DatamigrationV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Get(self, request, global_params=None):
+      r"""Use this method to get details about a migration job object.
+
+      Args:
+        request: (DatamigrationProjectsLocationsMigrationJobsObjectsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MigrationJobObject) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}/objects/{objectsId}',
+        http_method='GET',
+        method_id='datamigration.projects.locations.migrationJobs.objects.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DatamigrationProjectsLocationsMigrationJobsObjectsGetRequest',
+        response_type_name='MigrationJobObject',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -896,6 +923,60 @@ class DatamigrationV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DatamigrationProjectsLocationsMigrationJobsObjectsGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Use this method to list the objects of a specific migration job.
+
+      Args:
+        request: (DatamigrationProjectsLocationsMigrationJobsObjectsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMigrationJobObjectsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}/objects',
+        http_method='GET',
+        method_id='datamigration.projects.locations.migrationJobs.objects.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/objects',
+        request_field='',
+        request_type_name='DatamigrationProjectsLocationsMigrationJobsObjectsListRequest',
+        response_type_name='ListMigrationJobObjectsResponse',
+        supports_download=False,
+    )
+
+    def Lookup(self, request, global_params=None):
+      r"""Use this method to look up a migration job object by its source object identifier.
+
+      Args:
+        request: (DatamigrationProjectsLocationsMigrationJobsObjectsLookupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MigrationJobObject) The response message.
+      """
+      config = self.GetMethodConfig('Lookup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Lookup.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}/objects:lookup',
+        http_method='POST',
+        method_id='datamigration.projects.locations.migrationJobs.objects.lookup',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/objects:lookup',
+        request_field='lookupMigrationJobObjectRequest',
+        request_type_name='DatamigrationProjectsLocationsMigrationJobsObjectsLookupRequest',
+        response_type_name='MigrationJobObject',
         supports_download=False,
     )
 
@@ -1040,6 +1121,33 @@ class DatamigrationV1(base_api.BaseApiClient):
         relative_path='v1/{+name}:demoteDestination',
         request_field='demoteDestinationRequest',
         request_type_name='DatamigrationProjectsLocationsMigrationJobsDemoteDestinationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def FetchSourceObjects(self, request, global_params=None):
+      r"""Retrieves objects from the source database that can be selected for data migration. This is applicable for the following migrations: 1. PostgreSQL to Cloud SQL for PostgreSQL 2. PostgreSQL to AlloyDB for PostgreSQL.
+
+      Args:
+        request: (DatamigrationProjectsLocationsMigrationJobsFetchSourceObjectsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('FetchSourceObjects')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchSourceObjects.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:fetchSourceObjects',
+        http_method='GET',
+        method_id='datamigration.projects.locations.migrationJobs.fetchSourceObjects',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:fetchSourceObjects',
+        request_field='',
+        request_type_name='DatamigrationProjectsLocationsMigrationJobsFetchSourceObjectsRequest',
         response_type_name='Operation',
         supports_download=False,
     )

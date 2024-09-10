@@ -43,43 +43,42 @@ DURATION_HELP_STR = (
     'respectively. If the unit is omitted, seconds is assumed.'
 )
 
-# Mapping of flag name to the feature of subscription
-NON_GDU_DISABLED_SUBSCRIPION_FLAG_FEATURE_MAP = {
-    'enable_message_ordering': 'ENABLE_MESSAGE_ORDERING',
-    'enable_exactly_once_delivery': 'ENABLE_EXACTLY_ONCE_DELIVERY',
-    'min_retry_delay': 'RETRY_POLICY',
-    'max_retry_delay': 'RETRY_POLICY',
-    'dead_letter_topic': 'DEAD_LETTER_TOPIC',
-    'bigquery_table': 'BIGQUERY_TABLE',
-    'cloud_storage_bucket': 'CLOUD_STORAGE_CONFIG',
-    'cloud_storage_file_prefix': 'CLOUD_STORAGE_CONFIG',
-    'cloud_storage_file_suffix': 'CLOUD_STORAGE_CONFIG',
-    'cloud_storage_file_datetime_format': 'CLOUD_STORAGE_CONFIG',
-    'cloud_storage_max_bytes': 'CLOUD_STORAGE_CONFIG',
-    'cloud_storage_max_duration': 'CLOUD_STORAGE_CONFIG',
-    'cloud_storage_write_metadata': 'CLOUD_STORAGE_CONFIG',
-    'message_filter': 'MESSAGE_FILTER',
-    'clear_dead_letter_policy': 'CLEAR_DEAD_LETTER_POLICY',
-    'clear_retry_policy': 'CLEAR_RETRY_POLICY',
-    'clear_bigquery_config': 'CLEAR_BIGQUERY_CONFIG',
-    'clear_cloud_storage_config': 'CLEAR_CLOUD_STORAGE_CONFIG',
-    'snapshot': 'SNAPSHOT',
-}
-
-# Mapping of flag name to the feature of topic
-NON_GDU_DISABLED_TOPIC_FLAG_FEATURE_MAP = {
-    'schema': 'SCHEMA',
-}
+# Universe Help Text is only shown when the gcloud client is configured
+# to target non-GDU. It looks like the following
+#
+# FLAGS
+#  --my-flag-name
+#     UNIVERSE INFO: This is not available.
+#
+# go/gcloud:tpc-doc-specific-help-text-support
+MESSAGE_ORDERING_NOT_SUPPORTED_IN_TPC = 'Message Ordering is not available.'
+MESSAGE_FILTERING_NOT_SUPPORTED_IN_TPC = 'Message Filtering is not available.'
+DEAD_LETTER_TOPICS_NOT_SUPPORTED_IN_TPC = (
+    'Dead-Letter Topics are not available.'
+)
+RETRY_POLICY_NOT_SUPPORTED_IN_TPC = 'Retry Policy is not available.'
+EXACTLY_ONCE_NOT_SUPPORTED_IN_TPC = 'Exactly-Once Delivery is not available.'
+SCHEMA_NOT_SUPPORTED_IN_TPC = 'Schema is not available.'
+INGESTION_NOT_SUPPORTED_IN_TPC = 'Ingestion is not available.'
+BIGQUERY_EXPORT_NOT_SUPPORTED_IN_TPC = (
+    'BigQuery Export Subscriptions are not available.'
+)
+CLOUD_STORAGE_EXPORT_NOT_SUPPORTED_IN_TPC = (
+    'Cloud Storage Export Subscriptions are not available.'
+)
 
 
 def NegativeBooleanFlagHelpText(flag_name):
   return f'Use --no-{flag_name} to disable this flag.'
 
 
-def AddBooleanFlag(parser, flag_name, help_text, **kwargs):
+def AddBooleanFlag(parser, flag_name, help_text, universe_help=None, **kwargs):
   parser.add_argument(
       '--' + flag_name,
-      help=help_text + ' ' + NegativeBooleanFlagHelpText(flag_name),
+      help=arg_parsers.UniverseHelpText(
+          help_text + ' ' + NegativeBooleanFlagHelpText(flag_name),
+          universe_help,
+      ),
       **kwargs,
   )
 
@@ -325,7 +324,10 @@ def AddSubscriptionMessageRetentionFlags(parser, is_update):
   """Adds flags subscription's message retention properties to the parser."""
   if is_update:
     retention_parser = ParseSubscriptionRetentionDurationWithDefault
-    retention_default_help = 'Specify "default" to use the default value.'
+    retention_default_help = (
+        'Specify "default" to use the default value of 7 days. The minimum is'
+        ' 10 minutes, and the maximum is 7 days.'
+    )
   else:
     retention_parser = arg_parsers.Duration()
     retention_default_help = (
@@ -391,13 +393,17 @@ def AddBigQueryConfigFlags(
         action='store_true',
         default=None,
         help_text="""If set, clear the BigQuery config from the subscription.""",
+        universe_help=BIGQUERY_EXPORT_NOT_SUPPORTED_IN_TPC,
     )
     current_group = mutual_exclusive_group
   bigquery_config_group = current_group.add_argument_group(
-      help="""BigQuery Config Options. The Cloud Pub/Sub service account
+      help=arg_parsers.UniverseHelpText(
+          default="""BigQuery Config Options. The Cloud Pub/Sub service account
          associated with the enclosing subscription's parent project (i.e.,
          service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
-         must have permission to write to this BigQuery table."""
+         must have permission to write to this BigQuery table.""",
+          universe_help=BIGQUERY_EXPORT_NOT_SUPPORTED_IN_TPC,
+      )
   )
   bigquery_config_group.add_argument(
       '--bigquery-table',
@@ -487,13 +493,17 @@ def AddCloudStorageConfigFlags(parser, is_update):
         action='store_true',
         default=None,
         help_text="""If set, clear the Cloud Storage config from the subscription.""",
+        universe_help=CLOUD_STORAGE_EXPORT_NOT_SUPPORTED_IN_TPC,
     )
     current_group = mutual_exclusive_group
     cloud_storage_config_group_help += """\n\nNote that an update to the Cloud
           Storage config will replace it with a new config containing only the
           flags that are passed in the `update` CLI."""
   cloud_storage_config_group = current_group.add_argument_group(
-      help=cloud_storage_config_group_help
+      help=arg_parsers.UniverseHelpText(
+          default=cloud_storage_config_group_help,
+          universe_help=CLOUD_STORAGE_EXPORT_NOT_SUPPORTED_IN_TPC,
+      )
   )
   cloud_storage_config_group.add_argument(
       '--cloud-storage-bucket',
@@ -705,15 +715,19 @@ def AddSubscriptionSettingsFlags(
         help_text="""Whether to receive messages with the same ordering key in order.
             If set, messages with the same ordering key are sent to subscribers
             in the order that Pub/Sub receives them.""",
+        universe_help=MESSAGE_ORDERING_NOT_SUPPORTED_IN_TPC,
     )
   if not is_update:
     parser.add_argument(
         '--message-filter',
         type=str,
-        help="""Expression to filter messages. If set, Pub/Sub only delivers the
+        help=arg_parsers.UniverseHelpText(
+            default="""Expression to filter messages. If set, Pub/Sub only delivers the
         messages that match the filter. The expression must be a non-empty
         string in the [Pub/Sub filtering
         language](https://cloud.google.com/pubsub/docs/filtering).""",
+            universe_help=MESSAGE_FILTERING_NOT_SUPPORTED_IN_TPC,
+        ),
     )
   current_group = parser
   if is_update:
@@ -723,16 +737,22 @@ def AddSubscriptionSettingsFlags(
         flag_name='clear-dead-letter-policy',
         action='store_true',
         default=None,
-        help_text="""If set, clear the dead letter policy from the subscription.""",
+        help_text=arg_parsers.UniverseHelpText(
+            default="""If set, clear the dead letter policy from the subscription.""",
+            universe_help=DEAD_LETTER_TOPICS_NOT_SUPPORTED_IN_TPC,
+        ),
     )
     current_group = mutual_exclusive_group
 
   set_dead_letter_policy_group = current_group.add_argument_group(
-      help="""Dead Letter Queue Options. The Cloud Pub/Sub service account
+      help=arg_parsers.UniverseHelpText(
+          default="""Dead Letter Queue Options. The Cloud Pub/Sub service account
            associated with the enclosing subscription's parent project (i.e.,
            service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
            must have permission to Publish() to this topic and Acknowledge()
-           messages on this subscription."""
+           messages on this subscription.""",
+          universe_help=DEAD_LETTER_TOPICS_NOT_SUPPORTED_IN_TPC,
+      )
   )
   dead_letter_topic = resource_args.CreateTopicResourceArg(
       'to publish dead letter messages to.',
@@ -769,13 +789,19 @@ def AddSubscriptionSettingsFlags(
         flag_name='clear-retry-policy',
         action='store_true',
         default=None,
-        help_text="""If set, clear the retry policy from the subscription.""",
+        help_text=arg_parsers.UniverseHelpText(
+            default="""If set, clear the retry policy from the subscription.""",
+            universe_help=RETRY_POLICY_NOT_SUPPORTED_IN_TPC,
+        ),
     )
     current_group = mutual_exclusive_group
 
   set_retry_policy_group = current_group.add_argument_group(
-      help="""Retry Policy Options. Retry policy specifies how Cloud Pub/Sub
-              retries message delivery for this subscription."""
+      help=arg_parsers.UniverseHelpText(
+          default="""Retry Policy Options. Retry policy specifies how Cloud Pub/Sub
+              retries message delivery for this subscription.""",
+          universe_help=RETRY_POLICY_NOT_SUPPORTED_IN_TPC,
+      )
   )
 
   set_retry_policy_group.add_argument(
@@ -792,12 +818,7 @@ def AddSubscriptionSettingsFlags(
           message. Value should be between 0 and 600 seconds. Defaults to 10
           seconds. {}""".format(DURATION_HELP_STR),
   )
-  help_text_suffix = ''
-  if is_update:
-    help_text_suffix = (
-        ' To disable exactly-once delivery use '
-        '`--no-enable-exactly-once-delivery`.'
-    )
+
   AddBooleanFlag(
       parser=parser,
       flag_name='enable-exactly-once-delivery',
@@ -809,8 +830,8 @@ def AddSubscriptionSettingsFlags(
           of a message with a given value of `message_id` on this
           subscription: The message sent to a subscriber is guaranteed not to
           be resent before the message's acknowledgment deadline expires. An
-          acknowledged message will not be resent to a subscriber."""
-      + help_text_suffix,
+          acknowledged message will not be resent to a subscriber.""",
+      universe_help=EXACTLY_ONCE_NOT_SUPPORTED_IN_TPC,
   )
 
 
@@ -852,9 +873,12 @@ def AddPublishMessageFlags(parser, add_deprecated=False):
 
   parser.add_argument(
       '--ordering-key',
-      help="""The key for ordering delivery to subscribers. All messages with
+      help=arg_parsers.UniverseHelpText(
+          default="""The key for ordering delivery to subscribers. All messages with
           the same ordering key are sent to subscribers in the order that
           Pub/Sub receives them.""",
+          universe_help=MESSAGE_ORDERING_NOT_SUPPORTED_IN_TPC,
+      ),
   )
 
 
@@ -875,11 +899,17 @@ def AddSchemaSettingsFlags(parser, is_update=False):
         action='store_true',
         default=None,
         help_text="""If set, clear the Schema Settings from the topic.""",
+        universe_help=SCHEMA_NOT_SUPPORTED_IN_TPC,
     )
     current_group = mutual_exclusive_group
   set_schema_settings_group = current_group.add_argument_group(
-      # pylint: disable=line-too-long
-      help="""Schema settings. The schema that messages published to this topic must conform to and the expected message encoding."""
+      help=arg_parsers.UniverseHelpText(
+          default=(
+              'Schema settings. The schema that messages published to this '
+              'topic must conform to and the expected message encoding.'
+          ),
+          universe_help=SCHEMA_NOT_SUPPORTED_IN_TPC,
+      ),
   )
 
   schema_help_text = 'that messages published to this topic must conform to.'
@@ -942,6 +972,7 @@ def AddIngestionDatasourceFlags(
         help_text=(
             'If set, clear the Ingestion Data Source Settings from the topic.'
         ),
+        universe_help=INGESTION_NOT_SUPPORTED_IN_TPC,
     )
     current_group = clear_settings_group
 
@@ -949,10 +980,14 @@ def AddIngestionDatasourceFlags(
   ingestion_source_types_group = current_group.add_argument_group()
 
   aws_kinesis_group = ingestion_source_types_group.add_argument_group(
-      help=(
-          'The following flags are for specifying ingestion settings for an'
-          ' import topic from Amazon Web Services (AWS) Kinesis Data Streams'
-      ),
+      help=arg_parsers.UniverseHelpText(
+          default=(
+              'The following flags are for specifying ingestion settings for an'
+              ' import topic from Amazon Web Services (AWS) Kinesis Data'
+              ' Streams'
+          ),
+          universe_help=INGESTION_NOT_SUPPORTED_IN_TPC,
+      )
   )
   aws_kinesis_group.add_argument(
       '--kinesis-ingestion-stream-arn',
@@ -992,9 +1027,12 @@ def AddIngestionDatasourceFlags(
 
   if include_ingestion_from_cloud_storage_flags:
     cloud_storage_group = ingestion_source_types_group.add_argument_group(
-        help=(
-            'The following flags are for specifying ingestion settings for an'
-            ' import topic from Cloud Storage'
+        help=arg_parsers.UniverseHelpText(
+            default=(
+                'The following flags are for specifying ingestion settings for'
+                ' an import topic from Cloud Storage'
+            ),
+            universe_help=INGESTION_NOT_SUPPORTED_IN_TPC,
         ),
         hidden=True,
     )
@@ -1223,40 +1261,6 @@ def _RaiseExceptionIfContains(args, universe_domain, feature_map):
           + ' is not available in universe_domain '
           + universe_domain,
       )
-
-
-def ValidateSubscriptionArgsUseUniverseSupportedFeatures(args):
-  """Raises an exception if args has unsupported features in non default universe.
-
-  Args:
-    args (argparse.Namespace): Parsed arguments
-
-  Raises:
-    InvalidArgumentException: if invalid flags are set in current universe.
-  """
-  if properties.IsDefaultUniverse():
-    return
-  universe_domain = properties.GetUniverseDomain()
-  _RaiseExceptionIfContains(
-      args, universe_domain, NON_GDU_DISABLED_SUBSCRIPION_FLAG_FEATURE_MAP
-  )
-
-
-def ValidateTopicArgsUseUniverseSupportedFeatures(args):
-  """Raises an exception if args has unsupported features in non default universe.
-
-  Args:
-    args (argparse.Namespace): Parsed arguments
-
-  Raises:
-    InvalidArgumentException: if invalid flags are set in current universe.
-  """
-  if properties.IsDefaultUniverse():
-    return
-  universe_domain = properties.GetUniverseDomain()
-  _RaiseExceptionIfContains(
-      args, universe_domain, NON_GDU_DISABLED_TOPIC_FLAG_FEATURE_MAP
-  )
 
 
 def ValidateIsDefaultUniverse(command):

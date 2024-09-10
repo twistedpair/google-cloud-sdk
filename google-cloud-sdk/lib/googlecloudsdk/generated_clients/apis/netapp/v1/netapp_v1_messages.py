@@ -155,6 +155,8 @@ class Backup(_messages.Message):
     name: Identifier. The resource name of the backup. Format: `projects/{proj
       ect_id}/locations/{location}/backupVaults/{backup_vault_id}/backups/{bac
       kup_id}`.
+    satisfiesPzi: Output only. Reserved for future use
+    satisfiesPzs: Output only. Reserved for future use
     sourceSnapshot: If specified, backup will be created from the given
       snapshot. If not specified, there will be a new snapshot taken to
       initiate the backup creation. Format: `projects/{project_id}/locations/{
@@ -234,10 +236,12 @@ class Backup(_messages.Message):
   description = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  sourceSnapshot = _messages.StringField(7)
-  sourceVolume = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  volumeUsageBytes = _messages.IntegerField(10)
+  satisfiesPzi = _messages.BooleanField(7)
+  satisfiesPzs = _messages.BooleanField(8)
+  sourceSnapshot = _messages.StringField(9)
+  sourceVolume = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  volumeUsageBytes = _messages.IntegerField(12)
 
 
 class BackupConfig(_messages.Message):
@@ -1594,6 +1598,33 @@ class NetappProjectsLocationsStoragePoolsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class NetappProjectsLocationsStoragePoolsSwitchRequest(_messages.Message):
+  r"""A NetappProjectsLocationsStoragePoolsSwitchRequest object.
+
+  Fields:
+    name: Required. Name of the storage pool
+    switchActiveReplicaZoneRequest: A SwitchActiveReplicaZoneRequest resource
+      to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  switchActiveReplicaZoneRequest = _messages.MessageField('SwitchActiveReplicaZoneRequest', 2)
+
+
+class NetappProjectsLocationsStoragePoolsValidateDirectoryServiceRequest(_messages.Message):
+  r"""A NetappProjectsLocationsStoragePoolsValidateDirectoryServiceRequest
+  object.
+
+  Fields:
+    name: Required. Name of the storage pool
+    validateDirectoryServiceRequest: A ValidateDirectoryServiceRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  validateDirectoryServiceRequest = _messages.MessageField('ValidateDirectoryServiceRequest', 2)
+
+
 class NetappProjectsLocationsVolumesCreateRequest(_messages.Message):
   r"""A NetappProjectsLocationsVolumesCreateRequest object.
 
@@ -2592,6 +2623,8 @@ class StoragePool(_messages.Message):
       this field are ignored.
     replicaZone: Optional. Specifies the replica zone for regional
       storagePool.
+    satisfiesPzi: Output only. Reserved for future use
+    satisfiesPzs: Output only. Reserved for future use
     serviceLevel: Required. Service level of the storage pool
     state: Output only. State of the storage pool
     stateDetails: Output only. State details of the storage pool
@@ -2690,12 +2723,21 @@ class StoragePool(_messages.Message):
   network = _messages.StringField(12)
   psaRange = _messages.StringField(13)
   replicaZone = _messages.StringField(14)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  stateDetails = _messages.StringField(17)
-  volumeCapacityGib = _messages.IntegerField(18)
-  volumeCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(20)
+  satisfiesPzi = _messages.BooleanField(15)
+  satisfiesPzs = _messages.BooleanField(16)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  stateDetails = _messages.StringField(19)
+  volumeCapacityGib = _messages.IntegerField(20)
+  volumeCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(22)
+
+
+class SwitchActiveReplicaZoneRequest(_messages.Message):
+  r"""SwitchActiveReplicaZoneRequest switch the active/replica zone for a
+  regional storagePool.
+  """
+
 
 
 class SyncReplicationRequest(_messages.Message):
@@ -2748,8 +2790,10 @@ class TransferStats(_messages.Message):
     lastTransferEndTime: Time when last transfer completed.
     lastTransferError: A message describing the cause of the last transfer
       failure.
-    totalTransferDuration: Total time taken during transfer.
-    transferBytes: bytes trasferred so far in current transfer.
+    totalTransferDuration: Cumulative time taken across all transfers for the
+      replication relationship.
+    transferBytes: Cumulative bytes trasferred so far for the replication
+      relatinonship.
     updateTime: Time when progress was updated last.
   """
 
@@ -2761,6 +2805,33 @@ class TransferStats(_messages.Message):
   totalTransferDuration = _messages.StringField(6)
   transferBytes = _messages.IntegerField(7)
   updateTime = _messages.StringField(8)
+
+
+class ValidateDirectoryServiceRequest(_messages.Message):
+  r"""ValidateDirectoryServiceRequest validates the directory service policy
+  attached to the storage pool.
+
+  Enums:
+    DirectoryServiceTypeValueValuesEnum: Type of directory service policy
+      attached to the storage pool.
+
+  Fields:
+    directoryServiceType: Type of directory service policy attached to the
+      storage pool.
+  """
+
+  class DirectoryServiceTypeValueValuesEnum(_messages.Enum):
+    r"""Type of directory service policy attached to the storage pool.
+
+    Values:
+      DIRECTORY_SERVICE_TYPE_UNSPECIFIED: Directory service type is not
+        specified.
+      ACTIVE_DIRECTORY: Active directory policy attached to the storage pool.
+    """
+    DIRECTORY_SERVICE_TYPE_UNSPECIFIED = 0
+    ACTIVE_DIRECTORY = 1
+
+  directoryServiceType = _messages.EnumField('DirectoryServiceTypeValueValuesEnum', 1)
 
 
 class VerifyKmsConfigRequest(_messages.Message):
@@ -2805,6 +2876,7 @@ class Volume(_messages.Message):
       volume.
     backupConfig: BackupConfig of the volume.
     capacityGib: Required. Capacity in GIB of the volume
+    coldTierSizeGib: Output only. Size of the volume cold tier data in GiB.
     createTime: Output only. Create time of the volume
     description: Optional. Description of the volume
     encryptionType: Output only. Specified the current volume encryption key
@@ -3009,40 +3081,41 @@ class Volume(_messages.Message):
   activeDirectory = _messages.StringField(1)
   backupConfig = _messages.MessageField('BackupConfig', 2)
   capacityGib = _messages.IntegerField(3)
-  createTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 6)
-  exportPolicy = _messages.MessageField('ExportPolicy', 7)
-  hasReplication = _messages.BooleanField(8)
-  hybridReplicationParameters = _messages.MessageField('HybridReplicationParameters', 9)
-  kerberosEnabled = _messages.BooleanField(10)
-  kmsConfig = _messages.StringField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  largeCapacity = _messages.BooleanField(13)
-  ldapEnabled = _messages.BooleanField(14)
-  mountOptions = _messages.MessageField('MountOption', 15, repeated=True)
-  multipleEndpoints = _messages.BooleanField(16)
-  name = _messages.StringField(17)
-  network = _messages.StringField(18)
-  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 19, repeated=True)
-  psaRange = _messages.StringField(20)
-  replicaZone = _messages.StringField(21)
-  restoreParameters = _messages.MessageField('RestoreParameters', 22)
-  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 23, repeated=True)
-  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 24)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 25)
-  shareName = _messages.StringField(26)
-  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 27, repeated=True)
-  snapReserve = _messages.FloatField(28)
-  snapshotDirectory = _messages.BooleanField(29)
-  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 30)
-  state = _messages.EnumField('StateValueValuesEnum', 31)
-  stateDetails = _messages.StringField(32)
-  storagePool = _messages.StringField(33)
-  tieringPolicy = _messages.MessageField('TieringPolicy', 34)
-  unixPermissions = _messages.StringField(35)
-  usedGib = _messages.IntegerField(36)
-  zone = _messages.StringField(37)
+  coldTierSizeGib = _messages.IntegerField(4)
+  createTime = _messages.StringField(5)
+  description = _messages.StringField(6)
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 7)
+  exportPolicy = _messages.MessageField('ExportPolicy', 8)
+  hasReplication = _messages.BooleanField(9)
+  hybridReplicationParameters = _messages.MessageField('HybridReplicationParameters', 10)
+  kerberosEnabled = _messages.BooleanField(11)
+  kmsConfig = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  largeCapacity = _messages.BooleanField(14)
+  ldapEnabled = _messages.BooleanField(15)
+  mountOptions = _messages.MessageField('MountOption', 16, repeated=True)
+  multipleEndpoints = _messages.BooleanField(17)
+  name = _messages.StringField(18)
+  network = _messages.StringField(19)
+  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 20, repeated=True)
+  psaRange = _messages.StringField(21)
+  replicaZone = _messages.StringField(22)
+  restoreParameters = _messages.MessageField('RestoreParameters', 23)
+  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 24, repeated=True)
+  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 25)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 26)
+  shareName = _messages.StringField(27)
+  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 28, repeated=True)
+  snapReserve = _messages.FloatField(29)
+  snapshotDirectory = _messages.BooleanField(30)
+  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 31)
+  state = _messages.EnumField('StateValueValuesEnum', 32)
+  stateDetails = _messages.StringField(33)
+  storagePool = _messages.StringField(34)
+  tieringPolicy = _messages.MessageField('TieringPolicy', 35)
+  unixPermissions = _messages.StringField(36)
+  usedGib = _messages.IntegerField(37)
+  zone = _messages.StringField(38)
 
 
 class WeeklySchedule(_messages.Message):

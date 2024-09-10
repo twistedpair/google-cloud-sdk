@@ -196,6 +196,25 @@ def add_acl_modifier_flags(parser):
   )
 
 
+def add_placement_flag(parser):
+  """Adds placement flag to set placement config for Dual-region."""
+  parser.add_argument(
+      '--placement',
+      metavar='REGION',
+      type=arg_parsers.ArgList(
+          min_length=2, max_length=2, custom_delim_char=','
+      ),
+      help=(
+          'A comma-separated list of exactly 2 regions that form the custom'
+          ' [dual-region]'
+          ' (https://cloud.google.com/storage/docs/locations#location-dr).'
+          ' Only regions within the same continent are or will ever be valid.'
+          ' Invalid location pairs (such as mixed-continent, or with'
+          ' unsupported regions) will return an error.'
+      ),
+  )
+
+
 def add_precondition_flags(parser):
   """Add flags indicating a precondition for an operation to happen."""
   preconditions_group = parser.add_group(

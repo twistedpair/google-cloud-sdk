@@ -39,6 +39,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_autonomousDatabaseBackups = self.ProjectsLocationsAutonomousDatabaseBackupsService(self)
     self.projects_locations_autonomousDatabaseCharacterSets = self.ProjectsLocationsAutonomousDatabaseCharacterSetsService(self)
     self.projects_locations_autonomousDatabases = self.ProjectsLocationsAutonomousDatabasesService(self)
     self.projects_locations_autonomousDbVersions = self.ProjectsLocationsAutonomousDbVersionsService(self)
@@ -52,6 +53,43 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsAutonomousDatabaseBackupsService(base_api.BaseApiService):
+    """Service class for the projects_locations_autonomousDatabaseBackups resource."""
+
+    _NAME = 'projects_locations_autonomousDatabaseBackups'
+
+    def __init__(self, client):
+      super(OracledatabaseV1alpha.ProjectsLocationsAutonomousDatabaseBackupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists Autonomous Database Long-term and Automatic Backups.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsAutonomousDatabaseBackupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAutonomousDatabaseBackupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/autonomousDatabaseBackups',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.autonomousDatabaseBackups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/autonomousDatabaseBackups',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsAutonomousDatabaseBackupsListRequest',
+        response_type_name='ListAutonomousDatabaseBackupsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsAutonomousDatabaseCharacterSetsService(base_api.BaseApiService):
     """Service class for the projects_locations_autonomousDatabaseCharacterSets resource."""
@@ -181,6 +219,33 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GenerateWallet(self, request, global_params=None):
+      r"""Generates Wallet for a single Autonomous Database.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsAutonomousDatabasesGenerateWalletRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateAutonomousDatabaseWalletResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateWallet')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateWallet.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/autonomousDatabases/{autonomousDatabasesId}:generateWallet',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.autonomousDatabases.generateWallet',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:generateWallet',
+        request_field='generateAutonomousDatabaseWalletRequest',
+        request_type_name='OracledatabaseProjectsLocationsAutonomousDatabasesGenerateWalletRequest',
+        response_type_name='GenerateAutonomousDatabaseWalletResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single Autonomous Database.
 
@@ -232,6 +297,33 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='OracledatabaseProjectsLocationsAutonomousDatabasesListRequest',
         response_type_name='ListAutonomousDatabasesResponse',
+        supports_download=False,
+    )
+
+    def Restore(self, request, global_params=None):
+      r"""Restores a single Autonomous Database.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsAutonomousDatabasesRestoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Restore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Restore.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/autonomousDatabases/{autonomousDatabasesId}:restore',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.autonomousDatabases.restore',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:restore',
+        request_field='restoreAutonomousDatabaseRequest',
+        request_type_name='OracledatabaseProjectsLocationsAutonomousDatabasesRestoreRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
