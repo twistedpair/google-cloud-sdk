@@ -83,6 +83,7 @@ class SecuritycenterV2(base_api.BaseApiClient):
     self.organizations_sources_locations_findings = self.OrganizationsSourcesLocationsFindingsService(self)
     self.organizations_sources_locations = self.OrganizationsSourcesLocationsService(self)
     self.organizations_sources = self.OrganizationsSourcesService(self)
+    self.organizations_valuedResources = self.OrganizationsValuedResourcesService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_assets = self.ProjectsAssetsService(self)
     self.projects_findings = self.ProjectsFindingsService(self)
@@ -3480,6 +3481,43 @@ class SecuritycenterV2(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='SecuritycenterOrganizationsSourcesTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsValuedResourcesService(base_api.BaseApiService):
+    """Service class for the organizations_valuedResources resource."""
+
+    _NAME = 'organizations_valuedResources'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.OrganizationsValuedResourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the valued resources for a set of simulation results and filter.
+
+      Args:
+        request: (SecuritycenterOrganizationsValuedResourcesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListValuedResourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/valuedResources',
+        http_method='GET',
+        method_id='securitycenter.organizations.valuedResources.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/valuedResources',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsValuedResourcesListRequest',
+        response_type_name='ListValuedResourcesResponse',
         supports_download=False,
     )
 

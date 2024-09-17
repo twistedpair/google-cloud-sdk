@@ -331,7 +331,7 @@ def GetEnableOpportunisticMaintenanceFlag():
   """
   return base.Argument(
       '--enable-opportunistic-maintenance',
-      type=bool,
+      action=arg_parsers.StoreTrueFalseAction,
       help=help_text,
   )
 
@@ -559,12 +559,16 @@ def AddCommitmentInfoFlags(parser):
       help='Manage the commitment info properties',
       required=False,
   )
-  commitment_info_group.add_argument('--commitment-name',
-                                     type=str, help=GetCommitmentNameHelpText())
-  commitment_info_group.add_argument('--commitment-plan',
-                                     choices=['TWELVE_MONTH',
-                                              'THIRTY_SIX_MONTH'],
-                                     help=GetCommitmentPlanHelpText())
-  commitment_info_group.add_argument('--previous-commitment-terms',
-                                     choices=['EXTEND'],
-                                     help=GetPreviousCommitmentTermsHelpText())
+  commitment_info_group.add_argument(
+      '--commitment-name', type=str, help=GetCommitmentNameHelpText()
+  )
+  commitment_info_group.add_argument(
+      '--commitment-plan',
+      choices=['TWELVE_MONTH', 'THIRTY_SIX_MONTH'],
+      help=GetCommitmentPlanHelpText(),
+  )
+  commitment_info_group.add_argument(
+      '--previous-commitment-terms',
+      choices=['EXTEND'],
+      help=GetPreviousCommitmentTermsHelpText(),
+  )

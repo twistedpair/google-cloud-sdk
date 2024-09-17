@@ -74,6 +74,56 @@ class DataplexOrganizationsLocationsEncryptionConfigsTestIamPermissionsRequest(_
   resource = _messages.StringField(2, required=True)
 
 
+class DataplexOrganizationsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A DataplexOrganizationsLocationsOperationsCancelRequest object.
+
+  Fields:
+    googleLongrunningCancelOperationRequest: A
+      GoogleLongrunningCancelOperationRequest resource to be passed as the
+      request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  googleLongrunningCancelOperationRequest = _messages.MessageField('GoogleLongrunningCancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class DataplexOrganizationsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A DataplexOrganizationsLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexOrganizationsLocationsOperationsGetRequest(_messages.Message):
+  r"""A DataplexOrganizationsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexOrganizationsLocationsOperationsListOperationsRequest(_messages.Message):
+  r"""A DataplexOrganizationsLocationsOperationsListOperationsRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class DataplexProjectsLocationsAspectTypesCreateRequest(_messages.Message):
   r"""A DataplexProjectsLocationsAspectTypesCreateRequest object.
 
@@ -1285,6 +1335,63 @@ class DataplexProjectsLocationsEntryGroupsTestIamPermissionsRequest(_messages.Me
   resource = _messages.StringField(2, required=True)
 
 
+class DataplexProjectsLocationsEntryLinkTypesGetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsEntryLinkTypesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy.Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected.Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset.The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1.To learn which resources support conditions in
+      their IAM policies, see the IAM documentation
+      (https://cloud.google.com/iam/help/conditions/resource-policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsEntryLinkTypesSetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsEntryLinkTypesSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsEntryLinkTypesTestIamPermissionsRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsEntryLinkTypesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See Resource names
+      (https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class DataplexProjectsLocationsEntryTypesCreateRequest(_messages.Message):
   r"""A DataplexProjectsLocationsEntryTypesCreateRequest object.
 
@@ -1447,6 +1554,65 @@ class DataplexProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class DataplexProjectsLocationsGlossariesCategoriesGetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesCategoriesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy.Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected.Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset.The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1.To learn which resources support conditions in
+      their IAM policies, see the IAM documentation
+      (https://cloud.google.com/iam/help/conditions/resource-policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsGlossariesCategoriesSetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesCategoriesSetIamPolicyRequest
+  object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsGlossariesCategoriesTestIamPermissionsRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesCategoriesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See Resource names
+      (https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class DataplexProjectsLocationsGlossariesGetIamPolicyRequest(_messages.Message):
   r"""A DataplexProjectsLocationsGlossariesGetIamPolicyRequest object.
 
@@ -1483,6 +1649,63 @@ class DataplexProjectsLocationsGlossariesSetIamPolicyRequest(_messages.Message):
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsGlossariesTermsGetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesTermsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy.Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected.Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset.The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1.To learn which resources support conditions in
+      their IAM policies, see the IAM documentation
+      (https://cloud.google.com/iam/help/conditions/resource-policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsGlossariesTermsSetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesTermsSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsGlossariesTermsTestIamPermissionsRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesTermsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See Resource names
+      (https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
   resource = _messages.StringField(2, required=True)
 
 
@@ -3589,6 +3812,11 @@ class GoogleCloudDataplexV1AspectType(_messages.Message):
   r"""AspectType is a template for creating Aspects, and represents the JSON-
   schema for a given Entry, for example, BigQuery Table Schema.
 
+  Enums:
+    TransferStatusValueValuesEnum: Output only. Denotes the transfer status of
+      the Aspect Type. It is unspecified for Aspect Types created from
+      Dataplex API.
+
   Messages:
     LabelsValue: Optional. User-defined labels for the AspectType.
 
@@ -3605,11 +3833,31 @@ class GoogleCloudDataplexV1AspectType(_messages.Message):
     name: Output only. The relative resource name of the AspectType, of the
       form: projects/{project_number}/locations/{location_id}/aspectTypes/{asp
       ect_type_id}.
+    transferStatus: Output only. Denotes the transfer status of the Aspect
+      Type. It is unspecified for Aspect Types created from Dataplex API.
     uid: Output only. System generated globally unique ID for the AspectType.
       If you delete and recreate the AspectType with the same name, then this
       ID will be different.
     updateTime: Output only. The time when the AspectType was last updated.
   """
+
+  class TransferStatusValueValuesEnum(_messages.Enum):
+    r"""Output only. Denotes the transfer status of the Aspect Type. It is
+    unspecified for Aspect Types created from Dataplex API.
+
+    Values:
+      TRANSFER_STATUS_UNSPECIFIED: The default value. It is set for resources
+        that were not subject for migration from Data Catalog service.
+      TRANSFER_STATUS_MIGRATED: Indicates that a resource was migrated from
+        Data Catalog service but it hasn't been transferred yet. In particular
+        the resource cannot be updated from Dataplex API.
+      TRANSFER_STATUS_TRANSFERRED: Indicates that a resource was transferred
+        from Data Catalog service. The resource can only be updated from
+        Dataplex API.
+    """
+    TRANSFER_STATUS_UNSPECIFIED = 0
+    TRANSFER_STATUS_MIGRATED = 1
+    TRANSFER_STATUS_TRANSFERRED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3643,8 +3891,9 @@ class GoogleCloudDataplexV1AspectType(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   metadataTemplate = _messages.MessageField('GoogleCloudDataplexV1AspectTypeMetadataTemplate', 7)
   name = _messages.StringField(8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  transferStatus = _messages.EnumField('TransferStatusValueValuesEnum', 9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class GoogleCloudDataplexV1AspectTypeAuthorization(_messages.Message):
@@ -6232,6 +6481,11 @@ class GoogleCloudDataplexV1Entry(_messages.Message):
 class GoogleCloudDataplexV1EntryGroup(_messages.Message):
   r"""An Entry Group represents a logical grouping of one or more Entries.
 
+  Enums:
+    TransferStatusValueValuesEnum: Output only. Denotes the transfer status of
+      the Entry Group. It is unspecified for Entry Group created from Dataplex
+      API.
+
   Messages:
     LabelsValue: Optional. User-defined labels for the EntryGroup.
 
@@ -6246,11 +6500,31 @@ class GoogleCloudDataplexV1EntryGroup(_messages.Message):
     name: Output only. The relative resource name of the EntryGroup, in the
       format projects/{project_id_or_number}/locations/{location_id}/entryGrou
       ps/{entry_group_id}.
+    transferStatus: Output only. Denotes the transfer status of the Entry
+      Group. It is unspecified for Entry Group created from Dataplex API.
     uid: Output only. System generated globally unique ID for the EntryGroup.
       If you delete and recreate the EntryGroup with the same name, this ID
       will be different.
     updateTime: Output only. The time when the EntryGroup was last updated.
   """
+
+  class TransferStatusValueValuesEnum(_messages.Enum):
+    r"""Output only. Denotes the transfer status of the Entry Group. It is
+    unspecified for Entry Group created from Dataplex API.
+
+    Values:
+      TRANSFER_STATUS_UNSPECIFIED: The default value. It is set for resources
+        that were not subject for migration from Data Catalog service.
+      TRANSFER_STATUS_MIGRATED: Indicates that a resource was migrated from
+        Data Catalog service but it hasn't been transferred yet. In particular
+        the resource cannot be updated from Dataplex API.
+      TRANSFER_STATUS_TRANSFERRED: Indicates that a resource was transferred
+        from Data Catalog service. The resource can only be updated from
+        Dataplex API.
+    """
+    TRANSFER_STATUS_UNSPECIFIED = 0
+    TRANSFER_STATUS_MIGRATED = 1
+    TRANSFER_STATUS_TRANSFERRED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -6282,8 +6556,9 @@ class GoogleCloudDataplexV1EntryGroup(_messages.Message):
   etag = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  transferStatus = _messages.EnumField('TransferStatusValueValuesEnum', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class GoogleCloudDataplexV1EntrySource(_messages.Message):
@@ -9924,9 +10199,15 @@ encoding.AddCustomJsonFieldMapping(
 encoding.AddCustomJsonFieldMapping(
     DataplexProjectsLocationsEntryGroupsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
+    DataplexProjectsLocationsEntryLinkTypesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
     DataplexProjectsLocationsEntryTypesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     DataplexProjectsLocationsGlossariesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    DataplexProjectsLocationsGlossariesCategoriesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    DataplexProjectsLocationsGlossariesTermsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     DataplexProjectsLocationsGovernanceRulesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(

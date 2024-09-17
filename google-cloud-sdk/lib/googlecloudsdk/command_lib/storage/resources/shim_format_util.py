@@ -24,7 +24,7 @@ from googlecloudsdk.core.util import scaled_integer
 
 _BUCKET_FIELDS_WITH_PRESENT_VALUE = ('cors_config', 'lifecycle_config',
                                      'logging_config', 'retention_policy',
-                                     'website_config')
+                                     'website_config', 'ip_filter_config')
 _BYTE_EXPONENTS_AND_UNIT_STRINGS = [
     (0, 'B'),
     (10, 'KiB'),
@@ -92,7 +92,7 @@ def replace_autoclass_value_with_prefixed_time(bucket_resource,
 def replace_bucket_values_with_present_string(bucket_resource):
   """Updates fields with complex data to a simple 'Present' string."""
   for field in _BUCKET_FIELDS_WITH_PRESENT_VALUE:
-    value = getattr(bucket_resource, field)
+    value = getattr(bucket_resource, field, None)
     if value and not isinstance(value, errors.CloudApiError):
       setattr(bucket_resource, field, PRESENT_STRING)
 

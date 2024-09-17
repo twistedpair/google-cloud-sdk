@@ -101,7 +101,7 @@ class ClientBase(object):
     )
 
   def _SecurityPosture(self, args):
-    vulnerability_mode = flags.GetSecurityPosture(args)
+    vulnerability_mode = flags.GetWorkloadVulnerabilityScanning(args)
     if not vulnerability_mode:
       return None
     return self._messages.GoogleCloudGkemulticloudV1SecurityPostureConfig(

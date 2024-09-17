@@ -63,6 +63,9 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = base.BucketDisplayTitlesAndDefaults(
     default_event_based_hold=base.FieldDisplayTitleAndDefault(
         title='Default Event-Based Hold', default=None
     ),
+    ip_filter_config=base.FieldDisplayTitleAndDefault(
+        title='IP Filter Configuration', default=None
+    ),
     labels=base.FieldDisplayTitleAndDefault(title='Labels', default=None),
     default_kms_key=base.FieldDisplayTitleAndDefault(
         title='Default KMS Key', default=shim_format_util.NONE_STRING

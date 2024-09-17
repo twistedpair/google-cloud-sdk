@@ -228,7 +228,20 @@ def _GetClusterEndpoint(
     use_dns_endpoint,
 ):
   """Get the cluster endpoint suitable for writing to kubeconfig."""
-  if use_dns_endpoint:
+  if (
+      # TODO(b/365115169)
+      cluster.controlPlaneEndpointsConfig is not None
+      and cluster.controlPlaneEndpointsConfig.ipEndpointsConfig is not None
+      and not cluster.controlPlaneEndpointsConfig.ipEndpointsConfig.enabled
+  ) and (use_internal_ip or cross_connect_subnetwork or use_private_fqdn):
+    raise IPEndpointsIsDisabledError(cluster)
+
+  if use_dns_endpoint or (
+      # TODO(b/365115169)
+      cluster.controlPlaneEndpointsConfig is not None
+      and cluster.controlPlaneEndpointsConfig.ipEndpointsConfig is not None
+      and not cluster.controlPlaneEndpointsConfig.ipEndpointsConfig.enabled
+  ):
     return _GetDNSEndpoint(cluster)
 
   if use_internal_ip or cross_connect_subnetwork or use_private_fqdn:
@@ -253,10 +266,11 @@ def _GetDNSEndpoint(cluster):
   """Extract dns endpoint for the kubeconfig from the ControlPlaneEndpointConfig."""
   if (
       not cluster.controlPlaneEndpointsConfig
-      or not cluster.controlPlaneEndpointsConfig.enhancedIngress
+      or not cluster.controlPlaneEndpointsConfig.dnsEndpointConfig
+      or not cluster.controlPlaneEndpointsConfig.dnsEndpointConfig.endpoint
   ):
     raise MissingDnsEndpointConfigError(cluster)
-  dns_endpoint = cluster.controlPlaneEndpointsConfig.enhancedIngress.endpoint
+  dns_endpoint = cluster.controlPlaneEndpointsConfig.dnsEndpointConfig.endpoint
   if dns_endpoint is None:
     raise MissingDNSEndpointError(cluster)
   return dns_endpoint
@@ -347,6 +361,15 @@ class AutoprovisioningConfigError(Error):
   def __init__(self, e):
     super(AutoprovisioningConfigError, self).__init__(
         'Invalid autoprovisioning config file: {0}'.format(e)
+    )
+
+
+class IPEndpointsIsDisabledError(Error):
+  """Error for attempting to persist internal IP for cluster with ipEndpoint access disabled."""
+
+  def __init__(self, cluster):
+    super(IPEndpointsIsDisabledError, self).__init__(
+        'IP access is disabled for cluster {0}.'.format(cluster.name)
     )
 
 
@@ -506,7 +529,12 @@ class ClusterConfig(object):
         'project_id': project_id,
         'server': 'https://' + endpoint,
     }
-    if use_dns_endpoint:
+    if use_dns_endpoint or (
+        # TODO(b/365115169)
+        cluster.controlPlaneEndpointsConfig is not None
+        and cluster.controlPlaneEndpointsConfig.ipEndpointsConfig is not None
+        and not cluster.controlPlaneEndpointsConfig.ipEndpointsConfig.enabled
+    ):
       kwargs['dns_endpoint'] = endpoint
     auth = cluster.masterAuth
     if auth and auth.clusterCaCertificate:

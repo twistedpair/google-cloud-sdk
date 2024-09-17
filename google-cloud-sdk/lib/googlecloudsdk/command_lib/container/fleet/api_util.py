@@ -87,7 +87,9 @@ def UpdateMembership(name,
                      issuer_url=None,
                      oidc_jwks=None,
                      api_server_version=None,
-                     async_flag=False):
+                     async_flag=False,
+                     use_v1main_api=False,
+                     ):
   """UpdateMembership updates membership resource in the GKE Hub API.
 
   Args:
@@ -109,6 +111,7 @@ def UpdateMembership(name,
       publicly-reachable. Still requires issuer_url to be set.
     api_server_version: api_server_version of the cluster
     async_flag: Whether to return the update operation instead of polling
+    use_v1main_api: Whether to use the v1main API.
 
   Returns:
     The updated Membership resource or the update operation if async.
@@ -117,7 +120,7 @@ def UpdateMembership(name,
     - apitools.base.py.HttpError: if the request returns an HTTP error
     - exceptions raised by waiter.WaitFor()
   """
-  client = gkehub_api_util.GetApiClientForTrack(release_track)
+  client = gkehub_api_util.GetApiClientForTrack(release_track, use_v1main_api)
   messages = client.MESSAGES_MODULE
   request = messages.GkehubProjectsLocationsMembershipsPatchRequest(
       membership=membership, name=name, updateMask=update_mask)
@@ -198,7 +201,8 @@ def CreateMembership(project,
                      release_track=None,
                      issuer_url=None,
                      oidc_jwks=None,
-                     api_server_version=None):
+                     api_server_version=None,
+                     use_v1main_api=False):
   """Creates a Membership resource in the GKE Hub API.
 
   Args:
@@ -217,6 +221,7 @@ def CreateMembership(project,
       service account tokens. Set to None if the issuer_url is
       publicly-routable. Still requires issuer_url to be set.
     api_server_version: api server version of the cluster for CRD
+    use_v1main_api: Whether to use the v1main API.
 
   Returns:
     the created Membership resource.
@@ -225,7 +230,7 @@ def CreateMembership(project,
     - apitools.base.py.HttpError: if the request returns an HTTP error
     - exceptions raised by waiter.WaitFor()
   """
-  client = gkehub_api_util.GetApiClientForTrack(release_track)
+  client = gkehub_api_util.GetApiClientForTrack(release_track, use_v1main_api)
   messages = client.MESSAGES_MODULE
   parent_ref = ParentRef(project, location)
 
@@ -264,7 +269,7 @@ def CreateMembership(project,
       op_resource, 'Waiting for membership to be created')
 
 
-def GetMembership(name, release_track=None):
+def GetMembership(name, release_track=None, use_v1main_api=False):
   """Gets a Membership resource from the GKE Hub API.
 
   Args:
@@ -272,6 +277,7 @@ def GetMembership(name, release_track=None):
       projects/foo/locations/global/memberships/name.
     release_track: the release_track used in the gcloud command, or None if it
       is not available.
+    use_v1main_api: whether to use the v1main API.
 
   Returns:
     a Membership resource
@@ -284,7 +290,7 @@ def GetMembership(name, release_track=None):
 
   if _MEMBERSHIP_RE.match(name) is None:
     raise InvalidMembershipFormatError(name)
-  client = gkehub_api_util.GetApiClientForTrack(release_track)
+  client = gkehub_api_util.GetApiClientForTrack(release_track, use_v1main_api)
   return client.projects_locations_memberships.Get(
       client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsGetRequest(
           name=name))

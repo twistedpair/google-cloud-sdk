@@ -33,6 +33,7 @@ class CommandData(object):
     from googlecloudsdk.command_lib.util.apis import yaml_arg_schema
     # pylint: enable=g-import-not-at-top
     self.hidden = data.get('hidden', False)
+    self.auto_generated = data.get('auto_generated', False)
     self.universe_compatible = data.get('universe_compatible', None)
     self.release_tracks = [
         base.ReleaseTrack.FromId(i) for i in data.get('release_tracks', [])

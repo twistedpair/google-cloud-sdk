@@ -74,6 +74,10 @@ class GoogleCloudOrgpolicyV2CustomConstraint(_messages.Message):
     ActionTypeValueValuesEnum: Allow or deny type.
     MethodTypesValueListEntryValuesEnum:
 
+  Messages:
+    ParametersValue: Stores Structure of parameters used by Constraint
+      condition. Key of map represents name of the parameter.
+
   Fields:
     actionType: Allow or deny type.
     condition: Org policy condition/expression. For example:
@@ -92,6 +96,8 @@ class GoogleCloudOrgpolicyV2CustomConstraint(_messages.Message):
       length is 70 characters and the minimum length is 1. Note that the
       prefix `organizations/{organization_id}/customConstraints/` is not
       counted.
+    parameters: Stores Structure of parameters used by Constraint condition.
+      Key of map represents name of the parameter.
     resourceTypes: Immutable. The resource instance type on which this policy
       applies. Format will be of the form : `/` Example: *
       `compute.googleapis.com/Instance`.
@@ -131,14 +137,109 @@ class GoogleCloudOrgpolicyV2CustomConstraint(_messages.Message):
     REMOVE_GRANT = 4
     GOVERN_TAGS = 5
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""Stores Structure of parameters used by Constraint condition. Key of
+    map represents name of the parameter.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudOrgpolicyV2CustomConstraintParameter attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudOrgpolicyV2CustomConstraintParameter', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   actionType = _messages.EnumField('ActionTypeValueValuesEnum', 1)
   condition = _messages.StringField(2)
   description = _messages.StringField(3)
   displayName = _messages.StringField(4)
   methodTypes = _messages.EnumField('MethodTypesValueListEntryValuesEnum', 5, repeated=True)
   name = _messages.StringField(6)
-  resourceTypes = _messages.StringField(7, repeated=True)
-  updateTime = _messages.StringField(8)
+  parameters = _messages.MessageField('ParametersValue', 7)
+  resourceTypes = _messages.StringField(8, repeated=True)
+  updateTime = _messages.StringField(9)
+
+
+class GoogleCloudOrgpolicyV2CustomConstraintParameter(_messages.Message):
+  r"""Defines a parameter structure.
+
+  Enums:
+    ItemValueValuesEnum: Determines the parameter's value structure. For
+      example, LIST can be specified by defining type : LIST, and item type as
+      : STRING.
+    TypeValueValuesEnum: Type of the parameter.
+
+  Fields:
+    defaultValue: Sets the value of the parameter in an assignment if no value
+      is given.
+    item: Determines the parameter's value structure. For example, LIST can be
+      specified by defining type : LIST, and item type as : STRING.
+    metadata: Defines subproperties primarily used by the UI to display user-
+      friendly information.
+    type: Type of the parameter.
+    validValuesExpr: Provides a CEL expression to specify the acceptable
+      parameter values during assignment. For example, parameterName in
+      ("parameterValue1", "parameterValue2")
+  """
+
+  class ItemValueValuesEnum(_messages.Enum):
+    r"""Determines the parameter's value structure. For example, LIST can be
+    specified by defining type : LIST, and item type as : STRING.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified. Results in an error.
+      LIST: List parameter type.
+      STRING: String parameter type.
+      BOOLEAN: Boolean parameter type.
+    """
+    TYPE_UNSPECIFIED = 0
+    LIST = 1
+    STRING = 2
+    BOOLEAN = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the parameter.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified. Results in an error.
+      LIST: List parameter type.
+      STRING: String parameter type.
+      BOOLEAN: Boolean parameter type.
+    """
+    TYPE_UNSPECIFIED = 0
+    LIST = 1
+    STRING = 2
+    BOOLEAN = 3
+
+  defaultValue = _messages.MessageField('extra_types.JsonValue', 1)
+  item = _messages.EnumField('ItemValueValuesEnum', 2)
+  metadata = _messages.MessageField('GoogleCloudOrgpolicyV2CustomConstraintParameterMetadata', 3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  validValuesExpr = _messages.StringField(5)
+
+
+class GoogleCloudOrgpolicyV2CustomConstraintParameterMetadata(_messages.Message):
+  r"""Defines Medata structure.
+
+  Fields:
+    description: Detailed description of what this `parameter` is and use of
+      it. Mutable.
+  """
+
+  description = _messages.StringField(1)
 
 
 class GoogleCloudOrgpolicyV2Policy(_messages.Message):
@@ -248,6 +349,8 @@ class GoogleCloudOrgpolicyV2PolicySpecPolicyRule(_messages.Message):
       Ensure that parameter value types match those defined in the constraint
       definition. For example: { "allowedLocations" : ["us-east1", "us-
       west1"], "allowAll" : true }
+    resourceTypes: Optional. The resource types policy can support, only used
+      for Google managed constraint and method type is GOVERN_TAGS.
     values: List of values to be used for this policy rule. This field can be
       set only in policies for list constraints.
   """
@@ -284,7 +387,24 @@ class GoogleCloudOrgpolicyV2PolicySpecPolicyRule(_messages.Message):
   denyAll = _messages.BooleanField(3)
   enforce = _messages.BooleanField(4)
   parameters = _messages.MessageField('ParametersValue', 5)
-  values = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpecPolicyRuleStringValues', 6)
+  resourceTypes = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpecPolicyRuleResourceTypes', 6)
+  values = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpecPolicyRuleStringValues', 7)
+
+
+class GoogleCloudOrgpolicyV2PolicySpecPolicyRuleResourceTypes(_messages.Message):
+  r"""Set multiple resource types for one policy, eg: resourceTypes: included:
+  - compute.googleapis.com/Instance - compute.googleapis.com/Disk Constraint
+  definition contains an empty resource type in order to support multiple
+  resource types in the policy. Only support Google managed constriaint and
+  method type is GOVERN_TAGS Refer go/multi-resource-support-force-tags-gmc to
+  get more details.
+
+  Fields:
+    included: Optional. The resource type we currently support.
+      cloud/orgpolicy/customconstraintconfig/prod/resource_types.prototext
+  """
+
+  included = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudOrgpolicyV2PolicySpecPolicyRuleStringValues(_messages.Message):
@@ -1056,6 +1176,20 @@ class GoogleCloudPolicysimulatorV1alphaListOrgPolicyViolationsResponse(_messages
   orgPolicyViolations = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaOrgPolicyViolation', 2, repeated=True)
 
 
+class GoogleCloudPolicysimulatorV1alphaListPabSimulationResultsResponse(_messages.Message):
+  r"""Response message for ListPolicySimulationResults.
+
+  Fields:
+    nextPageToken: Optional. A token that you can use to retrieve the next
+      page of PolicySimulationResult objects. If this field is omitted, there
+      are no subsequent pages.
+    pabSimulationResults: The results of the simulation.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  pabSimulationResults = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaPabSimulationResult', 2, repeated=True)
+
+
 class GoogleCloudPolicysimulatorV1alphaListReplayResultsResponse(_messages.Message):
   r"""Response message for Simulator.ListReplayResults.
 
@@ -1240,6 +1374,487 @@ class GoogleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreviewResourceCounts(
   noncompliant = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   scanned = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   unenforced = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudPolicysimulatorV1alphaPabOverlay(_messages.Message):
+  r"""Overlay for PAB Simulator.
+
+  Enums:
+    ActionValueValuesEnum: Required. Immutable. The action to take.
+
+  Fields:
+    action: Required. Immutable. The action to take.
+    pabPolicyBindingOverlay: The PAB binding overlay to apply.
+    pabPolicyOverlay: The PAB policy overlay to apply.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Required. Immutable. The action to take.
+
+    Values:
+      OVERLAY_ACTION_UNSPECIFIED: Default value. This value is unused.
+      CREATE: Create the policy binding.
+      UPDATE: Update the PAB policy or binding.
+      DELETE: Only the policy name matters. Everything else in the policy
+        ignored.
+    """
+    OVERLAY_ACTION_UNSPECIFIED = 0
+    CREATE = 1
+    UPDATE = 2
+    DELETE = 3
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  pabPolicyBindingOverlay = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaPabPolicyBindingOverlay', 2)
+  pabPolicyOverlay = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaPabPolicyOverlay', 3)
+
+
+class GoogleCloudPolicysimulatorV1alphaPabPolicyBindingOverlay(_messages.Message):
+  r"""PolicyOverlay for PAB PolicyBinding.
+
+  Fields:
+    parent: Optional. Parent of the policy binding. Only supported for CREATE
+      action.
+    policyBinding: Required. The PAB policy binding
+    policyBindingId: Optional. The ID to use for the policy binding, which
+      will become the final component of the policy binding's resource name.
+      Only supported for CREATE action. This value must start with a lowercase
+      letter followed by up to 62 lowercase letters, numbers, hyphens, or
+      dots. Pattern, /a-z{2,62}/.
+    updateMask: Optional. An empty update mask will imply that only the
+      present fields are being updated. Set to `*` to completely overwrite.
+      Only supported for UPDATE action.
+  """
+
+  parent = _messages.StringField(1)
+  policyBinding = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaPolicyBinding', 2)
+  policyBindingId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class GoogleCloudPolicysimulatorV1alphaPabPolicyOverlay(_messages.Message):
+  r"""PolicyOverlay for PAB Policy.
+
+  Fields:
+    force: Optional. If true, the policy will be deleted even if the policy is
+      bound to targets. Only supported for DELETE action.
+    parent: Optional. Parent of the Principal Access Boundary policy. Only
+      supported for CREATE action.
+    policyId: Optional. The ID to use for the principal access boundary
+      policy, which will become the final component of the principal access
+      boundary policy's resource name. Only supported for CREATE action. This
+      value must start with a lowercase letter followed by up to 62 lowercase
+      letters, numbers, hyphens, or dots. Pattern, /a-z{2,62}/.
+    principalAccessBoundaryPolicy: Required. The PAB policy.
+    updateMask: Optional. An empty update mask will imply that only the
+      present fields are being updated. Set to `*` to completely overwrite.
+      Only supported for UPDATE action.
+  """
+
+  force = _messages.BooleanField(1)
+  parent = _messages.StringField(2)
+  policyId = _messages.StringField(3)
+  principalAccessBoundaryPolicy = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaPrincipalAccessBoundaryPolicy', 4)
+  updateMask = _messages.StringField(5)
+
+
+class GoogleCloudPolicysimulatorV1alphaPabSimulation(_messages.Message):
+  r"""PolicySimulation resource.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the simulation. Output
+      only.
+
+  Fields:
+    endTime: Output only. The end time of the simulation. Output only.
+    name: Identifier. The resource name of the simulation. Output only. {organ
+      izations}/{organization_id}/locations/{location}/pabSimulations/{pab_sim
+      ulation_id}
+    pabOverlay: Required. Immutable. The overlay to apply to the simulation.
+    startTime: Output only. The start time of the simulation. Output only.
+    state: Output only. The state of the simulation. Output only.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the simulation. Output only.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      PENDING: The `PABSimulation` has not started yet.
+      RUNNING: The `PABSimulation` is currently running.
+      SUCCEEDED: The `PABSimulation` has successfully completed.
+      FAILED: The `PABSimulation` has finished with an error.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    SUCCEEDED = 3
+    FAILED = 4
+
+  endTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  pabOverlay = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaPabOverlay', 3, repeated=True)
+  startTime = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+
+
+class GoogleCloudPolicysimulatorV1alphaPabSimulationResult(_messages.Message):
+  r"""PolicySimulation result for a access tuple.
+
+  Enums:
+    AccessDiffValueValuesEnum: Access difference for the tuple.
+
+  Fields:
+    accessDiff: Access difference for the tuple.
+    accessTuple: The access tuple.
+    daysAccessed: The number of distinct days this access was observed during
+      the look back period. Default look back period is 90 days.
+    lastSeenDate: The time when the access tuple was last accessed (date only,
+      no time).
+    name: Identifier. The resource name of the `PABSimulationResult`, in the
+      following format: `{organizations}/{organization-
+      id}/locations/global/pabSimulations/{pab-simulation-id}/results/{result-
+      id}`, where `{organization-id}` is the ID of the organization that owns
+      the PolicySimulation. Example: `organizations/123456/locations/global/pa
+      bSimulations/506a5f7f-38ce-4d7d-8e03-479ce1833c36/results/1234`
+    parent: Output only. The PABSimulation that the access diff was included
+      in.
+  """
+
+  class AccessDiffValueValuesEnum(_messages.Enum):
+    r"""Access difference for the tuple.
+
+    Values:
+      ACCESS_DIFF_TYPE_UNSPECIFIED: Default value. This value is unused.
+      ACCESS_LOST: The principal will lose access to the resource.
+      ACCESS_GAINED: The principal will gain access to the resource.
+    """
+    ACCESS_DIFF_TYPE_UNSPECIFIED = 0
+    ACCESS_LOST = 1
+    ACCESS_GAINED = 2
+
+  accessDiff = _messages.EnumField('AccessDiffValueValuesEnum', 1)
+  accessTuple = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaPabSimulationResultAccessTuple', 2)
+  daysAccessed = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  lastSeenDate = _messages.MessageField('GoogleTypeDate', 4)
+  name = _messages.StringField(5)
+  parent = _messages.StringField(6)
+
+
+class GoogleCloudPolicysimulatorV1alphaPabSimulationResultAccessTuple(_messages.Message):
+  r"""The access tuple of this simulation result.
+
+  Fields:
+    permission: The permission used in the last access.
+    principal: The principal that will lose or gain access.
+    resource: The resource the principal will lose or gain access to.
+  """
+
+  permission = _messages.StringField(1)
+  principal = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaPabSimulationResultAccessTuplePrincipal', 2)
+  resource = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaPabSimulationResultAccessTupleResource', 3)
+
+
+class GoogleCloudPolicysimulatorV1alphaPabSimulationResultAccessTuplePrincipal(_messages.Message):
+  r"""The principal of the access tuple.
+
+  Fields:
+    subject: The subject of the principal. For 1st party users, this is the
+      email address. For 3rd party users, this is the 3P subject.
+    type: The type of the principal. Supported principal types are Workspace,
+      Workforce Pool, Workload Pool and Service Account. Allowed string must
+      be one of: * iam.googleapis.com/WorkspaceIdentity *
+      iam.googleapis.com/WorkforcePoolIdentity *
+      iam.googleapis.com/WorkloadPoolIdentity *
+      iam.googleapis.com/ServiceAccount
+  """
+
+  subject = _messages.StringField(1)
+  type = _messages.StringField(2)
+
+
+class GoogleCloudPolicysimulatorV1alphaPabSimulationResultAccessTupleResource(_messages.Message):
+  r"""The resource the principal will lose or gain access to.
+
+  Fields:
+    name: The resource name in the short format (e.g. `projects/123`)
+    type: The resource type.
+  """
+
+  name = _messages.StringField(1)
+  type = _messages.StringField(2)
+
+
+class GoogleCloudPolicysimulatorV1alphaPolicyBinding(_messages.Message):
+  r"""IAM policy binding resource.
+
+  Enums:
+    PolicyKindValueValuesEnum: Immutable. The kind of the policy to attach in
+      this binding. This field must be one of the following: * Left empty
+      (will be automatically set to the policy kind) * The input policy kind
+
+  Messages:
+    AnnotationsValue: Optional. User defined annotations. See
+      https://google.aip.dev/148#annotations for more details such as format
+      and size limitations
+
+  Fields:
+    annotations: Optional. User defined annotations. See
+      https://google.aip.dev/148#annotations for more details such as format
+      and size limitations
+    condition: Optional. Condition can either be a principal condition or a
+      resource condition. It depends on the type of target, the policy it is
+      attached to, and/or the expression itself. When set, the `expression`
+      field in the `Expr` must include from 1 to 10 subexpressions, joined by
+      the "||"(Logical OR), "&&"(Logical AND) or "!"(Logical NOT) operators
+      and cannot contain more than 250 characters. Allowed operations for
+      principal.subject: * `principal.subject == ` * `principal.subject != ` *
+      `principal.subject in []` * `principal.subject.startsWith()` *
+      `principal.subject.endsWith()` Allowed operations for principal.type: *
+      `principal.type == ` * `principal.type != ` * `principal.type in []`
+      Supported principal types are Workspace, Workforce Pool, Workload Pool
+      and Service Account. Allowed string must be one of: *
+      iam.googleapis.com/WorkspaceIdentity *
+      iam.googleapis.com/WorkforcePoolIdentity *
+      iam.googleapis.com/WorkloadPoolIdentity *
+      iam.googleapis.com/ServiceAccount When the bound policy is a principal
+      access boundary policy, the only supported attributes in any
+      subexpression are `principal.type` and `principal.subject`. An example
+      expression is: "principal.type == 'iam.googleapis.com/ServiceAccount'"
+      or "principal.subject == 'bob@example.com'".
+    createTime: Output only. The time when the policy binding was created.
+    displayName: Optional. The description of the policy binding. Must be less
+      than or equal to 63 characters.
+    etag: Optional. The etag for the policy binding. If this is provided on
+      update, it must match the server's etag.
+    name: Identifier. The name of the policy binding, in the format
+      `{binding_parent/locations/{location}/policyBindings/{policy_binding_id}
+      `. The binding parent is the closest Resource Manager resource (i.e.,
+      Project, Folder or Organization) to the binding target. Format: * `proje
+      cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
+      ` * `projects/{project_number}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` * `folders/{folder_id}/locations/{location}/policyBindin
+      gs/{policy_binding_id}` * `organizations/{organization_id}/locations/{lo
+      cation}/policyBindings/{policy_binding_id}`
+    policy: Required. Immutable. The resource name of the policy to be bound.
+      The binding parent and policy must belong to the same Organization (or
+      Project).
+    policyKind: Immutable. The kind of the policy to attach in this binding.
+      This field must be one of the following: * Left empty (will be
+      automatically set to the policy kind) * The input policy kind
+    policyUid: Output only. The globally unique ID of the policy to be bound.
+    target: Required. Immutable. Target is the full resource name of the
+      resource to which the policy will be bound. Immutable once set.
+    uid: Output only. The globally unique ID of the policy binding. Assigned
+      when the policy binding is created.
+    updateTime: Output only. The time when the policy binding was most
+      recently updated.
+  """
+
+  class PolicyKindValueValuesEnum(_messages.Enum):
+    r"""Immutable. The kind of the policy to attach in this binding. This
+    field must be one of the following: * Left empty (will be automatically
+    set to the policy kind) * The input policy kind
+
+    Values:
+      POLICY_KIND_UNSPECIFIED: Unspecified policy kind; Not a valid state
+      PRINCIPAL_ACCESS_BOUNDARY: Principal access boundary policy kind
+      ACCESS: Access policy kind. Keep behind visibility label until Access
+        Policy launch.
+    """
+    POLICY_KIND_UNSPECIFIED = 0
+    PRINCIPAL_ACCESS_BOUNDARY = 1
+    ACCESS = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. User defined annotations. See
+    https://google.aip.dev/148#annotations for more details such as format and
+    size limitations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  condition = _messages.MessageField('GoogleTypeExpr', 2)
+  createTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  name = _messages.StringField(6)
+  policy = _messages.StringField(7)
+  policyKind = _messages.EnumField('PolicyKindValueValuesEnum', 8)
+  policyUid = _messages.StringField(9)
+  target = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaPolicyBindingTarget', 10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+
+
+class GoogleCloudPolicysimulatorV1alphaPolicyBindingTarget(_messages.Message):
+  r"""Target is the full resource name of the resource to which the policy
+  will be bound. Immutable once set.
+
+  Fields:
+    principalSet: Immutable. Full Resource Name used for principal access
+      boundary policy bindings Examples: * Organization:
+      `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
+      Folder: `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` *
+      Project: *
+      `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER` *
+      `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID` * Workload
+      Identity Pool: `//iam.googleapis.com/projects/PROJECT_NUMBER/locations/L
+      OCATION/workloadIdentityPools/WORKLOAD_POOL_ID` * Workforce Identity:
+      `//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID`
+      * Workspace Identity:
+      `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID`
+    resource: Immutable. Full Resource Name used for access policy bindings
+      Examples: * Organization:
+      `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
+      Folder: `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` *
+      Project: *
+      `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER` *
+      `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID`
+  """
+
+  principalSet = _messages.StringField(1)
+  resource = _messages.StringField(2)
+
+
+class GoogleCloudPolicysimulatorV1alphaPrincipalAccessBoundaryPolicy(_messages.Message):
+  r"""An IAM principal access boundary policy resource.
+
+  Messages:
+    AnnotationsValue: Optional. User defined annotations. See
+      https://google.aip.dev/148#annotations for more details such as format
+      and size limitations
+
+  Fields:
+    annotations: Optional. User defined annotations. See
+      https://google.aip.dev/148#annotations for more details such as format
+      and size limitations
+    createTime: Output only. The time when the principal access boundary
+      policy was created.
+    details: Optional. The details for the principal access boundary policy.
+    displayName: Optional. The description of the principal access boundary
+      policy. Must be less than or equal to 63 characters.
+    etag: Optional. The etag for the principal access boundary. If this is
+      provided on update, it must match the server's etag.
+    name: Identifier. The resource name of the principal access boundary
+      policy. The following format is supported: `organizations/{organization_
+      id}/locations/{location}/principalAccessBoundaryPolicies/{policy_id}`
+    uid: Output only. The globally unique ID of the principal access boundary
+      policy.
+    updateTime: Output only. The time when the principal access boundary
+      policy was most recently updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. User defined annotations. See
+    https://google.aip.dev/148#annotations for more details such as format and
+    size limitations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  details = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaPrincipalAccessBoundaryPolicyDetails', 3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  name = _messages.StringField(6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class GoogleCloudPolicysimulatorV1alphaPrincipalAccessBoundaryPolicyDetails(_messages.Message):
+  r"""Principal access boundary policy details
+
+  Fields:
+    enforcementVersion: Optional. The version number that indicates which
+      Google Cloud services are included in the enforcement (e.g. "latest",
+      "1", ...). If empty, the PAB policy version will be set to the current
+      latest version, and this version won't get updated when new versions are
+      released.
+    rules: Required. A list of principal access boundary policy rules. The
+      number of rules in a policy is limited to 500.
+  """
+
+  enforcementVersion = _messages.StringField(1)
+  rules = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaPrincipalAccessBoundaryPolicyRule', 2, repeated=True)
+
+
+class GoogleCloudPolicysimulatorV1alphaPrincipalAccessBoundaryPolicyRule(_messages.Message):
+  r"""Principal access boundary policy rule that defines the resource
+  boundary.
+
+  Enums:
+    EffectValueValuesEnum: Required. The access relationship of principals to
+      the resources in this rule.
+
+  Fields:
+    description: Optional. The description of the principal access boundary
+      policy rule. Must be less than or equal to 256 characters.
+    effect: Required. The access relationship of principals to the resources
+      in this rule.
+    resources: Required. A list of Cloud Resource Manager resources. The
+      resource and all the descendants are included. The number of resources
+      in a policy is limited to 500 across all rules. The following resource
+      types are supported: * Organizations, such as
+      `//cloudresourcemanager.googleapis.com/organizations/123`. * Folders,
+      such as `//cloudresourcemanager.googleapis.com/folders/123`. * Projects,
+      such as `//cloudresourcemanager.googleapis.com/projects/123` or
+      `//cloudresourcemanager.googleapis.com/projects/my-project-id`.
+  """
+
+  class EffectValueValuesEnum(_messages.Enum):
+    r"""Required. The access relationship of principals to the resources in
+    this rule.
+
+    Values:
+      EFFECT_UNSPECIFIED: Effect unspecified.
+      ALLOW: Allows access to the resources in this rule.
+    """
+    EFFECT_UNSPECIFIED = 0
+    ALLOW = 1
+
+  description = _messages.StringField(1)
+  effect = _messages.EnumField('EffectValueValuesEnum', 2)
+  resources = _messages.StringField(3, repeated=True)
 
 
 class GoogleCloudPolicysimulatorV1alphaReplay(_messages.Message):
@@ -2749,6 +3364,48 @@ class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsOrgPolicyV
     parent: Required. The OrgPolicyViolationsPreview to get
       OrgPolicyViolations from. Format: organizations/{organization}/locations
       /{location}/orgPolicyViolationsPreviews/{orgPolicyViolationsPreview}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class PolicysimulatorOrganizationsLocationsPabSimulationsCreateRequest(_messages.Message):
+  r"""A PolicysimulatorOrganizationsLocationsPabSimulationsCreateRequest
+  object.
+
+  Fields:
+    googleCloudPolicysimulatorV1alphaPabSimulation: A
+      GoogleCloudPolicysimulatorV1alphaPabSimulation resource to be passed as
+      the request body.
+    pabSimulationId: Optional. An optional user-specified ID for the
+      PabSimulation. If not provided, a random ID will be generated.
+    parent: Required. The resource name of the simulation parent. Required.
+      `organizations/{organization_id}/locations/{location}`
+  """
+
+  googleCloudPolicysimulatorV1alphaPabSimulation = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaPabSimulation', 1)
+  pabSimulationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class PolicysimulatorOrganizationsLocationsPabSimulationsResultsListRequest(_messages.Message):
+  r"""A PolicysimulatorOrganizationsLocationsPabSimulationsResultsListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of PolicySimulationResult objects
+      to return. Defaults to 1000. The maximum value is 1000; values above
+      1000 are rounded down to 1000.
+    pageToken: Optional. A page token, received from a previous
+      ListPolicySimulationResults call. Provide this token to retrieve the
+      next page of results. When paginating, all other parameters provided to
+      ListPolicySimulationResults must match the call that provided the page
+      token.
+    parent: Required. The simulation for which to return the results.
+      Required. `organizations/{organization_id}/locations/{location}/pabSimul
+      ations/{pab_simulation_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)

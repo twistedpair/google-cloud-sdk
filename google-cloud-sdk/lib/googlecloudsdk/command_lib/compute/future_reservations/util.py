@@ -195,21 +195,9 @@ def MakeShareSettings(messages, args, setting_configs):
       return messages.ShareSettings(
           shareType=messages.ShareSettings.ShareTypeValueValuesEnum
           .SPECIFIC_PROJECTS,
-          projectMap=MakeProjectMapFromProjectList(
-              messages, getattr(args, 'share_with', None)))
+          projects=getattr(args, 'share_with', None))
   else:
     return None
-
-
-def MakeProjectMapFromProjectList(messages, projects):
-  additional_properties = []
-  for project in projects:
-    additional_properties.append(
-        messages.ShareSettings.ProjectMapValue.AdditionalProperty(
-            key=project,
-            value=messages.ShareSettingsProjectConfig(projectId=project)))
-  return messages.ShareSettings.ProjectMapValue(
-      additionalProperties=additional_properties)
 
 
 def MakePlanningStatus(messages, planning_status):
@@ -288,8 +276,8 @@ def MakeInstanceTerminationAction(messages, instance_termination_action):
 def MakeSchedulingType(messages, scheduling_type):
   """Constructs the scheduling type enum value."""
   if scheduling_type:
-    if scheduling_type == 'GROUP':
-      return messages.FutureReservation.SchedulingTypeValueValuesEnum.GROUP
+    if scheduling_type == 'GROUPED':
+      return messages.FutureReservation.SchedulingTypeValueValuesEnum.GROUPED
     if scheduling_type == 'INDEPENDENT':
       return (messages.FutureReservation.SchedulingTypeValueValuesEnum
               .INDEPENDENT)

@@ -390,6 +390,8 @@ def _SubmitBuild(
   build_response = run_client.projects_locations_builds.Submit(
       submit_build_request
   )
+  if build_response.baseImageWarning:
+    tracker.AddWarning(build_response.baseImageWarning)
   build_op = build_response.buildOperation
   json = encoding.MessageToJson(build_op.metadata)
   build = encoding.JsonToMessage(

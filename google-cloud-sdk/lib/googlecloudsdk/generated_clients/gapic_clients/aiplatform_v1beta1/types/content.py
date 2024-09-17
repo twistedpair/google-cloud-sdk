@@ -64,12 +64,15 @@ class HarmCategory(proto.Enum):
         HARM_CATEGORY_SEXUALLY_EXPLICIT (4):
             The harm category is sexually explicit
             content.
+        HARM_CATEGORY_CIVIC_INTEGRITY (5):
+            The harm category is civic integrity.
     """
     HARM_CATEGORY_UNSPECIFIED = 0
     HARM_CATEGORY_HATE_SPEECH = 1
     HARM_CATEGORY_DANGEROUS_CONTENT = 2
     HARM_CATEGORY_HARASSMENT = 3
     HARM_CATEGORY_SEXUALLY_EXPLICIT = 4
+    HARM_CATEGORY_CIVIC_INTEGRITY = 5
 
 
 class Content(proto.Message):
@@ -518,12 +521,15 @@ class SafetySetting(proto.Message):
                 Block only high threshold (i.e. block less).
             BLOCK_NONE (4):
                 Block none.
+            OFF (5):
+                Turn off the safety filter.
         """
         HARM_BLOCK_THRESHOLD_UNSPECIFIED = 0
         BLOCK_LOW_AND_ABOVE = 1
         BLOCK_MEDIUM_AND_ABOVE = 2
         BLOCK_ONLY_HIGH = 3
         BLOCK_NONE = 4
+        OFF = 5
 
     class HarmBlockMethod(proto.Enum):
         r"""Probability vs severity.

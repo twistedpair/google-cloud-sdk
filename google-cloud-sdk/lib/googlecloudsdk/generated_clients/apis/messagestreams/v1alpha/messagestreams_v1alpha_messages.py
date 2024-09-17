@@ -381,6 +381,56 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class LoggingConfig(_messages.Message):
+  r"""The configuration for Platform Telemetry logging for the Stream
+  resource.
+
+  Enums:
+    LogSeverityValueValuesEnum: Optional. The minimum severity of logs that
+      will be sent to Stackdriver/Platform Telemetry. Logs at severitiy
+      \\u2265 this value will be sent, unless it is NONE.
+
+  Fields:
+    logSeverity: Optional. The minimum severity of logs that will be sent to
+      Stackdriver/Platform Telemetry. Logs at severitiy \u2265 this value will
+      be sent, unless it is NONE.
+  """
+
+  class LogSeverityValueValuesEnum(_messages.Enum):
+    r"""Optional. The minimum severity of logs that will be sent to
+    Stackdriver/Platform Telemetry. Logs at severitiy \\u2265 this value will
+    be sent, unless it is NONE.
+
+    Values:
+      LOG_SEVERITY_UNSPECIFIED: Log severity is not specified. This value is
+        treated the same as NONE, but is used to distinguish between no update
+        and update to NONE in update_masks.
+      NONE: Default value at resource creation, presence of this value must be
+        treated as no logging/disable logging.
+      DEBUG: Debug or trace level logging.
+      INFO: Routine information, such as ongoing status or performance.
+      NOTICE: Normal but significant events, such as start up, shut down, or a
+        configuration change.
+      WARNING: Warning events might cause problems.
+      ERROR: Error events are likely to cause problems.
+      CRITICAL: Critical events cause more severe problems or outages.
+      ALERT: A person must take action immediately.
+      EMERGENCY: One or more systems are unusable.
+    """
+    LOG_SEVERITY_UNSPECIFIED = 0
+    NONE = 1
+    DEBUG = 2
+    INFO = 3
+    NOTICE = 4
+    WARNING = 5
+    ERROR = 6
+    CRITICAL = 7
+    ALERT = 8
+    EMERGENCY = 9
+
+  logSeverity = _messages.EnumField('LogSeverityValueValuesEnum', 1)
+
+
 class Mediation(_messages.Message):
   r"""Mediation defines different ways to modify the stream.
 
@@ -1095,6 +1145,7 @@ class Stream(_messages.Message):
       Mediations on the stream that involve access to the data field will fail
       as persistent errors.
     labels: Optional. Labels as key value pairs
+    loggingConfig: Optional. Config to control Platform Logging for Streams.
     mediations: Optional. Mediations to define the way to modify the incoming
       message.
     name: The resource name of the stream. Must be unique within the location
@@ -1208,15 +1259,16 @@ class Stream(_messages.Message):
   eventarcTransformationType = _messages.EnumField('EventarcTransformationTypeValueValuesEnum', 5)
   inputPayloadFormat = _messages.MessageField('MessagePayloadFormat', 6)
   labels = _messages.MessageField('LabelsValue', 7)
-  mediations = _messages.MessageField('Mediation', 8, repeated=True)
-  name = _messages.StringField(9)
-  replyBus = _messages.StringField(10)
-  source = _messages.MessageField('Source', 11)
-  streamAction = _messages.MessageField('StreamAction', 12)
-  streamIdentityOverride = _messages.StringField(13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
-  useSharedPool = _messages.BooleanField(16)
+  loggingConfig = _messages.MessageField('LoggingConfig', 8)
+  mediations = _messages.MessageField('Mediation', 9, repeated=True)
+  name = _messages.StringField(10)
+  replyBus = _messages.StringField(11)
+  source = _messages.MessageField('Source', 12)
+  streamAction = _messages.MessageField('StreamAction', 13)
+  streamIdentityOverride = _messages.StringField(14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
+  useSharedPool = _messages.BooleanField(17)
 
 
 class StreamAction(_messages.Message):

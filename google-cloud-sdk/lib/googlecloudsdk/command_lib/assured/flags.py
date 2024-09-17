@@ -18,43 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.assured import message_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.command_lib.assured import resource_args
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
-from googlecloudsdk.generated_clients.apis.assuredworkloads.v1 import assuredworkloads_v1_messages
-from googlecloudsdk.generated_clients.apis.assuredworkloads.v1beta1 import assuredworkloads_v1beta1_messages
-
-ReleaseTrack = calliope_base.ReleaseTrack
-
-V1ComplianceRegimes = (
-    assuredworkloads_v1_messages.GoogleCloudAssuredworkloadsV1Workload.ComplianceRegimeValueValuesEnum
-)
-V1beta1ComplianceRegimes = (
-    assuredworkloads_v1beta1_messages.GoogleCloudAssuredworkloadsV1beta1Workload.ComplianceRegimeValueValuesEnum
-)
-
-compliance_regimes_enum = {
-    ReleaseTrack.GA: V1ComplianceRegimes,
-    ReleaseTrack.BETA: V1beta1ComplianceRegimes,
-    ReleaseTrack.ALPHA: V1beta1ComplianceRegimes,
-}
-
-V1Partners = (
-    assuredworkloads_v1_messages.GoogleCloudAssuredworkloadsV1Workload.PartnerValueValuesEnum
-)
-V1beta1Partners = (
-    assuredworkloads_v1beta1_messages.GoogleCloudAssuredworkloadsV1beta1Workload.PartnerValueValuesEnum
-)
-
-partners_enum = {
-    ReleaseTrack.GA: V1Partners,
-    ReleaseTrack.BETA: V1beta1Partners,
-    ReleaseTrack.ALPHA: V1beta1Partners,
-}
-
-ACKNOWLEDGE_TYPE = ['SINGLE_VIOLATION', 'EXISTING_CHILD_RESOURCE_VIOLATIONS']
 
 
 def AddListWorkloadsFlags(parser):
@@ -138,14 +107,14 @@ def AddCreateWorkloadFlags(parser, release_track):
   )
   arg_utils.ChoiceEnumMapper(
       '--compliance-regime',
-      compliance_regimes_enum[release_track],
+      message_util.GetComplianceRegimesEnum(release_track),
       include_filter=lambda regime: regime != 'COMPLIANCE_REGIME_UNSPECIFIED',
       required=True,
       help_str='The compliance regime of the new Assured Workloads environment',
   ).choice_arg.AddToParser(parser)
   arg_utils.ChoiceEnumMapper(
       '--partner',
-      partners_enum[release_track],
+      message_util.GetPartnersEnum(release_track),
       include_filter=lambda regime: regime != 'PARTNER_UNSPECIFIED',
       help_str=(
           'The partner choice when creating a workload managed by local trusted'
@@ -237,7 +206,7 @@ def _AddResourceSettingsFlag(parser, release_track):
   Returns:
     None.
   """
-  if release_track == ReleaseTrack.GA:
+  if release_track == calliope_base.ReleaseTrack.GA:
     parser.add_argument(
         '--resource-settings',
         type=arg_parsers.ArgDict(

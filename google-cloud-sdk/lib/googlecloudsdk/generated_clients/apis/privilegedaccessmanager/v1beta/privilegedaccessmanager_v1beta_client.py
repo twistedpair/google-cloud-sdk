@@ -93,7 +93,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new grant in a given project and location.
+      r"""Creates a new grant in a given project/folder/organization and location.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsCreateRequest) input message
@@ -292,7 +292,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single entitlement. This method can only be called when there are no in-progress (ACTIVE/ACTIVATING/REVOKING) grants under the entitlement.
+      r"""Deletes a single entitlement. This method can only be called when there are no in-progress (`ACTIVE`/`ACTIVATING`/`REVOKING`) grants under the entitlement.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsDeleteRequest) input message
@@ -528,7 +528,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
           }
 
     def CheckOnboardingStatus(self, request, global_params=None):
-      r"""CheckOnboardingStatus reports the onboarding status for a project/folder/organization. Any findings reported by this API need to be fixed before PAM can be used on the resource.
+      r"""`CheckOnboardingStatus` reports the onboarding status for a project/folder/organization. Any findings reported by this API need to be fixed before PAM can be used on the resource.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsCheckOnboardingStatusRequest) input message
@@ -656,7 +656,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new grant in a given project and location.
+      r"""Creates a new grant in a given project/folder/organization and location.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsCreateRequest) input message
@@ -855,7 +855,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single entitlement. This method can only be called when there are no in-progress (ACTIVE/ACTIVATING/REVOKING) grants under the entitlement.
+      r"""Deletes a single entitlement. This method can only be called when there are no in-progress (`ACTIVE`/`ACTIVATING`/`REVOKING`) grants under the entitlement.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsDeleteRequest) input message
@@ -1091,7 +1091,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
           }
 
     def CheckOnboardingStatus(self, request, global_params=None):
-      r"""CheckOnboardingStatus reports the onboarding status for a project/folder/organization. Any findings reported by this API need to be fixed before PAM can be used on the resource.
+      r"""`CheckOnboardingStatus` reports the onboarding status for a project/folder/organization. Any findings reported by this API need to be fixed before PAM can be used on the resource.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsCheckOnboardingStatusRequest) input message
@@ -1219,7 +1219,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new grant in a given project and location.
+      r"""Creates a new grant in a given project/folder/organization and location.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsCreateRequest) input message
@@ -1418,7 +1418,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single entitlement. This method can only be called when there are no in-progress (ACTIVE/ACTIVATING/REVOKING) grants under the entitlement.
+      r"""Deletes a single entitlement. This method can only be called when there are no in-progress (`ACTIVE`/`ACTIVATING`/`REVOKING`) grants under the entitlement.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsDeleteRequest) input message
@@ -1654,7 +1654,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
           }
 
     def CheckOnboardingStatus(self, request, global_params=None):
-      r"""CheckOnboardingStatus reports the onboarding status for a project/folder/organization. Any findings reported by this API need to be fixed before PAM can be used on the resource.
+      r"""`CheckOnboardingStatus` reports the onboarding status for a project/folder/organization. Any findings reported by this API need to be fixed before PAM can be used on the resource.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsCheckOnboardingStatusRequest) input message

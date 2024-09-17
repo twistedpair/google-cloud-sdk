@@ -134,7 +134,8 @@ def _ConvertYAMLToMessage(messages, reservations_yaml, resources):
         messages, a.get('reservation', None), share_settings,
         specific_allocation, resource_policies,
         a.get('require_specific_reservation', None),
-        a.get('reservation_zone', None))
+        a.get('reservation_zone', None),
+        reservation_sharing_policy=a.get('reservation_sharing_policy', None))
     allocations_msg.append(a_msg)
   return allocations_msg
 

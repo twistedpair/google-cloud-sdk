@@ -366,6 +366,14 @@ class _BaseInstances(object):
     if args.storage_size:
       settings.dataDiskSizeGb = int(args.storage_size / constants.BYTES_TO_GB)
 
+    if args.IsKnownAndSpecified('storage_provisioned_iops'):
+      settings.dataDiskProvisionedIops = int(args.storage_provisioned_iops)
+
+    if args.IsKnownAndSpecified('storage_provisioned_throughput'):
+      settings.dataDiskProvisionedThroughput = int(
+          args.storage_provisioned_throughput
+      )
+
     if args.storage_auto_increase is not None:
       settings.storageAutoResize = args.storage_auto_increase
 

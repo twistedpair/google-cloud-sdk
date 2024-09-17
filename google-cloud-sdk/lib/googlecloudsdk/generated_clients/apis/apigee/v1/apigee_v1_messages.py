@@ -11594,6 +11594,12 @@ class GoogleCloudApigeeV1SecurityAction(_messages.Message):
 
   Fields:
     allow: Allow a request through if it matches this SecurityAction.
+    apiProxies: Optional. If unset, this would apply to all proxies in the
+      environment. If set, this action is enforced only if at least one proxy
+      in the repeated list is deployed at the time of enforcement. If set,
+      several restrictions are enforced on SecurityActions. There can be at
+      most 100 enabled actions with proxies set in an env. Several other
+      restrictions apply on conditions and are detailed later.
     conditionConfig: Required. A valid SecurityAction must contain at least
       one condition.
     createTime: Output only. The create time for this SecurityAction.
@@ -11629,16 +11635,17 @@ class GoogleCloudApigeeV1SecurityAction(_messages.Message):
     DISABLED = 2
 
   allow = _messages.MessageField('GoogleCloudApigeeV1SecurityActionAllow', 1)
-  conditionConfig = _messages.MessageField('GoogleCloudApigeeV1SecurityActionConditionConfig', 2)
-  createTime = _messages.StringField(3)
-  deny = _messages.MessageField('GoogleCloudApigeeV1SecurityActionDeny', 4)
-  description = _messages.StringField(5)
-  expireTime = _messages.StringField(6)
-  flag = _messages.MessageField('GoogleCloudApigeeV1SecurityActionFlag', 7)
-  name = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  ttl = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  apiProxies = _messages.StringField(2, repeated=True)
+  conditionConfig = _messages.MessageField('GoogleCloudApigeeV1SecurityActionConditionConfig', 3)
+  createTime = _messages.StringField(4)
+  deny = _messages.MessageField('GoogleCloudApigeeV1SecurityActionDeny', 5)
+  description = _messages.StringField(6)
+  expireTime = _messages.StringField(7)
+  flag = _messages.MessageField('GoogleCloudApigeeV1SecurityActionFlag', 8)
+  name = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  ttl = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class GoogleCloudApigeeV1SecurityActionAllow(_messages.Message):

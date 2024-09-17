@@ -390,7 +390,9 @@ class ConsumerPscConnection(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: An invalid state as the default case.
-      ACTIVE: The connection is fully established and ready to use.
+      ACTIVE: The connection has been created successfully. However, for the
+        up-to-date connection status, please use the service attachment's
+        "ConnectedEndpoint.status" as the source of truth.
       FAILED: The connection is not functional since some resources on the
         connection fail to be created.
       CREATING: The connection is being created.
@@ -3903,7 +3905,8 @@ class PscConnection(_messages.Message):
     consumerForwardingRule: The resource reference of the PSC Forwarding Rule
       within the consumer VPC.
     consumerTargetProject: The project where the PSC connection is created.
-    error: The most recent error during operating this connection.
+    error: The most recent error during operating this connection. Deprecated,
+      please use error_info instead.
     errorInfo: Output only. The error info for the latest error during
       operating this connection.
     errorType: The error type indicates whether the error is consumer facing,
@@ -3938,7 +3941,9 @@ class PscConnection(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: An invalid state as the default case.
-      ACTIVE: The connection is fully established and ready to use.
+      ACTIVE: The connection has been created successfully. However, for the
+        up-to-date connection status, please use the created forwarding rule's
+        "PscConnectionStatus" as the source of truth.
       FAILED: The connection is not functional since some resources on the
         connection fail to be created.
       CREATING: The connection is being created.
@@ -3988,8 +3993,8 @@ class PscPropagationStatus(_messages.Message):
     Values:
       CODE_UNSPECIFIED: The code is unspecified.
       READY: The propagated PSC connection is ready.
-      PENDING: PSC connection propagation is pending. This is a transient
-        state.
+      PROPAGATING: PSC connection is propagating. This is a transient state.
+      PENDING: PSC connection is pending. This is a transient state.
       ERROR_PRODUCER_PROPAGATED_CONNECTION_LIMIT_EXCEEDED: The PSC connection
         propagation failed because the VPC network or the project of the
         target spoke has exceeded the connection limit set by the producer.
@@ -4007,11 +4012,12 @@ class PscPropagationStatus(_messages.Message):
     """
     CODE_UNSPECIFIED = 0
     READY = 1
-    PENDING = 2
-    ERROR_PRODUCER_PROPAGATED_CONNECTION_LIMIT_EXCEEDED = 3
-    ERROR_PRODUCER_NAT_IP_SPACE_EXHAUSTED = 4
-    ERROR_PRODUCER_QUOTA_EXCEEDED = 5
-    ERROR_CONSUMER_QUOTA_EXCEEDED = 6
+    PROPAGATING = 2
+    PENDING = 3
+    ERROR_PRODUCER_PROPAGATED_CONNECTION_LIMIT_EXCEEDED = 4
+    ERROR_PRODUCER_NAT_IP_SPACE_EXHAUSTED = 5
+    ERROR_PRODUCER_QUOTA_EXCEEDED = 6
+    ERROR_CONSUMER_QUOTA_EXCEEDED = 7
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
@@ -4596,7 +4602,8 @@ class ServiceConnectionPolicy(_messages.Message):
     LabelsValue: User-defined labels.
 
   Fields:
-    createTime: Output only. Time when the ServiceConnectionMap was created.
+    createTime: Output only. Time when the ServiceConnectionPolicy was
+      created.
     description: A description of this resource.
     etag: Optional. The etag is computed by the server, and may be sent on
       update and delete requests to ensure the client has an up-to-date value
@@ -4620,7 +4627,8 @@ class ServiceConnectionPolicy(_messages.Message):
       Service Producer. Google services have a prefix of gcp or google-cloud.
       For example, gcp-memorystore-redis or google-cloud-sql. 3rd party
       services do not. For example, test-service-a3dfcx.
-    updateTime: Output only. Time when the ServiceConnectionMap was updated.
+    updateTime: Output only. Time when the ServiceConnectionPolicy was
+      updated.
   """
 
   class InfrastructureValueValuesEnum(_messages.Enum):

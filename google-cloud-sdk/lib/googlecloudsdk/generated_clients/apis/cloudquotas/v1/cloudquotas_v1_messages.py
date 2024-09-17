@@ -722,11 +722,16 @@ class QuotaIncreaseEligibility(_messages.Message):
         true.
       NO_VALID_BILLING_ACCOUNT: The container is not linked with a valid
         billing account.
+      NOT_SUPPORTED: Quota increase is not supported for the quota.
+      NOT_ENOUGH_USAGE_HISTORY: There is not enough usage history to determine
+        the eligibility.
       OTHER: Other reasons.
     """
     INELIGIBILITY_REASON_UNSPECIFIED = 0
     NO_VALID_BILLING_ACCOUNT = 1
-    OTHER = 2
+    NOT_SUPPORTED = 2
+    NOT_ENOUGH_USAGE_HISTORY = 3
+    OTHER = 4
 
   ineligibilityReason = _messages.EnumField('IneligibilityReasonValueValuesEnum', 1)
   isEligible = _messages.BooleanField(2)

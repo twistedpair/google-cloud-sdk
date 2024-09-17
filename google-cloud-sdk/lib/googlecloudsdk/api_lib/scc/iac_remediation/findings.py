@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
 import re
 
 from apitools.base.py import encoding
@@ -74,4 +75,58 @@ def MakeApiCall(finding_org_id, finding_name) -> str:
   request.parent = f"organizations/{finding_org_id}/sources/-"
   resp = client.organizations_sources_findings.List(request)
   json_resp = encoding.MessageToJson(resp)
+  ValidateFinding(json_resp)
   return json_resp
+
+
+def FetchIAMBinding(
+    finding_json: json,
+) -> dict[str, dict[str, list[str]]]:
+  """Fetches the IAMBindings from the finding data.
+
+  Args:
+    finding_json: JSON response from the API call to fetch the finding.
+
+  Returns:
+    IAM binding details per member.
+  """
+  iam_bindings = {}
+  for binding in finding_json["listFindingsResults"][0]["finding"][
+      "iamBindings"
+  ]:
+    if binding["member"] not in iam_bindings:
+      iam_bindings[binding["member"]] = dict()
+    if binding["action"] == "ADD":
+      iam_bindings[binding["member"]]["ADD"].append(binding["role"])
+    elif binding["action"] == "REMOVE":
+      iam_bindings[binding["member"]]["REMOVE"].append(binding["role"])
+  return iam_bindings
+
+
+def FetchResourceName(finding_json: json) -> str:
+  """Fetches the resource name from the finding data.
+
+  Args:
+    finding_json: JSON response from the API call to fetch the finding.
+
+  Returns:
+    Resource name for which the finding was generated.
+  """
+  return finding_json["listFindingsResults"][0]["resource"]["displayName"]
+
+
+def ValidateFinding(finding_data):
+  """Checks if the finding is supported or not.
+
+  Args:
+    finding_data: JSON response from the API call.
+  """
+  try:
+    finding_data = json.loads(finding_data)
+    finding_category = finding_data["listFindingsResults"][0]["finding"][
+        "category"
+    ]
+    if finding_category not in const.SUPPORTED_FINDING_CATEGORIES:
+      raise errors.UnsupportedFindingCategoryError(finding_category)
+  except:
+    raise errors.FindingNotFoundError()

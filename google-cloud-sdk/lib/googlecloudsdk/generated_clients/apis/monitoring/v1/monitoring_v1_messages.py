@@ -519,13 +519,41 @@ class ColumnLayout(_messages.Message):
 class ColumnSettings(_messages.Message):
   r"""The persistent settings for a table's columns.
 
+  Enums:
+    AlignmentValueValuesEnum: Optional. Whether the column should be left /
+      middle / right aligned
+
   Fields:
+    alignment: Optional. Whether the column should be left / middle / right
+      aligned
     column: Required. The id of the column.
+    displayName: Optional. Display name of the column
+    thresholds: Optional. The thresholds used to determine how the table cell
+      should be rendered given the time series' current value.
     visible: Required. Whether the column should be visible on page load.
   """
 
-  column = _messages.StringField(1)
-  visible = _messages.BooleanField(2)
+  class AlignmentValueValuesEnum(_messages.Enum):
+    r"""Optional. Whether the column should be left / middle / right aligned
+
+    Values:
+      CELL_ALIGNMENT_UNSPECIFIED: No horizontal alignment specified; fall back
+        to the default behavior. Label values are left aligned. Numeric values
+        are right aligned.
+      LEFT: Left-align
+      CENTER: Center-align
+      RIGHT: Right-align
+    """
+    CELL_ALIGNMENT_UNSPECIFIED = 0
+    LEFT = 1
+    CENTER = 2
+    RIGHT = 3
+
+  alignment = _messages.EnumField('AlignmentValueValuesEnum', 1)
+  column = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  thresholds = _messages.MessageField('Threshold', 4, repeated=True)
+  visible = _messages.BooleanField(5)
 
 
 class Dashboard(_messages.Message):

@@ -1152,6 +1152,7 @@ class Order(_messages.Message):
       UK: UK datacenter location.
       JPN: Japan datacenter location.
       CAN: Canada(Montr\xe9al) data center.
+      AUTP: Australia(Third Party) datacenter location.
     """
     DATACENTER_LOCATION_UNSPECIFIED = 0
     US = 1
@@ -1161,6 +1162,7 @@ class Order(_messages.Message):
     UK = 5
     JPN = 6
     CAN = 7
+    AUTP = 8
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the order.

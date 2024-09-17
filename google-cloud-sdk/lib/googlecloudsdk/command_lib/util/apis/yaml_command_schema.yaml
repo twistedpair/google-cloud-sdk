@@ -468,6 +468,9 @@ properties:
   # Determines whether the command is visible in help text or not.
   hidden: {type: boolean}
 
+  # Determines whether the command is auto generated or not.
+  auto_generated: {type: boolean}
+
   # Determines whether the command is available in univserse or not.
   universe_compatible: {type: boolean}
 

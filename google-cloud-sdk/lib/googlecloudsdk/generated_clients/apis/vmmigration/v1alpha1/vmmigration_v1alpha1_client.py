@@ -44,7 +44,6 @@ class VmmigrationV1alpha1(base_api.BaseApiClient):
     self.projects_locations_imageImports = self.ProjectsLocationsImageImportsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_sources_datacenterConnectors = self.ProjectsLocationsSourcesDatacenterConnectorsService(self)
-    self.projects_locations_sources_diskMigrationJobs = self.ProjectsLocationsSourcesDiskMigrationJobsService(self)
     self.projects_locations_sources_migratingVms_cloneJobs = self.ProjectsLocationsSourcesMigratingVmsCloneJobsService(self)
     self.projects_locations_sources_migratingVms_cutoverJobs = self.ProjectsLocationsSourcesMigratingVmsCutoverJobsService(self)
     self.projects_locations_sources_migratingVms_replicationCycles = self.ProjectsLocationsSourcesMigratingVmsReplicationCyclesService(self)
@@ -722,70 +721,6 @@ class VmmigrationV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+datacenterConnector}:upgradeAppliance',
         request_field='upgradeApplianceRequest',
         request_type_name='VmmigrationProjectsLocationsSourcesDatacenterConnectorsUpgradeApplianceRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsSourcesDiskMigrationJobsService(base_api.BaseApiService):
-    """Service class for the projects_locations_sources_diskMigrationJobs resource."""
-
-    _NAME = 'projects_locations_sources_diskMigrationJobs'
-
-    def __init__(self, client):
-      super(VmmigrationV1alpha1.ProjectsLocationsSourcesDiskMigrationJobsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Cancel(self, request, global_params=None):
-      r"""Cancels the disk migration job.
-
-      Args:
-        request: (VmmigrationProjectsLocationsSourcesDiskMigrationJobsCancelRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Cancel')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sources/{sourcesId}/diskMigrationJobs/{diskMigrationJobsId}:cancel',
-        http_method='POST',
-        method_id='vmmigration.projects.locations.sources.diskMigrationJobs.cancel',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}:cancel',
-        request_field='cancelDiskMigrationJobRequest',
-        request_type_name='VmmigrationProjectsLocationsSourcesDiskMigrationJobsCancelRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Run(self, request, global_params=None):
-      r"""Runs the disk migration job.
-
-      Args:
-        request: (VmmigrationProjectsLocationsSourcesDiskMigrationJobsRunRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Run')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Run.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sources/{sourcesId}/diskMigrationJobs/{diskMigrationJobsId}:run',
-        http_method='POST',
-        method_id='vmmigration.projects.locations.sources.diskMigrationJobs.run',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}:run',
-        request_field='runDiskMigrationJobRequest',
-        request_type_name='VmmigrationProjectsLocationsSourcesDiskMigrationJobsRunRequest',
         response_type_name='Operation',
         supports_download=False,
     )

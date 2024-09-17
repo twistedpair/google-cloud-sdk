@@ -1873,6 +1873,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
       notifications. Absence implies that this feature is not enabled for this
       instance.
     state: Output only. State of the instance.
+    storageSettings: User-specified storage settings for this instance.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1927,6 +1928,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
   name = _messages.StringField(6)
   schedulerNotificationConfig = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaSchedulerNotificationConfig', 7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
+  storageSettings = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaStorageSettings', 9)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesRequest(_messages.Message):
@@ -2004,6 +2006,28 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaSchedulerNotificationConfig(
   """
 
   topic = _messages.StringField(1)
+
+
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaStorageSettings(_messages.Message):
+  r"""Describes the storage settings for an instance. This consists of user-
+  specified TTL values for CAS and ActionResult entries.
+
+  Fields:
+    actionResultTtl: Defines how long after a cached execution result was
+      uploaded or accessed (due to a cache hit) before it is eligible for
+      garbage collection (TTL countdowns are reset upon access). RBE may
+      remove it from the action cache at any time after this period has
+      elapsed. Note that the action cache only concerns when an incoming
+      execution to RBE results in a cache hit. Input and output artifacts of
+      the action are stored in the RBE CAS.
+    casTtl: Defines how long after a blob was uploaded or last accessed before
+      it is eligible for garbage collection (TTL countdowns are reset upon
+      access). RBE may remove it from the instance's CAS at any time after
+      this period has elapsed.
+  """
+
+  actionResultTtl = _messages.StringField(1)
+  casTtl = _messages.StringField(2)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaTestNotifyInstanceRequest(_messages.Message):

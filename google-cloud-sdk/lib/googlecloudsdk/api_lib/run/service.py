@@ -41,22 +41,26 @@ SERVICE_MAX_SURGE_ANNOTATION = 'run.googleapis.com/max-surge'
 SERVICE_MAX_UNAVAILABLE_ANNOTATION = 'run.googleapis.com/max-unavailable'
 SERVICE_SCALING_MODE_ANNOTATION = 'run.googleapis.com/scalingMode'
 OPERATION_ID_ANNOTATION = 'run.googleapis.com/operation-id'
-RUN_FUNCTIONS_SOURCE_LOCATION_ANNOTATION = 'run.googleapis.com/source-location'
 RUN_FUNCTIONS_BUILD_ID_ANNOTATION = 'run.googleapis.com/build-id'
 RUN_FUNCTIONS_BUILD_ENV_VARS_ANNOTATION = (
     'run.googleapis.com/build-environment-variables'
 )
-RUN_FUNCTIONS_FUNCTION_TARGET_ANNOTATION = 'run.googleapis.com/function-target'
 RUN_FUNCTIONS_BUILD_WORKER_POOL_ANNOTATION = (
     'run.googleapis.com/build-worker-pool'
 )
 RUN_FUNCTIONS_BUILD_SERVICE_ACCOUNT_ANNOTATION = (
     'run.googleapis.com/build-service-account'
 )
-RUN_FUNCTIONS_IMAGE_URI_ANNOTATION = 'run.googleapis.com/image-uri'
 RUN_FUNCTIONS_BUILD_NAME_ANNOTATION = 'run.googleapis.com/build-name'
 RUN_FUNCTIONS_BUILD_BASE_IMAGE = 'run.googleapis.com/build-base-image'
-RUN_FUNCTIONS_ENABLE_AUTOMATIC_UPDATES = (
+RUN_FUNCTIONS_BUILD_ENABLE_AUTOMATIC_UPDATES = (
+    'run.googleapis.com/build-enable-automatic-updates'
+)
+# TODO(b/365567914): Remove these annotations once the new ones are in use.
+RUN_FUNCTIONS_SOURCE_LOCATION_ANNOTATION_DEPRECATED = 'run.googleapis.com/source-location'
+RUN_FUNCTIONS_FUNCTION_TARGET_ANNOTATION_DEPRECATED = 'run.googleapis.com/function-target'
+RUN_FUNCTIONS_IMAGE_URI_ANNOTATION_DEPRECATED = 'run.googleapis.com/image-uri'
+RUN_FUNCTIONS_ENABLE_AUTOMATIC_UPDATES_DEPRECATED = (
     'run.googleapis.com/enable-automatic-updates'
 )
 

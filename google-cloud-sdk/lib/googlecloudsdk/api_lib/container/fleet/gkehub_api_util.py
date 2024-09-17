@@ -30,13 +30,15 @@ GKEHUB_BETA_API_VERSION = 'v1beta1'
 GKEHUB_GA_API_VERSION = 'v1'
 
 
-def GetApiVersionForTrack(release_track=None):
+# TODO: b/296872066 - Remove the v1main_only argument once beta track is mapped
+# to v1beta for all commands.
+def GetApiVersionForTrack(release_track=None, v1main_only=False):
   if not release_track:
     return core_apis.ResolveVersion(GKEHUB_API_NAME)
   elif release_track == base.ReleaseTrack.ALPHA:
     return GKEHUB_ALPHA_API_VERSION
   elif release_track == base.ReleaseTrack.BETA:
-    return GKEHUB_BETA_API_VERSION
+    return 'v1beta' if v1main_only else GKEHUB_BETA_API_VERSION
   elif release_track == base.ReleaseTrack.GA:
     return GKEHUB_GA_API_VERSION
   return core_apis.ResolveVersion(GKEHUB_API_NAME)
@@ -48,6 +50,9 @@ def GetApiClientForApiVersion(api_version=None):
   return core_apis.GetClientInstance(GKEHUB_API_NAME, api_version)
 
 
-def GetApiClientForTrack(release_track=base.ReleaseTrack.GA):
+def GetApiClientForTrack(release_track=base.ReleaseTrack.GA, v1main_only=False):
   return GetApiClientForApiVersion(
-      GetApiVersionForTrack(release_track=release_track))
+      GetApiVersionForTrack(
+          release_track=release_track, v1main_only=v1main_only
+      )
+  )

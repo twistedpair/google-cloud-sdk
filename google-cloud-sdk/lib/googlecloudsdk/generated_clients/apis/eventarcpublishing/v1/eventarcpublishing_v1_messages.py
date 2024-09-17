@@ -177,6 +177,9 @@ class GoogleCloudEventarcPublishingV1PublishRequest(_messages.Message):
     jsonMessage: The JSON format of the CloudEvent being published.
       Specification can be found here: https://github.com/cloudevents/spec/blo
       b/v1.0.2/cloudevents/formats/json-format.md
+    messageUid: Optional. This field provides a message_uid override uniquely
+      associated with a message in Eventarc Advanced systems, and should be
+      propagated by the first ingestion point of the message.
     protoMessage: The Protobuf format of the CloudEvent being published.
       Specification can be found here: https://github.com/cloudevents/spec/blo
       b/v1.0.2/cloudevents/formats/protobuf-format.md
@@ -184,7 +187,8 @@ class GoogleCloudEventarcPublishingV1PublishRequest(_messages.Message):
 
   avroMessage = _messages.BytesField(1)
   jsonMessage = _messages.StringField(2)
-  protoMessage = _messages.MessageField('IoCloudeventsV1CloudEvent', 3)
+  messageUid = _messages.StringField(3)
+  protoMessage = _messages.MessageField('IoCloudeventsV1CloudEvent', 4)
 
 
 class GoogleCloudEventarcPublishingV1PublishResponse(_messages.Message):

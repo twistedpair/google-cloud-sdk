@@ -2769,6 +2769,114 @@ class HealthcareV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Binary_create(self, request, global_params=None):
+      r"""Creates a FHIR Binary resource. This method can be used to create a Binary resource either by using one of the accepted FHIR JSON content types, or as a raw data stream. If a resource is created with this method using the FHIR content type this method's behavior is the same as [`fhir.create`](https://cloud.google.com/healthcare-api/docs/reference/rest/v1/projects.locations.datasets.fhirStores.fhir/create). If a resource type other than Binary is used in the request it's treated in the same way as non-FHIR data (e.g., images, zip archives, pdf files, documents). When a non-FHIR content type is used in the request, a Binary resource will be generated, and the uploaded data will be stored in the `content` field (`DSTU2` and `STU3`), or the `data` field (`R4`). The Binary resource's `contentType` will be filled in using the value of the `Content-Type` header, and the `securityContext` field (not present in `DSTU2`) will be populated from the `X-Security-Context` header if it exists. At this time `securityContext` has no special behavior in the Cloud Healthcare API. Note: the limit on data ingested through this method is 2 GB. For best performance, use a non-FHIR data type instead of wrapping the data in a Binary resource. Some of the Healthcare API features, such as [exporting to BigQuery](https://cloud.google.com/healthcare-api/docs/how-tos/fhir-export-bigquery) or [Pub/Sub notifications](https://cloud.google.com/healthcare-api/docs/fhir-pubsub#behavior_when_a_fhir_resource_is_too_large_or_traffic_is_high) with full resource content, do not support Binary resources that are larger than 10 MB. In these cases the resource's `data` field will be omitted. Instead, the "http://hl7.org/fhir/StructureDefinition/data-absent-reason" extension will be present to indicate that including the data is `unsupported`. On success, an empty `201 Created` response is returned. The newly created resource's ID and version are returned in the Location header. Using `Prefer: representation=resource` is not allowed for this method. The definition of the Binary REST API can be found at https://hl7.org/fhir/binary.html#rest.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('Binary_create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Binary_create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/Binary',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.fhirStores.fhir.Binary-create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/fhir/Binary',
+        request_field='httpBody',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryCreateRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+    def Binary_read(self, request, global_params=None):
+      r"""Gets the contents of a FHIR Binary resource. This method can be used to retrieve a Binary resource either by using the FHIR JSON mimetype as the value for the Accept header, or as a raw data stream. If the FHIR Accept type is used this method will return a Binary resource with the data base64-encoded, regardless of how the resource was created. The resource data can be retrieved in base64-decoded form if the Accept type of the request matches the value of the resource's `contentType` field. The definition of the Binary REST API can be found at https://hl7.org/fhir/binary.html#rest.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryReadRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('Binary_read')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Binary_read.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/Binary/{BinaryId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.fhirStores.fhir.Binary-read',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryReadRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+    def Binary_update(self, request, global_params=None):
+      r"""Updates the entire contents of a Binary resource. If the specified resource does not exist and the FHIR store has enable_update_create set, creates the resource with the client-specified ID. It is strongly advised not to include or encode any sensitive data such as patient identifiers in client-specified resource IDs. Those IDs are part of the FHIR resource path recorded in Cloud Audit Logs and Pub/Sub notifications. Those IDs can also be contained in reference fields within other resources. This method can be used to update a Binary resource either by using one of the accepted FHIR JSON content types, or as a raw data stream. If a resource is updated with this method using the FHIR content type this method's behavior is the same as `update`. If a resource type other than Binary is used in the request it will be treated in the same way as non-FHIR data. When a non-FHIR content type is used in the request, a Binary resource will be generated using the ID from the resource path, and the uploaded data will be stored in the `content` field (`DSTU2` and `STU3`), or the `data` field (`R4`). The Binary resource's `contentType` will be filled in using the value of the `Content-Type` header, and the `securityContext` field (not present in `DSTU2`) will be populated from the `X-Security-Context` header if it exists. At this time `securityContext` has no special behavior in the Cloud Healthcare API. Note: the limit on data ingested through this method is 2 GB. For best performance, use a non-FHIR data type instead of wrapping the data in a Binary resource. Some of the Healthcare API features, such as [exporting to BigQuery](https://cloud.google.com/healthcare-api/docs/how-tos/fhir-export-bigquery) or [Pub/Sub notifications](https://cloud.google.com/healthcare-api/docs/fhir-pubsub#behavior_when_a_fhir_resource_is_too_large_or_traffic_is_high) with full resource content, do not support Binary resources that are larger than 10 MB. In these cases the resource's `data` field will be omitted. Instead, the "http://hl7.org/fhir/StructureDefinition/data-absent-reason" extension will be present to indicate that including the data is `unsupported`. On success, an empty 200 OK response will be returned, or a 201 Created if the resource did not exit. The resource's ID and version are returned in the Location header. Using `Prefer: representation=resource` is not allowed for this method. The definition of the Binary REST API can be found at https://hl7.org/fhir/binary.html#rest.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('Binary_update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Binary_update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/Binary/{BinaryId}',
+        http_method='PUT',
+        method_id='healthcare.projects.locations.datasets.fhirStores.fhir.Binary-update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='httpBody',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryUpdateRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+    def Binary_vread(self, request, global_params=None):
+      r"""Gets the contents of a version (current or historical) of a FHIR Binary resource by version ID. This method can be used to retrieve a Binary resource version either by using the FHIR JSON mimetype as the value for the Accept header, or as a raw data stream. If the FHIR Accept type is used this method will return a Binary resource with the data base64-encoded, regardless of how the resource version was created. The resource data can be retrieved in base64-decoded form if the Accept type of the request matches the value of the resource version's `contentType` field. The definition of the Binary REST API can be found at https://hl7.org/fhir/binary.html#rest.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryVreadRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('Binary_vread')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Binary_vread.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/fhir/Binary/{BinaryId}/_history/{_historyId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.fhirStores.fhir.Binary-vread',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryVreadRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
     def ConceptMap_search_translate(self, request, global_params=None):
       r"""Translates a code from one value set to another by searching for appropriate concept maps. Implements the FHIR standard $translate operation ([DSTU2](https://www.hl7.org/fhir/DSTU2/operation-conceptmap-translate.html), [STU3](https://www.hl7.org/fhir/STU3/operation-conceptmap-translate.html), [R4](https://www.hl7.org/fhir/R4/operation-conceptmap-translate.html)). On success, the response body contains a JSON-encoded representation of a FHIR Parameters resource, which includes the translation result. Errors generated by the FHIR store contain a JSON-encoded `OperationOutcome` resource describing the reason for the error. If the request cannot be mapped to a valid API method on a FHIR store, a generic GCP error might be returned instead.
 
@@ -4393,7 +4501,7 @@ class HealthcareV1beta1(base_api.BaseApiClient):
     )
 
     def Rollback(self, request, global_params=None):
-      r"""Rolls back messages from the HL7 store to the specified time. This method returns an Operation that can be used to track the status of the rollback by calling GetOperation. Immediate fatal errors appear in the error field, errors are also logged to Cloud Logging (see [Viewing error logs in Cloud Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)). Otherwise, when the operation finishes, a detailed response of type RollbackHl7V2MessagesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata.
+      r"""Rolls back messages from the HL7v2 store to the specified time. This method returns an Operation that can be used to track the status of the rollback by calling GetOperation. Immediate fatal errors appear in the error field, errors are also logged to Cloud Logging (see [Viewing error logs in Cloud Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)). Otherwise, when the operation finishes, a detailed response of type RollbackHl7V2MessagesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsHl7V2StoresRollbackRequest) input message

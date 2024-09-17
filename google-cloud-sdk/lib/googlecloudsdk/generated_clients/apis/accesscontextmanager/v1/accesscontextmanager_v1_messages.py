@@ -92,6 +92,34 @@ class AccessPolicy(_messages.Message):
   title = _messages.StringField(5)
 
 
+class AccessScope(_messages.Message):
+  r"""Access scope represents the client scope, etc. to which the settings
+  will be applied to.
+
+  Fields:
+    clientScope: Optional. Client scope for this access scope.
+  """
+
+  clientScope = _messages.MessageField('ClientScope', 1)
+
+
+class AccessSettings(_messages.Message):
+  r"""Access settings represent the set of conditions that must be met for
+  access to be granted. At least one of the fields must be set.
+
+  Fields:
+    accessLevels: Optional. Access level that a user must have to be granted
+      access. Only one access level is supported, not multiple. This repeated
+      field must have exactly one element. Example:
+      "accessPolicies/9522/accessLevels/device_trusted"
+    reauthSettings: Optional. Reauth settings applied to user access on a
+      given AccessScope.
+  """
+
+  accessLevels = _messages.StringField(1, repeated=True)
+  reauthSettings = _messages.MessageField('ReauthSettings', 2)
+
+
 class AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest(_messages.Message):
   r"""A AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest object.
 
@@ -1051,6 +1079,18 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class ClientScope(_messages.Message):
+  r"""Client scope represents the application, etc. subject to this binding's
+  restrictions.
+
+  Fields:
+    restrictedClientApplication: Optional. The application that is subject to
+      this binding's scope.
+  """
+
+  restrictedClientApplication = _messages.MessageField('Application', 1)
+
+
 class CommitServicePerimetersRequest(_messages.Message):
   r"""A request to commit dry-run specs in all Service Perimeters belonging to
   an Access Policy.
@@ -1229,10 +1269,12 @@ class EgressFrom(_messages.Message):
   Fields:
     identities: A list of identities that are allowed access through
       [EgressPolicy]. Identities can be an individual user, service account,
-      Google group, or third-party identity. The `v1` identities that have the
-      prefix `user`, `group`, `serviceAccount`, `principal`, and
-      `principalSet` in https://cloud.google.com/iam/docs/principal-
-      identifiers#v1 are supported.
+      Google group, or third-party identity. For third-party identity, only
+      single identities are supported and other identity types are not
+      supported. The `v1` identities that have the prefix `user`, `group`,
+      `serviceAccount`, and `principal` in
+      https://cloud.google.com/iam/docs/principal-identifiers#v1 are
+      supported.
     identityType: Specifies the type of identities that are allowed access to
       outside the perimeter. If left unspecified, then members of `identities`
       field will be allowed access.
@@ -1434,16 +1476,22 @@ class GcpUserAccessBinding(_messages.Message):
       2.3](https://tools.ietf.org/html/rfc3986#section-2.3)). Should not be
       specified by the client during creation. Example:
       "organizations/256/gcpUserAccessBindings/b3-BhcX_Ud5N"
+    reauthSettings: Optional. GCSL policy for the group key.
     restrictedClientApplications: Optional. A list of applications that are
       subject to this binding's restrictions. If the list is empty, the
       binding restrictions will universally apply to all applications.
+    scopedAccessSettings: Optional. A list of scoped access settings that set
+      this binding's restrictions on a subset of applications. This field
+      cannot be set if restricted_client_applications is set.
   """
 
   accessLevels = _messages.StringField(1, repeated=True)
   dryRunAccessLevels = _messages.StringField(2, repeated=True)
   groupKey = _messages.StringField(3)
   name = _messages.StringField(4)
-  restrictedClientApplications = _messages.MessageField('Application', 5, repeated=True)
+  reauthSettings = _messages.MessageField('ReauthSettings', 5)
+  restrictedClientApplications = _messages.MessageField('Application', 6, repeated=True)
+  scopedAccessSettings = _messages.MessageField('ScopedAccessSettings', 7, repeated=True)
 
 
 class GcpUserAccessBindingOperationMetadata(_messages.Message):
@@ -1496,10 +1544,12 @@ class IngressFrom(_messages.Message):
   Fields:
     identities: A list of identities that are allowed access through
       [IngressPolicy]. Identities can be an individual user, service account,
-      Google group, or third-party identity. The `v1` identities that have the
-      prefix `user`, `group`, `serviceAccount`, `principal`, and
-      `principalSet` in https://cloud.google.com/iam/docs/principal-
-      identifiers#v1 are supported.
+      Google group, or third-party identity. For third-party identity, only
+      single identities are supported and other identity types are not
+      supported. The `v1` identities that have the prefix `user`, `group`,
+      `serviceAccount`, and `principal` in
+      https://cloud.google.com/iam/docs/principal-identifiers#v1 are
+      supported.
     identityType: Specifies the type of identities that are allowed access
       from outside the perimeter. If left unspecified, then members of
       `identities` field will be allowed access.
@@ -1935,6 +1985,60 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class ReauthSettings(_messages.Message):
+  r"""Stores settings related to Google Cloud Session Length including session
+  duration, the type of challenge (i.e. method) they should face when their
+  session expires, and other related settings.
+
+  Enums:
+    ReauthMethodValueValuesEnum: Optional. Reauth method when users GCP
+      session is up.
+
+  Fields:
+    maxInactivity: Optional. How long a user is allowed to take between
+      actions before a new access token must be issued. Presently only set for
+      Cloud Apps.
+    reauthMethod: Optional. Reauth method when users GCP session is up.
+    sessionLength: Optional. The session length. Setting this field to zero is
+      equal to disabling. Reauth. Also can set infinite session by flipping
+      the enabled bit to false below. If use_oidc_max_age is true, for OIDC
+      apps, the session length will be the minimum of this field and OIDC
+      max_age param.
+    sessionLengthEnabled: Optional. Big red button to turn off GCSL. When
+      false, all fields set above will be disregarded and the session length
+      is basically infinite.
+    useOidcMaxAge: Optional. Only useful for OIDC apps. When false, the OIDC
+      max_age param, if passed in the authentication request will be ignored.
+      When true, the re-auth period will be the minimum of the session_length
+      field and the max_age OIDC param.
+  """
+
+  class ReauthMethodValueValuesEnum(_messages.Enum):
+    r"""Optional. Reauth method when users GCP session is up.
+
+    Values:
+      REAUTH_METHOD_UNSPECIFIED: If method undefined in API, we will use LOGIN
+        by default.
+      LOGIN: The user will prompted to perform regular login. Users who are
+        enrolled for two-step verification and haven't chosen to "Remember
+        this computer" will be prompted for their second factor.
+      SECURITY_KEY: The user will be prompted to autheticate using their
+        security key. If no security key has been configured, then we will
+        fallback to LOGIN.
+      PASSWORD: The user will be prompted for their password.
+    """
+    REAUTH_METHOD_UNSPECIFIED = 0
+    LOGIN = 1
+    SECURITY_KEY = 2
+    PASSWORD = 3
+
+  maxInactivity = _messages.StringField(1)
+  reauthMethod = _messages.EnumField('ReauthMethodValueValuesEnum', 2)
+  sessionLength = _messages.StringField(3)
+  sessionLengthEnabled = _messages.BooleanField(4)
+  useOidcMaxAge = _messages.BooleanField(5)
+
+
 class ReplaceAccessLevelsRequest(_messages.Message):
   r"""A request to replace all existing Access Levels in an Access Policy with
   the Access Levels provided. This is done atomically.
@@ -1995,6 +2099,24 @@ class ReplaceServicePerimetersResponse(_messages.Message):
   """
 
   servicePerimeters = _messages.MessageField('ServicePerimeter', 1, repeated=True)
+
+
+class ScopedAccessSettings(_messages.Message):
+  r"""A relationship between access settings and its scope.
+
+  Fields:
+    activeSettings: Optional. Access settings for this scoped access settings.
+      This field may be empty if dry_run_settings is set.
+    dryRunSettings: Optional. Dry-run access settings for this scoped access
+      settings. This field may be empty if active_settings is set.
+    scope: Optional. Application, etc. to which the access settings will be
+      applied to. Implicitly, this is the scoped access settings key; as such,
+      it must be unique and non-empty.
+  """
+
+  activeSettings = _messages.MessageField('AccessSettings', 1)
+  dryRunSettings = _messages.MessageField('AccessSettings', 2)
+  scope = _messages.MessageField('AccessScope', 3)
 
 
 class ServicePerimeter(_messages.Message):

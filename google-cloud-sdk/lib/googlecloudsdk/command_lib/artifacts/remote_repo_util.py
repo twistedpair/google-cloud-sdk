@@ -120,95 +120,70 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
 
   # MAVEN
   if repo_args.remote_mvn_repo:
-    remote_cfg.mavenRepository = messages.MavenRepository()
     facade, remote_input = "Maven", repo_args.remote_mvn_repo
     enum_message = _ChoiceToRemoteEnum(facade, remote_input)
     if enum_message:  # input is PublicRepository
+      remote_cfg.mavenRepository = messages.MavenRepository()
       remote_cfg.mavenRepository.publicRepository = enum_message
     elif _IsRemoteURI(remote_input):  # input is CustomRepository
-      remote_cfg.mavenRepository.customRepository = (
-          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigMavenRepositoryCustomRepository()
-      )
-      remote_cfg.mavenRepository.customRepository.uri = remote_input
+      remote_cfg.commonRepository = messages.CommonRemoteRepository()
+      remote_cfg.commonRepository.uri = remote_input
     elif _IsARRemote(remote_input):  # input is ArtifactRegistryRepository
-      remote_cfg.mavenRepository.artifactRegistryRepository = (
-          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigMavenRepositoryArtifactRegistryRepository()
-      )
-      remote_cfg.mavenRepository.artifactRegistryRepository.repository = (
-          remote_input
-      )
+      remote_cfg.commonRepository = messages.CommonRemoteRepository()
+      remote_cfg.commonRepository.uri = remote_input
     else:  # raise error
       _RaiseRemoteRepoUpstreamError(facade, remote_input)
 
   # DOCKER
   elif repo_args.remote_docker_repo:
-    remote_cfg.dockerRepository = messages.DockerRepository()
     facade, remote_input = "Docker", repo_args.remote_docker_repo
     enum_message = _ChoiceToRemoteEnum(facade, remote_input)
     if enum_message:  # input is PublicRepository
+      remote_cfg.dockerRepository = messages.DockerRepository()
       remote_cfg.dockerRepository.publicRepository = enum_message
     elif _IsRemoteURI(remote_input):  # input is CustomRepository
-      remote_cfg.dockerRepository.customRepository = (
-          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigDockerRepositoryCustomRepository()
-      )
-      remote_cfg.dockerRepository.customRepository.uri = remote_input
+      remote_cfg.commonRepository = messages.CommonRemoteRepository()
+      remote_cfg.commonRepository.uri = remote_input
     elif _IsARRemote(remote_input):  # input is ArtifactRegistryRepository
-      remote_cfg.dockerRepository.artifactRegistryRepository = (
-          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigDockerRepositoryArtifactRegistryRepository()
-      )
-      remote_cfg.dockerRepository.artifactRegistryRepository.repository = (
-          remote_input
-      )
+      remote_cfg.commonRepository = messages.CommonRemoteRepository()
+      remote_cfg.commonRepository.uri = remote_input
     else:  # raise error
       _RaiseRemoteRepoUpstreamError(facade, remote_input)
 
   # NPM
   elif repo_args.remote_npm_repo:
-    remote_cfg.npmRepository = messages.NpmRepository()
     facade, remote_input = "Npm", repo_args.remote_npm_repo
     enum_message = _ChoiceToRemoteEnum(facade, remote_input)
     if enum_message:  # input is PublicRepository
+      remote_cfg.npmRepository = messages.NpmRepository()
       remote_cfg.npmRepository.publicRepository = enum_message
     elif _IsRemoteURI(remote_input):  # input is CustomRepository
-      remote_cfg.npmRepository.customRepository = (
-          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigNpmRepositoryCustomRepository()
-      )
-      remote_cfg.npmRepository.customRepository.uri = remote_input
+      remote_cfg.commonRepository = messages.CommonRemoteRepository()
+      remote_cfg.commonRepository.uri = remote_input
     elif _IsARRemote(remote_input):  # input is ArtifactRegistryRepository
-      remote_cfg.npmRepository.artifactRegistryRepository = (
-          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigNpmRepositoryArtifactRegistryRepository()
-      )
-      remote_cfg.npmRepository.artifactRegistryRepository.repository = (
-          remote_input
-      )
+      remote_cfg.commonRepository = messages.CommonRemoteRepository()
+      remote_cfg.commonRepository.uri = remote_input
     else:  # raise error
       _RaiseRemoteRepoUpstreamError(facade, remote_input)
 
   # PYTHON
   elif repo_args.remote_python_repo:
-    remote_cfg.pythonRepository = messages.PythonRepository()
     facade, remote_input = "Python", repo_args.remote_python_repo
     enum_message = _ChoiceToRemoteEnum(facade, remote_input)
     if enum_message:  # input is PublicRepository
+      remote_cfg.pythonRepository = messages.PythonRepository()
       remote_cfg.pythonRepository.publicRepository = enum_message
     elif _IsRemoteURI(remote_input):  # input is CustomRepository
-      remote_cfg.pythonRepository.customRepository = (
-          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigPythonRepositoryCustomRepository()
-      )
-      remote_cfg.pythonRepository.customRepository.uri = remote_input
+      remote_cfg.commonRepository = messages.CommonRemoteRepository()
+      remote_cfg.commonRepository.uri = remote_input
     elif _IsARRemote(remote_input):  # input is ArtifactRegistryRepository
-      remote_cfg.pythonRepository.artifactRegistryRepository = (
-          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigPythonRepositoryArtifactRegistryRepository()
-      )
-      remote_cfg.pythonRepository.artifactRegistryRepository.repository = (
-          remote_input
-      )
+      remote_cfg.commonRepository = messages.CommonRemoteRepository()
+      remote_cfg.commonRepository.uri = remote_input
     else:  # raise error
       _RaiseRemoteRepoUpstreamError(facade, remote_input)
 
   # APT
   elif repo_args.remote_apt_repo:
-    remote_cfg.aptRepository = messages.AptRepository()
     facade, remote_base, remote_path = (
         "Apt",
         repo_args.remote_apt_repo,
@@ -216,6 +191,7 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
     )
     enum_message = _ChoiceToRemoteEnum(facade, remote_base)
     if enum_message:  # input is PublicRepository
+      remote_cfg.aptRepository = messages.AptRepository()
       remote_cfg.aptRepository.publicRepository = (
           messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryPublicRepository()
       )
@@ -223,30 +199,21 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
       remote_cfg.aptRepository.publicRepository.repositoryPath = remote_path
     elif _IsRemoteURI(_OsPackageUri(remote_base, remote_path)):
       # input is CustomRepository
-      remote_cfg.aptRepository.customRepository = (
-          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryCustomRepository()
-      )
-      remote_cfg.aptRepository.customRepository.uri = _OsPackageUri(
-          remote_base, remote_path
-      )
+      remote_cfg.commonRepository = messages.CommonRemoteRepository()
+      remote_cfg.commonRepository.uri = _OsPackageUri(remote_base, remote_path)
     elif _IsARRemote(remote_base):  # input is ArtifactRegistryRepository
       if remote_path:
         raise ar_exceptions.InvalidInputValueError(
             "--remote-apt-repo-path is not supported for Artifact Registry"
             " Repository upstream."
         )
-      remote_cfg.aptRepository.artifactRegistryRepository = (
-          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryArtifactRegistryRepository()
-      )
-      remote_cfg.aptRepository.artifactRegistryRepository.repository = (
-          remote_base
-      )
+      remote_cfg.commonRepository = messages.CommonRemoteRepository()
+      remote_cfg.commonRepository.uri = remote_base
     else:  # raise error
       _RaiseRemoteRepoUpstreamError(facade, remote_base)
 
   # YUM
   elif repo_args.remote_yum_repo:
-    remote_cfg.yumRepository = messages.YumRepository()
     facade, remote_base, remote_path = (
         "Yum",
         repo_args.remote_yum_repo,
@@ -254,6 +221,7 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
     )
     enum_message = _ChoiceToRemoteEnum(facade, remote_base)
     if enum_message:  # input is PublicRepository
+      remote_cfg.yumRepository = messages.YumRepository()
       remote_cfg.yumRepository.publicRepository = (
           messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryPublicRepository()
       )
@@ -261,30 +229,21 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
       remote_cfg.yumRepository.publicRepository.repositoryPath = remote_path
     elif _IsRemoteURI(_OsPackageUri(remote_base, remote_path)):
       # input is CustomRepository
-      remote_cfg.yumRepository.customRepository = (
-          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryCustomRepository()
-      )
-      remote_cfg.yumRepository.customRepository.uri = _OsPackageUri(
-          remote_base, remote_path
-      )
+      remote_cfg.commonRepository = messages.CommonRemoteRepository()
+      remote_cfg.commonRepository.uri = _OsPackageUri(remote_base, remote_path)
     elif _IsARRemote(remote_base):  # input is ArtifactRegistryRepository
       if remote_path:
         raise ar_exceptions.InvalidInputValueError(
             "--remote-yum-repo-path is not supported for Artifact Registry"
             " Repository upstream."
         )
-      remote_cfg.yumRepository.artifactRegistryRepository = (
-          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryArtifactRegistryRepository()
-      )
-      remote_cfg.yumRepository.artifactRegistryRepository.repository = (
-          remote_base
-      )
+      remote_cfg.commonRepository = messages.CommonRemoteRepository()
+      remote_cfg.commonRepository.uri = remote_base
     else:  # raise error
       _RaiseRemoteRepoUpstreamError(facade, remote_base)
 
   # GO
   elif repo_args.remote_go_repo:
-    remote_cfg.goRepository = messages.GoRepository()
     facade, remote_input = "Go", repo_args.remote_go_repo
     # Go does not have Public enums
     if _IsRemoteURI(remote_input):  # input is CustomRepository
@@ -292,10 +251,8 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
         remote_input = remote_input[:-1]
       if remote_input != GITHUB_URI:
         _RaiseCustomUpstreamUnsupportedError(facade, remote_input, [GITHUB_URI])
-      remote_cfg.goRepository.customRepository = (
-          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigGoRepositoryCustomRepository()
-      )
-      remote_cfg.goRepository.customRepository.uri = remote_input
+      remote_cfg.commonRepository = messages.CommonRemoteRepository()
+      remote_cfg.commonRepository.uri = remote_input
     elif _IsARRemote(remote_input):  # input is ArtifactRegistryRepository
       _RaiseArtifactRegistryUpstreamUnsupportedError(facade)
     else:  # raise error

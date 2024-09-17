@@ -44,6 +44,30 @@ class AOFConfig(_messages.Message):
   appendFsync = _messages.EnumField('AppendFsyncValueValuesEnum', 1)
 
 
+class AssetLocation(_messages.Message):
+  r"""Provides the mapping of a cloud asset to a direct physical location or
+  to a proxy that defines the location on its behalf.
+
+  Fields:
+    ccfeRmsPath: Spanner path of the CCFE RMS database. It is only applicable
+      for CCFE tenants that use CCFE RMS for storing resource metadata.
+    expected: Defines the customer expectation around ZI/ZS for this asset and
+      ZI/ZS state of the region at the time of asset creation.
+    extraParameters: Defines extra parameters required for specific asset
+      types.
+    locationData: Contains all kinds of physical location definitions for this
+      asset.
+    parentAsset: Defines parents assets if any in order to allow later
+      generation of child_asset_location data via child assets.
+  """
+
+  ccfeRmsPath = _messages.StringField(1)
+  expected = _messages.MessageField('IsolationExpectations', 2)
+  extraParameters = _messages.MessageField('ExtraParameter', 3, repeated=True)
+  locationData = _messages.MessageField('LocationData', 4, repeated=True)
+  parentAsset = _messages.MessageField('CloudAsset', 5, repeated=True)
+
+
 class AvailabilityConfiguration(_messages.Message):
   r"""Configuration for availability of database instance
 
@@ -144,6 +168,17 @@ class BackupRun(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 4)
 
 
+class BlobstoreLocation(_messages.Message):
+  r"""Policy ID that identified data placement in Blobstore as per
+  go/blobstore-user-guide#data-metadata-placement-and-failure-domains
+
+  Fields:
+    policyId: A string attribute.
+  """
+
+  policyId = _messages.StringField(1, repeated=True)
+
+
 class CategoryHealth(_messages.Message):
   r"""Category health, such as CPU/memory
 
@@ -202,6 +237,28 @@ class CertificateAuthority(_messages.Message):
   name = _messages.StringField(2)
 
 
+class CloudAsset(_messages.Message):
+  r"""A CloudAsset object.
+
+  Fields:
+    assetName: A string attribute.
+    assetType: A string attribute.
+  """
+
+  assetName = _messages.StringField(1)
+  assetType = _messages.StringField(2)
+
+
+class CloudAssetComposition(_messages.Message):
+  r"""A CloudAssetComposition object.
+
+  Fields:
+    childAsset: A CloudAsset attribute.
+  """
+
+  childAsset = _messages.MessageField('CloudAsset', 1, repeated=True)
+
+
 class Cluster(_messages.Message):
   r"""A cluster instance.
 
@@ -252,8 +309,8 @@ class Cluster(_messages.Message):
     pscConfigs: Required. Each PscConfig configures the consumer network where
       IPs will be designated to the cluster for client access through Private
       Service Connect Automation. Currently, only one PscConfig is supported.
-    pscConnections: Output only. PSC connections for discovery of the cluster
-      topology and accessing the cluster.
+    pscConnections: Output only. The list of PSC connections that are auto-
+      created through service connectivity automation.
     redisConfigs: Optional. Key/Value pairs of customer overrides for mutable
       Redis Configs
     replicaCount: Optional. The number of replica nodes per shard.
@@ -304,7 +361,7 @@ class Cluster(_messages.Message):
     the underlying machine-type of a redis node.
 
     Values:
-      NODE_TYPE_UNSPECIFIED: <no description>
+      NODE_TYPE_UNSPECIFIED: Node type unspecified
       REDIS_SHARED_CORE_NANO: Redis shared core nano node_type.
       REDIS_HIGHMEM_MEDIUM: Redis highmem medium node_type.
       REDIS_HIGHMEM_XLARGE: Redis highmem xlarge node_type.
@@ -428,7 +485,7 @@ class ClusterMaintenancePolicy(_messages.Message):
   Fields:
     createTime: Output only. The time when the policy was created i.e.
       Maintenance Window or Deny Period was assigned.
-    denyMaintenancePeriods: Deny maintenance periods
+    denyMaintenancePeriods: Optional. Deny maintenance periods
     updateTime: Output only. The time when the policy was updated i.e.
       Maintenance Window or Deny Period was updated.
     weeklyMaintenanceWindow: Optional. Maintenance window that is applied to
@@ -1162,7 +1219,7 @@ class DatabaseResourceId(_messages.Message):
 
 
 class DatabaseResourceMetadata(_messages.Message):
-  r"""Common model for database resource instance metadata.
+  r"""Common model for database resource instance metadata. Next ID: 21
 
   Enums:
     CurrentStateValueValuesEnum: Current state of the instance.
@@ -1203,6 +1260,7 @@ class DatabaseResourceMetadata(_messages.Message):
       "ABC" is deleted, the name "ABC" can be used to to create a new resource
       within the same source. Resource name to follow CAIS resource_name
       format as noted here go/condor-common-datamodel
+    tagsSet: Optional. Tags associated with this resources.
     updationTime: The time at which the resource was updated and recorded at
       partner service.
     userLabelSet: User-provided labels associated with the resource
@@ -1289,8 +1347,9 @@ class DatabaseResourceMetadata(_messages.Message):
   product = _messages.MessageField('Product', 14)
   resourceContainer = _messages.StringField(15)
   resourceName = _messages.StringField(16)
-  updationTime = _messages.StringField(17)
-  userLabelSet = _messages.MessageField('UserLabels', 18)
+  tagsSet = _messages.MessageField('Tags', 17)
+  updationTime = _messages.StringField(18)
+  userLabelSet = _messages.MessageField('UserLabels', 19)
 
 
 class DatabaseResourceRecommendationSignalData(_messages.Message):
@@ -1687,6 +1746,16 @@ class Date(_messages.Message):
   year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class DirectLocationAssignment(_messages.Message):
+  r"""A DirectLocationAssignment object.
+
+  Fields:
+    location: A LocationAssignment attribute.
+  """
+
+  location = _messages.MessageField('LocationAssignment', 1, repeated=True)
+
+
 class DiscoveryEndpoint(_messages.Message):
   r"""Endpoints on each network, for Redis clients to connect to the cluster.
 
@@ -1765,6 +1834,17 @@ class ExportInstanceRequest(_messages.Message):
   """
 
   outputConfig = _messages.MessageField('OutputConfig', 1)
+
+
+class ExtraParameter(_messages.Message):
+  r"""Defines parameters that should only be used for specific asset types.
+
+  Fields:
+    regionalMigDistributionPolicy: Details about zones used by regional
+      compute.googleapis.com/InstanceGroupManager to create instances.
+  """
+
+  regionalMigDistributionPolicy = _messages.MessageField('RegionalMigDistributionPolicy', 1)
 
 
 class FailoverInstanceRequest(_messages.Message):
@@ -2261,6 +2341,156 @@ class InternalResourceMetadata(_messages.Message):
   resourceName = _messages.StringField(5)
 
 
+class IsolationExpectations(_messages.Message):
+  r"""A IsolationExpectations object.
+
+  Enums:
+    ZiOrgPolicyValueValuesEnum:
+    ZiRegionPolicyValueValuesEnum:
+    ZiRegionStateValueValuesEnum:
+    ZoneIsolationValueValuesEnum: Deprecated: use zi_org_policy,
+      zi_region_policy and zi_region_state instead for setting ZI expectations
+      as per go/zicy-publish-physical-location.
+    ZoneSeparationValueValuesEnum: Deprecated: use zs_org_policy, and
+      zs_region_stateinstead for setting Zs expectations as per go/zicy-
+      publish-physical-location.
+    ZsOrgPolicyValueValuesEnum:
+    ZsRegionStateValueValuesEnum:
+
+  Fields:
+    requirementOverride: Explicit overrides for ZI and ZS requirements to be
+      used for resources that should be excluded from ZI/ZS verification
+      logic.
+    ziOrgPolicy: A ZiOrgPolicyValueValuesEnum attribute.
+    ziRegionPolicy: A ZiRegionPolicyValueValuesEnum attribute.
+    ziRegionState: A ZiRegionStateValueValuesEnum attribute.
+    zoneIsolation: Deprecated: use zi_org_policy, zi_region_policy and
+      zi_region_state instead for setting ZI expectations as per go/zicy-
+      publish-physical-location.
+    zoneSeparation: Deprecated: use zs_org_policy, and zs_region_stateinstead
+      for setting Zs expectations as per go/zicy-publish-physical-location.
+    zsOrgPolicy: A ZsOrgPolicyValueValuesEnum attribute.
+    zsRegionState: A ZsRegionStateValueValuesEnum attribute.
+  """
+
+  class ZiOrgPolicyValueValuesEnum(_messages.Enum):
+    r"""ZiOrgPolicyValueValuesEnum enum type.
+
+    Values:
+      ZI_UNSPECIFIED: <no description>
+      ZI_UNKNOWN: To be used if tracking is not available
+      ZI_NOT_REQUIRED: <no description>
+      ZI_PREFERRED: <no description>
+      ZI_REQUIRED: <no description>
+    """
+    ZI_UNSPECIFIED = 0
+    ZI_UNKNOWN = 1
+    ZI_NOT_REQUIRED = 2
+    ZI_PREFERRED = 3
+    ZI_REQUIRED = 4
+
+  class ZiRegionPolicyValueValuesEnum(_messages.Enum):
+    r"""ZiRegionPolicyValueValuesEnum enum type.
+
+    Values:
+      ZI_REGION_POLICY_UNSPECIFIED: <no description>
+      ZI_REGION_POLICY_UNKNOWN: To be used if tracking is not available
+      ZI_REGION_POLICY_NOT_SET: <no description>
+      ZI_REGION_POLICY_FAIL_OPEN: <no description>
+      ZI_REGION_POLICY_FAIL_CLOSED: <no description>
+    """
+    ZI_REGION_POLICY_UNSPECIFIED = 0
+    ZI_REGION_POLICY_UNKNOWN = 1
+    ZI_REGION_POLICY_NOT_SET = 2
+    ZI_REGION_POLICY_FAIL_OPEN = 3
+    ZI_REGION_POLICY_FAIL_CLOSED = 4
+
+  class ZiRegionStateValueValuesEnum(_messages.Enum):
+    r"""ZiRegionStateValueValuesEnum enum type.
+
+    Values:
+      ZI_REGION_UNSPECIFIED: <no description>
+      ZI_REGION_UNKNOWN: To be used if tracking is not available
+      ZI_REGION_NOT_ENABLED: <no description>
+      ZI_REGION_ENABLED: <no description>
+    """
+    ZI_REGION_UNSPECIFIED = 0
+    ZI_REGION_UNKNOWN = 1
+    ZI_REGION_NOT_ENABLED = 2
+    ZI_REGION_ENABLED = 3
+
+  class ZoneIsolationValueValuesEnum(_messages.Enum):
+    r"""Deprecated: use zi_org_policy, zi_region_policy and zi_region_state
+    instead for setting ZI expectations as per go/zicy-publish-physical-
+    location.
+
+    Values:
+      ZI_UNSPECIFIED: <no description>
+      ZI_UNKNOWN: To be used if tracking is not available
+      ZI_NOT_REQUIRED: <no description>
+      ZI_PREFERRED: <no description>
+      ZI_REQUIRED: <no description>
+    """
+    ZI_UNSPECIFIED = 0
+    ZI_UNKNOWN = 1
+    ZI_NOT_REQUIRED = 2
+    ZI_PREFERRED = 3
+    ZI_REQUIRED = 4
+
+  class ZoneSeparationValueValuesEnum(_messages.Enum):
+    r"""Deprecated: use zs_org_policy, and zs_region_stateinstead for setting
+    Zs expectations as per go/zicy-publish-physical-location.
+
+    Values:
+      ZS_UNSPECIFIED: <no description>
+      ZS_UNKNOWN: To be used if tracking is not available
+      ZS_NOT_REQUIRED: <no description>
+      ZS_REQUIRED: <no description>
+    """
+    ZS_UNSPECIFIED = 0
+    ZS_UNKNOWN = 1
+    ZS_NOT_REQUIRED = 2
+    ZS_REQUIRED = 3
+
+  class ZsOrgPolicyValueValuesEnum(_messages.Enum):
+    r"""ZsOrgPolicyValueValuesEnum enum type.
+
+    Values:
+      ZS_UNSPECIFIED: <no description>
+      ZS_UNKNOWN: To be used if tracking is not available
+      ZS_NOT_REQUIRED: <no description>
+      ZS_REQUIRED: <no description>
+    """
+    ZS_UNSPECIFIED = 0
+    ZS_UNKNOWN = 1
+    ZS_NOT_REQUIRED = 2
+    ZS_REQUIRED = 3
+
+  class ZsRegionStateValueValuesEnum(_messages.Enum):
+    r"""ZsRegionStateValueValuesEnum enum type.
+
+    Values:
+      ZS_REGION_UNSPECIFIED: <no description>
+      ZS_REGION_UNKNOWN: To be used if tracking of the asset ZS-bit is not
+        available
+      ZS_REGION_NOT_ENABLED: <no description>
+      ZS_REGION_ENABLED: <no description>
+    """
+    ZS_REGION_UNSPECIFIED = 0
+    ZS_REGION_UNKNOWN = 1
+    ZS_REGION_NOT_ENABLED = 2
+    ZS_REGION_ENABLED = 3
+
+  requirementOverride = _messages.MessageField('RequirementOverride', 1)
+  ziOrgPolicy = _messages.EnumField('ZiOrgPolicyValueValuesEnum', 2)
+  ziRegionPolicy = _messages.EnumField('ZiRegionPolicyValueValuesEnum', 3)
+  ziRegionState = _messages.EnumField('ZiRegionStateValueValuesEnum', 4)
+  zoneIsolation = _messages.EnumField('ZoneIsolationValueValuesEnum', 5)
+  zoneSeparation = _messages.EnumField('ZoneSeparationValueValuesEnum', 6)
+  zsOrgPolicy = _messages.EnumField('ZsOrgPolicyValueValuesEnum', 7)
+  zsRegionState = _messages.EnumField('ZsRegionStateValueValuesEnum', 8)
+
+
 class ListClustersResponse(_messages.Message):
   r"""Response for ListClusters.
 
@@ -2418,6 +2648,65 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class LocationAssignment(_messages.Message):
+  r"""A LocationAssignment object.
+
+  Enums:
+    LocationTypeValueValuesEnum:
+
+  Fields:
+    location: A string attribute.
+    locationType: A LocationTypeValueValuesEnum attribute.
+  """
+
+  class LocationTypeValueValuesEnum(_messages.Enum):
+    r"""LocationTypeValueValuesEnum enum type.
+
+    Values:
+      UNSPECIFIED: <no description>
+      CLUSTER: 1-10: Physical failure domains.
+      POP: <no description>
+      CLOUD_ZONE: 11-20: Logical failure domains.
+      CLOUD_REGION: <no description>
+      MULTI_REGION_GEO: <no description>
+      MULTI_REGION_JURISDICTION: <no description>
+      GLOBAL: <no description>
+      OTHER: <no description>
+    """
+    UNSPECIFIED = 0
+    CLUSTER = 1
+    POP = 2
+    CLOUD_ZONE = 3
+    CLOUD_REGION = 4
+    MULTI_REGION_GEO = 5
+    MULTI_REGION_JURISDICTION = 6
+    GLOBAL = 7
+    OTHER = 8
+
+  location = _messages.StringField(1)
+  locationType = _messages.EnumField('LocationTypeValueValuesEnum', 2)
+
+
+class LocationData(_messages.Message):
+  r"""A LocationData object.
+
+  Fields:
+    blobstoreLocation: A BlobstoreLocation attribute.
+    childAssetLocation: A CloudAssetComposition attribute.
+    directLocation: A DirectLocationAssignment attribute.
+    gcpProjectProxy: A TenantProjectProxy attribute.
+    placerLocation: A PlacerLocation attribute.
+    spannerLocation: A SpannerLocation attribute.
+  """
+
+  blobstoreLocation = _messages.MessageField('BlobstoreLocation', 1)
+  childAssetLocation = _messages.MessageField('CloudAssetComposition', 2)
+  directLocation = _messages.MessageField('DirectLocationAssignment', 3)
+  gcpProjectProxy = _messages.MessageField('TenantProjectProxy', 4)
+  placerLocation = _messages.MessageField('PlacerLocation', 5)
+  spannerLocation = _messages.MessageField('SpannerLocation', 6)
+
+
 class LocationMetadata(_messages.Message):
   r"""This location metadata represents additional configuration options for a
   given location where a Redis instance may be created. All fields are output
@@ -2477,10 +2766,12 @@ class MachineConfiguration(_messages.Message):
       validations again after bug fix.
     memorySizeInBytes: Memory size in bytes. TODO(b/342344482, b/342346271)
       add proto validations again after bug fix.
+    shardCount: Optional. Number of shards (if applicable).
   """
 
   cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   memorySizeInBytes = _messages.IntegerField(2)
+  shardCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class MaintenancePolicy(_messages.Message):
@@ -2955,6 +3246,18 @@ class PersistenceConfig(_messages.Message):
   rdbSnapshotStartTime = _messages.StringField(4)
 
 
+class PlacerLocation(_messages.Message):
+  r"""Message describing that the location of the customer resource is tied to
+  placer allocations
+
+  Fields:
+    placerConfig: Directory with a config related to it in placer (e.g.
+      "/placer/prod/home/my-root/my-dir")
+  """
+
+  placerConfig = _messages.StringField(1)
+
+
 class Product(_messages.Message):
   r"""Product specification for Condor resources.
 
@@ -3071,17 +3374,20 @@ class PscConnection(_messages.Message):
   r"""Details of consumer resources in a PSC connection.
 
   Fields:
-    address: Output only. The IP allocated on the consumer network for the PSC
+    address: Required. The IP allocated on the consumer network for the PSC
       forwarding rule.
-    forwardingRule: Output only. The URI of the consumer side forwarding rule.
+    forwardingRule: Required. The URI of the consumer side forwarding rule.
       Example: projects/{projectNumOrId}/regions/us-
       east1/forwardingRules/{resourceId}.
-    network: The consumer network where the IP address resides, in the form of
-      projects/{project_id}/global/networks/{network_id}.
-    projectId: Output only. The consumer project_id where the forwarding rule
-      is created from.
-    pscConnectionId: Output only. The PSC connection id of the forwarding rule
+    network: Required. The consumer network where the IP address resides, in
+      the form of projects/{project_id}/global/networks/{network_id}.
+    projectId: Optional. Project ID of the consumer project where the
+      forwarding rule is created in.
+    pscConnectionId: Optional. The PSC connection id of the forwarding rule
       connected to the service attachment.
+    serviceAttachment: Required. The service attachment which is the target of
+      the PSC connection, in the form of projects/{project-
+      id}/regions/{region}/serviceAttachments/{service-attachment-id}.
   """
 
   address = _messages.StringField(1)
@@ -3089,6 +3395,7 @@ class PscConnection(_messages.Message):
   network = _messages.StringField(3)
   projectId = _messages.StringField(4)
   pscConnectionId = _messages.StringField(5)
+  serviceAttachment = _messages.StringField(6)
 
 
 class RDBConfig(_messages.Message):
@@ -3560,6 +3867,20 @@ class RedisProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class RegionalMigDistributionPolicy(_messages.Message):
+  r"""To be used for specifying the intended distribution of regional
+  compute.googleapis.com/InstanceGroupManager instances
+
+  Fields:
+    targetShape: The shape in which the group converges around distribution of
+      resources. Instance of proto2 enum
+    zones: Cloud zones used by regional MIG to create instances.
+  """
+
+  targetShape = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  zones = _messages.MessageField('ZoneConfiguration', 2, repeated=True)
+
+
 class RemoteCluster(_messages.Message):
   r"""Details of the remote cluster associated with this cluster in a cross
   cluster replication setup.
@@ -3606,6 +3927,52 @@ class ReportInstanceHealthResponse(_messages.Message):
 
   categories = _messages.MessageField('CategoryHealth', 1, repeated=True)
   overallState = _messages.EnumField('OverallStateValueValuesEnum', 2)
+
+
+class RequirementOverride(_messages.Message):
+  r"""A RequirementOverride object.
+
+  Enums:
+    ZiOverrideValueValuesEnum:
+    ZsOverrideValueValuesEnum:
+
+  Fields:
+    ziOverride: A ZiOverrideValueValuesEnum attribute.
+    zsOverride: A ZsOverrideValueValuesEnum attribute.
+  """
+
+  class ZiOverrideValueValuesEnum(_messages.Enum):
+    r"""ZiOverrideValueValuesEnum enum type.
+
+    Values:
+      ZI_UNSPECIFIED: <no description>
+      ZI_UNKNOWN: To be used if tracking is not available
+      ZI_NOT_REQUIRED: <no description>
+      ZI_PREFERRED: <no description>
+      ZI_REQUIRED: <no description>
+    """
+    ZI_UNSPECIFIED = 0
+    ZI_UNKNOWN = 1
+    ZI_NOT_REQUIRED = 2
+    ZI_PREFERRED = 3
+    ZI_REQUIRED = 4
+
+  class ZsOverrideValueValuesEnum(_messages.Enum):
+    r"""ZsOverrideValueValuesEnum enum type.
+
+    Values:
+      ZS_UNSPECIFIED: <no description>
+      ZS_UNKNOWN: To be used if tracking is not available
+      ZS_NOT_REQUIRED: <no description>
+      ZS_REQUIRED: <no description>
+    """
+    ZS_UNSPECIFIED = 0
+    ZS_UNKNOWN = 1
+    ZS_NOT_REQUIRED = 2
+    ZS_REQUIRED = 3
+
+  ziOverride = _messages.EnumField('ZiOverrideValueValuesEnum', 1)
+  zsOverride = _messages.EnumField('ZsOverrideValueValuesEnum', 2)
 
 
 class RescheduleClusterMaintenanceRequest(_messages.Message):
@@ -3708,6 +4075,20 @@ class RetentionSettings(_messages.Message):
   quantityBasedRetention = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   retentionUnit = _messages.EnumField('RetentionUnitValueValuesEnum', 2)
   timeBasedRetention = _messages.StringField(3)
+
+
+class SpannerLocation(_messages.Message):
+  r"""A SpannerLocation object.
+
+  Fields:
+    backupName: Set of backups used by the resource with name in the same
+      format as what is available at
+      http://table/spanner_automon.backup_metadata
+    dbName: Set of databases used by the resource in format /span//
+  """
+
+  backupName = _messages.StringField(1, repeated=True)
+  dbName = _messages.StringField(2, repeated=True)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -3833,6 +4214,55 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class Tags(_messages.Message):
+  r"""Message type for storing tags. Tags provide a way to create annotations
+  for resources, and in some cases conditionally allow or deny policies based
+  on whether a resource has a specific tag.
+
+  Messages:
+    TagsValue: The Tag key/value mappings.
+
+  Fields:
+    tags: The Tag key/value mappings.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""The Tag key/value mappings.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  tags = _messages.MessageField('TagsValue', 1)
+
+
+class TenantProjectProxy(_messages.Message):
+  r"""A TenantProjectProxy object.
+
+  Fields:
+    projectNumbers: A string attribute.
+  """
+
+  projectNumbers = _messages.StringField(1, repeated=True)
 
 
 class TimeOfDay(_messages.Message):
@@ -3997,6 +4427,16 @@ class WeeklyMaintenanceWindow(_messages.Message):
   day = _messages.EnumField('DayValueValuesEnum', 1)
   duration = _messages.StringField(2)
   startTime = _messages.MessageField('TimeOfDay', 3)
+
+
+class ZoneConfiguration(_messages.Message):
+  r"""A ZoneConfiguration object.
+
+  Fields:
+    zone: A string attribute.
+  """
+
+  zone = _messages.StringField(1)
 
 
 class ZoneDistributionConfig(_messages.Message):

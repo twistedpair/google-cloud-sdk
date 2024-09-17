@@ -1598,9 +1598,10 @@ class WorkstationConfig(_messages.Message):
       that has `roles/logging.logWriter` and `roles/monitoring.metricWriter`
       on the project. Operating system audit logging is distinct from [Cloud
       Audit Logs](https://cloud.google.com/workstations/docs/audit-logging)
-      and [Container output logging](http://cloud/workstations/docs/container-
-      output-logging#overview). Operating system audit logs are available in
-      the [Cloud Logging](https://cloud.google.com/logging/docs) console by
+      and [Container output
+      logging](https://cloud.google.com/workstations/docs/container-output-
+      logging#overview). Operating system audit logs are available in the
+      [Cloud Logging](https://cloud.google.com/logging/docs) console by
       querying: resource.type="gce_instance" log_name:"/logs/linux-auditd"
     encryptionKey: Immutable. Encrypts resources of this workstation
       configuration using a customer-managed encryption key (CMEK). If
@@ -1620,6 +1621,11 @@ class WorkstationConfig(_messages.Message):
     etag: Optional. Checksum computed by the server. May be sent on update and
       delete requests to make sure that the client has an up-to-date value
       before proceeding.
+    grantWorkstationAdminRoleOnCreate: Optional. Grant creator of a
+      workstation `roles/workstations.policyAdmin` role along with
+      `roles/workstations.user` role on the workstation created by them. This
+      allows workstation users to share access to either their entire
+      workstation, or individual ports. Defaults to false.
     host: Optional. Runtime host for the workstation.
     idleTimeout: Optional. Number of seconds to wait before automatically
       stopping a workstation after it last received user traffic. A value of
@@ -1633,6 +1639,15 @@ class WorkstationConfig(_messages.Message):
       [Labels](https://cloud.google.com/workstations/docs/label-resources)
       that are applied to the workstation configuration and that are also
       propagated to the underlying Compute Engine resources.
+    maxUsableWorkstations: Optional. Maximum number of workstations under this
+      configuration a user can have `workstations.workstation.use` permission
+      on. Only enforced on CreateWorkstation API calls on the user issuing the
+      API request. Can be overridden by: - granting a user
+      workstations.workstationConfigs.exemptMaxUsableWorkstationLimit
+      permission, or - having a user with that permission create a workstation
+      and granting another user `workstations.workstation.use` permission on
+      that workstation. If not specified, defaults to `0`, which indicates
+      unlimited.
     name: Identifier. Full name of this workstation configuration.
     persistentDirectories: Optional. Directories to persist across workstation
       sessions.
@@ -1732,17 +1747,19 @@ class WorkstationConfig(_messages.Message):
   encryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
   ephemeralDirectories = _messages.MessageField('EphemeralDirectory', 12, repeated=True)
   etag = _messages.StringField(13)
-  host = _messages.MessageField('Host', 14)
-  idleTimeout = _messages.StringField(15)
-  labels = _messages.MessageField('LabelsValue', 16)
-  name = _messages.StringField(17)
-  persistentDirectories = _messages.MessageField('PersistentDirectory', 18, repeated=True)
-  readinessChecks = _messages.MessageField('ReadinessCheck', 19, repeated=True)
-  reconciling = _messages.BooleanField(20)
-  replicaZones = _messages.StringField(21, repeated=True)
-  runningTimeout = _messages.StringField(22)
-  uid = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
+  grantWorkstationAdminRoleOnCreate = _messages.BooleanField(14)
+  host = _messages.MessageField('Host', 15)
+  idleTimeout = _messages.StringField(16)
+  labels = _messages.MessageField('LabelsValue', 17)
+  maxUsableWorkstations = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  name = _messages.StringField(19)
+  persistentDirectories = _messages.MessageField('PersistentDirectory', 20, repeated=True)
+  readinessChecks = _messages.MessageField('ReadinessCheck', 21, repeated=True)
+  reconciling = _messages.BooleanField(22)
+  replicaZones = _messages.StringField(23, repeated=True)
+  runningTimeout = _messages.StringField(24)
+  uid = _messages.StringField(25)
+  updateTime = _messages.StringField(26)
 
 
 class WorkstationsProjectsLocationsGetRequest(_messages.Message):

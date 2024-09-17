@@ -1698,35 +1698,109 @@ def AddDatabase(parser, required=True):
   )
 
 
-def AddGCSUri(parser, required=True):
+def AddDestinationURI(parser, required=True):
   """Adds a --gcs-uri flag to parser.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
     required: Whether or not --gcs-uri is required.
   """
-  parser.add_argument(
-      '--gcs-uri',
+  destination_uri_group = parser.add_group(
+      mutex=True,
       required=required,
+      help='Destination URI where the file needs to be exported.',
+  )
+  destination_uri_group.add_argument(
+      '--gcs-uri',
       type=str,
       help=(
-          'Path to the destination source file to which export has to be done.'
+          'Path to the Google Cloud Storage file to which'
+          ' export has to be done.'
       ),
   )
 
 
-def AddSelectQuery(parser, required=True):
+def AddExportOptions(parser):
   """Adds a --select-query flag to parser.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
-    required: Whether or not --select-query is required.
   """
-  parser.add_argument(
+  export_options_group = parser.add_group(
+      mutex=True, required=True, help='Export options for the cluster.'
+  )
+  csv_export_options_group = export_options_group.add_group(
+      help='CSV export options for the cluster.'
+  )
+  csv_export_options_group.add_argument(
+      '--csv',
+      required=True,
+      action='store_true',
+      help='Specifies destination file type.',
+  )
+  csv_export_options_group.add_argument(
       '--select-query',
-      required=required,
+      required=True,
       type=str,
+      help='Select query to be used for export.',
+  )
+  csv_export_options_group.add_argument(
+      '--field-delimiter',
+      required=False,
+      type=str,
+      help='Field delimiter to be used for export.',
+  )
+  csv_export_options_group.add_argument(
+      '--escape-character',
+      required=False,
+      type=str,
+      help='Escape character to be used for export.',
+  )
+  csv_export_options_group.add_argument(
+      '--quote-character',
+      required=False,
+      type=str,
+      help='Quote character to be used for export.',
+  )
+  sql_export_options_group = export_options_group.add_group(
+      help='SQL export options for the cluster.'
+  )
+  sql_export_options_group.add_argument(
+      '--sql',
+      required=True,
+      action='store_true',
+      help='Specifies destination file type.',
+  )
+  sql_export_options_group.add_argument(
+      '--schema-only',
+      required=False,
+      action='store_true',
+      help='Export only schema of the database.',
+  )
+  sql_export_options_group.add_argument(
+      '--tables',
+      required=False,
+      type=str,
+      help='Comma-separated list of table names which need to be exported.',
+  )
+  clean_target_options_group = sql_export_options_group.add_group(
+      help='SQL export options to clean target objects.'
+  )
+  clean_target_options_group.add_argument(
+      '--clean-target-objects',
+      required=True,
+      action='store_true',
       help=(
-          'Query specifying the data to be exported.'
+          'If true, output commands to DROP all the dumped database objects'
+          ' prior to outputting the commands for creating them.'
+      ),
+  )
+  clean_target_options_group.add_argument(
+      '--if-exist-target-objects',
+      required=False,
+      action='store_true',
+      help=(
+          "If true, use DROP ... IF EXISTS commands to check for the object's"
+          ' existence before dropping it in clean_target_objects mode.'
       ),
   )

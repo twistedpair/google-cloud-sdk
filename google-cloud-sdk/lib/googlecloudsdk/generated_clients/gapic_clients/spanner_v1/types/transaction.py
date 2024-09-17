@@ -29,6 +29,7 @@ __protobuf__ = proto.module(
         'TransactionOptions',
         'Transaction',
         'TransactionSelector',
+        'MultiplexedSessionPrecommitToken',
     },
 )
 
@@ -632,6 +633,16 @@ class Transaction(proto.Message):
 
             A timestamp in RFC3339 UTC "Zulu" format, accurate to
             nanoseconds. Example: ``"2014-10-02T15:01:23.045123456Z"``.
+        precommit_token (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.MultiplexedSessionPrecommitToken):
+            A precommit token will be included in the response of a
+            BeginTransaction request if the read-write transaction is on
+            a multiplexed session and a mutation_key was specified in
+            the
+            [BeginTransaction][google.spanner.v1.BeginTransactionRequest].
+            The precommit token with the highest sequence number from
+            this transaction attempt should be passed to the
+            [Commit][google.spanner.v1.Spanner.Commit] request for this
+            transaction.
     """
 
     id: bytes = proto.Field(
@@ -642,6 +653,11 @@ class Transaction(proto.Message):
         proto.MESSAGE,
         number=2,
         message=timestamp_pb2.Timestamp,
+    )
+    precommit_token: 'MultiplexedSessionPrecommitToken' = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        message='MultiplexedSessionPrecommitToken',
     )
 
 
@@ -699,6 +715,33 @@ class TransactionSelector(proto.Message):
         number=3,
         oneof='selector',
         message='TransactionOptions',
+    )
+
+
+class MultiplexedSessionPrecommitToken(proto.Message):
+    r"""When a read-write transaction is executed on a multiplexed session,
+    this precommit token is sent back to the client as a part of the
+    [Transaction] message in the BeginTransaction response and also as a
+    part of the [ResultSet] and [PartialResultSet] responses.
+
+    Attributes:
+        precommit_token (bytes):
+            Opaque precommit token.
+        seq_num (int):
+            An incrementing seq number is generated on
+            every precommit token that is returned. Clients
+            should remember the precommit token with the
+            highest sequence number from the current
+            transaction attempt.
+    """
+
+    precommit_token: bytes = proto.Field(
+        proto.BYTES,
+        number=1,
+    )
+    seq_num: int = proto.Field(
+        proto.INT32,
+        number=2,
     )
 
 

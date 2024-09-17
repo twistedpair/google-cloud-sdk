@@ -82,7 +82,7 @@ class ParallelstoreV1beta(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Instance.
+      r"""Deletes a single instance.
 
       Args:
         request: (ParallelstoreProjectsLocationsInstancesDeleteRequest) input message
@@ -109,7 +109,7 @@ class ParallelstoreV1beta(base_api.BaseApiClient):
     )
 
     def ExportData(self, request, global_params=None):
-      r"""ExportData copies data from Parallelstore to Cloud Storage.
+      r"""Copies data from Parallelstore to Cloud Storage.
 
       Args:
         request: (ParallelstoreProjectsLocationsInstancesExportDataRequest) input message
@@ -136,7 +136,7 @@ class ParallelstoreV1beta(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Instance.
+      r"""Gets details of a single instance.
 
       Args:
         request: (ParallelstoreProjectsLocationsInstancesGetRequest) input message
@@ -163,7 +163,7 @@ class ParallelstoreV1beta(base_api.BaseApiClient):
     )
 
     def ImportData(self, request, global_params=None):
-      r"""ImportData copies data from Cloud Storage to Parallelstore.
+      r"""Copies data from Cloud Storage to Parallelstore.
 
       Args:
         request: (ParallelstoreProjectsLocationsInstancesImportDataRequest) input message
@@ -190,7 +190,7 @@ class ParallelstoreV1beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Instances in a given project and location.
+      r"""Lists all instances in a given project and location.
 
       Args:
         request: (ParallelstoreProjectsLocationsInstancesListRequest) input message
@@ -217,7 +217,7 @@ class ParallelstoreV1beta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Instance.
+      r"""Updates the parameters of a single instance.
 
       Args:
         request: (ParallelstoreProjectsLocationsInstancesPatchRequest) input message

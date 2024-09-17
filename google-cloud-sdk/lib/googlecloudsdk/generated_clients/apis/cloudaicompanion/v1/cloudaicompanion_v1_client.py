@@ -45,6 +45,7 @@ class CloudaicompanionV1(base_api.BaseApiClient):
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+    self.v1 = self.V1Service(self)
 
   class ProjectsLocationsCodeRepositoryIndexesRepositoryGroupsService(base_api.BaseApiService):
     """Service class for the projects_locations_codeRepositoryIndexes_repositoryGroups resource."""
@@ -751,5 +752,68 @@ class CloudaicompanionV1(base_api.BaseApiClient):
         request_field='checkStatusRequest',
         request_type_name='CloudaicompanionProjectsCheckStatusRequest',
         response_type_name='CheckStatusResponse',
+        supports_download=False,
+    )
+
+    def SelfAssignLicense(self, request, global_params=None):
+      r"""Assigns a license to the user, if available.
+
+      Args:
+        request: (CloudaicompanionProjectsSelfAssignLicenseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SelfAssignLicenseResponse) The response message.
+      """
+      config = self.GetMethodConfig('SelfAssignLicense')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SelfAssignLicense.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}:selfAssignLicense',
+        http_method='POST',
+        method_id='cloudaicompanion.projects.selfAssignLicense',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}:selfAssignLicense',
+        request_field='selfAssignLicenseRequest',
+        request_type_name='CloudaicompanionProjectsSelfAssignLicenseRequest',
+        response_type_name='SelfAssignLicenseResponse',
+        supports_download=False,
+    )
+
+  class V1Service(base_api.BaseApiService):
+    """Service class for the v1 resource."""
+
+    _NAME = 'v1'
+
+    def __init__(self, client):
+      super(CloudaicompanionV1.V1Service, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def CheckUserLicense(self, request, global_params=None):
+      r"""Checks if the user has a license for the given experience.
+
+      Args:
+        request: (CheckUserLicenseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckUserLicenseResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckUserLicense')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckUserLicense.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='cloudaicompanion.checkUserLicense',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v1:checkUserLicense',
+        request_field='<request>',
+        request_type_name='CheckUserLicenseRequest',
+        response_type_name='CheckUserLicenseResponse',
         supports_download=False,
     )

@@ -63,7 +63,7 @@ properties:
       A list of authorization HTTP rules to match against the incoming request.
       A policy match occurs when at least one HTTP rule matches the request or
       when no HTTP rules are specified in the policy. At least one HTTP Rule is
-      required for Allow or Deny Action.
+      required for Allow or Deny Action. Limited to 5 rules.
     type: array
     items:
       $ref: AuthzPolicyAuthzRule.yaml

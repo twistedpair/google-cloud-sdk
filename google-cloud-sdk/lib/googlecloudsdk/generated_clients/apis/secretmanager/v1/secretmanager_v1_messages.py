@@ -1531,7 +1531,7 @@ class Topic(_messages.Message):
   events occur on this secret.
 
   Fields:
-    name: Required. The resource name of the Pub/Sub topic that will be
+    name: Identifier. The resource name of the Pub/Sub topic that will be
       published to, in the following format: `projects/*/topics/*`. For
       publication to succeed, the Secret Manager service agent must have the
       `pubsub.topic.publish` permission on the topic. The Pub/Sub Publisher

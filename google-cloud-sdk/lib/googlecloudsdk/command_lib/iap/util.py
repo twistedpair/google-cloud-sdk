@@ -424,8 +424,8 @@ def ParseIapIamResource(release_track, args):
     return iap_api.BackendServices(release_track, project, None)
   elif (
       release_track == base.ReleaseTrack.ALPHA
-      and args.resource_type == FORWARDING_RULE_RESOURCE_TYPE
-  ):
+      or release_track == base.ReleaseTrack.BETA
+  ) and (args.resource_type == FORWARDING_RULE_RESOURCE_TYPE):
     if args.version:
       raise calliope_exc.InvalidArgumentException(
           '--version',
@@ -564,8 +564,10 @@ def ParseIapSettingsResource(release_track, args):
         if args.service:
           path.extend(['services', args.service])
         return iap_api.IapSettingsResource(release_track, '/'.join(path))
-      elif (release_track == base.ReleaseTrack.ALPHA and
-            args.resource_type == FORWARDING_RULE_RESOURCE_TYPE):
+      elif (
+          release_track == base.ReleaseTrack.ALPHA
+          or release_track == base.ReleaseTrack.BETA
+      ) and (args.resource_type == FORWARDING_RULE_RESOURCE_TYPE):
         path = ['projects', args.project, 'iap_web']
         if args.version:
           raise calliope_exc.InvalidArgumentException(

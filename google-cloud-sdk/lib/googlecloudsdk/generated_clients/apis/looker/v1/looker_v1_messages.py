@@ -441,6 +441,8 @@ class Instance(_messages.Message):
     encryptionConfig: Encryption configuration (CMEK). Only set if CMEK has
       been enabled on the instance.
     fipsEnabled: Optional. Whether FIPS is enabled on the Looker instance.
+    geminiEnabled: Optional. Whether Gemini feature is enabled on the Looker
+      instance or not.
     ingressPrivateIp: Output only. Private Ingress IP (IPv4).
     ingressPublicIp: Output only. Public Ingress IP (IPv4).
     lastDenyMaintenancePeriod: Output only. Last computed maintenance denial
@@ -521,25 +523,26 @@ class Instance(_messages.Message):
   egressPublicIp = _messages.StringField(6)
   encryptionConfig = _messages.MessageField('EncryptionConfig', 7)
   fipsEnabled = _messages.BooleanField(8)
-  ingressPrivateIp = _messages.StringField(9)
-  ingressPublicIp = _messages.StringField(10)
-  lastDenyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 11)
-  linkedLspProjectNumber = _messages.IntegerField(12)
-  lookerUri = _messages.StringField(13)
-  lookerVersion = _messages.StringField(14)
-  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 15)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 16)
-  name = _messages.StringField(17)
-  oauthConfig = _messages.MessageField('OAuthConfig', 18)
-  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 19)
-  privateIpEnabled = _messages.BooleanField(20)
-  pscConfig = _messages.MessageField('PscConfig', 21)
-  pscEnabled = _messages.BooleanField(22)
-  publicIpEnabled = _messages.BooleanField(23)
-  reservedRange = _messages.StringField(24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  updateTime = _messages.StringField(26)
-  userMetadata = _messages.MessageField('UserMetadata', 27)
+  geminiEnabled = _messages.BooleanField(9)
+  ingressPrivateIp = _messages.StringField(10)
+  ingressPublicIp = _messages.StringField(11)
+  lastDenyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 12)
+  linkedLspProjectNumber = _messages.IntegerField(13)
+  lookerUri = _messages.StringField(14)
+  lookerVersion = _messages.StringField(15)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 16)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 17)
+  name = _messages.StringField(18)
+  oauthConfig = _messages.MessageField('OAuthConfig', 19)
+  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 20)
+  privateIpEnabled = _messages.BooleanField(21)
+  pscConfig = _messages.MessageField('PscConfig', 22)
+  pscEnabled = _messages.BooleanField(23)
+  publicIpEnabled = _messages.BooleanField(24)
+  reservedRange = _messages.StringField(25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  updateTime = _messages.StringField(27)
+  userMetadata = _messages.MessageField('UserMetadata', 28)
 
 
 class ListInstancesResponse(_messages.Message):

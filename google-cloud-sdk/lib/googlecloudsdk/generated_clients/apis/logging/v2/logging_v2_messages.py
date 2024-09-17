@@ -7717,6 +7717,7 @@ class MetricDescriptorMetadata(_messages.Message):
   Enums:
     LaunchStageValueValuesEnum: Deprecated. Must use the
       MetricDescriptor.launch_stage instead.
+    TimeSeriesResourceHierarchyLevelValueListEntryValuesEnum:
 
   Fields:
     ingestDelay: The delay of data points caused by ingestion. Data points
@@ -7728,6 +7729,8 @@ class MetricDescriptorMetadata(_messages.Message):
       are written periodically, consecutive data points are stored at this
       time interval, excluding data loss due to errors. Metrics with a higher
       granularity have a smaller sampling period.
+    timeSeriesResourceHierarchyLevel: The scope of the timeseries data of the
+      metric.
   """
 
   class LaunchStageValueValuesEnum(_messages.Enum):
@@ -7774,9 +7777,25 @@ class MetricDescriptorMetadata(_messages.Message):
     GA = 6
     DEPRECATED = 7
 
+  class TimeSeriesResourceHierarchyLevelValueListEntryValuesEnum(_messages.Enum):
+    r"""TimeSeriesResourceHierarchyLevelValueListEntryValuesEnum enum type.
+
+    Values:
+      TIME_SERIES_RESOURCE_HIERARCHY_LEVEL_UNSPECIFIED: Do not use this
+        default value.
+      PROJECT: Scopes a metric to a project.
+      ORGANIZATION: Scopes a metric to an organization.
+      FOLDER: Scopes a metric to a folder.
+    """
+    TIME_SERIES_RESOURCE_HIERARCHY_LEVEL_UNSPECIFIED = 0
+    PROJECT = 1
+    ORGANIZATION = 2
+    FOLDER = 3
+
   ingestDelay = _messages.StringField(1)
   launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 2)
   samplePeriod = _messages.StringField(3)
+  timeSeriesResourceHierarchyLevel = _messages.EnumField('TimeSeriesResourceHierarchyLevelValueListEntryValuesEnum', 4, repeated=True)
 
 
 class MonitoredResource(_messages.Message):
@@ -8312,13 +8331,41 @@ class QueryDataLocalRequest(_messages.Message):
   r"""The request message for QueryDataLocal. This is identical to
   QueryDataRequest except for the associated resources.
 
+  Messages:
+    LabelsValue: Optional. A set of labels to be propagated to the BigQuery
+      Job. If a resource generated the query, best practice is to provide
+      sufficient labels to identify the resource. For example, alerting
+      queries apply the label goog-alert-policy-id=12345678.Label keys and
+      values will be visible to customers in BigQuery's
+      INFORMATION_SCHEMA.JOBS table.The key goog-oa-client-id is reserved and
+      should not be set. If set, the label's value will be silently
+      overwritten.FORMATTING: * BigQuery key and label values can be no longer
+      than 63 characters. They can only contain lowercase letters, numeric
+      characters, underscores and dashes. Spaces are not allowed.
+
   Fields:
     clientId: Optional. An identifier for the client who sent this query. This
       should be the same (or one of a small number of values) for all queries
-      sent by a given client such as Alerting or Dashboards. It is ultimately
-      propagated to metric labels in Monarch.
+      sent by a given client such as "alerting" or "dashboard". It is
+      propagated to metric labels in Monarch and becomes the value of the
+      label goog-oa-client-id in the BigQuery Job. Best practice is for all
+      clients to set this field. If not set, then "unknown-client" will be
+      used.This value will be visible in BigQuery's INFORMATION_SCHEMA.JOBS
+      table.FORMATTING: * BigQuery label values can be no longer than 63
+      characters. They can only contain lowercase letters, numeric characters,
+      underscores and dashes. Spaces are not allowed.
     disableQueryCaching: Optional. If set to true, turns off all query caching
       on both the Log Analytics and BigQuery sides.
+    labels: Optional. A set of labels to be propagated to the BigQuery Job. If
+      a resource generated the query, best practice is to provide sufficient
+      labels to identify the resource. For example, alerting queries apply the
+      label goog-alert-policy-id=12345678.Label keys and values will be
+      visible to customers in BigQuery's INFORMATION_SCHEMA.JOBS table.The key
+      goog-oa-client-id is reserved and should not be set. If set, the label's
+      value will be silently overwritten.FORMATTING: * BigQuery key and label
+      values can be no longer than 63 characters. They can only contain
+      lowercase letters, numeric characters, underscores and dashes. Spaces
+      are not allowed.
     parent: Required. The project in which the query will be run. The calling
       user must have the bigquery.jobs.create and bigquery.jobs.get
       permissions in this project.For example: "projects/PROJECT_ID"
@@ -8327,11 +8374,45 @@ class QueryDataLocalRequest(_messages.Message):
       job if this duration is exceeded. If not set, the default is 5 minutes.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. A set of labels to be propagated to the BigQuery Job. If a
+    resource generated the query, best practice is to provide sufficient
+    labels to identify the resource. For example, alerting queries apply the
+    label goog-alert-policy-id=12345678.Label keys and values will be visible
+    to customers in BigQuery's INFORMATION_SCHEMA.JOBS table.The key goog-oa-
+    client-id is reserved and should not be set. If set, the label's value
+    will be silently overwritten.FORMATTING: * BigQuery key and label values
+    can be no longer than 63 characters. They can only contain lowercase
+    letters, numeric characters, underscores and dashes. Spaces are not
+    allowed.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   clientId = _messages.StringField(1)
   disableQueryCaching = _messages.BooleanField(2)
-  parent = _messages.StringField(3)
-  query = _messages.MessageField('AnalyticsQuery', 4)
-  timeout = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 3)
+  parent = _messages.StringField(4)
+  query = _messages.MessageField('AnalyticsQuery', 5)
+  timeout = _messages.StringField(6)
 
 
 class QueryDataRequest(_messages.Message):
@@ -8339,28 +8420,67 @@ class QueryDataRequest(_messages.Message):
 
   Messages:
     LabelsValue: Optional. A set of labels to be propagated to the BigQuery
-      job.
+      Job. If a resource generated the query, best practice is to provide
+      sufficient labels to identify the resource. For example, alerting
+      queries apply the label goog-alert-policy-id=12345678.Label keys and
+      values will be visible to customers in BigQuery's
+      INFORMATION_SCHEMA.JOBS table.The key goog-oa-client-id is reserved and
+      should not be set. If set, the label's value will be silently
+      overwritten.FORMATTING: * BigQuery key and label values can be no longer
+      than 63 characters. They can only contain lowercase letters, numeric
+      characters, underscores and dashes. Spaces are not allowed.
 
   Fields:
     clientId: Optional. An identifier for the client who sent this query. This
       should be the same (or one of a small number of values) for all queries
-      sent by a given client such as Alerting or Dashboards.
+      sent by a given client such as "alerting" or "dashboard". It is
+      propagated to metric labels in Monarch and becomes the value of the
+      label goog-oa-client-id in the BigQuery Job. Best practice is for all
+      clients to set this field. If not set, then "unknown-client" will be
+      used.This value will be visible in BigQuery's INFORMATION_SCHEMA.JOBS
+      table.FORMATTING: * BigQuery label values can be no longer than 63
+      characters. They can only contain lowercase letters, numeric characters,
+      underscores and dashes. Spaces are not allowed.
     disableQueryCaching: Optional. If set to true, turns off all query caching
       on both the Log Analytics and BigQuery sides.
-    labels: Optional. A set of labels to be propagated to the BigQuery job.
+    labels: Optional. A set of labels to be propagated to the BigQuery Job. If
+      a resource generated the query, best practice is to provide sufficient
+      labels to identify the resource. For example, alerting queries apply the
+      label goog-alert-policy-id=12345678.Label keys and values will be
+      visible to customers in BigQuery's INFORMATION_SCHEMA.JOBS table.The key
+      goog-oa-client-id is reserved and should not be set. If set, the label's
+      value will be silently overwritten.FORMATTING: * BigQuery key and label
+      values can be no longer than 63 characters. They can only contain
+      lowercase letters, numeric characters, underscores and dashes. Spaces
+      are not allowed.
     query: Optional. The contents of the query. If this field is populated,
       query_steps will be ignored.
     resourceNames: Required. Names of one or more views to run a SQL
       query.Example: projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BU
       CKET_ID]/views/[VIEW_ID]Requires appropriate permissions on each
-      resource such as 'logging.views.access' on log view resources.
+      resource, such as 'logging.views.access' on log view
+      resources.Alternatively, may be the name of a single project from which
+      a slot reservation should be used. In this case, the SQL query is run
+      against customer owned datasets. Any linked dataset referenced by the
+      corresponding log view in the SQL query requires the
+      logging.buckets.listLinks permission on the bucket owning the
+      view.Example: projects/[PROJECT_ID]
     timeout: Optional. The timeout for the query. BigQuery will terminate the
       job if this duration is exceeded. If not set, the default is 5 minutes.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. A set of labels to be propagated to the BigQuery job.
+    r"""Optional. A set of labels to be propagated to the BigQuery Job. If a
+    resource generated the query, best practice is to provide sufficient
+    labels to identify the resource. For example, alerting queries apply the
+    label goog-alert-policy-id=12345678.Label keys and values will be visible
+    to customers in BigQuery's INFORMATION_SCHEMA.JOBS table.The key goog-oa-
+    client-id is reserved and should not be set. If set, the label's value
+    will be silently overwritten.FORMATTING: * BigQuery key and label values
+    can be no longer than 63 characters. They can only contain lowercase
+    letters, numeric characters, underscores and dashes. Spaces are not
+    allowed.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

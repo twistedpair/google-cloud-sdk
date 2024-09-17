@@ -14,7 +14,7 @@
 # limitations under the License.
 """Utilities for flags for `gcloud notebook-executor` commands."""
 
-
+from googlecloudsdk.api_lib.notebook_executor import executions as executions_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
@@ -27,6 +27,32 @@ def GetRegionAttributeConfig():
       name='region',
       help_text='Cloud region for the {resource}.',
   )
+
+
+def AddExecutionResourceArg(parser, verb):
+  """Add a resource argument for an execution to the parser.
+
+  Args:
+    parser: argparse parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+
+  def GetExecutionResourceSpec(resource_name='notebook execution job'):
+    return concepts.ResourceSpec(
+        'aiplatform.projects.locations.notebookExecutionJobs',
+        resource_name=resource_name,
+        projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+        locationsId=GetRegionAttributeConfig(),
+    )
+
+  concept_parsers.ConceptParser.ForResource(
+      'execution',
+      GetExecutionResourceSpec(),
+      'Unique name of the execution {}. This was optionally provided by setting'
+      ' --execution-job-id in the create execution command or was'
+      ' system-generated if unspecified.'.format(verb),
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddDataformRepositoryResourceArg(parser):
@@ -278,3 +304,19 @@ def AddKmsKeyResourceArg(parser, help_text):
       required=False,
   ).AddToParser(parser)
 
+
+def AddDeleteExecutionFlags(parser):
+  """Adds flags for deleting an execution to the parser."""
+  AddExecutionResourceArg(parser, 'to delete')
+  base.ASYNC_FLAG.AddToParser(parser)
+
+
+def AddDescribeExecutionFlags(parser):
+  """Adds flags for describing an execution to the parser."""
+  AddExecutionResourceArg(parser, 'to describe')
+
+
+def AddListRuntimeTemplatesFlags(parser):
+  """Construct groups and arguments specific to listing runtime templates."""
+  AddRegionResourceArg(parser, 'for which to list all executions')
+  parser.display_info.AddUriFunc(executions_util.GetExecutionUri)

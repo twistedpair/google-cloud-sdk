@@ -101,6 +101,8 @@ class AuditmanagerFoldersLocationsAuditReportsControlReportsFindingsListRequest(
   object.
 
   Fields:
+    filter: Optional. The filters to apply to the findings. See
+      https://google.aip.dev/160 for syntax details.
     pageSize: Optional. The maximum number of resources to return.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
@@ -110,9 +112,10 @@ class AuditmanagerFoldersLocationsAuditReportsControlReportsFindingsListRequest(
       trolId}
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class AuditmanagerFoldersLocationsAuditReportsControlReportsGetRequest(_messages.Message):
@@ -356,6 +359,8 @@ class AuditmanagerProjectsLocationsAuditReportsControlReportsFindingsListRequest
   object.
 
   Fields:
+    filter: Optional. The filters to apply to the findings. See
+      https://google.aip.dev/160 for syntax details.
     pageSize: Optional. The maximum number of resources to return.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
@@ -365,9 +370,10 @@ class AuditmanagerProjectsLocationsAuditReportsControlReportsFindingsListRequest
       trolId}
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class AuditmanagerProjectsLocationsAuditReportsControlReportsGetRequest(_messages.Message):

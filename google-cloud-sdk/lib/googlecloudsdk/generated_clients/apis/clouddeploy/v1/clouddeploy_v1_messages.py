@@ -470,11 +470,15 @@ class AutomationRule(_messages.Message):
       promote a release from the current target to a specified target.
     repairRolloutRule: Optional. The `RepairRolloutRule` will automatically
       repair a failed rollout.
+    timedPromoteReleaseRule: Optional. The `TimedPromoteReleaseRule` will
+      automatically promote a release from the current target(s) to the
+      specified target(s) on a configured schedule.
   """
 
   advanceRolloutRule = _messages.MessageField('AdvanceRolloutRule', 1)
   promoteReleaseRule = _messages.MessageField('PromoteReleaseRule', 2)
   repairRolloutRule = _messages.MessageField('RepairRolloutRule', 3)
+  timedPromoteReleaseRule = _messages.MessageField('TimedPromoteReleaseRule', 4)
 
 
 class AutomationRuleCondition(_messages.Message):
@@ -528,6 +532,8 @@ class AutomationRun(_messages.Message):
     targetId: Output only. The ID of the target that represents the promotion
       stage that initiates the `AutomationRun`. The value of this field is the
       last segment of a target name.
+    timedPromoteReleaseOperation: Output only. Promotes a release to a
+      specified 'Target' as defined in a Timed Promote Release rule.
     updateTime: Output only. Time at which the automationRun was updated.
     waitUntilTime: Output only. Earliest time the `AutomationRun` will attempt
       to resume. Wait-time is configured by `wait` in automation rule.
@@ -568,8 +574,9 @@ class AutomationRun(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 13)
   stateDescription = _messages.StringField(14)
   targetId = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
-  waitUntilTime = _messages.StringField(17)
+  timedPromoteReleaseOperation = _messages.MessageField('TimedPromoteReleaseOperation', 16)
+  updateTime = _messages.StringField(17)
+  waitUntilTime = _messages.StringField(18)
 
 
 class AutomationRunEvent(_messages.Message):
@@ -3202,6 +3209,7 @@ class Empty(_messages.Message):
   """
 
 
+
 class ExecutionConfig(_messages.Message):
   r"""Configuration of the environment to use when calling Skaffold.
 
@@ -3838,10 +3846,9 @@ class MultiTarget(_messages.Message):
 
 
 class OneTimeWindow(_messages.Message):
-  r"""One-time window within which actions are restricted.
-
-  For example, blocking actions over New Year's Eve from December 31st at 5pm to
-  January 1st at 9am.
+  r"""One-time window within which actions are restricted. For example,
+  blocking actions over New Year's Eve from December 31st at 5pm to January
+  1st at 9am.
 
   Fields:
     endDate: Required. End date.
@@ -5649,7 +5656,6 @@ class RolloutRestriction(_messages.Message):
       ROLLBACK: Rollback a rollout.
       TERMINATE_JOBRUN: Terminate a jobrun.
     """
-
     ROLLOUT_ACTIONS_UNSPECIFIED = 0
     ADVANCE = 1
     APPROVE = 2
@@ -5669,18 +5675,13 @@ class RolloutRestriction(_messages.Message):
         manually via a gcloud create command.
       DEPLOY_AUTOMATION: Automated action by Cloud Deploy.
     """
-
     INVOKER_UNSPECIFIED = 0
     USER = 1
     DEPLOY_AUTOMATION = 2
 
-  actions = _messages.EnumField(
-      'ActionsValueListEntryValuesEnum', 1, repeated=True
-  )
+  actions = _messages.EnumField('ActionsValueListEntryValuesEnum', 1, repeated=True)
   id = _messages.StringField(2)
-  invokers = _messages.EnumField(
-      'InvokersValueListEntryValuesEnum', 3, repeated=True
-  )
+  invokers = _messages.EnumField('InvokersValueListEntryValuesEnum', 3, repeated=True)
   timeWindows = _messages.MessageField('TimeWindows', 4)
 
 
@@ -6710,6 +6711,55 @@ class TimeWindows(_messages.Message):
   weeklyWindows = _messages.MessageField('WeeklyWindow', 3, repeated=True)
 
 
+class TimedPromoteReleaseOperation(_messages.Message):
+  r"""Contains the information of an automated timed promote-release
+  operation.
+
+  Fields:
+    phase: Output only. The starting phase of the rollout created by this
+      operation.
+    release: Output only. The name of the release to be promoted.
+    targetId: Output only. The ID of the target that represents the promotion
+      stage to which the release will be promoted. The value of this field is
+      the last segment of a target name.
+  """
+
+  phase = _messages.StringField(1)
+  release = _messages.StringField(2)
+  targetId = _messages.StringField(3)
+
+
+class TimedPromoteReleaseRule(_messages.Message):
+  r"""The `TimedPromoteReleaseRule` will automatically promote a release from
+  the current target(s) to the specified target(s) on a configured schedule.
+
+  Fields:
+    condition: Output only. Information around the state of the Automation
+      rule.
+    destinationPhase: Optional. The starting phase of the rollout created by
+      this rule. Default to the first phase.
+    destinationTargetId: Optional. The ID of the stage in the pipeline to
+      which this `Release` is deploying. If unspecified, default it to the
+      next stage in the promotion flow. The value of this field could be one
+      of the following: * The last segment of a target name * "@next", the
+      next target in the promotion sequence
+    id: Required. ID of the rule. This ID must be unique in the `Automation`
+      resource to which this rule belongs. The format is
+      `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`.
+    schedule: Required. Schedule in crontab format. e.g. "0 9 * * 1" for every
+      Monday at 9am.
+    timeZone: Required. The time zone in IANA format [IANA Time Zone
+      Database](https://www.iana.org/time-zones) (e.g. America/New_York).
+  """
+
+  condition = _messages.MessageField('AutomationRuleCondition', 1)
+  destinationPhase = _messages.StringField(2)
+  destinationTargetId = _messages.StringField(3)
+  id = _messages.StringField(4)
+  schedule = _messages.StringField(5)
+  timeZone = _messages.StringField(6)
+
+
 class VerifyJob(_messages.Message):
   r"""A verify Job."""
 
@@ -6771,8 +6821,8 @@ class VerifyJobRun(_messages.Message):
 
 class WeeklyWindow(_messages.Message):
   r"""Weekly windows. For example, blocking actions every Saturday and Sunday.
-
-  Another example would be blocking actions every weekday from 5pm to midnight.
+  Another example would be blocking actions every weekday from 5pm to
+  midnight.
 
   Enums:
     DaysOfWeekValueListEntryValuesEnum:
@@ -6803,7 +6853,6 @@ class WeeklyWindow(_messages.Message):
       SATURDAY: Saturday
       SUNDAY: Sunday
     """
-
     DAY_OF_WEEK_UNSPECIFIED = 0
     MONDAY = 1
     TUESDAY = 2
@@ -6813,9 +6862,7 @@ class WeeklyWindow(_messages.Message):
     SATURDAY = 6
     SUNDAY = 7
 
-  daysOfWeek = _messages.EnumField(
-      'DaysOfWeekValueListEntryValuesEnum', 1, repeated=True
-  )
+  daysOfWeek = _messages.EnumField('DaysOfWeekValueListEntryValuesEnum', 1, repeated=True)
   endTime = _messages.MessageField('TimeOfDay', 2)
   startTime = _messages.MessageField('TimeOfDay', 3)
 

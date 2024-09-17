@@ -18,6 +18,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+from googlecloudsdk.generated_clients.apis.recaptchaenterprise.v1 import recaptchaenterprise_v1_messages as messages
 
 
 def SanitizePlatformSettings(unused_ref, args, request):
@@ -25,15 +26,26 @@ def SanitizePlatformSettings(unused_ref, args, request):
   if args.android:
     request.googleCloudRecaptchaenterpriseV1Key.iosSettings = None
     request.googleCloudRecaptchaenterpriseV1Key.webSettings = None
+    request.googleCloudRecaptchaenterpriseV1Key.expressSettings = None
   elif args.ios:
     request.googleCloudRecaptchaenterpriseV1Key.androidSettings = None
     request.googleCloudRecaptchaenterpriseV1Key.webSettings = None
+    request.googleCloudRecaptchaenterpriseV1Key.expressSettings = None
   elif args.web:
     request.googleCloudRecaptchaenterpriseV1Key.androidSettings = None
     request.googleCloudRecaptchaenterpriseV1Key.iosSettings = None
+    request.googleCloudRecaptchaenterpriseV1Key.expressSettings = None
+  elif args.express:
+    request.googleCloudRecaptchaenterpriseV1Key.expressSettings = (
+        messages.GoogleCloudRecaptchaenterpriseV1ExpressKeySettings()
+    )
+    request.googleCloudRecaptchaenterpriseV1Key.androidSettings = None
+    request.googleCloudRecaptchaenterpriseV1Key.iosSettings = None
+    request.googleCloudRecaptchaenterpriseV1Key.webSettings = None
   else:
     request.googleCloudRecaptchaenterpriseV1Key.androidSettings = None
     request.googleCloudRecaptchaenterpriseV1Key.iosSettings = None
     request.googleCloudRecaptchaenterpriseV1Key.webSettings = None
+    request.googleCloudRecaptchaenterpriseV1Key.expressSettings = None
 
   return request

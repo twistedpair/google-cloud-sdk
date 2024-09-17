@@ -757,10 +757,13 @@ class ConnectSettings(_messages.Message):
       GOOGLE_MANAGED_CAS_CA: Google-managed regional CA part of root CA
         hierarchy hosted on Google Cloud's Certificate Authority Service
         (CAS).
+      CUSTOMER_MANAGED_CAS_CA: Customer-managed CA hosted on Google Cloud's
+        Certificate Authority Service (CAS).
     """
     CA_MODE_UNSPECIFIED = 0
     GOOGLE_MANAGED_INTERNAL_CA = 1
     GOOGLE_MANAGED_CAS_CA = 2
+    CUSTOMER_MANAGED_CAS_CA = 3
 
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
@@ -2524,10 +2527,13 @@ class IpConfiguration(_messages.Message):
       GOOGLE_MANAGED_CAS_CA: Google-managed regional CA part of root CA
         hierarchy hosted on Google Cloud's Certificate Authority Service
         (CAS).
+      CUSTOMER_MANAGED_CAS_CA: Customer-managed CA hosted on Google Cloud's
+        Certificate Authority Service (CAS).
     """
     CA_MODE_UNSPECIFIED = 0
     GOOGLE_MANAGED_INTERNAL_CA = 1
     GOOGLE_MANAGED_CAS_CA = 2
+    CUSTOMER_MANAGED_CAS_CA = 3
 
   class SslModeValueValuesEnum(_messages.Enum):
     r"""Specify how SSL/TLS is enforced in database connections. If you must

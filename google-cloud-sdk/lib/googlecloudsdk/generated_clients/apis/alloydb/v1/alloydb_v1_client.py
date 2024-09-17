@@ -871,6 +871,33 @@ class AlloydbV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Upgrade(self, request, global_params=None):
+      r"""Upgrades a single Cluster. Imperative only.
+
+      Args:
+        request: (AlloydbProjectsLocationsClustersUpgradeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Upgrade')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Upgrade.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:upgrade',
+        http_method='PATCH',
+        method_id='alloydb.projects.locations.clusters.upgrade',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:upgrade',
+        request_field='upgradeClusterRequest',
+        request_type_name='AlloydbProjectsLocationsClustersUpgradeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 

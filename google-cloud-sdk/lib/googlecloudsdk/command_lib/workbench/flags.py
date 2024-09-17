@@ -25,6 +25,7 @@ from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.compute.networks import flags as compute_network_flags
 from googlecloudsdk.command_lib.compute.networks.subnets import flags as compute_subnet_flags
 from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.workbench import completers
 from googlecloudsdk.core import properties
@@ -202,6 +203,20 @@ def AddDiagnosticConfigFlags(parser, vm_type):
       required=False)
 
 
+def GetReservationTypeMapper(messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--reservation-type',
+      messages.ReservationAffinity.ConsumeReservationTypeValueValuesEnum,
+      required=False,
+      custom_mappings={
+          'RESERVATION_NONE': 'none',
+          'RESERVATION_ANY': 'any',
+          'RESERVATION_SPECIFIC': 'specific',
+      },
+      help_str='Type of the reservation.',
+  )
+
+
 def AddCreateInstanceFlags(parser):
   """Construct groups and arguments specific to the instance creation."""
   accelerator_choices = [
@@ -214,6 +229,9 @@ def AddCreateInstanceFlags(parser):
   disk_choices = ['PD_STANDARD', 'PD_SSD', 'PD_BALANCED', 'PD_EXTREME']
   encryption_choices = ['GMEK', 'CMEK']
   nic_type_choices = ['VIRTIGO_NET', 'GVNIC']
+  reservation_type_choices = [
+      'none', 'any', 'specific'
+  ]
 
   AddInstanceResource(parser)
   gce_setup_group = parser.add_group(
@@ -427,57 +445,103 @@ def AddCreateInstanceFlags(parser):
 
   network_group = gce_setup_group.add_group(help='Network configs.')
   AddNetworkArgument(
-      ('The name of the VPC that this instance is in. Format: '
-       'projects/`{project_id}`/global/networks/`{network_id}`.'),
-      network_group)
+      (
+          'The name of the VPC that this instance is in. Format: '
+          'projects/`{project_id}`/global/networks/`{network_id}`.'
+      ),
+      network_group,
+  )
   AddSubnetArgument(
-      ('The name of the subnet that this instance is in. Format: projects/'
-       '`{project_id}`/regions/`{region}`/subnetworks/`{subnetwork_id}`.'),
-      network_group)
+      (
+          'The name of the subnet that this instance is in. Format: projects/'
+          '`{project_id}`/regions/`{region}`/subnetworks/`{subnetwork_id}`.'
+      ),
+      network_group,
+  )
 
   network_group.add_argument(
       '--nic-type',
       help='Type of the network interface card.',
       choices=nic_type_choices,
-      default=None)
+      default=None,
+  )
 
   gce_setup_group.add_argument(
       '--disable-public-ip',
       action='store_true',
       dest='disable_public_ip',
       help="""\
-  If specified, no public IP will be assigned to this instance.""")
+  If specified, no public IP will be assigned to this instance.""",
+  )
   gce_setup_group.add_argument(
       '--enable-ip-forwarding',
       action='store_true',
       dest='enable_ip_forwarding',
       help="""\
-  If specified, IP forwarding will be enabled for this instance.""")
+  If specified, IP forwarding will be enabled for this instance.""",
+  )
   parser.add_argument(
       '--disable-proxy-access',
       action='store_true',
       dest='disable_proxy_access',
       help="""\
-  If true, the notebook instance will not register with the proxy.""")
+  If true, the notebook instance will not register with the proxy.""",
+  )
 
   gce_setup_group.add_argument(
       '--metadata',
       help='Custom metadata to apply to this instance.',
       type=arg_parsers.ArgDict(),
-      metavar='KEY=VALUE')
+      metavar='KEY=VALUE',
+  )
 
   gce_setup_group.add_argument(
       '--tags',
       metavar='TAGS',
-      help=('Tags to apply to this instance.'),
-      type=arg_parsers.ArgList())
+      help='Tags to apply to this instance.',
+      type=arg_parsers.ArgList(),
+  )
+
+  reservation_group = gce_setup_group.add_group(
+      help='Reservation configs.', hidden=True
+  )
+  reservation_group.add_argument(
+      '--reservation-type',
+      help='Type of the reservation.',
+      choices=reservation_type_choices,
+      default='any',
+  )
+  reservation_group.add_argument(
+      '--reservation-key',
+      help=(
+          'The label key of a reservation resource. To target a'
+          ' specific reservation by name, use'
+          ' compute.googleapis.com/reservation-name as the key and specify the'
+          ' name of your reservation as its value.'
+      ),
+      type=str,
+  )
+  reservation_group.add_argument(
+      '--reservation-values',
+      help=(
+          'The label value of a reservation resource. To target a'
+          ' specific reservation by name, use'
+          ' compute.googleapis.com/reservation-name as the key and specify the'
+          ' name of your reservation as its value.'
+      ),
+      metavar='VALUES',
+      type=arg_parsers.ArgList(),
+  )
 
   parser.add_argument(
       '--labels',
-      help=('Labels to apply to this instance. These can be later modified '
-            'by the setLabels method.'),
+      help=(
+          'Labels to apply to this instance. These can be later modified '
+          'by the setLabels method.'
+      ),
       type=arg_parsers.ArgDict(),
-      metavar='KEY=VALUE')
+      metavar='KEY=VALUE',
+  )
 
   parser.add_argument(
       '--instance-owners',

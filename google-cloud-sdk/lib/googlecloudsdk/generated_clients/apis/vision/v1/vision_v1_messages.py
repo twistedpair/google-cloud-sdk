@@ -1513,7 +1513,10 @@ class GoogleCloudVisionV1p1beta1FaceAnnotation(_messages.Message):
 
 
 class GoogleCloudVisionV1p1beta1FaceAnnotationLandmark(_messages.Message):
-  r"""A face-specific landmark (for example, a face feature).
+  r"""A face-specific landmark (for example, a face feature). Landmark
+  positions may fall outside the bounds of the image if the face is near one
+  or more edges of the image. Therefore it is NOT guaranteed that `0 <= x <
+  width` or `0 <= y < height`.
 
   Enums:
     TypeValueValuesEnum: Face landmark type.
@@ -2779,7 +2782,10 @@ class GoogleCloudVisionV1p2beta1FaceAnnotation(_messages.Message):
 
 
 class GoogleCloudVisionV1p2beta1FaceAnnotationLandmark(_messages.Message):
-  r"""A face-specific landmark (for example, a face feature).
+  r"""A face-specific landmark (for example, a face feature). Landmark
+  positions may fall outside the bounds of the image if the face is near one
+  or more edges of the image. Therefore it is NOT guaranteed that `0 <= x <
+  width` or `0 <= y < height`.
 
   Enums:
     TypeValueValuesEnum: Face landmark type.
@@ -4085,7 +4091,10 @@ class GoogleCloudVisionV1p3beta1FaceAnnotation(_messages.Message):
 
 
 class GoogleCloudVisionV1p3beta1FaceAnnotationLandmark(_messages.Message):
-  r"""A face-specific landmark (for example, a face feature).
+  r"""A face-specific landmark (for example, a face feature). Landmark
+  positions may fall outside the bounds of the image if the face is near one
+  or more edges of the image. Therefore it is NOT guaranteed that `0 <= x <
+  width` or `0 <= y < height`.
 
   Enums:
     TypeValueValuesEnum: Face landmark type.
@@ -5475,7 +5484,10 @@ class GoogleCloudVisionV1p4beta1FaceAnnotation(_messages.Message):
 
 
 class GoogleCloudVisionV1p4beta1FaceAnnotationLandmark(_messages.Message):
-  r"""A face-specific landmark (for example, a face feature).
+  r"""A face-specific landmark (for example, a face feature). Landmark
+  positions may fall outside the bounds of the image if the face is near one
+  or more edges of the image. Therefore it is NOT guaranteed that `0 <= x <
+  width` or `0 <= y < height`.
 
   Enums:
     TypeValueValuesEnum: Face landmark type.
@@ -6590,7 +6602,10 @@ class KeyValue(_messages.Message):
 
 
 class Landmark(_messages.Message):
-  r"""A face-specific landmark (for example, a face feature).
+  r"""A face-specific landmark (for example, a face feature). Landmark
+  positions may fall outside the bounds of the image if the face is near one
+  or more edges of the image. Therefore it is NOT guaranteed that `0 <= x <
+  width` or `0 <= y < height`.
 
   Enums:
     TypeValueValuesEnum: Face landmark type.

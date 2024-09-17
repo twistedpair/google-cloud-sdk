@@ -553,9 +553,6 @@ class FirebasedataconnectProjectsLocationsServicesConnectorsPatchRequest(_messag
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    revisionId: Optional. The ID to use for the connector revision, which will
-      become the final component of the connector revision's resource name. If
-      not specified, the connector revision ID will be auto-generated.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Connector resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -569,9 +566,8 @@ class FirebasedataconnectProjectsLocationsServicesConnectorsPatchRequest(_messag
   connector = _messages.MessageField('Connector', 2)
   name = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
-  revisionId = _messages.StringField(5)
-  updateMask = _messages.StringField(6)
-  validateOnly = _messages.BooleanField(7)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class FirebasedataconnectProjectsLocationsServicesCreateRequest(_messages.Message):
@@ -1430,10 +1426,16 @@ class PostgreSql(_messages.Message):
         matches the schema exactly. Surface any discrepancies as
         `FAILED_PRECONDITION` with an `IncompatibleSqlSchemaError` error
         detail.
+      COMPATIBLE: Connect to the SQL database and validate that the SQL DDL
+        has all the SQL resources used in the given Firebase Data Connect
+        Schema. Surface any missing resources as `FAILED_PRECONDITION` with an
+        `IncompatibleSqlSchemaError` error detail. Succeed even if there are
+        unknown tables and columns.
     """
     SQL_SCHEMA_VALIDATION_UNSPECIFIED = 0
     NONE = 1
     STRICT = 2
+    COMPATIBLE = 3
 
   cloudSql = _messages.MessageField('CloudSqlInstance', 1)
   database = _messages.StringField(2)
@@ -1450,6 +1452,7 @@ class Schema(_messages.Message):
   Fields:
     annotations: Optional. Stores small amounts of arbitrary data.
     createTime: Output only. [Output only] Create time stamp.
+    datasources: Required. The data sources linked in the schema.
     displayName: Optional. Mutable human-readable name. 63 character limit.
     etag: Output only. This checksum is computed by the server based on the
       value of other fields, and may be sent on update and delete requests to
@@ -1518,15 +1521,16 @@ class Schema(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   createTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  primaryDatasource = _messages.MessageField('Datasource', 7)
-  reconciling = _messages.BooleanField(8)
-  source = _messages.MessageField('Source', 9)
-  uid = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  datasources = _messages.MessageField('Datasource', 3, repeated=True)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  primaryDatasource = _messages.MessageField('Datasource', 8)
+  reconciling = _messages.BooleanField(9)
+  source = _messages.MessageField('Source', 10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class Service(_messages.Message):

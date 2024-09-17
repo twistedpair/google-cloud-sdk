@@ -69,6 +69,7 @@ BucketDisplayTitlesAndDefaults = collections.namedtuple(
         'per_object_retention',
         'retention_policy',
         'default_event_based_hold',
+        'ip_filter_config',
         'labels',
         'default_kms_key',
         'creation_time',

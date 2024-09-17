@@ -35,6 +35,10 @@ class Candidate(_messages.Message):
     finishReason: Optional. Output only. The reason why the model stopped
       generating tokens. If empty, the model has not stopped generating the
       tokens.
+    groundingMetadata: Output only. Grounding metadata for model-generated
+      candidate. Grounding sources returned by extensions are checked against
+      the model generated candidate, return the grounding sources that are
+      used to generate the candidate.
     index: Output only. Index of the candidate in the list of candidates.
     safetyRatings: List of ratings for the safety of a response candidate.
       There is at most one rating per category.
@@ -64,9 +68,10 @@ class Candidate(_messages.Message):
   citationMetadata = _messages.MessageField('CitationMetadata', 1)
   content = _messages.MessageField('Content', 2)
   finishReason = _messages.EnumField('FinishReasonValueValuesEnum', 3)
-  index = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  safetyRatings = _messages.MessageField('SafetyRating', 5, repeated=True)
-  tokenCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  groundingMetadata = _messages.MessageField('GroundingMetadata', 4)
+  index = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  safetyRatings = _messages.MessageField('SafetyRating', 6, repeated=True)
+  tokenCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class Citation(_messages.Message):
@@ -136,6 +141,59 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class GroundingChunk(_messages.Message):
+  r"""Grounding chunk.
+
+  Fields:
+    retrievedContext: Grounding chunk from context retrieved by the retrieval
+      tools.
+    web: Grounding chunk from the web.
+  """
+
+  retrievedContext = _messages.MessageField('RetrievedContext', 1)
+  web = _messages.MessageField('Web', 2)
+
+
+class GroundingMetadata(_messages.Message):
+  r"""Grounding metadata for model-generated candidate. Grounding sources
+  returned by extensions are checked against the model generated candidate,
+  return the grounding sources that are used to generate the candidate.
+
+  Fields:
+    groundingChunks: List of supporting references retrieved from specified
+      grounding source.
+    groundingSupports: Optional. List of grounding support.
+    searchEntryPoint: Optional. Google search entry for the following-up web
+      searches.
+    webSearchQueries: Optional. Web search queries for the following-up web
+      search.
+  """
+
+  groundingChunks = _messages.MessageField('GroundingChunk', 1, repeated=True)
+  groundingSupports = _messages.MessageField('GroundingSupport', 2, repeated=True)
+  searchEntryPoint = _messages.MessageField('SearchEntryPoint', 3)
+  webSearchQueries = _messages.StringField(4, repeated=True)
+
+
+class GroundingSupport(_messages.Message):
+  r"""Grounding support.
+
+  Fields:
+    confidenceScores: Confidence score of the support references. Ranges from
+      0 to 1. 1 is the most confident. This list must have the same size as
+      the grounding_chunk_indices.
+    groundingChunkIndices: A list of indices (into 'grounding_chunk')
+      specifying the citations associated with the claim. For instance [1,3,4]
+      means that grounding_chunk[1], grounding_chunk[3], grounding_chunk[4]
+      are the retrieved content attributed to the claim.
+    segment: Segment of the content this support belongs to.
+  """
+
+  confidenceScores = _messages.FloatField(1, repeated=True, variant=_messages.Variant.FLOAT)
+  groundingChunkIndices = _messages.IntegerField(2, repeated=True, variant=_messages.Variant.INT32)
+  segment = _messages.MessageField('Segment', 3)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -406,6 +464,18 @@ class Part(_messages.Message):
   text = _messages.StringField(1)
 
 
+class RetrievedContext(_messages.Message):
+  r"""Chunk from context retrieved by the retrieval tools.
+
+  Fields:
+    title: Title of the attribution.
+    uri: URI reference of the attribution.
+  """
+
+  title = _messages.StringField(1)
+  uri = _messages.StringField(2)
+
+
 class SafetyRating(_messages.Message):
   r"""Safety rating for a piece of content. The safety rating contains the
   category of harm and the harm probability level in that category for a piece
@@ -504,15 +574,30 @@ class SafetySetting(_messages.Message):
       BLOCK_ONLY_HIGH: Content with NEGLIGIBLE, LOW, and MEDIUM will be
         allowed.
       BLOCK_NONE: All content will be allowed.
+      OFF: Turn off the safety filter.
     """
     HARM_BLOCK_THRESHOLD_UNSPECIFIED = 0
     BLOCK_LOW_AND_ABOVE = 1
     BLOCK_MEDIUM_AND_ABOVE = 2
     BLOCK_ONLY_HIGH = 3
     BLOCK_NONE = 4
+    OFF = 5
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   threshold = _messages.EnumField('ThresholdValueValuesEnum', 2)
+
+
+class SearchEntryPoint(_messages.Message):
+  r"""Google search entry point.
+
+  Fields:
+    renderedContent: Optional. Web content snippet that can be embedded in a
+      web page or an app webview.
+    sdkBlob: Optional. Base64 encoded JSON representing array of tuple.
+  """
+
+  renderedContent = _messages.StringField(1)
+  sdkBlob = _messages.BytesField(2)
 
 
 class SeclmProjectsLocationsGetRequest(_messages.Message):
@@ -717,6 +802,26 @@ class SeclmProjectsLocationsWorkbenchesQueryRequest(_messages.Message):
   workbenchQueryRequest = _messages.MessageField('WorkbenchQueryRequest', 2)
 
 
+class Segment(_messages.Message):
+  r"""Segment of the content.
+
+  Fields:
+    endIndex: Output only. End index in the given Part, measured in bytes.
+      Offset from the start of the Part, exclusive, starting at zero.
+    partIndex: Output only. The index of a Part object within its parent
+      Content object.
+    startIndex: Output only. Start index in the given Part, measured in bytes.
+      Offset from the start of the Part, inclusive, starting at zero.
+    text: Output only. The text corresponding to the segment from the
+      response.
+  """
+
+  endIndex = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  partIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  startIndex = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  text = _messages.StringField(4)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -831,8 +936,20 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class Web(_messages.Message):
+  r"""Chunk from the web.
+
+  Fields:
+    title: Title of the chunk.
+    uri: URI reference of the chunk.
+  """
+
+  title = _messages.StringField(1)
+  uri = _messages.StringField(2)
+
+
 class Workbench(_messages.Message):
-  r"""Message describing Workbench object. Next ID: 9
+  r"""Message describing Workbench object. Next ID: 10
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs.

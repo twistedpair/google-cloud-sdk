@@ -160,8 +160,6 @@ class AwsSourceDetails(_messages.Message):
       generated resource in AWS. These tags will be set in addition to the
       default tags that are set as part of the migration process. The tags
       must not begin with the reserved prefix `m2vm`.
-    networkInsights: Output only. Information about the network coniguration
-      of the source. Only gatherred upon request.
     publicIp: Output only. The source's public IP. All communication initiated
       by this source will originate from this IP.
     state: Output only. State of the source as determined by the health check.
@@ -219,9 +217,8 @@ class AwsSourceDetails(_messages.Message):
   inventorySecurityGroupNames = _messages.StringField(4, repeated=True)
   inventoryTagList = _messages.MessageField('Tag', 5, repeated=True)
   migrationResourcesUserTags = _messages.MessageField('MigrationResourcesUserTagsValue', 6)
-  networkInsights = _messages.MessageField('NetworkInsights', 7)
-  publicIp = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
+  publicIp = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class AwsSourceVmDetails(_messages.Message):
@@ -704,10 +701,6 @@ class CancelCutoverJobRequest(_messages.Message):
   r"""Request message for 'CancelCutoverJob' request."""
 
 
-class CancelDiskMigrationJobRequest(_messages.Message):
-  r"""Request message for 'CancelDiskMigrationJob' request."""
-
-
 class CancelImageImportJobRequest(_messages.Message):
   r"""Request message for 'CancelImageImportJob' request."""
 
@@ -856,6 +849,10 @@ class ComputeEngineTargetDefaults(_messages.Message):
   in a target Compute Engine project.
 
   Enums:
+    BootConversionValueValuesEnum: Optional. By default the virtual machine
+      will keep its existing boot option. Setting this property will trigger
+      an internal process which will convert the virtual machine from using
+      the existing boot option to another.
     BootOptionValueValuesEnum: Output only. The VM Boot Option, as set in the
       source VM.
     DiskTypeValueValuesEnum: The disk type to use in the VM.
@@ -869,10 +866,19 @@ class ComputeEngineTargetDefaults(_messages.Message):
     additionalLicenses: Additional licenses to assign to the VM.
     appliedLicense: Output only. The OS license returned from the adaptation
       module report.
+    bootConversion: Optional. By default the virtual machine will keep its
+      existing boot option. Setting this property will trigger an internal
+      process which will convert the virtual machine from using the existing
+      boot option to another.
     bootOption: Output only. The VM Boot Option, as set in the source VM.
     computeScheduling: Compute instance scheduling information (if empty
       default is used).
     diskType: The disk type to use in the VM.
+    enableIntegrityMonitoring: Optional. Defines whether the instance has
+      integrity monitoring enabled. This can be set to true only if the VM
+      boot option is EFI, and vTPM is enabled.
+    enableVtpm: Optional. Defines whether the instance has vTPM enabled. This
+      can be set to true only if the VM boot option is EFI.
     encryption: Optional. Immutable. The encryption to apply to the VM disks.
     hostname: The hostname to assign to the VM.
     labels: A map of labels to associate with the VM.
@@ -890,6 +896,21 @@ class ComputeEngineTargetDefaults(_messages.Message):
     vmName: The name of the VM to create.
     zone: The zone in which to create the VM.
   """
+
+  class BootConversionValueValuesEnum(_messages.Enum):
+    r"""Optional. By default the virtual machine will keep its existing boot
+    option. Setting this property will trigger an internal process which will
+    convert the virtual machine from using the existing boot option to
+    another.
+
+    Values:
+      BOOT_CONVERSION_UNSPECIFIED: Unspecified conversion type.
+      NONE: No conversion.
+      BIOS_TO_EFI: Convert from BIOS to EFI.
+    """
+    BOOT_CONVERSION_UNSPECIFIED = 0
+    NONE = 1
+    BIOS_TO_EFI = 2
 
   class BootOptionValueValuesEnum(_messages.Enum):
     r"""Output only. The VM Boot Option, as set in the source VM.
@@ -987,23 +1008,26 @@ class ComputeEngineTargetDefaults(_messages.Message):
 
   additionalLicenses = _messages.StringField(1, repeated=True)
   appliedLicense = _messages.MessageField('AppliedLicense', 2)
-  bootOption = _messages.EnumField('BootOptionValueValuesEnum', 3)
-  computeScheduling = _messages.MessageField('ComputeScheduling', 4)
-  diskType = _messages.EnumField('DiskTypeValueValuesEnum', 5)
-  encryption = _messages.MessageField('Encryption', 6)
-  hostname = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 9)
-  machineType = _messages.StringField(10)
-  machineTypeSeries = _messages.StringField(11)
-  metadata = _messages.MessageField('MetadataValue', 12)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 13, repeated=True)
-  networkTags = _messages.StringField(14, repeated=True)
-  secureBoot = _messages.BooleanField(15)
-  serviceAccount = _messages.StringField(16)
-  targetProject = _messages.StringField(17)
-  vmName = _messages.StringField(18)
-  zone = _messages.StringField(19)
+  bootConversion = _messages.EnumField('BootConversionValueValuesEnum', 3)
+  bootOption = _messages.EnumField('BootOptionValueValuesEnum', 4)
+  computeScheduling = _messages.MessageField('ComputeScheduling', 5)
+  diskType = _messages.EnumField('DiskTypeValueValuesEnum', 6)
+  enableIntegrityMonitoring = _messages.BooleanField(7)
+  enableVtpm = _messages.BooleanField(8)
+  encryption = _messages.MessageField('Encryption', 9)
+  hostname = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 12)
+  machineType = _messages.StringField(13)
+  machineTypeSeries = _messages.StringField(14)
+  metadata = _messages.MessageField('MetadataValue', 15)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 16, repeated=True)
+  networkTags = _messages.StringField(17, repeated=True)
+  secureBoot = _messages.BooleanField(18)
+  serviceAccount = _messages.StringField(19)
+  targetProject = _messages.StringField(20)
+  vmName = _messages.StringField(21)
+  zone = _messages.StringField(22)
 
 
 class ComputeEngineTargetDetails(_messages.Message):
@@ -1011,6 +1035,10 @@ class ComputeEngineTargetDetails(_messages.Message):
   in a target Compute Engine project.
 
   Enums:
+    BootConversionValueValuesEnum: Optional. By default the virtual machine
+      will keep its existing boot option. Setting this property will trigger
+      an internal process which will convert the virtual machine from using
+      the existing boot option to another.
     BootOptionValueValuesEnum: The VM Boot Option, as set in the source VM.
     DiskTypeValueValuesEnum: The disk type to use in the VM.
     LicenseTypeValueValuesEnum: The license type to use in OS adaptation.
@@ -1022,10 +1050,17 @@ class ComputeEngineTargetDetails(_messages.Message):
   Fields:
     additionalLicenses: Additional licenses to assign to the VM.
     appliedLicense: The OS license returned from the adaptation module report.
+    bootConversion: Optional. By default the virtual machine will keep its
+      existing boot option. Setting this property will trigger an internal
+      process which will convert the virtual machine from using the existing
+      boot option to another.
     bootOption: The VM Boot Option, as set in the source VM.
     computeScheduling: Compute instance scheduling information (if empty
       default is used).
     diskType: The disk type to use in the VM.
+    enableIntegrityMonitoring: Optional. Defines whether the instance has
+      integrity monitoring enabled.
+    enableVtpm: Optional. Defines whether the instance has vTPM enabled.
     encryption: Optional. The encryption to apply to the VM disks.
     hostname: The hostname to assign to the VM.
     labels: A map of labels to associate with the VM.
@@ -1042,6 +1077,21 @@ class ComputeEngineTargetDetails(_messages.Message):
     vmName: The name of the VM to create.
     zone: The zone in which to create the VM.
   """
+
+  class BootConversionValueValuesEnum(_messages.Enum):
+    r"""Optional. By default the virtual machine will keep its existing boot
+    option. Setting this property will trigger an internal process which will
+    convert the virtual machine from using the existing boot option to
+    another.
+
+    Values:
+      BOOT_CONVERSION_UNSPECIFIED: Unspecified conversion type.
+      NONE: No conversion.
+      BIOS_TO_EFI: Convert from BIOS to EFI.
+    """
+    BOOT_CONVERSION_UNSPECIFIED = 0
+    NONE = 1
+    BIOS_TO_EFI = 2
 
   class BootOptionValueValuesEnum(_messages.Enum):
     r"""The VM Boot Option, as set in the source VM.
@@ -1139,28 +1189,33 @@ class ComputeEngineTargetDetails(_messages.Message):
 
   additionalLicenses = _messages.StringField(1, repeated=True)
   appliedLicense = _messages.MessageField('AppliedLicense', 2)
-  bootOption = _messages.EnumField('BootOptionValueValuesEnum', 3)
-  computeScheduling = _messages.MessageField('ComputeScheduling', 4)
-  diskType = _messages.EnumField('DiskTypeValueValuesEnum', 5)
-  encryption = _messages.MessageField('Encryption', 6)
-  hostname = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 9)
-  machineType = _messages.StringField(10)
-  machineTypeSeries = _messages.StringField(11)
-  metadata = _messages.MessageField('MetadataValue', 12)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 13, repeated=True)
-  networkTags = _messages.StringField(14, repeated=True)
-  project = _messages.StringField(15)
-  secureBoot = _messages.BooleanField(16)
-  serviceAccount = _messages.StringField(17)
-  vmName = _messages.StringField(18)
-  zone = _messages.StringField(19)
+  bootConversion = _messages.EnumField('BootConversionValueValuesEnum', 3)
+  bootOption = _messages.EnumField('BootOptionValueValuesEnum', 4)
+  computeScheduling = _messages.MessageField('ComputeScheduling', 5)
+  diskType = _messages.EnumField('DiskTypeValueValuesEnum', 6)
+  enableIntegrityMonitoring = _messages.BooleanField(7)
+  enableVtpm = _messages.BooleanField(8)
+  encryption = _messages.MessageField('Encryption', 9)
+  hostname = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 12)
+  machineType = _messages.StringField(13)
+  machineTypeSeries = _messages.StringField(14)
+  metadata = _messages.MessageField('MetadataValue', 15)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 16, repeated=True)
+  networkTags = _messages.StringField(17, repeated=True)
+  project = _messages.StringField(18)
+  secureBoot = _messages.BooleanField(19)
+  serviceAccount = _messages.StringField(20)
+  vmName = _messages.StringField(21)
+  zone = _messages.StringField(22)
 
 
 class ComputeScheduling(_messages.Message):
   r"""Scheduling information for VM on maintenance/restart behaviour and node
-  allocation in sole tenant nodes.
+  allocation in sole tenant nodes. Options for instance behavior when the host
+  machine undergoes maintenance that may temporarily impact instance
+  performance.
 
   Enums:
     OnHostMaintenanceValueValuesEnum: How the instance should behave when the
@@ -1545,6 +1600,9 @@ class DisksMigrationVmTargetDefaults(_messages.Message):
     bootDiskDefaults: Optional. Details of the boot disk of the VM.
     computeScheduling: Optional. Compute instance scheduling information (if
       empty default is used).
+    enableIntegrityMonitoring: Optional. Defines whether the instance has
+      integrity monitoring enabled.
+    enableVtpm: Optional. Defines whether the instance has vTPM enabled.
     encryption: Optional. The encryption to apply to the VM.
     hostname: Optional. The hostname to assign to the VM.
     labels: Optional. A map of labels to associate with the VM.
@@ -1611,17 +1669,19 @@ class DisksMigrationVmTargetDefaults(_messages.Message):
   additionalLicenses = _messages.StringField(1, repeated=True)
   bootDiskDefaults = _messages.MessageField('BootDiskDefaults', 2)
   computeScheduling = _messages.MessageField('ComputeScheduling', 3)
-  encryption = _messages.MessageField('Encryption', 4)
-  hostname = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  machineType = _messages.StringField(7)
-  machineTypeSeries = _messages.StringField(8)
-  metadata = _messages.MessageField('MetadataValue', 9)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 10, repeated=True)
-  networkTags = _messages.StringField(11, repeated=True)
-  secureBoot = _messages.BooleanField(12)
-  serviceAccount = _messages.StringField(13)
-  vmName = _messages.StringField(14)
+  enableIntegrityMonitoring = _messages.BooleanField(4)
+  enableVtpm = _messages.BooleanField(5)
+  encryption = _messages.MessageField('Encryption', 6)
+  hostname = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  machineType = _messages.StringField(9)
+  machineTypeSeries = _messages.StringField(10)
+  metadata = _messages.MessageField('MetadataValue', 11)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 12, repeated=True)
+  networkTags = _messages.StringField(13, repeated=True)
+  secureBoot = _messages.BooleanField(14)
+  serviceAccount = _messages.StringField(15)
+  vmName = _messages.StringField(16)
 
 
 class DisksMigrationVmTargetDetails(_messages.Message):
@@ -2225,7 +2285,8 @@ class MachineImageTargetDetails(_messages.Message):
     machineImageParametersOverrides: Optional. Parameters overriding decisions
       based on the source machine image configurations.
     networkInterfaces: Optional. The network interfaces to create with the
-      instance created by the machine image.
+      instance created by the machine image. Internal and external IP
+      addresses are ignored for machine image import.
     osAdaptationParameters: Optional. Use to set the parameters relevant for
       the OS adaptation process.
     serviceAccount: Optional. The service account to assign to the instance
@@ -2524,27 +2585,14 @@ class MigrationWarning(_messages.Message):
   warningTime = _messages.StringField(5)
 
 
-class NetworkInsights(_messages.Message):
-  r"""Information about the network coniguration of the source.
-
-  Fields:
-    sourceNetworkConfig: Output only. The gathered network configuration of
-      the source. Presented in json format.
-    sourceNetworkTerraform: Output only. The gathered network configuration of
-      the source. Presented in terraform format.
-  """
-
-  sourceNetworkConfig = _messages.StringField(1)
-  sourceNetworkTerraform = _messages.StringField(2)
-
-
 class NetworkInterface(_messages.Message):
   r"""NetworkInterface represents a NIC of a VM.
 
   Enums:
     NetworkTierValueValuesEnum: Optional. The networking tier used for
-      configuring network access configuration. If left empty, will default to
-      PREMIUM.
+      optimizing connectivity between instances and systems on the internet.
+      Applies only for external ephemeral IP addresses. If left empty, will
+      default to PREMIUM.
 
   Fields:
     externalIp: Optional. The external IP to define in the NIC.
@@ -2552,14 +2600,17 @@ class NetworkInterface(_messages.Message):
       accepted are: `ephemeral` \ ipv4 address \ a named address resource full
       path.
     network: The network to connect the NIC to.
-    networkTier: Optional. The networking tier used for configuring network
-      access configuration. If left empty, will default to PREMIUM.
+    networkTier: Optional. The networking tier used for optimizing
+      connectivity between instances and systems on the internet. Applies only
+      for external ephemeral IP addresses. If left empty, will default to
+      PREMIUM.
     subnetwork: Optional. The subnetwork to connect the NIC to.
   """
 
   class NetworkTierValueValuesEnum(_messages.Enum):
-    r"""Optional. The networking tier used for configuring network access
-    configuration. If left empty, will default to PREMIUM.
+    r"""Optional. The networking tier used for optimizing connectivity between
+    instances and systems on the internet. Applies only for external ephemeral
+    IP addresses. If left empty, will default to PREMIUM.
 
     Values:
       COMPUTE_ENGINE_NETWORK_TIER_UNSPECIFIED: An unspecified network tier.
@@ -2936,10 +2987,6 @@ class ReplicationSync(_messages.Message):
 
 class ResumeMigrationRequest(_messages.Message):
   r"""Request message for 'ResumeMigration' request."""
-
-
-class RunDiskMigrationJobRequest(_messages.Message):
-  r"""Request message for 'RunDiskMigrationJobRequest' request."""
 
 
 class SchedulePolicy(_messages.Message):
@@ -3985,33 +4032,6 @@ class VmmigrationProjectsLocationsSourcesDeleteRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
-
-
-class VmmigrationProjectsLocationsSourcesDiskMigrationJobsCancelRequest(_messages.Message):
-  r"""A VmmigrationProjectsLocationsSourcesDiskMigrationJobsCancelRequest
-  object.
-
-  Fields:
-    cancelDiskMigrationJobRequest: A CancelDiskMigrationJobRequest resource to
-      be passed as the request body.
-    name: Required. The name of the DiskMigrationJob.
-  """
-
-  cancelDiskMigrationJobRequest = _messages.MessageField('CancelDiskMigrationJobRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class VmmigrationProjectsLocationsSourcesDiskMigrationJobsRunRequest(_messages.Message):
-  r"""A VmmigrationProjectsLocationsSourcesDiskMigrationJobsRunRequest object.
-
-  Fields:
-    name: Required. The name of the DiskMigrationJob.
-    runDiskMigrationJobRequest: A RunDiskMigrationJobRequest resource to be
-      passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  runDiskMigrationJobRequest = _messages.MessageField('RunDiskMigrationJobRequest', 2)
 
 
 class VmmigrationProjectsLocationsSourcesFetchInventoryRequest(_messages.Message):

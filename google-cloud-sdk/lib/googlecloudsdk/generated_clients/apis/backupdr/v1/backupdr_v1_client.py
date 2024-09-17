@@ -46,6 +46,7 @@ class BackupdrV1(base_api.BaseApiClient):
     self.projects_locations_backupVaults = self.ProjectsLocationsBackupVaultsService(self)
     self.projects_locations_managementServers = self.ProjectsLocationsManagementServersService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_serviceConfig = self.ProjectsLocationsServiceConfigService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -1223,6 +1224,43 @@ class BackupdrV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='BackupdrProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsServiceConfigService(base_api.BaseApiService):
+    """Service class for the projects_locations_serviceConfig resource."""
+
+    _NAME = 'projects_locations_serviceConfig'
+
+    def __init__(self, client):
+      super(BackupdrV1.ProjectsLocationsServiceConfigService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Initialize(self, request, global_params=None):
+      r"""Initializes the service related config for a project.
+
+      Args:
+        request: (BackupdrProjectsLocationsServiceConfigInitializeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Initialize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Initialize.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceConfig:initialize',
+        http_method='POST',
+        method_id='backupdr.projects.locations.serviceConfig.initialize',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:initialize',
+        request_field='initializeServiceRequest',
+        request_type_name='BackupdrProjectsLocationsServiceConfigInitializeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

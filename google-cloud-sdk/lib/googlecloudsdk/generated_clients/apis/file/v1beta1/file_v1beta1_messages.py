@@ -26,7 +26,7 @@ class Backup(_messages.Message):
 
   Messages:
     LabelsValue: Resource labels to represent user provided metadata.
-    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+    TagsValue: Optional. Input only. Immutable. Tag key-value pairs are bound
       to this resource. For example: "123/environment": "production",
       "123/costCenter": "marketing"
 
@@ -58,7 +58,7 @@ class Backup(_messages.Message):
     storageBytes: Output only. The size of the storage used by the backup. As
       backups share storage, this number is expected to change with backup
       creation/deletion.
-    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+    tags: Optional. Input only. Immutable. Tag key-value pairs are bound to
       this resource. For example: "123/environment": "production",
       "123/costCenter": "marketing"
   """
@@ -157,9 +157,9 @@ class Backup(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TagsValue(_messages.Message):
-    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
-    this resource. For example: "123/environment": "production",
-    "123/costCenter": "marketing"
+    r"""Optional. Input only. Immutable. Tag key-value pairs are bound to this
+    resource. For example: "123/environment": "production", "123/costCenter":
+    "marketing"
 
     Messages:
       AdditionalProperty: An additional property for a TagsValue object.
@@ -454,7 +454,8 @@ class FileProjectsLocationsInstancesPatchRequest(_messages.Message):
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field may
       only include these fields: * "description" * "directory_services" *
-      "file_shares" * "labels" * "performance_config"
+      "file_shares" * "labels" * "performance_config" *
+      "deletion_protection_enabled" * "deletion_protection_reason"
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -1337,16 +1338,6 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
   tier = _messages.StringField(3)
 
 
-class IOPSPerGB(_messages.Message):
-  r"""IOPS per capacity parameters.
-
-  Fields:
-    maxReadIopsPerGb: Required. Maximum read IOPS per GB.
-  """
-
-  maxReadIopsPerGb = _messages.IntegerField(1)
-
-
 class IOPSPerTB(_messages.Message):
   r"""IOPS per TB. Filestore defines TB as 1024^4 bytes (TiB).
 
@@ -1371,7 +1362,7 @@ class Instance(_messages.Message):
 
   Messages:
     LabelsValue: Resource labels to represent user provided metadata.
-    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+    TagsValue: Optional. Input only. Immutable. Tag key-value pairs are bound
       to this resource. For example: "123/environment": "production",
       "123/costCenter": "marketing"
 
@@ -1381,9 +1372,8 @@ class Instance(_messages.Message):
       multipliers of `capacity_step_size_gb` GB.
     capacityStepSizeGb: Output only. The increase/decrease capacity step size.
     configurablePerformanceEnabled: Output only. Indicates whether this
-      instance uses configurable performance. An instance with configurable
-      performance enabled can be configured by populating the instance's
-      `performance_config` field.
+      instance's performance is configurable. If enabled, adjust it using the
+      'performance_config' field.
     createTime: Output only. The time when the instance was created.
     deletionProtectionEnabled: Optional. Indicates whether the instance is
       protected against deletion.
@@ -1414,7 +1404,7 @@ class Instance(_messages.Message):
     protocol: Immutable. The protocol indicates the access protocol for all
       shares in the instance. This field is immutable and it cannot be changed
       after the instance has been created. Default value: `NFS_V3`.
-    replication: Optional. Replicaition configuration.
+    replication: Optional. Replication configuration.
     satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The instance state.
@@ -1422,7 +1412,7 @@ class Instance(_messages.Message):
       state, if available.
     suspensionReasons: Output only. Field indicates all the reasons the
       instance is in "SUSPENDED" state.
-    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+    tags: Optional. Input only. Immutable. Tag key-value pairs are bound to
       this resource. For example: "123/environment": "production",
       "123/costCenter": "marketing"
     tier: The service tier of the instance.
@@ -1547,9 +1537,9 @@ class Instance(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TagsValue(_messages.Message):
-    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
-    this resource. For example: "123/environment": "production",
-    "123/costCenter": "marketing"
+    r"""Optional. Input only. Immutable. Tag key-value pairs are bound to this
+    resource. For example: "123/environment": "production", "123/costCenter":
+    "marketing"
 
     Messages:
       AdditionalProperty: An additional property for a TagsValue object.
@@ -1867,13 +1857,13 @@ class MaintenanceWindow(_messages.Message):
 
 class ManagedActiveDirectoryConfig(_messages.Message):
   r"""ManagedActiveDirectoryConfig contains all the parameters for connecting
-  to Managed Active Directory.
+  to Managed Service for Microsoft Active Directory (Managed Microsoft AD).
 
   Fields:
-    computer: Required. The computer name is used as a prefix to the mount
-      remote target. Example: if the computer is `my-computer`, the mount
-      command will look like: `$mount -o vers=4.1,sec=krb5 my-
-      computer.filestore.: `.
+    computer: Required. The computer name is used as a prefix in the command
+      to mount the remote target. For example: if the computer is `my-
+      computer`, the mount command will look like: `$mount -o
+      vers=4.1,sec=krb5 my-computer.filestore.: `.
     domain: Required. The domain resource name, in the format
       `projects/{project_id}/locations/global/domains/{domain}`.
   """
@@ -2179,8 +2169,13 @@ class OperationMetadata(_messages.Message):
 
 
 class PerformanceConfig(_messages.Message):
-  r"""Performance configuration. Used for setting the performance
-  configuration. Defaults to `iops_by_capacity` if unset in instance creation.
+  r"""Used for setting the performance configuration. If the user doesn't
+  specify PerformanceConfig, automatically provision the default performance
+  settings as described in
+  https://cloud.google.com/filestore/docs/performance. Larger instances will
+  be linearly set to more IOPS. If the instance's capacity is increased or
+  decreased, its performance will be automatically adjusted upwards or
+  downwards accordingly (respectively).
 
   Fields:
     fixedIops: Choose a fixed provisioned IOPS value for the instance, which
@@ -2190,38 +2185,20 @@ class PerformanceConfig(_messages.Message):
       fail with an `InvalidArgument` error. Similarly, if an instance capacity
       update would result in a value outside the supported range, the update
       will fail with an `InvalidArgument` error.
-    iopsByCapacity: Automatically provision maximum available IOPS based on
-      the capacity of the instance. Larger instances will be granted more
-      IOPS. If instance capacity is increased or decreased, IOPS will be
-      automatically adjusted upwards or downwards accordingly. The maximum
-      available IOPS for a given capacity is defined in Filestore
-      documentation.
-    iopsPerGb: Provision IOPS dynamically based on the capacity of the
-      instance. Provisioned read IOPS will be calculated by by multiplying the
-      capacity of the instance in GiB by the `iops_per_gb` value, and rounding
-      to the nearest 1000. For example, for a 1 TiB instance with an
-      `iops_per_gb` value of 15, the provisioned read IOPS would be `1024 * 15
-      = 15,360`, rounded to `15,000`. If the calculated value is outside the
-      supported range for the instance's capacity during instance creation,
-      instance creation will fail with an `InvalidArgument` error. Similarly,
-      if an instance capacity update would result in a value outside the
-      supported range, the update will fail with an `InvalidArgument` error.
     iopsPerTb: Provision IOPS dynamically based on the capacity of the
-      instance. Provisioned read IOPS will be calculated by by multiplying the
-      capacity of the instance in TiB by the `iops_per_tb` value, and rounding
-      to the nearest 1000. For example, for a 1 TiB instance with an
-      `iops_per_tb` value of 15, the provisioned read IOPS would be `1024 * 15
-      = 15,360`, rounded to `15,000`. If the calculated value is outside the
-      supported range for the instance's capacity during instance creation,
-      instance creation will fail with an `InvalidArgument` error. Similarly,
-      if an instance capacity update would result in a value outside the
-      supported range, the update will fail with an `InvalidArgument` error.
+      instance. Provisioned read IOPS will be calculated by multiplying the
+      capacity of the instance in TiB by the `iops_per_tb` value. For example,
+      for a 2 TiB instance with an `iops_per_tb` value of 17000 the
+      provisioned read IOPS will be 34000. If the calculated value is outside
+      the supported range for the instance's capacity during instance
+      creation, instance creation will fail with an `InvalidArgument` error.
+      Similarly, if an instance capacity update would result in a value
+      outside the supported range, the update will fail with an
+      `InvalidArgument` error.
   """
 
   fixedIops = _messages.MessageField('FixedIOPS', 1)
-  iopsByCapacity = _messages.BooleanField(2)
-  iopsPerGb = _messages.MessageField('IOPSPerGB', 3)
-  iopsPerTb = _messages.MessageField('IOPSPerTB', 4)
+  iopsPerTb = _messages.MessageField('IOPSPerTB', 2)
 
 
 class PerformanceLimits(_messages.Message):
@@ -2230,21 +2207,17 @@ class PerformanceLimits(_messages.Message):
 
   Fields:
     maxReadIops: Output only. The max read IOPS.
-    maxReadThroughput: Output only. The max read throughput.
     maxReadThroughputBps: Output only. The max read throughput in bytes per
       second.
     maxWriteIops: Output only. The max write IOPS.
-    maxWriteThroughput: Output only. The max write throughput.
     maxWriteThroughputBps: Output only. The max write throughput in bytes per
       second.
   """
 
   maxReadIops = _messages.IntegerField(1)
-  maxReadThroughput = _messages.IntegerField(2)
-  maxReadThroughputBps = _messages.IntegerField(3)
-  maxWriteIops = _messages.IntegerField(4)
-  maxWriteThroughput = _messages.IntegerField(5)
-  maxWriteThroughputBps = _messages.IntegerField(6)
+  maxReadThroughputBps = _messages.IntegerField(2)
+  maxWriteIops = _messages.IntegerField(3)
+  maxWriteThroughputBps = _messages.IntegerField(4)
 
 
 class PromoteReplicaRequest(_messages.Message):
@@ -2310,8 +2283,8 @@ class Replication(_messages.Message):
     RoleValueValuesEnum: Output only. The replication role.
 
   Fields:
-    replicas: Replicas configuration on the instance. For now, only a single
-      replica config is supported.
+    replicas: Replication configuration for the replica instance associated
+      with this instance. Only a single replica is supported.
     role: Output only. The replication role.
   """
 
@@ -2320,10 +2293,10 @@ class Replication(_messages.Message):
 
     Values:
       ROLE_UNSPECIFIED: Role not set.
-      ACTIVE: The instance is a Active replication member, functions as the
-        replication source instance.
-      STANDBY: The instance is a Standby replication member, functions as the
-        replication destination instance.
+      ACTIVE: The instance is the `ACTIVE` replication member, functions as
+        the replication source instance.
+      STANDBY: The instance is the `STANDBY` replication member, functions as
+        the replication destination instance.
     """
     ROLE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -2494,7 +2467,7 @@ class Snapshot(_messages.Message):
 
   Messages:
     LabelsValue: Resource labels to represent user provided metadata.
-    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+    TagsValue: Optional. Input only. Immutable. Tag key-value pairs are bound
       to this resource. For example: "123/environment": "production",
       "123/costCenter": "marketing"
 
@@ -2509,7 +2482,7 @@ class Snapshot(_messages.Message):
       cts/{project_id}/locations/{location_id}/instances/{instance_id}/snapsho
       ts/{snapshot_id}`.
     state: Output only. The snapshot state.
-    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+    tags: Optional. Input only. Immutable. Tag key-value pairs are bound to
       this resource. For example: "123/environment": "production",
       "123/costCenter": "marketing"
   """
@@ -2554,9 +2527,9 @@ class Snapshot(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TagsValue(_messages.Message):
-    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
-    this resource. For example: "123/environment": "production",
-    "123/costCenter": "marketing"
+    r"""Optional. Input only. Immutable. Tag key-value pairs are bound to this
+    resource. For example: "123/environment": "production", "123/costCenter":
+    "marketing"
 
     Messages:
       AdditionalProperty: An additional property for a TagsValue object.

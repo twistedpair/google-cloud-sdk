@@ -579,6 +579,21 @@ class Empty(_messages.Message):
 
 
 
+class GceTag(_messages.Message):
+  r"""For use only by GCE. GceTag is a wrapper around the GCE administrative
+  tag with parent info.
+
+  Fields:
+    parent: The parents(s) of the tag. Eg. projects/123, folders/456 It
+      usually contains only one parent. But, in some corner cases, it can
+      contain multiple parents. Currently, organizations are not supported.
+    tag: The administrative_tag name.
+  """
+
+  parent = _messages.StringField(1, repeated=True)
+  tag = _messages.StringField(2)
+
+
 class GoogleAppengineV1betaLocationMetadata(_messages.Message):
   r"""Metadata for the given google.cloud.location.Location.
 
@@ -1065,6 +1080,8 @@ class ProjectsMetadata(_messages.Message):
       same state that is communicated to the CLH during project events. Notice
       that this field is not set in the DB, it is only set in this proto when
       communicated to CLH in the side channel.
+    gceTag: The GCE tags associated with the consumer project and those
+      inherited due to their ancestry, if any. Not supported by CCFE.
     p4ServiceAccount: The service account authorized to operate on the
       consumer project. Note: CCFE only propagates P4SA with default tag to
       CLH.
@@ -1111,11 +1128,12 @@ class ProjectsMetadata(_messages.Message):
   consumerProjectId = _messages.StringField(1)
   consumerProjectNumber = _messages.IntegerField(2)
   consumerProjectState = _messages.EnumField('ConsumerProjectStateValueValuesEnum', 3)
-  p4ServiceAccount = _messages.StringField(4)
-  producerProjectId = _messages.StringField(5)
-  producerProjectNumber = _messages.IntegerField(6)
-  tenantProjectId = _messages.StringField(7)
-  tenantProjectNumber = _messages.IntegerField(8)
+  gceTag = _messages.MessageField('GceTag', 4, repeated=True)
+  p4ServiceAccount = _messages.StringField(5)
+  producerProjectId = _messages.StringField(6)
+  producerProjectNumber = _messages.IntegerField(7)
+  tenantProjectId = _messages.StringField(8)
+  tenantProjectNumber = _messages.IntegerField(9)
 
 
 class Reasons(_messages.Message):

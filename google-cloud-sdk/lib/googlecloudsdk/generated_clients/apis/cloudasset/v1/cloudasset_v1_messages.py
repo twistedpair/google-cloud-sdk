@@ -75,10 +75,13 @@ class AdditionalInfo(_messages.Message):
       failure reasons. When the status is
       AZURE_MANAGED_IDENTITY_MISSING_REQUIRED_PERMISSION, it will contain the
       missing required permissions.
+    validAccountCnt: Required. The number of valid AWS accounts or Azure
+      subscriptions.
   """
 
   invalidAccount = _messages.MessageField('InvalidCollectorAccount', 1, repeated=True)
   summary = _messages.StringField(2)
+  validAccountCnt = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class AnalyzeIamPolicyLongrunningMetadata(_messages.Message):
@@ -325,6 +328,18 @@ class Asset(_messages.Message):
   updateTime = _messages.StringField(14)
 
 
+class AssetEnrichment(_messages.Message):
+  r"""The enhanced metadata information for a resource.
+
+  Fields:
+    resourceOwners: The resource owners for a resource. Note that this field
+      only contains the members that have "roles/owner" role in the resource's
+      IAM Policy.
+  """
+
+  resourceOwners = _messages.MessageField('ResourceOwners', 1)
+
+
 class AttachedResource(_messages.Message):
   r"""Attached resource representation, which is defined by the corresponding
   service provider. It represents an attached resource's payload.
@@ -410,28 +425,62 @@ class AzureInfo(_messages.Message):
   r"""Additional information for an asset fetched from Azure
 
   Fields:
-    managementGroupResourceIds: The Azure Management Group
-      (https://learn.microsoft.com/en-us/azure/governance/management-
-      groups/overview) Order is from leaf management group to the root
-      management group E.g.:
+    managementGroupDisplayNames: The Azure Management Group
+      [displayName](https://learn.microsoft.com/en-
+      us/rest/api/managementgroups/management-groups/list?view=rest-
+      managementgroups-2020-05-01&tabs=HTTP#examples) Order is from leaf
+      management group to the root management group, which corresponds to the
+      order in management_group_resource_ids field. E.g.: Test Management
+      Group
+    managementGroupResourceIds: The Azure Management Group ID
+      (https://learn.microsoft.com/en-us/rest/api/managementgroups/management-
+      groups/list?view=rest-managementgroups-2020-05-01&tabs=HTTP#examples)
+      Order is from leaf management group to the root management group E.g.:
       /providers/Microsoft.Management/managementGroups/group-name
-    resourceGroupResourceId: The Azure Resource Group
-      (https://learn.microsoft.com/en-us/azure/azure-resource-
-      manager/management/manage-resource-groups-portal) E.g.: /subscriptions/1
-      a11aad8-de27-1234-85e9-0f675821f15c/resourceGroups/group-name
-    subscriptionResourceId: The Azure Subscription
-      (https://learn.microsoft.com/en-us/azure/cost-management-
-      billing/manage/) E.g.:
+    managementGroups: The Azure Management Group info Order is from leaf
+      management group to the root management group
+    resourceGroup: The Azure Resource Group info
+    resourceGroupName: The Azure Resource Group
+      [name](https://learn.microsoft.com/en-us/rest/api/resources/resource-
+      groups/list?view=rest-resources-2021-04-01#resourcegroupproperties)
+      E.g.: myResourceGroup
+    resourceGroupResourceId: The Azure Resource Group ID
+      (https://learn.microsoft.com/en-us/rest/api/resources/resource-
+      groups/list?view=rest-resources-2021-04-01#resourcegroupproperties)
+      E.g.: /subscriptions/1a11aad8-de27-1234-85e9-
+      0f675821f15c/resourceGroups/group-name
+    subscription: The Azure Subscription info
+    subscriptionDisplayName: The Azure Subscription
+      [displayName](https://learn.microsoft.com/en-
+      us/rest/api/resources/subscriptions/list?view=rest-
+      resources-2022-12-01&tabs=HTTP#examples) E.g.: My Test Subscription
+    subscriptionResourceId: The Azure Subscription ID
+      (https://learn.microsoft.com/en-
+      us/rest/api/resources/subscriptions/list?view=rest-
+      resources-2022-12-01&tabs=HTTP#examples) E.g.:
       /subscriptions/1a11aad8-de27-1234-85e9-0f675821f15c
-    tenantResourceId: The Azure Tenant id (https://learn.microsoft.com/en-
+    tenant: The Azure Tenant info
+    tenantDisplayName: The Azure Tenant
+      [displayName](https://learn.microsoft.com/en-
+      us/rest/api/resources/tenants/list?view=rest-
+      resources-2022-12-01&tabs=HTTP#examples) E.g.: Test_Display_Name
+    tenantResourceId: The Azure Tenant ID (https://learn.microsoft.com/en-
       us/azure/azure-portal/get-subscription-tenant-id) E.g.:
       /tenants/a11aaa11-aa11-1aa1-11aa-1aaa11a
   """
 
-  managementGroupResourceIds = _messages.StringField(1, repeated=True)
-  resourceGroupResourceId = _messages.StringField(2)
-  subscriptionResourceId = _messages.StringField(3)
-  tenantResourceId = _messages.StringField(4)
+  managementGroupDisplayNames = _messages.StringField(1, repeated=True)
+  managementGroupResourceIds = _messages.StringField(2, repeated=True)
+  managementGroups = _messages.MessageField('ManagementGroupInfo', 3, repeated=True)
+  resourceGroup = _messages.MessageField('ResourceGroupInfo', 4)
+  resourceGroupName = _messages.StringField(5)
+  resourceGroupResourceId = _messages.StringField(6)
+  subscription = _messages.MessageField('SubscriptionInfo', 7)
+  subscriptionDisplayName = _messages.StringField(8)
+  subscriptionResourceId = _messages.StringField(9)
+  tenant = _messages.MessageField('TenantInfo', 10)
+  tenantDisplayName = _messages.StringField(11)
+  tenantResourceId = _messages.StringField(12)
 
 
 class BatchGetAssetsHistoryResponse(_messages.Message):
@@ -2625,11 +2674,15 @@ class GoogleCloudAssetV1CustomConstraint(_messages.Message):
       CREATE: Constraint applied when creating the resource.
       UPDATE: Constraint applied when updating the resource.
       DELETE: Constraint applied when deleting the resource.
+      REMOVE_GRANT: Constraint applied when removing an IAM grant.
+      GOVERN_TAGS: Constraint applied when enforcing forced tagging.
     """
     METHOD_TYPE_UNSPECIFIED = 0
     CREATE = 1
     UPDATE = 2
     DELETE = 3
+    REMOVE_GRANT = 4
+    GOVERN_TAGS = 5
 
   actionType = _messages.EnumField('ActionTypeValueValuesEnum', 1)
   condition = _messages.StringField(2)
@@ -4655,7 +4708,7 @@ class Item(_messages.Message):
     r"""The specific type of inventory, correlating to its specific details.
 
     Values:
-      TYPE_UNSPECIFIED: Invalid. An type must be specified.
+      TYPE_UNSPECIFIED: Invalid. A type must be specified.
       INSTALLED_PACKAGE: This represents a package that is installed on the
         VM.
       AVAILABLE_PACKAGE: This represents an update that is available for a
@@ -4725,6 +4778,25 @@ class ListSavedQueriesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   savedQueries = _messages.MessageField('SavedQuery', 2, repeated=True)
+
+
+class ManagementGroupInfo(_messages.Message):
+  r"""Additional information for management group from Azure
+
+  Fields:
+    managementGroupDisplayName: The Azure Management Group
+      [displayName](https://learn.microsoft.com/en-
+      us/rest/api/managementgroups/management-groups/list?view=rest-
+      managementgroups-2020-05-01&tabs=HTTP#examples) E.g.: Test Management
+      Group
+    managementGroupResourceId: The Azure Management Group ID
+      (https://learn.microsoft.com/en-us/rest/api/managementgroups/management-
+      groups/list?view=rest-managementgroups-2020-05-01&tabs=HTTP#examples)
+      E.g.: /providers/Microsoft.Management/managementGroups/group-name
+  """
+
+  managementGroupDisplayName = _messages.StringField(1)
+  managementGroupResourceId = _messages.StringField(2)
 
 
 class MoveAnalysis(_messages.Message):
@@ -5123,9 +5195,9 @@ class OtherCloudAssetId(_messages.Message):
 
 
 class OtherCloudConnection(_messages.Message):
-  r"""An Other-Cloud Connection is a set of settings to allow Google Cloud to
-  connect to an other-cloud provider(such as AWS, Azure, etc.) to collect
-  their asset config data for Google Cloud products' use.
+  r"""LINT.IfChange An Other-Cloud Connection is a set of settings to allow
+  Google Cloud to connect to an other-cloud provider(such as AWS, Azure, etc.)
+  to collect their asset config data for Google Cloud products' use.
 
   Enums:
     ConnectionTypeValueValuesEnum: Required. The other-cloud connection type.
@@ -5676,6 +5748,35 @@ class Resource(_messages.Message):
   version = _messages.StringField(7)
 
 
+class ResourceGroupInfo(_messages.Message):
+  r"""Additional information for resource group from Azure
+
+  Fields:
+    resourceGroupName: The Azure Resource Group
+      [name](https://learn.microsoft.com/en-us/rest/api/resources/resource-
+      groups/list?view=rest-resources-2021-04-01#resourcegroupproperties)
+      E.g.: myResourceGroup
+    resourceGroupResourceId: The Azure Resource Group ID
+      (https://learn.microsoft.com/en-us/rest/api/resources/resource-
+      groups/list?view=rest-resources-2021-04-01#resourcegroupproperties)
+      E.g.: /subscriptions/1a11aad8-de27-1234-85e9-
+      0f675821f15c/resourceGroups/group-name
+  """
+
+  resourceGroupName = _messages.StringField(1)
+  resourceGroupResourceId = _messages.StringField(2)
+
+
+class ResourceOwners(_messages.Message):
+  r"""The resource owners information.
+
+  Fields:
+    resourceOwners: List of resource owners.
+  """
+
+  resourceOwners = _messages.StringField(1, repeated=True)
+
+
 class ResourceSearchResult(_messages.Message):
   r"""A result of Resource Search, containing information of a cloud resource.
 
@@ -5769,6 +5870,15 @@ class ResourceSearchResult(_messages.Message):
       `effectiveTagValues:"123456789/env/prod*"` -
       `effectiveTagValues="123456789/env/prod"` -
       `effectiveTagValueIds="tagValues/456"`
+    enrichments: Enrichments of the asset. Currently supported enrichment
+      types with SearchAllResources API: * RESOURCE_OWNERS The corresponding
+      read masks in order to get the enrichment: * enrichments.resource_owners
+      The corresponding required permissions: *
+      cloudasset.assets.searchEnrichmentResourceOwners Example query to get
+      resource owner enrichment: ``` scope: "projects/my-project" query:
+      "name: my-project" assetTypes:
+      "cloudresourcemanager.googleapis.com/Project" readMask: { paths:
+      "asset_type" paths: "name" paths: "enrichments.resource_owners" } ```
     folders: The folder(s) that this resource belongs to, in the form of
       folders/{FOLDER_NUMBER}. This field is available when the resource
       belongs to one or more folders. To search against `folders`: * Use a
@@ -6048,26 +6158,27 @@ class ResourceSearchResult(_messages.Message):
   description = _messages.StringField(5)
   displayName = _messages.StringField(6)
   effectiveTags = _messages.MessageField('EffectiveTagDetails', 7, repeated=True)
-  folders = _messages.StringField(8, repeated=True)
-  kmsKey = _messages.StringField(9)
-  kmsKeys = _messages.StringField(10, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 11)
-  location = _messages.StringField(12)
-  name = _messages.StringField(13)
-  networkTags = _messages.StringField(14, repeated=True)
-  organization = _messages.StringField(15)
-  parentAssetType = _messages.StringField(16)
-  parentFullResourceName = _messages.StringField(17)
-  project = _messages.StringField(18)
-  relationships = _messages.MessageField('RelationshipsValue', 19)
-  sccSecurityMarks = _messages.MessageField('SccSecurityMarksValue', 20)
-  state = _messages.StringField(21)
-  tagKeys = _messages.StringField(22, repeated=True)
-  tagValueIds = _messages.StringField(23, repeated=True)
-  tagValues = _messages.StringField(24, repeated=True)
-  tags = _messages.MessageField('Tag', 25, repeated=True)
-  updateTime = _messages.StringField(26)
-  versionedResources = _messages.MessageField('VersionedResource', 27, repeated=True)
+  enrichments = _messages.MessageField('AssetEnrichment', 8, repeated=True)
+  folders = _messages.StringField(9, repeated=True)
+  kmsKey = _messages.StringField(10)
+  kmsKeys = _messages.StringField(11, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 12)
+  location = _messages.StringField(13)
+  name = _messages.StringField(14)
+  networkTags = _messages.StringField(15, repeated=True)
+  organization = _messages.StringField(16)
+  parentAssetType = _messages.StringField(17)
+  parentFullResourceName = _messages.StringField(18)
+  project = _messages.StringField(19)
+  relationships = _messages.MessageField('RelationshipsValue', 20)
+  sccSecurityMarks = _messages.MessageField('SccSecurityMarksValue', 21)
+  state = _messages.StringField(22)
+  tagKeys = _messages.StringField(23, repeated=True)
+  tagValueIds = _messages.StringField(24, repeated=True)
+  tagValues = _messages.StringField(25, repeated=True)
+  tags = _messages.MessageField('Tag', 26, repeated=True)
+  updateTime = _messages.StringField(27)
+  versionedResources = _messages.MessageField('VersionedResource', 28, repeated=True)
 
 
 class ResourceSelector(_messages.Message):
@@ -6376,6 +6487,25 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class SubscriptionInfo(_messages.Message):
+  r"""Additional information for subscription from Azure
+
+  Fields:
+    subscriptionDisplayName: The Azure Subscription
+      [displayName](https://learn.microsoft.com/en-
+      us/rest/api/resources/subscriptions/list?view=rest-
+      resources-2022-12-01&tabs=HTTP#examples) E.g.: My Test Subscription
+    subscriptionResourceId: The Azure Subscription ID
+      (https://learn.microsoft.com/en-
+      us/rest/api/resources/subscriptions/list?view=rest-
+      resources-2022-12-01&tabs=HTTP#examples) E.g.:
+      /subscriptions/1a11aad8-de27-1234-85e9-0f675821f15c
+  """
+
+  subscriptionDisplayName = _messages.StringField(1)
+  subscriptionResourceId = _messages.StringField(2)
+
+
 class TableFieldSchema(_messages.Message):
   r"""A field in TableSchema.
 
@@ -6483,6 +6613,23 @@ class TemporalAsset(_messages.Message):
   priorAsset = _messages.MessageField('Asset', 3)
   priorAssetState = _messages.EnumField('PriorAssetStateValueValuesEnum', 4)
   window = _messages.MessageField('TimeWindow', 5)
+
+
+class TenantInfo(_messages.Message):
+  r"""Additional information for tenant from Azure
+
+  Fields:
+    tenantDisplayName: The Azure Tenant
+      [displayName](https://learn.microsoft.com/en-
+      us/rest/api/resources/tenants/list?view=rest-
+      resources-2022-12-01&tabs=HTTP#examples) E.g.: Test_Display_Name
+    tenantResourceId: The Azure Tenant ID (https://learn.microsoft.com/en-
+      us/azure/azure-portal/get-subscription-tenant-id) E.g.:
+      /tenants/a11aaa11-aa11-1aa1-11aa-1aaa11a
+  """
+
+  tenantDisplayName = _messages.StringField(1)
+  tenantResourceId = _messages.StringField(2)
 
 
 class TimeWindow(_messages.Message):

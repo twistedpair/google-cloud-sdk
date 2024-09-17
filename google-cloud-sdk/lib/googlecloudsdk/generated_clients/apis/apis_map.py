@@ -3806,9 +3806,26 @@ MAP = {
                 mtls_endpoint_override=''),
         'v2':
             APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.storage.v2',
+                    client_classpath='storage_v2_client.StorageV2',
+                    base_url='https://storage.googleapis.com/',
+                    messages_modulepath='storage_v2_messages'),
                 gapic=GapicClientDef(
                     class_path='googlecloudsdk.generated_clients.gapic_wrappers.storage.v2'),
                 default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
+    'storagebatchoperations': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.storagebatchoperations.v1',
+                    client_classpath='storagebatchoperations_v1_client.StoragebatchoperationsV1',
+                    base_url='https://storagebatchoperations.googleapis.com/',
+                    messages_modulepath='storagebatchoperations_v1_messages'),
+                default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

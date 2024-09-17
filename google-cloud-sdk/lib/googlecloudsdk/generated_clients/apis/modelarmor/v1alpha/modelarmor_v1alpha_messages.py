@@ -913,7 +913,9 @@ class RangeInfo(_messages.Message):
 
   Fields:
     end: Index of last character (exclusive).
-    start: Index of first character (inclusive).
+    start: For proto3, value cannot be set to 0 unless the field is optional.
+      Ref: https://protobuf.dev/programming-guides/proto3/#default Index of
+      first character (inclusive).
   """
 
   end = _messages.IntegerField(1)

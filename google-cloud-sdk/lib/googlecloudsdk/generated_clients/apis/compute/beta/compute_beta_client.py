@@ -97,6 +97,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.regionDisks = self.RegionDisksService(self)
     self.regionHealthCheckServices = self.RegionHealthCheckServicesService(self)
     self.regionHealthChecks = self.RegionHealthChecksService(self)
+    self.regionInstanceGroupManagerResizeRequests = self.RegionInstanceGroupManagerResizeRequestsService(self)
     self.regionInstanceGroupManagers = self.RegionInstanceGroupManagersService(self)
     self.regionInstanceGroups = self.RegionInstanceGroupsService(self)
     self.regionInstanceTemplates = self.RegionInstanceTemplatesService(self)
@@ -1233,7 +1234,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def ListUsable(self, request, global_params=None):
-      r"""Retrieves an aggregated list of all usable backend services in the specified project.
+      r"""Retrieves a list of all usable backend services in the specified project.
 
       Args:
         request: (ComputeBackendServicesListUsableRequest) input message
@@ -13387,7 +13388,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def ListUsable(self, request, global_params=None):
-      r"""Retrieves an aggregated list of all usable backend services in the specified project in the given region.
+      r"""Retrieves a list of all usable backend services in the specified project in the given region.
 
       Args:
         request: (ComputeRegionBackendServicesListUsableRequest) input message
@@ -14603,6 +14604,146 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='healthCheckResource',
         request_type_name='ComputeRegionHealthChecksUpdateRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class RegionInstanceGroupManagerResizeRequestsService(base_api.BaseApiService):
+    """Service class for the regionInstanceGroupManagerResizeRequests resource."""
+
+    _NAME = 'regionInstanceGroupManagerResizeRequests'
+
+    def __init__(self, client):
+      super(ComputeBeta.RegionInstanceGroupManagerResizeRequestsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Cancels the specified resize request. Cancelled resize request no longer waits for the resources to be provisioned. Cancel is only possible for requests that are in accepted state.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagerResizeRequestsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagerResizeRequests.cancel',
+        ordered_params=['project', 'region', 'instanceGroupManager', 'resizeRequest'],
+        path_params=['instanceGroupManager', 'project', 'region', 'resizeRequest'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/resizeRequests/{resizeRequest}/cancel',
+        request_field='',
+        request_type_name='ComputeRegionInstanceGroupManagerResizeRequestsCancelRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified, inactive resize request. Requests that are still active cannot be deleted. Deleting request does not delete instances that were provisioned previously.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagerResizeRequestsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.regionInstanceGroupManagerResizeRequests.delete',
+        ordered_params=['project', 'region', 'instanceGroupManager', 'resizeRequest'],
+        path_params=['instanceGroupManager', 'project', 'region', 'resizeRequest'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/resizeRequests/{resizeRequest}',
+        request_field='',
+        request_type_name='ComputeRegionInstanceGroupManagerResizeRequestsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns all of the details about the specified resize request.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagerResizeRequestsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceGroupManagerResizeRequest) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionInstanceGroupManagerResizeRequests.get',
+        ordered_params=['project', 'region', 'instanceGroupManager', 'resizeRequest'],
+        path_params=['instanceGroupManager', 'project', 'region', 'resizeRequest'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/resizeRequests/{resizeRequest}',
+        request_field='',
+        request_type_name='ComputeRegionInstanceGroupManagerResizeRequestsGetRequest',
+        response_type_name='InstanceGroupManagerResizeRequest',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new Resize Request that starts provisioning VMs immediately or queues VM creation.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagerResizeRequestsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagerResizeRequests.insert',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/resizeRequests',
+        request_field='instanceGroupManagerResizeRequest',
+        request_type_name='ComputeRegionInstanceGroupManagerResizeRequestsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of Resize Requests that are contained in the managed instance group.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagerResizeRequestsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionInstanceGroupManagerResizeRequestsListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionInstanceGroupManagerResizeRequests.list',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/resizeRequests',
+        request_field='',
+        request_type_name='ComputeRegionInstanceGroupManagerResizeRequestsListRequest',
+        response_type_name='RegionInstanceGroupManagerResizeRequestsListResponse',
         supports_download=False,
     )
 

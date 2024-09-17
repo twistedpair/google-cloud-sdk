@@ -56,6 +56,7 @@ from .types.spanner import ReadRequest
 from .types.spanner import RequestOptions
 from .types.spanner import RollbackRequest
 from .types.spanner import Session
+from .types.transaction import MultiplexedSessionPrecommitToken
 from .types.transaction import Transaction
 from .types.transaction import TransactionOptions
 from .types.transaction import TransactionSelector
@@ -84,6 +85,7 @@ __all__ = (
 'KeySet',
 'ListSessionsRequest',
 'ListSessionsResponse',
+'MultiplexedSessionPrecommitToken',
 'Mutation',
 'PartialResultSet',
 'Partition',

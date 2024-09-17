@@ -329,7 +329,7 @@ def AddSubscriptionMessageRetentionFlags(parser, is_update):
         ' 10 minutes, and the maximum is 7 days.'
     )
   else:
-    retention_parser = arg_parsers.Duration()
+    retention_parser = arg_parsers.Duration(lower_bound='10m', upper_bound='7d')
     retention_default_help = (
         'The default value is 7 days, the minimum is '
         '10 minutes, and the maximum is 7 days.'
@@ -672,7 +672,9 @@ def AddPubsubExportConfigFlags(parser, is_update):
 def ParseSubscriptionRetentionDurationWithDefault(value):
   if value == subscriptions.DEFAULT_MESSAGE_RETENTION_VALUE:
     return value
-  return util.FormatDuration(arg_parsers.Duration()(value))
+  return util.FormatDuration(
+      arg_parsers.Duration(lower_bound='10m', upper_bound='7d')(value)
+  )
 
 
 def ParseExpirationPeriodWithNeverSentinel(value):

@@ -247,6 +247,76 @@ class Backup(_messages.Message):
   volumeCount = _messages.IntegerField(30, variant=_messages.Variant.INT32)
 
 
+class BackupChannel(_messages.Message):
+  r"""A BackupChannel imposes constraints on where clusters can be backed up.
+  The BackupChannel should be in the same project and region as the cluster
+  being backed up. The backup can be created only in destination_project.
+
+  Messages:
+    LabelsValue: Optional. A set of custom labels supplied by user.
+
+  Fields:
+    createTime: Output only. The timestamp when this BackupChannel resource
+      was created.
+    description: Optional. User specified descriptive string for this
+      BackupChannel.
+    destinationProject: Required. Immutable. The project where Backups are
+      allowed to be stored. The format is `projects/{project}`. Currently,
+      {project} can only be the project number. Support for project IDs will
+      be added in the future.
+    etag: Output only. `etag` is used for optimistic concurrency control as a
+      way to help prevent simultaneous updates of a BackupChannel from
+      overwriting each other. It is strongly suggested that systems make use
+      of the 'etag' in the read-modify-write cycle to perform BackupChannel
+      updates in order to avoid race conditions: An `etag` is returned in the
+      response to `GetBackupChannel`, and systems are expected to put that
+      etag in the request to `UpdateBackupChannel` or `DeleteBackupChannel` to
+      ensure that their change will be applied to the same version of the
+      resource.
+    labels: Optional. A set of custom labels supplied by user.
+    name: Identifier. The fully qualified name of the BackupChannel.
+      `projects/*/locations/*/backupChannels/*`
+    uid: Output only. Server generated global unique identifier of
+      [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier)
+      format.
+    updateTime: Output only. The timestamp when this BackupChannel resource
+      was last updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. A set of custom labels supplied by user.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  destinationProject = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
 class BackupConfig(_messages.Message):
   r"""BackupConfig defines the configuration of Backups created via this
   BackupPlan.
@@ -294,6 +364,10 @@ class BackupPlan(_messages.Message):
     LabelsValue: Optional. A set of custom labels supplied by user.
 
   Fields:
+    backupChannel: Output only. The fully qualified name of the BackupChannel
+      to be used to create a backup. This field is set only if the cluster
+      being backed up is in a different project.
+      `projects/*/locations/*/backupChannels/*`
     backupConfig: Optional. Defines the configuration of Backups created via
       this BackupPlan.
     backupSchedule: Optional. Defines a schedule for automatic Backup creation
@@ -326,10 +400,6 @@ class BackupPlan(_messages.Message):
       BackupPlanAssociation to display last successful backup time.
     name: Output only. The full name of the BackupPlan resource. Format:
       `projects/*/locations/*/backupPlans/*`
-    permittedBackupFlow: Output only. The fully qualified name of the
-      PermittedBackupFlow to be used to create a backup. This field is set
-      only if the cluster being backed up is in a different project.
-      `projects/*/locations/*/permittedBackupFlows/*`
     protectedPodCount: Output only. The number of Kubernetes Pods backed up in
       the last successful Backup created via this BackupPlan.
     retentionPolicy: Optional. RetentionPolicy governs lifecycle of Backups
@@ -399,17 +469,17 @@ class BackupPlan(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  backupConfig = _messages.MessageField('BackupConfig', 1)
-  backupSchedule = _messages.MessageField('Schedule', 2)
-  cluster = _messages.StringField(3)
-  createTime = _messages.StringField(4)
-  deactivated = _messages.BooleanField(5)
-  description = _messages.StringField(6)
-  etag = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  lastSuccessfulBackupTime = _messages.StringField(9)
-  name = _messages.StringField(10)
-  permittedBackupFlow = _messages.StringField(11)
+  backupChannel = _messages.StringField(1)
+  backupConfig = _messages.MessageField('BackupConfig', 2)
+  backupSchedule = _messages.MessageField('Schedule', 3)
+  cluster = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  deactivated = _messages.BooleanField(6)
+  description = _messages.StringField(7)
+  etag = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  lastSuccessfulBackupTime = _messages.StringField(10)
+  name = _messages.StringField(11)
   protectedPodCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
   retentionPolicy = _messages.MessageField('RetentionPolicy', 13)
   rpoRiskLevel = _messages.IntegerField(14, variant=_messages.Variant.INT32)
@@ -421,15 +491,14 @@ class BackupPlan(_messages.Message):
 
 
 class BackupPlanAssociation(_messages.Message):
-  r"""A BackupPlanAssociation associates a BackupPlan with a
-  PermittedBackupFlow. This resource is created automatically when a
-  BackupPlan is created using a PermittedBackupFlow. This also serves as a
-  holder for cross-project fields that need to be displayed in the current
-  project.
+  r"""A BackupPlanAssociation associates a BackupPlan with a BackupChannel.
+  This resource is created automatically when a BackupPlan is created using a
+  BackupChannel. This also serves as a holder for cross-project fields that
+  need to be displayed in the current project.
 
   Fields:
     backupPlan: Output only. The fully qualified name of the BackupPlan
-      associated with the parent PermittedBackupFlow
+      associated with the parent BackupChannel.
       `projects/*/locations/*/backupPlans/{backup_plan}`
     cluster: Output only. The fully qualified name of the cluster that is
       being backed up Valid formats: - `projects/*/locations/*/clusters/*` -
@@ -445,7 +514,7 @@ class BackupPlanAssociation(_messages.Message):
       `UpdateBackupPlanAssociation` or `DeleteBackupPlanAssociation` to ensure
       that their change will be applied to the same version of the resource.
     name: Identifier. The fully qualified name of the BackupPlanAssociation.
-      `projects/*/locations/*/permittedBackupFlows/*/backupPlanAssociations/*`
+      `projects/*/locations/*/backupChannels/*/backupPlanAssociations/*`
     uid: Output only. Server generated global unique identifier of
       [UUID4](https://en.wikipedia.org/wiki/Universally_unique_identifier)
     updateTime: Output only. The timestamp when this association was created.
@@ -811,6 +880,149 @@ class GetBackupIndexDownloadUrlResponse(_messages.Message):
   """
 
   signedUrl = _messages.StringField(1)
+
+
+class GkebackupProjectsLocationsBackupChannelsBackupPlanAssociationsGetRequest(_messages.Message):
+  r"""A
+  GkebackupProjectsLocationsBackupChannelsBackupPlanAssociationsGetRequest
+  object.
+
+  Fields:
+    name: Required. Fully qualified BackupPlanAssociation name. Format:
+      `projects/*/locations/*/backupChannels/*/backupPlanAssociations/*`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkebackupProjectsLocationsBackupChannelsBackupPlanAssociationsListRequest(_messages.Message):
+  r"""A
+  GkebackupProjectsLocationsBackupChannelsBackupPlanAssociationsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Field match expression used to filter the results.
+    orderBy: Optional. Field by which to sort the results.
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
+      `ListBackupPlanAssociations` call. Provide this to retrieve the
+      subsequent page in a multi-page list of results. When paginating, all
+      other parameters provided to `ListBackupPlanAssociations` must match the
+      call that provided the page token.
+    parent: Required. The BackupChannel that contains the
+      BackupPlanAssociations to list. Format:
+      `projects/*/locations/*/backupChannels/*`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class GkebackupProjectsLocationsBackupChannelsCreateRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsBackupChannelsCreateRequest object.
+
+  Fields:
+    backupChannel: A BackupChannel resource to be passed as the request body.
+    backupChannelId: Optional. The client-provided short name for the
+      BackupChannel resource. This name must: - be between 1 and 63 characters
+      long (inclusive) - consist of only lower-case ASCII letters, numbers,
+      and dashes - start with a lower-case letter - end with a lower-case
+      letter or number - be unique within the set of BackupChannels in this
+      location If the user does not provide a name, a uuid will be used as the
+      name.
+    parent: Required. The location within which to create the BackupChannel.
+      Format: `projects/*/locations/*`
+  """
+
+  backupChannel = _messages.MessageField('BackupChannel', 1)
+  backupChannelId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkebackupProjectsLocationsBackupChannelsDeleteRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsBackupChannelsDeleteRequest object.
+
+  Fields:
+    etag: Optional. If provided, this value must match the current value of
+      the target BackupChannel's etag field or the request is rejected.
+    force: Optional. If set to true, any BackupPlanAssociations below this
+      BackupChannel will also be deleted. Otherwise, the request will only
+      succeed if the BackupChannel has no BackupPlanAssociations.
+    name: Required. Fully qualified BackupChannel name. Format:
+      `projects/*/locations/*/backupChannels/*`
+  """
+
+  etag = _messages.StringField(1)
+  force = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+
+
+class GkebackupProjectsLocationsBackupChannelsGetRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsBackupChannelsGetRequest object.
+
+  Fields:
+    name: Required. Fully qualified BackupChannel name. Format:
+      `projects/*/locations/*/backupChannels/*`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkebackupProjectsLocationsBackupChannelsListRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsBackupChannelsListRequest object.
+
+  Fields:
+    filter: Optional. Field match expression used to filter the results.
+    orderBy: Optional. Field by which to sort the results.
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
+      `ListBackupChannels` call. Provide this to retrieve the subsequent page
+      in a multi-page list of results. When paginating, all other parameters
+      provided to `ListBackupChannels` must match the call that provided the
+      page token.
+    parent: Required. The location that contains the BackupChannels to list.
+      Format: `projects/*/locations/*`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class GkebackupProjectsLocationsBackupChannelsPatchRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsBackupChannelsPatchRequest object.
+
+  Fields:
+    backupChannel: A BackupChannel resource to be passed as the request body.
+    name: Identifier. The fully qualified name of the BackupChannel.
+      `projects/*/locations/*/backupChannels/*`
+    updateMask: Optional. This is used to specify the fields to be overwritten
+      in the BackupChannel targeted for update. The values for each of these
+      updated fields will be taken from the `backup_channel` provided with
+      this request. Field names are relative to the root of the resource
+      (e.g., `description`, `labels`, etc.) If no `update_mask` is provided,
+      all fields in `backup_channel` will be written to the target
+      BackupChannel resource. Note that OUTPUT_ONLY and IMMUTABLE fields in
+      `backup_channel` are ignored and are not used to update the target
+      BackupChannel.
+  """
+
+  backupChannel = _messages.MessageField('BackupChannel', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class GkebackupProjectsLocationsBackupPlansBackupsCreateRequest(_messages.Message):
@@ -1318,80 +1530,39 @@ class GkebackupProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class GkebackupProjectsLocationsPermittedBackupFlowsBackupPlanAssociationsGetRequest(_messages.Message):
-  r"""A GkebackupProjectsLocationsPermittedBackupFlowsBackupPlanAssociationsGe
-  tRequest object.
+class GkebackupProjectsLocationsRestoreChannelsCreateRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsRestoreChannelsCreateRequest object.
 
   Fields:
-    name: Required. Fully qualified BackupPlanAssociation name. Format:
-      `projects/*/locations/*/permittedBackupFlows/*/backupPlanAssociations/*`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class GkebackupProjectsLocationsPermittedBackupFlowsBackupPlanAssociationsListRequest(_messages.Message):
-  r"""A GkebackupProjectsLocationsPermittedBackupFlowsBackupPlanAssociationsLi
-  stRequest object.
-
-  Fields:
-    filter: Optional. Field match expression used to filter the results.
-    orderBy: Optional. Field by which to sort the results.
-    pageSize: Optional. The target number of results to return in a single
-      response. If not specified, a default value will be chosen by the
-      service. Note that the response may include a partial list and a caller
-      should only rely on the response's next_page_token to determine if there
-      are more instances left to be queried.
-    pageToken: Optional. The value of next_page_token received from a previous
-      `ListBackupPlanAssociations` call. Provide this to retrieve the
-      subsequent page in a multi-page list of results. When paginating, all
-      other parameters provided to `ListBackupPlanAssociations` must match the
-      call that provided the page token.
-    parent: Required. The PermittedBackupFlow that contains the
-      BackupPlanAssociations to list. Format:
-      `projects/*/locations/*/permittedBackupFlows/*`
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class GkebackupProjectsLocationsPermittedBackupFlowsCreateRequest(_messages.Message):
-  r"""A GkebackupProjectsLocationsPermittedBackupFlowsCreateRequest object.
-
-  Fields:
-    parent: Required. The location within which to create the
-      PermittedBackupFlow. Format: `projects/*/locations/*`
-    permittedBackupFlow: A PermittedBackupFlow resource to be passed as the
-      request body.
-    permittedBackupFlowId: Optional. The client-provided short name for the
-      PermittedBackupFlow resource. This name must: - be between 1 and 63
+    parent: Required. The location within which to create the RestoreChannel.
+      Format: `projects/*/locations/*`
+    restoreChannel: A RestoreChannel resource to be passed as the request
+      body.
+    restoreChannelId: Optional. The client-provided short name for the
+      RestoreChannel resource. This name must: - be between 1 and 63
       characters long (inclusive) - consist of only lower-case ASCII letters,
       numbers, and dashes - start with a lower-case letter - end with a lower-
-      case letter or number - be unique within the set of PermittedBackupFlows
-      in this location If the user does not provide a name, a uuid will be
-      used as the name.
+      case letter or number - be unique within the set of RestoreChannels in
+      this location If the user does not provide a name, a uuid will be used
+      as the name.
   """
 
   parent = _messages.StringField(1, required=True)
-  permittedBackupFlow = _messages.MessageField('PermittedBackupFlow', 2)
-  permittedBackupFlowId = _messages.StringField(3)
+  restoreChannel = _messages.MessageField('RestoreChannel', 2)
+  restoreChannelId = _messages.StringField(3)
 
 
-class GkebackupProjectsLocationsPermittedBackupFlowsDeleteRequest(_messages.Message):
-  r"""A GkebackupProjectsLocationsPermittedBackupFlowsDeleteRequest object.
+class GkebackupProjectsLocationsRestoreChannelsDeleteRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsRestoreChannelsDeleteRequest object.
 
   Fields:
     etag: Optional. If provided, this value must match the current value of
-      the target PermittedBackupFlow's etag field or the request is rejected.
-    force: Optional. If set to true, any BackupPlanAssociations below this
-      PermittedBackupFlow will also be deleted. Otherwise, the request will
-      only succeed if the PermittedBackupFlow has no BackupPlanAssociations.
-    name: Required. Fully qualified PermittedBackupFlow name. Format:
-      `projects/*/locations/*/permittedBackupFlows/*`
+      the target RestoreChannel's etag field or the request is rejected.
+    force: Optional. If set to true, any RestorePlanAssociations below this
+      RestoreChannel will also be deleted. Otherwise, the request will only
+      succeed if the RestoreChannel has no RestorePlanAssociations.
+    name: Required. Fully qualified RestoreChannel name. Format:
+      `projects/*/locations/*/restoreChannels/*`
   """
 
   etag = _messages.StringField(1)
@@ -1399,19 +1570,19 @@ class GkebackupProjectsLocationsPermittedBackupFlowsDeleteRequest(_messages.Mess
   name = _messages.StringField(3, required=True)
 
 
-class GkebackupProjectsLocationsPermittedBackupFlowsGetRequest(_messages.Message):
-  r"""A GkebackupProjectsLocationsPermittedBackupFlowsGetRequest object.
+class GkebackupProjectsLocationsRestoreChannelsGetRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsRestoreChannelsGetRequest object.
 
   Fields:
-    name: Required. Fully qualified PermittedBackupFlow name. Format:
-      `projects/*/locations/*/permittedBackupFlows/*`
+    name: Required. Fully qualified RestoreChannel name. Format:
+      `projects/*/locations/*/restoreChannels/*`
   """
 
   name = _messages.StringField(1, required=True)
 
 
-class GkebackupProjectsLocationsPermittedBackupFlowsListRequest(_messages.Message):
-  r"""A GkebackupProjectsLocationsPermittedBackupFlowsListRequest object.
+class GkebackupProjectsLocationsRestoreChannelsListRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsRestoreChannelsListRequest object.
 
   Fields:
     filter: Optional. Field match expression used to filter the results.
@@ -1422,12 +1593,12 @@ class GkebackupProjectsLocationsPermittedBackupFlowsListRequest(_messages.Messag
       should only rely on the response's next_page_token to determine if there
       are more instances left to be queried.
     pageToken: Optional. The value of next_page_token received from a previous
-      `ListPermittedBackupFlows` call. Provide this to retrieve the subsequent
-      page in a multi-page list of results. When paginating, all other
-      parameters provided to `ListPermittedBackupFlows` must match the call
-      that provided the page token.
-    parent: Required. The location that contains the PermittedBackupFlows to
-      list. Format: `projects/*/locations/*`
+      `ListRestoreChannels` call. Provide this to retrieve the subsequent page
+      in a multi-page list of results. When paginating, all other parameters
+      provided to `ListRestoreChannels` must match the call that provided the
+      page token.
+    parent: Required. The location that contains the RestoreChannels to list.
+      Format: `projects/*/locations/*`
   """
 
   filter = _messages.StringField(1)
@@ -1437,28 +1608,71 @@ class GkebackupProjectsLocationsPermittedBackupFlowsListRequest(_messages.Messag
   parent = _messages.StringField(5, required=True)
 
 
-class GkebackupProjectsLocationsPermittedBackupFlowsPatchRequest(_messages.Message):
-  r"""A GkebackupProjectsLocationsPermittedBackupFlowsPatchRequest object.
+class GkebackupProjectsLocationsRestoreChannelsPatchRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsRestoreChannelsPatchRequest object.
 
   Fields:
-    name: Identifier. The fully qualified name of the PermittedBackupFlow.
-      `projects/*/locations/*/permittedBackupFlows/*`
-    permittedBackupFlow: A PermittedBackupFlow resource to be passed as the
-      request body.
+    name: Identifier. The fully qualified name of the RestoreChannel.
+      `projects/*/locations/*/restoreChannels/*`
+    restoreChannel: A RestoreChannel resource to be passed as the request
+      body.
     updateMask: Optional. This is used to specify the fields to be overwritten
-      in the PermittedBackupFlow targeted for update. The values for each of
-      these updated fields will be taken from the `permitted_backup_flow`
-      provided with this request. Field names are relative to the root of the
-      resource (e.g., `description`, `destination_project_id`, etc.) If no
-      `update_mask` is provided, all fields in `permitted_backup_flow` will be
-      written to the target PermittedBackupFlow resource. Note that
-      OUTPUT_ONLY and IMMUTABLE fields in `permitted_backup_flow` are ignored
-      and are not used to update the target PermittedBackupFlow.
+      in the RestoreChannel targeted for update. The values for each of these
+      updated fields will be taken from the `restore_channel` provided with
+      this request. Field names are relative to the root of the resource
+      (e.g., `description`, `destination_project_id`, etc.) If no
+      `update_mask` is provided, all fields in `restore_channel` will be
+      written to the target RestoreChannel resource. Note that OUTPUT_ONLY and
+      IMMUTABLE fields in `restore_channel` are ignored and are not used to
+      update the target RestoreChannel.
   """
 
   name = _messages.StringField(1, required=True)
-  permittedBackupFlow = _messages.MessageField('PermittedBackupFlow', 2)
+  restoreChannel = _messages.MessageField('RestoreChannel', 2)
   updateMask = _messages.StringField(3)
+
+
+class GkebackupProjectsLocationsRestoreChannelsRestorePlanAssociationsGetRequest(_messages.Message):
+  r"""A
+  GkebackupProjectsLocationsRestoreChannelsRestorePlanAssociationsGetRequest
+  object.
+
+  Fields:
+    name: Required. Fully qualified RestorePlanAssociation name. Format:
+      `projects/*/locations/*/restoreChannels/*/restorePlanAssociations/*`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkebackupProjectsLocationsRestoreChannelsRestorePlanAssociationsListRequest(_messages.Message):
+  r"""A
+  GkebackupProjectsLocationsRestoreChannelsRestorePlanAssociationsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Field match expression used to filter the results.
+    orderBy: Optional. Field by which to sort the results.
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
+      `ListRestorePlanAssociations` call. Provide this to retrieve the
+      subsequent page in a multi-page list of results. When paginating, all
+      other parameters provided to `ListRestorePlanAssociations` must match
+      the call that provided the page token.
+    parent: Required. The RestoreChannel that contains the
+      RestorePlanAssociations to list. Format:
+      `projects/*/locations/*/restoreChannels/*`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class GkebackupProjectsLocationsRestorePlansCreateRequest(_messages.Message):
@@ -2086,6 +2300,22 @@ class GroupKindDependency(_messages.Message):
   satisfying = _messages.MessageField('GroupKind', 2)
 
 
+class ListBackupChannelsResponse(_messages.Message):
+  r"""Response message for ListBackupChannels.
+
+  Fields:
+    backupChannels: The list of BackupChannels matching the given criteria.
+    nextPageToken: A token which may be sent as page_token in a subsequent
+      `ListBackupChannels` call to retrieve the next page of results. If this
+      field is omitted or empty, then there are no more results to return.
+    unreachable: Locations that could not be reached.
+  """
+
+  backupChannels = _messages.MessageField('BackupChannel', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListBackupPlanAssociationsResponse(_messages.Message):
   r"""Response message for ListBackupPlanAssociations.
 
@@ -2147,21 +2377,37 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class ListPermittedBackupFlowsResponse(_messages.Message):
-  r"""Response message for ListPermittedBackupFlows.
+class ListRestoreChannelsResponse(_messages.Message):
+  r"""Response message for ListRestoreChannels.
 
   Fields:
     nextPageToken: A token which may be sent as page_token in a subsequent
-      `ListPermittedBackupFlows` call to retrieve the next page of results. If
-      this field is omitted or empty, then there are no more results to
-      return.
-    permittedBackupFlows: The list of PermittedBackupFlows matching the given
-      criteria.
+      `ListRestoreChannels` call to retrieve the next page of results. If this
+      field is omitted or empty, then there are no more results to return.
+    restoreChannels: The list of RestoreChannels matching the given criteria.
     unreachable: Locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
-  permittedBackupFlows = _messages.MessageField('PermittedBackupFlow', 2, repeated=True)
+  restoreChannels = _messages.MessageField('RestoreChannel', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListRestorePlanAssociationsResponse(_messages.Message):
+  r"""Response message for ListRestorePlanAssociations.
+
+  Fields:
+    nextPageToken: A token which may be sent as page_token in a subsequent
+      `ListRestorePlanAssociations` call to retrieve the next page of results.
+      If this field is omitted or empty, then there are no more results to
+      return.
+    restorePlanAssociations: The list of RestorePlanAssociations matching the
+      given criteria.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  restorePlanAssociations = _messages.MessageField('RestorePlanAssociation', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -2362,75 +2608,6 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
-
-
-class PermittedBackupFlow(_messages.Message):
-  r"""A PermittedBackupFlow imposes constraints on where clusters can be
-  backed up. The PermittedBackupFlow should be in the same project and region
-  as the cluster being backed up. The backup can be created only in
-  destination_project.
-
-  Messages:
-    LabelsValue: Optional. A set of custom labels supplied by user.
-
-  Fields:
-    createTime: Output only. The timestamp when this PermittedBackupFlow
-      resource was created.
-    description: Optional. User specified descriptive string for this
-      PermittedBackupFlow.
-    destinationProjectId: Required. Immutable. The project where backups are
-      allowed to be stored.
-    etag: Output only. `etag` is used for optimistic concurrency control as a
-      way to help prevent simultaneous updates of a PermittedBackupFlow from
-      overwriting each other. It is strongly suggested that systems make use
-      of the 'etag' in the read-modify-write cycle to perform
-      PermittedBackupFlow updates in order to avoid race conditions: An `etag`
-      is returned in the response to `GetPermittedBackupFlow`, and systems are
-      expected to put that etag in the request to `UpdatePermittedBackupFlow`
-      or `DeletePermittedBackupFlow` to ensure that their change will be
-      applied to the same version of the resource.
-    labels: Optional. A set of custom labels supplied by user.
-    name: Identifier. The fully qualified name of the PermittedBackupFlow.
-      `projects/*/locations/*/permittedBackupFlows/*`
-    uid: Output only. Server generated global unique identifier of
-      [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier)
-      format.
-    updateTime: Output only. The timestamp when this PermittedBackupFlow
-      resource was last updated.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. A set of custom labels supplied by user.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  destinationProjectId = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
 
 
 class Policy(_messages.Message):
@@ -2740,6 +2917,76 @@ class Restore(_messages.Message):
   volumesRestoredCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
 
 
+class RestoreChannel(_messages.Message):
+  r"""A RestoreChannel imposes constraints on where backups can be restored.
+  The RestoreChannel should be in the same project and region as the backups.
+  The backups can only be restored in the `destination_project`.
+
+  Messages:
+    LabelsValue: Optional. A set of custom labels supplied by user.
+
+  Fields:
+    createTime: Output only. The timestamp when this RestoreChannel was
+      created.
+    description: Optional. User specified descriptive string for this
+      RestoreChannel.
+    destinationProject: Required. Immutable. The project into which the
+      backups will be restored. The format is `projects/{project}`. Currently,
+      {project} can only be the project number. Support for project IDs will
+      be added in the future.
+    etag: Output only. `etag` is used for optimistic concurrency control as a
+      way to help prevent simultaneous updates of a RestoreChannel from
+      overwriting each other. It is strongly suggested that systems make use
+      of the 'etag' in the read-modify-write cycle to perform RestoreChannel
+      updates in order to avoid race conditions: An `etag` is returned in the
+      response to `GetRestoreChannel`, and systems are expected to put that
+      etag in the request to `UpdateRestoreChannel` or `DeleteRestoreChannel`
+      to ensure that their change will be applied to the same version of the
+      resource.
+    labels: Optional. A set of custom labels supplied by user.
+    name: Identifier. The fully qualified name of the RestoreChannel.
+      `projects/*/locations/*/restoreChannels/*`
+    uid: Output only. Server generated global unique identifier of
+      [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier)
+      format.
+    updateTime: Output only. The timestamp when this RestoreChannel was last
+      updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. A set of custom labels supplied by user.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  destinationProject = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
 class RestoreConfig(_messages.Message):
   r"""Configuration of a restore.
 
@@ -2970,6 +3217,10 @@ class RestorePlan(_messages.Message):
     labels: Optional. A set of custom labels supplied by user.
     name: Output only. The full name of the RestorePlan resource. Format:
       `projects/*/locations/*/restorePlans/*`.
+    restoreChannel: Output only. The fully qualified name of the
+      RestoreChannel to be used to create a RestorePlan. This field is set
+      only if the `backup_plan` is in a different project than the
+      RestorePlan. Format: `projects/*/locations/*/restoreChannels/*`
     restoreConfig: Required. Configuration of Restores created via this
       RestorePlan.
     state: Output only. State of the RestorePlan. This State field reflects
@@ -3032,11 +3283,48 @@ class RestorePlan(_messages.Message):
   etag = _messages.StringField(5)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
-  restoreConfig = _messages.MessageField('RestoreConfig', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  stateReason = _messages.StringField(10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  restoreChannel = _messages.StringField(8)
+  restoreConfig = _messages.MessageField('RestoreConfig', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  stateReason = _messages.StringField(11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
+
+
+class RestorePlanAssociation(_messages.Message):
+  r"""A RestorePlanAssociation associates a RestorePlan with a RestoreChannel.
+  This resource is created automatically when a RestorePlan is created using a
+  RestoreChannel. This also serves as a holder for cross-project fields that
+  need to be displayed in the current project.
+
+  Fields:
+    createTime: Output only. The timestamp when this association was created.
+    etag: Output only. `etag` is used for optimistic concurrency control as a
+      way to help prevent simultaneous updates of a RestorePlanAssociation
+      from overwriting each other. It is strongly suggested that systems make
+      use of the 'etag' in the read-modify-write cycle to perform
+      RestorePlanAssociation updates in order to avoid race conditions: An
+      `etag` is returned in the response to `GetRestorePlanAssociation`, and
+      systems are expected to put that etag in the request to
+      `UpdateRestorePlanAssociation` or `DeleteRestorePlanAssociation` to
+      ensure that their change will be applied to the same version of the
+      resource.
+    name: Identifier. The fully qualified name of the RestorePlanAssociation.
+      `projects/*/locations/*/restoreChannels/*/restorePlanAssociations/*`
+    restorePlan: Output only. The fully qualified name of the RestorePlan
+      associated with this RestoreChannel.
+      `projects/*/locations/*/restorePlans/{restore_plan}`
+    uid: Output only. Server generated global unique identifier of
+      [UUID4](https://en.wikipedia.org/wiki/Universally_unique_identifier)
+    updateTime: Output only. The timestamp when this association was created.
+  """
+
+  createTime = _messages.StringField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  restorePlan = _messages.StringField(4)
+  uid = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class RetentionPolicy(_messages.Message):

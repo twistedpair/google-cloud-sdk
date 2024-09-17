@@ -772,12 +772,16 @@ class GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork(_messages.Message):
       excluded from peering.
     includeExportRanges: Optional. IP ranges allowed to be included from
       peering.
+    producerVpcSpokes: Output only. The list of Producer VPC spokes that this
+      VPC spoke is a service consumer VPC spoke for. These producer VPCs are
+      connected through VPC peering to this spoke's backing VPC network.
     uri: Required. The URI of the VPC network resource.
   """
 
   excludeExportRanges = _messages.StringField(1, repeated=True)
   includeExportRanges = _messages.StringField(2, repeated=True)
-  uri = _messages.StringField(3)
+  producerVpcSpokes = _messages.StringField(3, repeated=True)
+  uri = _messages.StringField(4)
 
 
 class GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels(_messages.Message):

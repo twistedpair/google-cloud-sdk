@@ -101,6 +101,10 @@ class Schema(proto.Message):
         properties (MutableMapping[str, googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Schema]):
             Optional. SCHEMA FIELDS FOR TYPE OBJECT
             Properties of Type.OBJECT.
+        property_ordering (MutableSequence[str]):
+            Optional. The order of the properties.
+            Not a standard field in open api spec. Only used
+            to support the order of the properties.
         required (MutableSequence[str]):
             Optional. Required properties of Type.OBJECT.
         min_properties (int):
@@ -177,6 +181,10 @@ class Schema(proto.Message):
         proto.MESSAGE,
         number=3,
         message='Schema',
+    )
+    property_ordering: MutableSequence[str] = proto.RepeatedField(
+        proto.STRING,
+        number=25,
     )
     required: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,

@@ -350,7 +350,7 @@ def AddNetworkTags(parser):
 def AddPoolSize(parser, use_default=True):
   """Adds a --pool-size flag to the given parser."""
   help_text = """\
-  Number of instances to pool for faster Workstation starup."""
+  Number of instances to pool for faster Workstation startup."""
   parser.add_argument(
       '--pool-size',
       default=0 if use_default else None,

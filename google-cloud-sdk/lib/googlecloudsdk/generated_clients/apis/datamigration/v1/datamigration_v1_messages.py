@@ -5091,18 +5091,26 @@ class PrivateServiceConnectConnectivity(_messages.Message):
 
 
 class PromoteMigrationJobRequest(_messages.Message):
-  r"""Request message for 'PromoteMigrationJob' request."""
+  r"""Request message for 'PromoteMigrationJob' request.
+
+  Fields:
+    objectsFilter: Optional. The object filter to apply to the migration job.
+  """
+
+  objectsFilter = _messages.MessageField('MigrationJobObjectsConfig', 1)
 
 
 class RestartMigrationJobRequest(_messages.Message):
   r"""Request message for 'RestartMigrationJob' request.
 
   Fields:
+    objectsFilter: Optional. The object filter to apply to the migration job.
     skipValidation: Optional. Restart the migration job without running prior
       configuration verification. Defaults to `false`.
   """
 
-  skipValidation = _messages.BooleanField(1)
+  objectsFilter = _messages.MessageField('MigrationJobObjectsConfig', 1)
+  skipValidation = _messages.BooleanField(2)
 
 
 class ResumeMigrationJobRequest(_messages.Message):

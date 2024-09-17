@@ -2015,9 +2015,11 @@ class RunStreamRequest(_messages.Message):
   Fields:
     cdcStrategy: Optional. The CDC strategy of the stream. If not set, the
       system's default value will be used.
+    force: Optional. Update the stream without validating it.
   """
 
   cdcStrategy = _messages.MessageField('CdcStrategy', 1)
+  force = _messages.BooleanField(2)
 
 
 class SingleTargetDataset(_messages.Message):

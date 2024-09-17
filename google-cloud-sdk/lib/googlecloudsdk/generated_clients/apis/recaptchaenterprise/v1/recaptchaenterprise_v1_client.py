@@ -294,7 +294,7 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
           }
 
     def AddIpOverride(self, request, global_params=None):
-      r"""Adds an IP override to a key. The following restrictions hold: * The maximum number of IP overrides per key is 100. * For any conflict (such as IP already exists or IP part of an existing IP range), an error will be returned.
+      r"""Adds an IP override to a key. The following restrictions hold: * The maximum number of IP overrides per key is 100. * For any conflict (such as IP already exists or IP part of an existing IP range), an error is returned.
 
       Args:
         request: (RecaptchaenterpriseProjectsKeysAddIpOverrideRequest) input message
@@ -455,6 +455,33 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListIpOverrides(self, request, global_params=None):
+      r"""Lists all IP overrides for a key.
+
+      Args:
+        request: (RecaptchaenterpriseProjectsKeysListIpOverridesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecaptchaenterpriseV1ListIpOverridesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListIpOverrides')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListIpOverrides.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/keys/{keysId}:listIpOverrides',
+        http_method='GET',
+        method_id='recaptchaenterprise.projects.keys.listIpOverrides',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}:listIpOverrides',
+        request_field='',
+        request_type_name='RecaptchaenterpriseProjectsKeysListIpOverridesRequest',
+        response_type_name='GoogleCloudRecaptchaenterpriseV1ListIpOverridesResponse',
+        supports_download=False,
+    )
+
     def Migrate(self, request, global_params=None):
       r"""Migrates an existing key from reCAPTCHA to reCAPTCHA Enterprise. Once a key is migrated, it can be used from either product. SiteVerify requests are billed as CreateAssessment calls. You must be authenticated as one of the current owners of the reCAPTCHA Key, and your user must have the reCAPTCHA Enterprise Admin IAM role in the destination project.
 
@@ -506,6 +533,33 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
         request_field='googleCloudRecaptchaenterpriseV1Key',
         request_type_name='RecaptchaenterpriseProjectsKeysPatchRequest',
         response_type_name='GoogleCloudRecaptchaenterpriseV1Key',
+        supports_download=False,
+    )
+
+    def RemoveIpOverride(self, request, global_params=None):
+      r"""Removes an IP override from a key. The following restrictions hold: * If the IP isn't found in an existing IP override, a `NOT_FOUND` error is returned. * If the IP is found in an existing IP override, but the override type does not match, a `NOT_FOUND` error is returned.
+
+      Args:
+        request: (RecaptchaenterpriseProjectsKeysRemoveIpOverrideRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecaptchaenterpriseV1RemoveIpOverrideResponse) The response message.
+      """
+      config = self.GetMethodConfig('RemoveIpOverride')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveIpOverride.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/keys/{keysId}:removeIpOverride',
+        http_method='POST',
+        method_id='recaptchaenterprise.projects.keys.removeIpOverride',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:removeIpOverride',
+        request_field='googleCloudRecaptchaenterpriseV1RemoveIpOverrideRequest',
+        request_type_name='RecaptchaenterpriseProjectsKeysRemoveIpOverrideRequest',
+        response_type_name='GoogleCloudRecaptchaenterpriseV1RemoveIpOverrideResponse',
         supports_download=False,
     )
 

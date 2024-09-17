@@ -494,6 +494,27 @@ class DataPreparation(_messages.Message):
   tags = _messages.StringField(4, repeated=True)
 
 
+class DataPreparationAction(_messages.Message):
+  r"""Represents a workflow action that will run a Data Preparation.
+
+  Fields:
+    contents: Output only. Binary encoded proto of the data preparation
+      definition.
+    contentsYaml: Output only. YAML representing the contents of the data
+      preparation. Can be used to show the customer what the input was to
+      their workflow.
+    generatedSql: Output only. The generated BigQuery SQL script that will be
+      executed. For reference only.
+    jobId: Output only. The ID of the BigQuery job that executed the SQL in
+      sql_script. Only set once the job has started to run.
+  """
+
+  contents = _messages.BytesField(1)
+  contentsYaml = _messages.StringField(2)
+  generatedSql = _messages.StringField(3)
+  jobId = _messages.StringField(4)
+
+
 class DataformProjectsLocationsCollectionsGetIamPolicyRequest(_messages.Message):
   r"""A DataformProjectsLocationsCollectionsGetIamPolicyRequest object.
 
@@ -3114,6 +3135,8 @@ class WorkflowInvocationAction(_messages.Message):
     canonicalTarget: Output only. The action's identifier if the project had
       been compiled without any overrides configured. Unique within the
       compilation result.
+    dataPreparationAction: Output only. The workflow action's data preparation
+      action details.
     failureReason: Output only. If and only if action's state is FAILED a
       failure reason is set.
     invocationTiming: Output only. This action's timing details. `start_time`
@@ -3151,11 +3174,12 @@ class WorkflowInvocationAction(_messages.Message):
 
   bigqueryAction = _messages.MessageField('BigQueryAction', 1)
   canonicalTarget = _messages.MessageField('Target', 2)
-  failureReason = _messages.StringField(3)
-  invocationTiming = _messages.MessageField('Interval', 4)
-  notebookAction = _messages.MessageField('NotebookAction', 5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  target = _messages.MessageField('Target', 7)
+  dataPreparationAction = _messages.MessageField('DataPreparationAction', 3)
+  failureReason = _messages.StringField(4)
+  invocationTiming = _messages.MessageField('Interval', 5)
+  notebookAction = _messages.MessageField('NotebookAction', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  target = _messages.MessageField('Target', 8)
 
 
 class Workspace(_messages.Message):

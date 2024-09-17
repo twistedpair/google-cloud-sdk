@@ -5630,6 +5630,54 @@ class HealthcareProjectsLocationsDatasetsFhirStoresExportRequest(_messages.Messa
   name = _messages.StringField(2, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryCreateRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryCreateRequest
+  object.
+
+  Fields:
+    httpBody: A HttpBody resource to be passed as the request body.
+    parent: Required. The name of the FHIR store this resource belongs to.
+  """
+
+  httpBody = _messages.MessageField('HttpBody', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryReadRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryReadRequest
+  object.
+
+  Fields:
+    name: Required. The name of the Binary resource to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryUpdateRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryUpdateRequest
+  object.
+
+  Fields:
+    httpBody: A HttpBody resource to be passed as the request body.
+    name: Required. The name of the resource to update.
+  """
+
+  httpBody = _messages.MessageField('HttpBody', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryVreadRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirBinaryVreadRequest
+  object.
+
+  Fields:
+    name: Required. The name of the Binary resource version to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirCapabilitiesRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresFhirCapabilitiesRequest
   object.
@@ -8721,8 +8769,8 @@ class RollbackFhirResourcesResponse(_messages.Message):
 
 
 class RollbackHL7MessagesFilteringFields(_messages.Message):
-  r"""Filtering fields for an HL7 rollback. Currently only supports a list of
-  operation ids to roll back.
+  r"""Filtering fields for an HL7v2 rollback. Currently only supports a list
+  of operation ids to roll back.
 
   Fields:
     operationIds: Optional. A list of operation IDs to roll back.
@@ -8782,7 +8830,7 @@ class RollbackHl7V2MessagesResponse(_messages.Message):
   r"""Final response of rollback FHIR resources request.
 
   Fields:
-    hl7v2Store: The name of the HL7 store to rollback, in the format of
+    hl7v2Store: The name of the HL7v2 store to rollback, in the format of
       "projects/{project_id}/locations/{location_id}/datasets/{dataset_id}
       /hl7v2Stores/{fhir_store_id}".
   """

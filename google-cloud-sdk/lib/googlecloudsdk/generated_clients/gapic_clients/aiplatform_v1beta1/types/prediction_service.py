@@ -761,6 +761,11 @@ class CountTokensRequest(proto.Message):
             A ``Tool`` is a piece of code that enables the system to
             interact with external systems to perform an action, or set
             of actions, outside of knowledge and scope of the model.
+        generation_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GenerationConfig):
+            Optional. Generation config that the model
+            will use to generate the response.
+
+            This field is a member of `oneof`_ ``_generation_config``.
     """
 
     endpoint: str = proto.Field(
@@ -791,6 +796,12 @@ class CountTokensRequest(proto.Message):
         proto.MESSAGE,
         number=6,
         message=tool.Tool,
+    )
+    generation_config: content.GenerationConfig = proto.Field(
+        proto.MESSAGE,
+        number=7,
+        optional=True,
+        message=content.GenerationConfig,
     )
 
 
@@ -862,6 +873,17 @@ class GenerateContentRequest(proto.Message):
         tool_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ToolConfig):
             Optional. Tool config. This config is shared
             for all tools provided in the request.
+        labels (MutableMapping[str, str]):
+            Optional. The labels with user-defined
+            metadata for the request. It is used for billing
+            and reporting only.
+
+            Label keys and values can be no longer than 63
+            characters (Unicode codepoints) and can only
+            contain lowercase letters, numeric characters,
+            underscores, and dashes. International
+            characters are allowed. Label values are
+            optional. Label keys must start with a letter.
         safety_settings (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.SafetySetting]):
             Optional. Per request settings for blocking
             unsafe content. Enforced on
@@ -898,6 +920,11 @@ class GenerateContentRequest(proto.Message):
         proto.MESSAGE,
         number=7,
         message=tool.ToolConfig,
+    )
+    labels: MutableMapping[str, str] = proto.MapField(
+        proto.STRING,
+        proto.STRING,
+        number=10,
     )
     safety_settings: MutableSequence[content.SafetySetting] = proto.RepeatedField(
         proto.MESSAGE,

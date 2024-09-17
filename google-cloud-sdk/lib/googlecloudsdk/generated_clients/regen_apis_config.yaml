@@ -1486,7 +1486,24 @@ apis:
         projects:
           path: projects/{project}
     v2:
+      discovery_doc: storage_v2.json
       gcloud_gapic_library: google/storage/v2:storage_v2_py
+      resources:
+        projects:
+          path: projects/{project}
+        projects.buckets:
+          path: projects/{project}/buckets/{bucket}
+        projects.buckets.notificationConfigs:
+          path: projects/{project}/buckets/{bucket}/notificationConfigs/{notification_config}
+        projects.locations:
+          path: projects/{project}/locations/{location}
+        projects.locations.keyRings:
+          path: projects/{project}/locations/{location}/keyRings/{key_ring}
+        projects.locations.keyRings.cryptoKeys:
+          path: projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}
+  storagebatchoperations:
+    v1:
+      discovery_doc: storagebatchoperations_v1.json
   storageinsights:
     v1:
       discovery_doc: storageinsights_v1.json
@@ -2244,6 +2261,10 @@ canonical_surfaces:
   storage:
     name: storage
     command: storage
+  storagebatchoperations:
+    name: storagebatchoperations
+    command: storage batch-actions
+    hidden: true
   storageinsights:
     name: storageinsights
     command: storage insights

@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
 FINDING_ORG_ID_FLAG = base.Argument(
@@ -32,4 +33,19 @@ FINDING_NAME_FLAG = base.Argument(
     help=""" Canonical name of the finding
         Format: projects/{proj_id}/sources/{src_id}/locations/global/findings/{finding_id} """,
     required=True
+)
+
+LLM_PROJ_ID_FLAG = base.Argument(
+    '--project-id',
+    help=""" Project ID of the LLM enabled project""",
+    required=True
+)
+
+TFSTATE_FILE_PATHS_LIST_FLAG = base.Argument(
+    '--tfstate-file-paths',
+    help=""" Comma seperated list of paths to terraform state files.
+        Format: /path/to/file1.tfstate,/path/to/file2.tfstate """,
+    metavar='PATHS',
+    type=arg_parsers.ArgList(),
+    required=False,
 )

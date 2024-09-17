@@ -97,7 +97,7 @@ class AdaptiveMtTranslateRequest(_messages.Message):
 
   content = _messages.StringField(1, repeated=True)
   dataset = _messages.StringField(2)
-  glossaryConfig = _messages.MessageField('TranslateTextGlossaryConfig', 3)
+  glossaryConfig = _messages.MessageField('GlossaryConfig', 3)
   referenceSentenceConfig = _messages.MessageField('ReferenceSentenceConfig', 4)
 
 
@@ -756,7 +756,7 @@ class Example(_messages.Message):
   Fields:
     name: Output only. The resource name of the example, in form of
       `projects/{project-number-or-
-      id}/locations/{location_id}/datasets/{dataset_id}/examples/{example_id}'
+      id}/locations/{location_id}/datasets/{dataset_id}/examples/{example_id}`
     sourceText: Sentence in source language.
     targetText: Sentence in target language.
     usage: Output only. Usage of the sentence pair. Options are
@@ -869,13 +869,30 @@ class Glossary(_messages.Message):
   submitTime = _messages.StringField(8)
 
 
+class GlossaryConfig(_messages.Message):
+  r"""Configures which glossary is used for a specific target language and
+  defines options for applying that glossary.
+
+  Fields:
+    glossary: Required. The `glossary` to be applied for this translation. The
+      format depends on the glossary: - User-provided custom glossary:
+      `projects/{project-number-or-id}/locations/{location-
+      id}/glossaries/{glossary-id}`
+    ignoreCase: Optional. Indicates match is case insensitive. The default
+      value is `false` if missing.
+  """
+
+  glossary = _messages.StringField(1)
+  ignoreCase = _messages.BooleanField(2)
+
+
 class GlossaryEntry(_messages.Message):
   r"""Represents a single entry in a glossary.
 
   Fields:
     description: Describes the glossary entry.
     name: Identifier. The resource name of the entry. Format:
-      "projects/*/locations/*/glossaries/*/glossaryEntries/*"
+      `projects/*/locations/*/glossaries/*/glossaryEntries/*`
     termsPair: Used for an unidirectional glossary.
     termsSet: Used for an equivalent term sets glossary.
   """

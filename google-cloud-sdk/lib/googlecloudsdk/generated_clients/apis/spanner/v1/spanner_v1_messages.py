@@ -1538,10 +1538,10 @@ class ExecuteSqlRequest(_messages.Message):
       NORMAL: The default mode. Only the statement results are returned.
       PLAN: This mode returns only the query plan, without any results or
         execution statistics information.
-      PROFILE: This mode returns both the query plan and the execution
-        statistics along with the results. This has a performance overhead
-        compared to the NORMAL mode. It is not recommended to use this mode
-        for production traffic.
+      PROFILE: This mode returns the query plan, overall execution statistics,
+        operator level execution statistics along with the results. This has a
+        performance overhead compared to the other modes. It is not
+        recommended to use this mode for production traffic.
     """
     NORMAL = 0
     PLAN = 1
@@ -3046,6 +3046,23 @@ class MoveInstanceRequest(_messages.Message):
   """
 
   targetConfig = _messages.StringField(1)
+
+
+class MultiplexedSessionPrecommitToken(_messages.Message):
+  r"""When a read-write transaction is executed on a multiplexed session, this
+  precommit token is sent back to the client as a part of the [Transaction]
+  message in the BeginTransaction response and also as a part of the
+  [ResultSet] and [PartialResultSet] responses.
+
+  Fields:
+    precommitToken: Opaque precommit token.
+    seqNum: An incrementing seq number is generated on every precommit token
+      that is returned. Clients should remember the precommit token with the
+      highest sequence number from the current transaction attempt.
+  """
+
+  precommitToken = _messages.BytesField(1)
+  seqNum = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class Mutation(_messages.Message):
@@ -6752,6 +6769,12 @@ class Transaction(_messages.Message):
       ExecuteSql, Commit, or Rollback calls. Single-use read-only transactions
       do not have IDs, because single-use transactions do not support multiple
       requests.
+    precommitToken: A precommit token will be included in the response of a
+      BeginTransaction request if the read-write transaction is on a
+      multiplexed session and a mutation_key was specified in the
+      BeginTransaction. The precommit token with the highest sequence number
+      from this transaction attempt should be passed to the Commit request for
+      this transaction.
     readTimestamp: For snapshot read-only transactions, the read timestamp
       chosen for the transaction. Not returned by default: see
       TransactionOptions.ReadOnly.return_read_timestamp. A timestamp in
@@ -6760,7 +6783,8 @@ class Transaction(_messages.Message):
   """
 
   id = _messages.BytesField(1)
-  readTimestamp = _messages.StringField(2)
+  precommitToken = _messages.MessageField('MultiplexedSessionPrecommitToken', 2)
+  readTimestamp = _messages.StringField(3)
 
 
 class TransactionOptions(_messages.Message):

@@ -1279,12 +1279,15 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange(_messages.Mes
         item.
       LINE_ITEM_CHANGE_TYPE_REVERT_CANCELLATION: The change is to revert a
         cancellation.
+      LINE_ITEM_CHANGE_TYPE_DISABLE_FREE_TRIAL: The change is to disable free
+        trial on this order.
     """
     LINE_ITEM_CHANGE_TYPE_UNSPECIFIED = 0
     LINE_ITEM_CHANGE_TYPE_CREATE = 1
     LINE_ITEM_CHANGE_TYPE_UPDATE = 2
     LINE_ITEM_CHANGE_TYPE_CANCEL = 3
     LINE_ITEM_CHANGE_TYPE_REVERT_CANCELLATION = 4
+    LINE_ITEM_CHANGE_TYPE_DISABLE_FREE_TRIAL = 5
 
   changeEffectiveTime = _messages.StringField(1)
   changeId = _messages.StringField(2)
@@ -1531,12 +1534,15 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequestModificati
         item.
       LINE_ITEM_CHANGE_TYPE_REVERT_CANCELLATION: The change is to revert a
         cancellation.
+      LINE_ITEM_CHANGE_TYPE_DISABLE_FREE_TRIAL: The change is to disable free
+        trial on this order.
     """
     LINE_ITEM_CHANGE_TYPE_UNSPECIFIED = 0
     LINE_ITEM_CHANGE_TYPE_CREATE = 1
     LINE_ITEM_CHANGE_TYPE_UPDATE = 2
     LINE_ITEM_CHANGE_TYPE_CANCEL = 3
     LINE_ITEM_CHANGE_TYPE_REVERT_CANCELLATION = 4
+    LINE_ITEM_CHANGE_TYPE_DISABLE_FREE_TRIAL = 5
 
   autoRenewalBehavior = _messages.EnumField('AutoRenewalBehaviorValueValuesEnum', 1)
   changeType = _messages.EnumField('ChangeTypeValueValuesEnum', 2)
@@ -1605,12 +1611,15 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyProductsOrderRequestMo
         item.
       LINE_ITEM_CHANGE_TYPE_REVERT_CANCELLATION: The change is to revert a
         cancellation.
+      LINE_ITEM_CHANGE_TYPE_DISABLE_FREE_TRIAL: The change is to disable free
+        trial on this order.
     """
     LINE_ITEM_CHANGE_TYPE_UNSPECIFIED = 0
     LINE_ITEM_CHANGE_TYPE_CREATE = 1
     LINE_ITEM_CHANGE_TYPE_UPDATE = 2
     LINE_ITEM_CHANGE_TYPE_CANCEL = 3
     LINE_ITEM_CHANGE_TYPE_REVERT_CANCELLATION = 4
+    LINE_ITEM_CHANGE_TYPE_DISABLE_FREE_TRIAL = 5
 
   autoRenewalBehavior = _messages.EnumField('AutoRenewalBehaviorValueValuesEnum', 1)
   changeType = _messages.EnumField('ChangeTypeValueValuesEnum', 2)

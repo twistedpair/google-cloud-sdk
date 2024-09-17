@@ -1613,6 +1613,20 @@ class NetappProjectsLocationsStoragePoolsSwitchRequest(_messages.Message):
   switchActiveReplicaZoneRequest = _messages.MessageField('SwitchActiveReplicaZoneRequest', 2)
 
 
+class NetappProjectsLocationsStoragePoolsValidateDirectoryServiceRequest(_messages.Message):
+  r"""A NetappProjectsLocationsStoragePoolsValidateDirectoryServiceRequest
+  object.
+
+  Fields:
+    name: Required. Name of the storage pool
+    validateDirectoryServiceRequest: A ValidateDirectoryServiceRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  validateDirectoryServiceRequest = _messages.MessageField('ValidateDirectoryServiceRequest', 2)
+
+
 class NetappProjectsLocationsVolumesCreateRequest(_messages.Message):
   r"""A NetappProjectsLocationsVolumesCreateRequest object.
 
@@ -2793,6 +2807,33 @@ class TransferStats(_messages.Message):
   totalTransferDuration = _messages.StringField(6)
   transferBytes = _messages.IntegerField(7)
   updateTime = _messages.StringField(8)
+
+
+class ValidateDirectoryServiceRequest(_messages.Message):
+  r"""ValidateDirectoryServiceRequest validates the directory service policy
+  attached to the storage pool.
+
+  Enums:
+    DirectoryServiceTypeValueValuesEnum: Type of directory service policy
+      attached to the storage pool.
+
+  Fields:
+    directoryServiceType: Type of directory service policy attached to the
+      storage pool.
+  """
+
+  class DirectoryServiceTypeValueValuesEnum(_messages.Enum):
+    r"""Type of directory service policy attached to the storage pool.
+
+    Values:
+      DIRECTORY_SERVICE_TYPE_UNSPECIFIED: Directory service type is not
+        specified.
+      ACTIVE_DIRECTORY: Active directory policy attached to the storage pool.
+    """
+    DIRECTORY_SERVICE_TYPE_UNSPECIFIED = 0
+    ACTIVE_DIRECTORY = 1
+
+  directoryServiceType = _messages.EnumField('DirectoryServiceTypeValueValuesEnum', 1)
 
 
 class VerifyKmsConfigRequest(_messages.Message):

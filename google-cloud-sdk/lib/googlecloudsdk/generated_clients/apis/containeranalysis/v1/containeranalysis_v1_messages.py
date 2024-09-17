@@ -2664,6 +2664,22 @@ class ContaineranalysisProjectsLocationsNotesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class ContaineranalysisProjectsLocationsNotesGetIamPolicyRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsNotesGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class ContaineranalysisProjectsLocationsNotesGetRequest(_messages.Message):
   r"""A ContaineranalysisProjectsLocationsNotesGetRequest object.
 
@@ -2725,6 +2741,39 @@ class ContaineranalysisProjectsLocationsNotesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class ContaineranalysisProjectsLocationsNotesSetIamPolicyRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsNotesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class ContaineranalysisProjectsLocationsNotesTestIamPermissionsRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsNotesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class ContaineranalysisProjectsLocationsOccurrencesBatchCreateRequest(_messages.Message):
   r"""A ContaineranalysisProjectsLocationsOccurrencesBatchCreateRequest
   object.
@@ -2762,6 +2811,23 @@ class ContaineranalysisProjectsLocationsOccurrencesDeleteRequest(_messages.Messa
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class ContaineranalysisProjectsLocationsOccurrencesGetIamPolicyRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsOccurrencesGetIamPolicyRequest
+  object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class ContaineranalysisProjectsLocationsOccurrencesGetNotesRequest(_messages.Message):
@@ -2833,6 +2899,40 @@ class ContaineranalysisProjectsLocationsOccurrencesPatchRequest(_messages.Messag
   name = _messages.StringField(1, required=True)
   occurrence = _messages.MessageField('Occurrence', 2)
   updateMask = _messages.StringField(3)
+
+
+class ContaineranalysisProjectsLocationsOccurrencesSetIamPolicyRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsOccurrencesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class ContaineranalysisProjectsLocationsOccurrencesTestIamPermissionsRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsOccurrencesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class ContaineranalysisProjectsLocationsResourcesExportSBOMRequest(_messages.Message):

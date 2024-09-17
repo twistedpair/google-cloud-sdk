@@ -54,6 +54,19 @@ def GetParentForExecution(args):
   return args.CONCEPTS.region.Parse().RelativeName()
 
 
+def GetExecutionResourceName(args):
+  """Get the resource name for the execution.
+
+  Args:
+    args: Argparse object from Command.Run
+
+  Returns:
+    The resource name in the form
+    projects/{project}/locations/{location}/notebookExecutionJobs/{execution_job_id}.
+  """
+  return args.CONCEPTS.execution.Parse().RelativeName()
+
+
 def CreateEncryptionSpecConfig(args, messages):
   """Constructs the encryption spec from the kms key resource arg.
 
@@ -159,6 +172,15 @@ def GetRuntimeTemplateResourceName(args):
   return args.CONCEPTS.notebook_runtime_template.Parse().RelativeName()
 
 
+def GetExecutionUri(resource):
+  """Get the URL for an execution resource."""
+  execution = resources.REGISTRY.ParseRelativeName(
+      relative_name=resource.name,
+      collection='aiplatform.projects.locations.notebookExecutionJobs',
+  )
+  return execution.SelfLink()
+
+
 def CreateNotebookExecutionJob(args, messages):
   """Creates the NotebookExecutionJob message for the create request.
 
@@ -201,4 +223,57 @@ def CreateExecutionCreateRequest(args, messages):
       googleCloudAiplatformV1beta1NotebookExecutionJob=notebook_execution_job,
       notebookExecutionJobId=args.execution_job_id,
       parent=parent,
+  )
+
+
+def CreateExecutionDeleteRequest(args, messages):
+  """Builds a NotebookExecutionJobsDeleteRequest message.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the specified API.
+
+  Returns:
+    Instance of the NotebookExecutionJobsDeleteRequest message.
+  """
+
+  return (
+      messages.AiplatformProjectsLocationsNotebookExecutionJobsDeleteRequest(
+          name=GetExecutionResourceName(args),
+      )
+  )
+
+
+def CreateExecutionGetRequest(args, messages):
+  """Builds a NotebookExecutionsJobGetRequest message.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the specified API.
+
+  Returns:
+    Instance of the NotebookExecutionsJobGetRequest message.
+  """
+
+  return (
+      messages.AiplatformProjectsLocationsNotebookExecutionJobsGetRequest(
+          name=GetExecutionResourceName(args),
+      )
+  )
+
+
+def CreateExecutionListRequest(args, messages):
+  """Builds a NotebookExecutionJobsListRequest message.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the specified API.
+
+  Returns:
+    Instance of the NotebookExecutionJobsListRequest message.
+  """
+  return (
+      messages.AiplatformProjectsLocationsNotebookExecutionJobsListRequest(
+          parent=GetParentForExecution(args),
+      )
   )

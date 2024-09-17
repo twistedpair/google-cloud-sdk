@@ -893,6 +893,33 @@ class GkehubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GenerateExclusivityManifest(self, request, global_params=None):
+      r"""GenerateExclusivityManifest generates the manifests to update the exclusivity artifacts in the cluster if needed. Exclusivity artifacts include the Membership custom resource definition (CRD) and the singleton Membership custom resource (CR). Combined with ValidateExclusivity, exclusivity artifacts guarantee that a Kubernetes cluster is only registered to a single GKE Hub. The Membership CRD is versioned, and may require conversion when the GKE Hub API server begins serving a newer version of the CRD and corresponding CR. The response will be the converted CRD and CR if there are any differences between the versions.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsGenerateExclusivityManifestRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateExclusivityManifestResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateExclusivityManifest')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateExclusivityManifest.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:generateExclusivityManifest',
+        http_method='GET',
+        method_id='gkehub.projects.locations.memberships.generateExclusivityManifest',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['crManifest', 'crdManifest'],
+        relative_path='v1alpha/{+name}:generateExclusivityManifest',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsMembershipsGenerateExclusivityManifestRequest',
+        response_type_name='GenerateExclusivityManifestResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets the details of a Membership.
 
@@ -1106,6 +1133,33 @@ class GkehubV1alpha(base_api.BaseApiClient):
         request_field='validateCreateMembershipRequest',
         request_type_name='GkehubProjectsLocationsMembershipsValidateCreateRequest',
         response_type_name='ValidateCreateMembershipResponse',
+        supports_download=False,
+    )
+
+    def ValidateExclusivity(self, request, global_params=None):
+      r"""ValidateExclusivity validates the state of exclusivity in the cluster. The validation does not depend on an existing Hub membership resource.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsValidateExclusivityRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValidateExclusivityResponse) The response message.
+      """
+      config = self.GetMethodConfig('ValidateExclusivity')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ValidateExclusivity.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships:validateExclusivity',
+        http_method='GET',
+        method_id='gkehub.projects.locations.memberships.validateExclusivity',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['crManifest', 'intendedMembership'],
+        relative_path='v1alpha/{+parent}/memberships:validateExclusivity',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsMembershipsValidateExclusivityRequest',
+        response_type_name='ValidateExclusivityResponse',
         supports_download=False,
     )
 
@@ -1526,6 +1580,33 @@ class GkehubV1alpha(base_api.BaseApiClient):
       super(GkehubV1alpha.ProjectsLocationsRolloutsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Cancel(self, request, global_params=None):
+      r"""Cancel a paused Rollout. The rollout will not be started on new clusters, however the rollout running on the cluster will be allowed to finish. It's only valid to cancel a paused rollout, otherwise it will return a FAILED_PRECONDITION error.
+
+      Args:
+        request: (GkehubProjectsLocationsRolloutsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/rollouts/{rolloutsId}:cancel',
+        http_method='POST',
+        method_id='gkehub.projects.locations.rollouts.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:cancel',
+        request_field='cancelRolloutRequest',
+        request_type_name='GkehubProjectsLocationsRolloutsCancelRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       r"""Create a new rollout resource.

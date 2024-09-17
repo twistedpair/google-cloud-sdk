@@ -59,6 +59,17 @@ class FileUploadError(core_exceptions.Error):
   """Exception raised when a file upload fails."""
 
 
+def DummyJar():
+  """Get flink python jar location."""
+  return os.path.join(
+      config.Paths().sdk_root,
+      'platform',
+      'managed-flink-client',
+      'lib',
+      'flink-python-1.19.0.jar',
+  )
+
+
 def Upload(files, destination, storage_client=None):
   """Uploads a list of files passed as strings to a Cloud Storage bucket."""
   client = storage_client or storage_api.StorageClient()
@@ -191,6 +202,8 @@ class FlinkClientWrapper(binary_operations.BinaryBackedOperation):
       managed_kafka_clusters=None,
       main_class=None,
       extra_args=None,
+      extra_archives=None,
+      python_venv=None,
       **kwargs
   ):
     """Parses the arguments for the given command."""
@@ -233,9 +246,9 @@ class FlinkClientWrapper(binary_operations.BinaryBackedOperation):
     if job_type == 'sql':
       udfs = []
       if extra_jars:
-        for jar in extra_jars:
+        for j in extra_jars:
           udfs.append('--jar')
-          udfs.append(jar)
+          udfs.append(j)
 
       return (
           args
@@ -247,6 +260,47 @@ class FlinkClientWrapper(binary_operations.BinaryBackedOperation):
               jar,
           ]
           + udfs
+          + job_args
+      )
+    elif job_type == 'python':
+      udfs = []
+      if extra_jars:
+        udfs.append('--jar')
+        for j in extra_jars:
+          udfs.append(',')
+          udfs.append(j)
+
+      env_folder = python_venv.split('/')[-1]
+      archives = ['-Dpython.archives={0}'.format(python_venv)]
+      if extra_archives:
+        for archive in extra_archives:
+          archives.append(',')
+          archives.append(archive)
+      return (
+          [
+              command,
+              '--target',
+              target,
+              '--class',
+              'org.apache.flink.client.python.PythonDriver',
+          ]
+          + args
+          + [
+              '-Dgcloud.output-path={0}'.format(temp_dir),
+              '-Dgcloud.api.staging-location={0}'.format(staging_location),
+              '-Dpython.client.executable={0}/bin/python3'.format(env_folder),
+              '-Dpython.executable={0}/bin/python3'.format(env_folder),
+              '-Dpython.pythonpath={0}/lib/python3.10/site-packages/'.format(
+                  env_folder
+              ),
+          ]
+          + archives
+          + udfs
+          + [
+              DummyJar(),
+              '--python',
+              jar,
+          ]
           + job_args
       )
     else:

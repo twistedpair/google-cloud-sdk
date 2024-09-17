@@ -3105,7 +3105,7 @@ def GetServiceConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
     changes.append(config_changes.ContainerPortChange(port=args.port))
   if FlagIsExplicitlySet(args, 'use_http2'):
     changes.append(config_changes.ContainerPortChange(use_http2=args.use_http2))
-  if FlagIsExplicitlySet(args, 'tag'):
+  if FlagIsExplicitlySet(args, 'tag') and args.tag:
     # MUST be after 'revision_suffix' change
     changes.append(config_changes.TagOnDeployChange(args.tag))
   if FlagIsExplicitlySet(args, 'cpu_throttling'):

@@ -205,7 +205,7 @@ class BackendBase(object):
       elif c == '"':
         chars.append('\\')
         enclose = True
-      elif c.isspace() or c == "'":
+      elif c.isspace() or c == "'" or c == ':':
         enclose = True
       chars.append(c)
     string = ''.join(chars)

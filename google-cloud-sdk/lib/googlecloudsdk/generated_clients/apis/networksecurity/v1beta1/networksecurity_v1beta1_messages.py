@@ -253,7 +253,8 @@ class AuthzPolicy(_messages.Message):
     httpRules: Optional. A list of authorization HTTP rules to match against
       the incoming request. A policy match occurs when at least one HTTP rule
       matches the request or when no HTTP rules are specified in the policy.
-      At least one HTTP Rule is required for Allow or Deny Action.
+      At least one HTTP Rule is required for Allow or Deny Action. Limited to
+      5 rules.
     labels: Optional. Set of labels associated with the `AuthzPolicy`
       resource. The format must comply with [the following
       requirements](/compute/docs/labeling-resources#requirements).
@@ -353,7 +354,7 @@ class AuthzPolicyAuthzRuleFrom(_messages.Message):
       Matches requests from sources that do not match the criteria specified
       in this field. At least one of sources or notSources must be specified.
     sources: Optional. Describes the properties of a request's sources. At
-      least one of sources or notSources must be specified. Limited to 10
+      least one of sources or notSources must be specified. Limited to 5
       sources. A match occurs when ANY source (in sources or notSources)
       matches the request. Within a single source, the match follows AND
       semantics across fields and OR semantics within a single field, i.e. a
@@ -374,9 +375,9 @@ class AuthzPolicyAuthzRuleFromRequestSource(_messages.Message):
       whose value is matched against the URI SAN, or DNS SAN or the subject
       field in the client's certificate. The match can be exact, prefix,
       suffix or a substring match. One of exact, prefix, suffix or contains
-      must be specified. Limited to 10 principals.
+      must be specified. Limited to 5 principals.
     resources: Optional. A list of resources to match against the resource of
-      the source VM of a request. Limited to 10 resources.
+      the source VM of a request. Limited to 5 resources.
   """
 
   principals = _messages.MessageField('AuthzPolicyAuthzRuleStringMatch', 1, repeated=True)
@@ -419,7 +420,7 @@ class AuthzPolicyAuthzRuleRequestResourceTagValueIdSet(_messages.Message):
     ids: Required. A list of resource tag value permanent IDs to match against
       the resource manager tags value associated with the source VM of a
       request. The match follows AND semantics which means all the ids must
-      match. Limited to 10 matches.
+      match. Limited to 5 matches.
   """
 
   ids = _messages.IntegerField(1, repeated=True)
@@ -462,7 +463,7 @@ class AuthzPolicyAuthzRuleTo(_messages.Message):
       notOperations must be specified.
     operations: Optional. Describes properties of one or more targets of a
       request. At least one of operations or notOperations must be specified.
-      Limited to 10 operations. A match occurs when ANY operation (in
+      Limited to 5 operations. A match occurs when ANY operation (in
       operations or notOperations) matches. Within an operation, the match
       follows AND semantics across fields and OR semantics within a field,
       i.e. a match occurs when ANY path matches AND ANY header matches and ANY
@@ -480,14 +481,14 @@ class AuthzPolicyAuthzRuleToRequestOperation(_messages.Message):
     headerSet: Optional. A list of headers to match against in http header.
     hosts: Optional. A list of HTTP Hosts to match against. The match can be
       one of exact, prefix, suffix, or contains (substring match). Matches are
-      always case sensitive unless the ignoreCase is set. Limited to 10
+      always case sensitive unless the ignoreCase is set. Limited to 5
       matches.
     methods: Optional. A list of HTTP methods to match against. Each entry
       must be a valid HTTP method name (GET, PUT, POST, HEAD, PATCH, DELETE,
       OPTIONS). It only allows exact match and is always case sensitive.
     paths: Optional. A list of paths to match against. The match can be one of
       exact, prefix, suffix, or contains (substring match). Matches are always
-      case sensitive unless the ignoreCase is set. Limited to 10 matches. Note
+      case sensitive unless the ignoreCase is set. Limited to 5 matches. Note
       that this path match includes the query parameters. For gRPC services,
       this should be a fully-qualified name of the form
       /package.service/method.
@@ -507,7 +508,7 @@ class AuthzPolicyAuthzRuleToRequestOperationHeaderSet(_messages.Message):
       match can be one of exact, prefix, suffix, or contains (substring
       match). The match follows AND semantics which means all the headers must
       match. Matches are always case sensitive unless the ignoreCase is set.
-      Limited to 10 matches.
+      Limited to 5 matches.
   """
 
   headers = _messages.MessageField('AuthzPolicyAuthzRuleHeaderMatch', 1, repeated=True)

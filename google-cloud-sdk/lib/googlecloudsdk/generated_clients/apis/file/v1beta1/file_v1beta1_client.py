@@ -628,7 +628,7 @@ class FileV1beta1(base_api.BaseApiClient):
     )
 
     def PromoteReplica(self, request, global_params=None):
-      r"""Promote an standby instance (replica).
+      r"""Promote the standby instance (replica).
 
       Args:
         request: (FileProjectsLocationsInstancesPromoteReplicaRequest) input message

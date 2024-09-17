@@ -2043,9 +2043,13 @@ class NetworkConfig(_messages.Message):
     userNote: User note field, it can be used by customers to add additional
       information for the BMS Ops team .
     vlanAttachments: List of VLAN attachments. As of now there are always 2
-      attachments, but it is going to change in the future (multi vlan).
+      attachments, but it is going to change in the future (multi vlan). Use
+      only one of vlan_attachments or vrf
     vlanSameProject: Whether the VLAN attachment pair is located in the same
       project.
+    vrf: Optional. The name of a pre-existing Vrf that the network should be
+      attached to. Format is `vrfs/{vrf}`. If vrf is specified,
+      vlan_attachments must be empty.
   """
 
   class BandwidthValueValuesEnum(_messages.Enum):
@@ -2103,6 +2107,7 @@ class NetworkConfig(_messages.Message):
   userNote = _messages.StringField(9)
   vlanAttachments = _messages.MessageField('IntakeVlanAttachment', 10, repeated=True)
   vlanSameProject = _messages.BooleanField(11)
+  vrf = _messages.StringField(12)
 
 
 class NetworkMountPoint(_messages.Message):

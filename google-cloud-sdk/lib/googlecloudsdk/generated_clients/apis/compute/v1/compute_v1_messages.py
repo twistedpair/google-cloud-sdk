@@ -1535,6 +1535,9 @@ class AdvancedMachineFeatures(_messages.Message):
       simultaneous multithreading (SMT) set this to 1. If unset, the maximum
       number of threads supported per core by the underlying processor is
       assumed.
+    turboMode: Turbo frequency mode to use for the instance. Supported modes
+      include: * ALL_CORE_MAX Using empty string or not setting this field
+      will use the platform-specific default turbo mode.
     visibleCoreCount: The number of physical cores to expose to an instance.
       Multiply by the number of threads per core to compute the total number
       of virtual CPUs to expose to the instance. If unset, the number of cores
@@ -1560,7 +1563,8 @@ class AdvancedMachineFeatures(_messages.Message):
   enableUefiNetworking = _messages.BooleanField(2)
   performanceMonitoringUnit = _messages.EnumField('PerformanceMonitoringUnitValueValuesEnum', 3)
   threadsPerCore = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  visibleCoreCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  turboMode = _messages.StringField(5)
+  visibleCoreCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class AliasIpRange(_messages.Message):
@@ -3566,6 +3570,7 @@ class BackendBucket(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     selfLink: [Output Only] Server-defined URL for the resource.
+    usedBy: [Output Only] List of resources referencing that backend bucket.
   """
 
   class CompressionModeValueValuesEnum(_messages.Enum):
@@ -3593,6 +3598,7 @@ class BackendBucket(_messages.Message):
   kind = _messages.StringField(10, default='compute#backendBucket')
   name = _messages.StringField(11)
   selfLink = _messages.StringField(12)
+  usedBy = _messages.MessageField('BackendBucketUsedBy', 13, repeated=True)
 
 
 class BackendBucketCdnPolicy(_messages.Message):
@@ -3962,6 +3968,17 @@ class BackendBucketList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class BackendBucketUsedBy(_messages.Message):
+  r"""A BackendBucketUsedBy object.
+
+  Fields:
+    reference: [Output Only] Server-defined URL for UrlMaps referencing that
+      BackendBucket.
+  """
+
+  reference = _messages.StringField(1)
 
 
 class BackendService(_messages.Message):
@@ -37811,11 +37828,6 @@ class FutureReservation(_messages.Message):
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
     shareSettings: List of Projects/Folders to share with.
-    specificReservationRequired: Indicates whether the auto-created
-      reservation can be consumed by VMs with affinity for "any" reservation.
-      If the field is set, then only VMs that target the reservation by name
-      can consume from the delivered reservation. If set to true,the delivered
-      resevervation will have the same name as the future reservation.
     specificSkuProperties: Future Reservation configuration to indicate
       instance properties and total count.
     status: [Output only] Status of the Future Reservation
@@ -37848,11 +37860,10 @@ class FutureReservation(_messages.Message):
   selfLink = _messages.StringField(11)
   selfLinkWithId = _messages.StringField(12)
   shareSettings = _messages.MessageField('ShareSettings', 13)
-  specificReservationRequired = _messages.BooleanField(14)
-  specificSkuProperties = _messages.MessageField('FutureReservationSpecificSKUProperties', 15)
-  status = _messages.MessageField('FutureReservationStatus', 16)
-  timeWindow = _messages.MessageField('FutureReservationTimeWindow', 17)
-  zone = _messages.StringField(18)
+  specificSkuProperties = _messages.MessageField('FutureReservationSpecificSKUProperties', 14)
+  status = _messages.MessageField('FutureReservationStatus', 15)
+  timeWindow = _messages.MessageField('FutureReservationTimeWindow', 16)
+  zone = _messages.StringField(17)
 
 
 class FutureReservationSpecificSKUProperties(_messages.Message):
@@ -38932,6 +38943,7 @@ class GuestOsFeature(_messages.Message):
       SEV_LIVE_MIGRATABLE: <no description>
       SEV_LIVE_MIGRATABLE_V2: <no description>
       SEV_SNP_CAPABLE: <no description>
+      TDX_CAPABLE: <no description>
       UEFI_COMPATIBLE: <no description>
       VIRTIO_SCSI_MULTIQUEUE: <no description>
       WINDOWS: <no description>
@@ -38945,9 +38957,10 @@ class GuestOsFeature(_messages.Message):
     SEV_LIVE_MIGRATABLE = 6
     SEV_LIVE_MIGRATABLE_V2 = 7
     SEV_SNP_CAPABLE = 8
-    UEFI_COMPATIBLE = 9
-    VIRTIO_SCSI_MULTIQUEUE = 10
-    WINDOWS = 11
+    TDX_CAPABLE = 9
+    UEFI_COMPATIBLE = 10
+    VIRTIO_SCSI_MULTIQUEUE = 11
+    WINDOWS = 12
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
@@ -47687,7 +47700,7 @@ class Interconnect(_messages.Message):
       routes are exchanged over it. By default, the status is set to true.
     availableFeatures: [Output only] List of features available for this
       Interconnect connection, which can take one of the following values: -
-      MACSEC If present then the Interconnect connection is provisioned on
+      IF_MACSEC If present then the Interconnect connection is provisioned on
       MACsec capable hardware ports. If not present then the Interconnect
       connection is provisioned on non-MACsec capable ports and MACsec isn't
       supported and enabling MACsec fails.
@@ -47772,7 +47785,7 @@ class Interconnect(_messages.Message):
       interconnect is connected to.
     requestedFeatures: Optional. List of features requested for this
       Interconnect connection, which can take one of the following values: -
-      MACSEC If specified then the connection is created on MACsec capable
+      IF_MACSEC If specified then the connection is created on MACsec capable
       hardware ports. If not specified, the default value is false, which
       allocates non-MACsec capable ports first if available. This parameter
       can be provided only with Interconnect INSERT. It isn't valid for
@@ -51238,6 +51251,10 @@ class MachineType(_messages.Message):
   for your VM instances based on performance and pricing requirements. For
   more information, read Machine Types.
 
+  Enums:
+    ArchitectureValueValuesEnum: [Output Only] The architecture of the machine
+      type.
+
   Messages:
     AcceleratorsValueListEntry: A AcceleratorsValueListEntry object.
     ScratchDisksValueListEntry: A ScratchDisksValueListEntry object.
@@ -51245,6 +51262,7 @@ class MachineType(_messages.Message):
   Fields:
     accelerators: [Output Only] A list of accelerator configurations assigned
       to this machine type.
+    architecture: [Output Only] The architecture of the machine type.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     deprecated: [Output Only] The deprecation status associated with this
@@ -51274,6 +51292,19 @@ class MachineType(_messages.Message):
       such as us-central1-a.
   """
 
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The architecture of the machine type.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Default value indicating Architecture is not
+        set.
+      ARM64: Machines with architecture ARM64
+      X86_64: Machines with architecture X86_64
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    ARM64 = 1
+    X86_64 = 2
+
   class AcceleratorsValueListEntry(_messages.Message):
     r"""A AcceleratorsValueListEntry object.
 
@@ -51296,21 +51327,22 @@ class MachineType(_messages.Message):
     diskGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
   accelerators = _messages.MessageField('AcceleratorsValueListEntry', 1, repeated=True)
-  creationTimestamp = _messages.StringField(2)
-  deprecated = _messages.MessageField('DeprecationStatus', 3)
-  description = _messages.StringField(4)
-  guestCpus = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  imageSpaceGb = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  isSharedCpu = _messages.BooleanField(8)
-  kind = _messages.StringField(9, default='compute#machineType')
-  maximumPersistentDisks = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  maximumPersistentDisksSizeGb = _messages.IntegerField(11)
-  memoryMb = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  name = _messages.StringField(13)
-  scratchDisks = _messages.MessageField('ScratchDisksValueListEntry', 14, repeated=True)
-  selfLink = _messages.StringField(15)
-  zone = _messages.StringField(16)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 2)
+  creationTimestamp = _messages.StringField(3)
+  deprecated = _messages.MessageField('DeprecationStatus', 4)
+  description = _messages.StringField(5)
+  guestCpus = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  imageSpaceGb = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  isSharedCpu = _messages.BooleanField(9)
+  kind = _messages.StringField(10, default='compute#machineType')
+  maximumPersistentDisks = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  maximumPersistentDisksSizeGb = _messages.IntegerField(12)
+  memoryMb = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  name = _messages.StringField(14)
+  scratchDisks = _messages.MessageField('ScratchDisksValueListEntry', 15, repeated=True)
+  selfLink = _messages.StringField(16)
+  zone = _messages.StringField(17)
 
 
 class MachineTypeAggregatedList(_messages.Message):
@@ -53452,6 +53484,9 @@ class NetworkEndpoint(_messages.Message):
 
   Fields:
     annotations: Metadata defined as annotations on the network endpoint.
+    clientDestinationPort: Represents the port number to which PSC consumer
+      sends packets. Only valid for network endpoint groups created with
+      GCE_VM_IP_PORTMAP endpoint type.
     fqdn: Optional fully qualified domain name of network endpoint. This can
       only be specified when NetworkEndpointGroup.network_endpoint_type is
       NON_GCP_FQDN_PORT.
@@ -53503,10 +53538,11 @@ class NetworkEndpoint(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  fqdn = _messages.StringField(2)
-  instance = _messages.StringField(3)
-  ipAddress = _messages.StringField(4)
-  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  clientDestinationPort = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  fqdn = _messages.StringField(3)
+  instance = _messages.StringField(4)
+  ipAddress = _messages.StringField(5)
+  port = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class NetworkEndpointGroup(_messages.Message):
@@ -53582,6 +53618,8 @@ class NetworkEndpointGroup(_messages.Message):
       GCE_VM_IP: The network endpoint is represented by an IP address.
       GCE_VM_IP_PORT: The network endpoint is represented by IP address and
         port pair.
+      GCE_VM_IP_PORTMAP: The network endpoint is represented by an IP, Port
+        and Client Destination Port.
       INTERNET_FQDN_PORT: The network endpoint is represented by fully
         qualified domain name and port.
       INTERNET_IP_PORT: The network endpoint is represented by an internet IP
@@ -53597,11 +53635,12 @@ class NetworkEndpointGroup(_messages.Message):
     """
     GCE_VM_IP = 0
     GCE_VM_IP_PORT = 1
-    INTERNET_FQDN_PORT = 2
-    INTERNET_IP_PORT = 3
-    NON_GCP_PRIVATE_IP_PORT = 4
-    PRIVATE_SERVICE_CONNECT = 5
-    SERVERLESS = 6
+    GCE_VM_IP_PORTMAP = 2
+    INTERNET_FQDN_PORT = 3
+    INTERNET_IP_PORT = 4
+    NON_GCP_PRIVATE_IP_PORT = 5
+    PRIVATE_SERVICE_CONNECT = 6
+    SERVERLESS = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -54097,6 +54136,9 @@ class NetworkEndpointGroupPscData(_messages.Message):
     consumerPscAddress: [Output Only] Address allocated from given subnetwork
       for PSC. This IP address acts as a VIP for a PSC NEG, allowing it to act
       as an endpoint in L7 PSC-XLB.
+    producerPort: The psc producer port is used to connect PSC NEG with
+      specific port on the PSC Producer side; should only be used for the
+      PRIVATE_SERVICE_CONNECT NEG type
     pscConnectionId: [Output Only] The PSC connection id of the PSC Network
       Endpoint Group Consumer.
     pscConnectionStatus: [Output Only] The connection status of the PSC
@@ -54125,8 +54167,9 @@ class NetworkEndpointGroupPscData(_messages.Message):
     STATUS_UNSPECIFIED = 5
 
   consumerPscAddress = _messages.StringField(1)
-  pscConnectionId = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
-  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 3)
+  producerPort = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pscConnectionId = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 4)
 
 
 class NetworkEndpointGroupsAttachEndpointsRequest(_messages.Message):
@@ -55023,6 +55066,8 @@ class NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Mes
     displayName: [Output Only] Deprecated, please use short name instead. The
       display name of the firewall policy.
     name: [Output Only] The name of the firewall policy.
+    priority: [Output only] Priority of firewall policy association. Not
+      applicable for type=HIERARCHY.
     rules: The rules that apply to the network.
     shortName: [Output Only] The short name of the firewall policy.
     type: [Output Only] The type of the firewall policy.
@@ -55034,17 +55079,20 @@ class NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Mes
     Values:
       HIERARCHY: <no description>
       NETWORK: <no description>
+      SYSTEM: <no description>
       UNSPECIFIED: <no description>
     """
     HIERARCHY = 0
     NETWORK = 1
-    UNSPECIFIED = 2
+    SYSTEM = 2
+    UNSPECIFIED = 3
 
   displayName = _messages.StringField(1)
   name = _messages.StringField(2)
-  rules = _messages.MessageField('FirewallPolicyRule', 3, repeated=True)
-  shortName = _messages.StringField(4)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  priority = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('FirewallPolicyRule', 4, repeated=True)
+  shortName = _messages.StringField(5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
 
 
 class NetworksRemovePeeringRequest(_messages.Message):
@@ -74121,8 +74169,8 @@ class Subnetwork(_messages.Message):
       reach destination addresses outside this subnetwork.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    internalIpv6Prefix: [Output Only] The internal IPv6 address range that is
-      assigned to this subnetwork.
+    internalIpv6Prefix: The internal IPv6 address range that is owned by this
+      subnetwork.
     ipCidrRange: The range of internal addresses that are owned by this
       subnetwork. Provide this property when you create the subnetwork. For
       example, 10.0.0.0/8 or 100.64.0.0/10. Ranges must be unique and non-

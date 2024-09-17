@@ -194,6 +194,14 @@ class AddSubnetworkRequest(_messages.Message):
       ks) in the Compute API documentation.
     secondaryIpRangeSpecs: Optional. A list of secondary IP ranges to be
       created within the new subnetwork.
+    skipRequestedAddressValidation: Optional. Skips validating if the
+      requested_address is in use by SN VPC's peering group. Compute Engine
+      will still perform this check and fail the request if the
+      requested_address is in use. Note that Compute Engine does not check for
+      the existence of dynamic routes when performing this check. Caller of
+      this API should make sure that there are no dynamic routes overlapping
+      with the requested_address/prefix_length IP address range otherwise the
+      created subnet could cause misrouting.
     subnetwork: Required. A name for the new subnet. For information about the
       naming requirements, see
       [subnetwork](/compute/docs/reference/rest/v1/subnetworks) in the Compute
@@ -224,9 +232,10 @@ class AddSubnetworkRequest(_messages.Message):
   requestedRanges = _messages.StringField(14, repeated=True)
   role = _messages.StringField(15)
   secondaryIpRangeSpecs = _messages.MessageField('SecondaryIpRangeSpec', 16, repeated=True)
-  subnetwork = _messages.StringField(17)
-  subnetworkUsers = _messages.StringField(18, repeated=True)
-  useCustomComputeIdempotencyWindow = _messages.BooleanField(19)
+  skipRequestedAddressValidation = _messages.BooleanField(17)
+  subnetwork = _messages.StringField(18)
+  subnetworkUsers = _messages.StringField(19, repeated=True)
+  useCustomComputeIdempotencyWindow = _messages.BooleanField(20)
 
 
 class Api(_messages.Message):
@@ -1328,6 +1337,21 @@ class EnumValue(_messages.Message):
   options = _messages.MessageField('Option', 3, repeated=True)
 
 
+class ExperimentalFeatures(_messages.Message):
+  r"""Experimental features to be included during client library generation.
+  These fields will be deprecated once the feature graduates and is enabled by
+  default.
+
+  Fields:
+    restAsyncIoEnabled: Enables generation of asynchronous REST clients if
+      `rest` transport is enabled. By default, asynchronous REST clients will
+      not be generated. This feature will be enabled by default 1 month after
+      launching the feature in preview packages.
+  """
+
+  restAsyncIoEnabled = _messages.BooleanField(1)
+
+
 class Field(_messages.Message):
   r"""A single field of a message type.
 
@@ -2298,6 +2322,7 @@ class MetricDescriptorMetadata(_messages.Message):
   Enums:
     LaunchStageValueValuesEnum: Deprecated. Must use the
       MetricDescriptor.launch_stage instead.
+    TimeSeriesResourceHierarchyLevelValueListEntryValuesEnum:
 
   Fields:
     ingestDelay: The delay of data points caused by ingestion. Data points
@@ -2309,6 +2334,8 @@ class MetricDescriptorMetadata(_messages.Message):
       are written periodically, consecutive data points are stored at this
       time interval, excluding data loss due to errors. Metrics with a higher
       granularity have a smaller sampling period.
+    timeSeriesResourceHierarchyLevel: The scope of the timeseries data of the
+      metric.
   """
 
   class LaunchStageValueValuesEnum(_messages.Enum):
@@ -2355,9 +2382,25 @@ class MetricDescriptorMetadata(_messages.Message):
     GA = 6
     DEPRECATED = 7
 
+  class TimeSeriesResourceHierarchyLevelValueListEntryValuesEnum(_messages.Enum):
+    r"""TimeSeriesResourceHierarchyLevelValueListEntryValuesEnum enum type.
+
+    Values:
+      TIME_SERIES_RESOURCE_HIERARCHY_LEVEL_UNSPECIFIED: Do not use this
+        default value.
+      PROJECT: Scopes a metric to a project.
+      ORGANIZATION: Scopes a metric to an organization.
+      FOLDER: Scopes a metric to a folder.
+    """
+    TIME_SERIES_RESOURCE_HIERARCHY_LEVEL_UNSPECIFIED = 0
+    PROJECT = 1
+    ORGANIZATION = 2
+    FOLDER = 3
+
   ingestDelay = _messages.StringField(1)
   launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 2)
   samplePeriod = _messages.StringField(3)
+  timeSeriesResourceHierarchyLevel = _messages.EnumField('TimeSeriesResourceHierarchyLevelValueListEntryValuesEnum', 4, repeated=True)
 
 
 class MetricRule(_messages.Message):
@@ -2888,9 +2931,12 @@ class PolicyBinding(_messages.Message):
       'roles/container.hostServiceAgentUser' applied on the shared VPC host
       project - 'roles/compute.securityAdmin' applied on the shared VPC host
       project - 'roles/compute.networkAdmin' applied on the shared VPC host
-      project - 'roles/compute.xpnAdmin' applied on the shared VPC host
-      project - 'roles/dns.admin' applied on the shared VPC host project -
-      'roles/logging.admin' applied on the shared VPC host project
+      project - 'roles/tpu.xpnAgent' applied on the shared VPC host project -
+      'roles/dns.admin' applied on the shared VPC host project -
+      'roles/logging.admin' applied on the shared VPC host project -
+      'roles/monitoring.viewer' applied on the shared VPC host project -
+      'roles/servicemanagement.quotaViewer' applied on the shared VPC host
+      project
   """
 
   member = _messages.StringField(1)
@@ -2976,9 +3022,12 @@ class PythonSettings(_messages.Message):
 
   Fields:
     common: Some settings.
+    experimentalFeatures: Experimental features to be included during client
+      library generation.
   """
 
   common = _messages.MessageField('CommonLanguageSettings', 1)
+  experimentalFeatures = _messages.MessageField('ExperimentalFeatures', 2)
 
 
 class Quota(_messages.Message):

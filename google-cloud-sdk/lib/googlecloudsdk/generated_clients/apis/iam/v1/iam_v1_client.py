@@ -1868,7 +1868,7 @@ class IamV1(base_api.BaseApiClient):
           }
 
     def AddAttestationRule(self, request, global_params=None):
-      r"""Add an AttestationRule on a WorkloadIdentityPoolManagedIdentity. A maximum of 100 AttestationRules can be added.
+      r"""Add an AttestationRule on a WorkloadIdentityPoolManagedIdentity. The total attestation rules after addition must not exceed 50.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesAddAttestationRuleRequest) input message
@@ -2111,7 +2111,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def SetAttestationRules(self, request, global_params=None):
-      r"""Set all AttestationRule on a WorkloadIdentityPoolManagedIdentity. A maximum of 100 AttestationRules can be set.
+      r"""Set all AttestationRule on a WorkloadIdentityPoolManagedIdentity. A maximum of 50 AttestationRules can be set.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesSetAttestationRulesRequest) input message
@@ -2448,7 +2448,7 @@ class IamV1(base_api.BaseApiClient):
           }
 
     def AddAttestationRule(self, request, global_params=None):
-      r"""Add an AttestationRule on a WorkloadIdentityPoolManagedIdentity. A maximum of 100 AttestationRules can be added.
+      r"""Add an AttestationRule on a WorkloadIdentityPoolManagedIdentity. The total attestation rules after addition must not exceed 50.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesAddAttestationRuleRequest) input message
@@ -2691,7 +2691,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def SetAttestationRules(self, request, global_params=None):
-      r"""Set all AttestationRule on a WorkloadIdentityPoolManagedIdentity. A maximum of 100 AttestationRules can be set.
+      r"""Set all AttestationRule on a WorkloadIdentityPoolManagedIdentity. A maximum of 50 AttestationRules can be set.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesSetAttestationRulesRequest) input message

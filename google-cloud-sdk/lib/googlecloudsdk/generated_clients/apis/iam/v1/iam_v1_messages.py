@@ -101,13 +101,9 @@ class AttestationRule(_messages.Message):
     googleCloudResource: Optional. A single workload operating on Google
       Cloud. For example: `//compute.googelapis.com/projects/123/uid/zones/us-
       central1-a/instances/12345`.
-    googleCloudResourceSet: Optional. A set of workloads operating on Google
-      Cloud. For example:
-      `//compute.googleapis.com/projects/123/type/BackendService/*`.
   """
 
   googleCloudResource = _messages.StringField(1)
-  googleCloudResourceSet = _messages.StringField(2)
 
 
 class AttributeTranslatorCEL(_messages.Message):
@@ -5192,7 +5188,7 @@ class SetAttestationRulesRequest(_messages.Message):
   r"""Request message for SetAttestationRules.
 
   Fields:
-    attestationRules: Required. The attestation rules to be set. At most 100
+    attestationRules: Required. The attestation rules to be set. At most 50
       attestation rules can be set.
   """
 

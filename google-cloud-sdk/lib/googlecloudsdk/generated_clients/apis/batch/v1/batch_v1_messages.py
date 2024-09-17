@@ -702,6 +702,19 @@ class InstancePolicyOrTemplate(_messages.Message):
   resources such as GPUs and extra disks.
 
   Fields:
+    blockProjectSshKeys: Optional. Set this field to `true` if you want Batch
+      to block project-level SSH keys from accessing this job's VMs.
+      Alternatively, you can configure the job to specify a VM instance
+      template that blocks project-level SSH keys. In either case, Batch
+      blocks project-level SSH keys while creating the VMs for this job. Batch
+      allows project-level SSH keys for a job's VMs only if all the following
+      are true: + This field is undefined or set to `false`. + The job's VM
+      instance template (if any) doesn't block project-level SSH keys.
+      Notably, you can override this behavior by manually updating a VM to
+      block or allow project-level SSH keys. For more information about
+      blocking project-level SSH keys, see the Compute Engine documentation:
+      https://cloud.google.com/compute/docs/connect/restrict-ssh-keys#block-
+      keys
     installGpuDrivers: Set this field true if you want Batch to help fetch
       drivers from a third party location and install them for GPUs specified
       in `policy.accelerators` or `instance_template` on your behalf. Default
@@ -714,15 +727,17 @@ class InstancePolicyOrTemplate(_messages.Message):
     installOpsAgent: Optional. Set this field true if you want Batch to
       install Ops Agent on your behalf. Default is false.
     instanceTemplate: Name of an instance template used to create VMs. Named
-      the field as 'instance_template' instead of 'template' to avoid c++
-      keyword conflict.
+      the field as 'instance_template' instead of 'template' to avoid C++
+      keyword conflict. Batch only supports global instance templates. You can
+      specify the global instance template as a full or partial URL.
     policy: InstancePolicy.
   """
 
-  installGpuDrivers = _messages.BooleanField(1)
-  installOpsAgent = _messages.BooleanField(2)
-  instanceTemplate = _messages.StringField(3)
-  policy = _messages.MessageField('InstancePolicy', 4)
+  blockProjectSshKeys = _messages.BooleanField(1)
+  installGpuDrivers = _messages.BooleanField(2)
+  installOpsAgent = _messages.BooleanField(3)
+  instanceTemplate = _messages.StringField(4)
+  policy = _messages.MessageField('InstancePolicy', 5)
 
 
 class InstanceStatus(_messages.Message):

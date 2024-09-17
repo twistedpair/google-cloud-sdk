@@ -1399,6 +1399,11 @@ class _SectionApiEndpointOverrides(_Section):
     self.speech = self._Add('speech', command='gcloud ml speech')
     self.sql = self._Add('sql', command='gcloud sql')
     self.storage = self._Add('storage', command='gcloud storage')
+    self.storagebatchoperations = self._Add(
+        'storagebatchoperations',
+        command='gcloud storage batch-actions',
+        hidden=True,
+    )
     self.storageinsights = self._Add(
         'storageinsights', command='gcloud storage insights', hidden=True)
     self.stream = self._Add('stream', hidden=True)

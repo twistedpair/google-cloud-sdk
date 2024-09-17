@@ -167,7 +167,8 @@ class GkemulticloudProjectsLocationsAttachedClustersPatchRequest(_messages.Messa
       `logging_config.component_config.enable_components`. *
       `monitoring_config.managed_prometheus_config.enabled`. *
       `platform_version`. * `proxy_config.kubernetes_secret.name`. *
-      `proxy_config.kubernetes_secret.namespace`.
+      `proxy_config.kubernetes_secret.namespace`. *
+      `security_posture_config.vulnerability_mode`
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -1887,6 +1888,7 @@ class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
     etag: Allows clients to perform consistent read-modify-writes through
       optimistic concurrency control. Can be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
+    kubeletConfig: Optional. Node kubelet configs.
     management: Optional. The Management configuration for this node pool.
     maxPodsConstraint: Required. The constraint on the maximum number of pods
       that can be run simultaneously on a node in the node pool.
@@ -1970,16 +1972,17 @@ class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
   createTime = _messages.StringField(4)
   errors = _messages.MessageField('GoogleCloudGkemulticloudV1AwsNodePoolError', 5, repeated=True)
   etag = _messages.StringField(6)
-  management = _messages.MessageField('GoogleCloudGkemulticloudV1AwsNodeManagement', 7)
-  maxPodsConstraint = _messages.MessageField('GoogleCloudGkemulticloudV1MaxPodsConstraint', 8)
-  name = _messages.StringField(9)
-  reconciling = _messages.BooleanField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  subnetId = _messages.StringField(12)
-  uid = _messages.StringField(13)
-  updateSettings = _messages.MessageField('GoogleCloudGkemulticloudV1UpdateSettings', 14)
-  updateTime = _messages.StringField(15)
-  version = _messages.StringField(16)
+  kubeletConfig = _messages.MessageField('GoogleCloudGkemulticloudV1NodeKubeletConfig', 7)
+  management = _messages.MessageField('GoogleCloudGkemulticloudV1AwsNodeManagement', 8)
+  maxPodsConstraint = _messages.MessageField('GoogleCloudGkemulticloudV1MaxPodsConstraint', 9)
+  name = _messages.StringField(10)
+  reconciling = _messages.BooleanField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  subnetId = _messages.StringField(13)
+  uid = _messages.StringField(14)
+  updateSettings = _messages.MessageField('GoogleCloudGkemulticloudV1UpdateSettings', 15)
+  updateTime = _messages.StringField(16)
+  version = _messages.StringField(17)
 
 
 class GoogleCloudGkemulticloudV1AwsNodePoolAutoscaling(_messages.Message):
@@ -3429,6 +3432,46 @@ class GoogleCloudGkemulticloudV1MonitoringConfig(_messages.Message):
 
   kubernetesMetadataEndpointOverride = _messages.StringField(1)
   managedPrometheusConfig = _messages.MessageField('GoogleCloudGkemulticloudV1ManagedPrometheusConfig', 2)
+
+
+class GoogleCloudGkemulticloudV1NodeKubeletConfig(_messages.Message):
+  r"""Configuration for node pool kubelet options.
+
+  Fields:
+    cpuCfsQuota: Optional. Enable CPU CFS quota enforcement for containers
+      that specify CPU limits. This option is enabled by default which makes
+      kubelet use CFS quota
+      (https://www.kernel.org/doc/Documentation/scheduler/sched-bwc.txt) to
+      enforce container CPU limits. Otherwise, CPU limits will not be enforced
+      at all. Disable this option to mitigate CPU throttling problems while
+      still having your pods to be in Guaranteed QoS class by specifying the
+      CPU limits. The default value is 'true' if unspecified.
+    cpuCfsQuotaPeriod: Optional. Set the CPU CFS quota period value
+      'cpu.cfs_period_us'. The string must be a sequence of decimal numbers,
+      each with optional fraction and a unit suffix, such as "300ms". Valid
+      time units are "ns", "us" (or "\xb5s"), "ms", "s", "m", "h". The value
+      must be a positive duration. The default value is '100ms' if
+      unspecified.
+    cpuManagerPolicy: Optional. Control the CPU management policy on the node.
+      See https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-
+      policies/ The following values are allowed. * "none": the default, which
+      represents the existing scheduling behavior. * "static": allows pods
+      with certain resource characteristics to be granted increased CPU
+      affinity and exclusivity on the node. The default value is 'none' if
+      unspecified.
+    insecureKubeletReadonlyPortEnabled: Optional. Enable the insecure kubelet
+      read only port.
+    podPidsLimit: Optional. Set the Pod PID limits. See
+      https://kubernetes.io/docs/concepts/policy/pid-limiting/#pod-pid-limits
+      Controls the maximum number of processes allowed to run in a pod. The
+      value must be greater than or equal to 1024 and less than 4194304.
+  """
+
+  cpuCfsQuota = _messages.BooleanField(1)
+  cpuCfsQuotaPeriod = _messages.StringField(2)
+  cpuManagerPolicy = _messages.StringField(3)
+  insecureKubeletReadonlyPortEnabled = _messages.BooleanField(4)
+  podPidsLimit = _messages.IntegerField(5)
 
 
 class GoogleCloudGkemulticloudV1NodeTaint(_messages.Message):

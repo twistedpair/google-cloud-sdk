@@ -1959,6 +1959,20 @@ class IdentityServiceAzureADConfig(_messages.Message):
   userClaim = _messages.StringField(7)
 
 
+class IdentityServiceDiagnosticInterface(_messages.Message):
+  r"""Configuration options for the AIS diagnostic interface.
+
+  Fields:
+    enabled: Determines whether to enable the diagnostic interface.
+    expirationTime: Determines the expiration time of the diagnostic interface
+      enablement. When reached, requests to the interface would be
+      automatically rejected.
+  """
+
+  enabled = _messages.BooleanField(1)
+  expirationTime = _messages.StringField(2)
+
+
 class IdentityServiceGoogleConfig(_messages.Message):
   r"""Configuration for the Google Plugin Auth flow.
 
@@ -1996,11 +2010,14 @@ class IdentityServiceIdentityServiceOptions(_messages.Message):
   r"""Holds non-protocol-related configuration options.
 
   Fields:
-    sessionDuration: Optional. Determines the lifespan of STS tokens issued by
-      Anthos Identity Service.
+    diagnosticInterface: Configuration options for the AIS diagnostic
+      interface.
+    sessionDuration: Determines the lifespan of STS tokens issued by Anthos
+      Identity Service.
   """
 
-  sessionDuration = _messages.StringField(1)
+  diagnosticInterface = _messages.MessageField('IdentityServiceDiagnosticInterface', 1)
+  sessionDuration = _messages.StringField(2)
 
 
 class IdentityServiceLdapConfig(_messages.Message):
@@ -3470,6 +3487,7 @@ class ServiceMeshCondition(_messages.Message):
         identity federation required error code
       CNI_INSTALLATION_FAILED: CNI installation failed error code
       CNI_POD_UNSCHEDULABLE: CNI pod unschedulable error code
+      CLUSTER_HAS_ZERO_NODES: Cluster has zero node code
       UNSUPPORTED_MULTIPLE_CONTROL_PLANES: Multiple control planes unsupported
         error code
       VPCSC_GA_SUPPORTED: VPC-SC GA is supported for this control plane.
@@ -3511,26 +3529,27 @@ class ServiceMeshCondition(_messages.Message):
     NODEPOOL_WORKLOAD_IDENTITY_FEDERATION_REQUIRED = 5
     CNI_INSTALLATION_FAILED = 6
     CNI_POD_UNSCHEDULABLE = 7
-    UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 8
-    VPCSC_GA_SUPPORTED = 9
-    CONFIG_APPLY_INTERNAL_ERROR = 10
-    CONFIG_VALIDATION_ERROR = 11
-    CONFIG_VALIDATION_WARNING = 12
-    QUOTA_EXCEEDED_BACKEND_SERVICES = 13
-    QUOTA_EXCEEDED_HEALTH_CHECKS = 14
-    QUOTA_EXCEEDED_HTTP_ROUTES = 15
-    QUOTA_EXCEEDED_TCP_ROUTES = 16
-    QUOTA_EXCEEDED_TLS_ROUTES = 17
-    QUOTA_EXCEEDED_TRAFFIC_POLICIES = 18
-    QUOTA_EXCEEDED_ENDPOINT_POLICIES = 19
-    QUOTA_EXCEEDED_GATEWAYS = 20
-    QUOTA_EXCEEDED_MESHES = 21
-    QUOTA_EXCEEDED_SERVER_TLS_POLICIES = 22
-    QUOTA_EXCEEDED_CLIENT_TLS_POLICIES = 23
-    QUOTA_EXCEEDED_SERVICE_LB_POLICIES = 24
-    QUOTA_EXCEEDED_HTTP_FILTERS = 25
-    QUOTA_EXCEEDED_TCP_FILTERS = 26
-    QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS = 27
+    CLUSTER_HAS_ZERO_NODES = 8
+    UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 9
+    VPCSC_GA_SUPPORTED = 10
+    CONFIG_APPLY_INTERNAL_ERROR = 11
+    CONFIG_VALIDATION_ERROR = 12
+    CONFIG_VALIDATION_WARNING = 13
+    QUOTA_EXCEEDED_BACKEND_SERVICES = 14
+    QUOTA_EXCEEDED_HEALTH_CHECKS = 15
+    QUOTA_EXCEEDED_HTTP_ROUTES = 16
+    QUOTA_EXCEEDED_TCP_ROUTES = 17
+    QUOTA_EXCEEDED_TLS_ROUTES = 18
+    QUOTA_EXCEEDED_TRAFFIC_POLICIES = 19
+    QUOTA_EXCEEDED_ENDPOINT_POLICIES = 20
+    QUOTA_EXCEEDED_GATEWAYS = 21
+    QUOTA_EXCEEDED_MESHES = 22
+    QUOTA_EXCEEDED_SERVER_TLS_POLICIES = 23
+    QUOTA_EXCEEDED_CLIENT_TLS_POLICIES = 24
+    QUOTA_EXCEEDED_SERVICE_LB_POLICIES = 25
+    QUOTA_EXCEEDED_HTTP_FILTERS = 26
+    QUOTA_EXCEEDED_TCP_FILTERS = 27
+    QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS = 28
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""Severity level of the condition.

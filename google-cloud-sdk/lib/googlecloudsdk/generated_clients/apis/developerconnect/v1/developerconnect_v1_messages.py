@@ -671,7 +671,6 @@ class GitHubEnterpriseConfig(_messages.Message):
       should only be set if the GitHub Enterprise server is hosted on-premises
       and not reachable by public internet. If this field is left empty, calls
       to the GitHub Enterprise server will be made over the public internet.
-    sslCa: Optional. SSL certificate to use for requests to GitHub Enterprise.
     sslCaCertificate: Optional. SSL certificate to use for requests to GitHub
       Enterprise.
     webhookSecretSecretVersion: Optional. SecretManager resource containing
@@ -687,9 +686,8 @@ class GitHubEnterpriseConfig(_messages.Message):
   privateKeySecretVersion = _messages.StringField(6)
   serverVersion = _messages.StringField(7)
   serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 8)
-  sslCa = _messages.StringField(9)
-  sslCaCertificate = _messages.StringField(10)
-  webhookSecretSecretVersion = _messages.StringField(11)
+  sslCaCertificate = _messages.StringField(9)
+  webhookSecretSecretVersion = _messages.StringField(10)
 
 
 class GitLabConfig(_messages.Message):

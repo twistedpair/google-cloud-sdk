@@ -82,7 +82,7 @@ def SetMembershipLocation(ref, args, request):
 
 
 def ExecuteUpdateMembershipRequest(ref, args):
-  """Set membership location for requested resource.
+  """Execute update membership request.
 
   Args:
     ref: API response from update membership call
@@ -99,7 +99,7 @@ def ExecuteUpdateMembershipRequest(ref, args):
 
   # Update membership from Fleet API.
   release_track = args.calliope_command.ReleaseTrack()
-  obj = api_util.GetMembership(name, release_track)
+  obj = api_util.GetMembership(name, release_track, use_v1main_api=True)
   update_fields = []
 
   external_id = infra_type = None
@@ -127,7 +127,8 @@ def ExecuteUpdateMembershipRequest(ref, args):
       issuer_url=None,
       oidc_jwks=None,
       api_server_version=None,
-      async_flag=args.GetValue('async'))
+      async_flag=args.GetValue('async'),
+      use_v1main_api=True)
 
   return response
 

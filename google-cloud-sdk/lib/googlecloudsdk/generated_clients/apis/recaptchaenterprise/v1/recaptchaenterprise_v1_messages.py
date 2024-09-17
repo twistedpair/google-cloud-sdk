@@ -148,9 +148,9 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
   r"""The request message to annotate an Assessment.
 
   Enums:
-    AnnotationValueValuesEnum: Optional. The annotation that will be assigned
-      to the Event. This field can be left empty to provide reasons that apply
-      to an event without concluding whether the event is legitimate or
+    AnnotationValueValuesEnum: Optional. The annotation that is assigned to
+      the Event. This field can be left empty to provide reasons that apply to
+      an event without concluding whether the event is legitimate or
       fraudulent.
     ReasonsValueListEntryValuesEnum:
 
@@ -159,8 +159,8 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
       assessment. This is an alternative to setting `account_id` in
       `CreateAssessment`, for example when a stable account identifier is not
       yet known in the initial request.
-    annotation: Optional. The annotation that will be assigned to the Event.
-      This field can be left empty to provide reasons that apply to an event
+    annotation: Optional. The annotation that is assigned to the Event. This
+      field can be left empty to provide reasons that apply to an event
       without concluding whether the event is legitimate or fraudulent.
     hashedAccountId: Optional. A stable hashed account identifier to apply to
       the assessment. This is an alternative to setting `hashed_account_id` in
@@ -174,9 +174,9 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
   """
 
   class AnnotationValueValuesEnum(_messages.Enum):
-    r"""Optional. The annotation that will be assigned to the Event. This
-    field can be left empty to provide reasons that apply to an event without
-    concluding whether the event is legitimate or fraudulent.
+    r"""Optional. The annotation that is assigned to the Event. This field can
+    be left empty to provide reasons that apply to an event without concluding
+    whether the event is legitimate or fraudulent.
 
     Values:
       ANNOTATION_UNSPECIFIED: Default unspecified type.
@@ -404,12 +404,11 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
       should be the same action provided at token generation time on client-
       side platforms already integrated with recaptcha enterprise.
     express: Optional. Flag for a reCAPTCHA express request for an assessment
-      without a token. If enabled, `site_key` must reference a SCORE key with
-      WAF feature set to EXPRESS.
+      without a token. If enabled, `site_key` must reference an Express site
+      key.
     firewallPolicyEvaluation: Optional. Flag for enabling firewall policy
-      config assessment. If this flag is enabled, the firewall policy will be
-      evaluated and a suggested firewall action will be returned in the
-      response.
+      config assessment. If this flag is enabled, the firewall policy is
+      evaluated and a suggested firewall action is returned in the response.
     fraudPrevention: Optional. The Fraud Prevention setting for this
       assessment.
     hashedAccountId: Optional. Deprecated: use `user_info.account_id` instead.
@@ -474,6 +473,10 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
   wafTokenAssessment = _messages.BooleanField(15)
 
 
+class GoogleCloudRecaptchaenterpriseV1ExpressKeySettings(_messages.Message):
+  r"""Settings specific to keys that can be used for reCAPTCHA Express."""
+
+
 class GoogleCloudRecaptchaenterpriseV1FirewallAction(_messages.Message):
   r"""An individual action. Each action represents what to do if a policy
   matches.
@@ -481,15 +484,15 @@ class GoogleCloudRecaptchaenterpriseV1FirewallAction(_messages.Message):
   Fields:
     allow: The user request did not match any policy and should be allowed
       access to the requested resource.
-    block: This action will deny access to a given page. The user will get an
-      HTTP error code.
-    includeRecaptchaScript: This action will inject reCAPTCHA JavaScript code
-      into the HTML page returned by the site backend.
-    redirect: This action will redirect the request to a ReCaptcha
-      interstitial to attach a token.
-    setHeader: This action will set a custom header but allow the request to
+    block: This action denies access to a given page. The user gets an HTTP
+      error code.
+    includeRecaptchaScript: This action injects reCAPTCHA JavaScript code into
+      the HTML page returned by the site backend.
+    redirect: This action redirects the request to a reCAPTCHA interstitial to
+      attach a token.
+    setHeader: This action sets a custom header but allow the request to
       continue to the customer backend.
-    substitute: This action will transparently serve a different page to an
+    substitute: This action transparently serves a different page to an
       offending user.
   """
 
@@ -511,7 +514,6 @@ class GoogleCloudRecaptchaenterpriseV1FirewallActionBlockAction(_messages.Messag
   """
 
 
-
 class GoogleCloudRecaptchaenterpriseV1FirewallActionIncludeRecaptchaScriptAction(_messages.Message):
   r"""An include reCAPTCHA script action involves injecting reCAPTCHA
   JavaScript code into the HTML returned by the site backend. This reCAPTCHA
@@ -521,12 +523,10 @@ class GoogleCloudRecaptchaenterpriseV1FirewallActionIncludeRecaptchaScriptAction
   """
 
 
-
 class GoogleCloudRecaptchaenterpriseV1FirewallActionRedirectAction(_messages.Message):
   r"""A redirect action returns a 307 (temporary redirect) response, pointing
-  the user to a ReCaptcha interstitial page to attach a token.
+  the user to a reCAPTCHA interstitial page to attach a token.
   """
-
 
 
 class GoogleCloudRecaptchaenterpriseV1FirewallActionSetHeaderAction(_messages.Message):
@@ -600,10 +600,10 @@ class GoogleCloudRecaptchaenterpriseV1FirewallPolicyAssessment(_messages.Message
 
   Fields:
     error: Output only. If the processing of a policy config fails, an error
-      will be populated and the firewall_policy will be left empty.
+      is populated and the firewall_policy is left empty.
     firewallPolicy: Output only. The policy that matched the request. If more
       than one policy may match, this is the first match. If no policy matches
-      the incoming request, the policy field will be left empty.
+      the incoming request, the policy field is left empty.
   """
 
   error = _messages.MessageField('GoogleRpcStatus', 1)
@@ -737,10 +737,10 @@ class GoogleCloudRecaptchaenterpriseV1IOSKeySettings(_messages.Message):
     allowedBundleIds: Optional. iOS bundle ids of apps allowed to use the key.
       Example: 'com.companyname.productname.appname'
     appleDeveloperId: Optional. Apple Developer account details for the app
-      that is protected by the reCAPTCHA Key. reCAPTCHA Enterprise leverages
-      platform-specific checks like Apple App Attest and Apple DeviceCheck to
-      protect your app from abuse. Providing these fields allows reCAPTCHA
-      Enterprise to get a better assessment of the integrity of your app.
+      that is protected by the reCAPTCHA Key. reCAPTCHA leverages platform-
+      specific checks like Apple App Attest and Apple DeviceCheck to protect
+      your app from abuse. Providing these fields allows reCAPTCHA to get a
+      better assessment of the integrity of your app.
   """
 
   allowAllBundleIds = _messages.BooleanField(1)
@@ -793,6 +793,7 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
       this key.
     displayName: Required. Human-readable display name of this key. Modifiable
       by user.
+    expressSettings: Settings for keys that can be used by reCAPTCHA Express.
     iosSettings: Settings for keys that can be used by iOS apps.
     labels: Optional. See [Creating and managing labels]
       (https://cloud.google.com/recaptcha/docs/labels).
@@ -831,12 +832,13 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
   androidSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1AndroidKeySettings', 1)
   createTime = _messages.StringField(2)
   displayName = _messages.StringField(3)
-  iosSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1IOSKeySettings', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  testingOptions = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TestingOptions', 7)
-  wafSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WafSettings', 8)
-  webSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WebKeySettings', 9)
+  expressSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ExpressKeySettings', 4)
+  iosSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1IOSKeySettings', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  testingOptions = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TestingOptions', 8)
+  wafSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WafSettings', 9)
+  webSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WebKeySettings', 10)
 
 
 class GoogleCloudRecaptchaenterpriseV1ListFirewallPoliciesResponse(_messages.Message):
@@ -849,6 +851,19 @@ class GoogleCloudRecaptchaenterpriseV1ListFirewallPoliciesResponse(_messages.Mes
   """
 
   firewallPolicies = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallPolicy', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudRecaptchaenterpriseV1ListIpOverridesResponse(_messages.Message):
+  r"""Response for ListIpOverrides.
+
+  Fields:
+    ipOverrides: IP Overrides details.
+    nextPageToken: Token to retrieve the next page of results. If this field
+      is empty, no keys remain in the results.
+  """
+
+  ipOverrides = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1IpOverrideData', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -895,12 +910,12 @@ class GoogleCloudRecaptchaenterpriseV1Metrics(_messages.Message):
   r"""Metrics for a single Key.
 
   Fields:
-    challengeMetrics: Metrics will be continuous and in order by dates, and in
-      the granularity of day. Only challenge-based keys (CHECKBOX, INVISIBLE),
-      will have challenge-based data.
+    challengeMetrics: Metrics are continuous and in order by dates, and in the
+      granularity of day. Only challenge-based keys (CHECKBOX, INVISIBLE) have
+      challenge-based data.
     name: Output only. Identifier. The name of the metrics, in the format
       `projects/{project}/keys/{key}/metrics`.
-    scoreMetrics: Metrics will be continuous and in order by dates, and in the
+    scoreMetrics: Metrics are continuous and in order by dates, and in the
       granularity of day. All Key types should have score-based data.
     startTime: Inclusive start time aligned to a day (UTC).
   """
@@ -995,6 +1010,20 @@ class GoogleCloudRecaptchaenterpriseV1RelatedAccountGroupMembership(_messages.Me
   accountId = _messages.StringField(1)
   hashedAccountId = _messages.BytesField(2)
   name = _messages.StringField(3)
+
+
+class GoogleCloudRecaptchaenterpriseV1RemoveIpOverrideRequest(_messages.Message):
+  r"""The removeIpOverride request message.
+
+  Fields:
+    ipOverrideData: Required. IP override to be removed from the key.
+  """
+
+  ipOverrideData = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1IpOverrideData', 1)
+
+
+class GoogleCloudRecaptchaenterpriseV1RemoveIpOverrideResponse(_messages.Message):
+  r"""Response for RemoveIpOverride."""
 
 
 class GoogleCloudRecaptchaenterpriseV1ReorderFirewallPoliciesRequest(_messages.Message):
@@ -1238,21 +1267,21 @@ class GoogleCloudRecaptchaenterpriseV1TestingOptions(_messages.Message):
 
   Enums:
     TestingChallengeValueValuesEnum: Optional. For challenge-based keys only
-      (CHECKBOX, INVISIBLE), all challenge requests for this site will return
+      (CHECKBOX, INVISIBLE), all challenge requests for this site return
       nocaptcha if NOCAPTCHA, or an unsolvable challenge if CHALLENGE.
 
   Fields:
     testingChallenge: Optional. For challenge-based keys only (CHECKBOX,
-      INVISIBLE), all challenge requests for this site will return nocaptcha
-      if NOCAPTCHA, or an unsolvable challenge if CHALLENGE.
-    testingScore: Optional. All assessments for this Key will return this
-      score. Must be between 0 (likely not legitimate) and 1 (likely
-      legitimate) inclusive.
+      INVISIBLE), all challenge requests for this site return nocaptcha if
+      NOCAPTCHA, or an unsolvable challenge if CHALLENGE.
+    testingScore: Optional. All assessments for this Key return this score.
+      Must be between 0 (likely not legitimate) and 1 (likely legitimate)
+      inclusive.
   """
 
   class TestingChallengeValueValuesEnum(_messages.Enum):
     r"""Optional. For challenge-based keys only (CHECKBOX, INVISIBLE), all
-    challenge requests for this site will return nocaptcha if NOCAPTCHA, or an
+    challenge requests for this site return nocaptcha if NOCAPTCHA, or an
     unsolvable challenge if CHALLENGE.
 
     Values:
@@ -1676,13 +1705,13 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
     ChallengeSecurityPreferenceValueValuesEnum: Optional. Settings for the
       frequency and difficulty at which this key triggers captcha challenges.
       This should only be specified for IntegrationTypes CHECKBOX and
-      INVISIBLE.
+      INVISIBLE and SCORE_AND_CHALLENGE.
     IntegrationTypeValueValuesEnum: Required. Describes how this key is
       integrated with the website.
 
   Fields:
-    allowAllDomains: Optional. If set to true, it means allowed_domains will
-      not be enforced.
+    allowAllDomains: Optional. If set to true, it means allowed_domains are
+      not enforced.
     allowAmpTraffic: Optional. If set to true, the key can be used on AMP
       (Accelerated Mobile Pages) websites. This is supported only for the
       SCORE integration type.
@@ -1692,7 +1721,10 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
       query or fragment. Examples: 'example.com' or 'subdomain.example.com'
     challengeSecurityPreference: Optional. Settings for the frequency and
       difficulty at which this key triggers captcha challenges. This should
-      only be specified for IntegrationTypes CHECKBOX and INVISIBLE.
+      only be specified for IntegrationTypes CHECKBOX and INVISIBLE and
+      SCORE_AND_CHALLENGE.
+    challengeSettings: Optional. Challenge settings for SCORE_AND_CHALLENGE
+      keys.
     integrationType: Required. Describes how this key is integrated with the
       website.
   """
@@ -1700,7 +1732,7 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
   class ChallengeSecurityPreferenceValueValuesEnum(_messages.Enum):
     r"""Optional. Settings for the frequency and difficulty at which this key
     triggers captcha challenges. This should only be specified for
-    IntegrationTypes CHECKBOX and INVISIBLE.
+    IntegrationTypes CHECKBOX and INVISIBLE and SCORE_AND_CHALLENGE.
 
     Values:
       CHALLENGE_SECURITY_PREFERENCE_UNSPECIFIED: Default type that indicates
@@ -1728,17 +1760,105 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
         challenges after it is checked.
       INVISIBLE: Doesn't display the "I'm not a robot" checkbox, but may show
         captcha challenges after risk analysis.
+      SCORE_AND_CHALLENGE: Displays a visual challenge or not depending on the
+        user risk analysis score.
     """
     INTEGRATION_TYPE_UNSPECIFIED = 0
     SCORE = 1
     CHECKBOX = 2
     INVISIBLE = 3
+    SCORE_AND_CHALLENGE = 4
 
   allowAllDomains = _messages.BooleanField(1)
   allowAmpTraffic = _messages.BooleanField(2)
   allowedDomains = _messages.StringField(3, repeated=True)
   challengeSecurityPreference = _messages.EnumField('ChallengeSecurityPreferenceValueValuesEnum', 4)
-  integrationType = _messages.EnumField('IntegrationTypeValueValuesEnum', 5)
+  challengeSettings = _messages.MessageField(
+      'GoogleCloudRecaptchaenterpriseV1WebKeySettingsChallengeSettings', 5
+  )
+  integrationType = _messages.EnumField('IntegrationTypeValueValuesEnum', 6)
+
+
+class GoogleCloudRecaptchaenterpriseV1WebKeySettingsActionSettings(
+    _messages.Message
+):
+  r"""Per-action challenge settings.
+
+  Fields:
+    scoreThreshold: Required. A challenge is triggered if the end-user score
+      is below that threshold. Value must be between 0 and 1 (inclusive).
+  """
+
+  scoreThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudRecaptchaenterpriseV1WebKeySettingsChallengeSettings(
+    _messages.Message
+):
+  r"""Settings for SCORE_AND_CHALLENGE keys to control when a challenge is
+
+  triggered.
+
+  Messages:
+    ActionSettingsValue: Optional. The action to score threshold map used for
+      SCORE_AND_CHALLENGE keys. The action name should be the same as the
+      action name passed in a execute (see
+      https://cloud.google.com/recaptcha/docs/actions-website). Action names
+      are case sensitive. There is a maximum of 100 action settings. An action
+      name has a maximum length of 100.
+
+  Fields:
+    actionSettings: Optional. The action to score threshold map used for
+      SCORE_AND_CHALLENGE keys. The action name should be the same as the
+      action name passed in a execute (see
+      https://cloud.google.com/recaptcha/docs/actions-website). Action names
+      are case sensitive. There is a maximum of 100 action settings. An action
+      name has a maximum length of 100.
+    defaultSettings: Required. Defines when a challenge is triggered (unless
+      the default threshold is overridden for the given action, see
+      `action_settings`).
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ActionSettingsValue(_messages.Message):
+    r"""Optional.
+
+    The action to score threshold map used for SCORE_AND_CHALLENGE keys. The
+    action name should be the same as the action name passed in a execute (see
+    https://cloud.google.com/recaptcha/docs/actions-website). Action names are
+    case sensitive. There is a maximum of 100 action settings. An action name
+    has a maximum length of 100.
+
+    Messages:
+      AdditionalProperty: An additional property for a ActionSettingsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ActionSettingsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ActionSettingsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudRecaptchaenterpriseV1WebKeySettingsActionSettings
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField(
+          'GoogleCloudRecaptchaenterpriseV1WebKeySettingsActionSettings', 2
+      )
+
+    additionalProperties = _messages.MessageField(
+        'AdditionalProperty', 1, repeated=True
+    )
+
+  actionSettings = _messages.MessageField('ActionSettingsValue', 1)
+  defaultSettings = _messages.MessageField(
+      'GoogleCloudRecaptchaenterpriseV1WebKeySettingsActionSettings', 2
+  )
 
 
 class GoogleProtobufEmpty(_messages.Message):
@@ -1747,7 +1867,6 @@ class GoogleProtobufEmpty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
 
 
 class GoogleRpcStatus(_messages.Message):
@@ -1823,7 +1942,7 @@ class RecaptchaenterpriseProjectsAssessmentsCreateRequest(_messages.Message):
     googleCloudRecaptchaenterpriseV1Assessment: A
       GoogleCloudRecaptchaenterpriseV1Assessment resource to be passed as the
       request body.
-    parent: Required. The name of the project in which the assessment will be
+    parent: Required. The name of the project in which the assessment is
       created, in the format `projects/{project}`.
   """
 
@@ -1838,8 +1957,8 @@ class RecaptchaenterpriseProjectsFirewallpoliciesCreateRequest(_messages.Message
     googleCloudRecaptchaenterpriseV1FirewallPolicy: A
       GoogleCloudRecaptchaenterpriseV1FirewallPolicy resource to be passed as
       the request body.
-    parent: Required. The name of the project this policy will apply to, in
-      the format `projects/{project}`.
+    parent: Required. The name of the project this policy applies to, in the
+      format `projects/{project}`.
   """
 
   googleCloudRecaptchaenterpriseV1FirewallPolicy = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallPolicy', 1)
@@ -1895,7 +2014,7 @@ class RecaptchaenterpriseProjectsFirewallpoliciesPatchRequest(_messages.Message)
     name: Identifier. The resource name for the FirewallPolicy in the format
       `projects/{project}/firewallpolicies/{firewallpolicy}`.
     updateMask: Optional. The mask to control which fields of the policy get
-      updated. If the mask is not present, all fields will be updated.
+      updated. If the mask is not present, all fields are updated.
   """
 
   googleCloudRecaptchaenterpriseV1FirewallPolicy = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallPolicy', 1)
@@ -1939,8 +2058,8 @@ class RecaptchaenterpriseProjectsKeysCreateRequest(_messages.Message):
   Fields:
     googleCloudRecaptchaenterpriseV1Key: A GoogleCloudRecaptchaenterpriseV1Key
       resource to be passed as the request body.
-    parent: Required. The name of the project in which the key will be
-      created, in the format `projects/{project}`.
+    parent: Required. The name of the project in which the key is created, in
+      the format `projects/{project}`.
   """
 
   googleCloudRecaptchaenterpriseV1Key = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1Key', 1)
@@ -1980,6 +2099,25 @@ class RecaptchaenterpriseProjectsKeysGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class RecaptchaenterpriseProjectsKeysListIpOverridesRequest(_messages.Message):
+  r"""A RecaptchaenterpriseProjectsKeysListIpOverridesRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of overrides to return. Default is
+      10. Max limit is 100. If the number of overrides is less than the
+      page_size, all overrides are returned. If the page size is more than
+      100, it is coerced to 100.
+    pageToken: Optional. The next_page_token value returned from a previous
+      ListIpOverridesRequest, if any.
+    parent: Required. The parent key for which the IP overrides are listed, in
+      the format `projects/{project}/keys/{key}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class RecaptchaenterpriseProjectsKeysListRequest(_messages.Message):
   r"""A RecaptchaenterpriseProjectsKeysListRequest object.
 
@@ -1988,8 +2126,8 @@ class RecaptchaenterpriseProjectsKeysListRequest(_messages.Message):
       Max limit is 1000.
     pageToken: Optional. The next_page_token value returned from a previous.
       ListKeysRequest, if any.
-    parent: Required. The name of the project that contains the keys that will
-      be listed, in the format `projects/{project}`.
+    parent: Required. The name of the project that contains the keys that is
+      listed, in the format `projects/{project}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2021,12 +2159,27 @@ class RecaptchaenterpriseProjectsKeysPatchRequest(_messages.Message):
     name: Identifier. The resource name for the Key in the format
       `projects/{project}/keys/{key}`.
     updateMask: Optional. The mask to control which fields of the key get
-      updated. If the mask is not present, all fields will be updated.
+      updated. If the mask is not present, all fields are updated.
   """
 
   googleCloudRecaptchaenterpriseV1Key = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1Key', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class RecaptchaenterpriseProjectsKeysRemoveIpOverrideRequest(_messages.Message):
+  r"""A RecaptchaenterpriseProjectsKeysRemoveIpOverrideRequest object.
+
+  Fields:
+    googleCloudRecaptchaenterpriseV1RemoveIpOverrideRequest: A
+      GoogleCloudRecaptchaenterpriseV1RemoveIpOverrideRequest resource to be
+      passed as the request body.
+    name: Required. The name of the key from which the IP override is removed,
+      in the format `projects/{project}/keys/{key}`.
+  """
+
+  googleCloudRecaptchaenterpriseV1RemoveIpOverrideRequest = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RemoveIpOverrideRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class RecaptchaenterpriseProjectsKeysRetrieveLegacySecretKeyRequest(_messages.Message):

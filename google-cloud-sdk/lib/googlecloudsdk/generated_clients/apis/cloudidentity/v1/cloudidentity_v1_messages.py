@@ -542,7 +542,7 @@ class CloudidentityDevicesListRequest(_messages.Message):
       COMPANY_INVENTORY: This view contains all devices imported by the
         company admin. Each device in the response contains all information
         specified by the company admin when importing the device (i.e. asset
-        tags). This includes devices that may be unaassigned or assigned to
+        tags). This includes devices that may be unassigned or assigned to
         users.
       USER_ASSIGNED_DEVICES: This view contains all devices with at least one
         user registered on the device. Each device in the response contains
@@ -2997,6 +2997,7 @@ class Membership(_messages.Message):
       SERVICE_ACCOUNT: Represents service account type.
       GROUP: Represents group type.
       SHARED_DRIVE: Represents Shared drive.
+      CBCM_BROWSER: Represents a CBCM-managed Chrome Browser type.
       OTHER: Represents other type.
     """
     TYPE_UNSPECIFIED = 0
@@ -3004,7 +3005,8 @@ class Membership(_messages.Message):
     SERVICE_ACCOUNT = 2
     GROUP = 3
     SHARED_DRIVE = 4
-    OTHER = 5
+    CBCM_BROWSER = 5
+    OTHER = 6
 
   createTime = _messages.StringField(1)
   deliverySetting = _messages.EnumField('DeliverySettingValueValuesEnum', 2)

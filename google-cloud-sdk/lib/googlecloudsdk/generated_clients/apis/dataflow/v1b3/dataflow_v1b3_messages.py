@@ -7491,6 +7491,10 @@ class StreamingConfigTask(_messages.Message):
       by the worker to validate outputs sent to the backend.
     streamingComputationConfigs: Set of computation configuration information.
     userStepToStateFamilyNameMap: Map from user step names to state families.
+    userWorkerRunnerV1Settings: Binary encoded proto to control runtime
+      behavior of the java runner v1 user worker.
+    userWorkerRunnerV2Settings: Binary encoded proto to control runtime
+      behavior of the runner v2 user worker.
     windmillServiceEndpoint: If present, the worker must use this endpoint to
       communicate with Windmill Service dispatchers, otherwise the worker must
       continue to use whatever endpoint it had been using.
@@ -7532,8 +7536,10 @@ class StreamingConfigTask(_messages.Message):
   operationalLimits = _messages.MessageField('StreamingOperationalLimits', 4)
   streamingComputationConfigs = _messages.MessageField('StreamingComputationConfig', 5, repeated=True)
   userStepToStateFamilyNameMap = _messages.MessageField('UserStepToStateFamilyNameMapValue', 6)
-  windmillServiceEndpoint = _messages.StringField(7)
-  windmillServicePort = _messages.IntegerField(8)
+  userWorkerRunnerV1Settings = _messages.BytesField(7)
+  userWorkerRunnerV2Settings = _messages.BytesField(8)
+  windmillServiceEndpoint = _messages.StringField(9)
+  windmillServicePort = _messages.IntegerField(10)
 
 
 class StreamingOperationalLimits(_messages.Message):

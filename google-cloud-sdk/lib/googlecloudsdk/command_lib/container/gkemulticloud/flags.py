@@ -1159,26 +1159,23 @@ def GetBinauthzEvaluationMode(args):
   )
 
 
-def AddSecurityPosture(parser):
-  """Adds --security-posture flag to parser."""
+def AddWorkloadVulnerabilityScanning(parser):
+  """Adds --workload-vulnerability-scanning flag to parser."""
   parser.add_argument(
-      '--security-posture',
+      '--workload-vulnerability-scanning',
       choices=['disabled', 'enterprise'],
       default=None,
       help=textwrap.dedent("""\
-      Sets the mode of the Kubernetes security posture API's off-cluster features.
+      Sets the mode of the Kubernetes security posture API's workload vulnerability scanning.
+      To enable Advanced vulnerability insights mode explicitly set the flag to --workload-vulnerability-scanning=enterprise.
 
-      To enable advanced mode explicitly set the flag to
-      `--security-posture=enterprise`.
-
-      To disable in an existing cluster, explicitly set the flag to
-      `--security-posture=disabled`.
+      To disable in an existing cluster, explicitly set the flag to --workload-vulnerability-scanning=disabled.
       """),
   )
 
 
-def GetSecurityPosture(args):
-  vulnerability_mode = getattr(args, 'security_posture', None)
+def GetWorkloadVulnerabilityScanning(args):
+  vulnerability_mode = getattr(args, 'workload_vulnerability_scanning', None)
   if vulnerability_mode is None:
     return None
   enum_type = (

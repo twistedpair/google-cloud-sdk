@@ -303,6 +303,10 @@ ADDITIONAL_SUBNETWORKS_POD_RANG_ENOT_FOUND = """\
 Can not remove pod ipv4 range {range}: not found in additional subnetworks
 """
 
+CLUSTER_TIER_NOT_SUPPORTED = """\
+Provided cluster tier '{tier}' is not supported.
+"""
+
 DEFAULT_MAX_NODES_PER_POOL = 1000
 
 MAX_AUTHORIZED_NETWORKS_CIDRS_PRIVATE = 100
@@ -780,6 +784,7 @@ class CreateClusterOptions(object):
       control_plane_disk_encryption_key=None,
       gkeops_etcd_backup_encryption_key=None,
       disable_l4_lb_firewall_reconciliation=None,
+      tier=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -1033,6 +1038,7 @@ class CreateClusterOptions(object):
     self.disable_l4_lb_firewall_reconciliation = (
         disable_l4_lb_firewall_reconciliation
     )
+    self.tier = tier
 
 
 class UpdateClusterOptions(object):
@@ -1194,6 +1200,7 @@ class UpdateClusterOptions(object):
       enable_dns_access=None,
       disable_l4_lb_firewall_reconciliation=None,
       enable_l4_lb_firewall_reconciliation=None,
+      tier=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1376,6 +1383,7 @@ class UpdateClusterOptions(object):
     self.enable_l4_lb_firewall_reconciliation = (
         enable_l4_lb_firewall_reconciliation
     )
+    self.tier = tier
 
 
 class SetMasterAuthOptions(object):
@@ -2749,6 +2757,9 @@ class APIAdapter(object):
       cluster.networkConfig.disableL4LbFirewallReconciliation = (
           options.disable_l4_lb_firewall_reconciliation
       )
+
+    if options.tier is not None:
+      cluster.enterpriseConfig = _GetEnterpriseConfig(options, self.messages)
 
     return cluster
 
@@ -4424,6 +4435,13 @@ class APIAdapter(object):
     if options.enable_l4_lb_firewall_reconciliation:
       update = self.messages.ClusterUpdate(
           desiredDisableL4LbFirewallReconciliation=False
+      )
+
+    if options.tier is not None:
+      update = self.messages.ClusterUpdate(
+          desiredEnterpriseConfig=_GetDesiredEnterpriseConfig(
+              options, self.messages
+          )
       )
 
     return update
@@ -6880,6 +6898,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     cluster.kubernetesObjectsExportConfig = _GetKubernetesObjectsExportConfigForClusterCreate(
         options, self.messages)
 
+    if options.tier is not None:
+      cluster.enterpriseConfig = _GetEnterpriseConfig(options, self.messages)
+
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -6993,6 +7014,13 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.convert_to_standard is not None:
       update = self.messages.ClusterUpdate(
           desiredAutopilot=self.messages.Autopilot(enabled=False))
+
+    if options.tier is not None:
+      update = self.messages.ClusterUpdate(
+          desiredEnterpriseConfig=_GetDesiredEnterpriseConfig(
+              options, self.messages
+          )
+      )
 
     if not update:
       # if reached here, it's possible:
@@ -8000,3 +8028,47 @@ def VariantConfigEnumFromString(messages, variant):
   elif variant == 'MAX_THROUGHPUT':
     variant_config_enum = messages.LoggingVariantConfig.VariantValueValuesEnum.MAX_THROUGHPUT
   return variant_config_enum
+
+
+def _GetEnterpriseConfig(options, messages):
+  """Gets the EnterpriseConfig from options."""
+  enterprise_config = messages.EnterpriseConfig()
+  if options.tier is not None:
+    tiers = {
+        'standard': (
+            messages.EnterpriseConfig.DesiredTierValueValuesEnum.STANDARD
+        ),
+        'enterprise': (
+            messages.EnterpriseConfig.DesiredTierValueValuesEnum.ENTERPRISE
+        ),
+    }
+    if options.tier not in tiers:
+      raise util.Error(
+          CLUSTER_TIER_NOT_SUPPORTED.format(
+              tier=options.tier
+          )
+      )
+    enterprise_config.desiredTier = tiers[options.tier]
+  return enterprise_config
+
+
+def _GetDesiredEnterpriseConfig(options, messages):
+  """Gets the DesiredEnterpriseConfig from options."""
+  desired_enterprise_config = messages.DesiredEnterpriseConfig()
+  if options.tier is not None:
+    tiers = {
+        'standard': (
+            messages.DesiredEnterpriseConfig.DesiredTierValueValuesEnum.STANDARD
+        ),
+        'enterprise': (
+            messages.DesiredEnterpriseConfig.DesiredTierValueValuesEnum.ENTERPRISE
+        ),
+    }
+    if options.tier not in tiers:
+      raise util.Error(
+          CLUSTER_TIER_NOT_SUPPORTED.format(
+              tier=options.tier
+          )
+      )
+    desired_enterprise_config.desiredTier = tiers[options.tier]
+  return desired_enterprise_config

@@ -2690,7 +2690,8 @@ class LbRouteExtension(_messages.Message):
       is available under the namespace `com.google.lb_route_extension.`. The
       following variables are supported in the metadata Struct:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name.
+      qualified resource name. Only one of the resource level metadata and
+      extension level metadata can be set.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -2720,7 +2721,8 @@ class LbRouteExtension(_messages.Message):
       is available under the namespace `com.google.lb_route_extension.`. The
       following variables are supported in the metadata Struct:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name.
+      qualified resource name. Only one of the resource level metadata and
+      extension level metadata can be set.
     name: Required. Identifier. Name of the `LbRouteExtension` resource in the
       following format: `projects/{project}/locations/{location}/lbRouteExtens
       ions/{lb_route_extension}`.
@@ -2780,7 +2782,8 @@ class LbRouteExtension(_messages.Message):
     available under the namespace `com.google.lb_route_extension.`. The
     following variables are supported in the metadata Struct:
     `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-    qualified resource name.
+    qualified resource name. Only one of the resource level metadata and
+    extension level metadata can be set.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -2836,7 +2839,8 @@ class LbTrafficExtension(_messages.Message):
       metadata is available under the key `com.google.lb_traffic_extension.`.
       The following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name.
+      qualified resource name. Only one of the resource level metadata and
+      extension level metadata can be set.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -2865,7 +2869,8 @@ class LbTrafficExtension(_messages.Message):
       metadata is available under the key `com.google.lb_traffic_extension.`.
       The following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name.
+      qualified resource name. Only one of the resource level metadata and
+      extension level metadata can be set.
     name: Required. Identifier. Name of the `LbTrafficExtension` resource in
       the following format: `projects/{project}/locations/{location}/lbTraffic
       Extensions/{lb_traffic_extension}`.
@@ -2924,7 +2929,8 @@ class LbTrafficExtension(_messages.Message):
     metadata is available under the key `com.google.lb_traffic_extension.`.
     The following variables are supported in the metadata:
     `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-    qualified resource name.
+    qualified resource name. Only one of the resource level metadata and
+    extension level metadata can be set.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -7595,7 +7601,7 @@ class RouteRule(_messages.Message):
       transformations, and so forth prior to forwarding the request to the
       selected origin.
     routeMethods: Optional. Allow overriding the set of methods that are
-      allowed for this route. When not set, Media CDN only allows `GET`,
+      allowed for this route. When not set, Media CDN allows only `GET`,
       `HEAD`, and `OPTIONS`.
     urlRedirect: Optional. The URL redirect configuration for requests that
       match this route. Only one of origin or `url_redirect` can be set.
@@ -8544,6 +8550,9 @@ class WasmPlugin(_messages.Message):
       format:
       `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}`.
     updateTime: Output only. The timestamp when the resource was updated.
+    usedBy: Output only. List of all [Service
+      Extensions](https://cloud.google.com/service-extensions/docs/overview)
+      that use this `WasmPlugin`.
     versions: Optional. All versions of this `WasmPlugin` in the key-value
       format. The key is the resource ID, the value is the `VersionDetails`.
       Allows to create or update `WasmPlugin` and its WasmPluginVersions in a
@@ -8624,7 +8633,8 @@ class WasmPlugin(_messages.Message):
   mainVersionId = _messages.StringField(5)
   name = _messages.StringField(6)
   updateTime = _messages.StringField(7)
-  versions = _messages.MessageField('VersionsValue', 8)
+  usedBy = _messages.MessageField('WasmPluginUsedBy', 8, repeated=True)
+  versions = _messages.MessageField('VersionsValue', 9)
 
 
 class WasmPluginLogConfig(_messages.Message):
@@ -8692,6 +8702,19 @@ class WasmPluginLogConfig(_messages.Message):
   enable = _messages.BooleanField(1)
   minLogLevel = _messages.EnumField('MinLogLevelValueValuesEnum', 2)
   sampleRate = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class WasmPluginUsedBy(_messages.Message):
+  r"""Defines a resource that uses the `WasmPlugin`.
+
+  Fields:
+    name: Output only. Full name of the resource
+      https://google.aip.dev/122#full-resource-names, e.g. `//networkservices.
+      googleapis.com/projects/{project}/locations/{location}/lbRouteExtensions
+      /{extension}`
+  """
+
+  name = _messages.StringField(1)
 
 
 class WasmPluginVersion(_messages.Message):

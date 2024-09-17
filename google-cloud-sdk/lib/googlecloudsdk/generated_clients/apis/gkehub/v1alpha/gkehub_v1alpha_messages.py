@@ -325,6 +325,10 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CancelRolloutRequest(_messages.Message):
+  r"""Request message for cancelling a rollout."""
+
+
 class CloudAuditLoggingFeatureSpec(_messages.Message):
   r"""**Cloud Audit Logging**: Spec for Audit Logging Allowlisting.
 
@@ -823,7 +827,7 @@ class ClusterUpgradeUpgradeStatus(_messages.Message):
 
 
 class CommonFeatureSpec(_messages.Message):
-  r"""CommonFeatureSpec contains Hub-wide configuration information
+  r"""CommonFeatureSpec contains Fleet-wide configuration information
 
   Fields:
     anthosobservability: Anthos Observability spec
@@ -857,7 +861,7 @@ class CommonFeatureSpec(_messages.Message):
 
 
 class CommonFeatureState(_messages.Message):
-  r"""CommonFeatureState contains Hub-wide Feature status information.
+  r"""CommonFeatureState contains Fleet-wide Feature status information.
 
   Fields:
     appdevexperience: Appdevexperience specific state.
@@ -867,7 +871,7 @@ class CommonFeatureState(_messages.Message):
     namespaceactuation: Namespace Actuation feature state.
     rbacrolebindingactuation: RBAC Role Binding Actuation feature state
     servicemesh: Service Mesh-specific state.
-    state: Output only. The "running state" of the Feature in this Hub.
+    state: Output only. The "running state" of the Feature in this Fleet.
     workloadidentity: WorkloadIdentity fleet-level state.
   """
 
@@ -1842,6 +1846,9 @@ class ConfigManagementMembershipSpec(_messages.Message):
       annotation or ClusterSelector.
     configSync: Config Sync configuration for the cluster.
     hierarchyController: Hierarchy Controller configuration for the cluster.
+      Deprecated: Configuring Hierarchy Controller through the
+      configmanagement feature is no longer recommended. Use
+      https://github.com/kubernetes-sigs/hierarchical-namespaces instead.
     management: Enables automatic Feature management.
     policyController: Policy Controller configuration for the cluster.
       Deprecated: Configuring Policy Controller through the configmanagement
@@ -2362,7 +2369,7 @@ class Expr(_messages.Message):
 
 
 class Feature(_messages.Message):
-  r"""Feature represents the settings and status of any Hub Feature.
+  r"""Feature represents the settings and status of any Fleet Feature.
 
   Messages:
     LabelsValue: Labels for this Feature.
@@ -2450,9 +2457,9 @@ class Feature(_messages.Message):
       indicate which Scope the state is for, in the form:
       `projects/{p}/locations/global/scopes/{s}` Where {p} is the project, {s}
       is a valid Scope in this project. {p} WILL match the Feature's project.
-    spec: Optional. Hub-wide Feature configuration. If this Feature does not
-      support any Hub-wide configuration, this field may be unused.
-    state: Output only. The Hub-wide Feature state.
+    spec: Optional. Fleet-wide Feature configuration. If this Feature does not
+      support any Fleet-wide configuration, this field may be unused.
+    state: Output only. The Fleet-wide Feature state.
     unreachable: Output only. List of locations that could not be reached
       while fetching this feature.
     updateTime: Output only. When the Feature resource was last updated.
@@ -2632,7 +2639,7 @@ class Feature(_messages.Message):
 class FeatureResourceState(_messages.Message):
   r"""FeatureResourceState describes the state of a Feature *resource* in the
   GkeHub API. See `FeatureState` for the "running state" of the Feature in the
-  Hub and across Memberships.
+  Fleet and across Memberships.
 
   Enums:
     StateValueValuesEnum: The current state of the Feature resource in the Hub
@@ -2649,10 +2656,10 @@ class FeatureResourceState(_messages.Message):
       STATE_UNSPECIFIED: State is unknown or not set.
       ENABLING: The Feature is being enabled, and the Feature resource is
         being created. Once complete, the corresponding Feature will be
-        enabled in this Hub.
-      ACTIVE: The Feature is enabled in this Hub, and the Feature resource is
-        fully available.
-      DISABLING: The Feature is being disabled in this Hub, and the Feature
+        enabled in this Fleet.
+      ACTIVE: The Feature is enabled in this Fleet, and the Feature resource
+        is fully available.
+      DISABLING: The Feature is being disabled in this Fleet, and the Feature
         resource is being deleted.
       UPDATING: The Feature resource is being updated.
       SERVICE_UPDATING: The Feature resource is being updated by the Hub
@@ -2747,7 +2754,7 @@ class FeatureState(_messages.Message):
 
 
 class FeatureUpdate(_messages.Message):
-  r"""Feature config to use for Rollout.
+  r"""LINT.IfChange Feature config to use for Rollout.
 
   Fields:
     binaryAuthorizationConfig: Optional. Configuration for Binary
@@ -3005,6 +3012,21 @@ class GenerateConnectManifestResponse(_messages.Message):
   """
 
   manifest = _messages.MessageField('ConnectAgentResource', 1, repeated=True)
+
+
+class GenerateExclusivityManifestResponse(_messages.Message):
+  r"""The response of the exclusivity artifacts manifests for the client to
+  apply.
+
+  Fields:
+    crManifest: The YAML manifest of the membership CR to apply if a new
+      version of the CR is available. Empty if no update needs to be applied.
+    crdManifest: The YAML manifest of the membership CRD to apply if a newer
+      version of the CRD is available. Empty if no update needs to be applied.
+  """
+
+  crManifest = _messages.StringField(1)
+  crdManifest = _messages.StringField(2)
 
 
 class GenerateMembershipRBACRoleBindingYAMLResponse(_messages.Message):
@@ -3546,6 +3568,26 @@ class GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest(_messages
   version = _messages.StringField(10)
 
 
+class GkehubProjectsLocationsMembershipsGenerateExclusivityManifestRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsGenerateExclusivityManifestRequest
+  object.
+
+  Fields:
+    crManifest: Optional. The YAML manifest of the membership CR retrieved by
+      `kubectl get memberships membership`. Leave empty if the resource does
+      not exist.
+    crdManifest: Optional. The YAML manifest of the membership CRD retrieved
+      by `kubectl get customresourcedefinitions membership`. Leave empty if
+      the resource does not exist.
+    name: Required. The Membership resource name in the format
+      `projects/*/locations/*/memberships/*`.
+  """
+
+  crManifest = _messages.StringField(1)
+  crdManifest = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+
+
 class GkehubProjectsLocationsMembershipsGetIamPolicyRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsGetIamPolicyRequest object.
 
@@ -3820,6 +3862,24 @@ class GkehubProjectsLocationsMembershipsValidateCreateRequest(_messages.Message)
   validateCreateMembershipRequest = _messages.MessageField('ValidateCreateMembershipRequest', 2)
 
 
+class GkehubProjectsLocationsMembershipsValidateExclusivityRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsValidateExclusivityRequest object.
+
+  Fields:
+    crManifest: Optional. The YAML of the membership CR in the cluster. Empty
+      if the membership CR does not exist.
+    intendedMembership: Required. The intended membership name under the
+      `parent`. This method only does validation in anticipation of a
+      CreateMembership call with the same name.
+    parent: Required. The parent (project and location) where the Memberships
+      will be created. Specified in the format `projects/*/locations/*`.
+  """
+
+  crManifest = _messages.StringField(1)
+  intendedMembership = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class GkehubProjectsLocationsNamespacesCreateRequest(_messages.Message):
   r"""A GkehubProjectsLocationsNamespacesCreateRequest object.
 
@@ -4025,6 +4085,20 @@ class GkehubProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class GkehubProjectsLocationsRolloutsCancelRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsRolloutsCancelRequest object.
+
+  Fields:
+    cancelRolloutRequest: A CancelRolloutRequest resource to be passed as the
+      request body.
+    name: Required. The name of the rollout to cancel.
+      projects/{project}/locations/{location}/rollouts/{rollout}
+  """
+
+  cancelRolloutRequest = _messages.MessageField('CancelRolloutRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class GkehubProjectsLocationsRolloutsCreateRequest(_messages.Message):
@@ -4735,6 +4809,20 @@ class IdentityServiceAzureADConfig(_messages.Message):
   userClaim = _messages.StringField(7)
 
 
+class IdentityServiceDiagnosticInterface(_messages.Message):
+  r"""Configuration options for the AIS diagnostic interface.
+
+  Fields:
+    enabled: Determines whether to enable the diagnostic interface.
+    expirationTime: Determines the expiration time of the diagnostic interface
+      enablement. When reached, requests to the interface would be
+      automatically rejected.
+  """
+
+  enabled = _messages.BooleanField(1)
+  expirationTime = _messages.StringField(2)
+
+
 class IdentityServiceGoogleConfig(_messages.Message):
   r"""Configuration for the Google Plugin Auth flow.
 
@@ -4772,11 +4860,14 @@ class IdentityServiceIdentityServiceOptions(_messages.Message):
   r"""Holds non-protocol-related configuration options.
 
   Fields:
-    sessionDuration: Optional. Determines the lifespan of STS tokens issued by
-      Anthos Identity Service.
+    diagnosticInterface: Configuration options for the AIS diagnostic
+      interface.
+    sessionDuration: Determines the lifespan of STS tokens issued by Anthos
+      Identity Service.
   """
 
-  sessionDuration = _messages.StringField(1)
+  diagnosticInterface = _messages.MessageField('IdentityServiceDiagnosticInterface', 1)
+  sessionDuration = _messages.StringField(2)
 
 
 class IdentityServiceLdapConfig(_messages.Message):
@@ -5732,7 +5823,7 @@ class MembershipEndpoint(_messages.Message):
 
 class MembershipFeatureSpec(_messages.Message):
   r"""MembershipFeatureSpec contains configuration information for a single
-  Membership. NOTE: Please use snake case in your feature name.
+  Membership.
 
   Fields:
     anthosobservability: Anthos Observability-specific spec
@@ -7192,11 +7283,11 @@ class ResourceManifest(_messages.Message):
   to the cluster.
 
   Fields:
-    clusterScoped: Whether the resource provided in the manifest is
-      `cluster_scoped`. If unset, the manifest is assumed to be namespace
+    clusterScoped: Output only. Whether the resource provided in the manifest
+      is `cluster_scoped`. If unset, the manifest is assumed to be namespace
       scoped. This field is used for REST mapping when applying the resource
       in a cluster.
-    manifest: YAML manifest of the resource.
+    manifest: Output only. YAML manifest of the resource.
   """
 
   clusterScoped = _messages.BooleanField(1)
@@ -7749,12 +7840,15 @@ class ServiceMeshCondition(_messages.Message):
     Values:
       CODE_UNSPECIFIED: Default Unspecified code
       MESH_IAM_PERMISSION_DENIED: Mesh IAM permission denied error code
+      MESH_IAM_CROSS_PROJECT_PERMISSION_DENIED: Permission denied error code
+        for cross-project
       CNI_CONFIG_UNSUPPORTED: CNI config unsupported error code
       GKE_SANDBOX_UNSUPPORTED: GKE sandbox unsupported error code
       NODEPOOL_WORKLOAD_IDENTITY_FEDERATION_REQUIRED: Nodepool workload
         identity federation required error code
       CNI_INSTALLATION_FAILED: CNI installation failed error code
       CNI_POD_UNSCHEDULABLE: CNI pod unschedulable error code
+      CLUSTER_HAS_ZERO_NODES: Cluster has zero node code
       UNSUPPORTED_MULTIPLE_CONTROL_PLANES: Multiple control planes unsupported
         error code
       VPCSC_GA_SUPPORTED: VPC-SC GA is supported for this control plane.
@@ -7790,31 +7884,33 @@ class ServiceMeshCondition(_messages.Message):
     """
     CODE_UNSPECIFIED = 0
     MESH_IAM_PERMISSION_DENIED = 1
-    CNI_CONFIG_UNSUPPORTED = 2
-    GKE_SANDBOX_UNSUPPORTED = 3
-    NODEPOOL_WORKLOAD_IDENTITY_FEDERATION_REQUIRED = 4
-    CNI_INSTALLATION_FAILED = 5
-    CNI_POD_UNSCHEDULABLE = 6
-    UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 7
-    VPCSC_GA_SUPPORTED = 8
-    CONFIG_APPLY_INTERNAL_ERROR = 9
-    CONFIG_VALIDATION_ERROR = 10
-    CONFIG_VALIDATION_WARNING = 11
-    QUOTA_EXCEEDED_BACKEND_SERVICES = 12
-    QUOTA_EXCEEDED_HEALTH_CHECKS = 13
-    QUOTA_EXCEEDED_HTTP_ROUTES = 14
-    QUOTA_EXCEEDED_TCP_ROUTES = 15
-    QUOTA_EXCEEDED_TLS_ROUTES = 16
-    QUOTA_EXCEEDED_TRAFFIC_POLICIES = 17
-    QUOTA_EXCEEDED_ENDPOINT_POLICIES = 18
-    QUOTA_EXCEEDED_GATEWAYS = 19
-    QUOTA_EXCEEDED_MESHES = 20
-    QUOTA_EXCEEDED_SERVER_TLS_POLICIES = 21
-    QUOTA_EXCEEDED_CLIENT_TLS_POLICIES = 22
-    QUOTA_EXCEEDED_SERVICE_LB_POLICIES = 23
-    QUOTA_EXCEEDED_HTTP_FILTERS = 24
-    QUOTA_EXCEEDED_TCP_FILTERS = 25
-    QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS = 26
+    MESH_IAM_CROSS_PROJECT_PERMISSION_DENIED = 2
+    CNI_CONFIG_UNSUPPORTED = 3
+    GKE_SANDBOX_UNSUPPORTED = 4
+    NODEPOOL_WORKLOAD_IDENTITY_FEDERATION_REQUIRED = 5
+    CNI_INSTALLATION_FAILED = 6
+    CNI_POD_UNSCHEDULABLE = 7
+    CLUSTER_HAS_ZERO_NODES = 8
+    UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 9
+    VPCSC_GA_SUPPORTED = 10
+    CONFIG_APPLY_INTERNAL_ERROR = 11
+    CONFIG_VALIDATION_ERROR = 12
+    CONFIG_VALIDATION_WARNING = 13
+    QUOTA_EXCEEDED_BACKEND_SERVICES = 14
+    QUOTA_EXCEEDED_HEALTH_CHECKS = 15
+    QUOTA_EXCEEDED_HTTP_ROUTES = 16
+    QUOTA_EXCEEDED_TCP_ROUTES = 17
+    QUOTA_EXCEEDED_TLS_ROUTES = 18
+    QUOTA_EXCEEDED_TRAFFIC_POLICIES = 19
+    QUOTA_EXCEEDED_ENDPOINT_POLICIES = 20
+    QUOTA_EXCEEDED_GATEWAYS = 21
+    QUOTA_EXCEEDED_MESHES = 22
+    QUOTA_EXCEEDED_SERVER_TLS_POLICIES = 23
+    QUOTA_EXCEEDED_CLIENT_TLS_POLICIES = 24
+    QUOTA_EXCEEDED_SERVICE_LB_POLICIES = 25
+    QUOTA_EXCEEDED_HTTP_FILTERS = 26
+    QUOTA_EXCEEDED_TCP_FILTERS = 27
+    QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS = 28
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""Severity level of the condition.
@@ -8453,6 +8549,20 @@ class ValidateCreateMembershipResponse(_messages.Message):
   """
 
   validationResults = _messages.MessageField('ValidationResult', 1, repeated=True)
+
+
+class ValidateExclusivityResponse(_messages.Message):
+  r"""The response of exclusivity artifacts validation result status.
+
+  Fields:
+    status: The validation result. * `OK` means that exclusivity is validated,
+      assuming the manifest produced by GenerateExclusivityManifest is
+      successfully applied. * `ALREADY_EXISTS` means that the Membership CRD
+      is already owned by another Hub. See `status.message` for more
+      information.
+  """
+
+  status = _messages.MessageField('GoogleRpcStatus', 1)
 
 
 class ValidationResult(_messages.Message):

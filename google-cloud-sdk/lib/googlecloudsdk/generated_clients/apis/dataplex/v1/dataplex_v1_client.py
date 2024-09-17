@@ -40,6 +40,7 @@ class DataplexV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.organizations_locations_encryptionConfigs = self.OrganizationsLocationsEncryptionConfigsService(self)
+    self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_locations_aspectTypes = self.ProjectsLocationsAspectTypesService(self)
@@ -50,7 +51,10 @@ class DataplexV1(base_api.BaseApiClient):
     self.projects_locations_dataTaxonomies = self.ProjectsLocationsDataTaxonomiesService(self)
     self.projects_locations_entryGroups_entries = self.ProjectsLocationsEntryGroupsEntriesService(self)
     self.projects_locations_entryGroups = self.ProjectsLocationsEntryGroupsService(self)
+    self.projects_locations_entryLinkTypes = self.ProjectsLocationsEntryLinkTypesService(self)
     self.projects_locations_entryTypes = self.ProjectsLocationsEntryTypesService(self)
+    self.projects_locations_glossaries_categories = self.ProjectsLocationsGlossariesCategoriesService(self)
+    self.projects_locations_glossaries_terms = self.ProjectsLocationsGlossariesTermsService(self)
     self.projects_locations_glossaries = self.ProjectsLocationsGlossariesService(self)
     self.projects_locations_governanceRules = self.ProjectsLocationsGovernanceRulesService(self)
     self.projects_locations_lakes_actions = self.ProjectsLocationsLakesActionsService(self)
@@ -160,6 +164,124 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='googleIamV1TestIamPermissionsRequest',
         request_type_name='DataplexOrganizationsLocationsEncryptionConfigsTestIamPermissionsRequest',
         response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_operations resource."""
+
+    _NAME = 'organizations_locations_operations'
+
+    def __init__(self, client):
+      super(DataplexV1.OrganizationsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
+
+      Args:
+        request: (DataplexOrganizationsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='dataplex.organizations.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:cancel',
+        request_field='googleLongrunningCancelOperationRequest',
+        request_type_name='DataplexOrganizationsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED.
+
+      Args:
+        request: (DataplexOrganizationsLocationsOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='dataplex.organizations.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexOrganizationsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (DataplexOrganizationsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='dataplex.organizations.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexOrganizationsLocationsOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def ListOperations(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.
+
+      Args:
+        request: (DataplexOrganizationsLocationsOperationsListOperationsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListOperations')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListOperations.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='dataplex.organizations.locations.operations.listOperations',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexOrganizationsLocationsOperationsListOperationsRequest',
+        response_type_name='GoogleLongrunningListOperationsResponse',
         supports_download=False,
     )
 
@@ -1829,6 +1951,97 @@ class DataplexV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsEntryLinkTypesService(base_api.BaseApiService):
+    """Service class for the projects_locations_entryLinkTypes resource."""
+
+    _NAME = 'projects_locations_entryLinkTypes'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsEntryLinkTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryLinkTypesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryLinkTypes/{entryLinkTypesId}:getIamPolicy',
+        http_method='GET',
+        method_id='dataplex.projects.locations.entryLinkTypes.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsEntryLinkTypesGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryLinkTypesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryLinkTypes/{entryLinkTypesId}:setIamPolicy',
+        http_method='POST',
+        method_id='dataplex.projects.locations.entryLinkTypes.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='DataplexProjectsLocationsEntryLinkTypesSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryLinkTypesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryLinkTypes/{entryLinkTypesId}:testIamPermissions',
+        http_method='POST',
+        method_id='dataplex.projects.locations.entryLinkTypes.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='googleIamV1TestIamPermissionsRequest',
+        request_type_name='DataplexProjectsLocationsEntryLinkTypesTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsEntryTypesService(base_api.BaseApiService):
     """Service class for the projects_locations_entryTypes resource."""
 
@@ -2051,6 +2264,188 @@ class DataplexV1(base_api.BaseApiClient):
         relative_path='v1/{+resource}:testIamPermissions',
         request_field='googleIamV1TestIamPermissionsRequest',
         request_type_name='DataplexProjectsLocationsEntryTypesTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsGlossariesCategoriesService(base_api.BaseApiService):
+    """Service class for the projects_locations_glossaries_categories resource."""
+
+    _NAME = 'projects_locations_glossaries_categories'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsGlossariesCategoriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesCategoriesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/categories/{categoriesId}:getIamPolicy',
+        http_method='GET',
+        method_id='dataplex.projects.locations.glossaries.categories.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsGlossariesCategoriesGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesCategoriesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/categories/{categoriesId}:setIamPolicy',
+        http_method='POST',
+        method_id='dataplex.projects.locations.glossaries.categories.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='DataplexProjectsLocationsGlossariesCategoriesSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesCategoriesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/categories/{categoriesId}:testIamPermissions',
+        http_method='POST',
+        method_id='dataplex.projects.locations.glossaries.categories.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='googleIamV1TestIamPermissionsRequest',
+        request_type_name='DataplexProjectsLocationsGlossariesCategoriesTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsGlossariesTermsService(base_api.BaseApiService):
+    """Service class for the projects_locations_glossaries_terms resource."""
+
+    _NAME = 'projects_locations_glossaries_terms'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsGlossariesTermsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesTermsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/terms/{termsId}:getIamPolicy',
+        http_method='GET',
+        method_id='dataplex.projects.locations.glossaries.terms.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsGlossariesTermsGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesTermsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/terms/{termsId}:setIamPolicy',
+        http_method='POST',
+        method_id='dataplex.projects.locations.glossaries.terms.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='DataplexProjectsLocationsGlossariesTermsSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesTermsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/terms/{termsId}:testIamPermissions',
+        http_method='POST',
+        method_id='dataplex.projects.locations.glossaries.terms.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='googleIamV1TestIamPermissionsRequest',
+        request_type_name='DataplexProjectsLocationsGlossariesTermsTestIamPermissionsRequest',
         response_type_name='GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )

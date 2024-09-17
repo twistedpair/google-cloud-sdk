@@ -49,8 +49,8 @@ class AccessSettings(_messages.Message):
     identitySources: Optional. Identity sources that IAP can use to
       authenticate the end user. Only one identity source can be configured.
     oauthSettings: Optional. Settings to configure IAP's OAuth behavior.
-    policyDelegationSettings: Optional. Settings to configure Policy
-      delegation for apps hosted in tenant projects. INTERNAL_ONLY.
+    policyDelegationSettings: Optional. Settings to allow google-internal
+      teams to use IAP for apps hosted in a tenant project.
     reauthSettings: Optional. Settings to configure reauthentication policies
       in IAP.
     workforceIdentitySettings: Optional. Settings to configure the workforce

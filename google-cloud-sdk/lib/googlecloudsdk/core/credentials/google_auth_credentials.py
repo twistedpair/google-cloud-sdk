@@ -103,10 +103,10 @@ class Credentials(credentials.Credentials):
     try:
       return self._Refresh(request)
     except ReauthRequiredError:
-      if not console_io.IsInteractive():
-        log.info('Reauthentication not performed as we cannot prompt during '
-                 'non-interactive execution.')
-        return
+      if not console_io.CanPrompt():
+        raise google_auth_exceptions.ReauthFailError(
+            'cannot prompt during non-interactive execution.'
+        )
 
       # When we clean up oauth2client code in the future, we can remove the else
       # part.

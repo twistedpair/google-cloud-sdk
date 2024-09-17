@@ -591,12 +591,15 @@ class Condition(_messages.Message):
     Values:
       CODE_UNSPECIFIED: Default Unspecified code
       MESH_IAM_PERMISSION_DENIED: Mesh IAM permission denied error code
+      MESH_IAM_CROSS_PROJECT_PERMISSION_DENIED: Permission denied error code
+        for cross-project
       CNI_CONFIG_UNSUPPORTED: CNI config unsupported error code
       GKE_SANDBOX_UNSUPPORTED: GKE sandbox unsupported error code
       NODEPOOL_WORKLOAD_IDENTITY_FEDERATION_REQUIRED: Nodepool workload
         identity federation required error code
       CNI_INSTALLATION_FAILED: CNI installation failed error code
       CNI_POD_UNSCHEDULABLE: CNI pod unschedulable error code
+      CLUSTER_HAS_ZERO_NODES: Cluster has zero node code
       UNSUPPORTED_MULTIPLE_CONTROL_PLANES: Multiple control planes unsupported
         error code
       VPCSC_GA_SUPPORTED: VPC-SC GA is supported for this control plane.
@@ -632,31 +635,33 @@ class Condition(_messages.Message):
     """
     CODE_UNSPECIFIED = 0
     MESH_IAM_PERMISSION_DENIED = 1
-    CNI_CONFIG_UNSUPPORTED = 2
-    GKE_SANDBOX_UNSUPPORTED = 3
-    NODEPOOL_WORKLOAD_IDENTITY_FEDERATION_REQUIRED = 4
-    CNI_INSTALLATION_FAILED = 5
-    CNI_POD_UNSCHEDULABLE = 6
-    UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 7
-    VPCSC_GA_SUPPORTED = 8
-    CONFIG_APPLY_INTERNAL_ERROR = 9
-    CONFIG_VALIDATION_ERROR = 10
-    CONFIG_VALIDATION_WARNING = 11
-    QUOTA_EXCEEDED_BACKEND_SERVICES = 12
-    QUOTA_EXCEEDED_HEALTH_CHECKS = 13
-    QUOTA_EXCEEDED_HTTP_ROUTES = 14
-    QUOTA_EXCEEDED_TCP_ROUTES = 15
-    QUOTA_EXCEEDED_TLS_ROUTES = 16
-    QUOTA_EXCEEDED_TRAFFIC_POLICIES = 17
-    QUOTA_EXCEEDED_ENDPOINT_POLICIES = 18
-    QUOTA_EXCEEDED_GATEWAYS = 19
-    QUOTA_EXCEEDED_MESHES = 20
-    QUOTA_EXCEEDED_SERVER_TLS_POLICIES = 21
-    QUOTA_EXCEEDED_CLIENT_TLS_POLICIES = 22
-    QUOTA_EXCEEDED_SERVICE_LB_POLICIES = 23
-    QUOTA_EXCEEDED_HTTP_FILTERS = 24
-    QUOTA_EXCEEDED_TCP_FILTERS = 25
-    QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS = 26
+    MESH_IAM_CROSS_PROJECT_PERMISSION_DENIED = 2
+    CNI_CONFIG_UNSUPPORTED = 3
+    GKE_SANDBOX_UNSUPPORTED = 4
+    NODEPOOL_WORKLOAD_IDENTITY_FEDERATION_REQUIRED = 5
+    CNI_INSTALLATION_FAILED = 6
+    CNI_POD_UNSCHEDULABLE = 7
+    CLUSTER_HAS_ZERO_NODES = 8
+    UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 9
+    VPCSC_GA_SUPPORTED = 10
+    CONFIG_APPLY_INTERNAL_ERROR = 11
+    CONFIG_VALIDATION_ERROR = 12
+    CONFIG_VALIDATION_WARNING = 13
+    QUOTA_EXCEEDED_BACKEND_SERVICES = 14
+    QUOTA_EXCEEDED_HEALTH_CHECKS = 15
+    QUOTA_EXCEEDED_HTTP_ROUTES = 16
+    QUOTA_EXCEEDED_TCP_ROUTES = 17
+    QUOTA_EXCEEDED_TLS_ROUTES = 18
+    QUOTA_EXCEEDED_TRAFFIC_POLICIES = 19
+    QUOTA_EXCEEDED_ENDPOINT_POLICIES = 20
+    QUOTA_EXCEEDED_GATEWAYS = 21
+    QUOTA_EXCEEDED_MESHES = 22
+    QUOTA_EXCEEDED_SERVER_TLS_POLICIES = 23
+    QUOTA_EXCEEDED_CLIENT_TLS_POLICIES = 24
+    QUOTA_EXCEEDED_SERVICE_LB_POLICIES = 25
+    QUOTA_EXCEEDED_HTTP_FILTERS = 26
+    QUOTA_EXCEEDED_TCP_FILTERS = 27
+    QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS = 28
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""Severity level of the condition.
@@ -2979,6 +2984,9 @@ class MembershipConfig(_messages.Message):
       annotation or ClusterSelector.
     configSync: Config Sync configuration for the cluster.
     hierarchyController: Hierarchy Controller configuration for the cluster.
+      Deprecated: Configuring Hierarchy Controller through the
+      configmanagement feature is no longer recommended. Use
+      https://github.com/kubernetes-sigs/hierarchical-namespaces instead.
     management: Enables automatic Feature management.
     policyController: Policy Controller configuration for the cluster.
       Deprecated: Configuring Policy Controller through the configmanagement

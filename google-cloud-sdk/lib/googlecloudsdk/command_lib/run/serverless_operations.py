@@ -1841,17 +1841,19 @@ class ServerlessOperations(object):
       if uploaded_source.generation is not None:
         source_path += f'#{uploaded_source.generation}'
     image_uri = build_pack[0].get('image') if build_pack else build_image
-
+    # TODO(b/365567914): Remove these annotations once the new ones are in use.
     annotations_map = {
-        service.RUN_FUNCTIONS_SOURCE_LOCATION_ANNOTATION: source_path,
         service.RUN_FUNCTIONS_BUILD_SERVICE_ACCOUNT_ANNOTATION: service_account,
         service.RUN_FUNCTIONS_BUILD_WORKER_POOL_ANNOTATION: worker_pool,
         service.RUN_FUNCTIONS_BUILD_ENV_VARS_ANNOTATION: build_env_vars_str,
-        service.RUN_FUNCTIONS_FUNCTION_TARGET_ANNOTATION: function_target,
         service.RUN_FUNCTIONS_BUILD_ID_ANNOTATION: build_id,
-        service.RUN_FUNCTIONS_IMAGE_URI_ANNOTATION: image_uri,
         service.RUN_FUNCTIONS_BUILD_NAME_ANNOTATION: build_name,
-        service.RUN_FUNCTIONS_ENABLE_AUTOMATIC_UPDATES: (
+        service.RUN_FUNCTIONS_IMAGE_URI_ANNOTATION_DEPRECATED: image_uri,
+        service.RUN_FUNCTIONS_SOURCE_LOCATION_ANNOTATION_DEPRECATED: (
+            source_path),
+        service.RUN_FUNCTIONS_FUNCTION_TARGET_ANNOTATION_DEPRECATED: (
+            function_target),
+        service.RUN_FUNCTIONS_ENABLE_AUTOMATIC_UPDATES_DEPRECATED: (
             'true' if enable_automatic_updates else 'false'
         ),
     }

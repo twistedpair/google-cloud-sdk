@@ -588,6 +588,7 @@ class Empty(_messages.Message):
   """
 
 
+
 class ExecutionStats(_messages.Message):
   r"""Execution statistics for the query.
 
@@ -877,6 +878,15 @@ class FindNearest(_messages.Message):
 
   Fields:
     distanceMeasure: Required. The distance measure to use, required.
+    distanceResultField: Optional. Optional name of the field to output the
+      result of the vector distance calculation. Must conform to document
+      field name limitations.
+    distanceThreshold: Optional. Option to specify a threshold for which no
+      less similar documents will be returned. The behavior of the specified
+      `distance_measure` will affect the meaning of the distance threshold.
+      Since DOT_PRODUCT distances increase when the vectors are more similar,
+      the comparison is inverted. For EUCLIDEAN, COSINE: WHERE distance <=
+      distance_threshold For DOT_PRODUCT: WHERE distance >= distance_threshold
     limit: Required. The number of nearest neighbors to return. Must be a
       positive integer of no more than 1000.
     queryVector: Required. The query vector that we are searching on. Must be
@@ -914,9 +924,11 @@ class FindNearest(_messages.Message):
     DOT_PRODUCT = 3
 
   distanceMeasure = _messages.EnumField('DistanceMeasureValueValuesEnum', 1)
-  limit = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  queryVector = _messages.MessageField('Value', 3)
-  vectorField = _messages.MessageField('FieldReference', 4)
+  distanceResultField = _messages.StringField(2)
+  distanceThreshold = _messages.FloatField(3)
+  limit = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  queryVector = _messages.MessageField('Value', 5)
+  vectorField = _messages.MessageField('FieldReference', 6)
 
 
 class FirestoreProjectsDatabasesBackupSchedulesCreateRequest(_messages.Message):
@@ -1672,13 +1684,21 @@ class FirestoreProjectsLocationsBackupsListRequest(_messages.Message):
   r"""A FirestoreProjectsLocationsBackupsListRequest object.
 
   Fields:
+    filter: An expression that filters the list of returned backups. A filter
+      expression consists of a field name, a comparison operator, and a value
+      for filtering. The value must be a string, a number, or a boolean. The
+      comparison operator must be one of: `<`, `>`, `<=`, `>=`, `!=`, `=`, or
+      `:`. Colon `:` is the contains operator. Filter rules are not case
+      sensitive. The following fields in the Backup are eligible for
+      filtering: * `database_uid` (supports `=` only)
     parent: Required. The location to list backups from. Format is
       `projects/{project}/locations/{location}`. Use `{location} = '-'` to
       list backups from all locations for the given project. This allows
       listing backups from a single location or from all locations.
   """
 
-  parent = _messages.StringField(1, required=True)
+  filter = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
 
 
 class FirestoreProjectsLocationsGetRequest(_messages.Message):
@@ -1790,9 +1810,20 @@ class GoogleFirestoreAdminV1BackupSchedule(_messages.Message):
   weeklyRecurrence = _messages.MessageField('GoogleFirestoreAdminV1WeeklyRecurrence', 6)
 
 
+class GoogleFirestoreAdminV1BackupSource(_messages.Message):
+  r"""Information about a backup that was used to restore a database.
+
+  Fields:
+    backup: The resource name of the backup that was used to restore this
+      database. Format:
+      `projects/{project}/locations/{location}/backups/{backup}`.
+  """
+
+  backup = _messages.StringField(1)
+
+
 class GoogleFirestoreAdminV1BulkDeleteDocumentsMetadata(_messages.Message):
   r"""Metadata for google.longrunning.Operation results from
-
   FirestoreAdmin.BulkDeleteDocuments.
 
   Enums:
@@ -1902,7 +1933,6 @@ class GoogleFirestoreAdminV1CreateDatabaseMetadata(_messages.Message):
 
 class GoogleFirestoreAdminV1CustomerManagedEncryptionOptions(_messages.Message):
   r"""The configuration options for using CMEK (Customer Managed Encryption
-
   Key) encryption.
 
   Fields:
@@ -1922,6 +1952,7 @@ class GoogleFirestoreAdminV1DailyRecurrence(_messages.Message):
   r"""Represents a recurring schedule that runs every day. The time zone is
   UTC.
   """
+
 
 
 class GoogleFirestoreAdminV1Database(_messages.Message):
@@ -1975,6 +2006,8 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
       database.
     previousId: Output only. The database resource's prior database ID. This
       field is only populated for deleted databases.
+    sourceInfo: Output only. Information about the provenance of this
+      database.
     type: The type of the database. See
       https://cloud.google.com/datastore/docs/firestore-or-datastore for
       information about how to choose.
@@ -2084,10 +2117,11 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
   name = _messages.StringField(11)
   pointInTimeRecoveryEnablement = _messages.EnumField('PointInTimeRecoveryEnablementValueValuesEnum', 12)
   previousId = _messages.StringField(13)
-  type = _messages.EnumField('TypeValueValuesEnum', 14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
-  versionRetentionPeriod = _messages.StringField(17)
+  sourceInfo = _messages.MessageField('GoogleFirestoreAdminV1SourceInfo', 14)
+  type = _messages.EnumField('TypeValueValuesEnum', 15)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
+  versionRetentionPeriod = _messages.StringField(18)
 
 
 class GoogleFirestoreAdminV1DeleteDatabaseMetadata(_messages.Message):
@@ -2096,8 +2130,7 @@ class GoogleFirestoreAdminV1DeleteDatabaseMetadata(_messages.Message):
 
 class GoogleFirestoreAdminV1EncryptionConfig(_messages.Message):
   r"""Encryption configuration for a new database being created from another
-
-  source. The source could be a Backup or a DatabaseSnapshot.
+  source. The source could be a Backup .
 
   Fields:
     customerManagedEncryption: Use Customer Managed Encryption Keys (CMEK) for
@@ -2107,20 +2140,13 @@ class GoogleFirestoreAdminV1EncryptionConfig(_messages.Message):
       configuration as the source.
   """
 
-  customerManagedEncryption = _messages.MessageField(
-      'GoogleFirestoreAdminV1CustomerManagedEncryptionOptions', 1
-  )
-  googleDefaultEncryption = _messages.MessageField(
-      'GoogleFirestoreAdminV1GoogleDefaultEncryptionOptions', 2
-  )
-  useSourceEncryption = _messages.MessageField(
-      'GoogleFirestoreAdminV1SourceEncryptionOptions', 3
-  )
+  customerManagedEncryption = _messages.MessageField('GoogleFirestoreAdminV1CustomerManagedEncryptionOptions', 1)
+  googleDefaultEncryption = _messages.MessageField('GoogleFirestoreAdminV1GoogleDefaultEncryptionOptions', 2)
+  useSourceEncryption = _messages.MessageField('GoogleFirestoreAdminV1SourceEncryptionOptions', 3)
 
 
 class GoogleFirestoreAdminV1ExportDocumentsMetadata(_messages.Message):
   r"""Metadata for google.longrunning.Operation results from
-
   FirestoreAdmin.ExportDocuments.
 
   Enums:
@@ -2222,10 +2248,9 @@ class GoogleFirestoreAdminV1ExportDocumentsResponse(_messages.Message):
 
 
 class GoogleFirestoreAdminV1Field(_messages.Message):
-  r"""Represents a single field in the database.
-
-  Fields are grouped by their "Collection Group", which represent all
-  collections in the database with the same ID.
+  r"""Represents a single field in the database. Fields are grouped by their
+  "Collection Group", which represent all collections in the database with the
+  same ID.
 
   Fields:
     indexConfig: The index configuration for this field. If unset, field
@@ -2321,13 +2346,13 @@ class GoogleFirestoreAdminV1FlatIndex(_messages.Message):
   """
 
 
+
 class GoogleFirestoreAdminV1GoogleDefaultEncryptionOptions(_messages.Message):
   r"""The configuration options for using Google default encryption."""
 
 
 class GoogleFirestoreAdminV1ImportDocumentsMetadata(_messages.Message):
   r"""Metadata for google.longrunning.Operation results from
-
   FirestoreAdmin.ImportDocuments.
 
   Enums:
@@ -2404,7 +2429,6 @@ class GoogleFirestoreAdminV1ImportDocumentsRequest(_messages.Message):
 
 class GoogleFirestoreAdminV1Index(_messages.Message):
   r"""Cloud Firestore indexes enable simple and complex queries against
-
   documents in a database.
 
   Enums:
@@ -2455,7 +2479,6 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
 
   class QueryScopeValueValuesEnum(_messages.Enum):
     r"""Indexes with a collection query scope specified allow queries against
-
     a collection that is the child of a specific document, specified at query
     time, and that has the same collection ID. Indexes with a collection group
     query scope specified allow queries against all collections descended from
@@ -2806,9 +2829,9 @@ class GoogleFirestoreAdminV1RestoreDatabaseRequest(_messages.Message):
   r"""The request message for FirestoreAdmin.RestoreDatabase.
 
   Fields:
-    backup: Backup to restore from. Must be from the same project as the
-      parent. The restored database will be created in the same location as
-      the source backup. Format is:
+    backup: Required. Backup to restore from. Must be from the same project as
+      the parent. The restored database will be created in the same location
+      as the source backup. Format is:
       `projects/{project_id}/locations/{location}/backups/{backup}`
     databaseId: Required. The ID to use for the database, which will become
       the final component of the database's resource name. This database ID
@@ -2825,16 +2848,29 @@ class GoogleFirestoreAdminV1RestoreDatabaseRequest(_messages.Message):
 
   backup = _messages.StringField(1)
   databaseId = _messages.StringField(2)
-  encryptionConfig = _messages.MessageField(
-      'GoogleFirestoreAdminV1EncryptionConfig', 3
-  )
+  encryptionConfig = _messages.MessageField('GoogleFirestoreAdminV1EncryptionConfig', 3)
 
 
 class GoogleFirestoreAdminV1SourceEncryptionOptions(_messages.Message):
   r"""The configuration options for using the same encryption method as the
-
   source.
   """
+
+
+
+class GoogleFirestoreAdminV1SourceInfo(_messages.Message):
+  r"""Information about the provenance of this database.
+
+  Fields:
+    backup: If set, this database was restored from the specified backup (or a
+      snapshot thereof).
+    operation: The associated long-running operation. This field may not be
+      set after the operation has completed. Format:
+      `projects/{project}/databases/{database}/operations/{operation}`.
+  """
+
+  backup = _messages.MessageField('GoogleFirestoreAdminV1BackupSource', 1)
+  operation = _messages.StringField(2)
 
 
 class GoogleFirestoreAdminV1Stats(_messages.Message):

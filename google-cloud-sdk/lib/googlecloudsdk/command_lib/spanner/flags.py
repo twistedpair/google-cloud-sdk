@@ -414,12 +414,31 @@ def SsdCache(
     )
 
 
+def GetEditionHelpText(update=False):
+  if update:
+    return (
+        'Cloud Spanner edition. You can upgrade your Standard edition'
+        ' instance to the `ENTERPRISE` edition or `ENTERPRISE_PLUS`'
+        ' edition. You can also upgrade your Enterprise edition instance to'
+        " the `ENTERPRISE_PLUS` edition. Self-service downgrade isn't"
+        ' available. To downgrade the edition of your instance, file a'
+        ' support ticket. For more information, see the [Spanner editions '
+        'overview](https://cloud.google.com/spanner/docs/editions-overview)'
+    )
+  return 'Cloud Spanner edition.'
+
+
 def Edition(
+    choices=None,
+    update=False,
     required=False,
-    hidden=True,
-    text='Cloud Spanner Edition.',
 ):
-  return base.Argument('--edition', required=required, hidden=hidden, help=text)
+  return base.Argument(
+      '--edition',
+      required=required,
+      help=GetEditionHelpText(update),
+      choices=choices,
+  )
 
 
 def AddCapacityArgsForInstance(

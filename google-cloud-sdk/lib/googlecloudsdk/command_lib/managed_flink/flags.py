@@ -318,3 +318,31 @@ def AddShowOutputArgument(parser):
       required=False,
       help='Shows the output of the Flink client.',
   ).AddToParser(parser)
+
+
+def AddExtraArchivesArgument(parser):
+  """Creates the extra archives argument."""
+  base.Argument(
+      '--archives',
+      metavar='ZIP',
+      type=arg_parsers.ArgList(),
+      dest='archives',
+      help=(
+          'The extra archives to pass to the job. Can be a zip file containing'
+          ' resource files for the job.'
+      ),
+  ).AddToParser(parser)
+
+
+def AddPythonVirtualEnvArgument(parser):
+  """Creates main class argument."""
+  base.Argument(
+      '--python-venv',
+      metavar='ZIP',
+      dest='python_venv',
+      help=(
+          'The path to the zip file to manage the virtualenv for Python'
+          ' dependencies. Required if the job type is python. Must start with'
+          ' gs://.'
+      ),
+  ).AddToParser(parser)

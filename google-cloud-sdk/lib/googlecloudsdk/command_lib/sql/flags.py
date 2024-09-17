@@ -1185,6 +1185,34 @@ def AddStorageSize(parser, hidden=False):
   )
 
 
+def AddStorageProvisionedIops(parser):
+  help_text = (
+      'Indicates how many IOPS to provision for the data disk. This sets the'
+      ' number of I/O operations per second that the disk can handle.'
+  )
+  parser.add_argument(
+      '--storage-provisioned-iops',
+      type=arg_parsers.BoundedInt(lower_bound=1, unlimited=True),
+      required=False,
+      help=help_text,
+      hidden=True,
+  )
+
+
+def AddStorageProvisionedThroughput(parser):
+  help_text = (
+      'Indicates how much throughput to provision for the data disk. This sets'
+      ' the throughput in MB per second that the disk can handle.'
+  )
+  parser.add_argument(
+      '--storage-provisioned-throughput',
+      type=arg_parsers.BoundedInt(lower_bound=1, unlimited=True),
+      required=False,
+      help=help_text,
+      hidden=True,
+  )
+
+
 def AddStorageSizeForStorageShrink(parser):
   parser.add_argument(
       '--storage-size',
@@ -2601,7 +2629,7 @@ def AddCascadableReplica(parser, hidden=False):
   )
 
 
-def AddEnableDataCache(parser, show_negated_in_help=False, hidden=False):
+def AddEnableDataCache(parser, show_negated_in_help=True, hidden=False):
   """Adds '--enable-data-cache' flag to the parser."""
   kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(

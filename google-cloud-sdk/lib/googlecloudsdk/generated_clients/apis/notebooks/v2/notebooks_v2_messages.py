@@ -552,6 +552,8 @@ class GceSetup(_messages.Message):
       platform#availablezones
     networkInterfaces: Optional. The network interfaces for the VM. Supports
       only one interface.
+    reservationAffinity: Optional. Specifies the reservations that this
+      instance can consume from. Next ID: 17
     serviceAccounts: Optional. The service account that serves as an identity
       for the VM instance. Currently supports only one service account.
     shieldedInstanceConfig: Optional. Shielded VM configuration. [Images using
@@ -600,10 +602,11 @@ class GceSetup(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 9)
   minCpuPlatform = _messages.StringField(10)
   networkInterfaces = _messages.MessageField('NetworkInterface', 11, repeated=True)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 12, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 13)
-  tags = _messages.StringField(14, repeated=True)
-  vmImage = _messages.MessageField('VmImage', 15)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 12)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 13, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 14)
+  tags = _messages.StringField(15, repeated=True)
+  vmImage = _messages.MessageField('VmImage', 16)
 
 
 class ImageRelease(_messages.Message):
@@ -1550,6 +1553,51 @@ class ReportInstanceInfoSystemRequest(_messages.Message):
 
   event = _messages.MessageField('Event', 1)
   vmId = _messages.StringField(2)
+
+
+class ReservationAffinity(_messages.Message):
+  r"""A reservation that an instance can consume from.
+
+  Enums:
+    ConsumeReservationTypeValueValuesEnum: Specifies the type of reservation
+      from which this instance can consume resources: RESERVATION_ANY
+      (default), RESERVATION_SPECIFIC, or RESERVATION_NONE. See Consuming
+      reserved instances for examples.
+
+  Fields:
+    consumeReservationType: Specifies the type of reservation from which this
+      instance can consume resources: RESERVATION_ANY (default),
+      RESERVATION_SPECIFIC, or RESERVATION_NONE. See Consuming reserved
+      instances for examples.
+    key: Corresponds to the label key of a reservation resource. To target a
+      RESERVATION_SPECIFIC by name, use compute.googleapis.com/reservation-
+      name as the key and specify the name of your reservation as its value.
+    values: Corresponds to the label values of a reservation resource. This
+      can be either a name to a reservation in the same project or
+      "projects/different-project/reservations/some-reservation-name" to
+      target a shared reservation in the same zone but in a different project.
+  """
+
+  class ConsumeReservationTypeValueValuesEnum(_messages.Enum):
+    r"""Specifies the type of reservation from which this instance can consume
+    resources: RESERVATION_ANY (default), RESERVATION_SPECIFIC, or
+    RESERVATION_NONE. See Consuming reserved instances for examples.
+
+    Values:
+      RESERVATION_UNSPECIFIED: Default type.
+      RESERVATION_NONE: Do not consume from any allocated capacity.
+      RESERVATION_ANY: Consume any reservation available.
+      RESERVATION_SPECIFIC: Must consume from a specific reservation. Must
+        specify key value fields for specifying the reservations.
+    """
+    RESERVATION_UNSPECIFIED = 0
+    RESERVATION_NONE = 1
+    RESERVATION_ANY = 2
+    RESERVATION_SPECIFIC = 3
+
+  consumeReservationType = _messages.EnumField('ConsumeReservationTypeValueValuesEnum', 1)
+  key = _messages.StringField(2)
+  values = _messages.StringField(3, repeated=True)
 
 
 class ResetInstanceRequest(_messages.Message):

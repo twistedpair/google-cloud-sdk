@@ -1337,7 +1337,7 @@ class FirestoreV1(base_api.BaseApiClient):
         method_id='firestore.projects.locations.backups.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=[],
+        query_params=['filter'],
         relative_path='v1/{+parent}/backups',
         request_field='',
         request_type_name='FirestoreProjectsLocationsBackupsListRequest',

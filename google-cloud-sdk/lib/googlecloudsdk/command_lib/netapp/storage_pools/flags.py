@@ -171,14 +171,13 @@ def AddStoragePoolEnableLdapArg(parser):
   )
 
 
-def AddStoragePoolAllowAutoTieringArg(parser, hidden=True):
+def AddStoragePoolAllowAutoTieringArg(parser):
   """Adds the --allow-auto-tiering arg to the given parser."""
   parser.add_argument(
       '--allow-auto-tiering',
       type=arg_parsers.ArgBoolean(
           truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey),
       help="""Boolean flag indicating whether Storage Pool is allowed to use auto-tiering""",
-      hidden=hidden
   )
 
 
@@ -221,12 +220,7 @@ def AddStoragePoolCreateArgs(parser, release_track):
   AddStoragePoolEnableLdapArg(parser)
   AddStoragePoolZoneArg(parser)
   AddStoragePoolReplicaZoneArg(parser)
-  # TODO(b/354772678):Remove the release track condition when auto tiering GA.
-  if (release_track == base.ReleaseTrack.ALPHA or
-      release_track == base.ReleaseTrack.BETA):
-    AddStoragePoolAllowAutoTieringArg(parser, False)
-  else:
-    AddStoragePoolAllowAutoTieringArg(parser, True)
+  AddStoragePoolAllowAutoTieringArg(parser)
 
 
 def AddStoragePoolDeleteArgs(parser):
@@ -237,7 +231,7 @@ def AddStoragePoolDeleteArgs(parser):
   flags.AddResourceAsyncFlag(parser)
 
 
-def AddStoragePoolUpdateArgs(parser, release_track):
+def AddStoragePoolUpdateArgs(parser):
   """Add args for updating a Storage Pool."""
   concept_parsers.ConceptParser([
       flags.GetStoragePoolPresentationSpec('The Storage Pool to update.')
@@ -247,14 +241,9 @@ def AddStoragePoolUpdateArgs(parser, release_track):
   flags.AddResourceCapacityArg(parser, 'Storage Pool', required=False)
   labels_util.AddUpdateLabelsFlags(parser)
   AddStoragePoolActiveDirectoryArg(parser)
-  # TODO(b/354772678):Remove the release track condition when auto tiering GA.
   AddStoragePoolZoneArg(parser)
   AddStoragePoolReplicaZoneArg(parser)
-  if (release_track == base.ReleaseTrack.ALPHA or
-      release_track == base.ReleaseTrack.BETA):
-    AddStoragePoolAllowAutoTieringArg(parser, False)
-  else:
-    AddStoragePoolAllowAutoTieringArg(parser, True)
+  AddStoragePoolAllowAutoTieringArg(parser)
 
 
 def AddStoragePoolSwitchArg(parser):

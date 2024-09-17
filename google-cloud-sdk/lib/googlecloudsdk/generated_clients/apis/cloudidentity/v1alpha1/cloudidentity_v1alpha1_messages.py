@@ -1149,6 +1149,8 @@ class DeviceUser(_messages.Message):
     languageCode: Output only. Default locale used on device, in IETF BCP-47
       format.
     lastSyncTime: Output only. Last time when user synced with policies.
+    lostModeDeviceInfo: Lost mode device info, contains location and battery
+      information.
     managementState: Output only. Management state of the user on the device.
     name: Output only. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the
@@ -1184,6 +1186,8 @@ class DeviceUser(_messages.Message):
       PENDING_APPROVAL: User is awaiting approval.
       UNENROLLED: User is unenrolled from Advanced Windows Management, but the
         Windows account is still intact.
+      LOST_MODE_PENDING: Lost mode is being activated on the device.
+      LOST_MODE_ACTIVATED: Lost mode is active for user on the device.
     """
     MANAGEMENT_STATE_UNSPECIFIED = 0
     WIPING = 1
@@ -1192,6 +1196,8 @@ class DeviceUser(_messages.Message):
     BLOCKED = 4
     PENDING_APPROVAL = 5
     UNENROLLED = 6
+    LOST_MODE_PENDING = 7
+    LOST_MODE_ACTIVATED = 8
 
   class PasswordStateValueValuesEnum(_messages.Enum):
     r"""Password state of the DeviceUser object
@@ -1210,11 +1216,12 @@ class DeviceUser(_messages.Message):
   firstSyncTime = _messages.StringField(3)
   languageCode = _messages.StringField(4)
   lastSyncTime = _messages.StringField(5)
-  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 6)
-  name = _messages.StringField(7)
-  passwordState = _messages.EnumField('PasswordStateValueValuesEnum', 8)
-  userAgent = _messages.StringField(9)
-  userEmail = _messages.StringField(10)
+  lostModeDeviceInfo = _messages.MessageField('LostModeDeviceInfo', 6)
+  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 7)
+  name = _messages.StringField(8)
+  passwordState = _messages.EnumField('PasswordStateValueValuesEnum', 9)
+  userAgent = _messages.StringField(10)
+  userEmail = _messages.StringField(11)
 
 
 class DynamicGroupMetadata(_messages.Message):
@@ -2427,6 +2434,22 @@ class GroupRelation(_messages.Message):
   roles = _messages.MessageField('TransitiveMembershipRole', 6, repeated=True)
 
 
+class LatLng(_messages.Message):
+  r"""An object that represents a latitude/longitude pair. This is expressed
+  as a pair of doubles to represent degrees latitude and degrees longitude.
+  Unless specified otherwise, this object must conform to the WGS84 standard.
+  Values must be within normalized ranges.
+
+  Fields:
+    latitude: The latitude in degrees. It must be in the range [-90.0, +90.0].
+    longitude: The longitude in degrees. It must be in the range [-180.0,
+      +180.0].
+  """
+
+  latitude = _messages.FloatField(1)
+  longitude = _messages.FloatField(2)
+
+
 class ListClientStatesResponse(_messages.Message):
   r"""Response message that is returned in LRO result of ListClientStates
   Operation.
@@ -2540,6 +2563,34 @@ class LookupSelfDeviceUsersResponse(_messages.Message):
   nextPageToken = _messages.StringField(3)
 
 
+class LostModeDeviceInfo(_messages.Message):
+  r"""Contains information about the location and battery level of a device in
+  lost mode.
+
+  Fields:
+    lostModeRecords: List of one or more last known information (location and
+      battery) of a device in lost mode.
+  """
+
+  lostModeRecords = _messages.MessageField('LostModeRecord', 1, repeated=True)
+
+
+class LostModeRecord(_messages.Message):
+  r"""Contains information about the location and battery level of a device in
+  lost mode.
+
+  Fields:
+    batteryLevel: The decrypted device location containing a int32.
+    collectionTime: Device timestamp when the event was logged
+    location: The decrypted device location containing a LatLng
+      (google3/google/type/latlng.proto).
+  """
+
+  batteryLevel = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  collectionTime = _messages.StringField(2)
+  location = _messages.MessageField('LatLng', 3)
+
+
 class MemberRelation(_messages.Message):
   r"""Message representing a transitive membership of a group.
 
@@ -2636,6 +2687,7 @@ class Membership(_messages.Message):
       SERVICE_ACCOUNT: Represents service account type.
       GROUP: Represents group type.
       SHARED_DRIVE: Represents Shared drive.
+      CBCM_BROWSER: Represents a CBCM-managed Chrome Browser type.
       OTHER: Represents other type.
     """
     TYPE_UNSPECIFIED = 0
@@ -2643,7 +2695,8 @@ class Membership(_messages.Message):
     SERVICE_ACCOUNT = 2
     GROUP = 3
     SHARED_DRIVE = 4
-    OTHER = 5
+    CBCM_BROWSER = 5
+    OTHER = 6
 
   createTime = _messages.StringField(1)
   deliverySetting = _messages.EnumField('DeliverySettingValueValuesEnum', 2)

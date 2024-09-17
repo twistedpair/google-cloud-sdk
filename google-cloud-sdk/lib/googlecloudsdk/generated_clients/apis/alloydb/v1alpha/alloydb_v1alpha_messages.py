@@ -1277,6 +1277,21 @@ class CloudControl2SharedOperationsReconciliationOperationMetadata(_messages.Mes
   exclusiveAction = _messages.EnumField('ExclusiveActionValueValuesEnum', 2)
 
 
+class CloudSQLBackupRunSource(_messages.Message):
+  r"""The source CloudSQL backup resource.
+
+  Fields:
+    backupRunId: Required. The CloudSQL backup run ID.
+    instanceId: Required. The CloudSQL instance ID.
+    project: The project ID of the source CloudSQL instance. This should be
+      the same as the AlloyDB cluster's project.
+  """
+
+  backupRunId = _messages.IntegerField(1)
+  instanceId = _messages.StringField(2)
+  project = _messages.StringField(3)
+
+
 class Cluster(_messages.Message):
   r"""A cluster is a collection of regional AlloyDB resources. It can include
   a primary instance and one or more read pool instances. All cluster
@@ -1316,6 +1331,8 @@ class Cluster(_messages.Message):
       information on the defaults, consult the documentation for the message
       type.
     backupSource: Output only. Cluster created from backup.
+    cloudsqlBackupRunSource: Output only. Cluster created from CloudSQL
+      snapshot.
     clusterType: Output only. The type of the cluster. This is an output-only
       field and it's populated at the Cluster creation time or the Cluster
       promotion time. The cluster type is determined by which RPC was used to
@@ -1552,38 +1569,39 @@ class Cluster(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   automatedBackupPolicy = _messages.MessageField('AutomatedBackupPolicy', 2)
   backupSource = _messages.MessageField('BackupSource', 3)
-  clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 4)
-  continuousBackupConfig = _messages.MessageField('ContinuousBackupConfig', 5)
-  continuousBackupInfo = _messages.MessageField('ContinuousBackupInfo', 6)
-  createTime = _messages.StringField(7)
-  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 8)
-  deleteTime = _messages.StringField(9)
-  displayName = _messages.StringField(10)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 11)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 12)
-  etag = _messages.StringField(13)
-  geminiConfig = _messages.MessageField('GeminiClusterConfig', 14)
-  initialUser = _messages.MessageField('UserPassword', 15)
-  labels = _messages.MessageField('LabelsValue', 16)
-  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 17)
-  maintenanceUpdatePolicy = _messages.MessageField('MaintenanceUpdatePolicy', 18)
-  migrationSource = _messages.MessageField('MigrationSource', 19)
-  name = _messages.StringField(20)
-  network = _messages.StringField(21)
-  networkConfig = _messages.MessageField('NetworkConfig', 22)
-  primaryConfig = _messages.MessageField('PrimaryConfig', 23)
-  pscConfig = _messages.MessageField('PscConfig', 24)
-  reconciling = _messages.BooleanField(25)
-  satisfiesPzi = _messages.BooleanField(26)
-  satisfiesPzs = _messages.BooleanField(27)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 28)
-  sslConfig = _messages.MessageField('SslConfig', 29)
-  state = _messages.EnumField('StateValueValuesEnum', 30)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 31)
-  tags = _messages.MessageField('TagsValue', 32)
-  trialMetadata = _messages.MessageField('TrialMetadata', 33)
-  uid = _messages.StringField(34)
-  updateTime = _messages.StringField(35)
+  cloudsqlBackupRunSource = _messages.MessageField('CloudSQLBackupRunSource', 4)
+  clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 5)
+  continuousBackupConfig = _messages.MessageField('ContinuousBackupConfig', 6)
+  continuousBackupInfo = _messages.MessageField('ContinuousBackupInfo', 7)
+  createTime = _messages.StringField(8)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 9)
+  deleteTime = _messages.StringField(10)
+  displayName = _messages.StringField(11)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 12)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 13)
+  etag = _messages.StringField(14)
+  geminiConfig = _messages.MessageField('GeminiClusterConfig', 15)
+  initialUser = _messages.MessageField('UserPassword', 16)
+  labels = _messages.MessageField('LabelsValue', 17)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 18)
+  maintenanceUpdatePolicy = _messages.MessageField('MaintenanceUpdatePolicy', 19)
+  migrationSource = _messages.MessageField('MigrationSource', 20)
+  name = _messages.StringField(21)
+  network = _messages.StringField(22)
+  networkConfig = _messages.MessageField('NetworkConfig', 23)
+  primaryConfig = _messages.MessageField('PrimaryConfig', 24)
+  pscConfig = _messages.MessageField('PscConfig', 25)
+  reconciling = _messages.BooleanField(26)
+  satisfiesPzi = _messages.BooleanField(27)
+  satisfiesPzs = _messages.BooleanField(28)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 29)
+  sslConfig = _messages.MessageField('SslConfig', 30)
+  state = _messages.EnumField('StateValueValuesEnum', 31)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 32)
+  tags = _messages.MessageField('TagsValue', 33)
+  trialMetadata = _messages.MessageField('TrialMetadata', 34)
+  uid = _messages.StringField(35)
+  updateTime = _messages.StringField(36)
 
 
 class ClusterUpgradeDetails(_messages.Message):
@@ -1646,14 +1664,22 @@ class ClusterUpgradeDetails(_messages.Message):
 
     Values:
       STATUS_UNSPECIFIED: Unspecified status.
+      NOT_STARTED: Not started.
+      IN_PROGRESS: In progress.
       SUCCESS: Operation succeeded.
       FAILED: Operation failed.
       PARTIAL_SUCCESS: Operation partially succeeded.
+      CANCEL_IN_PROGRESS: Cancel is in progress.
+      CANCELLED: Cancellation complete.
     """
     STATUS_UNSPECIFIED = 0
-    SUCCESS = 1
-    FAILED = 2
-    PARTIAL_SUCCESS = 3
+    NOT_STARTED = 1
+    IN_PROGRESS = 2
+    SUCCESS = 3
+    FAILED = 4
+    PARTIAL_SUCCESS = 5
+    CANCEL_IN_PROGRESS = 6
+    CANCELLED = 7
 
   clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
@@ -2503,14 +2529,22 @@ class InstanceUpgradeDetails(_messages.Message):
 
     Values:
       STATUS_UNSPECIFIED: Unspecified status.
+      NOT_STARTED: Not started.
+      IN_PROGRESS: In progress.
       SUCCESS: Operation succeeded.
       FAILED: Operation failed.
       PARTIAL_SUCCESS: Operation partially succeeded.
+      CANCEL_IN_PROGRESS: Cancel is in progress.
+      CANCELLED: Cancellation complete.
     """
     STATUS_UNSPECIFIED = 0
-    SUCCESS = 1
-    FAILED = 2
-    PARTIAL_SUCCESS = 3
+    NOT_STARTED = 1
+    IN_PROGRESS = 2
+    SUCCESS = 3
+    FAILED = 4
+    PARTIAL_SUCCESS = 5
+    CANCEL_IN_PROGRESS = 6
+    CANCELLED = 7
 
   instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 1)
   name = _messages.StringField(2)
@@ -3248,32 +3282,44 @@ class StageInfo(_messages.Message):
 
     Values:
       STAGE_UNSPECIFIED: Unspecified stage.
-      ALLOYDB_PRECHECK: This stage is for the custom checks done before
-        upgrade.
-      PG_UPGRADE_CHECK: This stage is for `pg_upgrade --check` run before
-        upgrade.
-      PRIMARY_INSTANCE_UPGRADE: This stage is primary upgrade.
-      READ_POOL_UPGRADE: This stage is read pool upgrade.
+      ALLOYDB_PRECHECK: Pre-upgrade custom checks, not covered by pg_upgrade.
+      PG_UPGRADE_CHECK: Pre-upgrade pg_upgrade checks.
+      PREPARE_FOR_UPGRADE: Clone the original cluster.
+      PRIMARY_INSTANCE_UPGRADE: Upgrade the primary instance(downtime).
+      READ_POOL_INSTANCES_UPGRADE: This stage is read pool upgrade.
+      ROLLBACK: Rollback in case of critical failures.
+      CLEANUP: Cleanup.
     """
     STAGE_UNSPECIFIED = 0
     ALLOYDB_PRECHECK = 1
     PG_UPGRADE_CHECK = 2
-    PRIMARY_INSTANCE_UPGRADE = 3
-    READ_POOL_UPGRADE = 4
+    PREPARE_FOR_UPGRADE = 3
+    PRIMARY_INSTANCE_UPGRADE = 4
+    READ_POOL_INSTANCES_UPGRADE = 5
+    ROLLBACK = 6
+    CLEANUP = 7
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""Status of the stage.
 
     Values:
       STATUS_UNSPECIFIED: Unspecified status.
+      NOT_STARTED: Not started.
+      IN_PROGRESS: In progress.
       SUCCESS: Operation succeeded.
       FAILED: Operation failed.
       PARTIAL_SUCCESS: Operation partially succeeded.
+      CANCEL_IN_PROGRESS: Cancel is in progress.
+      CANCELLED: Cancellation complete.
     """
     STATUS_UNSPECIFIED = 0
-    SUCCESS = 1
-    FAILED = 2
-    PARTIAL_SUCCESS = 3
+    NOT_STARTED = 1
+    IN_PROGRESS = 2
+    SUCCESS = 3
+    FAILED = 4
+    PARTIAL_SUCCESS = 5
+    CANCEL_IN_PROGRESS = 6
+    CANCELLED = 7
 
   logsUrl = _messages.StringField(1)
   stage = _messages.EnumField('StageValueValuesEnum', 2)
@@ -3404,6 +3450,10 @@ class StorageDatabasecenterPartnerapiV1mainAvailabilityConfiguration(_messages.M
       data from more than one zone in a region (it is highly available).
 
   Fields:
+    automaticFailoverRoutingConfigured: Checks for existence of (multi-
+      cluster) routing configuration that allows automatic failover to a
+      different zone/region in case of an outage. Applicable to Bigtable
+      resources.
     availabilityType: Availability type. Potential values: * `ZONAL`: The
       instance serves data from only one zone. Outages in that zone affect
       data accessibility. * `REGIONAL`: The instance can serve data from more
@@ -3433,10 +3483,11 @@ class StorageDatabasecenterPartnerapiV1mainAvailabilityConfiguration(_messages.M
     MULTI_REGIONAL = 3
     AVAILABILITY_TYPE_OTHER = 4
 
-  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 1)
-  crossRegionReplicaConfigured = _messages.BooleanField(2)
-  externalReplicaConfigured = _messages.BooleanField(3)
-  promotableReplicaConfigured = _messages.BooleanField(4)
+  automaticFailoverRoutingConfigured = _messages.BooleanField(1)
+  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 2)
+  crossRegionReplicaConfigured = _messages.BooleanField(3)
+  externalReplicaConfigured = _messages.BooleanField(4)
+  promotableReplicaConfigured = _messages.BooleanField(5)
 
 
 class StorageDatabasecenterPartnerapiV1mainBackupConfiguration(_messages.Message):
@@ -4028,8 +4079,11 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
     resourceType: Required. The type of resource this ID is identifying. Ex
       redis.googleapis.com/Instance, redis.googleapis.com/Cluster,
       alloydb.googleapis.com/Cluster, alloydb.googleapis.com/Instance,
-      spanner.googleapis.com/Instance, firestore.googleapis.com/Database,
-      REQUIRED Please refer go/condor-common-datamodel
+      spanner.googleapis.com/Instance, spanner.googleapis.com/Database,
+      firestore.googleapis.com/Database, sqladmin.googleapis.com/Instance,
+      bigtableadmin.googleapis.com/Cluster,
+      bigtableadmin.googleapis.com/Instance REQUIRED Please refer go/condor-
+      common-datamodel
     uniqueId: Required. A service-local token that distinguishes this resource
       from other resources within the same service.
   """
@@ -4066,7 +4120,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Message):
-  r"""Common model for database resource instance metadata.
+  r"""Common model for database resource instance metadata. Next ID: 21
 
   Enums:
     CurrentStateValueValuesEnum: Current state of the instance.
@@ -4107,6 +4161,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
       "ABC" is deleted, the name "ABC" can be used to to create a new resource
       within the same source. Resource name to follow CAIS resource_name
       format as noted here go/condor-common-datamodel
+    tagsSet: Optional. Tags associated with this resources.
     updationTime: The time at which the resource was updated and recorded at
       partner service.
     userLabelSet: User-provided labels associated with the resource
@@ -4193,8 +4248,9 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
   product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 14)
   resourceContainer = _messages.StringField(15)
   resourceName = _messages.StringField(16)
-  updationTime = _messages.StringField(17)
-  userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 18)
+  tagsSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainTags', 17)
+  updationTime = _messages.StringField(18)
+  userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 19)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData(_messages.Message):
@@ -4641,10 +4697,12 @@ class StorageDatabasecenterPartnerapiV1mainMachineConfiguration(_messages.Messag
       validations again after bug fix.
     memorySizeInBytes: Memory size in bytes. TODO(b/342344482, b/342346271)
       add proto validations again after bug fix.
+    shardCount: Optional. Number of shards (if applicable).
   """
 
   cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   memorySizeInBytes = _messages.IntegerField(2)
+  shardCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class StorageDatabasecenterPartnerapiV1mainObservabilityMetricData(_messages.Message):
@@ -4782,6 +4840,45 @@ class StorageDatabasecenterPartnerapiV1mainRetentionSettings(_messages.Message):
   quantityBasedRetention = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   retentionUnit = _messages.EnumField('RetentionUnitValueValuesEnum', 2)
   timeBasedRetention = _messages.StringField(3)
+
+
+class StorageDatabasecenterPartnerapiV1mainTags(_messages.Message):
+  r"""Message type for storing tags. Tags provide a way to create annotations
+  for resources, and in some cases conditionally allow or deny policies based
+  on whether a resource has a specific tag.
+
+  Messages:
+    TagsValue: The Tag key/value mappings.
+
+  Fields:
+    tags: The Tag key/value mappings.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""The Tag key/value mappings.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  tags = _messages.MessageField('TagsValue', 1)
 
 
 class StorageDatabasecenterPartnerapiV1mainUserLabels(_messages.Message):
@@ -5170,14 +5267,22 @@ class UpgradeClusterResponse(_messages.Message):
 
     Values:
       STATUS_UNSPECIFIED: Unspecified status.
+      NOT_STARTED: Not started.
+      IN_PROGRESS: In progress.
       SUCCESS: Operation succeeded.
       FAILED: Operation failed.
       PARTIAL_SUCCESS: Operation partially succeeded.
+      CANCEL_IN_PROGRESS: Cancel is in progress.
+      CANCELLED: Cancellation complete.
     """
     STATUS_UNSPECIFIED = 0
-    SUCCESS = 1
-    FAILED = 2
-    PARTIAL_SUCCESS = 3
+    NOT_STARTED = 1
+    IN_PROGRESS = 2
+    SUCCESS = 3
+    FAILED = 4
+    PARTIAL_SUCCESS = 5
+    CANCEL_IN_PROGRESS = 6
+    CANCELLED = 7
 
   clusterUpgradeDetails = _messages.MessageField('ClusterUpgradeDetails', 1, repeated=True)
   message = _messages.StringField(2)
@@ -5193,6 +5298,8 @@ class User(_messages.Message):
   Fields:
     databaseRoles: Optional. List of database roles this user has. The
       database role strings are subject to the PostgreSQL naming conventions.
+    keepExtraRoles: Input only. If the user already exists and it has
+      additional roles, keep them granted.
     name: Output only. Name of the resource in the form of
       projects/{project}/locations/{location}/cluster/{cluster}/users/{user}.
     password: Input only. Password for the user.
@@ -5214,9 +5321,10 @@ class User(_messages.Message):
     ALLOYDB_IAM_USER = 2
 
   databaseRoles = _messages.StringField(1, repeated=True)
-  name = _messages.StringField(2)
-  password = _messages.StringField(3)
-  userType = _messages.EnumField('UserTypeValueValuesEnum', 4)
+  keepExtraRoles = _messages.BooleanField(2)
+  name = _messages.StringField(3)
+  password = _messages.StringField(4)
+  userType = _messages.EnumField('UserTypeValueValuesEnum', 5)
 
 
 class UserPassword(_messages.Message):

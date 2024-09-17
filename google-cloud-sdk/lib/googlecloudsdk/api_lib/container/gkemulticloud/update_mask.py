@@ -36,7 +36,9 @@ ATTACHED_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'binauthz_evaluation_mode': 'binary_authorization.evaluation_mode',
     'proxy_secret_name': 'proxy_config.kubernetes_secret.name',
     'proxy_secret_namespace': 'proxy_config.kubernetes_secret.namespace',
-    'security_posture': 'security_posture_config.vulnerability_mode',
+    'workload_vulnerability_scanning': (
+        'security_posture_config.vulnerability_mode'
+    ),
 }
 
 AWS_CLUSTER_ARGS_TO_UPDATE_MASKS = {

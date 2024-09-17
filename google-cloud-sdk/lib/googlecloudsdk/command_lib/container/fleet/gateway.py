@@ -185,7 +185,7 @@ class GetCredentialsCommand(hub_base.HubCommand, base.Command):
   def ReadClusterMembership(self, project_id, location, membership):
     resource_name = hubapi_util.MembershipRef(project_id, location, membership)
     # If membership doesn't exist, exception will be raised to caller.
-    return hubapi_util.GetMembership(resource_name)
+    return hubapi_util.GetMembership(resource_name, use_v1main_api=True)
 
   def GenerateKubeconfig(
       self,

@@ -60,7 +60,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""========================== Remediate Findings ========================== Remediate findings. Creates a new FindingRemediationExecution resource.
+      r"""Remediate findings. Creates a new FindingRemediationExecution resource.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsFindingRemediationExecutionsCreateRequest) input message
@@ -242,7 +242,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single PostureDeployment.
+      r"""Deletes a PostureDeployment.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsPostureDeploymentsDeleteRequest) input message
@@ -269,7 +269,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single PostureDeployment.
+      r"""Gets details for a PostureDeployment.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsPostureDeploymentsGetRequest) input message
@@ -296,7 +296,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""========================== PostureDeployments ========================== Lists PostureDeployments in a given project and location.
+      r"""Lists every PostureDeployment in a project and location.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsPostureDeploymentsListRequest) input message
@@ -323,7 +323,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single PostureDeployment.
+      r"""Updates an existing PostureDeployment. To prevent concurrent updates from overwriting each other, always follow the read-modify-write pattern when you update a posture deployment: 1. Call GetPostureDeployment to get the current version of the deployment. 2. Update the fields in the deployment as needed. 3. Call UpdatePostureDeployment to update the deployment. Ensure that your request includes the `etag` value from the GetPostureDeployment response. **Important:** If you omit the `etag` when you call UpdatePostureDeployment, then the updated deployment unconditionally overwrites the existing deployment.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsPostureDeploymentsPatchRequest) input message
@@ -360,7 +360,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets a PostureTemplate. User must provide revision_id to retrieve a specific revision of the resource. NOT_FOUND error is returned if the revision_id or the PostureTemplate name does not exist. In case revision_id is not provided then the PostureTemplate with latest revision_id is returned.
+      r"""Gets a single revision of a PostureTemplate.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsPostureTemplatesGetRequest) input message
@@ -387,7 +387,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""========================== PostureTemplates ========================== Lists all the PostureTemplates available to the user.
+      r"""Lists every PostureTemplate in a given organization and location.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsPostureTemplatesListRequest) input message
@@ -424,7 +424,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Posture resource. If a Posture with the specified name already exists in the specified organization and location, the long running operation returns a ALREADY_EXISTS error.
+      r"""Creates a new Posture.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsPosturesCreateRequest) input message
@@ -451,7 +451,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes all the revisions of a resource. A posture can only be deleted when none of the revisions are deployed to any workload.
+      r"""Deletes all revisions of a Posture. You can only delete a posture if none of its revisions are deployed.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsPosturesDeleteRequest) input message
@@ -478,7 +478,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     )
 
     def Extract(self, request, global_params=None):
-      r"""Extracts existing policies on a workload as a posture. If a Posture on the given workload already exists, the long running operation returns a ALREADY_EXISTS error.
+      r"""Extracts existing policies from an organization, folder, or project, and applies them to another organization, folder, or project as a Posture. If the other organization, folder, or project already has a posture, then the result of the long-running operation is an ALREADY_EXISTS error.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsPosturesExtractRequest) input message
@@ -505,7 +505,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a posture in a given organization and location. User must provide revision_id to retrieve a specific revision of the resource. NOT_FOUND error is returned if the revision_id or the Posture name does not exist. In case revision_id is not provided then the latest Posture revision by UpdateTime is returned.
+      r"""Gets a single revision of a Posture.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsPosturesGetRequest) input message
@@ -532,7 +532,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""========================== Postures ========================== Lists Postures in a given organization and location. In case a posture has multiple revisions, the latest revision as per UpdateTime will be returned.
+      r"""Lists the most recent revisions of all Posture resources in a specified organization and location.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsPosturesListRequest) input message
@@ -559,7 +559,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     )
 
     def ListRevisions(self, request, global_params=None):
-      r"""Lists revisions of a Posture in a given organization and location.
+      r"""Lists all revisions of a single Posture.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsPosturesListRevisionsRequest) input message
@@ -586,7 +586,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an existing Posture. A new revision of the posture will be created if the revision to be updated is currently deployed on a workload. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the Posture does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the Posture. Updatable fields are state, description and policy_sets. State update operation cannot be clubbed with update of description and policy_sets. An ACTIVE posture can be updated to both DRAFT or DEPRECATED states. Postures in DRAFT or DEPRECATED states can only be updated to ACTIVE state.
+      r"""Updates a revision of an existing Posture. If the posture revision that you update is currently deployed, then a new revision of the posture is created. To prevent concurrent updates from overwriting each other, always follow the read-modify-write pattern when you update a posture: 1. Call GetPosture to get the current version of the posture. 2. Update the fields in the posture as needed. 3. Call UpdatePosture to update the posture. Ensure that your request includes the `etag` value from the GetPosture response. **Important:** If you omit the `etag` when you call UpdatePosture, then the updated posture unconditionally overwrites the existing posture.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsPosturesPatchRequest) input message
@@ -649,6 +649,60 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Gets a Prediction in a given organization and location.
+
+      Args:
+        request: (SecuritypostureOrganizationsLocationsPredictionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Prediction) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/predictions/{predictionsId}',
+        http_method='GET',
+        method_id='securityposture.organizations.locations.predictions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='SecuritypostureOrganizationsLocationsPredictionsGetRequest',
+        response_type_name='Prediction',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists predictions in a given organization and location.
+
+      Args:
+        request: (SecuritypostureOrganizationsLocationsPredictionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPredictionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/predictions',
+        http_method='GET',
+        method_id='securityposture.organizations.locations.predictions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/predictions',
+        request_field='',
+        request_type_name='SecuritypostureOrganizationsLocationsPredictionsListRequest',
+        response_type_name='ListPredictionsResponse',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsReportsService(base_api.BaseApiService):
     """Service class for the organizations_locations_reports resource."""
 
@@ -660,7 +714,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
           }
 
     def CreateIaCValidationReport(self, request, global_params=None):
-      r"""Validates the provided IaC and creates a validation report as a result. Validation is only performed on modified assets. This API currently only supports terraform plan file as IaC source.
+      r"""Validates a specified infrastructure-as-code (IaC) configuration, and creates a Report with the validation results. Only Terraform configurations are supported. Only modified assets are validated.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsReportsCreateIaCValidationReportRequest) input message
@@ -687,7 +741,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a report in a given organization and location.
+      r"""Gets details for a Report.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsReportsGetRequest) input message
@@ -714,7 +768,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists reports in a given organization and location.
+      r"""Lists every Report in a given organization and location.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsReportsListRequest) input message
@@ -750,33 +804,6 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Get(self, request, global_params=None):
-      r"""Gets information about a location.
-
-      Args:
-        request: (SecuritypostureOrganizationsLocationsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Location) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}',
-        http_method='GET',
-        method_id='securityposture.organizations.locations.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='SecuritypostureOrganizationsLocationsGetRequest',
-        response_type_name='Location',
-        supports_download=False,
-    )
-
     def GetIacValidationReportMetrics(self, request, global_params=None):
       r"""Gets the metrics for a given report.
 
@@ -801,33 +828,6 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuritypostureOrganizationsLocationsGetIacValidationReportMetricsRequest',
         response_type_name='IaCValidationReportMetrics',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists information about the supported locations for this service.
-
-      Args:
-        request: (SecuritypostureOrganizationsLocationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListLocationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations',
-        http_method='GET',
-        method_id='securityposture.organizations.locations.list',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+name}/locations',
-        request_field='',
-        request_type_name='SecuritypostureOrganizationsLocationsListRequest',
-        response_type_name='ListLocationsResponse',
         supports_download=False,
     )
 

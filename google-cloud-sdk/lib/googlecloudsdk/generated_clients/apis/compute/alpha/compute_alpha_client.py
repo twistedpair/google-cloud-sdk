@@ -1269,7 +1269,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def ListUsable(self, request, global_params=None):
-      r"""Retrieves an aggregated list of all usable backend services in the specified project.
+      r"""Retrieves a list of all usable backend services in the specified project.
 
       Args:
         request: (ComputeBackendServicesListUsableRequest) input message
@@ -8314,6 +8314,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeInstantSnapshotGroupsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instantSnapshotGroups.getIamPolicy',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshotGroups/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name='ComputeInstantSnapshotGroupsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""inserts a Zonal InstantSnapshotGroup resource.
 
@@ -8363,6 +8389,58 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeInstantSnapshotGroupsListRequest',
         response_type_name='ListInstantSnapshotGroups',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeInstantSnapshotGroupsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instantSnapshotGroups.setIamPolicy',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshotGroups/{resource}/setIamPolicy',
+        request_field='zoneSetPolicyRequest',
+        request_type_name='ComputeInstantSnapshotGroupsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeInstantSnapshotGroupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instantSnapshotGroups.testIamPermissions',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshotGroups/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeInstantSnapshotGroupsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -14051,7 +14129,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def ListUsable(self, request, global_params=None):
-      r"""Retrieves an aggregated list of all usable backend services in the specified project in the given region.
+      r"""Retrieves a list of all usable backend services in the specified project in the given region.
 
       Args:
         request: (ComputeRegionBackendServicesListUsableRequest) input message
@@ -16614,6 +16692,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotGroupsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionInstantSnapshotGroups.getIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/regions/{region}/instantSnapshotGroups/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name='ComputeRegionInstantSnapshotGroupsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""creates a Regional InstantSnapshotGroup resource.
 
@@ -16663,6 +16767,58 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeRegionInstantSnapshotGroupsListRequest',
         response_type_name='ListInstantSnapshotGroups',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotGroupsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstantSnapshotGroups.setIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/instantSnapshotGroups/{resource}/setIamPolicy',
+        request_field='regionSetPolicyRequest',
+        request_type_name='ComputeRegionInstantSnapshotGroupsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotGroupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstantSnapshotGroups.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/instantSnapshotGroups/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRegionInstantSnapshotGroupsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 

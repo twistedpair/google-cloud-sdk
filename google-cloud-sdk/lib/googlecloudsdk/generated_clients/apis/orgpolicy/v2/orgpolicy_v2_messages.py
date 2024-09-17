@@ -345,6 +345,8 @@ class GoogleCloudOrgpolicyV2PolicySpecPolicyRule(_messages.Message):
       Ensure that parameter value types match those defined in the constraint
       definition. For example: { "allowedLocations" : ["us-east1", "us-
       west1"], "allowAll" : true }
+    resourceTypes: Optional. The resource types policy can support, only used
+      for Google managed constraint and method type is GOVERN_TAGS.
     values: List of values to be used for this policy rule. This field can be
       set only in policies for list constraints.
   """
@@ -381,7 +383,24 @@ class GoogleCloudOrgpolicyV2PolicySpecPolicyRule(_messages.Message):
   denyAll = _messages.BooleanField(3)
   enforce = _messages.BooleanField(4)
   parameters = _messages.MessageField('ParametersValue', 5)
-  values = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpecPolicyRuleStringValues', 6)
+  resourceTypes = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpecPolicyRuleResourceTypes', 6)
+  values = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpecPolicyRuleStringValues', 7)
+
+
+class GoogleCloudOrgpolicyV2PolicySpecPolicyRuleResourceTypes(_messages.Message):
+  r"""Set multiple resource types for one policy, eg: resourceTypes: included:
+  - compute.googleapis.com/Instance - compute.googleapis.com/Disk Constraint
+  definition contains an empty resource type in order to support multiple
+  resource types in the policy. Only support Google managed constriaint and
+  method type is GOVERN_TAGS Refer go/multi-resource-support-force-tags-gmc to
+  get more details.
+
+  Fields:
+    included: Optional. The resource type we currently support.
+      cloud/orgpolicy/customconstraintconfig/prod/resource_types.prototext
+  """
+
+  included = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudOrgpolicyV2PolicySpecPolicyRuleStringValues(_messages.Message):

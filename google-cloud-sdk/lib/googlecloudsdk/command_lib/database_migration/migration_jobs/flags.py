@@ -294,3 +294,27 @@ def AddSqlServerUseDiffBackupFlag(parser):
       action='store_true',
       help=help_text,
   )
+
+
+def AddMigrationJobObjectsConfigFlag(parser):
+  """Adds migration job objects config flag group to the given parser."""
+  sqlserver_homogeneous_migration_config = parser.add_group(
+      'The migration job objects config.',
+      hidden=True,
+      mutex=True,
+  )
+  AddDatabasesFilterFlag(sqlserver_homogeneous_migration_config)
+
+
+def AddDatabasesFilterFlag(parser):
+  """Adds a --databases-filter flag to the given parser."""
+  help_text = """\
+    A list of databases to be migrated to the destination instance.
+    Provide databases as a comma separated list.
+    """
+  parser.add_argument(
+      '--databases-filter',
+      metavar='databaseName',
+      type=arg_parsers.ArgList(min_length=1),
+      help=help_text,
+  )

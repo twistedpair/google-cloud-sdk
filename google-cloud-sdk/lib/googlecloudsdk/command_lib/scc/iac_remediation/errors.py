@@ -34,6 +34,27 @@ class InvalidFindingNameError(Error):
       super(Error, self).__init__('Missing finding canonical name.')
     else:
       super(Error, self).__init__(
-          f'Invalid finding canonical name: {bad_finding_name}.'
-          'Correct format: projects/*/sources/*/locations/*/findings/*'
+          f"""Invalid finding canonical name: {bad_finding_name}
+          Correct format: projects/*/sources/*/locations/*/findings/*"""
       )
+
+
+class UnsupportedFindingCategoryError(Error):
+  """An error representing an unsupported finding category error."""
+
+  def __init__(self, invalid_category_name: str):
+    if invalid_category_name is None:
+      super(Error, self).__init__('Missing finding category name.')
+    else:
+      super(Error, self).__init__(
+          f'Finding category not supported: {invalid_category_name}.'
+      )
+
+
+class FindingNotFoundError(Error):
+  """An error representing a SCC finding not found error."""
+
+  def __init__(self):
+    super(Error, self).__init__(
+        'Finding not found for the given name and organization.'
+    )

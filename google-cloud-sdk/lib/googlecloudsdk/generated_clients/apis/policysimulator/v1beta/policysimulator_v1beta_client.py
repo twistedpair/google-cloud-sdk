@@ -50,6 +50,8 @@ class PolicysimulatorV1beta(base_api.BaseApiClient):
     self.organizations_locations_orgPolicyViolationsPreviews_operations = self.OrganizationsLocationsOrgPolicyViolationsPreviewsOperationsService(self)
     self.organizations_locations_orgPolicyViolationsPreviews_orgPolicyViolations = self.OrganizationsLocationsOrgPolicyViolationsPreviewsOrgPolicyViolationsService(self)
     self.organizations_locations_orgPolicyViolationsPreviews = self.OrganizationsLocationsOrgPolicyViolationsPreviewsService(self)
+    self.organizations_locations_pabSimulations_results = self.OrganizationsLocationsPabSimulationsResultsService(self)
+    self.organizations_locations_pabSimulations = self.OrganizationsLocationsPabSimulationsService(self)
     self.organizations_locations_replays_operations = self.OrganizationsLocationsReplaysOperationsService(self)
     self.organizations_locations_replays_results = self.OrganizationsLocationsReplaysResultsService(self)
     self.organizations_locations_replays = self.OrganizationsLocationsReplaysService(self)
@@ -602,6 +604,80 @@ class PolicysimulatorV1beta(base_api.BaseApiClient):
         request_field='',
         request_type_name='PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsListRequest',
         response_type_name='GoogleCloudPolicysimulatorV1betaListOrgPolicyViolationsPreviewsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsPabSimulationsResultsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_pabSimulations_results resource."""
+
+    _NAME = 'organizations_locations_pabSimulations_results'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1beta.OrganizationsLocationsPabSimulationsResultsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the results for a policy simulation.
+
+      Args:
+        request: (PolicysimulatorOrganizationsLocationsPabSimulationsResultsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1betaListPabSimulationResultsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/organizations/{organizationsId}/locations/{locationsId}/pabSimulations/{pabSimulationsId}/results',
+        http_method='GET',
+        method_id='policysimulator.organizations.locations.pabSimulations.results.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/results',
+        request_field='',
+        request_type_name='PolicysimulatorOrganizationsLocationsPabSimulationsResultsListRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1betaListPabSimulationResultsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsPabSimulationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_pabSimulations resource."""
+
+    _NAME = 'organizations_locations_pabSimulations'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1beta.OrganizationsLocationsPabSimulationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates and starts a policy simulation.
+
+      Args:
+        request: (PolicysimulatorOrganizationsLocationsPabSimulationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/organizations/{organizationsId}/locations/{locationsId}/pabSimulations',
+        http_method='POST',
+        method_id='policysimulator.organizations.locations.pabSimulations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pabSimulationId'],
+        relative_path='v1beta/{+parent}/pabSimulations',
+        request_field='googleCloudPolicysimulatorV1betaPabSimulation',
+        request_type_name='PolicysimulatorOrganizationsLocationsPabSimulationsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

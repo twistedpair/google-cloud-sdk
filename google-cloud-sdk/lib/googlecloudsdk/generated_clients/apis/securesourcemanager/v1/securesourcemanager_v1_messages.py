@@ -165,8 +165,104 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class BranchRule(_messages.Message):
+  r"""Metadata of a BranchRule. BranchRule is the protection rule to enforce
+  pre-defined rules on desginated branches within a repository.
+
+  Messages:
+    AnnotationsValue: Optional. User annotations. These attributes can only be
+      set and used by the user. See https://google.aip.dev/128#annotations for
+      more details such as format and size limitations.
+
+  Fields:
+    allowStaleReviews: Optional. Determines if allow stale reviews or
+      approvals before merging to the branch.
+    annotations: Optional. User annotations. These attributes can only be set
+      and used by the user. See https://google.aip.dev/128#annotations for
+      more details such as format and size limitations.
+    createTime: Output only. Create timestamp.
+    disabled: Optional. Determines if the branch rule is disabled or not.
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding.
+    includePattern: Optional. The pattern of the branch that can match to this
+      BranchRule. Specified as regex. .* for all branches. Examples: main,
+      (main|release.*). Current MVP phase only support `.*` for wildcard.
+    minimumApprovalsCount: Optional. The minimum number of approvals required
+      for the branch rule to be matched.
+    minimumReviewsCount: Optional. The minimum number of reviews required for
+      the branch rule to be matched.
+    name: Optional. A unique identifier for a BranchRule. The name should be
+      of the format: `projects/{project}/locations/{location}/repositories/{re
+      pository}/branchRules/{branch_rule}`
+    requireCommentsResolved: Optional. Determines if require comments resolved
+      before merging to the branch.
+    requireLinearHistory: Optional. Determines if require linear history
+      before merging to the branch.
+    requirePullRequest: Optional. Determines if the branch rule requires a
+      pull request or not.
+    requiredStatusChecks: Optional. List of required status checks before
+      merging to the branch.
+    uid: Output only. Unique identifier of the repository.
+    updateTime: Output only. Update timestamp.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. User annotations. These attributes can only be set and used
+    by the user. See https://google.aip.dev/128#annotations for more details
+    such as format and size limitations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  allowStaleReviews = _messages.BooleanField(1)
+  annotations = _messages.MessageField('AnnotationsValue', 2)
+  createTime = _messages.StringField(3)
+  disabled = _messages.BooleanField(4)
+  etag = _messages.StringField(5)
+  includePattern = _messages.StringField(6)
+  minimumApprovalsCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  minimumReviewsCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  name = _messages.StringField(9)
+  requireCommentsResolved = _messages.BooleanField(10)
+  requireLinearHistory = _messages.BooleanField(11)
+  requirePullRequest = _messages.BooleanField(12)
+  requiredStatusChecks = _messages.MessageField('Check', 13, repeated=True)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class Check(_messages.Message):
+  r"""Check is a type for status check.
+
+  Fields:
+    context: Required. The context of the check.
+  """
+
+  context = _messages.StringField(1)
 
 
 class Empty(_messages.Message):
@@ -487,6 +583,19 @@ class IssueRedirectTicketInternalResponse(_messages.Message):
   """
 
   ticketId = _messages.StringField(1)
+
+
+class ListBranchRulesResponse(_messages.Message):
+  r"""ListBranchRulesResponse is the response to listing branchRules.
+
+  Fields:
+    branchRules: The list of branch rules.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  branchRules = _messages.MessageField('BranchRule', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -874,9 +983,10 @@ class Repository(_messages.Message):
     initialConfig: Input only. Initial configurations for the repository.
     instance: Optional. The name of the instance in which the repository is
       hosted, formatted as `projects/{project_number}/locations/{location_id}/
-      instances/{instance_id}` For data plane CreateRepository requests, this
-      field is output only. For control plane CreateRepository requests, this
-      field is used as input.
+      instances/{instance_id}` When creating repository via
+      *.sourcemanager.dev (Data Plane API), this field is output only. When
+      creating repository via securesourcemanager.googleapis.com (Control
+      Plane API), this field is used as input.
     name: Optional. A unique identifier for a repository. The name should be
       of the format: `projects/{project}/locations/{location_id}/repositories/
       {repository_id}`
@@ -1125,6 +1235,91 @@ class SecuresourcemanagerProjectsLocationsOperationsListRequest(_messages.Messag
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesCreateRequest(_messages.Message):
+  r"""A
+  SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesCreateRequest
+  object.
+
+  Fields:
+    branchRule: A BranchRule resource to be passed as the request body.
+    branchRuleId: A string attribute.
+    parent: A string attribute.
+  """
+
+  branchRule = _messages.MessageField('BranchRule', 1)
+  branchRuleId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesDeleteRequest(_messages.Message):
+  r"""A
+  SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesDeleteRequest
+  object.
+
+  Fields:
+    allowMissing: Optional. If set to true, and the branch rule is not found,
+      the request will succeed but no action will be taken on the server.
+    name: A string attribute.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesGetRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the repository to retrieve. The format is `project
+      s/{project}/locations/{location}/repositories/{repository}/branchRules/{
+      branch_rule}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesListRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesListRequest
+  object.
+
+  Fields:
+    pageSize: A integer attribute.
+    pageToken: A string attribute.
+    parent: A string attribute.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesPatchRequest(_messages.Message):
+  r"""A
+  SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesPatchRequest
+  object.
+
+  Fields:
+    branchRule: A BranchRule resource to be passed as the request body.
+    name: Optional. A unique identifier for a BranchRule. The name should be
+      of the format: `projects/{project}/locations/{location}/repositories/{re
+      pository}/branchRules/{branch_rule}`
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the branchRule resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. The special
+      value "*" means full replacement.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not actually post it. (https://google.aip.dev/163, for
+      declarative friendly)
+  """
+
+  branchRule = _messages.MessageField('BranchRule', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class SecuresourcemanagerProjectsLocationsRepositoriesCreateRepositoryInternalRequest(_messages.Message):

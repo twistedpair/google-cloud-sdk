@@ -271,6 +271,9 @@ class AuditLogConfig(_messages.Message):
 class AutokeyConfig(_messages.Message):
   r"""Cloud KMS Autokey configuration for a folder.
 
+  Enums:
+    StateValueValuesEnum: Output only. The state for the AutokeyConfig.
+
   Fields:
     keyProject: Optional. Name of the key project, e.g.
       `projects/{PROJECT_ID}` or `projects/{PROJECT_NUMBER}`, where Cloud KMS
@@ -284,10 +287,28 @@ class AutokeyConfig(_messages.Message):
       clear the configuration.
     name: Identifier. Name of the AutokeyConfig resource, e.g.
       `folders/{FOLDER_NUMBER}/autokeyConfig`.
+    state: Output only. The state for the AutokeyConfig.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state for the AutokeyConfig.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the AutokeyConfig is unspecified.
+      ACTIVE: The AutokeyConfig is currently active.
+      KEY_PROJECT_DELETED: A previously configured key project has been
+        deleted and the current AutokeyConfig is unusable.
+      UNINITIALIZED: The AutokeyConfig is not yet initialized or has been
+        reset to its default uninitialized state.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    KEY_PROJECT_DELETED = 2
+    UNINITIALIZED = 3
 
   keyProject = _messages.StringField(1)
   name = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class Binding(_messages.Message):
@@ -721,12 +742,21 @@ class CloudkmsProjectsLocationsKeyHandlesListRequest(_messages.Message):
   Fields:
     filter: Optional. Filter to apply when listing KeyHandles, e.g.
       `resource_type_selector="{SERVICE}.googleapis.com/{TYPE}"`.
+    pageSize: Optional. Optional limit on the number of KeyHandles to include
+      in the response. The service may return fewer than this value. Further
+      KeyHandles can subsequently be obtained by including the
+      ListKeyHandlesResponse.next_page_token in a subsequent request. If
+      unspecified, at most KeyHandles 100 will be returned.
+    pageToken: Optional. Optional pagination token, returned earlier via
+      ListKeyHandlesResponse.next_page_token.
     parent: Required. Name of the resource project and location from which to
       list KeyHandles, e.g. `projects/{PROJECT_ID}/locations/{LOCATION}`.
   """
 
   filter = _messages.StringField(1)
-  parent = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class CloudkmsProjectsLocationsKeyRingsCreateRequest(_messages.Message):
@@ -2118,9 +2148,9 @@ class EkmConnection(_messages.Message):
       operations on the EKM. If unset, this defaults to MANUAL.
     name: Output only. The resource name for the EkmConnection in the format
       `projects/*/locations/*/ekmConnections/*`.
-    serviceResolvers: A list of ServiceResolvers where the EKM can be reached.
-      There should be one ServiceResolver per EKM replica. Currently, only a
-      single ServiceResolver is supported.
+    serviceResolvers: Optional. A list of ServiceResolvers where the EKM can
+      be reached. There should be one ServiceResolver per EKM replica.
+      Currently, only a single ServiceResolver is supported.
   """
 
   class KeyManagementModeValueValuesEnum(_messages.Enum):
@@ -2915,9 +2945,13 @@ class ListKeyHandlesResponse(_messages.Message):
 
   Fields:
     keyHandles: Resulting KeyHandles.
+    nextPageToken: A token to retrieve next page of results. Pass this value
+      in ListKeyHandlesRequest.page_token to retrieve the next page of
+      results.
   """
 
   keyHandles = _messages.MessageField('KeyHandle', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListKeyRingsResponse(_messages.Message):

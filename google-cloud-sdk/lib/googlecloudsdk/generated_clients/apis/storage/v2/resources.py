@@ -17,74 +17,65 @@
 import enum
 
 
-BASE_URL = 'https://storage.googleapis.com/storage/v1/'
+BASE_URL = 'https://storage.googleapis.com/v2/'
 DOCS_URL = 'https://developers.google.com/storage/docs/json_api/'
 
 
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  BUCKETACCESSCONTROLS = (
-      'bucketAccessControls',
-      'b/{bucket}/acl/{entity}',
-      {},
-      ['bucket', 'entity'],
-      True
-  )
-  BUCKETS = (
-      'buckets',
-      'b/{bucket}',
-      {},
-      ['bucket'],
-      True
-  )
-  DEFAULTOBJECTACCESSCONTROLS = (
-      'defaultObjectAccessControls',
-      'b/{bucket}/defaultObjectAcl/{entity}',
-      {},
-      ['bucket', 'entity'],
-      True
-  )
-  NOTIFICATIONS = (
-      'notifications',
-      'b/{bucket}/notificationConfigs/{notification}',
-      {},
-      ['bucket', 'notification'],
-      True
-  )
-  OBJECTACCESSCONTROLS = (
-      'objectAccessControls',
-      'b/{bucket}/o/{object}/acl/{entity}',
-      {},
-      ['bucket', 'object', 'entity'],
-      True
-  )
-  OBJECTS = (
-      'objects',
-      'b/{bucket}/o/{object}',
-      {},
-      ['bucket', 'object'],
-      True
-  )
   PROJECTS = (
       'projects',
-      'projects/{projectId}',
+      'projects/{project}',
       {},
-      ['projectId'],
+      ['project'],
       True
   )
-  PROJECTS_HMACKEYS = (
-      'projects.hmacKeys',
-      'projects/{projectId}/hmacKeys/{accessId}',
+  PROJECTS_BUCKETS = (
+      'projects.buckets',
+      'projects/{project}/buckets/{bucket}',
       {},
-      ['projectId', 'accessId'],
+      ['project', 'bucket'],
       True
   )
-  PROJECTS_SERVICEACCOUNT = (
-      'projects.serviceAccount',
-      'projects/{projectId}/serviceAccount',
+  PROJECTS_BUCKETS_FOLDERS = (
+      'projects.buckets.folders',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/buckets/{bucketsId}/folders/{foldersId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_BUCKETS_NOTIFICATIONCONFIGS = (
+      'projects.buckets.notificationConfigs',
+      'projects/{project}/buckets/{bucket}/notificationConfigs/'
+      '{notification_config}',
       {},
-      ['projectId'],
+      ['project', 'bucket', 'notification_config'],
+      True
+  )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{project}/locations/{location}',
+      {},
+      ['project', 'location'],
+      True
+  )
+  PROJECTS_LOCATIONS_KEYRINGS = (
+      'projects.locations.keyRings',
+      'projects/{project}/locations/{location}/keyRings/{key_ring}',
+      {},
+      ['project', 'location', 'key_ring'],
+      True
+  )
+  PROJECTS_LOCATIONS_KEYRINGS_CRYPTOKEYS = (
+      'projects.locations.keyRings.cryptoKeys',
+      'projects/{project}/locations/{location}/keyRings/{key_ring}/'
+      'cryptoKeys/{crypto_key}',
+      {},
+      ['project', 'location', 'key_ring', 'crypto_key'],
       True
   )
 

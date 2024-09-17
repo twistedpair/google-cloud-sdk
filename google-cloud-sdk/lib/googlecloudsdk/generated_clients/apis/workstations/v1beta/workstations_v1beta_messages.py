@@ -208,7 +208,7 @@ class BoostConfig(_messages.Message):
       **Machine Type**: nested virtualization can only be enabled on boost
       configurations that specify a machine_type in the N1 or N2 machine
       series.
-    id: Optional. Required. The id to be used for the boost config.
+    id: Optional. Required. The id to be used for the boost configuration.
     machineType: Optional. The type of machine that boosted VM instances will
       use-for example, `e2-standard-4`. For more information about machine
       types that Cloud Workstations supports, see the list of [available
@@ -1266,8 +1266,8 @@ class Workstation(_messages.Message):
 
   Fields:
     annotations: Optional. Client-specified annotations.
-    boostConfigs: Output only. List of available boost configuration ids that
-      this workstation can be boosted up to
+    boostConfigs: Output only. List of available boost configuration IDs that
+      this workstation can be boosted up to.
     createTime: Output only. Time when this workstation was created.
     deleteTime: Output only. Time when this workstation was soft-deleted.
     displayName: Optional. Human-readable name for this workstation.
@@ -1421,11 +1421,11 @@ class Workstation(_messages.Message):
 
 
 class WorkstationBoostConfig(_messages.Message):
-  r"""Boost config for this workstation. This object is populated from the
-  parent workstation config.
+  r"""Boost configuration for this workstation. This object is populated from
+  the parent workstation configuration.
 
   Fields:
-    id: Output only. Boost config id.
+    id: Output only. Boost configuration ID.
   """
 
   id = _messages.StringField(1)
@@ -1603,9 +1603,10 @@ class WorkstationConfig(_messages.Message):
       that has `roles/logging.logWriter` and `roles/monitoring.metricWriter`
       on the project. Operating system audit logging is distinct from [Cloud
       Audit Logs](https://cloud.google.com/workstations/docs/audit-logging)
-      and [Container output logging](http://cloud/workstations/docs/container-
-      output-logging#overview). Operating system audit logs are available in
-      the [Cloud Logging](https://cloud.google.com/logging/docs) console by
+      and [Container output
+      logging](https://cloud.google.com/workstations/docs/container-output-
+      logging#overview). Operating system audit logs are available in the
+      [Cloud Logging](https://cloud.google.com/logging/docs) console by
       querying: resource.type="gce_instance" log_name:"/logs/linux-auditd"
     encryptionKey: Immutable. Encrypts resources of this workstation
       configuration using a customer-managed encryption key (CMEK). If
@@ -1625,6 +1626,11 @@ class WorkstationConfig(_messages.Message):
     etag: Optional. Checksum computed by the server. May be sent on update and
       delete requests to make sure that the client has an up-to-date value
       before proceeding.
+    grantWorkstationAdminRoleOnCreate: Optional. Grant creator of a
+      workstation `roles/workstations.policyAdmin` role along with
+      `roles/workstations.user` role on the workstation created by them. This
+      allows workstation users to share access to either their entire
+      workstation, or individual ports. Defaults to false.
     host: Optional. Runtime host for the workstation.
     httpOptions: Optional. HTTP options that customize the behavior of the
       workstation service's HTTP proxy.
@@ -1640,6 +1646,15 @@ class WorkstationConfig(_messages.Message):
       [Labels](https://cloud.google.com/workstations/docs/label-resources)
       that are applied to the workstation configuration and that are also
       propagated to the underlying Compute Engine resources.
+    maxUsableWorkstations: Optional. Maximum number of workstations under this
+      configuration a user can have `workstations.workstation.use` permission
+      on. Only enforced on CreateWorkstation API calls on the user issuing the
+      API request. Can be overridden by: - granting a user
+      workstations.workstationConfigs.exemptMaxUsableWorkstationLimit
+      permission, or - having a user with that permission create a workstation
+      and granting another user `workstations.workstation.use` permission on
+      that workstation. If not specified, defaults to `0`, which indicates
+      unlimited.
     name: Identifier. Full name of this workstation configuration.
     persistentDirectories: Optional. Directories to persist across workstation
       sessions.
@@ -1741,20 +1756,22 @@ class WorkstationConfig(_messages.Message):
   encryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
   ephemeralDirectories = _messages.MessageField('EphemeralDirectory', 12, repeated=True)
   etag = _messages.StringField(13)
-  host = _messages.MessageField('Host', 14)
-  httpOptions = _messages.MessageField('HttpOptions', 15)
-  idleTimeout = _messages.StringField(16)
-  labels = _messages.MessageField('LabelsValue', 17)
-  name = _messages.StringField(18)
-  persistentDirectories = _messages.MessageField('PersistentDirectory', 19, repeated=True)
-  readinessChecks = _messages.MessageField('ReadinessCheck', 20, repeated=True)
-  reconciling = _messages.BooleanField(21)
-  replicaZones = _messages.StringField(22, repeated=True)
-  runningTimeout = _messages.StringField(23)
-  satisfiesPzi = _messages.BooleanField(24)
-  satisfiesPzs = _messages.BooleanField(25)
-  uid = _messages.StringField(26)
-  updateTime = _messages.StringField(27)
+  grantWorkstationAdminRoleOnCreate = _messages.BooleanField(14)
+  host = _messages.MessageField('Host', 15)
+  httpOptions = _messages.MessageField('HttpOptions', 16)
+  idleTimeout = _messages.StringField(17)
+  labels = _messages.MessageField('LabelsValue', 18)
+  maxUsableWorkstations = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  name = _messages.StringField(20)
+  persistentDirectories = _messages.MessageField('PersistentDirectory', 21, repeated=True)
+  readinessChecks = _messages.MessageField('ReadinessCheck', 22, repeated=True)
+  reconciling = _messages.BooleanField(23)
+  replicaZones = _messages.StringField(24, repeated=True)
+  runningTimeout = _messages.StringField(25)
+  satisfiesPzi = _messages.BooleanField(26)
+  satisfiesPzs = _messages.BooleanField(27)
+  uid = _messages.StringField(28)
+  updateTime = _messages.StringField(29)
 
 
 class WorkstationsProjectsLocationsOperationsCancelRequest(_messages.Message):

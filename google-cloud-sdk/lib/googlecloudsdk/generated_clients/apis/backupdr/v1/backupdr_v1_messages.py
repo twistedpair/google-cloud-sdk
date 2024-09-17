@@ -657,7 +657,7 @@ class BackupLock(_messages.Message):
 
 
 class BackupPlan(_messages.Message):
-  r"""A `BackupPlan` specifies some common fields, such as `display_name` as
+  r"""A `BackupPlan` specifies some common fields, such as `description` as
   well as one or more `BackupRule` messages. Each `BackupRule` has a retention
   policy and defines a schedule by which the system is to perform backup
   workloads.
@@ -816,16 +816,6 @@ class BackupRule(_messages.Message):
     backupRetentionDays: Required. Configures the duration for which backup
       data will be kept. It is defined in "days". The value should be greater
       than or equal to minimum enforced retention of the backup vault.
-    backupVault: Optional. TODO b/341576760: Remove deprecated BV and
-      Datasource field form BP and BPA once UI removed all dependencies on
-      them Required. Resource name of backup vault which will be used as
-      storage location for backups. Format:
-      projects/{project}/locations/{location}/backupVaults/{backupvault}
-    backupVaultServiceAccount: Output only. TODO b/341576760: Remove
-      deprecated BV and Datasource field form BP and BPA once UI removed all
-      dependencies on them Output only. The Google Cloud Platform Service
-      Account to be used by the BackupVault for taking backups. Specify the
-      email address of the Backup Vault Service Account.
     ruleId: Required. Immutable. The unique id of this `BackupRule`. The
       `rule_id` is unique per `BackupPlan`.The `rule_id` must start with a
       lowercase letter followed by up to 62 lowercase letters, numbers, or
@@ -835,10 +825,8 @@ class BackupRule(_messages.Message):
   """
 
   backupRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  backupVault = _messages.StringField(2)
-  backupVaultServiceAccount = _messages.StringField(3)
-  ruleId = _messages.StringField(4)
-  standardSchedule = _messages.MessageField('StandardSchedule', 5)
+  ruleId = _messages.StringField(2)
+  standardSchedule = _messages.MessageField('StandardSchedule', 3)
 
 
 class BackupVault(_messages.Message):
@@ -870,8 +858,6 @@ class BackupVault(_messages.Message):
       characters or less).
     effectiveTime: Optional. Time after which the BackupVault resource is
       locked.
-    enforcedRetentionDuration: Required. The default retention period for each
-      backup in the backup vault (Deprecated).
     etag: Optional. Server specified ETag for the backup vault resource to
       prevent simultaneous updates from overwiting each other.
     labels: Optional. Resource labels to represent user provided metadata. No
@@ -963,15 +949,14 @@ class BackupVault(_messages.Message):
   deletable = _messages.BooleanField(5)
   description = _messages.StringField(6)
   effectiveTime = _messages.StringField(7)
-  enforcedRetentionDuration = _messages.StringField(8)
-  etag = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  serviceAccount = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  totalStoredBytes = _messages.IntegerField(14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  etag = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  serviceAccount = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  totalStoredBytes = _messages.IntegerField(13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class BackupWindow(_messages.Message):
@@ -1869,6 +1854,21 @@ class BackupdrProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class BackupdrProjectsLocationsServiceConfigInitializeRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsServiceConfigInitializeRequest object.
+
+  Fields:
+    initializeServiceRequest: A InitializeServiceRequest resource to be passed
+      as the request body.
+    name: Required. The resource name of the serviceConfig used to initialize
+      the service. Format:
+      `projects/{project_id}/locations/{location}/serviceConfig`.
+  """
+
+  initializeServiceRequest = _messages.MessageField('InitializeServiceRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -2002,6 +2002,10 @@ class ComputeInstanceBackupProperties(_messages.Message):
       instance. Supported options are "STOP" and "NONE". The default value is
       "NONE" if it is not specified.
 
+  Messages:
+    LabelsValue: Labels to apply to instances that are created from these
+      properties.
+
   Fields:
     canIpForward: Enables instances created based on these properties to send
       packets with source IP addresses other than their own and receive
@@ -2019,6 +2023,8 @@ class ComputeInstanceBackupProperties(_messages.Message):
     keyRevocationActionType: KeyRevocationActionType of the instance.
       Supported options are "STOP" and "NONE". The default value is "NONE" if
       it is not specified.
+    labels: Labels to apply to instances that are created from these
+      properties.
     machineType: The machine type to use for instances that are created from
       these properties.
     metadata: The metadata key/value pairs to assign to instances that are
@@ -2067,19 +2073,44 @@ class ComputeInstanceBackupProperties(_messages.Message):
     NONE = 1
     STOP = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels to apply to instances that are created from these properties.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   canIpForward = _messages.BooleanField(1)
   description = _messages.StringField(2)
   disk = _messages.MessageField('AttachedDisk', 3, repeated=True)
   guestAccelerator = _messages.MessageField('AcceleratorConfig', 4, repeated=True)
   keyRevocationActionType = _messages.EnumField('KeyRevocationActionTypeValueValuesEnum', 5)
-  machineType = _messages.StringField(6)
-  metadata = _messages.MessageField('Metadata', 7)
-  minCpuPlatform = _messages.StringField(8)
-  networkInterface = _messages.MessageField('NetworkInterface', 9, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 10)
-  serviceAccount = _messages.MessageField('ServiceAccount', 11, repeated=True)
-  sourceInstance = _messages.StringField(12)
-  tags = _messages.MessageField('Tags', 13)
+  labels = _messages.MessageField('LabelsValue', 6)
+  machineType = _messages.StringField(7)
+  metadata = _messages.MessageField('Metadata', 8)
+  minCpuPlatform = _messages.StringField(9)
+  networkInterface = _messages.MessageField('NetworkInterface', 10, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 11)
+  serviceAccount = _messages.MessageField('ServiceAccount', 12, repeated=True)
+  sourceInstance = _messages.StringField(13)
+  tags = _messages.MessageField('Tags', 14)
 
 
 class ComputeInstanceDataSourceProperties(_messages.Message):
@@ -2726,6 +2757,30 @@ class InitializeParams(_messages.Message):
 
   diskName = _messages.StringField(1)
   replicaZones = _messages.StringField(2, repeated=True)
+
+
+class InitializeServiceRequest(_messages.Message):
+  r"""Request message for initializing the service.
+
+  Fields:
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    resourceType: Required. The resource type to which the default service
+      config will be applied. Examples include,
+      "compute.googleapis.com/Instance" and "storage.googleapis.com/Bucket".
+  """
+
+  requestId = _messages.StringField(1)
+  resourceType = _messages.StringField(2)
 
 
 class InitiateBackupRequest(_messages.Message):
@@ -3963,12 +4018,6 @@ class RuleConfigInfo(_messages.Message):
       rule.
 
   Fields:
-    dataSource: Output only. TODO b/341576760: Remove deprecated BV and
-      Datasource field form BP and BPA once UI removed all dependencies on
-      them Output Only. Resource name of data source which will be used as
-      storage location for backups taken by specified rule. Format : projects/
-      {project}/locations/{location}/backupVaults/{backupvault}/dataSources/{d
-      atasource}
     lastBackupError: Output only. Output Only. google.rpc.Status object to
       store the last backup error.
     lastBackupState: Output only. The last backup state for rule.
@@ -3994,11 +4043,10 @@ class RuleConfigInfo(_messages.Message):
     SUCCEEDED = 3
     FAILED = 4
 
-  dataSource = _messages.StringField(1)
-  lastBackupError = _messages.MessageField('Status', 2)
-  lastBackupState = _messages.EnumField('LastBackupStateValueValuesEnum', 3)
-  lastSuccessfulBackupConsistencyTime = _messages.StringField(4)
-  ruleId = _messages.StringField(5)
+  lastBackupError = _messages.MessageField('Status', 1)
+  lastBackupState = _messages.EnumField('LastBackupStateValueValuesEnum', 2)
+  lastSuccessfulBackupConsistencyTime = _messages.StringField(3)
+  ruleId = _messages.StringField(4)
 
 
 class Scheduling(_messages.Message):

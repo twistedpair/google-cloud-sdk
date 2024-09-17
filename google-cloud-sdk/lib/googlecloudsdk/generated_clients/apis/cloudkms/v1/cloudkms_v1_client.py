@@ -515,7 +515,7 @@ class CloudkmsV1(base_api.BaseApiClient):
         method_id='cloudkms.projects.locations.keyHandles.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/keyHandles',
         request_field='',
         request_type_name='CloudkmsProjectsLocationsKeyHandlesListRequest',

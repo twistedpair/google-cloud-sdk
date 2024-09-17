@@ -485,7 +485,13 @@ class ApplicationEnvironmentInfo(_messages.Message):
 class ApplicationInfo(_messages.Message):
   r"""High level information corresponding to an application.
 
+  Enums:
+    ApplicationContextIngestionStatusValueValuesEnum:
+    QuantileDataStatusValueValuesEnum:
+
   Fields:
+    applicationContextIngestionStatus: A
+      ApplicationContextIngestionStatusValueValuesEnum attribute.
     applicationId: A string attribute.
     attempts: A ApplicationAttemptInfo attribute.
     coresGranted: A integer attribute.
@@ -493,15 +499,40 @@ class ApplicationInfo(_messages.Message):
     maxCores: A integer attribute.
     memoryPerExecutorMb: A integer attribute.
     name: A string attribute.
+    quantileDataStatus: A QuantileDataStatusValueValuesEnum attribute.
   """
 
-  applicationId = _messages.StringField(1)
-  attempts = _messages.MessageField('ApplicationAttemptInfo', 2, repeated=True)
-  coresGranted = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  coresPerExecutor = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  maxCores = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  memoryPerExecutorMb = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  name = _messages.StringField(7)
+  class ApplicationContextIngestionStatusValueValuesEnum(_messages.Enum):
+    r"""ApplicationContextIngestionStatusValueValuesEnum enum type.
+
+    Values:
+      APPLICATION_CONTEXT_INGESTION_STATUS_UNSPECIFIED: <no description>
+      APPLICATION_CONTEXT_INGESTION_STATUS_COMPLETED: <no description>
+    """
+    APPLICATION_CONTEXT_INGESTION_STATUS_UNSPECIFIED = 0
+    APPLICATION_CONTEXT_INGESTION_STATUS_COMPLETED = 1
+
+  class QuantileDataStatusValueValuesEnum(_messages.Enum):
+    r"""QuantileDataStatusValueValuesEnum enum type.
+
+    Values:
+      QUANTILE_DATA_STATUS_UNSPECIFIED: <no description>
+      QUANTILE_DATA_STATUS_COMPLETED: <no description>
+      QUANTILE_DATA_STATUS_FAILED: <no description>
+    """
+    QUANTILE_DATA_STATUS_UNSPECIFIED = 0
+    QUANTILE_DATA_STATUS_COMPLETED = 1
+    QUANTILE_DATA_STATUS_FAILED = 2
+
+  applicationContextIngestionStatus = _messages.EnumField('ApplicationContextIngestionStatusValueValuesEnum', 1)
+  applicationId = _messages.StringField(2)
+  attempts = _messages.MessageField('ApplicationAttemptInfo', 3, repeated=True)
+  coresGranted = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  coresPerExecutor = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxCores = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  memoryPerExecutorMb = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  name = _messages.StringField(8)
+  quantileDataStatus = _messages.EnumField('QuantileDataStatusValueValuesEnum', 9)
 
 
 class AuthenticationConfig(_messages.Message):
@@ -1540,6 +1571,32 @@ class ClusterStatus(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 2)
   stateStartTime = _messages.StringField(3)
   substate = _messages.EnumField('SubstateValueValuesEnum', 4)
+
+
+class ClusterToRepair(_messages.Message):
+  r"""Cluster to be repaired
+
+  Enums:
+    ClusterRepairActionValueValuesEnum: Required. Repair action to take on the
+      cluster resource.
+
+  Fields:
+    clusterRepairAction: Required. Repair action to take on the cluster
+      resource.
+  """
+
+  class ClusterRepairActionValueValuesEnum(_messages.Enum):
+    r"""Required. Repair action to take on the cluster resource.
+
+    Values:
+      CLUSTER_REPAIR_ACTION_UNSPECIFIED: No action will be taken by default.
+      REPAIR_ERROR_DUE_TO_UPDATE_CLUSTER: Repair cluster in
+        ERROR_DUE_TO_UPDATE states.
+    """
+    CLUSTER_REPAIR_ACTION_UNSPECIFIED = 0
+    REPAIR_ERROR_DUE_TO_UPDATE_CLUSTER = 1
+
+  clusterRepairAction = _messages.EnumField('ClusterRepairActionValueValuesEnum', 1)
 
 
 class ConfidentialInstanceConfig(_messages.Message):
@@ -4543,6 +4600,7 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class EncryptionConfig(_messages.Message):
@@ -8193,13 +8251,17 @@ class RayBatch(_messages.Message):
   submission/index.html) workload.
 
   Fields:
+    archiveUris: Optional. HCFS URI of archives to be extracted into the
+      working directory of each Ray node. Supported file types: .tar, .tar.gz,
+      .tgz, and .zip.
     args: Optional. The arguments to pass to the Ray job script.
     mainPythonFileUri: Required. The HCFS URI of the main Python file to use
       as the Ray job. Must be a .py file.
   """
 
-  args = _messages.StringField(1, repeated=True)
-  mainPythonFileUri = _messages.StringField(2)
+  archiveUris = _messages.StringField(1, repeated=True)
+  args = _messages.StringField(2, repeated=True)
+  mainPythonFileUri = _messages.StringField(3)
 
 
 class RddDataDistribution(_messages.Message):
@@ -8372,6 +8434,7 @@ class RepairClusterRequest(_messages.Message):
   r"""A request to repair a cluster.
 
   Fields:
+    cluster: Optional. Cluster to be repaired
     clusterUuid: Optional. Specifying the cluster_uuid means the RPC will fail
       (with error NOT_FOUND) if a cluster with the specified UUID does not
       exist.
@@ -8398,11 +8461,12 @@ class RepairClusterRequest(_messages.Message):
       and hyphens (-). The maximum length is 40 characters.
   """
 
-  clusterUuid = _messages.StringField(1)
-  gracefulDecommissionTimeout = _messages.StringField(2)
-  nodePools = _messages.MessageField('NodePool', 3, repeated=True)
-  parentOperationId = _messages.StringField(4)
-  requestId = _messages.StringField(5)
+  cluster = _messages.MessageField('ClusterToRepair', 1)
+  clusterUuid = _messages.StringField(2)
+  gracefulDecommissionTimeout = _messages.StringField(3)
+  nodePools = _messages.MessageField('NodePool', 4, repeated=True)
+  parentOperationId = _messages.StringField(5)
+  requestId = _messages.StringField(6)
 
 
 class RepairNodeGroupRequest(_messages.Message):
@@ -9077,9 +9141,7 @@ class Session(_messages.Message):
   sessionTemplate = _messages.StringField(9)
   sparkConnectSession = _messages.MessageField('SparkConnectConfig', 10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
-  stateHistory = _messages.MessageField(
-      'SessionStateHistory', 12, repeated=True
-  )
+  stateHistory = _messages.MessageField('SessionStateHistory', 12, repeated=True)
   stateMessage = _messages.StringField(13)
   stateTime = _messages.StringField(14)
   user = _messages.StringField(15)

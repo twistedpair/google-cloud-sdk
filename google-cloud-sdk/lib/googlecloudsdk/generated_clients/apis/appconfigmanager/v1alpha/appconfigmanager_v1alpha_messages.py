@@ -440,7 +440,8 @@ class Config(_messages.Message):
     labels: Optional. Labels as key value pairs
     name: Identifier. [Output only] The resource name of the Config in the
       format `projects/*locations/*/configs/*`.
-    riPrincipal: Output only. [Output-only] Resource identity principal
+    policyMember: Output only. [Output-only] policy member strings of a Google
+      Cloud resource.
     serviceAgentEmail: Output only. Per-resource service agent email
     updateTime: Output only. [Output only] Update time stamp
   """
@@ -488,7 +489,7 @@ class Config(_messages.Message):
   format = _messages.EnumField('FormatValueValuesEnum', 2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  riPrincipal = _messages.StringField(5)
+  policyMember = _messages.MessageField('ResourcePolicyMember', 5)
   serviceAgentEmail = _messages.StringField(6)
   updateTime = _messages.StringField(7)
 
@@ -501,7 +502,7 @@ class ConfigVersion(_messages.Message):
       for ConfigVersions. They are only supported at the Configs level.
 
   Fields:
-    configVersionRender: Output only. Resource identifier to the corresponding
+    configVersionRender: Optional. Resource identifier to the corresponding
       ConfigVersionRender resource associated with the ConfigVersion.
     createTime: Output only. [Output only] Create time stamp
     disabled: Optional. Disabled boolean to determine if a ConfigVersion acts
@@ -808,6 +809,28 @@ class RenderConfigVersionResponse(_messages.Message):
   configVersion = _messages.StringField(1)
   payload = _messages.MessageField('ConfigVersionPayload', 2)
   renderedPayload = _messages.BytesField(3)
+
+
+class ResourcePolicyMember(_messages.Message):
+  r"""Output-only policy member strings of a Google Cloud resource.
+
+  Fields:
+    iamPolicyNamePrincipal: Output only. IAM policy binding member referring
+      to a Google Cloud resource by user-assigned name
+      (https://google.aip.dev/122). If a resource is deleted and recreated
+      with the same name, the binding will be applicable to the new resource.
+      Example: `principal://appconfigmanager.googleapis.com/projects/12345/nam
+      e/locations/us-central1-a/configs/my-config`
+    iamPolicyUidPrincipal: Output only. IAM policy binding member referring to
+      a Google Cloud resource by system-assigned unique identifier
+      (https://google.aip.dev/148#uid). If a resource is deleted and recreated
+      with the same name, the binding will not be applicable to the new
+      resource Example: `principal://appconfigmanager.googleapis.com/projects/
+      12345/uid/locations/us-central1-a/configs/a918fed5`
+  """
+
+  iamPolicyNamePrincipal = _messages.StringField(1)
+  iamPolicyUidPrincipal = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

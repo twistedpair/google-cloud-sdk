@@ -6914,3 +6914,15 @@ def AddClusterEnablePrivateNodesFlag(parser, hidden=True):
       help=help_text,
       hidden=hidden,
   )
+
+
+def AddClusterTierFlag(parser, hidden=True):
+  """Adds a --tier flag to the given cluster parser."""
+  help_text = ' '
+  parser.add_argument(
+      '--tier',
+      metavar='tier=TIER',
+      help=help_text,
+      hidden=hidden,
+      choices=['standard', 'enterprise'],
+  )

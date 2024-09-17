@@ -658,11 +658,12 @@ class ExecuteSqlRequest(proto.Message):
                 without any results or execution statistics
                 information.
             PROFILE (2):
-                This mode returns both the query plan and the
-                execution statistics along with the results.
-                This has a performance overhead compared to the
-                NORMAL mode. It is not recommended to use this
-                mode for production traffic.
+                This mode returns the query plan, overall
+                execution statistics, operator level execution
+                statistics along with the results. This has a
+                performance overhead compared to the other
+                modes. It is not recommended to use this mode
+                for production traffic.
         """
         NORMAL = 0
         PLAN = 1

@@ -26,7 +26,7 @@ package = 'privilegedaccessmanager'
 
 
 class AccessControlEntry(_messages.Message):
-  r"""AccessControlEntry is used to control who can do some operation.
+  r"""`AccessControlEntry` is used to control who can do some operation.
 
   Fields:
     principals: Optional. Users who are allowed for the operation. Each entry
@@ -53,7 +53,7 @@ class ActivationFailed(_messages.Message):
 
 
 class AdditionalNotificationTargets(_messages.Message):
-  r"""AdditionalNotificationTargets includes email addresses to be notified.
+  r"""`AdditionalNotificationTargets` includes email addresses to be notified.
 
   Fields:
     adminEmailRecipients: Optional. Additional email addresses to be notified
@@ -281,6 +281,7 @@ class ExternallyModified(_messages.Message):
   """
 
 
+
 class Finding(_messages.Message):
   r"""Finding represents an issue which prevents PAM from functioning properly
   for this resource.
@@ -294,7 +295,7 @@ class Finding(_messages.Message):
 
 
 class GcpIamAccess(_messages.Message):
-  r"""GcpIamAccess represents IAM based access control on a Google Cloud
+  r"""`GcpIamAccess` represents IAM based access control on a Google Cloud
   resource. Refer to https://cloud.google.com/iam/docs to understand more
   about IAM.
 
@@ -318,11 +319,10 @@ class GoogleProtobufEmpty(_messages.Message):
   """
 
 
-class Grant(_messages.Message):
-  r"""This is to ensure that the `Grants` and `ProducerGrants` proto are byte
 
-  compatible. A grant represents a request from a user for obtaining the
-  access specified in an entitlement they are eligible for.
+class Grant(_messages.Message):
+  r"""A grant represents a request from a user for obtaining the access
+  specified in an entitlement they are eligible for.
 
   Enums:
     StateValueValuesEnum: Output only. Current state of this grant.
@@ -597,6 +597,7 @@ class NotMandatory(_messages.Message):
   r"""The justification is not mandatory but can be provided in any of the
   supported formats.
   """
+
 
 
 class Operation(_messages.Message):
@@ -1994,7 +1995,7 @@ class Revoked(_messages.Message):
 
 
 class RoleBinding(_messages.Message):
-  r"""IAM Role bindings that are created after a successful grant.
+  r"""IAM role bindings that are created after a successful grant.
 
   Fields:
     conditionExpression: Optional. The expression field of the IAM condition

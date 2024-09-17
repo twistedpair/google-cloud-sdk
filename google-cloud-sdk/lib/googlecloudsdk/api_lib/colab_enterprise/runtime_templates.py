@@ -14,6 +14,7 @@
 # limitations under the License.
 """colab-enterprise runtime-templates api helper."""
 
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import resources
@@ -120,18 +121,22 @@ def GetPersistentDiskSpecFromArgs(args, messages):
     Persistent disk spec config for the runtime template.
   """
   # Keep the string input, disk type is not represented as an enum in API.
-  disk_type = None
-  disk_size = None
   persistent_disk_spec_config = (
       messages.GoogleCloudAiplatformV1beta1PersistentDiskSpec
   )
   if args.IsSpecified('disk_type'):
     disk_type = FormatDiskTypeForApiRequest(args.disk_type)
-  if args.IsSpecified('disk_size_gb'):
-    disk_size = args.disk_size_gb
-  return persistent_disk_spec_config(
-      diskType=disk_type, diskSizeGb=disk_size
-  )
+    return persistent_disk_spec_config(
+        diskType=disk_type, diskSizeGb=args.disk_size_gb
+    )
+  # Match API requirement that disk type must be specified when disk size is,
+  # instead of silently using the default stored in args.disk_type.
+  elif args.IsSpecified('disk_size_gb'):
+    raise exceptions.RequiredArgumentException(
+        '--disk-type',
+        'Disk type must be specified when disk size is specified.',
+    )
+  return None
 
 
 def GetNetworkSpecFromArgs(args, messages):

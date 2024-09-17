@@ -73,7 +73,8 @@ ID_FIELD = 'id'
 ADVANCE_ROLLOUT_RULE_FIELD = 'advanceRolloutRule'
 PROMOTE_RELEASE_RULE_FIELD = 'promoteReleaseRule'
 REPAIR_ROLLOUT_RULE_FIELD = 'repairRolloutRule'
-RESTRICT_ROLLOUT_FIELD = 'restrictRollouts'
+ROLLOUT_RESTRICTIONS_FIELD = 'rolloutRestriction'
+TIMED_PROMOTE_RELEASE_RULE_FIELD = 'timedPromoteReleaseRule'
 DESTINATION_TARGET_ID_FIELD = 'destinationTargetId'
 SOURCE_PHASES_FIELD = 'sourcePhases'
 PHASES_FIELD = 'phases'
@@ -97,6 +98,8 @@ BACKOFF_MODE_FIELD = 'backoffMode'
 BACKOFF_CHOICES = ['BACKOFF_MODE_LINEAR', 'BACKOFF_MODE_EXPONENTIAL']
 BACKOFF_CHOICES_SHORT = ['LINEAR', 'EXPONENTIAL']
 TARGETS_FIELD = 'targets'
+SCHEDULE_FIELD = 'schedule'
+TIME_ZONE_FIELD = 'timeZone'
 
 
 def ParseDeployConfig(messages, manifests, region):
@@ -333,108 +336,133 @@ def SetPolicyRules(messages, policy, rules):
   Raises:
     arg_parsers.ArgumentTypeError: if usage is not a valid enum.
   """
-  # Go through each rule and parse the restrictRollouts field.
+  # Go through each rule and parse the rolloutRestriction field.
   for pv_rule in rules:
-    restrict_rollout_message = messages.RestrictRollout()
-    if pv_rule.get(RESTRICT_ROLLOUT_FIELD):
-      restrict_rollout = pv_rule.get(RESTRICT_ROLLOUT_FIELD)
-      _SetRestrictRollout(
-          messages, restrict_rollout_message, restrict_rollout, policy
+    rollout_restriction_message = messages.RolloutRestriction()
+    if pv_rule.get(ROLLOUT_RESTRICTIONS_FIELD):
+      rollout_restriction = pv_rule.get(ROLLOUT_RESTRICTIONS_FIELD)
+      _SetRolloutRestriction(
+          messages, rollout_restriction_message, rollout_restriction, policy
       )
     else:
       policy.rules.append(pv_rule)
 
 
-def _SetRestrictRollout(
-    messages, restrict_rollout_message, restrict_rollout, policy
+def _SetRolloutRestriction(
+    messages, rollout_restriction_message, rollout_restriction, policy
 ):
-  """Sets the restrictRollout field of cloud deploy policy message.
+  """Sets the rolloutRestriction field of cloud deploy policy message.
 
   Args:
     messages: module containing the definitions of messages for Cloud Deploy.
-    restrict_rollout_message:
-      googlecloudsdk.generated_clients.apis.clouddeploy.RestrictRollout message.
-    restrict_rollout: value of the restrictRollout field in the manifest.
+    rollout_restriction_message:
+      googlecloudsdk.generated_clients.apis.clouddeploy.RolloutRestriction
+      message.
+    rollout_restriction: value of the rolloutRestriction field in the manifest.
     policy:  googlecloudsdk.generated_clients.apis.clouddeploy.DeployPolicy
       message.
 
   Raises:
     arg_parsers.ArgumentTypeError: if usage is not a valid enum.
   """
-  for field in restrict_rollout:
+  for field in rollout_restriction:
     # The value of actions and invokers are enums, so they need special
     # treatment. timeWindow also needs special treatment because it has an
     # enum within it.
-    if field != 'actions' and field != 'invokers' and field != 'timeWindow':
-      # If the field doesn't need special treatment (e.g. timeZone) set it
-      # on the restrictRollout message.
-      setattr(restrict_rollout_message, field, restrict_rollout.get(field))
+    if field != 'actions' and field != 'invokers' and field != 'timeWindows':
+      # If the field doesn't need special treatment (e.g. id) set it
+      # on the rolloutRestriction message.
+      setattr(
+          rollout_restriction_message, field, rollout_restriction.get(field)
+      )
 
-  actions = restrict_rollout.get('actions', [])
+  actions = rollout_restriction.get('actions', [])
   for action in actions:
-    restrict_rollout_message.actions.append(
-        # converts a string literal in restrictRollout.actions to an Enum.
+    rollout_restriction_message.actions.append(
+        # converts a string literal in rolloutRestriction.actions to an Enum.
         arg_utils.ChoiceToEnum(
             action,
-            messages.RestrictRollout.ActionsValueListEntryValuesEnum,
+            messages.RolloutRestriction.ActionsValueListEntryValuesEnum,
             valid_choices=ACTION_CHOICES,
         )
     )
 
-  invokers = restrict_rollout.get('invokers', [])
+  invokers = rollout_restriction.get('invokers', [])
   for invoker in invokers:
-    restrict_rollout_message.invokers.append(
-        # converts a string literal in restrictRollout.invokers to an Enum.
+    rollout_restriction_message.invokers.append(
+        # converts a string literal in rolloutRestriction.invokers to an Enum.
         arg_utils.ChoiceToEnum(
             invoker,
-            messages.RestrictRollout.InvokersValueListEntryValuesEnum,
+            messages.RolloutRestriction.InvokersValueListEntryValuesEnum,
             valid_choices=INVOKER_CHOICES,
         )
     )
   # Parse and set the timeWindow field on the restrictRollout message.
-  time_window = restrict_rollout.get('timeWindow')
-  time_window_message = messages.TimeWindow()
-  _SetTimeWindow(messages, time_window_message, time_window)
-  restrict_rollout_message.timeWindow = time_window_message
-  # Set the restrictRollout field on the policy rule message.
+  time_windows = rollout_restriction.get('timeWindows')
+  time_windows_message = messages.TimeWindows()
+  _SetTimeWindows(messages, time_windows_message, time_windows)
+  rollout_restriction_message.timeWindows = time_windows_message
+  # Set the rolloutRestriction field on the policy rule message.
   policy_rule_message = messages.PolicyRule()
-  policy_rule_message.restrictRollouts = restrict_rollout_message
+  policy_rule_message.rolloutRestriction = rollout_restriction_message
   policy.rules.append(policy_rule_message)
 
 
-def _SetTimeWindow(messages, time_window_message, time_window):
+def _SetTimeWindows(messages, time_windows_message, time_windows):
   """Sets the timeWindow field of cloud deploy resource message.
 
   Args:
     messages: module containing the definitions of messages for Cloud Deploy.
-    time_window_message:
-      googlecloudsdk.generated_clients.apis.clouddeploy.TimeWindow message.
-    time_window: value of the timeWindow field.
+    time_windows_message:
+      googlecloudsdk.generated_clients.apis.clouddeploy.TimeWindows message.
+    time_windows: value of the timeWindows field.
 
   Raises:
     arg_parsers.ArgumentTypeError: if usage is not a valid enum.
   """
-  for f in time_window:
-    # ranges has an enum within it, so it needs special treatment.
-    if f != 'ranges':
-      setattr(time_window_message, f, time_window.get(f))
-  ranges = time_window.get('ranges', [])
-  for r in ranges:
-    range_message = messages.Range()
-    for field in r:
-      if field != 'dayOfWeek':
-        setattr(range_message, field, r.get(field))
-    days_of_week = r.get('dayOfWeek') or []
-    for d in days_of_week:
-      range_message.dayOfWeek.append(
-          # converts a string literal in ranges.dayOfWeek to an Enum.
-          arg_utils.ChoiceToEnum(
-              d,
-              messages.Range.DayOfWeekValueListEntryValuesEnum,
-              valid_choices=DAY_OF_WEEK_CHOICES,
-          )
-      )
-    time_window_message.ranges.append(range_message)
+  setattr(time_windows_message, 'timeZone', time_windows.get('timeZone'))
+
+  # Go through each oneTimeWindow and parse the fields.
+  one_time_windows = time_windows.get('oneTimeWindows', [])
+  for one_time_window in one_time_windows:
+    one_time_window_message = messages.OneTimeWindow()
+    for field in one_time_window:
+      setattr(one_time_window_message, field, one_time_window.get(field))
+    time_windows_message.oneTimeWindows.append(one_time_window_message)
+
+  # Go through each weeklyWindow and parse the fields.
+  weekly_windows = time_windows.get('weeklyWindows', [])
+  for weekly_window in weekly_windows:
+    _SetWeeklyWindow(messages, weekly_window, time_windows_message)
+
+
+def _SetWeeklyWindow(messages, weekly_window, time_windows_message):
+  """Sets the weeklyWindow field of a timeWindows message.
+
+  Args:
+    messages: module containing the definitions of messages for Cloud Deploy.
+    weekly_window: value of the weeklyWindow field.
+    time_windows_message:
+      googlecloudsdk.generated_clients.apis.clouddeploy.TimeWindows message.
+
+  Raises:
+    arg_parsers.ArgumentTypeError: if usage is not a valid enum.
+  """
+  weekly_window_message = messages.WeeklyWindow()
+  for field in weekly_window:
+    if field != 'daysOfWeek':
+      setattr(weekly_window_message, field, weekly_window.get(field))
+  days_of_week = weekly_window.get('daysOfWeek') or []
+  for d in days_of_week:
+    weekly_window_message.daysOfWeek.append(
+        # converts a string literal in weeklyWindow.daysOfWeek to an Enum.
+        arg_utils.ChoiceToEnum(
+            d,
+            messages.WeeklyWindow.DaysOfWeekValueListEntryValuesEnum,
+            valid_choices=DAY_OF_WEEK_CHOICES,
+        )
+    )
+  time_windows_message.weeklyWindows.append(weekly_window_message)
 
 
 def _CreateTargetResource(messages, target_name_or_id, project, region):
@@ -823,6 +851,17 @@ def SetAutomationRules(messages, automation, automation_ref, rules):
               messages, message.get(REPAIR_PHASES_FIELD) or []
           ),
       )
+    if rule.get(TIMED_PROMOTE_RELEASE_RULE_FIELD):
+      message = rule.get(TIMED_PROMOTE_RELEASE_RULE_FIELD)
+      automation_rule.timedPromoteReleaseRule = (
+          messages.TimedPromoteReleaseRule(
+              id=message.get(ID_FIELD) or message.get(NAME_FIELD),
+              schedule=message.get(SCHEDULE_FIELD),
+              timeZone=message.get(TIME_ZONE_FIELD),
+              destinationTargetId=message.get(DESTINATION_TARGET_ID_FIELD),
+              destinationPhase=message.get(DESTINATION_PHASE_FIELD),
+          )
+      )
     automation.rules.append(automation_rule)
 
 
@@ -888,7 +927,23 @@ def ExportAutomationRules(manifest, rules):
         repair[REPAIR_PHASES_FIELD] = _ExportRepairPhases(
             getattr(message, REPAIR_PHASES_FIELD)
         )
-
+    if getattr(rule, TIMED_PROMOTE_RELEASE_RULE_FIELD):
+      message = getattr(rule, TIMED_PROMOTE_RELEASE_RULE_FIELD)
+      timed_promote = {}
+      resource[TIMED_PROMOTE_RELEASE_RULE_FIELD] = timed_promote
+      timed_promote[NAME_FIELD] = getattr(message, ID_FIELD)
+      if getattr(message, SCHEDULE_FIELD):
+        timed_promote[SCHEDULE_FIELD] = getattr(message, SCHEDULE_FIELD)
+      if getattr(message, TIME_ZONE_FIELD):
+        timed_promote[TIME_ZONE_FIELD] = getattr(message, TIME_ZONE_FIELD)
+      if getattr(message, DESTINATION_TARGET_ID_FIELD):
+        timed_promote[DESTINATION_TARGET_ID_FIELD] = getattr(
+            message, DESTINATION_TARGET_ID_FIELD
+        )
+      if getattr(message, DESTINATION_PHASE_FIELD):
+        timed_promote[DESTINATION_PHASE_FIELD] = getattr(
+            message, DESTINATION_PHASE_FIELD
+        )
     manifest[RULES_FIELD].append(resource)
 
 

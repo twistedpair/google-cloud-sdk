@@ -5020,7 +5020,9 @@ class GoogleCloudDialogflowCxV3EnvironmentVersionConfig(_messages.Message):
   r"""Configuration for the version.
 
   Fields:
-    version: Required. Format: projects//locations//agents//flows//versions/.
+    version: Required. Both flow and playbook versions are supported. Format
+      for flow version: projects//locations//agents//flows//versions/. Format
+      for playbook version: projects//locations//agents//playbooks//versions/.
   """
 
   version = _messages.StringField(1)
@@ -6307,7 +6309,9 @@ class GoogleCloudDialogflowCxV3ResponseMessageText(_messages.Message):
     allowPlaybackInterruption: Output only. Whether the playback of this
       message can be interrupted by the end user's speech and the client can
       then starts the next Dialogflow request.
-    text: Required. A collection of text responses.
+    text: Required. A collection of text response variants. If multiple
+      variants are defined, only one text response variant is returned at
+      runtime.
   """
 
   allowPlaybackInterruption = _messages.BooleanField(1)
@@ -7710,7 +7714,9 @@ class GoogleCloudDialogflowCxV3beta1EnvironmentVersionConfig(_messages.Message):
   r"""Configuration for the version.
 
   Fields:
-    version: Required. Format: projects//locations//agents//flows//versions/.
+    version: Required. Both flow and playbook versions are supported. Format
+      for flow version: projects//locations//agents//flows//versions/. Format
+      for playbook version: projects//locations//agents//playbooks//versions/.
   """
 
   version = _messages.StringField(1)
@@ -8982,7 +8988,9 @@ class GoogleCloudDialogflowCxV3beta1ResponseMessageText(_messages.Message):
     allowPlaybackInterruption: Output only. Whether the playback of this
       message can be interrupted by the end user's speech and the client can
       then starts the next Dialogflow request.
-    text: Required. A collection of text responses.
+    text: Required. A collection of text response variants. If multiple
+      variants are defined, only one text response variant is returned at
+      runtime.
   """
 
   allowPlaybackInterruption = _messages.BooleanField(1)
@@ -19283,7 +19291,8 @@ class GoogleCloudDialogflowV2beta1ResponseMessageText(_messages.Message):
   r"""The text response message.
 
   Fields:
-    text: A collection of text responses.
+    text: A collection of text response variants. If multiple variants are
+      defined, only one text response variant is returned at runtime.
   """
 
   text = _messages.StringField(1, repeated=True)

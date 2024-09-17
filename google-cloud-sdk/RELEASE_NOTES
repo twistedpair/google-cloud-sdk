@@ -5,6 +5,106 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 493.0.0 (2024-09-17)
+
+### Breaking Changes
+
+*   **(Anthos Multi-Cloud)** Renamed `--security-posture` flag as `--workload-vulnerability-scanning`.
+*   **(Compute Engine)** Removed `gcloud compute future-reservations` command group from GA.
+*   **(Security Command Center)** Removed `gcloud scc slz-overwatch` command group.
+
+
+### Google Cloud CLI
+
+* `gcloud auth application-default print-access-token` now supports context_aware access.
+
+### AlloyDB
+
+* Added `--node-ids` flag to `gcloud alloydb instances restart` command to the
+GA track. This flag allows users to allow users to specify a
+comma-separated list of read pool node IDs to perform the restart on. Without
+specifying this flag, every node in the read pool will be restarted.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.19.9
+  * Fix missing version data on non-transactional and transactional deletes
+
+### Cloud Identity-Aware Proxy
+
+* Promoted `--resource-type=forwarding-rule` from ALPHA to beta.
+
+### Cloud Managed Flink
+
+* Fixed issue UDF jars are mishandled for SQL jobs in some cases.
+* SQL jobs will always produce script output to improve spotting errors.
+
+### Cloud NetApp
+
+* Added `--allow-auto-tiering` flag to `gcloud netapp storagepools`.
+* Added `--tiering-policy` flag to `gcloud netapp volumes`.
+
+### Cloud Pub/Sub
+
+*   Modified `--message-retention-duration` flag of `gcloud pubsub subscriptions create` to enforce lower bound of 10 minutes and upper bound of 7 days.
+*   Modified `--message-retention-duration` flag of `gcloud pubsub subscriptions update` to enforce lower bound of 10 minutes and upper bound of 7 days.
+
+### Cloud SQL
+
+* Added support for restoring backups across projects.
+
+### Cloud Spanner
+
+* Added `--edition` flag to `gcloud spanner instances create` and `gcloud spanner instances update` commands to allow specifying the Spanner edition while creating or updating instances.
+
+### Colab Enterprise
+
+*   Added `gcloud beta colab-enterprise runtimes`.
+*   Added `gcloud beta colab-enterprise runtimes assign`.
+*   Update `gcloud beta colab-enterprise runtime-templates create` to set
+    default disk type and size if neither flag is specified, instead of no disk.
+
+### Compute Engine
+
+*   Added `--reservation-sharing-policy` flag to `gcloud compute commitments create command` to specify
+    the reservation sharing policy for the commitment.
+*   Promote `--turbo-mode` in `gcloud compute instances create` to GA.
+
+### Compute Firewall Policy Rules
+
+*   Promoted `--src-network-scope` flag of `gcloud compute firewall-policies rules` to beta.
+*   Promoted `--src-networks` flag of `gcloud compute firewall-policies rules` to beta.
+*   Promoted `--dest-network-scope` flag of `gcloud compute firewall-policies rules` to beta.
+*   Promoted `--src-network-scope` flag of `gcloud compute network-firewall-policies rules` to beta.
+*   Promoted `--src-networks` flag of `gcloud compute network-firewall-policies rules` to beta.
+*   Promoted `--dest-network-scope` flag of `gcloud compute network-firewall-policies rules` to beta.
+
+### GKE Hub
+
+* Modified `gcloud beta container fleet memberships update` to call gkehub API version v1beta instead of v1beta1.
+* Modified `gcloud beta container fleet memberships create` to call gkehub API version v1beta instead of v1beta1.
+
+### Migrate to Virtual Machines
+
+* Promoted `gcloud migration vms image-imports` commands to GA.
+
+### Network Security
+
+* Simplified the `network-security mirroring-deployment-groups create` command by accepting just the `networkID` for network specification.
+* Changed subflags for `--threat-prevention-policy` in `network-security security-profile-groups create` and `update` from `--security-profile-organization` and `--security-profile-location` to the more consistent `--threat-prevention-profile-organization` and `--threat-prevention-profile-location`, while keeping the old flags as well for backwards compatibility.
+
+### Recaptcha
+
+* Update reCAPTCHA Express support in CreateKey API.
+
+### Security Command Center
+
+* Modified `gcloud scc sources describe` to accept parent (organization|folder|project) as positional argument instead of only organization.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 492.0.0 (2024-09-10)
 
 ### Anthos Multi-Cloud

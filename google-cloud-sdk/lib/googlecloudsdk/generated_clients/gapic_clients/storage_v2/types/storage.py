@@ -1331,8 +1331,8 @@ class BidiWriteObjectRequest(proto.Message):
         object_checksums (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ObjectChecksums):
             Checksums for the complete object. If the checksums computed
             by the service don't match the specified checksums the call
-            will fail. May only be provided in the first or last request
-            (either with first_message, or finish_write set).
+            will fail. May only be provided in last request (with
+            finish_write set).
         state_lookup (bool):
             For each BidiWriteObjectRequest where state_lookup is
             ``true`` or the client closes the stream, the service will

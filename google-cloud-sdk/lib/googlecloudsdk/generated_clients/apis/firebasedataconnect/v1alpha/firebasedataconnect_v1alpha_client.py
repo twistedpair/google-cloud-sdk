@@ -355,7 +355,7 @@ class FirebasedataconnectV1alpha(base_api.BaseApiClient):
         method_id='firebasedataconnect.projects.locations.services.connectors.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'requestId', 'revisionId', 'updateMask', 'validateOnly'],
+        query_params=['allowMissing', 'requestId', 'updateMask', 'validateOnly'],
         relative_path='v1alpha/{+name}',
         request_field='connector',
         request_type_name='FirebasedataconnectProjectsLocationsServicesConnectorsPatchRequest',

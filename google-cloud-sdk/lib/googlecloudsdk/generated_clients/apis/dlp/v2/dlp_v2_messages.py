@@ -726,15 +726,17 @@ class DlpOrganizationsLocationsFileStoreDataProfilesListRequest(_messages.Messag
       implicitly uses `AND`. * A restriction has the form of `{field}
       {operator} {value}`. * Supported fields/values: - `project_id` - The
       Google Cloud project ID. - `file_store_path` - The path like
-      "gs://bucket". - `sensitivity_level` - HIGH|MODERATE|LOW -
-      `data_risk_level` - HIGH|MODERATE|LOW - `resource_visibility`:
-      PUBLIC|RESTRICTED - `status_code` - an RPC status code as defined in htt
-      ps://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto
-      * The operator must be `=` or `!=`. Examples: * `project_id = 12345 AND
-      status_code = 1` * `project_id = 12345 AND sensitivity_level = HIGH` *
-      `project_id = 12345 AND resource_visibility = PUBLIC` * `file_store_path
-      = "gs://mybucket"` The length of this field should be no more than 500
-      characters.
+      "gs://bucket". - `data_source_type` - The profile's data source type,
+      like "google/storage/bucket". - `data_storage_location` - The location
+      where the file store's data is stored, like "us-central1". -
+      `sensitivity_level` - HIGH|MODERATE|LOW - `data_risk_level` -
+      HIGH|MODERATE|LOW - `resource_visibility`: PUBLIC|RESTRICTED -
+      `status_code` - an RPC status code as defined in https://github.com/goog
+      leapis/googleapis/blob/master/google/rpc/code.proto * The operator must
+      be `=` or `!=`. Examples: * `project_id = 12345 AND status_code = 1` *
+      `project_id = 12345 AND sensitivity_level = HIGH` * `project_id = 12345
+      AND resource_visibility = PUBLIC` * `file_store_path = "gs://mybucket"`
+      The length of this field should be no more than 500 characters.
     orderBy: Optional. Comma-separated list of fields to order by, followed by
       `asc` or `desc` postfix. This list is case insensitive. The default
       sorting order is ascending. Redundant space characters are
@@ -2518,15 +2520,17 @@ class DlpProjectsLocationsFileStoreDataProfilesListRequest(_messages.Message):
       implicitly uses `AND`. * A restriction has the form of `{field}
       {operator} {value}`. * Supported fields/values: - `project_id` - The
       Google Cloud project ID. - `file_store_path` - The path like
-      "gs://bucket". - `sensitivity_level` - HIGH|MODERATE|LOW -
-      `data_risk_level` - HIGH|MODERATE|LOW - `resource_visibility`:
-      PUBLIC|RESTRICTED - `status_code` - an RPC status code as defined in htt
-      ps://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto
-      * The operator must be `=` or `!=`. Examples: * `project_id = 12345 AND
-      status_code = 1` * `project_id = 12345 AND sensitivity_level = HIGH` *
-      `project_id = 12345 AND resource_visibility = PUBLIC` * `file_store_path
-      = "gs://mybucket"` The length of this field should be no more than 500
-      characters.
+      "gs://bucket". - `data_source_type` - The profile's data source type,
+      like "google/storage/bucket". - `data_storage_location` - The location
+      where the file store's data is stored, like "us-central1". -
+      `sensitivity_level` - HIGH|MODERATE|LOW - `data_risk_level` -
+      HIGH|MODERATE|LOW - `resource_visibility`: PUBLIC|RESTRICTED -
+      `status_code` - an RPC status code as defined in https://github.com/goog
+      leapis/googleapis/blob/master/google/rpc/code.proto * The operator must
+      be `=` or `!=`. Examples: * `project_id = 12345 AND status_code = 1` *
+      `project_id = 12345 AND sensitivity_level = HIGH` * `project_id = 12345
+      AND resource_visibility = PUBLIC` * `file_store_path = "gs://mybucket"`
+      The length of this field should be no more than 500 characters.
     orderBy: Optional. Comma-separated list of fields to order by, followed by
       `asc` or `desc` postfix. This list is case insensitive. The default
       sorting order is ascending. Redundant space characters are
@@ -4776,12 +4780,20 @@ class GooglePrivacyDlpV2DataProfileAction(_messages.Message):
   Fields:
     exportData: Export data profiles into a provided location.
     pubSubNotification: Publish a message into the Pub/Sub topic.
+    publishToChronicle: Publishes generated data profiles to Google Security
+      Operations. For more information, see [Use Sensitive Data Protection
+      data in context-aware
+      analytics](https://cloud.google.com/chronicle/docs/detection/usecase-
+      dlp-high-risk-user-download).
+    publishToScc: Publishes findings to SCC for each data profile.
     tagResources: Tags the profiled resources with the specified tag values.
   """
 
   exportData = _messages.MessageField('GooglePrivacyDlpV2Export', 1)
   pubSubNotification = _messages.MessageField('GooglePrivacyDlpV2PubSubNotification', 2)
-  tagResources = _messages.MessageField('GooglePrivacyDlpV2TagResources', 3)
+  publishToChronicle = _messages.MessageField('GooglePrivacyDlpV2PublishToChronicle', 3)
+  publishToScc = _messages.MessageField('GooglePrivacyDlpV2PublishToSecurityCommandCenter', 4)
+  tagResources = _messages.MessageField('GooglePrivacyDlpV2TagResources', 5)
 
 
 class GooglePrivacyDlpV2DataProfileBigQueryRowSchema(_messages.Message):
@@ -4964,7 +4976,8 @@ class GooglePrivacyDlpV2DataSourceType(_messages.Message):
 
   Fields:
     dataSource: Output only. An identifying string to the type of resource
-      being profiled. Current values: google/bigquery/table, google/project
+      being profiled. Current values: * google/bigquery/table * google/project
+      * google/sql/table * google/gcs/bucket
   """
 
   dataSource = _messages.StringField(1)
@@ -5628,6 +5641,9 @@ class GooglePrivacyDlpV2DiscoveryCloudSqlGenerationCadence(_messages.Message):
       underlying tables have changed. Defaults to never.
 
   Fields:
+    inspectTemplateModifiedCadence: Governs when to update data profiles when
+      the inspection rules defined by the `InspectTemplate` change. If not
+      set, changing the template will not cause a data profile to update.
     refreshFrequency: Data changes (non-schema changes) in Cloud SQL tables
       can't trigger reprofiling. If you set this field, profiles are refreshed
       at this frequency regardless of whether the underlying tables have
@@ -5655,8 +5671,9 @@ class GooglePrivacyDlpV2DiscoveryCloudSqlGenerationCadence(_messages.Message):
     UPDATE_FREQUENCY_DAILY = 2
     UPDATE_FREQUENCY_MONTHLY = 3
 
-  refreshFrequency = _messages.EnumField('RefreshFrequencyValueValuesEnum', 1)
-  schemaModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2SchemaModifiedCadence', 2)
+  inspectTemplateModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoveryInspectTemplateModifiedCadence', 1)
+  refreshFrequency = _messages.EnumField('RefreshFrequencyValueValuesEnum', 2)
+  schemaModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2SchemaModifiedCadence', 3)
 
 
 class GooglePrivacyDlpV2DiscoveryCloudStorageConditions(_messages.Message):
@@ -6408,9 +6425,11 @@ class GooglePrivacyDlpV2FileClusterSummary(_messages.Message):
       truncated to 10 per cluster.
     fileClusterType: The file cluster type.
     fileExtensionsScanned: A sample of file types scanned in this cluster.
-      Empty if no files were scanned.
+      Empty if no files were scanned. File extensions can be derived from the
+      file name or the file content.
     fileExtensionsSeen: A sample of file types seen in this cluster. Empty if
-      no files were seen.
+      no files were seen. File extensions can be derived from the file name or
+      the file content.
     fileStoreInfoTypeSummaries: InfoTypes detected in this cluster.
     noFilesExist: True if no files exist in this cluster. If the bucket had
       more files than could be listed, this will be false even if no files for
@@ -8653,7 +8672,7 @@ class GooglePrivacyDlpV2ProjectDataProfile(_messages.Message):
     profileLastGenerated: The last time the profile was generated.
     profileStatus: Success or error status of the last attempt to profile the
       project.
-    projectId: Project ID that was profiled.
+    projectId: Project ID or account that was profiled.
     sensitivityScore: The sensitivity score of this project.
     tableDataProfileCount: The number of table data profiles generated for
       this project.
@@ -8857,6 +8876,12 @@ class GooglePrivacyDlpV2PublishSummaryToCscc(_messages.Message):
 
 
 
+class GooglePrivacyDlpV2PublishToChronicle(_messages.Message):
+  r"""Message expressing intention to publish to Google Security Operations.
+  """
+
+
+
 class GooglePrivacyDlpV2PublishToPubSub(_messages.Message):
   r"""Publish a message into a given Pub/Sub topic when DlpJob has completed.
   The message contains a single field, `DlpJobName`, which is equal to the
@@ -8872,6 +8897,13 @@ class GooglePrivacyDlpV2PublishToPubSub(_messages.Message):
   """
 
   topic = _messages.StringField(1)
+
+
+class GooglePrivacyDlpV2PublishToSecurityCommandCenter(_messages.Message):
+  r"""If set, a summary finding will be created/updated in SCC for each
+  profile.
+  """
+
 
 
 class GooglePrivacyDlpV2PublishToStackdriver(_messages.Message):

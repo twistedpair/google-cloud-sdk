@@ -590,7 +590,7 @@ def AddSrcNetworks(parser):
       help=(
           'The source VPC networks to  match for this rule.  It can only be'
           ' specified when --src-network-scope is VPC_NETWORKS. It applies to '
-          ' ingress rules .It accepts full or partial URLs.'
+          ' ingress rules. It accepts full or partial URLs.'
       ),
   )
 

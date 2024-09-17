@@ -454,7 +454,7 @@ def ListSbomReferences(args):
         ]
       # Update the project for the request when a specific resource is provided.
       if artifact.project:
-        project = artifact.project
+        project = util.GetParent(artifact.project, args.location)
 
     except (ar_exceptions.InvalidInputValueError, docker_name.BadNameException):
       # Failed to process the artifact. Use the uri directly
@@ -767,6 +767,8 @@ def _GenerateSbomRefOccurrenceListFilter(artifact, sbom, project_id):
   f.WithResources([artifact.GetOccurrenceResourceUri()])
   f.WithKinds(['SBOM_REFERENCE'])
   note_id = _GetReferenceNoteID(sbom.sbom_format, sbom.version)
+  if len(project_id.split('/')) > 1:
+    project_id = project_id.split('/')[0]
   f.WithCustomFilter(
       'noteId="{0}" AND noteProjectId="{1}"'.format(note_id, project_id)
   )

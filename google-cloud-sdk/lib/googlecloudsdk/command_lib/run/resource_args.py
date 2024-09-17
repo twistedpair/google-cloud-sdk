@@ -133,6 +133,12 @@ class WorkerPromptFallthrough(ResourcePromptFallthrough):
     super(WorkerPromptFallthrough, self).__init__('worker')
 
 
+class WorkerPoolPromptFallthrough(ResourcePromptFallthrough):
+
+  def __init__(self):
+    super(WorkerPoolPromptFallthrough, self).__init__('workerpool')
+
+
 class JobPromptFallthrough(ResourcePromptFallthrough):
 
   def __init__(self):
@@ -235,6 +241,19 @@ def WorkerAttributeConfig(prompt=False):
   )
 
 
+def WorkerPoolAttributeConfig(prompt=False):
+  """Attribute config with fallthrough prompt only if requested."""
+  if prompt:
+    fallthroughs = [WorkerPoolPromptFallthrough()]
+  else:
+    fallthroughs = []
+  return concepts.ResourceParameterAttributeConfig(
+      name='workerpool',
+      help_text='WorkerPool for the {resource}.',
+      fallthroughs=fallthroughs,
+  )
+
+
 def ConfigurationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='configuration', help_text='Configuration for the {resource}.'
@@ -309,6 +328,20 @@ def TaskAttributeConfig(prompt=False):
     fallthroughs = []
   return concepts.ResourceParameterAttributeConfig(
       name='tasks', help_text='Task.', fallthroughs=fallthroughs
+  )
+
+
+def LocationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='region',
+      help_text=(
+          'The Cloud region for the {resource}. Overrides the default '
+          '`run/region` property value for this command invocation.'
+      ),
+      fallthroughs=[
+          deps.ArgFallthrough('--region'),
+          deps.PropertyFallthrough(properties.VALUES.run.region),
+      ],
   )
 
 
@@ -575,11 +608,31 @@ def GetWorkerResourceSpec(prompt=False):
   )
 
 
+def GetWorkerPoolResourceSpec(prompt=False):
+  return concepts.ResourceSpec(
+      'run.projects.locations.workerPools',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      workerPoolsId=WorkerPoolAttributeConfig(prompt),
+      resource_name='WorkerPool',
+      api_version='v2',
+  )
+
+
 def GetProjectResourceSpec():
   return concepts.ResourceSpec(
       'run.projects',
       resource_name='project',
       projectsId=ProjectAttributeConfig(),
+  )
+
+
+def GetRegionResourceSpec():
+  return concepts.ResourceSpec(
+      'run.projects.locations',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      resource_name='Region',
   )
 
 

@@ -1248,6 +1248,9 @@ def CalculateMissingAuth(gcr_auth, ar_non_repo_auth, ar_repo_policy):
             )
             and not member.endswith(
                 "gcp-sa-artifactregistry.iam.gserviceaccount.com"
+            )
+            and not member.endswith(
+                "artifact-registry-same-project-copier@system.gserviceaccount.com"
             ),
             missing_auth[role],
         )
@@ -1772,7 +1775,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
     )
     update = console_io.PromptContinue(
         "Projects to redirect: {}".format(projects_to_redirect),
-        default=False,
+        default=True,
     )
     if not update:
       return None

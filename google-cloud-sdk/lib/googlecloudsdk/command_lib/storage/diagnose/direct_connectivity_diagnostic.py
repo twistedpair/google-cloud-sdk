@@ -61,7 +61,7 @@ def _exec_and_return_stdout(command):
       no_exit=True,
       out_func=out.write,
   )
-  return out.getvalue()
+  return out.getvalue().strip()
 
 
 def _log_running_check(check_name):
@@ -283,6 +283,8 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
 
   def _check_vm_has_service_account(self):
     """Checks if VM has a service account."""
+    if not self._vm_zone:
+      return 'Found no VM zone and, therefore, could not check service account.'
     service_accounts = _exec_and_return_stdout([
         'compute',
         'instances',

@@ -30,9 +30,9 @@ network-config-subnetwork:
   help_text: |
     subnetwork for the Flink deployment network config.
 
-secrets-path:
-  api_field: deployment.deploymentSpec.secretsPath
-  arg_name: secrets-path
+secrets-paths:
+  api_field: deployment.deploymentSpec.secretsPaths
+  arg_name: secrets-paths
   help_text: |
     path to the secrets manager for the Flink deployment. (ie. projects/{my-project}/secrets/{my-secret}/versions/{1})
 

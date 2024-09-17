@@ -193,6 +193,7 @@ BASE_PUBLIC_IMAGE_PROJECTS = [
     'cos-cloud',
     'debian-cloud',
     'rocky-linux-cloud',
+    'ubuntu-os-cloud',
 ]
 PUBLIC_IMAGE_PROJECTS = BASE_PUBLIC_IMAGE_PROJECTS + [
     'centos-cloud',
@@ -202,7 +203,6 @@ PUBLIC_IMAGE_PROJECTS = BASE_PUBLIC_IMAGE_PROJECTS + [
     'rhel-sap-cloud',
     'suse-cloud',
     'suse-sap-cloud',
-    'ubuntu-os-cloud',
     'ubuntu-os-pro-cloud',
 ] + WINDOWS_IMAGE_PROJECTS
 PREVIEW_IMAGE_PROJECTS = []

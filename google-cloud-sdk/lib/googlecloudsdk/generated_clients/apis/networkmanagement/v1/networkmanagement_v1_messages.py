@@ -100,6 +100,10 @@ class AbortInfo(_messages.Message):
         (several PSC endpoints satisfy test input).
       SOURCE_PSC_CLOUD_SQL_UNSUPPORTED: Aborted because tests with a PSC-based
         Cloud SQL instance as a source are not supported.
+      SOURCE_REDIS_CLUSTER_UNSUPPORTED: Aborted because tests with a Redis
+        Cluster as a source are not supported.
+      SOURCE_REDIS_INSTANCE_UNSUPPORTED: Aborted because tests with a Redis
+        Instance as a source are not supported.
       SOURCE_FORWARDING_RULE_UNSUPPORTED: Aborted because tests with a
         forwarding rule as a source are not supported.
       NON_ROUTABLE_IP_ADDRESS: Aborted because one of the endpoints is a non-
@@ -138,10 +142,12 @@ class AbortInfo(_messages.Message):
     ROUTE_CONFIG_NOT_FOUND = 26
     GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT = 27
     SOURCE_PSC_CLOUD_SQL_UNSUPPORTED = 28
-    SOURCE_FORWARDING_RULE_UNSUPPORTED = 29
-    NON_ROUTABLE_IP_ADDRESS = 30
-    UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT = 31
-    UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 32
+    SOURCE_REDIS_CLUSTER_UNSUPPORTED = 29
+    SOURCE_REDIS_INSTANCE_UNSUPPORTED = 30
+    SOURCE_FORWARDING_RULE_UNSUPPORTED = 31
+    NON_ROUTABLE_IP_ADDRESS = 32
+    UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT = 33
+    UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 34
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   ipAddress = _messages.StringField(2)
@@ -547,6 +553,8 @@ class DeliverInfo(_messages.Message):
         traces.
       GOOGLE_MANAGED_SERVICE: Target is a Google-managed service. Used only
         for return traces.
+      REDIS_INSTANCE: Target is a Redis Instance.
+      REDIS_CLUSTER: Target is a Redis Cluster.
     """
     TARGET_UNSPECIFIED = 0
     INSTANCE = 1
@@ -564,6 +572,8 @@ class DeliverInfo(_messages.Message):
     APP_ENGINE_VERSION = 13
     CLOUD_RUN_REVISION = 14
     GOOGLE_MANAGED_SERVICE = 15
+    REDIS_INSTANCE = 16
+    REDIS_CLUSTER = 17
 
   ipAddress = _messages.StringField(1)
   pscGoogleApiTarget = _messages.StringField(2)
@@ -657,6 +667,10 @@ class DropInfo(_messages.Message):
         not in running state.
       CLOUD_SQL_INSTANCE_NOT_RUNNING: Packet sent from or to a Cloud SQL
         instance that is not in running state.
+      REDIS_INSTANCE_NOT_RUNNING: Packet sent from or to a Redis Instance that
+        is not in running state.
+      REDIS_CLUSTER_NOT_RUNNING: Packet sent from or to a Redis Cluster that
+        is not in running state.
       TRAFFIC_TYPE_BLOCKED: The type of traffic is blocked and the user cannot
         configure a firewall rule to enable it. See [Always blocked
         traffic](https://cloud.google.com/vpc/docs/firewalls#blockedtraffic)
@@ -757,6 +771,35 @@ class DropInfo(_messages.Message):
       LOAD_BALANCER_BACKEND_INVALID_NETWORK: Packet is dropped due to a load
         balancer backend instance not having a network interface in the
         network expected by the load balancer.
+      BACKEND_SERVICE_NAMED_PORT_NOT_DEFINED: Packet is dropped due to a
+        backend service named port not being defined on the instance group
+        level.
+      DESTINATION_IS_PRIVATE_NAT_IP_RANGE: Packet is dropped due to a
+        destination IP range being part of a Private NAT IP range.
+      DROPPED_INSIDE_REDIS_INSTANCE_SERVICE: Generic drop cause for a packet
+        being dropped inside a Redis Instance service project.
+      REDIS_INSTANCE_UNSUPPORTED_PORT: Packet is dropped due to an unsupported
+        port being used to connect to a Redis Instance. Port 6379 should be
+        used to connect to a Redis Instance.
+      REDIS_INSTANCE_CONNECTING_FROM_PUPI_ADDRESS: Packet is dropped due to
+        connecting from PUPI address to a PSA based Redis Instance.
+      REDIS_INSTANCE_NO_ROUTE_TO_DESTINATION_NETWORK: Packet is dropped due to
+        no route to the destination network.
+      REDIS_INSTANCE_NO_EXTERNAL_IP: Redis Instance does not have an external
+        IP address.
+      REDIS_INSTANCE_UNSUPPORTED_PROTOCOL: Packet is dropped due to an
+        unsupported protocol being used to connect to a Redis Instance. Only
+        TCP connections are accepted by a Redis Instance.
+      DROPPED_INSIDE_REDIS_CLUSTER_SERVICE: Generic drop cause for a packet
+        being dropped inside a Redis Cluster service project.
+      REDIS_CLUSTER_UNSUPPORTED_PORT: Packet is dropped due to an unsupported
+        port being used to connect to a Redis Cluster. Ports 6379 and 11000 to
+        13047 should be used to connect to a Redis Cluster.
+      REDIS_CLUSTER_NO_EXTERNAL_IP: Redis Cluster does not have an external IP
+        address.
+      REDIS_CLUSTER_UNSUPPORTED_PROTOCOL: Packet is dropped due to an
+        unsupported protocol being used to connect to a Redis Cluster. Only
+        TCP connections are accepted by a Redis Cluster.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -786,44 +829,58 @@ class DropInfo(_messages.Message):
     INSTANCE_NOT_RUNNING = 25
     GKE_CLUSTER_NOT_RUNNING = 26
     CLOUD_SQL_INSTANCE_NOT_RUNNING = 27
-    TRAFFIC_TYPE_BLOCKED = 28
-    GKE_MASTER_UNAUTHORIZED_ACCESS = 29
-    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 30
-    DROPPED_INSIDE_GKE_SERVICE = 31
-    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 32
-    GOOGLE_MANAGED_SERVICE_NO_PEERING = 33
-    GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT = 34
-    GKE_PSC_ENDPOINT_MISSING = 35
-    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 36
-    GKE_CONTROL_PLANE_REGION_MISMATCH = 37
-    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 38
-    GKE_CONTROL_PLANE_NO_ROUTE = 39
-    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 40
-    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 41
-    CLOUD_SQL_INSTANCE_NO_ROUTE = 42
-    CLOUD_SQL_CONNECTOR_REQUIRED = 43
-    CLOUD_FUNCTION_NOT_ACTIVE = 44
-    VPC_CONNECTOR_NOT_SET = 45
-    VPC_CONNECTOR_NOT_RUNNING = 46
-    VPC_CONNECTOR_SERVERLESS_TRAFFIC_BLOCKED = 47
-    VPC_CONNECTOR_HEALTH_CHECK_TRAFFIC_BLOCKED = 48
-    FORWARDING_RULE_REGION_MISMATCH = 49
-    PSC_CONNECTION_NOT_ACCEPTED = 50
-    PSC_ENDPOINT_ACCESSED_FROM_PEERED_NETWORK = 51
-    PSC_NEG_PRODUCER_ENDPOINT_NO_GLOBAL_ACCESS = 52
-    PSC_NEG_PRODUCER_FORWARDING_RULE_MULTIPLE_PORTS = 53
-    CLOUD_SQL_PSC_NEG_UNSUPPORTED = 54
-    NO_NAT_SUBNETS_FOR_PSC_SERVICE_ATTACHMENT = 55
-    PSC_TRANSITIVITY_NOT_PROPAGATED = 56
-    HYBRID_NEG_NON_DYNAMIC_ROUTE_MATCHED = 57
-    HYBRID_NEG_NON_LOCAL_DYNAMIC_ROUTE_MATCHED = 58
-    CLOUD_RUN_REVISION_NOT_READY = 59
-    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 60
-    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 61
-    CLOUD_NAT_NO_ADDRESSES = 62
-    ROUTING_LOOP = 63
-    DROPPED_INSIDE_GOOGLE_MANAGED_SERVICE = 64
-    LOAD_BALANCER_BACKEND_INVALID_NETWORK = 65
+    REDIS_INSTANCE_NOT_RUNNING = 28
+    REDIS_CLUSTER_NOT_RUNNING = 29
+    TRAFFIC_TYPE_BLOCKED = 30
+    GKE_MASTER_UNAUTHORIZED_ACCESS = 31
+    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 32
+    DROPPED_INSIDE_GKE_SERVICE = 33
+    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 34
+    GOOGLE_MANAGED_SERVICE_NO_PEERING = 35
+    GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT = 36
+    GKE_PSC_ENDPOINT_MISSING = 37
+    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 38
+    GKE_CONTROL_PLANE_REGION_MISMATCH = 39
+    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 40
+    GKE_CONTROL_PLANE_NO_ROUTE = 41
+    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 42
+    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 43
+    CLOUD_SQL_INSTANCE_NO_ROUTE = 44
+    CLOUD_SQL_CONNECTOR_REQUIRED = 45
+    CLOUD_FUNCTION_NOT_ACTIVE = 46
+    VPC_CONNECTOR_NOT_SET = 47
+    VPC_CONNECTOR_NOT_RUNNING = 48
+    VPC_CONNECTOR_SERVERLESS_TRAFFIC_BLOCKED = 49
+    VPC_CONNECTOR_HEALTH_CHECK_TRAFFIC_BLOCKED = 50
+    FORWARDING_RULE_REGION_MISMATCH = 51
+    PSC_CONNECTION_NOT_ACCEPTED = 52
+    PSC_ENDPOINT_ACCESSED_FROM_PEERED_NETWORK = 53
+    PSC_NEG_PRODUCER_ENDPOINT_NO_GLOBAL_ACCESS = 54
+    PSC_NEG_PRODUCER_FORWARDING_RULE_MULTIPLE_PORTS = 55
+    CLOUD_SQL_PSC_NEG_UNSUPPORTED = 56
+    NO_NAT_SUBNETS_FOR_PSC_SERVICE_ATTACHMENT = 57
+    PSC_TRANSITIVITY_NOT_PROPAGATED = 58
+    HYBRID_NEG_NON_DYNAMIC_ROUTE_MATCHED = 59
+    HYBRID_NEG_NON_LOCAL_DYNAMIC_ROUTE_MATCHED = 60
+    CLOUD_RUN_REVISION_NOT_READY = 61
+    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 62
+    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 63
+    CLOUD_NAT_NO_ADDRESSES = 64
+    ROUTING_LOOP = 65
+    DROPPED_INSIDE_GOOGLE_MANAGED_SERVICE = 66
+    LOAD_BALANCER_BACKEND_INVALID_NETWORK = 67
+    BACKEND_SERVICE_NAMED_PORT_NOT_DEFINED = 68
+    DESTINATION_IS_PRIVATE_NAT_IP_RANGE = 69
+    DROPPED_INSIDE_REDIS_INSTANCE_SERVICE = 70
+    REDIS_INSTANCE_UNSUPPORTED_PORT = 71
+    REDIS_INSTANCE_CONNECTING_FROM_PUPI_ADDRESS = 72
+    REDIS_INSTANCE_NO_ROUTE_TO_DESTINATION_NETWORK = 73
+    REDIS_INSTANCE_NO_EXTERNAL_IP = 74
+    REDIS_INSTANCE_UNSUPPORTED_PROTOCOL = 75
+    DROPPED_INSIDE_REDIS_CLUSTER_SERVICE = 76
+    REDIS_CLUSTER_UNSUPPORTED_PORT = 77
+    REDIS_CLUSTER_NO_EXTERNAL_IP = 78
+    REDIS_CLUSTER_UNSUPPORTED_PROTOCOL = 79
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationIp = _messages.StringField(2)
@@ -2349,6 +2406,52 @@ class ReachabilityDetails(_messages.Message):
   verifyTime = _messages.StringField(4)
 
 
+class RedisClusterInfo(_messages.Message):
+  r"""For display only. Metadata associated with a Redis Cluster.
+
+  Fields:
+    discoveryEndpointIpAddress: Discovery endpoint IP address of a Redis
+      Cluster.
+    displayName: Name of a Redis Cluster.
+    location: Name of the region in which the Redis Cluster is defined. For
+      example, "us-central1".
+    networkUri: URI of a Redis Cluster network in format
+      "projects/{project_id}/global/networks/{network_id}".
+    secondaryEndpointIpAddress: Secondary endpoint IP address of a Redis
+      Cluster.
+    uri: URI of a Redis Cluster in format
+      "projects/{project_id}/locations/{location}/clusters/{cluster_id}"
+  """
+
+  discoveryEndpointIpAddress = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  location = _messages.StringField(3)
+  networkUri = _messages.StringField(4)
+  secondaryEndpointIpAddress = _messages.StringField(5)
+  uri = _messages.StringField(6)
+
+
+class RedisInstanceInfo(_messages.Message):
+  r"""For display only. Metadata associated with a Cloud Redis Instance.
+
+  Fields:
+    displayName: Name of a Cloud Redis Instance.
+    networkUri: URI of a Cloud Redis Instance network.
+    primaryEndpointIp: Primary endpoint IP address of a Cloud Redis Instance.
+    readEndpointIp: Read endpoint IP address of a Cloud Redis Instance (if
+      applicable).
+    region: Region in which the Cloud Redis Instance is defined.
+    uri: URI of a Cloud Redis Instance.
+  """
+
+  displayName = _messages.StringField(1)
+  networkUri = _messages.StringField(2)
+  primaryEndpointIp = _messages.StringField(3)
+  readEndpointIp = _messages.StringField(4)
+  region = _messages.StringField(5)
+  uri = _messages.StringField(6)
+
+
 class RerunConnectivityTestRequest(_messages.Message):
   r"""Request for the `RerunConnectivityTest` method."""
 
@@ -2657,6 +2760,8 @@ class Step(_messages.Message):
     projectId: Project ID that contains the configuration this step is
       validating.
     proxyConnection: Display information of a ProxyConnection.
+    redisCluster: Display information of a Redis Cluster.
+    redisInstance: Display information of a Redis Instance.
     route: Display information of a Compute Engine route.
     serverlessNeg: Display information of a Serverless network endpoint group
       backend. Used only for return traces.
@@ -2690,6 +2795,12 @@ class Step(_messages.Message):
       START_FROM_CLOUD_SQL_INSTANCE: Initial state: packet originating from a
         Cloud SQL instance. A CloudSQLInstanceInfo is populated with starting
         instance information.
+      START_FROM_REDIS_INSTANCE: Initial state: packet originating from a
+        Redis instance. A RedisInstanceInfo is populated with starting
+        instance information.
+      START_FROM_REDIS_CLUSTER: Initial state: packet originating from a Redis
+        Cluster. A RedisClusterInfo is populated with starting Cluster
+        information.
       START_FROM_CLOUD_FUNCTION: Initial state: packet originating from a
         Cloud Function. A CloudFunctionInfo is populated with starting
         function information.
@@ -2746,31 +2857,33 @@ class Step(_messages.Message):
     START_FROM_PRIVATE_NETWORK = 4
     START_FROM_GKE_MASTER = 5
     START_FROM_CLOUD_SQL_INSTANCE = 6
-    START_FROM_CLOUD_FUNCTION = 7
-    START_FROM_APP_ENGINE_VERSION = 8
-    START_FROM_CLOUD_RUN_REVISION = 9
-    START_FROM_STORAGE_BUCKET = 10
-    START_FROM_PSC_PUBLISHED_SERVICE = 11
-    START_FROM_SERVERLESS_NEG = 12
-    APPLY_INGRESS_FIREWALL_RULE = 13
-    APPLY_EGRESS_FIREWALL_RULE = 14
-    APPLY_ROUTE = 15
-    APPLY_FORWARDING_RULE = 16
-    ANALYZE_LOAD_BALANCER_BACKEND = 17
-    SPOOFING_APPROVED = 18
-    ARRIVE_AT_INSTANCE = 19
-    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 20
-    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 21
-    ARRIVE_AT_VPN_GATEWAY = 22
-    ARRIVE_AT_VPN_TUNNEL = 23
-    ARRIVE_AT_VPC_CONNECTOR = 24
-    NAT = 25
-    PROXY_CONNECTION = 26
-    DELIVER = 27
-    DROP = 28
-    FORWARD = 29
-    ABORT = 30
-    VIEWER_PERMISSION_MISSING = 31
+    START_FROM_REDIS_INSTANCE = 7
+    START_FROM_REDIS_CLUSTER = 8
+    START_FROM_CLOUD_FUNCTION = 9
+    START_FROM_APP_ENGINE_VERSION = 10
+    START_FROM_CLOUD_RUN_REVISION = 11
+    START_FROM_STORAGE_BUCKET = 12
+    START_FROM_PSC_PUBLISHED_SERVICE = 13
+    START_FROM_SERVERLESS_NEG = 14
+    APPLY_INGRESS_FIREWALL_RULE = 15
+    APPLY_EGRESS_FIREWALL_RULE = 16
+    APPLY_ROUTE = 17
+    APPLY_FORWARDING_RULE = 18
+    ANALYZE_LOAD_BALANCER_BACKEND = 19
+    SPOOFING_APPROVED = 20
+    ARRIVE_AT_INSTANCE = 21
+    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 22
+    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 23
+    ARRIVE_AT_VPN_GATEWAY = 24
+    ARRIVE_AT_VPN_TUNNEL = 25
+    ARRIVE_AT_VPC_CONNECTOR = 26
+    NAT = 27
+    PROXY_CONNECTION = 28
+    DELIVER = 29
+    DROP = 30
+    FORWARD = 31
+    ABORT = 32
+    VIEWER_PERMISSION_MISSING = 33
 
   abort = _messages.MessageField('AbortInfo', 1)
   appEngineVersion = _messages.MessageField('AppEngineVersionInfo', 2)
@@ -2794,13 +2907,15 @@ class Step(_messages.Message):
   network = _messages.MessageField('NetworkInfo', 20)
   projectId = _messages.StringField(21)
   proxyConnection = _messages.MessageField('ProxyConnectionInfo', 22)
-  route = _messages.MessageField('RouteInfo', 23)
-  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  storageBucket = _messages.MessageField('StorageBucketInfo', 26)
-  vpcConnector = _messages.MessageField('VpcConnectorInfo', 27)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 28)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 29)
+  redisCluster = _messages.MessageField('RedisClusterInfo', 23)
+  redisInstance = _messages.MessageField('RedisInstanceInfo', 24)
+  route = _messages.MessageField('RouteInfo', 25)
+  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 26)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
+  storageBucket = _messages.MessageField('StorageBucketInfo', 28)
+  vpcConnector = _messages.MessageField('VpcConnectorInfo', 29)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 30)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 31)
 
 
 class StorageBucketInfo(_messages.Message):

@@ -654,6 +654,10 @@ class CertificateDescription(_messages.Message):
     subjectKeyId: Provides a means of identifiying certificates that contain a
       particular public key, per
       https://tools.ietf.org/html/rfc5280#section-4.2.1.2.
+    tbsCertificateDigest: The hash of the pre-signed certificate, which will
+      be signed by the CA. Corresponds to the TBS Certificate in
+      https://tools.ietf.org/html/rfc5280#section-4.1.2. The field will always
+      be populated.
     x509Description: Describes some of the technical X.509 fields in a
       certificate.
   """
@@ -665,7 +669,8 @@ class CertificateDescription(_messages.Message):
   publicKey = _messages.MessageField('PublicKey', 5)
   subjectDescription = _messages.MessageField('SubjectDescription', 6)
   subjectKeyId = _messages.MessageField('KeyId', 7)
-  x509Description = _messages.MessageField('X509Parameters', 8)
+  tbsCertificateDigest = _messages.StringField(8)
+  x509Description = _messages.MessageField('X509Parameters', 9)
 
 
 class CertificateExtensionConstraints(_messages.Message):

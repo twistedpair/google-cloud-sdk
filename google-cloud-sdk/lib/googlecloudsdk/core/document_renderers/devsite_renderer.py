@@ -125,7 +125,7 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
       self._fill = 2
       if not self._lang:
         self._out.write('<pre class="prettyprint lang-sh wrap-code">\n')
-      elif self._lang in ('pretty', 'yaml'):
+      elif self._lang == 'pretty':
         self._out.write('<pre class="prettyprint lang-sh wrap-code">\n')
       else:
         self._out.write(

@@ -30,6 +30,14 @@ __protobuf__ = proto.module(
 
 class ApiAuth(proto.Message):
     r"""The generic reusable api auth config.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        api_key_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.ApiAuth.ApiKeyConfig):
+            The API secret.
+
+            This field is a member of `oneof`_ ``auth_config``.
     """
 
     class ApiKeyConfig(proto.Message):
@@ -46,6 +54,13 @@ class ApiAuth(proto.Message):
             proto.STRING,
             number=1,
         )
+
+    api_key_config: ApiKeyConfig = proto.Field(
+        proto.MESSAGE,
+        number=1,
+        oneof='auth_config',
+        message=ApiKeyConfig,
+    )
 
 
 __all__ = tuple(sorted(__protobuf__.manifest))

@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import enum
 from googlecloudsdk.api_lib.workbench import util
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.command_lib.workbench import flags
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 
@@ -95,6 +96,37 @@ def CreateGPUDriverConfigMessage(args, messages):
   return messages.GPUDriverConfig(
       customGpuDriverPath=args.custom_gpu_driver_path,
       enableGpuDriver=args.install_gpu_driver,
+  )
+
+
+def CreateReservationConfigMessage(args, messages):
+  """Creates the reservation config for the instance.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the specified API.
+
+  Returns:
+    Reservation config for the instance.
+  """
+  if not (
+      args.IsSpecified('reservation_type')
+      or args.IsSpecified('reservation_key')
+      or args.IsSpecified('reservation_values')
+  ):
+    return None
+  reservation_type_enum = None
+  if args.IsSpecified('reservation_type'):
+    reservation_type_enum = flags.GetReservationTypeMapper(
+        messages
+    ).GetEnumForChoice(args.reservation_type)
+  reservation_values = []
+  if args.IsSpecified('reservation_values'):
+    reservation_values = args.reservation_values
+  return messages.ReservationAffinity(
+      consumeReservationType=reservation_type_enum,
+      key=args.reservation_key,
+      values=reservation_values,
   )
 
 
@@ -286,6 +318,7 @@ def CreateInstance(args, messages):
       minCpuPlatform=args.min_cpu_platform,
       metadata=GetMetadataFromArgs(args, messages),
       networkInterfaces=[CreateNetworkConfigMessage(args, messages)],
+      reservationAffinity=CreateReservationConfigMessage(args, messages),
       serviceAccounts=[CreateServiceAccountConfigMessage(args, messages)],
       shieldedInstanceConfig=GetShieldedInstanceConfigFromArgs(args, messages),
       tags=GetTagsFromArgs(args),

@@ -65,7 +65,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists Autonomous Database Long-term and Automatic Backups.
+      r"""Lists the long term and automatic backups of an Autonomous Database.
 
       Args:
         request: (OracledatabaseProjectsLocationsAutonomousDatabaseBackupsListRequest) input message
@@ -102,7 +102,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Autonomous Database Character Set.
+      r"""Gets the details of a single Autonomous Database Character Set.
 
       Args:
         request: (OracledatabaseProjectsLocationsAutonomousDatabaseCharacterSetsGetRequest) input message
@@ -220,7 +220,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
     )
 
     def GenerateWallet(self, request, global_params=None):
-      r"""Generates Wallet for a single Autonomous Database.
+      r"""Generates a wallet for a single Autonomous Database.
 
       Args:
         request: (OracledatabaseProjectsLocationsAutonomousDatabasesGenerateWalletRequest) input message
@@ -247,7 +247,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Autonomous Database.
+      r"""Gets the details of a single Autonomous Database.
 
       Args:
         request: (OracledatabaseProjectsLocationsAutonomousDatabasesGetRequest) input message
@@ -274,7 +274,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Autonomous Databases in a given project and location.
+      r"""Lists the Autonomous Databases in a given project and location.
 
       Args:
         request: (OracledatabaseProjectsLocationsAutonomousDatabasesListRequest) input message
@@ -338,7 +338,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Autonomous Database Version.
+      r"""Gets the details of a single Autonomous Database version.
 
       Args:
         request: (OracledatabaseProjectsLocationsAutonomousDbVersionsGetRequest) input message
@@ -365,7 +365,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Autonomous Database Versions in a given project and location.
+      r"""Lists all the available Autonomous Database versions for a project and location.
 
       Args:
         request: (OracledatabaseProjectsLocationsAutonomousDbVersionsListRequest) input message
@@ -402,7 +402,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Db Server.
+      r"""Gets details of a single database server.
 
       Args:
         request: (OracledatabaseProjectsLocationsCloudExadataInfrastructuresDbServersGetRequest) input message
@@ -429,7 +429,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Db Servers in a given project and location.
+      r"""Lists the database servers of an Exadata Infrastructure instance.
 
       Args:
         request: (OracledatabaseProjectsLocationsCloudExadataInfrastructuresDbServersListRequest) input message
@@ -466,7 +466,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new ExadataInfrastructure in a given project and location.
+      r"""Creates a new Exadata Infrastructure in a given project and location.
 
       Args:
         request: (OracledatabaseProjectsLocationsCloudExadataInfrastructuresCreateRequest) input message
@@ -611,7 +611,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Db Node.
+      r"""Gets details of a single database node.
 
       Args:
         request: (OracledatabaseProjectsLocationsCloudVmClustersDbNodesGetRequest) input message
@@ -638,7 +638,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Db Nodes in a given project and location.
+      r"""Lists the database nodes of a VM Cluster.
 
       Args:
         request: (OracledatabaseProjectsLocationsCloudVmClustersDbNodesListRequest) input message
@@ -675,7 +675,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new VmCluster in a given project and location.
+      r"""Creates a new VM Cluster in a given project and location.
 
       Args:
         request: (OracledatabaseProjectsLocationsCloudVmClustersCreateRequest) input message
@@ -702,7 +702,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Vm Cluster.
+      r"""Deletes a single VM Cluster.
 
       Args:
         request: (OracledatabaseProjectsLocationsCloudVmClustersDeleteRequest) input message
@@ -756,7 +756,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists VM Clusters in a given project and location.
+      r"""Lists the VM Clusters in a given project and location.
 
       Args:
         request: (OracledatabaseProjectsLocationsCloudVmClustersListRequest) input message
@@ -820,7 +820,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Db System Shape.
+      r"""Gets details of a single database system shape.
 
       Args:
         request: (OracledatabaseProjectsLocationsDbSystemShapesGetRequest) input message
@@ -847,7 +847,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Db System Shapes in a given project and location.
+      r"""Lists the database system shapes available for the project and location.
 
       Args:
         request: (OracledatabaseProjectsLocationsDbSystemShapesListRequest) input message
@@ -884,7 +884,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Get Entitlement in a given project and location.
+      r"""Gets the entitlements of a given project.
 
       Args:
         request: (OracledatabaseProjectsLocationsEntitlementsGetRequest) input message
@@ -911,7 +911,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Entitlements in a given project and location.
+      r"""Lists the entitlements in a given project.
 
       Args:
         request: (OracledatabaseProjectsLocationsEntitlementsListRequest) input message
@@ -948,7 +948,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Gi Version.
+      r"""Gets details of a single grid infrastructure version.
 
       Args:
         request: (OracledatabaseProjectsLocationsGiVersionsGetRequest) input message
@@ -975,7 +975,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Gi Versions in a given project and location.
+      r"""Lists all the valid Oracle Grid Infrastructure (GI) versions for the given project and location.
 
       Args:
         request: (OracledatabaseProjectsLocationsGiVersionsListRequest) input message

@@ -41,6 +41,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_repositories_branchRules = self.ProjectsLocationsRepositoriesBranchRulesService(self)
     self.projects_locations_repositories = self.ProjectsLocationsRepositoriesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -386,6 +387,151 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuresourcemanagerProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRepositoriesBranchRulesService(base_api.BaseApiService):
+    """Service class for the projects_locations_repositories_branchRules resource."""
+
+    _NAME = 'projects_locations_repositories_branchRules'
+
+    def __init__(self, client):
+      super(SecuresourcemanagerV1.ProjectsLocationsRepositoriesBranchRulesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""CreateBranchRule creates a branch rule in a given repository.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/branchRules',
+        http_method='POST',
+        method_id='securesourcemanager.projects.locations.repositories.branchRules.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['branchRuleId'],
+        relative_path='v1/{+parent}/branchRules',
+        request_field='branchRule',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""DeleteBranchRule deletes a branch rule.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/branchRules/{branchRulesId}',
+        http_method='DELETE',
+        method_id='securesourcemanager.projects.locations.repositories.branchRules.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""GetBranchRule gets a branch rule.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BranchRule) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/branchRules/{branchRulesId}',
+        http_method='GET',
+        method_id='securesourcemanager.projects.locations.repositories.branchRules.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesGetRequest',
+        response_type_name='BranchRule',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""ListBranchRules lists branch rules in a given repository.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBranchRulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/branchRules',
+        http_method='GET',
+        method_id='securesourcemanager.projects.locations.repositories.branchRules.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/branchRules',
+        request_field='',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesListRequest',
+        response_type_name='ListBranchRulesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""UpdateBranchRule updates a branch rule.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/branchRules/{branchRulesId}',
+        http_method='PATCH',
+        method_id='securesourcemanager.projects.locations.repositories.branchRules.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='branchRule',
+        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesBranchRulesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

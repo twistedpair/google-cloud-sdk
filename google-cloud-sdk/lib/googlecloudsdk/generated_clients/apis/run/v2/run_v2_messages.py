@@ -1917,7 +1917,9 @@ class GoogleCloudRunV2RevisionScaling(_messages.Message):
 
   Fields:
     maxInstanceCount: Optional. Maximum number of serving instances that this
-      resource should have.
+      resource should have. When unspecified, the field is set to the server
+      default value of 100. For more information see
+      https://cloud.google.com/run/docs/configuring/max-instances
     minInstanceCount: Optional. Minimum number of serving instances that this
       resource should have.
   """
@@ -2345,6 +2347,7 @@ class GoogleCloudRunV2Service(_messages.Message):
       resource is deleted.
     updateTime: Output only. The last-modified time.
     uri: Output only. The main URI in which this Service is serving traffic.
+    urls: Output only. All URLs serving traffic for this Service.
   """
 
   class IngressValueValuesEnum(_messages.Enum):
@@ -2514,14 +2517,17 @@ class GoogleCloudRunV2Service(_messages.Message):
   uid = _messages.StringField(30)
   updateTime = _messages.StringField(31)
   uri = _messages.StringField(32)
+  urls = _messages.StringField(33, repeated=True)
 
 
 class GoogleCloudRunV2ServiceMesh(_messages.Message):
-  r"""Service mesh configuration.
+  r"""Settings for Cloud Service Mesh. For more information see
+  https://cloud.google.com/service-mesh/docs/overview.
 
   Fields:
-    mesh: The service mesh resource name. Format:
-      projects/{project_number}/locations/global/meshes/{mesh}.
+    mesh: The Mesh resource name. Format:
+      projects/{project}/locations/global/meshes/{mesh}, where {project} can
+      be project id or number.
   """
 
   mesh = _messages.StringField(1)
@@ -2595,11 +2601,13 @@ class GoogleCloudRunV2SubmitBuildResponse(_messages.Message):
   Fields:
     baseImageUri: URI of the base builder image in Artifact Registry being
       used in the build. Used to opt into automatic base image updates.
+    baseImageWarning: Warning message for the base image.
     buildOperation: Cloud Build operation to be polled via CloudBuild API.
   """
 
   baseImageUri = _messages.StringField(1)
-  buildOperation = _messages.MessageField('GoogleLongrunningOperation', 2)
+  baseImageWarning = _messages.StringField(2)
+  buildOperation = _messages.MessageField('GoogleLongrunningOperation', 3)
 
 
 class GoogleCloudRunV2TCPSocketAction(_messages.Message):
@@ -3379,8 +3387,6 @@ class GoogleCloudRunV2WorkerPoolRevisionTemplate(_messages.Message):
       system annotations in v1 now have a corresponding field in v2
       WorkerPoolRevisionTemplate. This field follows Kubernetes annotations'
       namespacing, limits, and rules.
-    ContainersValue: Holds the map of the containers that defines the unit of
-      execution for this Revision.
     LabelsValue: Optional. Unstructured key value map that can be used to
       organize and categorize objects. User-provided labels are shared with
       Google's billing system, so they can be used to filter, or break down
@@ -3404,7 +3410,7 @@ class GoogleCloudRunV2WorkerPoolRevisionTemplate(_messages.Message):
       system annotations in v1 now have a corresponding field in v2
       WorkerPoolRevisionTemplate. This field follows Kubernetes annotations'
       namespacing, limits, and rules.
-    containers: Holds the map of the containers that defines the unit of
+    containers: Holds list of the containers that defines the unit of
       execution for this Revision.
     encryptionKey: A reference to a customer managed encryption key (CMEK) to
       use to encrypt this container image. For more information, go to
@@ -3471,31 +3477,6 @@ class GoogleCloudRunV2WorkerPoolRevisionTemplate(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class ContainersValue(_messages.Message):
-    r"""Holds the map of the containers that defines the unit of execution for
-    this Revision.
-
-    Messages:
-      AdditionalProperty: An additional property for a ContainersValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type ContainersValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ContainersValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A GoogleCloudRunV2Container attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('GoogleCloudRunV2Container', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. Unstructured key value map that can be used to organize and
     categorize objects. User-provided labels are shared with Google's billing
@@ -3529,7 +3510,7 @@ class GoogleCloudRunV2WorkerPoolRevisionTemplate(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  containers = _messages.MessageField('ContainersValue', 2)
+  containers = _messages.MessageField('GoogleCloudRunV2Container', 2, repeated=True)
   encryptionKey = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
   nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 5)

@@ -46,12 +46,13 @@ def GetRegionAttributeConfig():
   )
 
 
-def AddRuntimeTemplateResourceArg(parser, verb):
+def AddRuntimeTemplateResourceArg(parser, verb, is_positional):
   """Add a resource argument for a runtime template to the parser.
 
   Args:
     parser: argparse parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
+    is_positional: bool, True for if arg is positional; False if flag.
   """
 
   def GetRuntimeTemplateResourceSpec(resource_name='runtime template'):
@@ -63,13 +64,26 @@ def AddRuntimeTemplateResourceArg(parser, verb):
         disable_auto_completers=False,
     )
 
+  if is_positional:
+    arg_name = 'runtime_template'
+    prefixes = False
+    flag_name_overrides = None
+    fallthroughs = None
+  else:
+    arg_name = '--runtime-template'
+    prefixes = True
+    flag_name_overrides = {'region': ''}
+    fallthroughs = {'region': ['--region']}
   concept_parsers.ConceptParser.ForResource(
-      'runtime_template',
+      arg_name,
       GetRuntimeTemplateResourceSpec(),
       'Unique name of the runtime template {}. This was optionally provided by'
       ' setting --runtime-template-id in the create runtime-template command,'
       ' or was system-generated if unspecified.'.format(verb),
       required=True,
+      prefixes=prefixes,
+      flag_name_overrides=flag_name_overrides,
+      command_level_fallthroughs=fallthroughs,
   ).AddToParser(parser)
 
 
@@ -136,6 +150,7 @@ def AddSubnetworkResourceArg(help_text, parser):
     help_text: str, the help text for the flag.
     parser: argparse parser for the command.
   """
+
   def GetSubnetResourceSpec():
     """Constructs and returns the Resource specification for Subnet."""
 
@@ -143,7 +158,8 @@ def AddSubnetworkResourceArg(help_text, parser):
       return concepts.ResourceParameterAttributeConfig(
           name='subnetwork',
           help_text=help_text,
-          completer=compute_subnet_flags.SubnetworksCompleter)
+          completer=compute_subnet_flags.SubnetworksCompleter,
+      )
 
     def RegionAttributeConfig():
       return concepts.ResourceParameterAttributeConfig(
@@ -152,7 +168,8 @@ def AddSubnetworkResourceArg(help_text, parser):
               'Google Cloud region of this subnetwork '
               'https://cloud.google.com/compute/docs/regions-zones/#locations.'
           ),
-          completer=completers.RegionCompleter)
+          completer=completers.RegionCompleter,
+      )
 
     return concepts.ResourceSpec(
         'compute.subnetworks',
@@ -175,6 +192,7 @@ def AddKmsKeyResourceArg(parser, help_text):
     parser: argparse parser for the command.
     help_text: str, the help text for the flag.
   """
+
   def GetKmsKeyResourceSpec():
 
     def KmsKeyAttributeConfig():
@@ -295,15 +313,11 @@ def AddCreateRuntimeTemplateFlags(parser):
       help='The network configuration for the runtime.',
   )
   AddNetworkResourceArg(
-      help_text=(
-          'The name of the VPC that this runtime is in.'
-      ),
+      help_text='The name of the VPC that this runtime is in.',
       parser=network_spec_group,
   )
   AddSubnetworkResourceArg(
-      help_text=(
-          'The name of the subnetwork that this runtime is in.'
-      ),
+      help_text='The name of the subnetwork that this runtime is in.',
       parser=network_spec_group,
   )
   # Since default for this flag is True, the documentation will only show
@@ -366,13 +380,13 @@ def AddCreateRuntimeTemplateFlags(parser):
 
 def AddDeleteRuntimeTemplateFlags(parser):
   """Construct groups and arguments specific to runtime template deletion."""
-  AddRuntimeTemplateResourceArg(parser, 'to delete')
+  AddRuntimeTemplateResourceArg(parser, 'to delete', is_positional=True)
   AddAsyncFlag(parser)
 
 
 def AddDescribeRuntimeTemplateFlags(parser):
   """Construct groups and arguments specific to describing a runtime template."""
-  AddRuntimeTemplateResourceArg(parser, 'to describe')
+  AddRuntimeTemplateResourceArg(parser, 'to describe', is_positional=True)
 
 
 def AddListRuntimeTemplatesFlags(parser):
@@ -383,22 +397,71 @@ def AddListRuntimeTemplatesFlags(parser):
 
 def AddFlagsToAddIamPolicyBinding(parser):
   """Construct arguments for adding an IAM policy binding to a runtime template."""
-  AddRuntimeTemplateResourceArg(parser, 'to add IAM policy binding to')
+  AddRuntimeTemplateResourceArg(
+      parser, 'to add IAM policy binding to', is_positional=True
+  )
   iam_util.AddArgsForAddIamPolicyBinding(parser)
 
 
 def AddGetIamPolicyFlags(parser):
   """Construct arguments for getting the IAM policy for a runtime template."""
-  AddRuntimeTemplateResourceArg(parser, 'to get IAM policy for')
+  AddRuntimeTemplateResourceArg(
+      parser, 'to get IAM policy for', is_positional=True
+  )
 
 
 def AddSetIamPolicyBindingFlags(parser):
   """Construct arguments for setting the IAM policy for a runtime template."""
-  AddRuntimeTemplateResourceArg(parser, 'to set IAM policy for')
+  AddRuntimeTemplateResourceArg(
+      parser, 'to set IAM policy for', is_positional=True
+  )
   iam_util.AddArgForPolicyFile(parser)
 
 
 def AddRemoveIamPolicyBindingFlags(parser):
   """Construct arguments for removing an IAM policy binding from a runtime template."""
-  AddRuntimeTemplateResourceArg(parser, 'to remove IAM policy from')
+  AddRuntimeTemplateResourceArg(
+      parser, 'to remove IAM policy from', is_positional=True
+  )
   iam_util.AddArgsForRemoveIamPolicyBinding(parser)
+
+
+def AddAssignRuntimeFlags(parser):
+  """Construct arguments for assigning a runtime."""
+
+  AddRegionResourceArg(parser, 'to assign runtime')
+
+  AddRuntimeTemplateResourceArg(
+      parser, 'to configure the runtime with', is_positional=False
+  )
+  parser.add_argument(
+      '--runtime-id',
+      required=False,
+      help=(
+          'The id of the runtime to assign. If not specified, a random id will'
+          ' be generated.'
+      ),
+  )
+  parser.add_argument(
+      '--display-name',
+      required=True,
+      help='The display name of the runtime to assign.',
+  )
+  parser.add_argument('--description', required=False, help='The description')
+  parser.add_argument(
+      '--runtime-user',
+      required=False,
+      help=(
+          'User email for the runtime owner. Runtimes can only be used by the'
+          ' owner. If a user is not provided, the gcloud user will be assumed'
+          ' to be the owner. The user cannot be a service account.'
+      ),
+  )
+  parser.add_argument(
+      '--labels',
+      help='Add labels to identify and group the runtime template.',
+      type=arg_parsers.ArgDict(),
+      metavar='KEY=VALUE',
+  )
+
+  AddAsyncFlag(parser)

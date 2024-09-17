@@ -1566,14 +1566,17 @@ class GoogleCloudApihubV1ApiHubResource(_messages.Message):
     definition: This represents Definition resource in search results. Only
       name field is populated in search results.
     deployment: This represents Deployment resource in search results. Only
-      name, display_name and description fields are populated in search
-      results.
+      name, display_name, description, deployment_type and api_versions fields
+      are populated in search results.
     operation: This represents ApiOperation resource in search results. Only
-      name, and description fields are populated in search results.
+      name, description, spec and details fields are populated in search
+      results.
     spec: This represents Spec resource in search results. Only name,
-      display_name and description fields are populated in search results.
+      display_name, description, spec_type and documentation fields are
+      populated in search results.
     version: This represents Version resource in search results. Only name,
-      display_name and description fields are populated in search results.
+      display_name, description, lifecycle, compliance and accreditation
+      fields are populated in search results.
   """
 
   api = _messages.MessageField('GoogleCloudApihubV1Api', 1)
@@ -1779,14 +1782,38 @@ class GoogleCloudApihubV1AttributeValues(_messages.Message):
 class GoogleCloudApihubV1Config(_messages.Message):
   r"""Available configurations to provision an ApiHub Instance.
 
+  Enums:
+    EncryptionTypeValueValuesEnum: Optional. Encryption type for the region.
+      If the encryption type is CMEK, the cmek_key_name must be provided. If
+      no encryption type is provided, GMEK will be used.
+
   Fields:
-    cmekKeyName: Required. The Customer Managed Encryption Key (CMEK) used for
+    cmekKeyName: Optional. The Customer Managed Encryption Key (CMEK) used for
       data encryption. The CMEK name should follow the format of `projects/([^
       /]+)/locations/([^/]+)/keyRings/([^/]+)/cryptoKeys/([^/]+)`, where the
-      location must match the instance location.
+      location must match the instance location. If the CMEK is not provided,
+      a GMEK will be created for the instance.
+    encryptionType: Optional. Encryption type for the region. If the
+      encryption type is CMEK, the cmek_key_name must be provided. If no
+      encryption type is provided, GMEK will be used.
   """
 
+  class EncryptionTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Encryption type for the region. If the encryption type is
+    CMEK, the cmek_key_name must be provided. If no encryption type is
+    provided, GMEK will be used.
+
+    Values:
+      ENCRYPTION_TYPE_UNSPECIFIED: Encryption type unspecified.
+      GMEK: Default encryption using Google managed encryption key.
+      CMEK: Encryption using customer managed encryption key.
+    """
+    ENCRYPTION_TYPE_UNSPECIFIED = 0
+    GMEK = 1
+    CMEK = 2
+
   cmekKeyName = _messages.StringField(1)
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 2)
 
 
 class GoogleCloudApihubV1Definition(_messages.Message):
@@ -2420,8 +2447,7 @@ class GoogleCloudApihubV1ListDependenciesResponse(_messages.Message):
   r"""The ListDependencies method's response.
 
   Fields:
-    dependencies: The dependency resources present in the API hub. Only
-      following field will be populated in the response: name.
+    dependencies: The dependency resources present in the API hub.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
   """
@@ -2447,9 +2473,7 @@ class GoogleCloudApihubV1ListExternalApisResponse(_messages.Message):
   r"""The ListExternalApis method's response.
 
   Fields:
-    externalApis: The External API resources present in the API hub. Only
-      following fields will be populated in the response: name, display_name,
-      documentation.external_uri.
+    externalApis: The External API resources present in the API hub.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
   """

@@ -376,6 +376,10 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
       KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS: Assured Workloads
         Sovereign Controls KSA
       REGIONAL_CONTROLS: Assured Workloads for Regional Controls
+      HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS: Healthcare and Life Science
+        Controls
+      HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT: Healthcare and Life
+        Science Controls with US Support
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -398,6 +402,8 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
     JP_REGIONS_AND_SUPPORT = 18
     KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS = 19
     REGIONAL_CONTROLS = 20
+    HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS = 21
+    HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT = 22
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -800,7 +806,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       account for the customer workload
     partnerServicesBillingAccount: Optional. Billing account necessary for
       purchasing services from Sovereign Partners. This field is required for
-      creating SIA/PSN partner workloads. The caller should have
+      creating SIA/PSN/CNTXT partner workloads. The caller should have
       'billing.resourceAssociations.create' IAM permission on this billing-
       account. The format of this string is billingAccounts/AAAAAA-BBBBBB-
       CCCCCC
@@ -863,6 +869,10 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS: Assured Workloads
         Sovereign Controls KSA
       REGIONAL_CONTROLS: Assured Workloads for Regional Controls
+      HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS: Healthcare and Life Science
+        Controls
+      HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT: Healthcare and Life
+        Science Controls with US Support
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -885,6 +895,8 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     JP_REGIONS_AND_SUPPORT = 18
     KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS = 19
     REGIONAL_CONTROLS = 20
+    HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS = 21
+    HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT = 22
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given

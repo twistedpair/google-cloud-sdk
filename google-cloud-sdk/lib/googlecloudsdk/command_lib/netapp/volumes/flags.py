@@ -496,7 +496,7 @@ def AddVolumeMultipleEndpointsArg(parser):
   )
 
 
-def AddVolumeTieringPolicyArg(parser, messages, hidden=True):
+def AddVolumeTieringPolicyArg(parser, messages):
   """Adds the --tiering-policy arg to the arg parser."""
   tiering_policy_arg_spec = {
       'tier-action': messages.TieringPolicy.TierActionValueValuesEnum,
@@ -518,8 +518,7 @@ can be range from 7-183. Default is 31.
       '--tiering-policy',
       type=arg_parsers.ArgDict(spec=tiering_policy_arg_spec),
       metavar='tier-action=ENABLED|PAUSED',
-      help=tiering_policy_help,
-      hidden=hidden
+      help=tiering_policy_help
   )
 
 
@@ -599,12 +598,7 @@ def AddVolumeCreateArgs(parser, release_track):
       release_track == calliope_base.ReleaseTrack.GA):
     AddVolumeBackupConfigArg(parser)
     AddVolumeSourceBackupArg(parser)
-  # TODO(b/354772678):Remove the release track condition when auto tiering GA.
-  if (release_track == calliope_base.ReleaseTrack.ALPHA or
-      release_track == calliope_base.ReleaseTrack.BETA):
-    AddVolumeTieringPolicyArg(parser, messages, False)
-  else:
-    AddVolumeTieringPolicyArg(parser, messages, True)
+  AddVolumeTieringPolicyArg(parser, messages)
   AddVolumeHybridReplicationParametersArg(parser)
   labels_util.AddCreateLabelsFlags(parser)
 
@@ -647,10 +641,5 @@ def AddVolumeUpdateArgs(parser, release_track):
       release_track == calliope_base.ReleaseTrack.GA):
     AddVolumeBackupConfigArg(parser)
     AddVolumeSourceBackupArg(parser)
-  # TODO(b/354772678):Remove the release track condition when auto tiering GA.
-  if (release_track == calliope_base.ReleaseTrack.ALPHA or
-      release_track == calliope_base.ReleaseTrack.BETA):
-    AddVolumeTieringPolicyArg(parser, messages, False)
-  else:
-    AddVolumeTieringPolicyArg(parser, messages, True)
+  AddVolumeTieringPolicyArg(parser, messages)
   labels_util.AddUpdateLabelsFlags(parser)

@@ -173,6 +173,7 @@ def AddCreateFlags(
     support_stable_fleet=False,
     support_existing_reservation=False,
     support_custom_end_time=False,
+    support_reservation_sharing_policy=False,
 ):
   """Add general arguments for `commitments create` flag."""
   AddPlanForCreate(parser)
@@ -181,6 +182,7 @@ def AddCreateFlags(
       support_share_setting,
       support_stable_fleet,
       support_existing_reservation,
+      support_reservation_sharing_policy,
   )
   AddResourcesArgGroup(parser)
   AddSplitSourceCommitment(parser)
@@ -476,6 +478,7 @@ def AddReservationArgGroup(
     support_share_setting=False,
     support_stable_fleet=False,
     support_existing_reservations=False,
+    support_reservation_sharing_policy=False,
 ):
   """Adds all flags needed for reservations creation."""
   reservations_manage_group = parser.add_group(
@@ -515,6 +518,24 @@ def AddReservationArgGroup(
         )
     )
     AddFlagsToShareSettingGroup(share_setting_reservation_group)
+
+  if support_reservation_sharing_policy:
+    reservation_sharing_policy_group = (
+        single_reservation_group.add_argument_group(
+            help='Manage the properties of a reservation sharing policy to create',
+            required=False,
+        )
+    )
+    AddFlagsToReservationSharingPolicyGroup(reservation_sharing_policy_group)
+
+
+def AddFlagsToReservationSharingPolicyGroup(group):
+  """Adds flags needed for a reservation sharing policy."""
+  args = [
+      reservation_flags.GetReservationSharingPolicyFlag(),
+  ]
+  for arg in args:
+    arg.AddToParser(group)
 
 
 def AddFlagsToSpecificSkuGroup(group, support_stable_fleet=False):

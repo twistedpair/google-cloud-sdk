@@ -878,6 +878,15 @@ class FindNearest(_messages.Message):
 
   Fields:
     distanceMeasure: Required. The distance measure to use, required.
+    distanceResultField: Optional. Optional name of the field to output the
+      result of the vector distance calculation. Must conform to document
+      field name limitations.
+    distanceThreshold: Optional. Option to specify a threshold for which no
+      less similar documents will be returned. The behavior of the specified
+      `distance_measure` will affect the meaning of the distance threshold.
+      Since DOT_PRODUCT distances increase when the vectors are more similar,
+      the comparison is inverted. For EUCLIDEAN, COSINE: WHERE distance <=
+      distance_threshold For DOT_PRODUCT: WHERE distance >= distance_threshold
     limit: Required. The number of nearest neighbors to return. Must be a
       positive integer of no more than 1000.
     queryVector: Required. The query vector that we are searching on. Must be
@@ -915,9 +924,11 @@ class FindNearest(_messages.Message):
     DOT_PRODUCT = 3
 
   distanceMeasure = _messages.EnumField('DistanceMeasureValueValuesEnum', 1)
-  limit = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  queryVector = _messages.MessageField('Value', 3)
-  vectorField = _messages.MessageField('FieldReference', 4)
+  distanceResultField = _messages.StringField(2)
+  distanceThreshold = _messages.FloatField(3)
+  limit = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  queryVector = _messages.MessageField('Value', 5)
+  vectorField = _messages.MessageField('FieldReference', 6)
 
 
 class FirestoreProjectsDatabasesDocumentsBatchGetRequest(_messages.Message):
@@ -1366,10 +1377,10 @@ class GoogleFirestoreAdminV1BulkDeleteDocumentsMetadata(_messages.Message):
     OperationStateValueValuesEnum: The state of the operation.
 
   Fields:
-    collectionIds: The ids of the collection groups that are being deleted.
+    collectionIds: The IDs of the collection groups that are being deleted.
     endTime: The time this operation completed. Will be unset if operation
       still in progress.
-    namespaceIds: Which namespace ids are being deleted.
+    namespaceIds: Which namespace IDs are being deleted.
     operationState: The state of the operation.
     progressBytes: The progress, in bytes, of this operation.
     progressDocuments: The progress, in documents, of this operation.

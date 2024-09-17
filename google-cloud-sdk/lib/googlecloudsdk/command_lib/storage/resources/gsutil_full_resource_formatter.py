@@ -94,6 +94,8 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = base.BucketDisplayTitlesAndDefaults(
     soft_delete_policy=base.FieldDisplayTitleAndDefault(
         title='Soft Delete Policy', default=None
     ),
+    # IP Filter is not supported in gsutil.
+    ip_filter_config=None,
     acl=base.FieldDisplayTitleAndDefault(
         title='ACL', default=shim_format_util.EMPTY_LIST_STRING
     ),

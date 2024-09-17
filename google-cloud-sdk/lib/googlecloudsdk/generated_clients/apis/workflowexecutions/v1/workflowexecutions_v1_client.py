@@ -112,7 +112,7 @@ class WorkflowexecutionsV1(base_api.BaseApiClient):
         method_id='workflowexecutions.projects.locations.workflows.executions.stepEntries.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['view'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='WorkflowexecutionsProjectsLocationsWorkflowsExecutionsStepEntriesGetRequest',
@@ -139,7 +139,7 @@ class WorkflowexecutionsV1(base_api.BaseApiClient):
         method_id='workflowexecutions.projects.locations.workflows.executions.stepEntries.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'skip'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'skip', 'view'],
         relative_path='v1/{+parent}/stepEntries',
         request_field='',
         request_type_name='WorkflowexecutionsProjectsLocationsWorkflowsExecutionsStepEntriesListRequest',
@@ -208,6 +208,33 @@ class WorkflowexecutionsV1(base_api.BaseApiClient):
         request_field='execution',
         request_type_name='WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCreateRequest',
         response_type_name='Execution',
+        supports_download=False,
+    )
+
+    def DeleteExecutionHistory(self, request, global_params=None):
+      r"""Deletes all step entries for an execution.
+
+      Args:
+        request: (WorkflowexecutionsProjectsLocationsWorkflowsExecutionsDeleteExecutionHistoryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('DeleteExecutionHistory')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteExecutionHistory.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions/{executionsId}:deleteExecutionHistory',
+        http_method='POST',
+        method_id='workflowexecutions.projects.locations.workflows.executions.deleteExecutionHistory',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:deleteExecutionHistory',
+        request_field='deleteExecutionHistoryRequest',
+        request_type_name='WorkflowexecutionsProjectsLocationsWorkflowsExecutionsDeleteExecutionHistoryRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 

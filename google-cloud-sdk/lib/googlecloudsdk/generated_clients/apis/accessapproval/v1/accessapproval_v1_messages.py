@@ -600,6 +600,8 @@ class ApprovalRequest(_messages.Message):
     name: The resource name of the request. Format is "{projects|folders|organ
       izations}/{id}/approvalRequests/{approval_request}".
     requestTime: The time at which approval was requested.
+    requestedAugmentedInfo: This field contains the augmented information of
+      the request.
     requestedDuration: The requested access duration.
     requestedExpiration: The original requested expiration for the approval.
       Calculated by adding the requested_duration to the request_time.
@@ -620,12 +622,13 @@ class ApprovalRequest(_messages.Message):
   dismiss = _messages.MessageField('DismissDecision', 2)
   name = _messages.StringField(3)
   requestTime = _messages.StringField(4)
-  requestedDuration = _messages.StringField(5)
-  requestedExpiration = _messages.StringField(6)
-  requestedLocations = _messages.MessageField('AccessLocations', 7)
-  requestedReason = _messages.MessageField('AccessReason', 8)
-  requestedResourceName = _messages.StringField(9)
-  requestedResourceProperties = _messages.MessageField('ResourceProperties', 10)
+  requestedAugmentedInfo = _messages.MessageField('AugmentedInfo', 5)
+  requestedDuration = _messages.StringField(6)
+  requestedExpiration = _messages.StringField(7)
+  requestedLocations = _messages.MessageField('AccessLocations', 8)
+  requestedReason = _messages.MessageField('AccessReason', 9)
+  requestedResourceName = _messages.StringField(10)
+  requestedResourceProperties = _messages.MessageField('ResourceProperties', 11)
 
 
 class ApproveApprovalRequestMessage(_messages.Message):
@@ -656,6 +659,18 @@ class ApproveDecision(_messages.Message):
   expireTime = _messages.StringField(3)
   invalidateTime = _messages.StringField(4)
   signatureInfo = _messages.MessageField('SignatureInfo', 5)
+
+
+class AugmentedInfo(_messages.Message):
+  r"""This field contains the augmented information of the request.
+
+  Fields:
+    command: For command-line tools, the full command-line exactly as entered
+      by the actor without adding any additional characters (such as quotation
+      marks).
+  """
+
+  command = _messages.StringField(1)
 
 
 class DismissApprovalRequestMessage(_messages.Message):

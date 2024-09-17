@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://oracledatabase.googleapis.com/v1/'
-DOCS_URL = 'https://cloud.google.com/blog/products/databases/accelerating-cloud-transformation-with-google-cloud-and-oracle'
+DOCS_URL = 'https://cloud.google.com/oracle/database/docs'
 
 
 class Collections(enum.Enum):

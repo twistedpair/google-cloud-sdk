@@ -41,6 +41,29 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_BACKUPCHANNELS = (
+      'projects.locations.backupChannels',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/backupChannels/'
+              '{backupChannelsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_BACKUPCHANNELS_BACKUPPLANASSOCIATIONS = (
+      'projects.locations.backupChannels.backupPlanAssociations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/backupChannels/'
+              '{backupChannelsId}/backupPlanAssociations/'
+              '{backupPlanAssociationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_BACKUPPLANS = (
       'projects.locations.backupPlans',
       '{+name}',
@@ -86,25 +109,25 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_PERMITTEDBACKUPFLOWS = (
-      'projects.locations.permittedBackupFlows',
+  PROJECTS_LOCATIONS_RESTORECHANNELS = (
+      'projects.locations.restoreChannels',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'permittedBackupFlows/{permittedBackupFlowsId}',
+              'projects/{projectsId}/locations/{locationsId}/restoreChannels/'
+              '{restoreChannelsId}',
       },
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_PERMITTEDBACKUPFLOWS_BACKUPPLANASSOCIATIONS = (
-      'projects.locations.permittedBackupFlows.backupPlanAssociations',
+  PROJECTS_LOCATIONS_RESTORECHANNELS_RESTOREPLANASSOCIATIONS = (
+      'projects.locations.restoreChannels.restorePlanAssociations',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'permittedBackupFlows/{permittedBackupFlowsId}/'
-              'backupPlanAssociations/{backupPlanAssociationsId}',
+              'projects/{projectsId}/locations/{locationsId}/restoreChannels/'
+              '{restoreChannelsId}/restorePlanAssociations/'
+              '{restorePlanAssociationsId}',
       },
       ['name'],
       True

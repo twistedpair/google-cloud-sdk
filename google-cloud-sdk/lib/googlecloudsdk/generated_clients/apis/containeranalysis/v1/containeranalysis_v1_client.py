@@ -205,6 +205,33 @@ class ContaineranalysisV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a note or an occurrence resource. Requires `containeranalysis.notes.setIamPolicy` or `containeranalysis.occurrences.setIamPolicy` permission if the resource is a note or occurrence, respectively. The resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for notes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for occurrences.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsNotesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notes/{notesId}:getIamPolicy',
+        http_method='POST',
+        method_id='containeranalysis.projects.locations.notes.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='ContaineranalysisProjectsLocationsNotesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists notes for the specified project.
 
@@ -256,6 +283,60 @@ class ContaineranalysisV1(base_api.BaseApiClient):
         request_field='note',
         request_type_name='ContaineranalysisProjectsLocationsNotesPatchRequest',
         response_type_name='Note',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified note or occurrence. Requires `containeranalysis.notes.setIamPolicy` or `containeranalysis.occurrences.setIamPolicy` permission if the resource is a note or an occurrence, respectively. The resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for notes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for occurrences.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsNotesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notes/{notesId}:setIamPolicy',
+        http_method='POST',
+        method_id='containeranalysis.projects.locations.notes.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='ContaineranalysisProjectsLocationsNotesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns the permissions that a caller has on the specified note or occurrence. Requires list permission on the project (for example, `containeranalysis.notes.list`). The resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for notes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for occurrences.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsNotesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notes/{notesId}:testIamPermissions',
+        http_method='POST',
+        method_id='containeranalysis.projects.locations.notes.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='ContaineranalysisProjectsLocationsNotesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -377,6 +458,33 @@ class ContaineranalysisV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a note or an occurrence resource. Requires `containeranalysis.notes.setIamPolicy` or `containeranalysis.occurrences.setIamPolicy` permission if the resource is a note or occurrence, respectively. The resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for notes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for occurrences.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsOccurrencesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/occurrences/{occurrencesId}:getIamPolicy',
+        http_method='POST',
+        method_id='containeranalysis.projects.locations.occurrences.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='ContaineranalysisProjectsLocationsOccurrencesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
     def GetNotes(self, request, global_params=None):
       r"""Gets the note attached to the specified occurrence. Consumer projects can use this method to get a note that belongs to a provider project.
 
@@ -482,6 +590,60 @@ class ContaineranalysisV1(base_api.BaseApiClient):
         request_field='occurrence',
         request_type_name='ContaineranalysisProjectsLocationsOccurrencesPatchRequest',
         response_type_name='Occurrence',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified note or occurrence. Requires `containeranalysis.notes.setIamPolicy` or `containeranalysis.occurrences.setIamPolicy` permission if the resource is a note or an occurrence, respectively. The resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for notes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for occurrences.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsOccurrencesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/occurrences/{occurrencesId}:setIamPolicy',
+        http_method='POST',
+        method_id='containeranalysis.projects.locations.occurrences.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='ContaineranalysisProjectsLocationsOccurrencesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns the permissions that a caller has on the specified note or occurrence. Requires list permission on the project (for example, `containeranalysis.notes.list`). The resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for notes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for occurrences.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsOccurrencesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/occurrences/{occurrencesId}:testIamPermissions',
+        http_method='POST',
+        method_id='containeranalysis.projects.locations.occurrences.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='ContaineranalysisProjectsLocationsOccurrencesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

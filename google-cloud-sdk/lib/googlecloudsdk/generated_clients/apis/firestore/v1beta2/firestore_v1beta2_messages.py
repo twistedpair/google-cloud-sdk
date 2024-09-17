@@ -184,10 +184,10 @@ class GoogleFirestoreAdminV1BulkDeleteDocumentsMetadata(_messages.Message):
     OperationStateValueValuesEnum: The state of the operation.
 
   Fields:
-    collectionIds: The ids of the collection groups that are being deleted.
+    collectionIds: The IDs of the collection groups that are being deleted.
     endTime: The time this operation completed. Will be unset if operation
       still in progress.
-    namespaceIds: Which namespace ids are being deleted.
+    namespaceIds: Which namespace IDs are being deleted.
     operationState: The state of the operation.
     progressBytes: The progress, in bytes, of this operation.
     progressDocuments: The progress, in documents, of this operation.

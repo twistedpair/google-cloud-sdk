@@ -376,7 +376,8 @@ def AddUpdateRotationGroup(parser):
       _ArgOrFlag('remove-rotation-period', False),
       action='store_true',
       help=(
-          'If set, removes the rotation period, cancelling all rotations except for the next one.'
+          'If set, removes the rotation period, cancelling all rotations '
+          'except for the next one.'
       ))
   group.add_argument(
       _ArgOrFlag('remove-rotation-schedule', False),
@@ -384,24 +385,28 @@ def AddUpdateRotationGroup(parser):
       help=('If set, removes rotation policy from a secret.'))
 
 
-def AddSecretEtag(parser):
+def AddSecretEtag(parser, action):
   """Add flag for specifying the current secret etag."""
   parser.add_argument(
       _ArgOrFlag('etag', False),
       metavar='ETAG',
       help=(
-          'Current entity tag (ETag) of the secret. If this flag is defined, the secret is updated only if the ETag provided matched the current secret\'s ETag.'
-      ))
+          'Current entity tag (ETag) of the secret. If specified, the secret is'
+          ' {action} only if the ETag provided matches the current secret\'s '
+          'ETag.'
+      ).format(action=action))
 
 
-def AddVersionEtag(parser):
+def AddVersionEtag(parser, action):
   """Add flag for specifying the current secret version etag."""
   parser.add_argument(
       _ArgOrFlag('etag', False),
       metavar='ETAG',
       help=(
-          'Current entity tag (ETag) of the secret version. If this flag is defined, the version is updated only if the ETag provided matched the current version\'s ETag.'
-      ))
+          'Current entity tag (ETag) of the secret version. If specified, the '
+          'version is {action} only if the ETag provided matches the current '
+          'version\'s ETag.'
+      ).format(action=action))
 
 
 def AddRegionalKmsKeyName(parser, positional=False, **kwargs):

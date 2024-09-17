@@ -994,8 +994,9 @@ class InstancePolicyOrTemplate(_messages.Message):
     installOpsAgent: Optional. Set this field true if you want Batch to
       install Ops Agent on your behalf. Default is false.
     instanceTemplate: Name of an instance template used to create VMs. Named
-      the field as 'instance_template' instead of 'template' to avoid c++
-      keyword conflict.
+      the field as 'instance_template' instead of 'template' to avoid C++
+      keyword conflict. Batch only supports global instance templates. You can
+      specify the global instance template as a full or partial URL.
     policy: InstancePolicy.
   """
 
@@ -1285,6 +1286,10 @@ class JobStatus(_messages.Message):
       DELETION_IN_PROGRESS: The Job will be deleted, but has not been deleted
         yet. Typically this is because resources used by the Job are still
         being cleaned up.
+      CANCELLATION_IN_PROGRESS: The Job cancellation is in progress, this is
+        because the resources used by the Job are still being cleaned up.
+      CANCELLED: The Job has been cancelled, the task executions were stopped
+        and the resources were cleaned up.
     """
     STATE_UNSPECIFIED = 0
     QUEUED = 1
@@ -1293,6 +1298,8 @@ class JobStatus(_messages.Message):
     SUCCEEDED = 4
     FAILED = 5
     DELETION_IN_PROGRESS = 6
+    CANCELLATION_IN_PROGRESS = 7
+    CANCELLED = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TaskGroupsValue(_messages.Message):
@@ -1682,6 +1689,10 @@ class Message(_messages.Message):
       DELETION_IN_PROGRESS: The Job will be deleted, but has not been deleted
         yet. Typically this is because resources used by the Job are still
         being cleaned up.
+      CANCELLATION_IN_PROGRESS: The Job cancellation is in progress, this is
+        because the resources used by the Job are still being cleaned up.
+      CANCELLED: The Job has been cancelled, the task executions were stopped
+        and the resources were cleaned up.
     """
     STATE_UNSPECIFIED = 0
     QUEUED = 1
@@ -1690,6 +1701,8 @@ class Message(_messages.Message):
     SUCCEEDED = 4
     FAILED = 5
     DELETION_IN_PROGRESS = 6
+    CANCELLATION_IN_PROGRESS = 7
+    CANCELLED = 8
 
   class NewTaskStateValueValuesEnum(_messages.Enum):
     r"""The new task state.

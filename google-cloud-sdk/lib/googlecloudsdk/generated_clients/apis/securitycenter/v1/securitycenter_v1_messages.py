@@ -579,11 +579,13 @@ class AzureMetadata(_messages.Message):
       highest level.
     resourceGroup: The Azure resource group associated with the resource.
     subscription: The Azure subscription associated with the resource.
+    tenant: The Azure Entra tenant associated with the resource.
   """
 
   managementGroups = _messages.MessageField('AzureManagementGroup', 1, repeated=True)
   resourceGroup = _messages.MessageField('AzureResourceGroup', 2)
   subscription = _messages.MessageField('AzureSubscription', 3)
+  tenant = _messages.MessageField('AzureTenant', 4)
 
 
 class AzureResourceGroup(_messages.Message):
@@ -607,6 +609,17 @@ class AzureSubscription(_messages.Message):
 
   displayName = _messages.StringField(1)
   id = _messages.StringField(2)
+
+
+class AzureTenant(_messages.Message):
+  r"""Represents a Microsoft Entra tenant.
+
+  Fields:
+    id: The ID of the Microsoft Entra tenant, for example,
+      "a11aaa11-aa11-1aa1-11aa-1aaa11a".
+  """
+
+  id = _messages.StringField(1)
 
 
 class BackupDisasterRecovery(_messages.Message):
@@ -1142,6 +1155,7 @@ class Cve(_messages.Message):
       released.
     exploitationActivity: The exploitation activity of the vulnerability in
       the wild.
+    firstExploitationDate: Date of the earliest known exploitation.
     id: The unique identifier for the vulnerability. e.g. CVE-2021-34527
     impact: The potential impact of the vulnerability if it was to be
       exploited.
@@ -1197,12 +1211,13 @@ class Cve(_messages.Message):
   cvssv3 = _messages.MessageField('Cvssv3', 1)
   exploitReleaseDate = _messages.StringField(2)
   exploitationActivity = _messages.EnumField('ExploitationActivityValueValuesEnum', 3)
-  id = _messages.StringField(4)
-  impact = _messages.EnumField('ImpactValueValuesEnum', 5)
-  observedInTheWild = _messages.BooleanField(6)
-  references = _messages.MessageField('Reference', 7, repeated=True)
-  upstreamFixAvailable = _messages.BooleanField(8)
-  zeroDay = _messages.BooleanField(9)
+  firstExploitationDate = _messages.StringField(4)
+  id = _messages.StringField(5)
+  impact = _messages.EnumField('ImpactValueValuesEnum', 6)
+  observedInTheWild = _messages.BooleanField(7)
+  references = _messages.MessageField('Reference', 8, repeated=True)
+  upstreamFixAvailable = _messages.BooleanField(9)
+  zeroDay = _messages.BooleanField(10)
 
 
 class Cvssv3(_messages.Message):
@@ -1415,6 +1430,85 @@ class Cvssv3(_messages.Message):
   privilegesRequired = _messages.EnumField('PrivilegesRequiredValueValuesEnum', 7)
   scope = _messages.EnumField('ScopeValueValuesEnum', 8)
   userInteraction = _messages.EnumField('UserInteractionValueValuesEnum', 9)
+
+
+class DataAccessEvent(_messages.Message):
+  r"""Details about a data access attempt made by a principal not authorized
+  under applicable data security policy.
+
+  Enums:
+    OperationValueValuesEnum: The operation performed by the principal to
+      access the data.
+
+  Fields:
+    eventId: Unique identifier for data access event.
+    eventTime: Timestamp of data access event.
+    operation: The operation performed by the principal to access the data.
+    principalEmail: The email address of the principal that accessed the data.
+      The principal could be a user account, service account, Google group, or
+      other.
+  """
+
+  class OperationValueValuesEnum(_messages.Enum):
+    r"""The operation performed by the principal to access the data.
+
+    Values:
+      OPERATION_UNSPECIFIED: The operation is unspecified.
+      READ: Represents a read operation.
+      MOVE: Represents a move operation.
+      COPY: Represents a copy operation.
+    """
+    OPERATION_UNSPECIFIED = 0
+    READ = 1
+    MOVE = 2
+    COPY = 3
+
+  eventId = _messages.StringField(1)
+  eventTime = _messages.StringField(2)
+  operation = _messages.EnumField('OperationValueValuesEnum', 3)
+  principalEmail = _messages.StringField(4)
+
+
+class DataFlowEvent(_messages.Message):
+  r"""Details about a data flow event, in which either the data is moved to or
+  is accessed from a non-compliant geo-location, as defined in the applicable
+  data security policy.
+
+  Enums:
+    OperationValueValuesEnum: The operation performed by the principal for the
+      data flow event.
+
+  Fields:
+    eventId: Unique identifier for data flow event.
+    eventTime: Timestamp of data flow event.
+    operation: The operation performed by the principal for the data flow
+      event.
+    principalEmail: The email address of the principal that initiated the data
+      flow event. The principal could be a user account, service account,
+      Google group, or other.
+    violatedLocation: Non-compliant location of the principal or the data
+      destination.
+  """
+
+  class OperationValueValuesEnum(_messages.Enum):
+    r"""The operation performed by the principal for the data flow event.
+
+    Values:
+      OPERATION_UNSPECIFIED: The operation is unspecified.
+      READ: Represents a read operation.
+      MOVE: Represents a move operation.
+      COPY: Represents a copy operation.
+    """
+    OPERATION_UNSPECIFIED = 0
+    READ = 1
+    MOVE = 2
+    COPY = 3
+
+  eventId = _messages.StringField(1)
+  eventTime = _messages.StringField(2)
+  operation = _messages.EnumField('OperationValueValuesEnum', 3)
+  principalEmail = _messages.StringField(4)
+  violatedLocation = _messages.StringField(5)
 
 
 class Database(_messages.Message):
@@ -1857,6 +1951,8 @@ class Finding(_messages.Message):
       information for both Kubernetes and non-Kubernetes containers.
     createTime: The time at which the finding was created in Security Command
       Center.
+    dataAccessEvents: Data access events associated with the finding.
+    dataFlowEvents: Data flow events associated with the finding.
     database: Database associated with the finding.
     description: Contains more details about the finding.
     eventTime: The time the finding was first detected. If an existing finding
@@ -1973,6 +2069,8 @@ class Finding(_messages.Message):
         issues occur together, represent a greater risk than when the issues
         occur independently. A group of such issues is referred to as a toxic
         combination.
+      SENSITIVE_DATA_RISK: Describes a potential security risk to data assets
+        that contain sensitive data.
     """
     FINDING_CLASS_UNSPECIFIED = 0
     THREAT = 1
@@ -1982,6 +2080,7 @@ class Finding(_messages.Message):
     SCC_ERROR = 5
     POSTURE_VIOLATION = 6
     TOXIC_COMBINATION = 7
+    SENSITIVE_DATA_RISK = 8
 
   class MuteValueValuesEnum(_messages.Enum):
     r"""Indicates the mute state of a finding (either muted, unmuted or
@@ -2159,43 +2258,45 @@ class Finding(_messages.Message):
   contacts = _messages.MessageField('ContactsValue', 12)
   containers = _messages.MessageField('Container', 13, repeated=True)
   createTime = _messages.StringField(14)
-  database = _messages.MessageField('Database', 15)
-  description = _messages.StringField(16)
-  eventTime = _messages.StringField(17)
-  exfiltration = _messages.MessageField('Exfiltration', 18)
-  externalSystems = _messages.MessageField('ExternalSystemsValue', 19)
-  externalUri = _messages.StringField(20)
-  files = _messages.MessageField('File', 21, repeated=True)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 22)
-  groupMemberships = _messages.MessageField('GroupMembership', 23, repeated=True)
-  iamBindings = _messages.MessageField('IamBinding', 24, repeated=True)
-  indicator = _messages.MessageField('Indicator', 25)
-  kernelRootkit = _messages.MessageField('KernelRootkit', 26)
-  kubernetes = _messages.MessageField('Kubernetes', 27)
-  loadBalancers = _messages.MessageField('LoadBalancer', 28, repeated=True)
-  logEntries = _messages.MessageField('LogEntry', 29, repeated=True)
-  mitreAttack = _messages.MessageField('MitreAttack', 30)
-  moduleName = _messages.StringField(31)
-  mute = _messages.EnumField('MuteValueValuesEnum', 32)
-  muteAnnotation = _messages.StringField(33)
-  muteInfo = _messages.MessageField('MuteInfo', 34)
-  muteInitiator = _messages.StringField(35)
-  muteUpdateTime = _messages.StringField(36)
-  name = _messages.StringField(37)
-  nextSteps = _messages.StringField(38)
-  notebook = _messages.MessageField('Notebook', 39)
-  orgPolicies = _messages.MessageField('OrgPolicy', 40, repeated=True)
-  parent = _messages.StringField(41)
-  parentDisplayName = _messages.StringField(42)
-  processes = _messages.MessageField('Process', 43, repeated=True)
-  resourceName = _messages.StringField(44)
-  securityMarks = _messages.MessageField('SecurityMarks', 45)
-  securityPosture = _messages.MessageField('SecurityPosture', 46)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 47)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 48)
-  state = _messages.EnumField('StateValueValuesEnum', 49)
-  toxicCombination = _messages.MessageField('ToxicCombination', 50)
-  vulnerability = _messages.MessageField('Vulnerability', 51)
+  dataAccessEvents = _messages.MessageField('DataAccessEvent', 15, repeated=True)
+  dataFlowEvents = _messages.MessageField('DataFlowEvent', 16, repeated=True)
+  database = _messages.MessageField('Database', 17)
+  description = _messages.StringField(18)
+  eventTime = _messages.StringField(19)
+  exfiltration = _messages.MessageField('Exfiltration', 20)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 21)
+  externalUri = _messages.StringField(22)
+  files = _messages.MessageField('File', 23, repeated=True)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 24)
+  groupMemberships = _messages.MessageField('GroupMembership', 25, repeated=True)
+  iamBindings = _messages.MessageField('IamBinding', 26, repeated=True)
+  indicator = _messages.MessageField('Indicator', 27)
+  kernelRootkit = _messages.MessageField('KernelRootkit', 28)
+  kubernetes = _messages.MessageField('Kubernetes', 29)
+  loadBalancers = _messages.MessageField('LoadBalancer', 30, repeated=True)
+  logEntries = _messages.MessageField('LogEntry', 31, repeated=True)
+  mitreAttack = _messages.MessageField('MitreAttack', 32)
+  moduleName = _messages.StringField(33)
+  mute = _messages.EnumField('MuteValueValuesEnum', 34)
+  muteAnnotation = _messages.StringField(35)
+  muteInfo = _messages.MessageField('MuteInfo', 36)
+  muteInitiator = _messages.StringField(37)
+  muteUpdateTime = _messages.StringField(38)
+  name = _messages.StringField(39)
+  nextSteps = _messages.StringField(40)
+  notebook = _messages.MessageField('Notebook', 41)
+  orgPolicies = _messages.MessageField('OrgPolicy', 42, repeated=True)
+  parent = _messages.StringField(43)
+  parentDisplayName = _messages.StringField(44)
+  processes = _messages.MessageField('Process', 45, repeated=True)
+  resourceName = _messages.StringField(46)
+  securityMarks = _messages.MessageField('SecurityMarks', 47)
+  securityPosture = _messages.MessageField('SecurityPosture', 48)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 49)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 50)
+  state = _messages.EnumField('StateValueValuesEnum', 51)
+  toxicCombination = _messages.MessageField('ToxicCombination', 52)
+  vulnerability = _messages.MessageField('Vulnerability', 53)
 
 
 class Folder(_messages.Message):
@@ -3564,11 +3665,13 @@ class GoogleCloudSecuritycenterV2AzureMetadata(_messages.Message):
       highest level.
     resourceGroup: The Azure resource group associated with the resource.
     subscription: The Azure subscription associated with the resource.
+    tenant: The Azure Entra tenant associated with the resource.
   """
 
   managementGroups = _messages.MessageField('GoogleCloudSecuritycenterV2AzureManagementGroup', 1, repeated=True)
   resourceGroup = _messages.MessageField('GoogleCloudSecuritycenterV2AzureResourceGroup', 2)
   subscription = _messages.MessageField('GoogleCloudSecuritycenterV2AzureSubscription', 3)
+  tenant = _messages.MessageField('GoogleCloudSecuritycenterV2AzureTenant', 4)
 
 
 class GoogleCloudSecuritycenterV2AzureResourceGroup(_messages.Message):
@@ -3592,6 +3695,17 @@ class GoogleCloudSecuritycenterV2AzureSubscription(_messages.Message):
 
   displayName = _messages.StringField(1)
   id = _messages.StringField(2)
+
+
+class GoogleCloudSecuritycenterV2AzureTenant(_messages.Message):
+  r"""Represents a Microsoft Entra tenant.
+
+  Fields:
+    id: The ID of the Microsoft Entra tenant, for example,
+      "a11aaa11-aa11-1aa1-11aa-1aaa11a".
+  """
+
+  id = _messages.StringField(1)
 
 
 class GoogleCloudSecuritycenterV2BackupDisasterRecovery(_messages.Message):
@@ -3950,6 +4064,7 @@ class GoogleCloudSecuritycenterV2Cve(_messages.Message):
       released.
     exploitationActivity: The exploitation activity of the vulnerability in
       the wild.
+    firstExploitationDate: Date of the earliest known exploitation.
     id: The unique identifier for the vulnerability. e.g. CVE-2021-34527
     impact: The potential impact of the vulnerability if it was to be
       exploited.
@@ -4005,12 +4120,13 @@ class GoogleCloudSecuritycenterV2Cve(_messages.Message):
   cvssv3 = _messages.MessageField('GoogleCloudSecuritycenterV2Cvssv3', 1)
   exploitReleaseDate = _messages.StringField(2)
   exploitationActivity = _messages.EnumField('ExploitationActivityValueValuesEnum', 3)
-  id = _messages.StringField(4)
-  impact = _messages.EnumField('ImpactValueValuesEnum', 5)
-  observedInTheWild = _messages.BooleanField(6)
-  references = _messages.MessageField('GoogleCloudSecuritycenterV2Reference', 7, repeated=True)
-  upstreamFixAvailable = _messages.BooleanField(8)
-  zeroDay = _messages.BooleanField(9)
+  firstExploitationDate = _messages.StringField(4)
+  id = _messages.StringField(5)
+  impact = _messages.EnumField('ImpactValueValuesEnum', 6)
+  observedInTheWild = _messages.BooleanField(7)
+  references = _messages.MessageField('GoogleCloudSecuritycenterV2Reference', 8, repeated=True)
+  upstreamFixAvailable = _messages.BooleanField(9)
+  zeroDay = _messages.BooleanField(10)
 
 
 class GoogleCloudSecuritycenterV2Cvssv3(_messages.Message):
@@ -4223,6 +4339,85 @@ class GoogleCloudSecuritycenterV2Cvssv3(_messages.Message):
   privilegesRequired = _messages.EnumField('PrivilegesRequiredValueValuesEnum', 7)
   scope = _messages.EnumField('ScopeValueValuesEnum', 8)
   userInteraction = _messages.EnumField('UserInteractionValueValuesEnum', 9)
+
+
+class GoogleCloudSecuritycenterV2DataAccessEvent(_messages.Message):
+  r"""Details about a data access attempt made by a principal not authorized
+  under applicable data security policy.
+
+  Enums:
+    OperationValueValuesEnum: The operation performed by the principal to
+      access the data.
+
+  Fields:
+    eventId: Unique identifier for data access event.
+    eventTime: Timestamp of data access event.
+    operation: The operation performed by the principal to access the data.
+    principalEmail: The email address of the principal that accessed the data.
+      The principal could be a user account, service account, Google group, or
+      other.
+  """
+
+  class OperationValueValuesEnum(_messages.Enum):
+    r"""The operation performed by the principal to access the data.
+
+    Values:
+      OPERATION_UNSPECIFIED: The operation is unspecified.
+      READ: Represents a read operation.
+      MOVE: Represents a move operation.
+      COPY: Represents a copy operation.
+    """
+    OPERATION_UNSPECIFIED = 0
+    READ = 1
+    MOVE = 2
+    COPY = 3
+
+  eventId = _messages.StringField(1)
+  eventTime = _messages.StringField(2)
+  operation = _messages.EnumField('OperationValueValuesEnum', 3)
+  principalEmail = _messages.StringField(4)
+
+
+class GoogleCloudSecuritycenterV2DataFlowEvent(_messages.Message):
+  r"""Details about a data flow event, in which either the data is moved to or
+  is accessed from a non-compliant geo-location, as defined in the applicable
+  data security policy.
+
+  Enums:
+    OperationValueValuesEnum: The operation performed by the principal for the
+      data flow event.
+
+  Fields:
+    eventId: Unique identifier for data flow event.
+    eventTime: Timestamp of data flow event.
+    operation: The operation performed by the principal for the data flow
+      event.
+    principalEmail: The email address of the principal that initiated the data
+      flow event. The principal could be a user account, service account,
+      Google group, or other.
+    violatedLocation: Non-compliant location of the principal or the data
+      destination.
+  """
+
+  class OperationValueValuesEnum(_messages.Enum):
+    r"""The operation performed by the principal for the data flow event.
+
+    Values:
+      OPERATION_UNSPECIFIED: The operation is unspecified.
+      READ: Represents a read operation.
+      MOVE: Represents a move operation.
+      COPY: Represents a copy operation.
+    """
+    OPERATION_UNSPECIFIED = 0
+    READ = 1
+    MOVE = 2
+    COPY = 3
+
+  eventId = _messages.StringField(1)
+  eventTime = _messages.StringField(2)
+  operation = _messages.EnumField('OperationValueValuesEnum', 3)
+  principalEmail = _messages.StringField(4)
+  violatedLocation = _messages.StringField(5)
 
 
 class GoogleCloudSecuritycenterV2Database(_messages.Message):
@@ -4505,6 +4700,8 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
       information for both Kubernetes and non-Kubernetes containers.
     createTime: Output only. The time at which the finding was created in
       Security Command Center.
+    dataAccessEvents: Data access events associated with the finding.
+    dataFlowEvents: Data flow events associated with the finding.
     database: Database associated with the finding.
     description: Contains more details about the finding.
     eventTime: The time the finding was first detected. If an existing finding
@@ -4626,6 +4823,8 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
         in the security posture.
       TOXIC_COMBINATION: Describes a combination of security issues that
         represent a more severe security problem when taken together.
+      SENSITIVE_DATA_RISK: Describes a potential security risk to data assets
+        that contain sensitive data.
     """
     FINDING_CLASS_UNSPECIFIED = 0
     THREAT = 1
@@ -4635,6 +4834,7 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
     SCC_ERROR = 5
     POSTURE_VIOLATION = 6
     TOXIC_COMBINATION = 7
+    SENSITIVE_DATA_RISK = 8
 
   class MuteValueValuesEnum(_messages.Enum):
     r"""Indicates the mute state of a finding (either muted, unmuted or
@@ -4812,42 +5012,44 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
   contacts = _messages.MessageField('ContactsValue', 12)
   containers = _messages.MessageField('GoogleCloudSecuritycenterV2Container', 13, repeated=True)
   createTime = _messages.StringField(14)
-  database = _messages.MessageField('GoogleCloudSecuritycenterV2Database', 15)
-  description = _messages.StringField(16)
-  eventTime = _messages.StringField(17)
-  exfiltration = _messages.MessageField('GoogleCloudSecuritycenterV2Exfiltration', 18)
-  externalSystems = _messages.MessageField('ExternalSystemsValue', 19)
-  externalUri = _messages.StringField(20)
-  files = _messages.MessageField('GoogleCloudSecuritycenterV2File', 21, repeated=True)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 22)
-  groupMemberships = _messages.MessageField('GoogleCloudSecuritycenterV2GroupMembership', 23, repeated=True)
-  iamBindings = _messages.MessageField('GoogleCloudSecuritycenterV2IamBinding', 24, repeated=True)
-  indicator = _messages.MessageField('GoogleCloudSecuritycenterV2Indicator', 25)
-  kernelRootkit = _messages.MessageField('GoogleCloudSecuritycenterV2KernelRootkit', 26)
-  kubernetes = _messages.MessageField('GoogleCloudSecuritycenterV2Kubernetes', 27)
-  loadBalancers = _messages.MessageField('GoogleCloudSecuritycenterV2LoadBalancer', 28, repeated=True)
-  logEntries = _messages.MessageField('GoogleCloudSecuritycenterV2LogEntry', 29, repeated=True)
-  mitreAttack = _messages.MessageField('GoogleCloudSecuritycenterV2MitreAttack', 30)
-  moduleName = _messages.StringField(31)
-  mute = _messages.EnumField('MuteValueValuesEnum', 32)
-  muteInfo = _messages.MessageField('GoogleCloudSecuritycenterV2MuteInfo', 33)
-  muteInitiator = _messages.StringField(34)
-  muteUpdateTime = _messages.StringField(35)
-  name = _messages.StringField(36)
-  nextSteps = _messages.StringField(37)
-  notebook = _messages.MessageField('GoogleCloudSecuritycenterV2Notebook', 38)
-  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 39, repeated=True)
-  parent = _messages.StringField(40)
-  parentDisplayName = _messages.StringField(41)
-  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 42, repeated=True)
-  resourceName = _messages.StringField(43)
-  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 44)
-  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 45)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 46)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 47)
-  state = _messages.EnumField('StateValueValuesEnum', 48)
-  toxicCombination = _messages.MessageField('GoogleCloudSecuritycenterV2ToxicCombination', 49)
-  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 50)
+  dataAccessEvents = _messages.MessageField('GoogleCloudSecuritycenterV2DataAccessEvent', 15, repeated=True)
+  dataFlowEvents = _messages.MessageField('GoogleCloudSecuritycenterV2DataFlowEvent', 16, repeated=True)
+  database = _messages.MessageField('GoogleCloudSecuritycenterV2Database', 17)
+  description = _messages.StringField(18)
+  eventTime = _messages.StringField(19)
+  exfiltration = _messages.MessageField('GoogleCloudSecuritycenterV2Exfiltration', 20)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 21)
+  externalUri = _messages.StringField(22)
+  files = _messages.MessageField('GoogleCloudSecuritycenterV2File', 23, repeated=True)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 24)
+  groupMemberships = _messages.MessageField('GoogleCloudSecuritycenterV2GroupMembership', 25, repeated=True)
+  iamBindings = _messages.MessageField('GoogleCloudSecuritycenterV2IamBinding', 26, repeated=True)
+  indicator = _messages.MessageField('GoogleCloudSecuritycenterV2Indicator', 27)
+  kernelRootkit = _messages.MessageField('GoogleCloudSecuritycenterV2KernelRootkit', 28)
+  kubernetes = _messages.MessageField('GoogleCloudSecuritycenterV2Kubernetes', 29)
+  loadBalancers = _messages.MessageField('GoogleCloudSecuritycenterV2LoadBalancer', 30, repeated=True)
+  logEntries = _messages.MessageField('GoogleCloudSecuritycenterV2LogEntry', 31, repeated=True)
+  mitreAttack = _messages.MessageField('GoogleCloudSecuritycenterV2MitreAttack', 32)
+  moduleName = _messages.StringField(33)
+  mute = _messages.EnumField('MuteValueValuesEnum', 34)
+  muteInfo = _messages.MessageField('GoogleCloudSecuritycenterV2MuteInfo', 35)
+  muteInitiator = _messages.StringField(36)
+  muteUpdateTime = _messages.StringField(37)
+  name = _messages.StringField(38)
+  nextSteps = _messages.StringField(39)
+  notebook = _messages.MessageField('GoogleCloudSecuritycenterV2Notebook', 40)
+  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 41, repeated=True)
+  parent = _messages.StringField(42)
+  parentDisplayName = _messages.StringField(43)
+  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 44, repeated=True)
+  resourceName = _messages.StringField(45)
+  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 46)
+  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 47)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 48)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 49)
+  state = _messages.EnumField('StateValueValuesEnum', 50)
+  toxicCombination = _messages.MessageField('GoogleCloudSecuritycenterV2ToxicCombination', 51)
+  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 52)
 
 
 class GoogleCloudSecuritycenterV2Folder(_messages.Message):
@@ -11120,6 +11322,39 @@ class SecuritycenterOrganizationsUpdateOrganizationSettingsRequest(_messages.Mes
   name = _messages.StringField(1, required=True)
   organizationSettings = _messages.MessageField('OrganizationSettings', 2)
   updateMask = _messages.StringField(3)
+
+
+class SecuritycenterOrganizationsValuedResourcesListRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsValuedResourcesListRequest object.
+
+  Fields:
+    filter: The filter expression that filters the valued resources in the
+      response. Supported fields: * `resource_value` supports = *
+      `resource_type` supports =
+    orderBy: Optional. The fields by which to order the valued resources
+      response. Supported fields: * `exposed_score` * `resource_value` *
+      `resource_type` * `resource` * `display_name` Values should be a comma
+      separated list of fields. For example: `exposed_score,resource_value`.
+      The default sorting order is descending. To specify ascending or
+      descending order for a field, append a ` ASC` or a ` DESC` suffix,
+      respectively; for example: `exposed_score DESC`.
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last `ListValuedResourcesResponse`;
+      indicates that this is a continuation of a prior `ListValuedResources`
+      call, and that the system should return the next page of data.
+    parent: Required. Name of parent to list valued resources. Valid formats:
+      `organizations/{organization}`,
+      `organizations/{organization}/simulations/{simulation}` `organizations/{
+      organization}/simulations/{simulation}/attackExposureResults/{attack_exp
+      osure_result_v2}`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class SecuritycenterProjectsAssetsGroupRequest(_messages.Message):

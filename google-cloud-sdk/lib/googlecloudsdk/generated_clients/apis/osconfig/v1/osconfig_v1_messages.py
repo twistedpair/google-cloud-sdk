@@ -584,7 +584,7 @@ class InventoryItem(_messages.Message):
     r"""The specific type of inventory, correlating to its specific details.
 
     Values:
-      TYPE_UNSPECIFIED: Invalid. An type must be specified.
+      TYPE_UNSPECIFIED: Invalid. A type must be specified.
       INSTALLED_PACKAGE: This represents a package that is installed on the
         VM.
       AVAILABLE_PACKAGE: This represents an update that is available for a
@@ -1470,7 +1470,7 @@ class OSPolicyResourceExecResourceExec(_messages.Message):
       (that is created by this Exec) whose content will be recorded in
       OSPolicyResourceCompliance after a successful run. Absence or failure to
       read this file will result in this ExecResource being non-compliant.
-      Output file size is limited to 100K bytes.
+      Output file size is limited to 500K bytes.
     script: An inline script. The size of the script is limited to 32KiB.
   """
 

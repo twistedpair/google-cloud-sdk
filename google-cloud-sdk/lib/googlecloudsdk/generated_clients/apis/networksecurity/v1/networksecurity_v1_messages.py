@@ -311,6 +311,18 @@ class CloneAddressGroupItemsRequest(_messages.Message):
   sourceAddressGroup = _messages.StringField(2)
 
 
+class CustomMirroringProfile(_messages.Message):
+  r"""CustomMirroringProfile defines an action for mirroring traffic to a
+  collector's EndpointGroup
+
+  Fields:
+    mirroringEndpointGroup: Required. The MirroringEndpointGroup to which
+      traffic associated with the SP should be mirrored.
+  """
+
+  mirroringEndpointGroup = _messages.StringField(1)
+
+
 class Destination(_messages.Message):
   r"""Specification of traffic destination attributes.
 
@@ -499,12 +511,14 @@ class FirewallEndpointAssociation(_messages.Message):
       ACTIVE: Active and ready for traffic.
       DELETING: Being deleted.
       INACTIVE: Down or in an error state.
+      ORPHAN: The GCP project that housed the association has been deleted.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
     INACTIVE = 4
+    ORPHAN = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2260,6 +2274,68 @@ class NetworksecurityProjectsLocationsAuthorizationPoliciesTestIamPermissionsReq
   resource = _messages.StringField(2, required=True)
 
 
+class NetworksecurityProjectsLocationsAuthzPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAuthzPoliciesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsAuthzPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAuthzPoliciesSetIamPolicyRequest
+  object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsAuthzPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAuthzPoliciesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class NetworksecurityProjectsLocationsClientTlsPoliciesCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsClientTlsPoliciesCreateRequest object.
 
@@ -3288,6 +3364,8 @@ class SecurityProfile(_messages.Message):
 
   Fields:
     createTime: Output only. Resource creation timestamp.
+    customMirroringProfile: The custom Packet Mirroring v2 configuration for
+      the SecurityProfile.
     description: Optional. An optional description of the profile. Max length
       512 characters.
     etag: Output only. This checksum is computed by the server based on the
@@ -3311,9 +3389,11 @@ class SecurityProfile(_messages.Message):
     Values:
       PROFILE_TYPE_UNSPECIFIED: Profile type not specified.
       THREAT_PREVENTION: Profile type for threat prevention.
+      CUSTOM_MIRRORING: Profile type for packet mirroring v2
     """
     PROFILE_TYPE_UNSPECIFIED = 0
     THREAT_PREVENTION = 1
+    CUSTOM_MIRRORING = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3340,13 +3420,14 @@ class SecurityProfile(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  threatPreventionProfile = _messages.MessageField('ThreatPreventionProfile', 6)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  customMirroringProfile = _messages.MessageField('CustomMirroringProfile', 2)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  threatPreventionProfile = _messages.MessageField('ThreatPreventionProfile', 7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class SecurityProfileGroup(_messages.Message):
@@ -3358,6 +3439,8 @@ class SecurityProfileGroup(_messages.Message):
 
   Fields:
     createTime: Output only. Resource creation timestamp.
+    customMirroringProfile: Optional. Reference to a SecurityProfile with the
+      CustomMirroring configuration.
     description: Optional. An optional description of the profile group. Max
       length 2048 characters.
     etag: Output only. This checksum is computed by the server based on the
@@ -3397,12 +3480,13 @@ class SecurityProfileGroup(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  threatPreventionProfile = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  customMirroringProfile = _messages.StringField(2)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  threatPreventionProfile = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class ServerTlsPolicy(_messages.Message):
@@ -3946,6 +4030,8 @@ encoding.AddCustomJsonFieldMapping(
     NetworksecurityProjectsLocationsAddressGroupsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     NetworksecurityProjectsLocationsAuthorizationPoliciesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    NetworksecurityProjectsLocationsAuthzPoliciesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     NetworksecurityProjectsLocationsClientTlsPoliciesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(

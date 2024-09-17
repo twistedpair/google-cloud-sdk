@@ -2117,7 +2117,9 @@ class IndexedFieldConfig(_messages.Message):
 
 
 class Input(_messages.Message):
-  r"""Input describes an input of a transformer.
+  r"""Input describes an input of a transformer. The type could be one of: -
+  Primitive types ("string", "number", "bool") - Custom complex type. Format:
+  "p/p/l/l/complexTypes/*" - Collections of the above - list(), dict()
 
   Fields:
     required: A required field is for inputs which must be specified in the

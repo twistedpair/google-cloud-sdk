@@ -202,7 +202,7 @@ def SearchMembershipResource(args,
       in the fleet
   """
   if MembershipLocationSpecified(args) and api_util.GetMembership(
-      MembershipResourceName(args)):
+      MembershipResourceName(args), use_v1main_api=True):
     return MembershipResourceName(args)
   if args.IsKnownAndSpecified(flag_override):
     arg_membership = getattr(args, flag_override)

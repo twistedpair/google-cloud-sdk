@@ -1600,6 +1600,8 @@ class IamFoldersLocationsAccessPoliciesDeleteRequest(_messages.Message):
   Fields:
     etag: Optional. The etag of the access policy. If this is provided, it
       must match the server's etag.
+    force: Optional. If set to true, the request will force the deletion of
+      the Policy even if the Policy references PolicyBindings.
     name: Required. The name of the access policy to delete. Format: `projects
       /{project_id}/locations/{location}/accessPolicies/{access_policy_id}` `p
       rojects/{project_number}/locations/{location}/accessPolicies/{access_pol
@@ -1611,8 +1613,9 @@ class IamFoldersLocationsAccessPoliciesDeleteRequest(_messages.Message):
   """
 
   etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  validateOnly = _messages.BooleanField(3)
+  force = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
 
 
 class IamFoldersLocationsAccessPoliciesGetRequest(_messages.Message):
@@ -1697,10 +1700,10 @@ class IamFoldersLocationsPolicyBindingsCreateRequest(_messages.Message):
       be passed as the request body.
     parent: Required. The parent resource where this policy binding will be
       created. The binding parent is the closest Resource Manager resource
-      (Project, Folder or Organization) to the binding target. Format: -
-      `projects/{project_id}/locations/{location}` -
-      `projects/{project_number}/locations/{location}` -
-      `folders/{folder_id}/locations/{location}` -
+      (Project, Folder or Organization) to the binding target. Format: *
+      `projects/{project_id}/locations/{location}` *
+      `projects/{project_number}/locations/{location}` *
+      `folders/{folder_id}/locations/{location}` *
       `organizations/{organization_id}/locations/{location}`
     policyBindingId: Required. The ID to use for the policy binding, which
       will become the final component of the policy binding's resource name.
@@ -1722,11 +1725,11 @@ class IamFoldersLocationsPolicyBindingsDeleteRequest(_messages.Message):
   Fields:
     etag: Optional. The etag of the policy binding. If this is provided, it
       must match the server's etag.
-    name: Required. The name of the policy binding to delete. Format: - `proje
+    name: Required. The name of the policy binding to delete. Format: * `proje
       cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` - `projects/{project_number}/locations/{location}/policyBindings/{poli
-      cy_binding_id}` - `folders/{folder_id}/locations/{location}/policyBindin
-      gs/{policy_binding_id}` - `organizations/{organization_id}/locations/{lo
+      ` * `projects/{project_number}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` * `folders/{folder_id}/locations/{location}/policyBindin
+      gs/{policy_binding_id}` * `organizations/{organization_id}/locations/{lo
       cation}/policyBindings/{policy_binding_id}`
     validateOnly: Optional. If set, validate the request and preview the
       deletion, but do not actually post it.
@@ -1741,11 +1744,11 @@ class IamFoldersLocationsPolicyBindingsGetRequest(_messages.Message):
   r"""A IamFoldersLocationsPolicyBindingsGetRequest object.
 
   Fields:
-    name: Required. The name of the policy binding to retrieve. Format: - `pro
+    name: Required. The name of the policy binding to retrieve. Format: * `pro
       jects/{project_id}/locations/{location}/policyBindings/{policy_binding_i
-      d}` - `projects/{project_number}/locations/{location}/policyBindings/{po
-      licy_binding_id}` - `folders/{folder_id}/locations/{location}/policyBind
-      ings/{policy_binding_id}` - `organizations/{organization_id}/locations/{
+      d}` * `projects/{project_number}/locations/{location}/policyBindings/{po
+      licy_binding_id}` * `folders/{folder_id}/locations/{location}/policyBind
+      ings/{policy_binding_id}` * `organizations/{organization_id}/locations/{
       location}/policyBindings/{policy_binding_id}`
   """
 
@@ -1772,9 +1775,9 @@ class IamFoldersLocationsPolicyBindingsListRequest(_messages.Message):
       When paginating, all other parameters provided to `ListPolicyBindings`
       must match the call that provided the page token.
     parent: Required. The parent resource, which owns the collection of policy
-      bindings. Format: - `projects/{project_id}/locations/{location}` -
-      `projects/{project_number}/locations/{location}` -
-      `folders/{folder_id}/locations/{location}` -
+      bindings. Format: * `projects/{project_id}/locations/{location}` *
+      `projects/{project_number}/locations/{location}` *
+      `folders/{folder_id}/locations/{location}` *
       `organizations/{organization_id}/locations/{location}`
   """
 
@@ -1826,19 +1829,19 @@ class IamFoldersLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_messag
       the page token.
     parent: Required. The parent resource where this search will be performed.
       This should be the nearest Resource Manager resource (project, folder,
-      or organization) to the target. Format: -
-      `projects/{project_id}/locations/{location}` -
-      `projects/{project_number}/locations/{location}` -
-      `folders/{folder_id}/locations/{location}` -
+      or organization) to the target. Format: *
+      `projects/{project_id}/locations/{location}` *
+      `projects/{project_number}/locations/{location}` *
+      `folders/{folder_id}/locations/{location}` *
       `organizations/{organization_id}/locations/{location}`
     target: Required. The target resource, which is bound to the policy in the
-      binding. Format: -
-      `//iam.googleapis.com/locations/global/workforcePools/POOL_ID` - `//iam.
+      binding. Format: *
+      `//iam.googleapis.com/locations/global/workforcePools/POOL_ID` * `//iam.
       googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentity
-      Pools/POOL_ID` -
-      `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID` -
-      `//cloudresourcemanager.googleapis.com/projects/{project_number}` -
-      `//cloudresourcemanager.googleapis.com/folders/{folder_id}` -
+      Pools/POOL_ID` *
+      `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID` *
+      `//cloudresourcemanager.googleapis.com/projects/{project_number}` *
+      `//cloudresourcemanager.googleapis.com/folders/{folder_id}` *
       `//cloudresourcemanager.googleapis.com/organizations/{organization_id}`
   """
 
@@ -1880,6 +1883,8 @@ class IamOrganizationsLocationsAccessPoliciesDeleteRequest(_messages.Message):
   Fields:
     etag: Optional. The etag of the access policy. If this is provided, it
       must match the server's etag.
+    force: Optional. If set to true, the request will force the deletion of
+      the Policy even if the Policy references PolicyBindings.
     name: Required. The name of the access policy to delete. Format: `projects
       /{project_id}/locations/{location}/accessPolicies/{access_policy_id}` `p
       rojects/{project_number}/locations/{location}/accessPolicies/{access_pol
@@ -1891,8 +1896,9 @@ class IamOrganizationsLocationsAccessPoliciesDeleteRequest(_messages.Message):
   """
 
   etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  validateOnly = _messages.BooleanField(3)
+  force = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
 
 
 class IamOrganizationsLocationsAccessPoliciesGetRequest(_messages.Message):
@@ -1977,10 +1983,10 @@ class IamOrganizationsLocationsPolicyBindingsCreateRequest(_messages.Message):
       be passed as the request body.
     parent: Required. The parent resource where this policy binding will be
       created. The binding parent is the closest Resource Manager resource
-      (Project, Folder or Organization) to the binding target. Format: -
-      `projects/{project_id}/locations/{location}` -
-      `projects/{project_number}/locations/{location}` -
-      `folders/{folder_id}/locations/{location}` -
+      (Project, Folder or Organization) to the binding target. Format: *
+      `projects/{project_id}/locations/{location}` *
+      `projects/{project_number}/locations/{location}` *
+      `folders/{folder_id}/locations/{location}` *
       `organizations/{organization_id}/locations/{location}`
     policyBindingId: Required. The ID to use for the policy binding, which
       will become the final component of the policy binding's resource name.
@@ -2002,11 +2008,11 @@ class IamOrganizationsLocationsPolicyBindingsDeleteRequest(_messages.Message):
   Fields:
     etag: Optional. The etag of the policy binding. If this is provided, it
       must match the server's etag.
-    name: Required. The name of the policy binding to delete. Format: - `proje
+    name: Required. The name of the policy binding to delete. Format: * `proje
       cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` - `projects/{project_number}/locations/{location}/policyBindings/{poli
-      cy_binding_id}` - `folders/{folder_id}/locations/{location}/policyBindin
-      gs/{policy_binding_id}` - `organizations/{organization_id}/locations/{lo
+      ` * `projects/{project_number}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` * `folders/{folder_id}/locations/{location}/policyBindin
+      gs/{policy_binding_id}` * `organizations/{organization_id}/locations/{lo
       cation}/policyBindings/{policy_binding_id}`
     validateOnly: Optional. If set, validate the request and preview the
       deletion, but do not actually post it.
@@ -2021,11 +2027,11 @@ class IamOrganizationsLocationsPolicyBindingsGetRequest(_messages.Message):
   r"""A IamOrganizationsLocationsPolicyBindingsGetRequest object.
 
   Fields:
-    name: Required. The name of the policy binding to retrieve. Format: - `pro
+    name: Required. The name of the policy binding to retrieve. Format: * `pro
       jects/{project_id}/locations/{location}/policyBindings/{policy_binding_i
-      d}` - `projects/{project_number}/locations/{location}/policyBindings/{po
-      licy_binding_id}` - `folders/{folder_id}/locations/{location}/policyBind
-      ings/{policy_binding_id}` - `organizations/{organization_id}/locations/{
+      d}` * `projects/{project_number}/locations/{location}/policyBindings/{po
+      licy_binding_id}` * `folders/{folder_id}/locations/{location}/policyBind
+      ings/{policy_binding_id}` * `organizations/{organization_id}/locations/{
       location}/policyBindings/{policy_binding_id}`
   """
 
@@ -2052,9 +2058,9 @@ class IamOrganizationsLocationsPolicyBindingsListRequest(_messages.Message):
       When paginating, all other parameters provided to `ListPolicyBindings`
       must match the call that provided the page token.
     parent: Required. The parent resource, which owns the collection of policy
-      bindings. Format: - `projects/{project_id}/locations/{location}` -
-      `projects/{project_number}/locations/{location}` -
-      `folders/{folder_id}/locations/{location}` -
+      bindings. Format: * `projects/{project_id}/locations/{location}` *
+      `projects/{project_number}/locations/{location}` *
+      `folders/{folder_id}/locations/{location}` *
       `organizations/{organization_id}/locations/{location}`
   """
 
@@ -2107,19 +2113,19 @@ class IamOrganizationsLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_
       the page token.
     parent: Required. The parent resource where this search will be performed.
       This should be the nearest Resource Manager resource (project, folder,
-      or organization) to the target. Format: -
-      `projects/{project_id}/locations/{location}` -
-      `projects/{project_number}/locations/{location}` -
-      `folders/{folder_id}/locations/{location}` -
+      or organization) to the target. Format: *
+      `projects/{project_id}/locations/{location}` *
+      `projects/{project_number}/locations/{location}` *
+      `folders/{folder_id}/locations/{location}` *
       `organizations/{organization_id}/locations/{location}`
     target: Required. The target resource, which is bound to the policy in the
-      binding. Format: -
-      `//iam.googleapis.com/locations/global/workforcePools/POOL_ID` - `//iam.
+      binding. Format: *
+      `//iam.googleapis.com/locations/global/workforcePools/POOL_ID` * `//iam.
       googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentity
-      Pools/POOL_ID` -
-      `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID` -
-      `//cloudresourcemanager.googleapis.com/projects/{project_number}` -
-      `//cloudresourcemanager.googleapis.com/folders/{folder_id}` -
+      Pools/POOL_ID` *
+      `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID` *
+      `//cloudresourcemanager.googleapis.com/projects/{project_number}` *
+      `//cloudresourcemanager.googleapis.com/folders/{folder_id}` *
       `//cloudresourcemanager.googleapis.com/organizations/{organization_id}`
   """
 
@@ -2293,6 +2299,8 @@ class IamProjectsLocationsAccessPoliciesDeleteRequest(_messages.Message):
   Fields:
     etag: Optional. The etag of the access policy. If this is provided, it
       must match the server's etag.
+    force: Optional. If set to true, the request will force the deletion of
+      the Policy even if the Policy references PolicyBindings.
     name: Required. The name of the access policy to delete. Format: `projects
       /{project_id}/locations/{location}/accessPolicies/{access_policy_id}` `p
       rojects/{project_number}/locations/{location}/accessPolicies/{access_pol
@@ -2304,8 +2312,9 @@ class IamProjectsLocationsAccessPoliciesDeleteRequest(_messages.Message):
   """
 
   etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  validateOnly = _messages.BooleanField(3)
+  force = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
 
 
 class IamProjectsLocationsAccessPoliciesGetRequest(_messages.Message):
@@ -2390,10 +2399,10 @@ class IamProjectsLocationsPolicyBindingsCreateRequest(_messages.Message):
       be passed as the request body.
     parent: Required. The parent resource where this policy binding will be
       created. The binding parent is the closest Resource Manager resource
-      (Project, Folder or Organization) to the binding target. Format: -
-      `projects/{project_id}/locations/{location}` -
-      `projects/{project_number}/locations/{location}` -
-      `folders/{folder_id}/locations/{location}` -
+      (Project, Folder or Organization) to the binding target. Format: *
+      `projects/{project_id}/locations/{location}` *
+      `projects/{project_number}/locations/{location}` *
+      `folders/{folder_id}/locations/{location}` *
       `organizations/{organization_id}/locations/{location}`
     policyBindingId: Required. The ID to use for the policy binding, which
       will become the final component of the policy binding's resource name.
@@ -2415,11 +2424,11 @@ class IamProjectsLocationsPolicyBindingsDeleteRequest(_messages.Message):
   Fields:
     etag: Optional. The etag of the policy binding. If this is provided, it
       must match the server's etag.
-    name: Required. The name of the policy binding to delete. Format: - `proje
+    name: Required. The name of the policy binding to delete. Format: * `proje
       cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` - `projects/{project_number}/locations/{location}/policyBindings/{poli
-      cy_binding_id}` - `folders/{folder_id}/locations/{location}/policyBindin
-      gs/{policy_binding_id}` - `organizations/{organization_id}/locations/{lo
+      ` * `projects/{project_number}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` * `folders/{folder_id}/locations/{location}/policyBindin
+      gs/{policy_binding_id}` * `organizations/{organization_id}/locations/{lo
       cation}/policyBindings/{policy_binding_id}`
     validateOnly: Optional. If set, validate the request and preview the
       deletion, but do not actually post it.
@@ -2434,11 +2443,11 @@ class IamProjectsLocationsPolicyBindingsGetRequest(_messages.Message):
   r"""A IamProjectsLocationsPolicyBindingsGetRequest object.
 
   Fields:
-    name: Required. The name of the policy binding to retrieve. Format: - `pro
+    name: Required. The name of the policy binding to retrieve. Format: * `pro
       jects/{project_id}/locations/{location}/policyBindings/{policy_binding_i
-      d}` - `projects/{project_number}/locations/{location}/policyBindings/{po
-      licy_binding_id}` - `folders/{folder_id}/locations/{location}/policyBind
-      ings/{policy_binding_id}` - `organizations/{organization_id}/locations/{
+      d}` * `projects/{project_number}/locations/{location}/policyBindings/{po
+      licy_binding_id}` * `folders/{folder_id}/locations/{location}/policyBind
+      ings/{policy_binding_id}` * `organizations/{organization_id}/locations/{
       location}/policyBindings/{policy_binding_id}`
   """
 
@@ -2465,9 +2474,9 @@ class IamProjectsLocationsPolicyBindingsListRequest(_messages.Message):
       When paginating, all other parameters provided to `ListPolicyBindings`
       must match the call that provided the page token.
     parent: Required. The parent resource, which owns the collection of policy
-      bindings. Format: - `projects/{project_id}/locations/{location}` -
-      `projects/{project_number}/locations/{location}` -
-      `folders/{folder_id}/locations/{location}` -
+      bindings. Format: * `projects/{project_id}/locations/{location}` *
+      `projects/{project_number}/locations/{location}` *
+      `folders/{folder_id}/locations/{location}` *
       `organizations/{organization_id}/locations/{location}`
   """
 
@@ -2519,19 +2528,19 @@ class IamProjectsLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_messa
       the page token.
     parent: Required. The parent resource where this search will be performed.
       This should be the nearest Resource Manager resource (project, folder,
-      or organization) to the target. Format: -
-      `projects/{project_id}/locations/{location}` -
-      `projects/{project_number}/locations/{location}` -
-      `folders/{folder_id}/locations/{location}` -
+      or organization) to the target. Format: *
+      `projects/{project_id}/locations/{location}` *
+      `projects/{project_number}/locations/{location}` *
+      `folders/{folder_id}/locations/{location}` *
       `organizations/{organization_id}/locations/{location}`
     target: Required. The target resource, which is bound to the policy in the
-      binding. Format: -
-      `//iam.googleapis.com/locations/global/workforcePools/POOL_ID` - `//iam.
+      binding. Format: *
+      `//iam.googleapis.com/locations/global/workforcePools/POOL_ID` * `//iam.
       googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentity
-      Pools/POOL_ID` -
-      `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID` -
-      `//cloudresourcemanager.googleapis.com/projects/{project_number}` -
-      `//cloudresourcemanager.googleapis.com/folders/{folder_id}` -
+      Pools/POOL_ID` *
+      `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID` *
+      `//cloudresourcemanager.googleapis.com/projects/{project_number}` *
+      `//cloudresourcemanager.googleapis.com/folders/{folder_id}` *
       `//cloudresourcemanager.googleapis.com/organizations/{organization_id}`
   """
 
@@ -2896,21 +2905,21 @@ class IamSearchApplicablePoliciesSearchRequest(_messages.Message):
       bindings for. Binding conditions will not be evaluated and all bindings
       that are bound to the target will be returned. All targets from the
       PolicyBinding are supported, as well as principals that are part of the
-      principalSet. For example: -
-      `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` -
-      `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` -
-      `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER` -
-      `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID` - `//iam.goo
+      principalSet. For example: *
+      `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
+      `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` *
+      `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER` *
+      `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID` * `//iam.goo
       gleapis.com/projects/PROJECT_NUMBER/locations/LOCATION/workloadIdentityP
-      ools/WORKLOAD_POOL_ID` -
+      ools/WORKLOAD_POOL_ID` *
       `//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID`
-      - `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID` -
-      `principal:alice@example.com` -
+      * `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID` *
+      `principal:alice@example.com` *
       `principal://iam.googleapis.com/locations/global/workforcePools/pool-
-      id/subject/alice` - `principal://iam.googleapis.com/projects/123/locatio
-      ns/global/workloadIdentityPools/pool-id/subject/alice` -
-      `serviceAccount:my-sa@my-project.iam.gserviceaccount.com` -
-      `user:user@example.com` - `user@example.com`
+      id/subject/alice` * `principal://iam.googleapis.com/projects/123/locatio
+      ns/global/workloadIdentityPools/pool-id/subject/alice` *
+      `serviceAccount:my-sa@my-project.iam.gserviceaccount.com` *
+      `user:user@example.com` * `user@example.com`
   """
 
   filter = _messages.StringField(1)

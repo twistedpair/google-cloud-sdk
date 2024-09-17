@@ -269,7 +269,7 @@ def AddAccessModeFlag(parser, messages):
         '--access-mode',
         choices=access_mode_enum_type.names(),
         help=(
-            'Specifie how VMs attached to the disk can access the data on the'
+            'Specifies how VMs attached to the disk can access the data on the'
             ' disk. To grant read-only access to multiple VMs attached to the'
             ' disk, set access-mode to READ_ONLY_MANY.'
             ' To grant read-write access'

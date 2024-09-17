@@ -62,7 +62,6 @@ class SupportedFeatures:
       support_custom_hostnames,
       support_specific_then_x_affinity,
       support_watchdog_timer,
-      support_turbo_mode,
   ):
     self.support_rsa_encrypted = support_rsa_encrypted
     self.support_secure_tags = support_secure_tags
@@ -98,7 +97,6 @@ class SupportedFeatures:
     self.support_custom_hostnames = support_custom_hostnames
     self.support_specific_then_x_affinity = support_specific_then_x_affinity
     self.support_watchdog_timer = support_watchdog_timer
-    self.support_turbo_mode = support_turbo_mode
     self.support_replica_zones = True
 
 
@@ -395,7 +393,7 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
           supported_features.support_watchdog_timer
           and args.enable_watchdog_timer is not None
       )
-      or (supported_features.support_turbo_mode and args.turbo_mode is not None)
+      or (args.turbo_mode is not None)
   ):
     visible_core_count = (
         args.visible_core_count
@@ -418,7 +416,7 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
             args.enable_watchdog_timer
             if supported_features.support_watchdog_timer
             else None,
-            args.turbo_mode if supported_features.support_turbo_mode else None,
+            args.turbo_mode,
         )
     )
 

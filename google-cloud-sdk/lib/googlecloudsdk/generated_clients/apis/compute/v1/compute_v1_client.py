@@ -1180,7 +1180,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListUsable(self, request, global_params=None):
-      r"""Retrieves an aggregated list of all usable backend services in the specified project.
+      r"""Retrieves a list of all usable backend services in the specified project.
 
       Args:
         request: (ComputeBackendServicesListUsableRequest) input message
@@ -12050,7 +12050,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def ListUsable(self, request, global_params=None):
-      r"""Retrieves an aggregated list of all usable backend services in the specified project in the given region.
+      r"""Retrieves a list of all usable backend services in the specified project in the given region.
 
       Args:
         request: (ComputeRegionBackendServicesListUsableRequest) input message

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2023 Google LLC. All Rights Reserved.
+# Copyright 2024 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+
+from typing import List
 
 from googlecloudsdk.api_lib.network_security.security_profile_groups import spg_api
 from googlecloudsdk.calliope.concepts import concepts
@@ -43,62 +45,118 @@ def AddProfileGroupDescription(parser, required=False):
   )
 
 
-def AddThreatPreventionProfileResource(
+def AddSecurityProfileResource(
     parser,
     release_track,
+    arg_name: str,
     help_text="Path to Security Profile resource.",
     required=False,
+    arg_aliases: List[str] = None,
 ):
-  """Adds Security Profile resource."""
+  """Adds Security Profile resource.
+
+  Args:
+    parser: The parser for the command.
+    release_track: The release track for the command.
+    arg_name: The name used for the arg, e.g. "--threat-prevention-profile" or
+      "--custom-mirroring-profile".
+    help_text: The help text for the resource.
+    required: Whether the resource is required.
+    arg_aliases: The list of aliases for the arg, for backwards compatibility.
+      Sub-flags named {alias}-organization and {alias}-location will be added to
+      the parser and used as fallthrough args for the resource.
+
+  Returns:
+      The resource parser.
+  """
   api_version = spg_api.GetApiVersion(release_track)
   collection_info = resources.REGISTRY.Clone().GetCollectionInfo(
       _SECURITY_PROFILE_GROUP_RESOURCE_COLLECTION, api_version
   )
+  if arg_name.startswith("--"):
+    arg_name = arg_name[2:]
+
+  organization_resource_spec = concepts.ResourceParameterAttributeConfig(
+      f"{arg_name}-organization",
+      "Organization ID of the Security Profile.",
+      parameter_name="organizationsId",
+      fallthroughs=[
+          deps.ArgFallthrough("--organization"),
+          deps.FullySpecifiedAnchorFallthrough(
+              [
+                  deps.ArgFallthrough(
+                      _SECURITY_PROFILE_GROUP_RESOURCE_COLLECTION
+                  )
+              ],
+              collection_info,
+              "organizationsId",
+          ),
+      ],
+  )
+
+  location_resource_spec = concepts.ResourceParameterAttributeConfig(
+      "{prefix}-location".format(prefix=arg_name),
+      """
+      Location of the {resource}.
+      NOTE: Only `global` security profiles are supported.
+      """,
+      parameter_name="locationsId",
+      fallthroughs=[
+          deps.ArgFallthrough("--location"),
+          deps.FullySpecifiedAnchorFallthrough(
+              [
+                  deps.ArgFallthrough(
+                      _SECURITY_PROFILE_GROUP_RESOURCE_COLLECTION
+                  )
+              ],
+              collection_info,
+              "locationsId",
+          ),
+      ],
+  )
+
+  profile_id_resource_spec = concepts.ResourceParameterAttributeConfig(
+      "{prefix}-profile".format(prefix=arg_name),
+      "Name of security profile {resource}.",
+      parameter_name="securityProfilesId",
+  )
+
+  if arg_aliases:
+    for arg_alias in arg_aliases:
+      org_flag_alias = f"--{arg_alias}-organization"
+      loc_flag_alias = f"--{arg_alias}-location"
+      parser.add_argument(
+          org_flag_alias,
+          required=False,
+          hidden=True,
+          help="Flag to preserve backward compatibility.",
+      )
+      parser.add_argument(
+          loc_flag_alias,
+          required=False,
+          hidden=True,
+          help="Flag to preserve backward compatibility.",
+      )
+      # Insert at beginning of fallthroughs, otherwis the fallthrough that
+      # takes the value from the SPG resource will be used.
+      organization_resource_spec.fallthroughs.insert(
+          0, deps.ArgFallthrough(org_flag_alias)
+      )
+      location_resource_spec.fallthroughs.insert(
+          0, deps.ArgFallthrough(loc_flag_alias)
+      )
+
   resource_spec = concepts.ResourceSpec(
       _SECURITY_PROFILE_RESOURCE_COLLECTION,
       "Security Profile",
       api_version=api_version,
-      organizationsId=concepts.ResourceParameterAttributeConfig(
-          "security-profile-organization",
-          "Organization ID of the Security Profile.",
-          parameter_name="organizationsId",
-          fallthroughs=[
-              deps.ArgFallthrough("--organization"),
-              deps.FullySpecifiedAnchorFallthrough(
-                  [deps.ArgFallthrough(
-                      _SECURITY_PROFILE_GROUP_RESOURCE_COLLECTION
-                  )],
-                  collection_info,
-                  "organizationsId",
-              ),
-          ],
-      ),
-      locationsId=concepts.ResourceParameterAttributeConfig(
-          "security-profile-location",
-          """
-          Location of the {resource}.
-          NOTE: Only `global` security profiles are supported.
-          """,
-          parameter_name="locationsId",
-          fallthroughs=[
-              deps.ArgFallthrough("--location"),
-              deps.FullySpecifiedAnchorFallthrough(
-                  [deps.ArgFallthrough(
-                      _SECURITY_PROFILE_GROUP_RESOURCE_COLLECTION
-                  )],
-                  collection_info,
-                  "locationsId",
-              ),
-          ],
-      ),
-      securityProfilesId=concepts.ResourceParameterAttributeConfig(
-          "security_profile",
-          "Name of security profile {resource}.",
-          parameter_name="securityProfilesId",
-      ),
+      organizationsId=organization_resource_spec,
+      locationsId=location_resource_spec,
+      securityProfilesId=profile_id_resource_spec,
   )
+
   presentation_spec = presentation_specs.ResourcePresentationSpec(
-      name=_THREAT_PREVENTION_PROFILE_RESOURCE_NAME,
+      name=f"--{arg_name}",
       concept_spec=resource_spec,
       required=required,
       group_help=help_text,

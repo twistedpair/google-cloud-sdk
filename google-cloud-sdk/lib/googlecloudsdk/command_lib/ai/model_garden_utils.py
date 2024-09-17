@@ -30,6 +30,8 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import requests
 from googlecloudsdk.core import resources
 
+_MAX_LABEL_VALUE_LENGTH = 63
+
 
 def _ParseEndpoint(endpoint_id, location_id):
   """Parses a Vertex Endpoint ID into a endpoint resource object."""
@@ -47,9 +49,13 @@ def GetEndpointLabelValue(
     is_hf_model, publisher_name, model_name='', model_version_name=''
 ):
   if is_hf_model:
-    return f'hf-{publisher_name}-{model_name}'
+    return f'hf-{publisher_name}-{model_name}'.replace('.', '_')[
+        :_MAX_LABEL_VALUE_LENGTH
+    ]
   else:
-    return f'mg-{publisher_name}-{model_version_name}'
+    return f'mg-{publisher_name}-{model_version_name}'.replace('.', '_')[
+        :_MAX_LABEL_VALUE_LENGTH
+    ]
 
 
 def IsHFModelGated(publisher_name, model_name):

@@ -15147,6 +15147,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates a RagCorpus.
+
+      Args:
+        request: (GoogleCloudAiplatformV1beta1RagCorpus) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/ragCorpora/{ragCorporaId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.ragCorpora.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='<request>',
+        request_type_name='GoogleCloudAiplatformV1beta1RagCorpus',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsReasoningEnginesOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_reasoningEngines_operations resource."""
 
@@ -18761,6 +18788,60 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       super(AiplatformV1beta1.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def AugmentPrompt(self, request, global_params=None):
+      r"""Given an input prompt, it returns augmented prompt from vertex rag store to guide LLM towards generating grounded responses.
+
+      Args:
+        request: (AiplatformProjectsLocationsAugmentPromptRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1AugmentPromptResponse) The response message.
+      """
+      config = self.GetMethodConfig('AugmentPrompt')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AugmentPrompt.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}:augmentPrompt',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.augmentPrompt',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}:augmentPrompt',
+        request_field='googleCloudAiplatformV1beta1AugmentPromptRequest',
+        request_type_name='AiplatformProjectsLocationsAugmentPromptRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1AugmentPromptResponse',
+        supports_download=False,
+    )
+
+    def CorroborateContent(self, request, global_params=None):
+      r"""Given an input text, it returns a score that evaluates the factuality of the text. It also extracts and returns claims from the text and provides supporting facts.
+
+      Args:
+        request: (AiplatformProjectsLocationsCorroborateContentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1CorroborateContentResponse) The response message.
+      """
+      config = self.GetMethodConfig('CorroborateContent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CorroborateContent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}:corroborateContent',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.corroborateContent',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}:corroborateContent',
+        request_field='googleCloudAiplatformV1beta1CorroborateContentRequest',
+        request_type_name='AiplatformProjectsLocationsCorroborateContentRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1CorroborateContentResponse',
+        supports_download=False,
+    )
 
     def EvaluateInstances(self, request, global_params=None):
       r"""Evaluates instances based on a given metric.

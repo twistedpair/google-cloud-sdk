@@ -333,6 +333,24 @@ class ReplicationsClient(object):
     )
     return self.WaitForOperation(operation_ref)
 
+  def SyncReplication(self, replication_ref, async_):
+    """Sync a Cloud NetApp Volume Replication.
+
+    Args:
+      replication_ref: the reference to the Replication.
+      async_: bool, if False, wait for the operation to complete.
+
+    Returns:
+      an Operation or Volume message.
+    """
+    sync_op = self._adapter.SyncReplication(replication_ref)
+    if async_:
+      return sync_op
+    operation_ref = resources.REGISTRY.ParseRelativeName(
+        sync_op.name, collection=constants.OPERATIONS_COLLECTION
+    )
+    return self.WaitForOperation(operation_ref)
+
 
 class ReplicationsAdapter(object):
   """Adapter for the Cloud NetApp Files API Replication resource."""
@@ -461,6 +479,17 @@ class ReplicationsAdapter(object):
     )
     return self.client.projects_locations_volumes_replications.EstablishPeering(
         establish_peering_request
+    )
+
+  def SyncReplication(self, replication_ref):
+    """Send a sync request for the Cloud NetApp Volume Replication."""
+    sync_request = (
+        self.messages.NetappProjectsLocationsVolumesReplicationsSyncRequest(
+            name=replication_ref.RelativeName(),
+        )
+    )
+    return self.client.projects_locations_volumes_replications.Sync(
+        sync_request
     )
 
 

@@ -33,14 +33,14 @@ properties:
       matched against the URI SAN, or DNS SAN or the subject field in the
       client's certificate. The match can be exact, prefix, suffix or a
       substring match. One of exact, prefix, suffix or contains must be
-      specified. Limited to 10 principals.
+      specified. Limited to 5 principals.
     type: array
     items:
       $ref: AuthzPolicyAuthzRuleStringMatch.yaml
   resources:
     description: |-
       A list of resources to match against the resource of the source VM of
-      a request. Limited to 10 resources.
+      a request. Limited to 5 resources.
     type: array
     items:
       $ref: AuthzPolicyAuthzRuleRequestResource.yaml

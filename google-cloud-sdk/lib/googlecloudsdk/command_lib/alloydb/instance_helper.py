@@ -863,28 +863,8 @@ def ConstructInstanceAndUpdatePathsFromArgsAlpha(
   return instance_resource, paths
 
 
-def ConstructRestartRequestFromArgs(alloydb_messages, project_ref):
+def ConstructRestartRequestFromArgs(alloydb_messages, project_ref, args):
   """Constructs the request to restart an AlloyDB instance.
-
-  Args:
-    alloydb_messages: Messages module for the API client.
-    project_ref: parent resource path of the resource being updated
-
-  Returns:
-    Fully-constructed request to restart an AlloyDB instance.
-  """
-  req = (
-      alloydb_messages.AlloydbProjectsLocationsClustersInstancesRestartRequest(
-          name=project_ref.RelativeName(),
-      )
-  )
-  return req
-
-
-def ConstructRestartRequestFromArgsAlphaBeta(
-    alloydb_messages, project_ref, args
-):
-  """Constructs the request to restart an AlloyDB instance in the alpha or beta tracks.
 
   Args:
     alloydb_messages: Messages module for the API client.
@@ -894,10 +874,9 @@ def ConstructRestartRequestFromArgsAlphaBeta(
   Returns:
     Fully-constructed request to restart an AlloyDB instance.
   """
-
   req = (
       alloydb_messages.AlloydbProjectsLocationsClustersInstancesRestartRequest(
-          name=project_ref.RelativeName()
+          name=project_ref.RelativeName(),
       )
   )
   if args.node_ids:

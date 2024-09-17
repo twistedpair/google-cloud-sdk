@@ -147,7 +147,7 @@ class BlockchainValidatorConfig(_messages.Message):
   votingPublicKey = _messages.StringField(13)
 
 
-class BlockchainValidatorConfigTemplate(_messages.Message):
+class BlockchainValidatorTemplate(_messages.Message):
   r"""A templatised set of blockchain validator configs, from which multiple
   configurations can be generated.
 
@@ -534,8 +534,8 @@ class EthereumDetails(_messages.Message):
     network: Optional. Output only. The Ethereum network the validator is
       deployed on. This is set on initial deployment to a blockchain node and
       cannot be changed.
-    suggestedFeeRecipient: Immutable. The Ethereum address to which fee
-      rewards should be sent. This can only be set when creating the
+    suggestedFeeRecipient: Required. Immutable. The Ethereum address to which
+      fee rewards should be sent. This can only be set when creating the
       validator. If no blockchain node is specified for the validator, this
       has no effect as no validator client is run. See also
       https://lighthouse-book.sigmaprime.io/suggested-fee-recipient.html for
@@ -597,8 +597,8 @@ class EthereumDetailsTemplate(_messages.Message):
     network: Optional. Output only. The Ethereum network the validator is
       deployed on. This is set on initial deployment to a blockchain node and
       cannot be changed.
-    suggestedFeeRecipient: Immutable. The Ethereum address to which fee
-      rewards should be sent. This can only be set when creating the
+    suggestedFeeRecipient: Required. Immutable. The Ethereum address to which
+      fee rewards should be sent. This can only be set when creating the
       validator. If no blockchain node is specified for the validator, this
       has no effect as no validator client is run. See also
       https://lighthouse-book.sigmaprime.io/suggested-fee-recipient.html for
@@ -764,7 +764,7 @@ class GenerateBlockchainValidatorConfigsRequest(_messages.Message):
     blockchainValidatorConfigTemplate: Required. The resources being created.
   """
 
-  blockchainValidatorConfigTemplate = _messages.MessageField('BlockchainValidatorConfigTemplate', 1)
+  blockchainValidatorConfigTemplate = _messages.MessageField('BlockchainValidatorTemplate', 1)
 
 
 class ListBlockchainValidatorConfigsResponse(_messages.Message):

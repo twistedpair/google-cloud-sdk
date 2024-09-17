@@ -3759,6 +3759,7 @@ class Membership(_messages.Message):
       SERVICE_ACCOUNT: Represents service account type.
       GROUP: Represents group type.
       SHARED_DRIVE: Represents Shared drive.
+      CBCM_BROWSER: Represents a CBCM-managed Chrome Browser type.
       OTHER: Represents other type.
     """
     TYPE_UNSPECIFIED = 0
@@ -3766,7 +3767,8 @@ class Membership(_messages.Message):
     SERVICE_ACCOUNT = 2
     GROUP = 3
     SHARED_DRIVE = 4
-    OTHER = 5
+    CBCM_BROWSER = 5
+    OTHER = 6
 
   createTime = _messages.StringField(1)
   deliverySetting = _messages.EnumField('DeliverySettingValueValuesEnum', 2)

@@ -358,7 +358,28 @@ def AddPostgresqlConnectionProfileResourceArg(parser, verb, positional=True):
       resource_specs,
       command_level_fallthroughs={
           '--psc-service-attachment.region': ['--region']
-      }).AddToParser(parser)
+      },
+  ).AddToParser(parser)
+
+
+def AddOnlyMigrationJobResourceArgs(parser, verb):
+  """Add resource arguments for actions on an mj except create/update.
+
+  Args:
+    parser: argparse.ArgumentParser, the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to promote'.
+  """
+  resource_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          'migration_job',
+          GetMigrationJobResourceSpec(),
+          'The migration job {}.'.format(verb),
+          required=True,
+      ),
+  ]
+  concept_parsers.ConceptParser(
+      resource_specs,
+  ).AddToParser(parser)
 
 
 def AddMigrationJobResourceArgs(parser, verb, required=False):

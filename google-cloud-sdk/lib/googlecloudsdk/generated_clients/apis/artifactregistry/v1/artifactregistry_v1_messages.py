@@ -329,9 +329,9 @@ class ArtifactregistryProjectsLocationsRepositoriesFilesListRequest(_messages.Me
     filter: An expression for filtering the results of the request. Filter
       rules are case insensitive. The fields eligible for filtering are: *
       `name` * `owner` * `annotations` Examples of using a filter: To filter
-      the results of your request to files with the name "my_file.txt" in
-      project my-project in the us-central region, in repository my-repo,
-      append the following filter expression to your request: *
+      the results of your request to files with the name `my_file.txt` in
+      project `my-project` in the `us-central` region, in repository `my-
+      repo`, append the following filter expression to your request: *
       `name="projects/my-project/locations/us-central1/repositories/my-
       repo/files/my-file.txt"` You can also use wildcards to match any number
       of characters before or after the value: * `name="projects/my-
@@ -343,21 +343,20 @@ class ArtifactregistryProjectsLocationsRepositoriesFilesListRequest(_messages.Me
       append the following filter expression to your request: *
       `owner="projects/my-project/locations/us-central1/repositories/my-
       repo/packages/my-package/versions/1.0"` To filter the results of your
-      request to files with the annotation key-value pair
-      [`external_link`:`external_link_value`], append the following filter
-      expression to your request: *
-      "annotations.external_link:external_link_value" To filter just for a
-      specific annotation key `external_link`, append the following filter
-      expression to your request: * "annotations.external_link" If the
-      annotation key or value contains special characters, you can escape them
-      by surrounding the value with backticks. For example, to filter the
+      request to files with the annotation key-value pair [`external_link`:
+      `external_link_value`], append the following filter expression to your
+      request: * `"annotations.external_link:external_link_value"` To filter
+      just for a specific annotation key `external_link`, append the following
+      filter expression to your request: * `"annotations.external_link"` If
+      the annotation key or value contains special characters, you can escape
+      them by surrounding the value with backticks. For example, to filter the
       results of your request to files with the annotation key-value pair
       [`external.link`:`https://example.com/my-file`], append the following
-      filter expression to your request: *
-      "annotations.`external.link`:`https://example.com/my-file`" You can also
-      filter with annotations with a wildcard to match any number of
-      characters before or after the value: *
-      "annotations.*_link:`*example.com*`"
+      filter expression to your request: * ``
+      "annotations.`external.link`:`https://example.com/my-file`" `` You can
+      also filter with annotations with a wildcard to match any number of
+      characters before or after the value: * ``
+      "annotations.*_link:`*example.com*`" ``
     orderBy: The field to order the results by.
     pageSize: The maximum number of files to return. Maximum page size is
       1,000.
@@ -531,10 +530,10 @@ class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message
     filter: Optional. An expression for filtering the results of the request.
       Filter rules are case insensitive. The fields eligible for filtering
       are: * `name` Examples of using a filter: To filter the results of your
-      request to repositories with the name "my-repo" in project my-project in
-      the us-central region, append the following filter expression to your
-      request: * `name="projects/my-project/locations/us-
-      central1/repositories/my-repo` You can also use wildcards to match any
+      request to repositories with the name `my-repo` in project `my-project`
+      in the `us-central` region, append the following filter expression to
+      your request: * `name="projects/my-project/locations/us-
+      central1/repositories/my-repo"` You can also use wildcards to match any
       number of characters before or after the value: * `name="projects/my-
       project/locations/us-central1/repositories/my-*"` * `name="projects/my-
       project/locations/us-central1/repositories/*repo"` * `name="projects/my-
@@ -643,9 +642,9 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest(_messages
     filter: Optional. An expression for filtering the results of the request.
       Filter rules are case insensitive. The fields eligible for filtering
       are: * `name` * `annotations` Examples of using a filter: To filter the
-      results of your request to packages with the name "my-package" in
-      project my-project in the us-central region, in repository my-repo,
-      append the following filter expression to your request: *
+      results of your request to packages with the name `my-package` in
+      project `my-project` in the `us-central` region, in repository `my-
+      repo`, append the following filter expression to your request: *
       `name="projects/my-project/locations/us-central1/repositories/my-
       repo/packages/my-package"` You can also use wildcards to match any
       number of characters before or after the value: * `name="projects/my-
@@ -654,20 +653,20 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest(_messages
       repo/packages/*package"` * `name="projects/my-project/locations/us-
       central1/repositories/my-repo/packages/*pack*"` To filter the results of
       your request to packages with the annotation key-value pair
-      [`external_link`:`external_link_value`], append the following filter
+      [`external_link`: `external_link_value`], append the following filter
       expression to your request": *
-      "annotations.external_link:external_link_value" To filter the results
+      `"annotations.external_link:external_link_value"` To filter the results
       just for a specific annotation key `external_link`, append the following
-      filter expression to your request: * "annotations.external_link" If the
-      annotation key or value contains special characters, you can escape them
-      by surrounding the value with backticks. For example, to filter the
+      filter expression to your request: * `"annotations.external_link"` If
+      the annotation key or value contains special characters, you can escape
+      them by surrounding the value with backticks. For example, to filter the
       results of your request to packages with the annotation key-value pair
       [`external.link`:`https://example.com/my-package`], append the following
-      filter expression to your request: *
-      "annotations.`external.link`:`https://example.com/my-package`" You can
-      also filter with annotations with a wildcard to match any number of
-      characters before or after the value: *
-      "annotations.*_link:`*example.com*`"
+      filter expression to your request: * ``
+      "annotations.`external.link`:`https://example.com/my-package`" `` You
+      can also filter with annotations with a wildcard to match any number of
+      characters before or after the value: * ``
+      "annotations.*_link:`*example.com*`" ``
     orderBy: Optional. The field to order the results by.
     pageSize: The maximum number of packages to return. Maximum page size is
       1,000.
@@ -748,8 +747,8 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesTagsListRequest(_mess
     filter: An expression for filtering the results of the request. Filter
       rules are case insensitive. The fields eligible for filtering are: *
       `name` * `version` Examples of using a filter: To filter the results of
-      your request to tags with the name "my-tag" in package "my-package" in
-      repository "my-repo" in project "my-project" in the us-central region,
+      your request to tags with the name `my-tag` in package `my-package` in
+      repository `my-repo` in project "`y-project` in the us-central region,
       append the following filter expression to your request: *
       `name="projects/my-project/locations/us-central1/repositories/my-
       repo/packages/my-package/tags/my-tag"` You can also use wildcards to
@@ -872,9 +871,9 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest(_
     filter: Optional. An expression for filtering the results of the request.
       Filter rules are case insensitive. The fields eligible for filtering
       are: * `name` * `annotations` Examples of using a filter: To filter the
-      results of your request to versions with the name "my-version" in
-      project my-project in the us-central region, in repository my-repo,
-      append the following filter expression to your request: *
+      results of your request to versions with the name `my-version` in
+      project `my-project` in the `us-central` region, in repository `my-
+      repo`, append the following filter expression to your request: *
       `name="projects/my-project/locations/us-central1/repositories/my-
       repo/packages/my-package/versions/my-version"` You can also use
       wildcards to match any number of characters before or after the value: *
@@ -884,20 +883,20 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest(_
       package/versions/my*"` * `name="projects/my-project/locations/us-
       central1/repositories/my-repo/packages/my-package/versions/*version*"`
       To filter the results of your request to versions with the annotation
-      key-value pair [`external_link`:`external_link_value`], append the
+      key-value pair [`external_link`: `external_link_value`], append the
       following filter expression to your request: *
-      "annotations.external_link:external_link_value" To filter just for a
+      `"annotations.external_link:external_link_value"` To filter just for a
       specific annotation key `external_link`, append the following filter
-      expression to your request: * "annotations.external_link" If the
+      expression to your request: * `"annotations.external_link"` If the
       annotation key or value contains special characters, you can escape them
       by surrounding the value with backticks. For example, to filter the
       results of your request to versions with the annotation key-value pair
       [`external.link`:`https://example.com/my-version`], append the following
-      filter expression to your request: *
-      "annotations.`external.link`:`https://example.com/my-version`" You can
-      also filter with annotations with a wildcard to match any number of
-      characters before or after the value: *
-      "annotations.*_link:`*example.com*`"
+      filter expression to your request: * ``
+      "annotations.`external.link`:`https://example.com/my-version`" `` You
+      can also filter with annotations with a wildcard to match any number of
+      characters before or after the value: * ``
+      "annotations.*_link:`*example.com*`" ``
     orderBy: Optional. The field to order the results by.
     pageSize: The maximum number of versions to return. Maximum page size is
       1,000.
@@ -1460,7 +1459,7 @@ class CommonRemoteRepository(_messages.Message):
   r"""Common remote repository settings type.
 
   Fields:
-    uri: A common public repository base for Remote Repository.
+    uri: Required. A common public repository base for Remote Repository.
   """
 
   uri = _messages.StringField(1)

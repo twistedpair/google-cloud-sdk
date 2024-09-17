@@ -739,7 +739,7 @@ class AppengineV1(base_api.BaseApiClient):
         request: (AppengineAppsServicesMigrationMigrateCodeFileRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (MigrateCodeFileResponse) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('MigrateCodeFile')
       return self._RunMethod(
@@ -755,7 +755,7 @@ class AppengineV1(base_api.BaseApiClient):
         relative_path='v1/{+name}/migration/migrateCodeFile',
         request_field='migrateCodeFileRequest',
         request_type_name='AppengineAppsServicesMigrationMigrateCodeFileRequest',
-        response_type_name='MigrateCodeFileResponse',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1392,7 +1392,7 @@ class AppengineV1(base_api.BaseApiClient):
         request: (AppengineProjectsLocationsApplicationsServicesMigrationMigrateCodeFileRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (MigrateCodeFileResponse) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('MigrateCodeFile')
       return self._RunMethod(
@@ -1408,7 +1408,7 @@ class AppengineV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='migrateCodeFileRequest',
         request_type_name='AppengineProjectsLocationsApplicationsServicesMigrationMigrateCodeFileRequest',
-        response_type_name='MigrateCodeFileResponse',
+        response_type_name='Operation',
         supports_download=False,
     )
 

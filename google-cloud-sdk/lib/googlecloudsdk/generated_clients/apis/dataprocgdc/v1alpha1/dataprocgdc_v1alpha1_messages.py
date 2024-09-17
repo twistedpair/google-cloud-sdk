@@ -276,11 +276,11 @@ class DataprocgdcProjectsLocationsServiceInstancesApplicationEnvironmentsListReq
   tRequest object.
 
   Fields:
-    filter: Output only. Filtering results
-    orderBy: Output only. Hint for how to order the results
-    pageSize: Output only. Requested page size. Server may return fewer items
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Output only. A token identifying a page of results the server
+    pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. Parent value for ListSparkApplicationsRequest
   """
@@ -403,11 +403,11 @@ class DataprocgdcProjectsLocationsServiceInstancesListRequest(_messages.Message)
   r"""A DataprocgdcProjectsLocationsServiceInstancesListRequest object.
 
   Fields:
-    filter: Output only. Filtering results
-    orderBy: Output only. Hint for how to order the results
-    pageSize: Output only. Requested page size. Server may return fewer items
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Output only. A token identifying a page of results the server
+    pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. Parent value for ListServiceInstancesRequest
   """
@@ -497,11 +497,11 @@ class DataprocgdcProjectsLocationsServiceInstancesSparkApplicationsListRequest(_
   object.
 
   Fields:
-    filter: Output only. Filtering results
-    orderBy: Output only. Hint for how to order the results
-    pageSize: Output only. Requested page size. Server may return fewer items
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Output only. A token identifying a page of results the server
+    pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. Parent value for ListSparkApplicationsRequest
   """
@@ -571,7 +571,7 @@ class ListApplicationEnvironmentsResponse(_messages.Message):
   r"""Message for response to listing ApplicationEnvironments
 
   Fields:
-    applicationEnvironments: Required. The list of ApplicationEnvironment
+    applicationEnvironments: The list of ApplicationEnvironment
     nextPageToken: Output only. A token identifying a page of results the
       server should return.
     unreachable: Output only. Locations that could not be reached.
