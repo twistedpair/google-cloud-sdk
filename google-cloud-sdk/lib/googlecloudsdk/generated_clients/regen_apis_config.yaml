@@ -44,6 +44,8 @@ root_dir: googlecloudsdk/generated_clients/apis
 
 apis:
   auditmanager:
+    v1:
+      discovery_doc: auditmanager_v1.json
     v1alpha:
       discovery_doc: auditmanager_v1alpha.json
       default: true
@@ -680,6 +682,8 @@ apis:
           path: projects/{projectsId}/secrets/{secretsId}
         projects.secrets.versions:
           path: projects/{projectsId}/secrets/{secretsId}/versions/{versionsId}
+        projects.locations.keyRings.cryptoKeys:
+          path: projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}
     v1alpha:
       discovery_doc: developerconnect_v1alpha.json
       resources:
@@ -1390,16 +1394,11 @@ apis:
       discovery_doc: securityposture_v1alpha.json
       default: false
       resources:
-        organizations.locations.predictions:
-          path: organizations/{organization}/locations/{location}/predictions/{predictionID}
         organizations.locations.iacValidationReportMetrics:
           path: organizations/{organizationsId}/locations/{locationsId}/iacValidationReportMetrics
     v1:
       discovery_doc: securityposture_v1.json
       default: true
-      resources:
-        organizations.locations.predictions:
-          path: organizations/{organization}/locations/{location}/predictions/{predictionID}
   serviceconsumermanagement:
     v1beta1:
       discovery_doc: serviceconsumermanagement_v1beta1.json
@@ -1764,6 +1763,25 @@ apis:
     v1:
       discovery_doc: oracledatabase_v1.json
       default: true
+      resources:
+        projects.locations.autonomousDatabaseCharacterSets:
+          path: projects/{projectsId}/locations/{locationsId}/autonomousDatabaseCharacterSets/{autonomousDatabaseCharacterSetsId}
+        projects.locations.autonomousDbVersions:
+          path: projects/{projectsId}/locations/{locationsId}/autonomousDbVersions/{autonomousDbVersionsId}
+        projects.locations.cloudExadataInfrastructures.dbServers:
+          path: projects/{projectsId}/locations/{locationsId}/cloudExadataInfrastructures/{cloudExadataInfrastructuresId}/dbServers/{dbServersId}
+        projects.locations.cloudVmClusters.dbNodes:
+          path: projects/{projectsId}/locations/{locationsId}/cloudVmClusters/{cloudVmClustersId}/dbNodes/{dbNodesId}
+        projects.locations.dbSystemShapes:
+          path: projects/{projectsId}/locations/{locationsId}/dbSystemShapes/{dbSystemShapesId}
+        projects.locations.giVersions:
+          path: projects/{projectsId}/locations/{locationsId}/giVersions/{giVersionsId}
+        projects.locations.entitlements:
+          path: projects/{projectsId}/locations/{locationsId}/entitlements/{entitlementsId}
+        projects.locations.autonomousDatabaseBackups:
+          path: projects/{projectsId}/locations/{locationsId}/autonomousDatabaseBackups/{autonomousDatabaseBackupsId}
+        projects.networks:
+          path: projects/{projectsId}/global/networks/{networksId}
     v1alpha:
       discovery_doc: oracledatabase_v1alpha.json
       resources:
@@ -1861,7 +1879,6 @@ canonical_surfaces:
   cloudaicompanion:
     name: cloudaicompanion
     command: gemini
-    hidden: true
   cloudbilling:
     name: cloudbilling
     command: billing

@@ -15,6 +15,7 @@
 """Utilities for flags for `gcloud colab-enterprise` commands."""
 
 from googlecloudsdk.api_lib.colab_enterprise import runtime_templates as runtime_templates_util
+from googlecloudsdk.api_lib.colab_enterprise import runtimes as runtimes_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
@@ -84,6 +85,33 @@ def AddRuntimeTemplateResourceArg(parser, verb, is_positional):
       prefixes=prefixes,
       flag_name_overrides=flag_name_overrides,
       command_level_fallthroughs=fallthroughs,
+  ).AddToParser(parser)
+
+
+def AddRuntimeResourceArg(parser, verb):
+  """Add a resource argument for a runtime template to the parser.
+
+  Args:
+    parser: argparse parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+
+  def GetRuntimeResourceSpec(resource_name='runtime'):
+    return concepts.ResourceSpec(
+        'aiplatform.projects.locations.notebookRuntimes',
+        resource_name=resource_name,
+        projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+        locationsId=GetRegionAttributeConfig(),
+        disable_auto_completers=False,
+    )
+
+  concept_parsers.ConceptParser.ForResource(
+      'runtime',
+      GetRuntimeResourceSpec(),
+      'Unique name of the runtime {}. This was optionally provided by setting'
+      ' --runtime-id in the assign runtime command, or was system-generated if'
+      ' unspecified.'.format(verb),
+      required=True,
   ).AddToParser(parser)
 
 
@@ -429,7 +457,7 @@ def AddRemoveIamPolicyBindingFlags(parser):
 def AddAssignRuntimeFlags(parser):
   """Construct arguments for assigning a runtime."""
 
-  AddRegionResourceArg(parser, 'to assign runtime')
+  AddRegionResourceArg(parser, verb='to assign runtime')
 
   AddRuntimeTemplateResourceArg(
       parser, 'to configure the runtime with', is_positional=False
@@ -464,4 +492,33 @@ def AddAssignRuntimeFlags(parser):
       metavar='KEY=VALUE',
   )
 
+  AddAsyncFlag(parser)
+
+
+def AddDescribeRuntimeFlags(parser):
+  """Construct arguments specific to describing a runtime."""
+  AddRuntimeResourceArg(parser, verb='to describe')
+
+
+def AddListRuntimeFlags(parser):
+  """Construct arguments specific to listing runtimes."""
+  AddRegionResourceArg(parser, verb='for which to list all runtimes')
+  parser.display_info.AddUriFunc(runtimes_util.GetRuntimeUri)
+
+
+def AddDeleteRuntimeFlags(parser):
+  """Construct arguments specific to deleting a runtime."""
+  AddRuntimeResourceArg(parser, verb='to delete')
+  AddAsyncFlag(parser)
+
+
+def AddUpgradeRuntimeFlags(parser):
+  """Construct arguments specific to upgrading a runtime."""
+  AddRuntimeResourceArg(parser, verb='to upgrade')
+  AddAsyncFlag(parser)
+
+
+def AddStartRuntimeFlags(parser):
+  """Construct arguments specific to starting a stopped runtime."""
+  AddRuntimeResourceArg(parser, verb='to start')
   AddAsyncFlag(parser)

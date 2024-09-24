@@ -30,6 +30,7 @@ applySpecVersion: 1
 spec:
   upgrades:
   cluster:
+  version:
   configSync:
     enabled: true
     sourceFormat: hierarchy
@@ -65,6 +66,7 @@ UPGRADES_EMPTY = ''
 MANAGEMENT_AUTOMATIC = 'MANAGEMENT_AUTOMATIC'
 MANAGEMENT_MANUAL = 'MANAGEMENT_MANUAL'
 CLUSTER = 'cluster'
+VERSION = 'version'
 CONFIG_SYNC = 'configSync'
 POLICY_CONTROLLER = 'policyController'
 HNC = 'hierarchyController'

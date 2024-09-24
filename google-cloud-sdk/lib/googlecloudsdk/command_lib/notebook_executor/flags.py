@@ -201,10 +201,10 @@ def AddCreateExecutionFlags(parser):
       ),
   )
   notebook_source_group.add_argument(
-      '--direct-content-from-file',
+      '--direct-content',
       help=(
-          'The local filepath to an .ipynb file containing the notebook'
-          ' content.'
+          'The direct notebook content as IPYNB. This can be a local filepath'
+          ' to an .ipynb file or can be set to `-` to read content from stdin.'
       ),
   )
   execution_group.add_argument(

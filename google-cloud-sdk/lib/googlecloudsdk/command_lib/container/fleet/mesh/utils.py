@@ -29,6 +29,7 @@ class FleetDefaultMemberConfigObject(file_parsers.YamlConfigObject):
   """Fleet Default Member Config abstraction."""
 
   MANAGEMENT_KEY = 'management'
+  CONFIGAPI_KEY = 'configapi'
 
   def GetManagement(self):
     try:
@@ -37,6 +38,13 @@ class FleetDefaultMemberConfigObject(file_parsers.YamlConfigObject):
       return None
 
     return management
+
+  def GetConfigapi(self):
+    try:
+      configapi = self[self.CONFIGAPI_KEY]
+    except KeyError:
+      return None
+    return configapi
 
 
 def ParseFleetDefaultMemberConfig(yaml_config, msg):
@@ -55,9 +63,15 @@ def ParseFleetDefaultMemberConfig(yaml_config, msg):
   config = yaml_config.data[0]
 
   management = config.GetManagement()
+  configapi = config.GetConfigapi()
 
-  if management is None:
-    raise exceptions.Error('Missing required field .management')
+  if management is None and configapi is None:
+    raise exceptions.Error('Missing required field .management or .configapi')
+
+  if management is not None and configapi is not None:
+    raise exceptions.Error(
+        'Both .management and .configapi cannot be set at the same time.'
+    )
 
   # Create empty MemberConfig.
   member_config = msg.ServiceMeshMembershipSpec()
@@ -87,6 +101,26 @@ def ParseFleetDefaultMemberConfig(yaml_config, msg):
   else:
     status_msg = ('management [{}] is not supported.').format(management)
     log.status.Print(status_msg)
+
+  # parse configapi setting
+
+  if configapi == 'istio':
+    member_config.configApi = (
+        msg.ServiceMeshMembershipSpec.ConfigApiValueValuesEnum(
+            'CONFIG_API_ISTIO'
+        )
+    )
+  elif configapi == 'gateway':
+    member_config.configApi = (
+        msg.ServiceMeshMembershipSpec.ConfigApiValueValuesEnum(
+            'CONFIG_API_GATEWAY'
+        )
+    )
+  else:
+    status_msg = (
+        'configapi [{}] is not supported. Use one of istio or gateway'
+    ).format(configapi)
+    raise exceptions.Error(status_msg)
 
   return member_config
 

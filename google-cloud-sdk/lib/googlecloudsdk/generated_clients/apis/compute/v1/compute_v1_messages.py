@@ -3997,6 +3997,26 @@ class BackendService(_messages.Message):
   Enums:
     CompressionModeValueValuesEnum: Compress text responses using Brotli or
       gzip compression, based on the client's Accept-Encoding header.
+    IpAddressSelectionPolicyValueValuesEnum: Specifies a preference for
+      traffic sent from the proxy to the backend (or from the client to the
+      backend for proxyless gRPC). The possible values are: - IPV4_ONLY: Only
+      send IPv4 traffic to the backends of the backend service (Instance
+      Group, Managed Instance Group, Network Endpoint Group), regardless of
+      traffic from the client to the proxy. Only IPv4 health checks are used
+      to check the health of the backends. This is the default setting. -
+      PREFER_IPV6: Prioritize the connection to the endpoint's IPv6 address
+      over its IPv4 address (provided there is a healthy IPv6 address). -
+      IPV6_ONLY: Only send IPv6 traffic to the backends of the backend service
+      (Instance Group, Managed Instance Group, Network Endpoint Group),
+      regardless of traffic from the client to the proxy. Only IPv6 health
+      checks are used to check the health of the backends. This field is
+      applicable to either: - Advanced global external Application Load
+      Balancer (load balancing scheme EXTERNAL_MANAGED), - Regional external
+      Application Load Balancer, - Internal proxy Network Load Balancer (load
+      balancing scheme INTERNAL_MANAGED), - Regional internal Application Load
+      Balancer (load balancing scheme INTERNAL_MANAGED), - Traffic Director
+      with Envoy proxies and proxyless gRPC (load balancing scheme
+      INTERNAL_SELF_MANAGED).
     LoadBalancingSchemeValueValuesEnum: Specifies the load balancer type. A
       backend service created for one type of load balancer cannot be used
       with another. For more information, refer to Choosing a load balancer.
@@ -4117,6 +4137,26 @@ class BackendService(_messages.Message):
       passthrough Network Load Balancers.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    ipAddressSelectionPolicy: Specifies a preference for traffic sent from the
+      proxy to the backend (or from the client to the backend for proxyless
+      gRPC). The possible values are: - IPV4_ONLY: Only send IPv4 traffic to
+      the backends of the backend service (Instance Group, Managed Instance
+      Group, Network Endpoint Group), regardless of traffic from the client to
+      the proxy. Only IPv4 health checks are used to check the health of the
+      backends. This is the default setting. - PREFER_IPV6: Prioritize the
+      connection to the endpoint's IPv6 address over its IPv4 address
+      (provided there is a healthy IPv6 address). - IPV6_ONLY: Only send IPv6
+      traffic to the backends of the backend service (Instance Group, Managed
+      Instance Group, Network Endpoint Group), regardless of traffic from the
+      client to the proxy. Only IPv6 health checks are used to check the
+      health of the backends. This field is applicable to either: - Advanced
+      global external Application Load Balancer (load balancing scheme
+      EXTERNAL_MANAGED), - Regional external Application Load Balancer, -
+      Internal proxy Network Load Balancer (load balancing scheme
+      INTERNAL_MANAGED), - Regional internal Application Load Balancer (load
+      balancing scheme INTERNAL_MANAGED), - Traffic Director with Envoy
+      proxies and proxyless gRPC (load balancing scheme
+      INTERNAL_SELF_MANAGED).
     kind: [Output Only] Type of resource. Always compute#backendService for
       backend services.
     loadBalancingScheme: Specifies the load balancer type. A backend service
@@ -4270,6 +4310,46 @@ class BackendService(_messages.Message):
     """
     AUTOMATIC = 0
     DISABLED = 1
+
+  class IpAddressSelectionPolicyValueValuesEnum(_messages.Enum):
+    r"""Specifies a preference for traffic sent from the proxy to the backend
+    (or from the client to the backend for proxyless gRPC). The possible
+    values are: - IPV4_ONLY: Only send IPv4 traffic to the backends of the
+    backend service (Instance Group, Managed Instance Group, Network Endpoint
+    Group), regardless of traffic from the client to the proxy. Only IPv4
+    health checks are used to check the health of the backends. This is the
+    default setting. - PREFER_IPV6: Prioritize the connection to the
+    endpoint's IPv6 address over its IPv4 address (provided there is a healthy
+    IPv6 address). - IPV6_ONLY: Only send IPv6 traffic to the backends of the
+    backend service (Instance Group, Managed Instance Group, Network Endpoint
+    Group), regardless of traffic from the client to the proxy. Only IPv6
+    health checks are used to check the health of the backends. This field is
+    applicable to either: - Advanced global external Application Load Balancer
+    (load balancing scheme EXTERNAL_MANAGED), - Regional external Application
+    Load Balancer, - Internal proxy Network Load Balancer (load balancing
+    scheme INTERNAL_MANAGED), - Regional internal Application Load Balancer
+    (load balancing scheme INTERNAL_MANAGED), - Traffic Director with Envoy
+    proxies and proxyless gRPC (load balancing scheme INTERNAL_SELF_MANAGED).
+
+    Values:
+      IPV4_ONLY: Only send IPv4 traffic to the backends of the Backend Service
+        (Instance Group, Managed Instance Group, Network Endpoint Group)
+        regardless of traffic from the client to the proxy. Only IPv4 health-
+        checks are used to check the health of the backends. This is the
+        default setting.
+      IPV6_ONLY: Only send IPv6 traffic to the backends of the Backend Service
+        (Instance Group, Managed Instance Group, Network Endpoint Group)
+        regardless of traffic from the client to the proxy. Only IPv6 health-
+        checks are used to check the health of the backends.
+      IP_ADDRESS_SELECTION_POLICY_UNSPECIFIED: Unspecified IP address
+        selection policy.
+      PREFER_IPV6: Prioritize the connection to the endpoints IPv6 address
+        over its IPv4 address (provided there is a healthy IPv6 address).
+    """
+    IPV4_ONLY = 0
+    IPV6_ONLY = 1
+    IP_ADDRESS_SELECTION_POLICY_UNSPECIFIED = 2
+    PREFER_IPV6 = 3
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     r"""Specifies the load balancer type. A backend service created for one
@@ -4484,29 +4564,30 @@ class BackendService(_messages.Message):
   healthChecks = _messages.StringField(17, repeated=True)
   iap = _messages.MessageField('BackendServiceIAP', 18)
   id = _messages.IntegerField(19, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(20, default='compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 21)
-  localityLbPolicies = _messages.MessageField('BackendServiceLocalityLoadBalancingPolicyConfig', 22, repeated=True)
-  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 23)
-  logConfig = _messages.MessageField('BackendServiceLogConfig', 24)
-  maxStreamDuration = _messages.MessageField('Duration', 25)
-  metadatas = _messages.MessageField('MetadatasValue', 26)
-  name = _messages.StringField(27)
-  network = _messages.StringField(28)
-  outlierDetection = _messages.MessageField('OutlierDetection', 29)
-  port = _messages.IntegerField(30, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(31)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 32)
-  region = _messages.StringField(33)
-  securityPolicy = _messages.StringField(34)
-  securitySettings = _messages.MessageField('SecuritySettings', 35)
-  selfLink = _messages.StringField(36)
-  serviceBindings = _messages.StringField(37, repeated=True)
-  serviceLbPolicy = _messages.StringField(38)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 39)
-  subsetting = _messages.MessageField('Subsetting', 40)
-  timeoutSec = _messages.IntegerField(41, variant=_messages.Variant.INT32)
-  usedBy = _messages.MessageField('BackendServiceUsedBy', 42, repeated=True)
+  ipAddressSelectionPolicy = _messages.EnumField('IpAddressSelectionPolicyValueValuesEnum', 20)
+  kind = _messages.StringField(21, default='compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 22)
+  localityLbPolicies = _messages.MessageField('BackendServiceLocalityLoadBalancingPolicyConfig', 23, repeated=True)
+  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 24)
+  logConfig = _messages.MessageField('BackendServiceLogConfig', 25)
+  maxStreamDuration = _messages.MessageField('Duration', 26)
+  metadatas = _messages.MessageField('MetadatasValue', 27)
+  name = _messages.StringField(28)
+  network = _messages.StringField(29)
+  outlierDetection = _messages.MessageField('OutlierDetection', 30)
+  port = _messages.IntegerField(31, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(32)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 33)
+  region = _messages.StringField(34)
+  securityPolicy = _messages.StringField(35)
+  securitySettings = _messages.MessageField('SecuritySettings', 36)
+  selfLink = _messages.StringField(37)
+  serviceBindings = _messages.StringField(38, repeated=True)
+  serviceLbPolicy = _messages.StringField(39)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 40)
+  subsetting = _messages.MessageField('Subsetting', 41)
+  timeoutSec = _messages.IntegerField(42, variant=_messages.Variant.INT32)
+  usedBy = _messages.MessageField('BackendServiceUsedBy', 43, repeated=True)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -33131,10 +33212,12 @@ class ConfidentialInstanceConfig(_messages.Message):
         this value.
       SEV: AMD Secure Encrypted Virtualization.
       SEV_SNP: AMD Secure Encrypted Virtualization - Secure Nested Paging.
+      TDX: Intel Trust Domain eXtension.
     """
     CONFIDENTIAL_INSTANCE_TYPE_UNSPECIFIED = 0
     SEV = 1
     SEV_SNP = 2
+    TDX = 3
 
   confidentialInstanceType = _messages.EnumField('ConfidentialInstanceTypeValueValuesEnum', 1)
   enableConfidentialCompute = _messages.BooleanField(2)
@@ -40279,6 +40362,8 @@ class HealthStatus(_messages.Message):
   Enums:
     HealthStateValueValuesEnum: Health state of the IPv4 address of the
       instance.
+    Ipv6HealthStateValueValuesEnum: Health state of the IPv6 address of the
+      instance.
     WeightErrorValueValuesEnum:
 
   Messages:
@@ -40294,6 +40379,8 @@ class HealthStatus(_messages.Message):
     ipAddress: For target pool based Network Load Balancing, it indicates the
       forwarding rule's IP address assigned to this instance. For other types
       of load balancing, the field indicates VM internal ip.
+    ipv6Address: A string attribute.
+    ipv6HealthState: Health state of the IPv6 address of the instance.
     port: The named port of the instance group, not necessarily the port that
       is health-checked.
     weight: A string attribute.
@@ -40302,6 +40389,16 @@ class HealthStatus(_messages.Message):
 
   class HealthStateValueValuesEnum(_messages.Enum):
     r"""Health state of the IPv4 address of the instance.
+
+    Values:
+      HEALTHY: <no description>
+      UNHEALTHY: <no description>
+    """
+    HEALTHY = 0
+    UNHEALTHY = 1
+
+  class Ipv6HealthStateValueValuesEnum(_messages.Enum):
+    r"""Health state of the IPv6 address of the instance.
 
     Values:
       HEALTHY: <no description>
@@ -40368,9 +40465,11 @@ class HealthStatus(_messages.Message):
   healthState = _messages.EnumField('HealthStateValueValuesEnum', 4)
   instance = _messages.StringField(5)
   ipAddress = _messages.StringField(6)
-  port = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  weight = _messages.StringField(8)
-  weightError = _messages.EnumField('WeightErrorValueValuesEnum', 9)
+  ipv6Address = _messages.StringField(7)
+  ipv6HealthState = _messages.EnumField('Ipv6HealthStateValueValuesEnum', 8)
+  port = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  weight = _messages.StringField(10)
+  weightError = _messages.EnumField('WeightErrorValueValuesEnum', 11)
 
 
 class HealthStatusForNetworkEndpoint(_messages.Message):

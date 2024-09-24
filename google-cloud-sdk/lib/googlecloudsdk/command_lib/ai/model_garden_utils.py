@@ -45,7 +45,7 @@ def _ParseEndpoint(endpoint_id, location_id):
   )
 
 
-def GetEndpointLabelValue(
+def GetCLIEndpointLabelValue(
     is_hf_model, publisher_name, model_name='', model_version_name=''
 ):
   if is_hf_model:
@@ -58,17 +58,49 @@ def GetEndpointLabelValue(
     ]
 
 
+def GetOneClickEndpointLabelValue(
+    is_hf_model, publisher_name, model_name='', model_version_name=''
+):
+  if is_hf_model:
+    return f'hf-{publisher_name}-{model_name}'.replace('.', '_')[
+        :_MAX_LABEL_VALUE_LENGTH
+    ]
+  else:
+    return (
+        f'publishers-{publisher_name}-models-{model_name}-{model_version_name}'
+        .replace(
+            '.', '_'
+        )[
+            :_MAX_LABEL_VALUE_LENGTH
+        ]
+    )
+
+
 def IsHFModelGated(publisher_name, model_name):
   """Checks if the HF model is gated or not by calling HF API."""
   hf_response = requests.GetSession().get(
       f'https://huggingface.co/api/models/{publisher_name}/{model_name}?blobs=true'
   )
   if hf_response.status_code != 200:
-    raise core_exceptions.Error(
+    raise core_exceptions.InternalError(
         "Something went wrong when we call HuggingFace's API to get the"
-        ' model data. Please try again later.'
+        ' model metadata. Please try again later.'
     )
   return bool(hf_response.json()['gated'])
+
+
+def VerifyHFTokenPermission(hf_token, publisher_name, model_name):
+  hf_response = requests.GetSession().request(
+      'GET',
+      f'https://huggingface.co/api/models/{publisher_name}/{model_name}/auth-check',
+      headers={'Authorization': f'Bearer {hf_token}'},
+  )
+  if hf_response.status_code != 200:
+    raise core_exceptions.Error(
+        'The Hugging Face access token is not valid or does not have permission'
+        ' to access the gated model.'
+    )
+  return
 
 
 def GetDeployConfig(args, publisher_model):
@@ -266,6 +298,8 @@ def DeployModel(
       endpoint_name,  # Use the endpoint_name as the deployed model name.
       machine_type=deploy_config.dedicatedResources.machineSpec.machineType,
       accelerator_dict=accelerator_dict,
+      enable_access_logging=True,
+      enable_container_logging=True,
   )
   operations_util.WaitForOpMaybe(
       operation_client,

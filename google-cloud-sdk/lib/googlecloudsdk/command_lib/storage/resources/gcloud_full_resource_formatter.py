@@ -192,6 +192,14 @@ _OBJECT_DISPLAY_TITLES_AND_DEFAULTS = base.ObjectDisplayTitlesAndDefaults(
 )
 
 
+def replace_bucket_ip_filter_config_with_mode_field(bucket_resource):
+  """Converts IpFilter object to IpFilter.mode only."""
+  ip_filter_object = getattr(bucket_resource, 'ip_filter_config', None)
+  if not ip_filter_object:
+    return
+  bucket_resource.ip_filter_config = ip_filter_object['mode']
+
+
 class GcloudFullResourceFormatter(base.FullResourceFormatter):
   """Format a resource as per Gcloud Storage style for ls -L output."""
 
@@ -199,6 +207,7 @@ class GcloudFullResourceFormatter(base.FullResourceFormatter):
     """See super class."""
     shim_format_util.replace_autoclass_value_with_prefixed_time(bucket_resource)
     shim_format_util.replace_bucket_values_with_present_string(bucket_resource)
+    replace_bucket_ip_filter_config_with_mode_field(bucket_resource)
     return base.get_formatted_string(
         bucket_resource, _BUCKET_DISPLAY_TITLES_AND_DEFAULTS
     )

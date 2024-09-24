@@ -149,8 +149,9 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
     if return_code == 0:
       with files.FileReader(self._logs_path) as file_reader:
         for line in file_reader:
-          if re.search(r'\[ipv6:%5B2001:4860:80[4-7].+\]', line) or re.search(
-              r'\[ipv4:%5B34\.126.+\]', line
+          if re.search(
+              r'(?:\[ipv6:(?:%5B)?2001:4860:80[4-7].+\])?(?:\[ipv4:(?:%5B)?34\.126.+\])?',
+              line,
           ):
             return _SUCCESS
     return 'Failed. See log at ' + self._logs_path
@@ -306,7 +307,7 @@ class DirectConnectivityDiagnostic(diagnostic.Diagnostic):
     log.warning(
         'This diagnostic is experimental. The output may change,'
         ' and checks may be added or removed at any time. Please do not rely on'
-        ' the diagnostic flag values being present.'
+        ' the diagnostic being present.'
     )
 
     _log_running_check(_CORE_CHECK_NAME)

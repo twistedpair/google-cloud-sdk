@@ -252,19 +252,19 @@ class AuthzPolicy(_messages.Message):
   backend designed to scan the traffic for security purposes.
 
   Enums:
-    ActionValueValuesEnum: Required. Can be one of ALLOW, DENY, CUSTOM. When
-      the action is CUSTOM, customProvider must be specified. When the action
-      is ALLOW, only requests matching the policy will be allowed. When the
-      action is DENY, only requests matching the policy will be denied. When a
-      request arrives, the policies are evaluated in the following order: 1.
-      If there is a CUSTOM policy that matches the request, the CUSTOM policy
-      is evaluated using the custom authorization providers and the request is
-      denied if the provider rejects the request. 2. If there are any DENY
-      policies that match the request, the request is denied. 3. If there are
-      no ALLOW policies for the resource or if any of the ALLOW policies match
-      the request, the request is allowed. 4. Else the request is denied by
-      default if none of the configured AuthzPolicies with ALLOW action match
-      the request.
+    ActionValueValuesEnum: Required. Can be one of `ALLOW`, `DENY`, `CUSTOM`.
+      When the action is `CUSTOM`, `customProvider` must be specified. When
+      the action is `ALLOW`, only requests matching the policy will be
+      allowed. When the action is `DENY`, only requests matching the policy
+      will be denied. When a request arrives, the policies are evaluated in
+      the following order: 1. If there is a `CUSTOM` policy that matches the
+      request, the `CUSTOM` policy is evaluated using the custom authorization
+      providers and the request is denied if the provider rejects the request.
+      2. If there are any `DENY` policies that match the request, the request
+      is denied. 3. If there are no `ALLOW` policies for the resource or if
+      any of the `ALLOW` policies match the request, the request is allowed.
+      4. Else the request is denied by default if none of the configured
+      AuthzPolicies with `ALLOW` action match the request.
 
   Messages:
     LabelsValue: Optional. Set of labels associated with the `AuthzPolicy`
@@ -272,23 +272,23 @@ class AuthzPolicy(_messages.Message):
       requirements](/compute/docs/labeling-resources#requirements).
 
   Fields:
-    action: Required. Can be one of ALLOW, DENY, CUSTOM. When the action is
-      CUSTOM, customProvider must be specified. When the action is ALLOW, only
-      requests matching the policy will be allowed. When the action is DENY,
-      only requests matching the policy will be denied. When a request
-      arrives, the policies are evaluated in the following order: 1. If there
-      is a CUSTOM policy that matches the request, the CUSTOM policy is
-      evaluated using the custom authorization providers and the request is
-      denied if the provider rejects the request. 2. If there are any DENY
-      policies that match the request, the request is denied. 3. If there are
-      no ALLOW policies for the resource or if any of the ALLOW policies match
-      the request, the request is allowed. 4. Else the request is denied by
-      default if none of the configured AuthzPolicies with ALLOW action match
-      the request.
+    action: Required. Can be one of `ALLOW`, `DENY`, `CUSTOM`. When the action
+      is `CUSTOM`, `customProvider` must be specified. When the action is
+      `ALLOW`, only requests matching the policy will be allowed. When the
+      action is `DENY`, only requests matching the policy will be denied. When
+      a request arrives, the policies are evaluated in the following order: 1.
+      If there is a `CUSTOM` policy that matches the request, the `CUSTOM`
+      policy is evaluated using the custom authorization providers and the
+      request is denied if the provider rejects the request. 2. If there are
+      any `DENY` policies that match the request, the request is denied. 3. If
+      there are no `ALLOW` policies for the resource or if any of the `ALLOW`
+      policies match the request, the request is allowed. 4. Else the request
+      is denied by default if none of the configured AuthzPolicies with
+      `ALLOW` action match the request.
     createTime: Output only. The timestamp when the resource was created.
-    customProvider: Optional. Required if the action is CUSTOM. Allows
+    customProvider: Optional. Required if the action is `CUSTOM`. Allows
       delegating authorization decisions to Cloud IAP or to Service
-      Extensions. One of cloudIap or authzExtension must be specified.
+      Extensions. One of `cloudIap` or `authzExtension` must be specified.
     description: Optional. A human-readable description of the resource.
     httpRules: Optional. A list of authorization HTTP rules to match against
       the incoming request. A policy match occurs when at least one HTTP rule
@@ -307,18 +307,19 @@ class AuthzPolicy(_messages.Message):
   """
 
   class ActionValueValuesEnum(_messages.Enum):
-    r"""Required. Can be one of ALLOW, DENY, CUSTOM. When the action is
-    CUSTOM, customProvider must be specified. When the action is ALLOW, only
-    requests matching the policy will be allowed. When the action is DENY,
-    only requests matching the policy will be denied. When a request arrives,
-    the policies are evaluated in the following order: 1. If there is a CUSTOM
-    policy that matches the request, the CUSTOM policy is evaluated using the
-    custom authorization providers and the request is denied if the provider
-    rejects the request. 2. If there are any DENY policies that match the
-    request, the request is denied. 3. If there are no ALLOW policies for the
-    resource or if any of the ALLOW policies match the request, the request is
-    allowed. 4. Else the request is denied by default if none of the
-    configured AuthzPolicies with ALLOW action match the request.
+    r"""Required. Can be one of `ALLOW`, `DENY`, `CUSTOM`. When the action is
+    `CUSTOM`, `customProvider` must be specified. When the action is `ALLOW`,
+    only requests matching the policy will be allowed. When the action is
+    `DENY`, only requests matching the policy will be denied. When a request
+    arrives, the policies are evaluated in the following order: 1. If there is
+    a `CUSTOM` policy that matches the request, the `CUSTOM` policy is
+    evaluated using the custom authorization providers and the request is
+    denied if the provider rejects the request. 2. If there are any `DENY`
+    policies that match the request, the request is denied. 3. If there are no
+    `ALLOW` policies for the resource or if any of the `ALLOW` policies match
+    the request, the request is allowed. 4. Else the request is denied by
+    default if none of the configured AuthzPolicies with `ALLOW` action match
+    the request.
 
     Values:
       AUTHZ_ACTION_UNSPECIFIED: Unspecified action.
@@ -605,15 +606,15 @@ class AuthzPolicyTarget(_messages.Message):
     LoadBalancingSchemeValueValuesEnum: Required. All gateways and forwarding
       rules referenced by this policy and extensions must share the same load
       balancing scheme. Supported values: `INTERNAL_MANAGED` and
-      `EXTERNAL_MANAGED`. For more information, refer to [Choosing a load
-      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
 
   Fields:
     loadBalancingScheme: Required. All gateways and forwarding rules
       referenced by this policy and extensions must share the same load
       balancing scheme. Supported values: `INTERNAL_MANAGED` and
-      `EXTERNAL_MANAGED`. For more information, refer to [Choosing a load
-      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
     resources: Required. A list of references to the Forwarding Rules on which
       this policy will be applied.
   """
@@ -622,7 +623,7 @@ class AuthzPolicyTarget(_messages.Message):
     r"""Required. All gateways and forwarding rules referenced by this policy
     and extensions must share the same load balancing scheme. Supported
     values: `INTERNAL_MANAGED` and `EXTERNAL_MANAGED`. For more information,
-    refer to [Choosing a load balancer](https://cloud.google.com/load-
+    refer to [Backend services overview](https://cloud.google.com/load-
     balancing/docs/backend-service).
 
     Values:
@@ -2181,6 +2182,36 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListMarketCaptureCollectorsResponse(_messages.Message):
+  r"""Message for response to listing MarketCaptureCollectors
+
+  Fields:
+    marketCaptureCollectors: The list of MarketCaptureCollector
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  marketCaptureCollectors = _messages.MessageField('MarketCaptureCollector', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMarketCaptureEnginesResponse(_messages.Message):
+  r"""Message for response to listing MarketCaptureEngines
+
+  Fields:
+    marketCaptureEngines: The list of MarketCaptureEngine
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  marketCaptureEngines = _messages.MessageField('MarketCaptureEngine', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListMirroringDeploymentGroupsResponse(_messages.Message):
   r"""Message for response to listing MirroringDeploymentGroups
 
@@ -2582,6 +2613,125 @@ class MTLSPolicy(_messages.Message):
   clientValidationCa = _messages.MessageField('ValidationCA', 1, repeated=True)
   clientValidationMode = _messages.EnumField('ClientValidationModeValueValuesEnum', 2)
   clientValidationTrustConfig = _messages.StringField(3)
+
+
+class MarketCaptureCollector(_messages.Message):
+  r"""Message describing MarketCaptureCollector object
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the collector.
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    forwardingRule: Required. Immutable. The regional load balancer which the
+      mirrored traffic should be forwarded to. Format is:
+      projects/{project}/regions/{region}/forwardingRules/{forwardingRule}
+    labels: Optional. Labels as key value pairs
+    name: Immutable. Identifier. The name of the MarketCaptureCollector.
+    reconciling: Output only. Whether reconciling is in progress, recommended
+      per https://google.aip.dev/128.
+    state: Output only. Current state of the collector.
+    subnet: Required. Immutable. Subnet to be used by the PSC Service
+      Attachment.
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the collector.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: Ready.
+      CREATING: Being created.
+      DELETING: Being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  forwardingRule = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  reconciling = _messages.BooleanField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  subnet = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class MarketCaptureEngine(_messages.Message):
+  r"""MarketCaptureEngine is a resource that represents the Market Capture
+  engine in a given location.
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Optional. Labels as key value pairs
+    name: Identifier. The name of the resource.
+    reconciling: Output only. Whether reconciling is in progress, recommended
+      per https://google.aip.dev/128.
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  reconciling = _messages.BooleanField(4)
+  updateTime = _messages.StringField(5)
 
 
 class MirroringDeployment(_messages.Message):
@@ -4003,9 +4153,9 @@ class NetworksecurityProjectsLocationsAuthzPoliciesPatchRequest(_messages.Messag
       (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Used to specify the fields to be overwritten in the
       `AuthzPolicy` resource by the update. The fields specified in the
-      update_mask are relative to the resource, not the full request. A field
-      is overwritten if it is in the mask. If the user does not specify a
-      mask, then all fields are overwritten.
+      `update_mask` are relative to the resource, not the full request. A
+      field is overwritten if it is in the mask. If the user does not specify
+      a mask, then all fields are overwritten.
   """
 
   authzPolicy = _messages.MessageField('AuthzPolicy', 1)
@@ -5109,6 +5259,223 @@ class NetworksecurityProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsMarketCaptureCollectorsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMarketCaptureCollectorsCreateRequest
+  object.
+
+  Fields:
+    marketCaptureCollector: A MarketCaptureCollector resource to be passed as
+      the request body.
+    marketCaptureCollectorId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and
+      market_capture_collector_id from the method_signature of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  marketCaptureCollector = _messages.MessageField('MarketCaptureCollector', 1)
+  marketCaptureCollectorId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsMarketCaptureCollectorsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMarketCaptureCollectorsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsMarketCaptureCollectorsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMarketCaptureCollectorsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsMarketCaptureCollectorsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMarketCaptureCollectorsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListMarketCaptureCollectorsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsMarketCaptureCollectorsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMarketCaptureCollectorsPatchRequest
+  object.
+
+  Fields:
+    marketCaptureCollector: A MarketCaptureCollector resource to be passed as
+      the request body.
+    name: Immutable. Identifier. The name of the MarketCaptureCollector.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the MarketCaptureCollector resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  marketCaptureCollector = _messages.MessageField('MarketCaptureCollector', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsMarketCaptureEnginesCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMarketCaptureEnginesCreateRequest
+  object.
+
+  Fields:
+    marketCaptureEngine: A MarketCaptureEngine resource to be passed as the
+      request body.
+    marketCaptureEngineId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and
+      market_capture_engine_id from the method_signature of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  marketCaptureEngine = _messages.MessageField('MarketCaptureEngine', 1)
+  marketCaptureEngineId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsMarketCaptureEnginesDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMarketCaptureEnginesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsMarketCaptureEnginesGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMarketCaptureEnginesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the MarketCaptureEngine.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsMarketCaptureEnginesListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMarketCaptureEnginesListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListMarketCaptureEnginesRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsMarketCaptureEnginesPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMarketCaptureEnginesPatchRequest
+  object.
+
+  Fields:
+    marketCaptureEngine: A MarketCaptureEngine resource to be passed as the
+      request body.
+    name: Identifier. The name of the resource.
+    updateMask: Optional. The list of fields to update.
+  """
+
+  marketCaptureEngine = _messages.MessageField('MarketCaptureEngine', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class NetworksecurityProjectsLocationsMirroringDeploymentGroupsCreateRequest(_messages.Message):
@@ -6965,7 +7332,8 @@ class PartnerSSEEnvironment(_messages.Message):
     sseNetwork: Output only. Google-owned VPC in the SSE project created for
       this environment. Supports all user traffic and peers to partner_vpc.
     sseNetworkingRanges: Required. CIDR ranges reserved for Google's use.
-      Should be at least a /20.
+      Should be at least a /20 in test environments and at least a /14 in
+      environments with customers, but that is not enforced.
     sseProject: Output only. Google-owned project created for this
       environment.
     sseProjectNumber: Output only. [Output only] CDEN owned project owning

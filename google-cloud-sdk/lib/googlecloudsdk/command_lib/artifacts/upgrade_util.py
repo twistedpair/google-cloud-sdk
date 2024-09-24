@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import copy
+import functools
 
 from apitools.base.py import exceptions as apitools_exceptions
 import frozendict
@@ -113,7 +115,9 @@ def iam_policy(domain, project):
   """
 
   # Convert the map to an iam.Policy object so that gcloud can format it nicely.
-  m, _ = iam_map(domain, project, skip_bucket=False, from_ar_permissions=False)
+  m, _ = copy.deepcopy(
+      iam_map(domain, project, skip_bucket=False, from_ar_permissions=False)
+  )
   return policy_from_map(m)
 
 
@@ -157,6 +161,7 @@ def policy_from_map(role_to_members):
   return messages.Policy(bindings=bindings)
 
 
+@functools.lru_cache(maxsize=None)
 def iam_map(
     domain, project, skip_bucket, from_ar_permissions, best_effort=False
 ):

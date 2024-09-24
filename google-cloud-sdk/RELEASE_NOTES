@@ -5,6 +5,118 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 494.0.0 (2024-09-24)
+
+### Breaking Changes
+
+*   **(GKE Hub)** `gcloud beta container fleet memberships get-credentials` now requires the
+    permission `gkehub.gateway.generateCredentials` (automatically included in
+    roles `gkehub.gatewayReader`, `gkehub.gatewayEditor`, and
+    `gkehub.gatewayAdmin`), as well as network access to
+    `*connectgateway.googleapis.com`.
+
+
+### Google Cloud CLI
+
+* Upgraded `cryptography` package to version 43.0.1.
+* Upgraded `pyopenssl` package to version 24.2.1.
+
+### AlloyDB
+
+* Added `--outbound-public-ip` flag to enable outbound public IP on an instance
+for the following commands in the GA track:
+  * `gcloud alloydb instances create`
+  * `gcloud alloydb instances create-secondary`
+  * `gcloud alloydb instances update`
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.30 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.30>.
+* Updated the Jetty9 and Jetty12 WebServer to latest Version.
+* Fixed a customer bug regarding running multiple services in the local devappserver.
+
+### Cloud Bigtable
+
+*   Added support for Data Boost in `gcloud bigtable app-profiles`.
+
+### Cloud Bigtable Emulator
+
+* Rebuilding cbt emulator with go version 1.23.0 which fixed CVE-2023-45288.
+
+### Cloud SQL
+
+*   Updated `gcloud beta sql ssl server-certs list` to also return the CA
+    certificates.
+*   Promoted `--time-zone` flag of `gcloud sql instances patch` command to GA.
+
+### Colab Enterprise
+
+*   Added `gcloud beta colab-enterprise runtimes describe`.
+*   Added `gcloud beta colab-enterprise runtimes list`.
+*   Added `gcloud beta colab-enterprise runtimes delete`.
+*   Added `gcloud beta colab-enterprise runtimes upgrade`.
+*   Added `gcloud beta colab-enterprise runtimes start`.
+
+### Compute Engine
+
+*   Promote `--confidential-compute-type=TDX` flag of `gcloud compute instances create` to v1.
+*   Added `gce_vm_ip_portmap` Network Endpoint Group for `gcloud compute network-endpoint-groups` GA support.
+*   Fix crash when setting `--session-affinity`.
+*   Added `TDX_CAPABLE` to the list of `guestOsFeatures`.
+
+### Database Migration
+
+* Updated `gcloud database-migration connection-profiles create alloydb` to support POSTGRES_16 version option for AlloyDB connection profiles.
+
+### Developer Connect
+
+*   Promoted `gcloud developer-connect` to beta.
+
+### GKE Hub
+
+* Added support for fleet-default membership configuration of Config Sync to
+  `gcloud beta container fleet config-management` command group.
+  * Added `--fleet-default-member-config` flag to
+    `gcloud beta container fleet config-management enable` to set the
+    fleet-default membership configuration.
+  * Added `--origin` flag to
+    `gcloud beta container fleet config-management apply` to sync a membership
+    to the fleet-default membership configuration.
+  * Added `--fleet-default-member-config` flag to
+    `gcloud beta container fleet config-management disable` to clear the
+    fleet-default membership configuration.
+  * Added column to `gcloud beta container fleet config-management status`
+    output to indicate whether each membership configuration is synced to the
+    fleet-default membership configuration.
+
+### Gemini
+
+*   Added `gcloud gemini code-repository-indexes` API.
+*   Added `gcloud gemini code-repository-indexes repository-groups` API.
+
+### Network Security
+
+* For commands `network-security security-profile-groups create` and `update`, changed subflags for `--threat-prevention-policy`  from `--security-profile-organization` and `--security-profile-location` to the more consistent `--threat-prevention-profile-organization` and `--threat-prevention-profile-location`, while keeping the old flags as well for backwards compatibility.
+* Added support for creating Security Profile Groups linked to Custom Mirroring security profiles using `network-security security-profile-groups create --custom-mirroring-profile=<...>`.
+
+### Oracle Database
+
+* Added `gcloud oracle-database` group in GA with the following commands:
+  * `gcloud oracle-database autonomous-database-backups list` command
+  * `gcloud oracle-database autonomous-databases` commands group
+  * `gcloud oracle-database autonomous-db-versions list` command
+  * `gcloud oracle-database cloud-exadata-infrastructures` commands group
+  * `gcloud oracle-database cloud-exadata-infrastructures db-servers list`
+  * `gcloud oracle-database cloud-vm-clusters` commands group
+  * `gcloud oracle-database cloud-vm-clusters db-system-shapes list` command
+  * `gcloud oracle-database entitlements list` command
+  * `gcloud oracle-database gi-versions list` command
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 493.0.0 (2024-09-17)
 
 ### Breaking Changes

@@ -176,3 +176,47 @@ def CheckBackupExists(backup_ref, _, req):
   # error from backups.Get.
   GetBackup(backup_ref)
   return req
+
+
+def FormatListBackups(backup_refs, _):
+  """Formats existing fields for displaying them in the list response.
+
+  Args:
+    backup_refs: A list of backups.
+
+  Returns:
+    The list of backups with the new formatting.
+  """
+  return [_FormatBackup(backup_ref) for backup_ref in backup_refs]
+
+
+def _FormatBackup(backup_ref):
+  """Formats a single backup for displaying it in the list response.
+
+  This function makes in-place modifications.
+
+  Args:
+    backup_ref: The backup to format.
+
+  Returns:
+    The backup with the new formatting.
+  """
+  formatted_backup_ref = backup_ref
+  formatted_backup_ref.backupSchedules = [
+      _ExtractScheduleNameFromScheduleUri(schedule_uri)
+      for schedule_uri in backup_ref.backupSchedules
+  ]
+  return formatted_backup_ref
+
+
+def _ExtractScheduleNameFromScheduleUri(schedule_uri):
+  """Converts a schedule URI to schedule names.
+
+  Args:
+      schedule_uri: The URI of the schedule, e.g.,
+      "projects/test-project/instances/test-instance/databases/test-database/backupSchedules/test-backup-schedule".
+
+  Returns:
+      The names of the schedules ("test-backup-schedule" in the example above).
+  """
+  return schedule_uri.split('/')[-1]

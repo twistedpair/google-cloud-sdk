@@ -4,5 +4,6 @@
   "authenticationDomain": "auth.cloud.google.com",
   "projectPrefix": "",
   "cloudWebDomain": "cloud.google.com",
+  "documentationDomain": "cloud.google.com",
   "version": "1.0.0"
 }

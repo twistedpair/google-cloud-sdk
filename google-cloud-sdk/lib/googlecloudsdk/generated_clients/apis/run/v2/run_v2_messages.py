@@ -17,24 +17,6 @@ from apitools.base.py import extra_types
 package = 'run'
 
 
-class GoogleCloudRunV2AutomaticScaling(_messages.Message):
-  r"""Automatic scaling settings.
-
-  Fields:
-    maxInstanceCount: Optional. Total max instances for the worker. This
-      number of instances is divided among all revisions with specified
-      instance split based on the percent of instance split they are
-      receiving.
-    minInstanceCount: Optional. Total min instances for the worker. This
-      number of instances is divided among all revisions with specified
-      instance split based on the percent of instance split they are
-      receiving.
-  """
-
-  maxInstanceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  minInstanceCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
 class GoogleCloudRunV2BinaryAuthorization(_messages.Message):
   r"""Settings for Binary Authorization feature.
 
@@ -1457,19 +1439,6 @@ class GoogleCloudRunV2ListWorkerPoolsResponse(_messages.Message):
   workerPools = _messages.MessageField('GoogleCloudRunV2WorkerPool', 2, repeated=True)
 
 
-class GoogleCloudRunV2ManualScaling(_messages.Message):
-  r"""Manual scaling settings.
-
-  Fields:
-    instanceCount: Optional. Total fixed instances for the manually scaled
-      worker. This number of instances is divided among all revisions with
-      specified instance split based on the percent of instance split they are
-      receiving.
-  """
-
-  instanceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-
-
 class GoogleCloudRunV2Metadata(_messages.Message):
   r"""Metadata represents the JSON encoded generated customer metadata.
 
@@ -2537,13 +2506,30 @@ class GoogleCloudRunV2ServiceScaling(_messages.Message):
   r"""Scaling settings applied at the service level rather than at the
   revision level.
 
+  Enums:
+    ScalingModeValueValuesEnum: Optional. The scaling mode for the service.
+
   Fields:
     minInstanceCount: Optional. total min instances for the service. This
       number of instances is divided among all revisions with specified
       traffic based on the percent of traffic they are receiving. (BETA)
+    scalingMode: Optional. The scaling mode for the service.
   """
 
+  class ScalingModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The scaling mode for the service.
+
+    Values:
+      SCALING_MODE_UNSPECIFIED: Unspecified.
+      AUTOMATIC: Scale based on traffic between min and max instances.
+      MANUAL: Scale to exactly min instances and ignore max instances.
+    """
+    SCALING_MODE_UNSPECIFIED = 0
+    AUTOMATIC = 1
+    MANUAL = 2
+
   minInstanceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  scalingMode = _messages.EnumField('ScalingModeValueValuesEnum', 2)
 
 
 class GoogleCloudRunV2StorageSource(_messages.Message):
@@ -3525,10 +3511,13 @@ class GoogleCloudRunV2WorkerPoolRevisionTemplate(_messages.Message):
 class GoogleCloudRunV2WorkerPoolScaling(_messages.Message):
   r"""Worker pool scaling settings.
 
+  Enums:
+    ScalingModeValueValuesEnum: Optional. The scaling mode for the worker
+      pool.
+
   Fields:
-    automaticScaling: The worker will automatically scale between min and max
-      instances.
-    manualScaling: The worker will have a fixed number of instances.
+    maxInstanceCount: Optional. The maximum count of instances distributed
+      among revisions based on the specified instance split percentages.
     maxSurge: Optional. A maximum percentage of instances that will be moved
       in each step of traffic split changes. When set to a positive value, the
       server will bring up, at most, that percentage of new instances at a
@@ -3543,12 +3532,28 @@ class GoogleCloudRunV2WorkerPoolScaling(_messages.Message):
       changes from one revision by reducing the pool of instances before
       bringing up new ones. Some requests may be slow or fail to serve during
       the transition.
+    minInstanceCount: Optional. The minimum count of instances distributed
+      among revisions based on the specified instance split percentages.
+    scalingMode: Optional. The scaling mode for the worker pool.
   """
 
-  automaticScaling = _messages.MessageField('GoogleCloudRunV2AutomaticScaling', 1)
-  manualScaling = _messages.MessageField('GoogleCloudRunV2ManualScaling', 2)
-  maxSurge = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  maxUnavailable = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  class ScalingModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The scaling mode for the worker pool.
+
+    Values:
+      SCALING_MODE_UNSPECIFIED: Unspecified.
+      AUTOMATIC: Automatically scale between min and max instances.
+      MANUAL: Scale to exactly min instances and ignore the max instances.
+    """
+    SCALING_MODE_UNSPECIFIED = 0
+    AUTOMATIC = 1
+    MANUAL = 2
+
+  maxInstanceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxSurge = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxUnavailable = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minInstanceCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  scalingMode = _messages.EnumField('ScalingModeValueValuesEnum', 5)
 
 
 class GoogleDevtoolsCloudbuildV1ApprovalConfig(_messages.Message):

@@ -98,7 +98,8 @@ def GetMigrationJobResourceSpec(resource_name='migration_job'):
       migrationJobsId=MigrationJobAttributeConfig(name=resource_name),
       locationsId=RegionAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=False)
+      disable_auto_completers=False,
+  )
 
 
 def GetPrivateConnectionResourceSpec(resource_name='private_connection'):
@@ -362,16 +363,23 @@ def AddPostgresqlConnectionProfileResourceArg(parser, verb, positional=True):
   ).AddToParser(parser)
 
 
-def AddOnlyMigrationJobResourceArgs(parser, verb):
+def AddOnlyMigrationJobResourceArgs(parser, verb, positional=True):
   """Add resource arguments for actions on an mj except create/update.
 
   Args:
     parser: argparse.ArgumentParser, the parser for the command.
     verb: str, the verb to describe the resource, such as 'to promote'.
+    positional: bool, if True, means that the resource is a positional rather
+      than a flag.
   """
+  if positional:
+    name = 'migration_job'
+  else:
+    name = '--migration-job'
+
   resource_specs = [
       presentation_specs.ResourcePresentationSpec(
-          'migration_job',
+          name,
           GetMigrationJobResourceSpec(),
           'The migration job {}.'.format(verb),
           required=True,

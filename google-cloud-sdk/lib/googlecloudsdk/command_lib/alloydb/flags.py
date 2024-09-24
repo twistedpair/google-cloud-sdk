@@ -1350,7 +1350,6 @@ def AddRequireConnectors(parser):
   )
 
 
-# LINT.IfChange(database_version)
 def AddDatabaseVersion(parser, alloydb_messages, release_track):
   """Adds Database Version flag.
 
@@ -1374,34 +1373,27 @@ def AddDatabaseVersion(parser, alloydb_messages, release_track):
       choices=choices,
       help='Database version of the cluster.',
   )
-# LINT.ThenChange(:version)
 
 
-# LINT.IfChange(version)
-def AddVersion(parser, alloydb_messages, release_track):
+def AddVersion(parser, alloydb_messages):
   """Adds Version flag.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
     alloydb_messages: Message module.
-    release_track: Release track of the command.
   """
   choices = [
       alloydb_messages.UpgradeClusterRequest.VersionValueValuesEnum.POSTGRES_14,
       alloydb_messages.UpgradeClusterRequest.VersionValueValuesEnum.POSTGRES_15,
+      alloydb_messages.UpgradeClusterRequest.VersionValueValuesEnum.POSTGRES_16,
   ]
-  if release_track == base.ReleaseTrack.ALPHA:
-    choices.append(
-        alloydb_messages.UpgradeClusterRequest.VersionValueValuesEnum.POSTGRES_16
-    )
   parser.add_argument(
       '--version',
       required=True,
       type=alloydb_messages.UpgradeClusterRequest.VersionValueValuesEnum,
       choices=choices,
-      help='Database version of the cluster.',
+      help='Target database version for the upgrade.',
   )
-# LINT.ThenChange(:database_version)
 
 
 def AddSubscriptionType(parser, alloydb_messages):

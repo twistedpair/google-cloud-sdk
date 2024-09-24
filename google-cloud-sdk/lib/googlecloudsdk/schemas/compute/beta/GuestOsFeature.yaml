@@ -43,3 +43,4 @@ properties:
     - SEV_SNP_CAPABLE
     - SEV_LIVE_MIGRATABLE_V2
     - IDPF
+    - TDX_CAPABLE

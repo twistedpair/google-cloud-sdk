@@ -244,6 +244,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_MARKETCAPTURECOLLECTORS = (
+      'projects.locations.marketCaptureCollectors',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'marketCaptureCollectors/{marketCaptureCollectorsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MARKETCAPTUREENGINES = (
+      'projects.locations.marketCaptureEngines',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'marketCaptureEngines/{marketCaptureEnginesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MIRRORINGDEPLOYMENTGROUPS = (
       'projects.locations.mirroringDeploymentGroups',
       '{+name}',

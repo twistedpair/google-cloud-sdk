@@ -79,6 +79,7 @@ def WaitForOpMaybe(
   logging_function = {
       'create': log.CreatedResource,
       'delete': log.DeletedResource,
+      'update': log.UpdatedResource,
   }
   if asynchronous:
     logging_function[log_method](resource=op.name, kind=kind, is_async=True)

@@ -30,7 +30,7 @@ from googlecloudsdk.core import properties
 _IAM_API_VERSION = 'v1'
 
 
-def LocationAttributeConfig(required=True):
+def LocationAttributeConfig(allow_aggregation=False):
   """Builds an AttributeConfig for the location resource."""
   fallthroughs_list = [
       deps.PropertyFallthrough(properties.FromString('eventarc/location'))
@@ -38,16 +38,12 @@ def LocationAttributeConfig(required=True):
   help_text = ('The location for the Eventarc {resource}, which should be '
                "either ``global'' or one of the supported regions. "
                'Alternatively, set the [eventarc/location] property.')
-  if not required:
+  if allow_aggregation:
     fallthroughs_list.append(
         deps.Fallthrough(
             googlecloudsdk.command_lib.eventarc.flags.SetLocation,
             'use \'-\' location to aggregate results for all Eventarc locations'
         ))
-    help_text = ('The location for the Eventarc {resource}, which should be '
-                 "either ``global'' or one of the supported regions. "
-                 "Use ``-'' to aggregate results for all Eventarc locations. "
-                 'Alternatively, set the [eventarc/location] property.')
   return concepts.ResourceParameterAttributeConfig(
       name='location', fallthroughs=fallthroughs_list, help_text=help_text)
 
@@ -140,13 +136,16 @@ def AddTransportTopicResourceArg(parser, required=False):
   concept_parser.AddToParser(parser)
 
 
-def AddLocationResourceArg(parser, group_help_text, required=False):
+def AddLocationResourceArg(
+    parser, group_help_text, required=False, allow_aggregation=False
+):
   """Adds a resource argument for an Eventarc location."""
   resource_spec = concepts.ResourceSpec(
       'eventarc.projects.locations',
       resource_name='location',
-      locationsId=LocationAttributeConfig(required),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      locationsId=LocationAttributeConfig(allow_aggregation=allow_aggregation),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
   concept_parser = concept_parsers.ConceptParser.ForResource(
       '--location', resource_spec, group_help_text, required=required)
   concept_parser.AddToParser(parser)

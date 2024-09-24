@@ -64,6 +64,7 @@ class Common(base.FeatureCommand):
         hierarchyController=self._parse_hierarchy_controller_config(config),
         management=self._parse_upgrades(config),
         cluster=config.get('spec', {}).get('cluster', ''),
+        version=config['spec'].get(utils.VERSION)
     )
 
   def _parse_config_sync(self, configmanagement):
@@ -412,6 +413,7 @@ def _validate_meta(configmanagement):
       utils.HNC,
       utils.CLUSTER,
       utils.UPGRADES,
+      utils.VERSION,
   })
   if illegal_spec_fields:
     raise exceptions.Error('Please remove illegal field(s) {}'.format(

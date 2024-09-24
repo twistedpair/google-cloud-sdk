@@ -188,3 +188,16 @@ report:
     attribute_name: report
     help: IaC Validation report resource
   disable_auto_completers: false
+
+prediction:
+  name: prediction
+  collection: securityposture.organizations.locations.predictions
+  request_id_field: predictionId
+  attributes:
+  - *security_posture_org
+  - *security_posture_location
+  - &prediction
+    parameter_name: predictionsId
+    attribute_name: prediction
+    help: SCC Posture Prediction resource
+  disable_auto_completers: false

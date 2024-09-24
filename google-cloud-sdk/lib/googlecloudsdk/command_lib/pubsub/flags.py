@@ -68,6 +68,17 @@ CLOUD_STORAGE_EXPORT_NOT_SUPPORTED_IN_TPC = (
 )
 
 
+def MustSpecifyAllHelpText(config_name: str, is_update: bool):
+  """The help text to tell users all fields must be specified during update."""
+  if is_update:
+    return (
+        f'\n\nWhen updating {config_name} flags, all {config_name} flags must'
+        f' be specified. Otherwise, any omitted {config_name} flags revert to'
+        ' their default value.'
+    )
+  return ''
+
+
 def NegativeBooleanFlagHelpText(flag_name):
   return f'Use --no-{flag_name} to disable this flag.'
 
@@ -241,9 +252,22 @@ def AddPullFlags(
     )
 
 
-def AddPushConfigFlags(parser, required=False, is_update=False):
+def AddPushConfigFlags(
+    parser, required=False, is_update=False, is_modify_push_config_request=False
+):
   """Adds flags for push subscriptions to the parser."""
-  parser.add_argument(
+
+  current_group = parser
+  if not is_modify_push_config_request:
+    # Dont create an outer group if this is an ModifyPushConfigRequest
+    current_group = parser.add_group(
+        mutex=False,
+        help='Push Config Options. Configuration for a push delivery endpoint.'
+        + MustSpecifyAllHelpText('PushConfig', is_update),
+        required=False,
+    )
+
+  current_group.add_argument(
       '--push-endpoint',
       required=required,
       help=(
@@ -251,7 +275,7 @@ def AddPushConfigFlags(parser, required=False, is_update=False):
           'also automatically set the subscription type to PUSH.'
       ),
   )
-  parser.add_argument(
+  current_group.add_argument(
       '--push-auth-service-account',
       required=False,
       dest='SERVICE_ACCOUNT_EMAIL',
@@ -260,7 +284,7 @@ def AddPushConfigFlags(parser, required=False, is_update=False):
           'Open ID Connect token for authenticated push.'
       ),
   )
-  parser.add_argument(
+  current_group.add_argument(
       '--push-auth-token-audience',
       required=False,
       dest='OPTIONAL_AUDIENCE_OVERRIDE',
@@ -270,7 +294,6 @@ def AddPushConfigFlags(parser, required=False, is_update=False):
           'push-endpoint.'
       ),
   )
-  current_group = parser
   if is_update:
     mutual_exclusive_group = current_group.add_mutually_exclusive_group()
     AddBooleanFlag(
@@ -401,7 +424,8 @@ def AddBigQueryConfigFlags(
           default="""BigQuery Config Options. The Cloud Pub/Sub service account
          associated with the enclosing subscription's parent project (i.e.,
          service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
-         must have permission to write to this BigQuery table.""",
+         must have permission to write to this BigQuery table."""
+          + MustSpecifyAllHelpText('BigQueryConfig', is_update),
           universe_help=BIGQUERY_EXPORT_NOT_SUPPORTED_IN_TPC,
       )
   )
@@ -484,7 +508,9 @@ def AddCloudStorageConfigFlags(parser, is_update):
         parent project (i.e.,
         service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
         must have permission to write to this Cloud Storage bucket and to read
-        this bucket's metadata."""
+        this bucket's metadata.""" + MustSpecifyAllHelpText(
+      'CloudStorageConfig', is_update
+  )
   if is_update:
     mutual_exclusive_group = current_group.add_mutually_exclusive_group()
     AddBooleanFlag(
@@ -644,7 +670,8 @@ def AddPubsubExportConfigFlags(parser, is_update):
       help="""Cloud Pub/Sub Export Config Options. The Cloud Pub/Sub service
       account associated with the enclosing subscription's parent project
       (i.e., service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
-      must have permission to publish to the destination Cloud Pub/Sub topic.""",
+      must have permission to publish to the destination Cloud Pub/Sub topic."""
+      + MustSpecifyAllHelpText('PubsubExportConfig', is_update),
   )
   pubsub_export_topic = resource_args.CreateTopicResourceArg(
       'to publish messages to.',
@@ -752,7 +779,10 @@ def AddSubscriptionSettingsFlags(
            associated with the enclosing subscription's parent project (i.e.,
            service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
            must have permission to Publish() to this topic and Acknowledge()
-           messages on this subscription.""",
+           messages on this subscription."""
+          + MustSpecifyAllHelpText(
+              'DeadLetterPolicy', is_update
+          ),
           universe_help=DEAD_LETTER_TOPICS_NOT_SUPPORTED_IN_TPC,
       )
   )
@@ -801,7 +831,8 @@ def AddSubscriptionSettingsFlags(
   set_retry_policy_group = current_group.add_argument_group(
       help=arg_parsers.UniverseHelpText(
           default="""Retry Policy Options. Retry policy specifies how Cloud Pub/Sub
-              retries message delivery for this subscription.""",
+              retries message delivery for this subscription."""
+          + MustSpecifyAllHelpText('RetryPolicy', is_update),
           universe_help=RETRY_POLICY_NOT_SUPPORTED_IN_TPC,
       )
   )
@@ -909,7 +940,7 @@ def AddSchemaSettingsFlags(parser, is_update=False):
           default=(
               'Schema settings. The schema that messages published to this '
               'topic must conform to and the expected message encoding.'
-          ),
+          ) + MustSpecifyAllHelpText('SchemaSettings', is_update),
           universe_help=SCHEMA_NOT_SUPPORTED_IN_TPC,
       ),
   )
@@ -946,7 +977,9 @@ def AddSchemaSettingsFlags(parser, is_update=False):
 
 
 def AddIngestionDatasourceFlags(
-    parser, is_update=False, include_ingestion_from_cloud_storage_flags=False
+    parser,
+    is_update=False,
+    include_ingestion_from_cloud_storage_flags_and_log_severity=False,
 ):
   """Adds the flags for Datasource Ingestion.
 
@@ -954,8 +987,8 @@ def AddIngestionDatasourceFlags(
     parser: The argparse parser
     is_update: (bool) If true, add a wrapper group with
       clear-ingestion-data-source-settings as a mutually exclusive argument.
-    include_ingestion_from_cloud_storage_flags: whether to include ingestion
-      from Cloud Storage flags
+    include_ingestion_from_cloud_storage_flags_and_log_severity: whether to
+      include ingestion from Cloud Storage flags and log severity.
   """
   current_group = parser
 
@@ -978,16 +1011,15 @@ def AddIngestionDatasourceFlags(
     )
     current_group = clear_settings_group
 
-  # TODO(b/289117408): use `current_group.add_mutually_exclusive_group` here.
-  ingestion_source_types_group = current_group.add_argument_group()
+  ingestion_source_settings_group = current_group.add_argument_group()
 
-  aws_kinesis_group = ingestion_source_types_group.add_argument_group(
+  aws_kinesis_group = ingestion_source_settings_group.add_argument_group(
       help=arg_parsers.UniverseHelpText(
           default=(
               'The following flags are for specifying ingestion settings for an'
               ' import topic from Amazon Web Services (AWS) Kinesis Data'
               ' Streams'
-          ),
+          ) + MustSpecifyAllHelpText('AWSKinesis Source', is_update),
           universe_help=INGESTION_NOT_SUPPORTED_IN_TPC,
       )
   )
@@ -1027,13 +1059,14 @@ def AddIngestionDatasourceFlags(
       required=True,
   )
 
-  if include_ingestion_from_cloud_storage_flags:
-    cloud_storage_group = ingestion_source_types_group.add_argument_group(
+  if include_ingestion_from_cloud_storage_flags_and_log_severity:
+    cloud_storage_group = ingestion_source_settings_group.add_argument_group(
         help=arg_parsers.UniverseHelpText(
             default=(
                 'The following flags are for specifying ingestion settings for'
                 ' an import topic from Cloud Storage'
-            ),
+            )
+            + MustSpecifyAllHelpText('CloudStorage Source', is_update),
             universe_help=INGESTION_NOT_SUPPORTED_IN_TPC,
         ),
         hidden=True,
@@ -1076,6 +1109,13 @@ def AddIngestionDatasourceFlags(
             ' ingested. If unset, all objects will be ingested.'
         ),
         required=False,
+    )
+    ingestion_source_settings_group.add_argument(
+        '--ingestion-log-severity',
+        default=None,
+        help='The log severity to use for ingestion.',
+        required=False,
+        hidden=True,
     )
 
 
@@ -1147,7 +1187,7 @@ def AddTopicMessageStoragePolicyFlags(parser, is_update):
       'Options for explicitly specifying the [message storage'
       ' policy](https://cloud.google.com/pubsub/docs/resource-location-restriction)'
       ' for a topic.'
-  )
+  ) + MustSpecifyAllHelpText('MessageStoragePolicy', is_update)
 
   if is_update:
     recompute_msp_group = current_group.add_group(

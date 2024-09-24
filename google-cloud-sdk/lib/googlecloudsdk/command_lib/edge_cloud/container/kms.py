@@ -86,6 +86,70 @@ def UseGoogleManagedKey(ref, args, request):
   return request
 
 
+def UpdateZoneKmsKey(ref, args, request):
+  """Updates the cluster.zone_storage_encryption if --zone-storage-kms-key flag is specified.
+
+  Args:
+    ref: reference to the cluster object.
+    args: command line arguments.
+    request: API request to be issued
+
+  Returns:
+    modified request
+  """
+
+  del ref  # unused argument
+
+  if not flags.FlagIsExplicitlySet(args, "zone_storage_kms_key"):
+    return request
+
+  release_track = args.calliope_command.ReleaseTrack()
+
+  if request.cluster is None:
+    request.cluster = util.GetMessagesModule(release_track).Cluster()
+
+  if request.cluster.zoneStorageEncryption is None:
+    messages = util.GetMessagesModule(release_track)
+    request.cluster.zoneStorageEncryption = messages.ZoneStorageEncryption()
+
+  request.cluster.zoneStorageEncryption.kmsKey = args.zone_storage_kms_key
+
+  _AddFieldToUpdateMask("zoneStorageEncryption", request)
+  return request
+
+
+def UseGoogleManagedZoneKey(ref, args, request):
+  """Clears cluster.zone_storage_encryption in the request if --use-google-managed-zone-key flag is specified.
+
+  Args:
+    ref: reference to the cluster object.
+    args: command line arguments.
+    request: API request to be issued
+
+  Returns:
+    modified request
+  """
+
+  del ref  # unused argument
+
+  if not flags.FlagIsExplicitlySet(args, "use_google_managed_zone_key"):
+    return request
+
+  if not args.use_google_managed_zone_key:
+    raise exceptions.BadArgumentException(
+        "--no-use-google-managed-zone-key", "The flag is not supported"
+    )
+
+  if request.cluster is None:
+    release_track = args.calliope_command.ReleaseTrack()
+    request.cluster = util.GetMessagesModule(release_track).Cluster()
+
+  request.cluster.zoneStorageEncryption = None
+
+  _AddFieldToUpdateMask("zoneStorageEncryption", request)
+  return request
+
+
 def _AddFieldToUpdateMask(field, request):
   if not request.updateMask:
     request.updateMask = field

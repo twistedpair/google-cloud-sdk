@@ -290,35 +290,53 @@ class ServiceScaling(proto.Message):
             among all revisions with specified traffic based
             on the percent of traffic they are receiving.
             (BETA)
+        scaling_mode (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.ServiceScaling.ScalingMode):
+            Optional. The scaling mode for the service.
     """
+    class ScalingMode(proto.Enum):
+        r"""The scaling mode for the service. If not provided, it
+        defaults to AUTOMATIC.
+
+        Values:
+            SCALING_MODE_UNSPECIFIED (0):
+                Unspecified.
+            AUTOMATIC (1):
+                Scale based on traffic between min and max
+                instances.
+            MANUAL (2):
+                Scale to exactly min instances and ignore max
+                instances.
+        """
+        SCALING_MODE_UNSPECIFIED = 0
+        AUTOMATIC = 1
+        MANUAL = 2
 
     min_instance_count: int = proto.Field(
         proto.INT32,
         number=1,
+    )
+    scaling_mode: ScalingMode = proto.Field(
+        proto.ENUM,
+        number=3,
+        enum=ScalingMode,
     )
 
 
 class WorkerPoolScaling(proto.Message):
     r"""Worker pool scaling settings.
 
-    This message has `oneof`_ fields (mutually exclusive fields).
-    For each oneof, at most one member field can be set at the same time.
-    Setting any member of the oneof automatically clears all other
-    members.
-
-    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
-
     Attributes:
-        automatic_scaling (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.WorkerPoolScaling.AutomaticScaling):
-            The worker will automatically scale between
-            min and max instances.
-
-            This field is a member of `oneof`_ ``scaling_mode``.
-        manual_scaling (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.WorkerPoolScaling.ManualScaling):
-            The worker will have a fixed number of
-            instances.
-
-            This field is a member of `oneof`_ ``scaling_mode``.
+        min_instance_count (int):
+            Optional. The minimum count of instances
+            distributed among revisions based on the
+            specified instance split percentages.
+        max_instance_count (int):
+            Optional. The maximum count of instances
+            distributed among revisions based on the
+            specified instance split percentages.
+        scaling_mode (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.WorkerPoolScaling.ScalingMode):
+            Optional. The scaling mode for the worker
+            pool.
         max_surge (int):
             Optional. A maximum percentage of instances
             that will be moved in each step of traffic split
@@ -346,62 +364,36 @@ class WorkerPoolScaling(proto.Message):
             before bringing up new ones. Some requests may
             be slow or fail to serve during the transition.
     """
+    class ScalingMode(proto.Enum):
+        r"""The scaling mode for the worker pool. If not provided, it
+        defaults to AUTOMATIC.
 
-    class AutomaticScaling(proto.Message):
-        r"""Automatic scaling settings.
-
-        Attributes:
-            min_instance_count (int):
-                Optional. Total min instances for the worker.
-                This number of instances is divided among all
-                revisions with specified instance split based on
-                the percent of instance split they are
-                receiving.
-            max_instance_count (int):
-                Optional. Total max instances for the worker.
-                This number of instances is divided among all
-                revisions with specified instance split based on
-                the percent of instance split they are
-                receiving.
+        Values:
+            SCALING_MODE_UNSPECIFIED (0):
+                Unspecified.
+            AUTOMATIC (1):
+                Automatically scale between min and max
+                instances.
+            MANUAL (2):
+                Scale to exactly min instances and ignore the
+                max instances.
         """
+        SCALING_MODE_UNSPECIFIED = 0
+        AUTOMATIC = 1
+        MANUAL = 2
 
-        min_instance_count: int = proto.Field(
-            proto.INT32,
-            number=1,
-        )
-        max_instance_count: int = proto.Field(
-            proto.INT32,
-            number=2,
-        )
-
-    class ManualScaling(proto.Message):
-        r"""Manual scaling settings.
-
-        Attributes:
-            instance_count (int):
-                Optional. Total fixed instances for the
-                manually scaled worker. This number of instances
-                is divided among all revisions with specified
-                instance split based on the percent of instance
-                split they are receiving.
-        """
-
-        instance_count: int = proto.Field(
-            proto.INT32,
-            number=1,
-        )
-
-    automatic_scaling: AutomaticScaling = proto.Field(
-        proto.MESSAGE,
+    min_instance_count: int = proto.Field(
+        proto.INT32,
         number=1,
-        oneof='scaling_mode',
-        message=AutomaticScaling,
     )
-    manual_scaling: ManualScaling = proto.Field(
-        proto.MESSAGE,
+    max_instance_count: int = proto.Field(
+        proto.INT32,
         number=2,
-        oneof='scaling_mode',
-        message=ManualScaling,
+    )
+    scaling_mode: ScalingMode = proto.Field(
+        proto.ENUM,
+        number=5,
+        enum=ScalingMode,
     )
     max_surge: int = proto.Field(
         proto.INT32,

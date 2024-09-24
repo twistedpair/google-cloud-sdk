@@ -41,6 +41,104 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_AUTONOMOUSDATABASEBACKUPS = (
+      'projects.locations.autonomousDatabaseBackups',
+      'projects/{projectsId}/locations/{locationsId}/'
+      'autonomousDatabaseBackups/{autonomousDatabaseBackupsId}',
+      {},
+      ['projectsId', 'locationsId', 'autonomousDatabaseBackupsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_AUTONOMOUSDATABASECHARACTERSETS = (
+      'projects.locations.autonomousDatabaseCharacterSets',
+      'projects/{projectsId}/locations/{locationsId}/'
+      'autonomousDatabaseCharacterSets/{autonomousDatabaseCharacterSetsId}',
+      {},
+      ['projectsId', 'locationsId', 'autonomousDatabaseCharacterSetsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_AUTONOMOUSDATABASES = (
+      'projects.locations.autonomousDatabases',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'autonomousDatabases/{autonomousDatabasesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_AUTONOMOUSDBVERSIONS = (
+      'projects.locations.autonomousDbVersions',
+      'projects/{projectsId}/locations/{locationsId}/autonomousDbVersions/'
+      '{autonomousDbVersionsId}',
+      {},
+      ['projectsId', 'locationsId', 'autonomousDbVersionsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_CLOUDEXADATAINFRASTRUCTURES = (
+      'projects.locations.cloudExadataInfrastructures',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'cloudExadataInfrastructures/{cloudExadataInfrastructuresId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CLOUDEXADATAINFRASTRUCTURES_DBSERVERS = (
+      'projects.locations.cloudExadataInfrastructures.dbServers',
+      'projects/{projectsId}/locations/{locationsId}/'
+      'cloudExadataInfrastructures/{cloudExadataInfrastructuresId}/dbServers/'
+      '{dbServersId}',
+      {},
+      ['projectsId', 'locationsId', 'cloudExadataInfrastructuresId', 'dbServersId'],
+      True
+  )
+  PROJECTS_LOCATIONS_CLOUDVMCLUSTERS = (
+      'projects.locations.cloudVmClusters',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/cloudVmClusters/'
+              '{cloudVmClustersId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CLOUDVMCLUSTERS_DBNODES = (
+      'projects.locations.cloudVmClusters.dbNodes',
+      'projects/{projectsId}/locations/{locationsId}/cloudVmClusters/'
+      '{cloudVmClustersId}/dbNodes/{dbNodesId}',
+      {},
+      ['projectsId', 'locationsId', 'cloudVmClustersId', 'dbNodesId'],
+      True
+  )
+  PROJECTS_LOCATIONS_DBSYSTEMSHAPES = (
+      'projects.locations.dbSystemShapes',
+      'projects/{projectsId}/locations/{locationsId}/dbSystemShapes/'
+      '{dbSystemShapesId}',
+      {},
+      ['projectsId', 'locationsId', 'dbSystemShapesId'],
+      True
+  )
+  PROJECTS_LOCATIONS_ENTITLEMENTS = (
+      'projects.locations.entitlements',
+      'projects/{projectsId}/locations/{locationsId}/entitlements/'
+      '{entitlementsId}',
+      {},
+      ['projectsId', 'locationsId', 'entitlementsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_GIVERSIONS = (
+      'projects.locations.giVersions',
+      'projects/{projectsId}/locations/{locationsId}/giVersions/'
+      '{giVersionsId}',
+      {},
+      ['projectsId', 'locationsId', 'giVersionsId'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -50,6 +148,13 @@ class Collections(enum.Enum):
               '{operationsId}',
       },
       ['name'],
+      True
+  )
+  PROJECTS_NETWORKS = (
+      'projects.networks',
+      'projects/{projectsId}/global/networks/{networksId}',
+      {},
+      ['projectsId', 'networksId'],
       True
   )
 

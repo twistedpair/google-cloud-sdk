@@ -26,17 +26,6 @@ project:
     help: The project id of the {resource} resource.
     property: core/project
   disable_auto_completers: true
-project_network:
-  name: network
-  plural_name: networks
-  collection: parallelstore.projects.networks
-  attributes:
-  - *project
-  - &network
-    parameter_name: networksId
-    attribute_name: network
-    help: The network id of the {resource} resource.
-  disable_auto_completers: true
 project_service_account:
   name: serviceAccount
   plural_name: serviceAccounts
@@ -69,6 +58,17 @@ project_location:
     parameter_name: locationsId
     attribute_name: location
     help: The location id of the {resource} resource.
+  disable_auto_completers: true
+project_global_network:
+  name: network
+  plural_name: networks
+  collection: parallelstore.projects.networks
+  attributes:
+  - *project
+  - &network
+    parameter_name: networksId
+    attribute_name: network
+    help: The network id of the {resource} resource.
   disable_auto_completers: true
 project_region_address:
   name: address

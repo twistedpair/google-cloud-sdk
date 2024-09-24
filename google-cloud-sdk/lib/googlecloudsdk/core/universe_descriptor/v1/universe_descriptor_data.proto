@@ -22,4 +22,7 @@ message UniverseDescriptorData {
 
   // For clients to leverage in order to understand proto changes (ex: 1.0.0)
   optional string version = 6;
+
+  // Documentation domain.
+  optional string documentation_domain = 7;
 }

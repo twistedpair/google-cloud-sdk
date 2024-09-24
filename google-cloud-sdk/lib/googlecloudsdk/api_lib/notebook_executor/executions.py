@@ -15,7 +15,7 @@
 """Notebook-executor executions api helper."""
 
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.util import files
+from googlecloudsdk.core.console import console_io
 
 
 def ParseExecutionOperation(operation_name):
@@ -138,11 +138,12 @@ def GetDirectNotebookSourceFromArgs(args, messages):
       DirectNotebookSource message for the execution.
   """
   notebook_source = messages.GoogleCloudAiplatformV1beta1NotebookExecutionJobDirectNotebookSource  # pylint: disable=line-too-long
-  if args.IsSpecified('direct_content_from_file'):
+  if args.IsSpecified('direct_content'):
     return notebook_source(
         # Gcloud client will handle base64 encoding of the byte string read
         # from disk.
-        content=files.ReadBinaryFileContents(args.direct_content_from_file)
+        content=console_io.ReadFromFileOrStdin(args.direct_content,
+                                               binary=True)
     )
   return None
 

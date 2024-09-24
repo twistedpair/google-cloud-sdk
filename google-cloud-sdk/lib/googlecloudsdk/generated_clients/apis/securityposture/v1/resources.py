@@ -87,8 +87,8 @@ class Collections(enum.Enum):
       '{+name}',
       {
           '':
-              'organizations/{organization}/locations/{location}/predictions/'
-              '{predictionID}',
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'predictions/{predictionsId}',
       },
       ['name'],
       True

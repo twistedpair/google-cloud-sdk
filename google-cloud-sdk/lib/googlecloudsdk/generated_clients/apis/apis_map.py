@@ -522,6 +522,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'auditmanager': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.auditmanager.v1',
+                    client_classpath='auditmanager_v1_client.AuditmanagerV1',
+                    base_url='https://auditmanager.googleapis.com/',
+                    messages_modulepath='auditmanager_v1_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(

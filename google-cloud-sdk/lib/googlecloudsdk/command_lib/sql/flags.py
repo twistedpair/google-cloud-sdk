@@ -94,9 +94,10 @@ class _MajorVersionMatchList(list):
 # The class for printing a server certificate.
 class ServerCertForPrint:
 
-  def __init__(self, ssl_cert, status):
+  def __init__(self, ssl_cert, status, ca_cert=None):
     self.ssl_cert = ssl_cert
     self.status = status
+    self.ca_cert = ca_cert
 
 
 def AddInstance(parser, support_wildcard_instances=False):
@@ -1782,6 +1783,20 @@ def AddBakImportStopAtMarkArgument(parser):
           'Used in transaction log import only. '
           'Transaction log import stop at the given mark. '
           'To stop at given LSN, use --stop-at-mark=lsn:xxx. '
+      ),
+  )
+
+
+def AddBakImportKeepEncryptedArgument(parser):
+  """Add the 'keep-encrypted' argument to the parser for bak import."""
+  parser.add_argument(
+      '--keep-encrypted',
+      action='store_true',
+      required=False,
+      default=False,
+      hidden=True,
+      help=(
+          'Whether or not to decrypt the imported encrypted BAK file.'
       ),
   )
 

@@ -26,6 +26,8 @@ class Connection(_messages.Message):
     annotations: Optional. Allows clients to store small amounts of arbitrary
       data.
     createTime: Output only. [Output only] Create timestamp
+    cryptoKeyConfig: Optional. The crypto key configuration. This field is
+      used by the Customer-Managed Encryption Keys (CMEK) feature.
     deleteTime: Output only. [Output only] Delete timestamp
     disabled: Optional. If disabled is set to true, functionality is disabled
       for this connection. Repository based API methods and webhooks
@@ -34,6 +36,11 @@ class Connection(_messages.Message):
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
     githubConfig: Configuration for connections to github.com.
+    githubEnterpriseConfig: Configuration for connections to an instance of
+      GitHub Enterprise.
+    gitlabConfig: Configuration for connections to gitlab.com.
+    gitlabEnterpriseConfig: Configuration for connections to an instance of
+      GitLab Enterprise.
     installationState: Output only. Installation state of the Connection.
     labels: Optional. Labels as key value pairs
     name: Identifier. The resource name of the connection, in the format
@@ -96,16 +103,33 @@ class Connection(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   createTime = _messages.StringField(2)
-  deleteTime = _messages.StringField(3)
-  disabled = _messages.BooleanField(4)
-  etag = _messages.StringField(5)
-  githubConfig = _messages.MessageField('GitHubConfig', 6)
-  installationState = _messages.MessageField('InstallationState', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  reconciling = _messages.BooleanField(10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  cryptoKeyConfig = _messages.MessageField('CryptoKeyConfig', 3)
+  deleteTime = _messages.StringField(4)
+  disabled = _messages.BooleanField(5)
+  etag = _messages.StringField(6)
+  githubConfig = _messages.MessageField('GitHubConfig', 7)
+  githubEnterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 8)
+  gitlabConfig = _messages.MessageField('GitLabConfig', 9)
+  gitlabEnterpriseConfig = _messages.MessageField('GitLabEnterpriseConfig', 10)
+  installationState = _messages.MessageField('InstallationState', 11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  name = _messages.StringField(13)
+  reconciling = _messages.BooleanField(14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
+
+
+class CryptoKeyConfig(_messages.Message):
+  r"""The crypto key configuration. This field is used by the Customer-managed
+  encryption keys (CMEK) feature.
+
+  Fields:
+    keyReference: Required. The name of the key which is used to
+      encrypt/decrypt customer data. For key in Cloud KMS, the key should be
+      in the format of `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
+  """
+
+  keyReference = _messages.StringField(1)
 
 
 class DeveloperconnectProjectsLocationsConnectionsCreateRequest(_messages.Message):
@@ -415,8 +439,8 @@ class DeveloperconnectProjectsLocationsConnectionsPatchRequest(_messages.Message
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the Connection resource by the update. The fields
+    updateMask: Optional. Required. Field mask is used to specify the fields
+      to be overwritten in the Connection resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the user
       does not provide a mask then all fields will be overwritten.
@@ -550,6 +574,105 @@ class GitHubConfig(_messages.Message):
   installationUri = _messages.StringField(4)
 
 
+class GitHubEnterpriseConfig(_messages.Message):
+  r"""Configuration for connections to an instance of GitHub Enterprise.
+
+  Fields:
+    appId: Optional. ID of the GitHub App created from the manifest.
+    appInstallationId: Optional. ID of the installation of the GitHub App.
+    appSlug: Output only. The URL-friendly name of the GitHub App.
+    hostUri: Required. The URI of the GitHub Enterprise host this connection
+      is for.
+    installationUri: Output only. The URI to navigate to in order to manage
+      the installation associated with this GitHubEnterpriseConfig.
+    privateKeySecretVersion: Optional. SecretManager resource containing the
+      private key of the GitHub App, formatted as
+      `projects/*/secrets/*/versions/*`.
+    serverVersion: Output only. GitHub Enterprise version installed at the
+      host_uri.
+    serviceDirectoryConfig: Optional. Configuration for using Service
+      Directory to privately connect to a GitHub Enterprise server. This
+      should only be set if the GitHub Enterprise server is hosted on-premises
+      and not reachable by public internet. If this field is left empty, calls
+      to the GitHub Enterprise server will be made over the public internet.
+    sslCaCertificate: Optional. SSL certificate to use for requests to GitHub
+      Enterprise.
+    webhookSecretSecretVersion: Optional. SecretManager resource containing
+      the webhook secret of the GitHub App, formatted as
+      `projects/*/secrets/*/versions/*`.
+  """
+
+  appId = _messages.IntegerField(1)
+  appInstallationId = _messages.IntegerField(2)
+  appSlug = _messages.StringField(3)
+  hostUri = _messages.StringField(4)
+  installationUri = _messages.StringField(5)
+  privateKeySecretVersion = _messages.StringField(6)
+  serverVersion = _messages.StringField(7)
+  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 8)
+  sslCaCertificate = _messages.StringField(9)
+  webhookSecretSecretVersion = _messages.StringField(10)
+
+
+class GitLabConfig(_messages.Message):
+  r"""Configuration for connections to gitlab.com.
+
+  Fields:
+    authorizerCredential: Required. A GitLab personal access token with the
+      minimum `api` scope access and a minimum role of `maintainer`. The
+      GitLab Projects visible to this Personal Access Token will control which
+      Projects Developer Connect has access to.
+    readAuthorizerCredential: Required. A GitLab personal access token with
+      the minimum `read_api` scope access and a minimum role of `reporter`.
+      The GitLab Projects visible to this Personal Access Token will control
+      which Projects Developer Connect has access to.
+    webhookSecretSecretVersion: Required. Immutable. SecretManager resource
+      containing the webhook secret of a GitLab project, formatted as
+      `projects/*/secrets/*/versions/*`. This is used to validate webhooks.
+  """
+
+  authorizerCredential = _messages.MessageField('UserCredential', 1)
+  readAuthorizerCredential = _messages.MessageField('UserCredential', 2)
+  webhookSecretSecretVersion = _messages.StringField(3)
+
+
+class GitLabEnterpriseConfig(_messages.Message):
+  r"""Configuration for connections to an instance of GitLab Enterprise.
+
+  Fields:
+    authorizerCredential: Required. A GitLab personal access token with the
+      minimum `api` scope access and a minimum role of `maintainer`. The
+      GitLab Projects visible to this Personal Access Token will control which
+      Projects Developer Connect has access to.
+    hostUri: Required. The URI of the GitLab Enterprise host this connection
+      is for.
+    readAuthorizerCredential: Required. A GitLab personal access token with
+      the minimum `read_api` scope access and a minimum role of `reporter`.
+      The GitLab Projects visible to this Personal Access Token will control
+      which Projects Developer Connect has access to.
+    serverVersion: Output only. Version of the GitLab Enterprise server
+      running on the `host_uri`.
+    serviceDirectoryConfig: Optional. Configuration for using Service
+      Directory to privately connect to a GitLab Enterprise instance. This
+      should only be set if the GitLab Enterprise server is hosted on-premises
+      and not reachable by public internet. If this field is left empty, calls
+      to the GitLab Enterprise server will be made over the public internet.
+    sslCaCertificate: Optional. SSL Certificate Authority certificate to use
+      for requests to GitLab Enterprise instance.
+    webhookSecretSecretVersion: Required. Immutable. SecretManager resource
+      containing the webhook secret of a GitLab project, formatted as
+      `projects/*/secrets/*/versions/*`. This is used to validate webhooks.
+  """
+
+  authorizerCredential = _messages.MessageField('UserCredential', 1)
+  hostUri = _messages.StringField(2)
+  readAuthorizerCredential = _messages.MessageField('UserCredential', 3)
+  serverVersion = _messages.StringField(4)
+  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 5)
+  sslCaCertificate = _messages.StringField(6)
+  webhookSecretSecretVersion = _messages.StringField(7)
+
+
 class GitRepositoryLink(_messages.Message):
   r"""Message describing the GitRepositoryLink object
 
@@ -575,6 +698,8 @@ class GitRepositoryLink(_messages.Message):
     uid: Output only. A system-assigned unique identifier for a the
       GitRepositoryLink.
     updateTime: Output only. [Output only] Update timestamp
+    webhookId: Output only. External ID of the webhook created for the
+      repository.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -636,6 +761,7 @@ class GitRepositoryLink(_messages.Message):
   reconciling = _messages.BooleanField(8)
   uid = _messages.StringField(9)
   updateTime = _messages.StringField(10)
+  webhookId = _messages.StringField(11)
 
 
 class Installation(_messages.Message):
@@ -885,6 +1011,18 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class ServiceDirectoryConfig(_messages.Message):
+  r"""ServiceDirectoryConfig represents Service Directory configuration for a
+  connection.
+
+  Fields:
+    service: Required. The Service Directory service name. Format: projects/{p
+      roject}/locations/{location}/namespaces/{namespace}/services/{service}.
+  """
+
+  service = _messages.StringField(1)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -997,6 +1135,21 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class UserCredential(_messages.Message):
+  r"""Represents a personal access token that authorized the Connection, and
+  associated metadata.
+
+  Fields:
+    userTokenSecretVersion: Required. A SecretManager resource containing the
+      user token that authorizes the Developer Connect connection. Format:
+      `projects/*/secrets/*/versions/*`.
+    username: Output only. The username associated with this token.
+  """
+
+  userTokenSecretVersion = _messages.StringField(1)
+  username = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

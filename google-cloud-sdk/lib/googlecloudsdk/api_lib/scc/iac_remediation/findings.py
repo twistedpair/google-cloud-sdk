@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import json
 import re
 
+from typing import Dict, List
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.scc.iac_remediation import const
 from googlecloudsdk.api_lib.util import apis
@@ -80,8 +81,8 @@ def MakeApiCall(finding_org_id, finding_name) -> str:
 
 
 def FetchIAMBinding(
-    finding_json: json,
-) -> dict[str, dict[str, list[str]]]:
+    finding_json: json
+    )-> Dict[str, Dict[str, List[str]]]:
   """Fetches the IAMBindings from the finding data.
 
   Args:
@@ -95,10 +96,14 @@ def FetchIAMBinding(
       "iamBindings"
   ]:
     if binding["member"] not in iam_bindings:
-      iam_bindings[binding["member"]] = dict()
+      iam_bindings[binding["member"]] = Dict()
     if binding["action"] == "ADD":
+      if "ADD" not in iam_bindings[binding["member"]]:
+        iam_bindings[binding["member"]]["ADD"] = []
       iam_bindings[binding["member"]]["ADD"].append(binding["role"])
     elif binding["action"] == "REMOVE":
+      if "REMOVE" not in iam_bindings[binding["member"]]:
+        iam_bindings[binding["member"]]["REMOVE"] = []
       iam_bindings[binding["member"]]["REMOVE"].append(binding["role"])
   return iam_bindings
 

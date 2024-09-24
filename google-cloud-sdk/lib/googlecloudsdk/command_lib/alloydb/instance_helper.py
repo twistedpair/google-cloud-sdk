@@ -166,6 +166,7 @@ def _ConstructInstanceFromArgs(client, alloydb_messages, args):
       alloydb_messages=alloydb_messages,
       assign_inbound_public_ip=args.assign_inbound_public_ip,
       authorized_external_networks=args.authorized_external_networks,
+      outbound_public_ip=args.outbound_public_ip,
   )
 
   if args.allowed_psc_projects:
@@ -197,12 +198,6 @@ def _ConstructInstanceFromArgsBeta(client, alloydb_messages, args):
       observability_config_record_application_tags=args.observability_config_record_application_tags,
       observability_config_query_plans_per_minute=args.observability_config_query_plans_per_minute,
       observability_config_track_active_queries=args.observability_config_track_active_queries,
-  )
-  instance_resource.networkConfig = NetworkConfig(
-      alloydb_messages=alloydb_messages,
-      assign_inbound_public_ip=args.assign_inbound_public_ip,
-      authorized_external_networks=args.authorized_external_networks,
-      outbound_public_ip=args.outbound_public_ip,
   )
 
   return instance_resource
@@ -250,6 +245,7 @@ def _ConstructSecondaryInstanceFromArgs(client, alloydb_messages, args):
       alloydb_messages=alloydb_messages,
       assign_inbound_public_ip=args.assign_inbound_public_ip,
       authorized_external_networks=args.authorized_external_networks,
+      outbound_public_ip=args.outbound_public_ip,
   )
   if args.allowed_psc_projects:
     instance_resource.pscInstanceConfig = PscInstanceConfig(
@@ -280,12 +276,6 @@ def ConstructSecondaryCreateRequestFromArgsAlphaBeta(
   """Validates command line input arguments and passes parent's resources for alpha/beta track."""
   instance_resource = _ConstructSecondaryInstanceFromArgs(
       client, alloydb_messages, args
-  )
-  instance_resource.networkConfig = NetworkConfig(
-      alloydb_messages=alloydb_messages,
-      assign_inbound_public_ip=args.assign_inbound_public_ip,
-      authorized_external_networks=args.authorized_external_networks,
-      outbound_public_ip=args.outbound_public_ip,
   )
   return alloydb_messages.AlloydbProjectsLocationsClustersInstancesCreatesecondaryRequest(
       instance=instance_resource,
@@ -412,19 +402,26 @@ def ConstructInstanceAndUpdatePathsFromArgs(
   if (
       args.assign_inbound_public_ip
       or args.authorized_external_networks is not None
+      or args.outbound_public_ip is not None
   ):
     instance_resource.networkConfig = NetworkConfig(
         alloydb_messages=alloydb_messages,
         assign_inbound_public_ip=args.assign_inbound_public_ip,
         authorized_external_networks=args.authorized_external_networks,
+        outbound_public_ip=args.outbound_public_ip,
     )
-  # If we are disabling public ip then update the whole networkConfig as we
-  # also need to clear the list of authorized networks
+  if args.outbound_public_ip is not None:
+    outbound_public_ip_path = 'networkConfig.enableOutboundPublicIp'
+    paths.append(outbound_public_ip_path)
+  # If we are disabling public ip then update both enablePublicIp and
+  # authorizedExternalNetworks because we need to clear the list of authorized
+  # networks.
   if (
       args.assign_inbound_public_ip
       and not instance_resource.networkConfig.enablePublicIp
   ):
-    paths.append('networkConfig')
+    paths.append('networkConfig.enablePublicIp')
+    paths.append('networkConfig.authorizedExternalNetworks')
   else:
     if args.assign_inbound_public_ip:
       paths.append('networkConfig.enablePublicIp')
@@ -829,18 +826,6 @@ def ConstructInstanceAndUpdatePathsFromArgsBeta(
       args.observability_config_track_active_queries,
   )
 
-  instance_resource.networkConfig = NetworkConfig(
-      alloydb_messages=alloydb_messages,
-      assign_inbound_public_ip=args.assign_inbound_public_ip,
-      authorized_external_networks=args.authorized_external_networks,
-      outbound_public_ip=args.outbound_public_ip,
-  )
-  if not (
-      args.assign_inbound_public_ip
-      and not instance_resource.networkConfig.enablePublicIp
-  ):
-    if args.outbound_public_ip is not None:
-      paths.append('networkConfig.enableOutboundPublicIp')
   return instance_resource, paths
 
 

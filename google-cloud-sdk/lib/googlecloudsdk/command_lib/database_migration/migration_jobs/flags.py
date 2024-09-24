@@ -296,6 +296,18 @@ def AddSqlServerUseDiffBackupFlag(parser):
   )
 
 
+def AddSkipValidationFlag(parser):
+  """Adds a --skip-validation flag to the given parser."""
+  help_text = """\
+    Restart the migration job without running prior configuration verification.
+    """
+  parser.add_argument(
+      '--skip-validation',
+      action='store_true',
+      help=help_text,
+  )
+
+
 def AddMigrationJobObjectsConfigFlag(parser):
   """Adds migration job objects config flag group to the given parser."""
   sqlserver_homogeneous_migration_config = parser.add_group(

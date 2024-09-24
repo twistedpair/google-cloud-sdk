@@ -1067,9 +1067,9 @@ class PostureDeployment(_messages.Message):
       help ensure that you're deleting the intended posture deployment.
     failureMessage: Output only. A description of why the posture deployment
       failed. Present only if the deployment is in a failed state.
-    name: Required. The name of the posture deployment, in the format `organiz
-      ations/{organization}/locations/global/postureDeployments/{deployment_id
-      }`.
+    name: Required. Identifier. The name of the posture deployment, in the
+      format `organizations/{organization}/locations/global/postureDeployments
+      /{deployment_id}`.
     postureId: Required. The posture used in the deployment, in the format
       `organizations/{organization}/locations/global/postures/{posture_id}`.
     postureRevisionId: Required. The revision ID of the posture used in the
@@ -1580,9 +1580,9 @@ class SecuritypostureOrganizationsLocationsPostureDeploymentsPatchRequest(_messa
   object.
 
   Fields:
-    name: Required. The name of the posture deployment, in the format `organiz
-      ations/{organization}/locations/global/postureDeployments/{deployment_id
-      }`.
+    name: Required. Identifier. The name of the posture deployment, in the
+      format `organizations/{organization}/locations/global/postureDeployments
+      /{deployment_id}`.
     postureDeployment: A PostureDeployment resource to be passed as the
       request body.
     updateMask: Required. The fields in the PostureDeployment to update. You

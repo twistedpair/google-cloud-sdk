@@ -1837,8 +1837,9 @@ class _LegacyGenerator(object):
       self.scopes = scopes
 
     paths = config.Paths()
-    # Bq file is not generated here. bq CLI generates it using the adc at
-    # self._adc_path and uses it as the cache.
+    # Bq file is not generated here. When not using google auth (made the
+    # default in the gcloud 490 release) the bq CLI generates it using the adc
+    #  at self._adc_path and uses it as the cache.
     # Register so it is cleaned up.
     self._bq_path = paths.LegacyCredentialsBqPath(account)
     self._gsutil_path = paths.LegacyCredentialsGSUtilPath(account)
@@ -1877,6 +1878,7 @@ class _LegacyGenerator(object):
     """Write the credential file."""
 
     # Remove all the credential files first. As per the comment in __init__
+    # When not using google auth (made the default in the gcloud 490 release)
     # the BQ file (singlestore_bq) is created by the BQ CLI and not
     # regenerated. This file should be removed when the credentials are
     # created. If this file isn't removed, it will be stale, but BQ CLI will

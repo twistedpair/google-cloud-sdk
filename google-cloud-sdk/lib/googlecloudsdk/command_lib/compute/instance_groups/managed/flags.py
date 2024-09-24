@@ -714,16 +714,17 @@ def AddInstanceFlexibilityPolicyArgs(
       type=arg_parsers.ArgList(),
       metavar='MACHINE_TYPE',
       help=(
-          'Primary machine types to use for the Compute Engine instances that'
-          ' will be created with the managed instance group. If not provided,'
-          ' machine type specified in the instance template will be used.'
+          'Machine types that are used to create VMs in the managed instance'
+          ' group. If not provided, the machine type specified in the instance'
+          ' template is used.'
       ),
   )
   parser.add_argument(
       '--instance-selection',
       help=(
           'Named selection of machine types with an optional rank. '
-          'eg. --instance-selection="name=instance-selection-1,machine-type=e2-standard-8,machine-type=t2d-standard-8,rank=0"'
+          'For example,'
+          ' `--instance-selection="name=instance-selection-1,machine-type=e2-standard-8,machine-type=t2d-standard-8,rank=0"`'
       ),
       metavar='name=NAME,machine-type=MACHINE_TYPE[,machine-type=MACHINE_TYPE...][,rank=RANK]',
       type=ArgMultiValueDict(),
@@ -733,9 +734,8 @@ def AddInstanceFlexibilityPolicyArgs(
     parser.add_argument(
         '--remove-instance-selections-all',
         action='store_true',
-        hidden=True,
         help=(
-            'Remove all instance selections from the instance flexibility.'
+            'Remove all instance selections from the instance flexibility'
             ' policy.'
         ),
     )
@@ -743,8 +743,10 @@ def AddInstanceFlexibilityPolicyArgs(
         '--remove-instance-selections',
         type=arg_parsers.ArgList(),
         metavar='INSTANCE_SELECTION_NAME',
-        hidden=True,
-        help='Remove instance selections from the instance flexibility policy.',
+        help=(
+            'Remove specific instance selections from the instance flexibility'
+            ' policy.'
+        ),
     )
 
 

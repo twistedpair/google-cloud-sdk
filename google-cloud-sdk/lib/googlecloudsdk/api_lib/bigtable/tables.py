@@ -40,17 +40,20 @@ def ParseSingleRule(rule):
   if len(rule_parts) != 2 or not rule_parts[1]:
     raise exceptions.BadArgumentException(
         '--column-families',
-        'Invalid union or intersection rule: {0}'.format(rule))
+        'Invalid union or intersection rule: {0}'.format(rule),
+    )
 
   if rule_parts[0] == 'maxage':
     return util.GetAdminMessages().GcRule(
-        maxAge=ConvertDurationToSeconds(rule_parts[1]))
+        maxAge=ConvertDurationToSeconds(rule_parts[1])
+    )
   elif rule_parts[0] == 'maxversions':
     return util.GetAdminMessages().GcRule(maxNumVersions=int(rule_parts[1]))
   else:
     raise exceptions.BadArgumentException(
         '--column-families',
-        'Invalid union or intersection rule: {0}'.format(rule))
+        'Invalid union or intersection rule: {0}'.format(rule),
+    )
 
 
 def ParseBinaryRule(rule_list):
@@ -69,7 +72,8 @@ def ParseBinaryRule(rule_list):
     # Only support binary rule
     raise exceptions.BadArgumentException(
         '--column-families',
-        'Invalid union or intersection rule: ' + ' '.join(rule_list))
+        'Invalid union or intersection rule: ' + ' '.join(rule_list),
+    )
 
   results = []
   for rule in rule_list:
@@ -83,7 +87,7 @@ def ParseExpr(expr):
 
   Args:
     expr: A string express contains family name and optional GC rules in the
-    format of `family_name[:gc_rule]`, such as `my_family:maxage=10d`.
+      format of `family_name[:gc_rule]`, such as `my_family:maxage=10d`.
 
   Returns:
     A family name and a GcRule object defined in the Bigtable admin API.
@@ -97,7 +101,8 @@ def ParseExpr(expr):
   if expr_list_len > 2 or family != family.strip():
     raise exceptions.BadArgumentException(
         '--column-families',
-        'Input column family ({0}) is mal-formatted.'.format(expr))
+        'Input column family ({0}) is mal-formatted.'.format(expr),
+    )
 
   # Without GC rules
   if expr_list_len == 1:
@@ -108,7 +113,8 @@ def ParseExpr(expr):
   if not expr_list[1]:
     raise exceptions.BadArgumentException(
         '--column-families',
-        'Input column family ({0}) is mal-formatted.'.format(expr))
+        'Input column family ({0}) is mal-formatted.'.format(expr),
+    )
 
   gc_rule = expr_list[1]
   union_list = gc_rule.split('||')
@@ -118,12 +124,15 @@ def ParseExpr(expr):
   if len(union_list) == 2 and len(intersection_list) == 1:
     # Union rule
     return family, util.GetAdminMessages().GcRule(
-        union=util.GetAdminMessages().Union(rules=ParseBinaryRule(union_list)))
+        union=util.GetAdminMessages().Union(rules=ParseBinaryRule(union_list))
+    )
   elif len(union_list) == 1 and len(intersection_list) == 2:
     # Intersection rule
     return family, util.GetAdminMessages().GcRule(
         intersection=util.GetAdminMessages().Intersection(
-            rules=ParseBinaryRule(intersection_list)))
+            rules=ParseBinaryRule(intersection_list)
+        )
+    )
   elif len(union_list) == 1 and len(intersection_list) == 1:
     # Either empty or a simple rule
     if gc_rule:
@@ -131,7 +140,8 @@ def ParseExpr(expr):
   else:
     raise exceptions.BadArgumentException(
         '--column-families',
-        'Input column family ({0}) is mal-formatted.'.format(expr))
+        'Input column family ({0}) is mal-formatted.'.format(expr),
+    )
 
 
 def UpdateRequestWithInput(original_ref, args, req):
@@ -183,10 +193,12 @@ def ConvertDurationToSeconds(duration):
     return times.FormatDurationForJson(times.ParseDuration(duration))
   except times.DurationSyntaxError as duration_error:
     raise exceptions.BadArgumentException(
-        '--column-families/change-stream-retention-period', str(duration_error))
+        '--column-families/change-stream-retention-period', str(duration_error)
+    )
   except times.DurationValueError as duration_error:
     raise exceptions.BadArgumentException(
-        '--column-families/change-stream-retention-period', str(duration_error))
+        '--column-families/change-stream-retention-period', str(duration_error)
+    )
 
 
 def ParseColumnFamilies(family_list):
@@ -207,10 +219,13 @@ def ParseColumnFamilies(family_list):
     column_family = util.GetAdminMessages().ColumnFamily(gcRule=gc_rule)
     results.append(
         util.GetAdminMessages().Table.ColumnFamiliesValue.AdditionalProperty(
-            key=family, value=column_family))
+            key=family, value=column_family
+        )
+    )
 
   return util.GetAdminMessages().Table.ColumnFamiliesValue(
-      additionalProperties=results)
+      additionalProperties=results
+  )
 
 
 def AddFieldToUpdateMask(field, req):
@@ -293,7 +308,7 @@ def AddChangeStreamConfigUpdateTableArgs():
               'hours (h), minutes (m), and seconds (s). If not already '
               'specified, enables a change stream for the table. Examples: `5d`'
               ' or `48h`.'
-          )
+          ),
       )
   )
   return [argument_group]
@@ -321,7 +336,8 @@ def AddAutomatedBackupPolicyUpdateTableArgs():
 def HandleChangeStreamArgs(unused_ref, args, req):
   if args.change_stream_retention_period:
     req.table.changeStreamConfig = CreateChangeStreamConfig(
-        args.change_stream_retention_period)
+        args.change_stream_retention_period
+    )
   return req
 
 
@@ -337,7 +353,8 @@ def HandleAutomatedBackupPolicyArgs(unused_ref, args, req):
 
 def CreateChangeStreamConfig(duration):
   return util.GetAdminMessages().ChangeStreamConfig(
-      retentionPeriod=ConvertDurationToSeconds(duration))
+      retentionPeriod=ConvertDurationToSeconds(duration)
+  )
 
 
 def CreateDefaultAutomatedBackupPolicy():

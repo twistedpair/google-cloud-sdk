@@ -21,6 +21,8 @@ from __future__ import unicode_literals
 import collections
 import re
 
+from dateutil import parser
+from googlecloudsdk.calliope import exceptions as c_exceptions
 from googlecloudsdk.command_lib.deploy import automation_util
 from googlecloudsdk.command_lib.deploy import deploy_util
 from googlecloudsdk.command_lib.deploy import exceptions
@@ -425,15 +427,94 @@ def _SetTimeWindows(messages, time_windows_message, time_windows):
   # Go through each oneTimeWindow and parse the fields.
   one_time_windows = time_windows.get('oneTimeWindows', [])
   for one_time_window in one_time_windows:
-    one_time_window_message = messages.OneTimeWindow()
-    for field in one_time_window:
-      setattr(one_time_window_message, field, one_time_window.get(field))
-    time_windows_message.oneTimeWindows.append(one_time_window_message)
+    _SetOneTimeWindow(messages, one_time_window, time_windows_message)
 
   # Go through each weeklyWindow and parse the fields.
   weekly_windows = time_windows.get('weeklyWindows', [])
   for weekly_window in weekly_windows:
     _SetWeeklyWindow(messages, weekly_window, time_windows_message)
+
+
+def _SetOneTimeWindow(messages, one_time_window, time_windows_message):
+  """Sets the oneTimeWindow field of a timeWindows message.
+
+  Args:
+    messages: module containing the definitions of messages for Cloud Deploy.
+    one_time_window: value of the oneTimeWindow field.
+    time_windows_message:
+      googlecloudsdk.generated_clients.apis.clouddeploy.TimeWindows message.
+
+  Raises:
+    c_exceptions.InvalidArgumentException: if the start or end field is not a
+    valid ISO 8601 string.
+  """
+  one_time_window_message = messages.OneTimeWindow()
+  for field in one_time_window:
+    if field not in ['start', 'end']:
+      setattr(one_time_window_message, field, one_time_window.get(field))
+  # Parse the ISO 8601 string from YAML into the date and time fields.
+  if one_time_window.get('start'):
+    _SetDateTimeFields(
+        one_time_window, one_time_window_message, messages, 'start'
+    )
+  if one_time_window.get('end'):
+    _SetDateTimeFields(
+        one_time_window, one_time_window_message, messages, 'end'
+    )
+  time_windows_message.oneTimeWindows.append(one_time_window_message)
+
+
+def _SetDateTimeFields(
+    one_time_window, one_time_window_message, messages, field_name
+):
+  """Sets the start/end date time fields on the oneTimeWindow message.
+
+  Args:
+    one_time_window: value of the oneTimeWindow field.
+    one_time_window_message:
+      googlecloudsdk.generated_clients.apis.clouddeploy.OneTimeWindow message.
+    messages: module containing the definitions of messages for Cloud Deploy.
+    field_name: the field to set (start or end).
+
+  Raises:
+    c_exceptions.InvalidArgumentException: if the start or end field is not a
+    valid ISO 8601 string.
+  """
+  try:
+    date_time = parser.isoparse(one_time_window.get(field_name))
+  except ValueError:
+    raise c_exceptions.InvalidArgumentException(
+        field_name,
+        'invalid date string: "{}". Must be a valid date in ISO 8601 format'
+        ' (e.g. {}: 2024-12-24 17:00)'.format(
+            one_time_window.get(field_name), field_name
+        ),
+    )
+  # Set the date field (e.g. startDate or endDate).
+  date_obj = _ConvertDate(date_time, messages)
+  date_field = '{}Date'.format(field_name)
+  setattr(one_time_window_message, date_field, date_obj)
+  # Set the time field (e.g. startTime or endTime)
+  time_obj = _ConvertTime(date_time, messages)
+  time_field = '{}Time'.format(field_name)
+  setattr(one_time_window_message, time_field, time_obj)
+
+
+def _ConvertDate(date_time_obj, messages):
+  """Converts a dateTime object to a Date message."""
+  return messages.Date(
+      year=date_time_obj.year, month=date_time_obj.month, day=date_time_obj.day
+  )
+
+
+def _ConvertTime(date_time_obj, messages):
+  """Converts a dateTime object to a TimeOfDay message."""
+  return messages.TimeOfDay(
+      hours=date_time_obj.hour,
+      minutes=date_time_obj.minute,
+      seconds=date_time_obj.second,
+      nanos=date_time_obj.microsecond * 1000,
+  )
 
 
 def _SetWeeklyWindow(messages, weekly_window, time_windows_message):

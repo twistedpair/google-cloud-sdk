@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import collections
 from concurrent import futures
+import copy
 # TODO(b/142489773) Required because of thread-safety issue with loading python
 # modules in the presence of threads.
 import encodings.idna  # pylint: disable=unused-import
@@ -1333,23 +1334,27 @@ def SetupAuthForRepository(
           )
       )
       raise e
-  gcr_auth, failures = upgrade_util.iam_map(
-      host,
-      gcr_project,
-      skip_bucket=(not has_bucket),
-      from_ar_permissions=False,
-      best_effort=True,
+  gcr_auth, failures = copy.deepcopy(
+      upgrade_util.iam_map(
+          host if has_bucket else "",
+          gcr_project,
+          skip_bucket=(not has_bucket),
+          from_ar_permissions=False,
+          best_effort=True,
+      )
   )
   if not gcr_auth and failures:
     WarnNoAuthGenerated(pkg_dev=pkg_dev)
     return True, False
 
-  ar_non_repo_auth, _ = upgrade_util.iam_map(
-      "",
-      ar_project,
-      skip_bucket=True,
-      from_ar_permissions=True,
-      best_effort=True,
+  ar_non_repo_auth, _ = copy.deepcopy(
+      upgrade_util.iam_map(
+          "",
+          ar_project,
+          skip_bucket=True,
+          from_ar_permissions=True,
+          best_effort=True,
+      )
   )
 
   # The AR auth policy on the repo. Doesn't include project+ auth above

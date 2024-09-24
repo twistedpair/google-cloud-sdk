@@ -720,3 +720,53 @@ class MigrationJobsClient(object):
     )
 
     return self._service.Promote(promote_req)
+
+  def Restart(
+      self,
+      name,
+      args=None,
+  ):
+    """Restarts a migration job.
+
+    Args:
+      name: str, the name of the resource to restart.
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+
+    Returns:
+      Operation: the operation for promoting the migration job.
+    """
+    restart_mj_req = self.messages.RestartMigrationJobRequest()
+    if args.IsKnownAndSpecified('databases_filter'):
+      restart_mj_req.objectsFilter = self._GetMigrationJobObjectsConfig(
+          args.databases_filter
+      )
+    if args.IsKnownAndSpecified('skip_validation'):
+      restart_mj_req.skipValidation = True
+
+    restart_req = (
+        self.messages.DatamigrationProjectsLocationsMigrationJobsRestartRequest(
+            name=name,
+            restartMigrationJobRequest=restart_mj_req,
+        )
+    )
+
+    return self._service.Restart(restart_req)
+
+  def FetchSourceObjects(
+      self,
+      name,
+  ):
+    """Fetches source objects of a migration job.
+
+    Args:
+      name: str, the name of the resource to fetch source objects for.
+
+    Returns:
+      Operation: the operation for fetching source objects of the migration job.
+    """
+    fetch_source_objects_req = self.messages.DatamigrationProjectsLocationsMigrationJobsFetchSourceObjectsRequest(
+        name=name,
+    )
+
+    return self._service.FetchSourceObjects(fetch_source_objects_req)

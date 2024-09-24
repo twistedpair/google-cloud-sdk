@@ -634,15 +634,16 @@ def add_per_object_retention_flags(parser, is_update=False):
   )
 
 
-def add_soft_deleted_flag(parser):
-  """Adds flag for only displaying soft-deleted objects."""
+def add_soft_deleted_flag(parser, hidden=False):
+  """Adds flag for only displaying soft-deleted resources."""
   parser.add_argument(
       '--soft-deleted',
       action='store_true',
       help=(
-          'Displays soft-deleted objects only. Excludes live and noncurrent'
-          ' objects.'
+          'Displays soft-deleted resources only. For objects, it will'
+          ' exclude live and noncurrent ones.'
       ),
+      hidden=hidden,
   )
 
 

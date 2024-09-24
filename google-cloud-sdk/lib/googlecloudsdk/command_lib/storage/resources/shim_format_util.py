@@ -24,7 +24,7 @@ from googlecloudsdk.core.util import scaled_integer
 
 _BUCKET_FIELDS_WITH_PRESENT_VALUE = ('cors_config', 'lifecycle_config',
                                      'logging_config', 'retention_policy',
-                                     'website_config', 'ip_filter_config')
+                                     'website_config')
 _BYTE_EXPONENTS_AND_UNIT_STRINGS = [
     (0, 'B'),
     (10, 'KiB'),

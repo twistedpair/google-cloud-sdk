@@ -522,7 +522,7 @@ can be range from 7-183. Default is 31.
   )
 
 
-def AddVolumeHybridReplicationParametersArg(parser):
+def AddVolumeHybridReplicationParametersArg(parser, hidden=True):
   """Adds the --hybrid-replication-parameters arg to the arg parser."""
   hybrid_replication_parameters_arg_spec = {
       'replication': str,
@@ -561,6 +561,7 @@ def AddVolumeHybridReplicationParametersArg(parser):
       '--hybrid-replication-parameters',
       type=arg_parsers.ArgDict(spec=hybrid_replication_parameters_arg_spec),
       help=hybrid_replication_parameters_help,
+      hidden=hidden,
   )
 
 
@@ -599,7 +600,11 @@ def AddVolumeCreateArgs(parser, release_track):
     AddVolumeBackupConfigArg(parser)
     AddVolumeSourceBackupArg(parser)
   AddVolumeTieringPolicyArg(parser, messages)
-  AddVolumeHybridReplicationParametersArg(parser)
+  if (release_track == calliope_base.ReleaseTrack.BETA or
+      release_track == calliope_base.ReleaseTrack.ALPHA):
+    AddVolumeHybridReplicationParametersArg(parser, False)
+  else:
+    AddVolumeHybridReplicationParametersArg(parser, True)
   labels_util.AddCreateLabelsFlags(parser)
 
 

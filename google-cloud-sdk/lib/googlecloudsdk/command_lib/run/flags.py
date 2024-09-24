@@ -376,20 +376,6 @@ def AddRegionArg(parser):
   )
 
 
-def AddFunctionArg(parser):
-  """Add a function resource arg."""
-  parser.add_argument(
-      '--function',
-      hidden=True,
-      nargs='?',
-      const=True,
-      help="""\
-      Specifies that the deployed object is a function. If a value is
-      provided, that value is used as the entrypoint.
-      """,
-  )
-
-
 def AddNoTrafficFlag(parser):
   """Add flag to deploy a revision with no traffic."""
   parser.add_argument(

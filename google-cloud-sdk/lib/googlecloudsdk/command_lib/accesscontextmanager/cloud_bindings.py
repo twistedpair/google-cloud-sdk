@@ -39,10 +39,14 @@ def AddUpdateMask(ref, args, req):
     update_mask.append('access_levels')
   if args.IsKnownAndSpecified('dry_run_level'):
     update_mask.append('dry_run_access_levels')
+  if args.IsKnownAndSpecified('session_length'):
+    update_mask.append('reauth_settings')
+  if args.IsKnownAndSpecified('binding_file'):
+    update_mask.append('scoped_access_settings')
 
   if not update_mask:
     raise calliope_exceptions.MinimumArgumentException(
-        ['--level', '--dry_run_level']
+        ['--level', '--dry_run_level', '--session-length', '--binding-file']
     )
 
   req.updateMask = ','.join(update_mask)
@@ -249,6 +253,8 @@ def ProcessLevels(ref, args, req):
       )
     param = {'accessPoliciesId': policy_ref.Name()}
     policies_to_check['--policy'] = policy_ref.RelativeName()
+  else:
+    del policy_ref
 
   # Parse level and dry run level
   level_refs = (
@@ -347,12 +353,9 @@ def ProcessReauthSettings(unused_ref, args, req):
           'Cannot set session length on restricted client applications. Use '
           'scoped access settings.',
       )
-    # Deformat Google protobuf Duration string, which is a number of seconds
-    # terminated with an 's'. Taking the 's' off the end of the string allows us
-    # to convert to an int and process the real value.
-    session_length = int(
-        req.gcpUserAccessBinding.reauthSettings.sessionLength[:-1]
-    )
+    session_length = times.ParseDuration(
+        req.gcpUserAccessBinding.reauthSettings.sessionLength
+    ).total_seconds
     if session_length < 0:  # Case where --session_length=''
       req.gcpUserAccessBinding.reauthSettings = None
     elif session_length == 0:  # Case where we disable reauth
@@ -737,6 +740,74 @@ def _ProcessAccessLevelsInScopedAccessSettings(args, req):
   _Start(args, req)
 
 
+def _ProcessReauthSettingsInScopedAccessSettings(req):
+  """Process the reauth settings in the scoped access settings."""
+
+  def _ValidateReauthSettings(reauth_settings):
+    if reauth_settings is None:
+      return
+    if reauth_settings.sessionLength is None:
+      raise calliope_exceptions.InvalidArgumentException(
+          '--binding-file',
+          'ReauthSettings within ScopedAccessSettings must include a session'
+          'length.',
+      )
+    session_length = times.ParseDuration(
+        reauth_settings.sessionLength
+    ).total_seconds
+    if session_length > iso_duration.Duration(days=1).total_seconds:
+      raise calliope_exceptions.InvalidArgumentException(
+          '--binding-file',
+          'SessionLength within ScopedAccessSettings must not be greater than'
+          ' one day',
+      )
+    if session_length < 0:
+      raise calliope_exceptions.InvalidArgumentException(
+          '--binding-file',
+          'SessionLength within ScopedAccessSettings must not be less than '
+          'zero',
+      )
+
+  def _InferEmptyReauthSettingsFields(reauth_settings):
+    # When reauthMethod is absent, infer LOGIN
+    if reauth_settings.reauthMethod is None:
+      v1_messages = util.GetMessages('v1')
+      if isinstance(reauth_settings, v1_messages.ReauthSettings):
+        reauth_settings.reauthMethod = (
+            v1_messages.ReauthSettings.ReauthMethodValueValuesEnum.LOGIN
+        )
+      else:
+        reauth_settings.reauthMethod = util.GetMessages(
+            'v1alpha'
+        ).ReauthSettings.ReauthMethodValueValuesEnum.LOGIN
+    # When sessionLengthEnabled is absent, infer True if SessionLength is
+    # greater than zero, otherwise infer false.
+    if reauth_settings.sessionLengthEnabled is None:
+      session_length = times.ParseDuration(
+          reauth_settings.sessionLength
+      ).total_seconds
+      if session_length > 0:
+        reauth_settings.sessionLengthEnabled = True
+      else:
+        reauth_settings.sessionLengthEnabled = False
+    # When useOidcMaxAge is absent, infer False
+    if reauth_settings.useOidcMaxAge is None:
+      reauth_settings.useOidcMaxAge = False
+
+  def _Start(req):
+    scoped_access_settings = req.gcpUserAccessBinding.scopedAccessSettings
+    for s in scoped_access_settings:
+      if not s.activeSettings:
+        continue
+      reauth_settings = s.activeSettings.reauthSettings
+      if not reauth_settings:
+        continue
+      _ValidateReauthSettings(reauth_settings)
+      _InferEmptyReauthSettingsFields(reauth_settings)
+
+  _Start(req)
+
+
 def ProcessScopedAccessSettings(unused_ref, args, req):
   """Hook to process and validate scoped access settings from the request."""
 
@@ -763,6 +834,7 @@ def ProcessScopedAccessSettings(unused_ref, args, req):
     _ProcessScopesInScopedAccessSettings(req)
     _ProcessAccessSettingsInScopedAccessSettings(req)
     _ProcessAccessLevelsInScopedAccessSettings(args, req)
+    _ProcessReauthSettingsInScopedAccessSettings(req)
 
     return req
 
@@ -880,10 +952,16 @@ class GcpUserAccessBindingStructureValidator:
     if restricted_client_application:
       self._ValidateAllFieldsRecognized(restricted_client_application)
 
+  def _ValidateReauthSettings(self, reauth_settings):
+    """Validate the ReauthSettings."""
+    if reauth_settings:
+      self._ValidateAllFieldsRecognized(reauth_settings)
+
   def _ValidateAccessSettings(self, access_settings):
     """Validates the AccessSettings structure."""
     if access_settings:
       self._ValidateAllFieldsRecognized(access_settings)
+      self._ValidateReauthSettings(access_settings.reauthSettings)
 
   def _ValidateAllFieldsRecognizedForGcpUserAccessBinding(
       self, gcp_user_access_binding
@@ -911,7 +989,10 @@ class GcpUserAccessBindingStructureValidator:
       unrecognized_fields.add('groupKey')
     if gcp_user_access_binding.name:
       unrecognized_fields.add('name')
-    if gcp_user_access_binding.principal is not None:
+    if (
+        hasattr(gcp_user_access_binding, 'principal')
+        and gcp_user_access_binding.principal is not None
+    ):
       unrecognized_fields.add('principal')
     if gcp_user_access_binding.reauthSettings is not None:
       unrecognized_fields.add('reauthSettings')

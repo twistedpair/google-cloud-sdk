@@ -40,6 +40,10 @@ class InvalidSchemaSettingsException(exceptions.Error):
   """Error when the schema settings are invalid."""
 
 
+class ConflictingIngestionSettingsException(exceptions.Error):
+  """Error when the ingestion settings are invalid."""
+
+
 class _TopicUpdateSetting(object):
   """Data container class for updating a topic."""
 
@@ -77,6 +81,15 @@ class TopicsClient(object):
     self._service = self.client.projects_topics
     self._subscriptions_service = self.client.projects_subscriptions
 
+  def _ParseIngestionPlatformLogsSettings(self, ingestion_log_severity):
+    if ingestion_log_severity:
+      return self.messages.PlatformLogsSettings(
+          severity=self.messages.PlatformLogsSettings.SeverityValueValuesEnum(
+              ingestion_log_severity
+          )
+      )
+    return None
+
   def _ParseIngestionDataSourceSettings(
       self,
       kinesis_ingestion_stream_arn=None,
@@ -88,6 +101,7 @@ class TopicsClient(object):
       cloud_storage_ingestion_text_delimiter=None,
       cloud_storage_ingestion_minimum_object_create_time=None,
       cloud_storage_ingestion_match_glob=None,
+      ingestion_log_severity=None,
   ):
     """Returns an IngestionDataSourceSettings message from the provided args.
     """
@@ -104,6 +118,18 @@ class TopicsClient(object):
         and (kinesis_ingestion_service_account is not None)
     )
 
+    is_cloud_storage = (cloud_storage_ingestion_bucket is not None) and (
+        cloud_storage_ingestion_input_format is not None
+    )
+
+    if is_cloud_storage and is_kinesis:
+      # We can't force these settings to be exclusive between them but not
+      # exclusive with the log severity via the yaml definition. Thus we enforce
+      # this exclusivity here.
+      raise ConflictingIngestionSettingsException(
+          'Cannot set both Kinesis and Cloud Storage ingestion settings.'
+      )
+
     if is_kinesis:
       kinesis_source = self.messages.AwsKinesis(
           streamArn=kinesis_ingestion_stream_arn,
@@ -111,14 +137,19 @@ class TopicsClient(object):
           awsRoleArn=kinesis_ingestion_role_arn,
           gcpServiceAccount=kinesis_ingestion_service_account,
       )
-      return self.messages.IngestionDataSourceSettings(
-          awsKinesis=kinesis_source
+      ingestion_data_source_settings = (
+          self.messages.IngestionDataSourceSettings(
+              awsKinesis=kinesis_source,
+          )
       )
-
-    is_cloud_storage = (cloud_storage_ingestion_bucket is not None) and (
-        cloud_storage_ingestion_input_format is not None
-    )
-    if is_cloud_storage:
+      # TODO(b/289117408) clean this up and make this code the same as the Cloud
+      # Storage code below.
+      if ingestion_log_severity:
+        ingestion_data_source_settings.platformLogsSettings = (
+            self._ParseIngestionPlatformLogsSettings(ingestion_log_severity)
+        )
+      return ingestion_data_source_settings
+    elif is_cloud_storage:
       cloud_storage_source = self.messages.CloudStorage(
           bucket=cloud_storage_ingestion_bucket,
           minimumObjectCreateTime=cloud_storage_ingestion_minimum_object_create_time,
@@ -134,7 +165,14 @@ class TopicsClient(object):
         cloud_storage_source.pubsubAvroFormat = self.messages.PubSubAvroFormat()
 
       return self.messages.IngestionDataSourceSettings(
-          cloudStorage=cloud_storage_source
+          cloudStorage=cloud_storage_source,
+          platformLogsSettings=self._ParseIngestionPlatformLogsSettings(
+              ingestion_log_severity
+          ),
+      )
+    elif ingestion_log_severity:
+      raise ConflictingIngestionSettingsException(
+          'Must set ingestion settings with log severity.'
       )
 
     return None
@@ -160,6 +198,7 @@ class TopicsClient(object):
       cloud_storage_ingestion_text_delimiter=None,
       cloud_storage_ingestion_minimum_object_create_time=None,
       cloud_storage_ingestion_match_glob=None,
+      ingestion_log_severity=None,
   ):
     """Creates a Topic.
 
@@ -201,6 +240,8 @@ class TopicsClient(object):
       cloud_storage_ingestion_match_glob (optional[str]): glob pattern used to
         match Cloud Storage objects that will be ingested. If unset, all objects
         will be ingested.
+      ingestion_log_severity (optional[str]): The log severity to use for
+        ingestion.
 
     Returns:
       Topic: The created topic.
@@ -244,6 +285,7 @@ class TopicsClient(object):
         cloud_storage_ingestion_text_delimiter=cloud_storage_ingestion_text_delimiter,
         cloud_storage_ingestion_minimum_object_create_time=cloud_storage_ingestion_minimum_object_create_time,
         cloud_storage_ingestion_match_glob=cloud_storage_ingestion_match_glob,
+        ingestion_log_severity=ingestion_log_severity,
     )
     return self._service.Create(topic)
 
@@ -481,6 +523,7 @@ class TopicsClient(object):
       cloud_storage_ingestion_text_delimiter=None,
       cloud_storage_ingestion_minimum_object_create_time=None,
       cloud_storage_ingestion_match_glob=None,
+      ingestion_log_severity=None,
   ):
     """Updates a Topic.
 
@@ -530,6 +573,8 @@ class TopicsClient(object):
       cloud_storage_ingestion_match_glob (optional[str]): glob pattern used to
         match Cloud Storage objects that will be ingested. If unset, all objects
         will be ingested.
+      ingestion_log_severity (optional[str]): The log severity to use for
+        ingestion.
 
     Returns:
       Topic: The updated topic.
@@ -601,6 +646,7 @@ class TopicsClient(object):
           cloud_storage_ingestion_text_delimiter=cloud_storage_ingestion_text_delimiter,
           cloud_storage_ingestion_minimum_object_create_time=cloud_storage_ingestion_minimum_object_create_time,
           cloud_storage_ingestion_match_glob=cloud_storage_ingestion_match_glob,
+          ingestion_log_severity=ingestion_log_severity,
       )
       if new_settings is not None:
         update_settings.append(

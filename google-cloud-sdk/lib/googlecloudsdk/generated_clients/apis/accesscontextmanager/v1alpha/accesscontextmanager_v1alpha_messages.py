@@ -666,6 +666,12 @@ class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messag
   object.
 
   Fields:
+    appendScopedAccessSettings: Optional. This field will be used to control
+      whether or not scoped access settings are appended to the existing list
+      of scoped access settings. If true, the scoped access settings in the
+      request will be appended to the existing list of scoped access settings.
+      If false, the scoped access settings in the request replace the existing
+      list of scoped access settings.
     gcpUserAccessBinding: A GcpUserAccessBinding resource to be passed as the
       request body.
     name: Immutable. Identifier. Assigned by the server during creation. The
@@ -681,9 +687,10 @@ class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messag
       `reauth_settings`. Example: update_mask { paths: "access_levels" }
   """
 
-  gcpUserAccessBinding = _messages.MessageField('GcpUserAccessBinding', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
+  appendScopedAccessSettings = _messages.BooleanField(1)
+  gcpUserAccessBinding = _messages.MessageField('GcpUserAccessBinding', 2)
+  name = _messages.StringField(3, required=True)
+  updateMask = _messages.StringField(4)
 
 
 class AccesscontextmanagerServicesGetRequest(_messages.Message):

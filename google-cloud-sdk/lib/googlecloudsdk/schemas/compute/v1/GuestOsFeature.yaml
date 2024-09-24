@@ -30,8 +30,9 @@ properties:
       The ID of a supported feature. To add multiple values, use commas to
       separate values. Set to one or more of the following values: -
       VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
-      SECURE_BOOT - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE For more
-      information, see Enabling guest operating system features.
+      SECURE_BOOT - GVNIC - SEV_CAPABLE - SEV_LIVE_MIGRATABLE - SEV_SNP_CAPABLE -
+      SEV_LIVE_MIGRATABLE_V2 - IDPF - TDX_CAPABLE For more information, see Enabling guest operating
+      system features.
     type: string
     enum:
     - FEATURE_TYPE_UNSPECIFIED
@@ -46,3 +47,4 @@ properties:
     - SEV_SNP_CAPABLE
     - SEV_LIVE_MIGRATABLE_V2
     - IDPF
+    - TDX_CAPABLE

@@ -63,6 +63,15 @@ def ParseRuntimeOperation(operation_name):
   )
 
 
+def GetRuntimeUri(resource):
+  """Transform a runtime resource into a URL."""
+  runtime = resources.REGISTRY.ParseRelativeName(
+      relative_name=resource.name,
+      collection='aiplatform.projects.locations.notebookRuntimes',
+  )
+  return runtime.SelfLink()
+
+
 def GetLabelsFromArgs(args, messages):
   """Constructs the labels from command line args.
 
@@ -100,6 +109,19 @@ def GetRuntimeUserFromArgsOrProperties(args):
     return args.runtime_user
   else:
     return properties.VALUES.core.account.Get()
+
+
+def GetRuntimeResourceName(args):
+  """Get the resource name for the notebook runtime.
+
+  Args:
+    args: Argparse object from Command.Run
+
+  Returns:
+    The resource name in the form
+    projects/{project}/locations/{location}/notebookRuntimes/{runtime_id}.
+  """
+  return args.CONCEPTS.runtime.Parse().RelativeName()
 
 
 def CreateRuntimeMessage(args, messages):
@@ -142,4 +164,86 @@ def CreateRuntimeAssignRequestMessage(args, messages):
           notebookRuntimeTemplate=args.CONCEPTS.runtime_template.Parse().RelativeName(),
       ),
       parent=parent,
+  )
+
+
+def CreateRuntimeGetRequestMessage(args, messages):
+  """Builds a GetNotebookRuntimeRequest message.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the specified API.
+
+  Returns:
+    Instance of the GetNotebookRuntimeRequest message.
+  """
+
+  return messages.AiplatformProjectsLocationsNotebookRuntimesGetRequest(
+      name=GetRuntimeResourceName(args),
+  )
+
+
+def CreateRuntimeListRequestMessage(args, messages):
+  """Builds a ListNotebookRuntimeRequest message.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the specified API.
+
+  Returns:
+    Instance of the ListNotebookRuntimeRequest message.
+  """
+
+  return messages.AiplatformProjectsLocationsNotebookRuntimesListRequest(
+      parent=GetParentForRuntime(args),
+  )
+
+
+def CreateRuntimeDeleteRequestMessage(args, messages):
+  """Builds a DeleteNotebookRuntimeRequest message.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the specified API.
+
+  Returns:
+    Instance of the DeleteNotebookRuntimeRequest message.
+  """
+
+  return messages.AiplatformProjectsLocationsNotebookRuntimesDeleteRequest(
+      name=GetRuntimeResourceName(args),
+  )
+
+
+def CreateRuntimeUpgradeRequestMessage(args, messages):
+  """Builds a UpgradeNotebookRuntimeRequest message.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the specified API.
+
+  Returns:
+    Instance of the UpgradeNotebookRuntimeRequest message.
+  """
+
+  return messages.AiplatformProjectsLocationsNotebookRuntimesUpgradeRequest(
+      googleCloudAiplatformV1beta1UpgradeNotebookRuntimeRequest=messages.GoogleCloudAiplatformV1beta1UpgradeNotebookRuntimeRequest(),
+      name=GetRuntimeResourceName(args),
+  )
+
+
+def CreateRuntimeStartRequestMessage(args, messages):
+  """Builds a StartNotebookRuntimeRequest message.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the specified API.
+
+  Returns:
+    Instance of the StartNotebookRuntimeRequest message.
+  """
+
+  return messages.AiplatformProjectsLocationsNotebookRuntimesStartRequest(
+      googleCloudAiplatformV1beta1StartNotebookRuntimeRequest=messages.GoogleCloudAiplatformV1beta1StartNotebookRuntimeRequest(),
+      name=GetRuntimeResourceName(args),
   )

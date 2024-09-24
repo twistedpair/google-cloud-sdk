@@ -65,7 +65,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists the long term and automatic backups of an Autonomous Database.
+      r"""Lists the long-term and automatic backups of an Autonomous Database.
 
       Args:
         request: (OracledatabaseProjectsLocationsAutonomousDatabaseBackupsListRequest) input message
@@ -220,7 +220,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
     )
 
     def GenerateWallet(self, request, global_params=None):
-      r"""Generates a wallet for a single Autonomous Database.
+      r"""Generates a wallet for an Autonomous Database.
 
       Args:
         request: (OracledatabaseProjectsLocationsAutonomousDatabasesGenerateWalletRequest) input message
@@ -338,7 +338,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets the details of a single Autonomous Database version.
+      r"""Gets the details of an Autonomous Database version.
 
       Args:
         request: (OracledatabaseProjectsLocationsAutonomousDbVersionsGetRequest) input message
@@ -402,7 +402,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single database server.
+      r"""Gets details of an Exadata Infrastructure's database server.
 
       Args:
         request: (OracledatabaseProjectsLocationsCloudExadataInfrastructuresDbServersGetRequest) input message
@@ -611,7 +611,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single database node.
+      r"""Gets information about the specified database node.
 
       Args:
         request: (OracledatabaseProjectsLocationsCloudVmClustersDbNodesGetRequest) input message

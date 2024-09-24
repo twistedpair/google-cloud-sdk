@@ -259,6 +259,7 @@ def RunBakImportCommand(args, client):
       args.cert_path,
       args.pvk_path,
       args.pvk_password,
+      args.keep_encrypted,
       args.striped,
       args.no_recovery,
       args.recovery_only,

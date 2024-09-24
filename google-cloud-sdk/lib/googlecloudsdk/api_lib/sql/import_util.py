@@ -144,6 +144,7 @@ def BakImportContext(
     cert_path,
     pvk_path,
     pvk_password,
+    keep_encrypted,
     striped,
     no_recovery,
     recovery_only,
@@ -163,6 +164,7 @@ def BakImportContext(
       `--pvk-path` flag.
     pvk_password: The private key password used for encrypted .bak; the output
       of the `--pvk-password` or `--prompt-for-pvk-password` flag.
+    keep_encrypted: Whether or not to decrypt the imported encrypted BAK file.
     striped: Whether or not the import is striped.
     no_recovery: Whether the import executes with NORECOVERY keyword.
     recovery_only: Whether the import skip download and bring database online.
@@ -178,7 +180,12 @@ def BakImportContext(
     bak_import_options = sql_messages.ImportContext.BakImportOptionsValue(
         encryptionOptions=sql_messages.ImportContext.BakImportOptionsValue
         .EncryptionOptionsValue(
-            certPath=cert_path, pvkPath=pvk_path, pvkPassword=pvk_password))
+            certPath=cert_path,
+            pvkPath=pvk_path,
+            pvkPassword=pvk_password,
+        ))
+    if keep_encrypted:
+      bak_import_options.encryptionOptions.keepEncrypted = keep_encrypted
   else:
     bak_import_options = sql_messages.ImportContext.BakImportOptionsValue()
 

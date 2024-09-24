@@ -68,18 +68,21 @@ class AppOperatorBinding:
     # The principal in the IAM format, e.g., "user:person@google.com".
     self.principal = principal
     # Overall role can be "view", "edit", or "admin" if the IAM and RBAC roles
-    # are consistent. Otherwise, it will be "custom".
+    # are known and consistent. If inconsistent, it will be "custom". Otherwise,
+    # it will be "unknown".
     self.overall_role = overall_role
-    # Scope RBAC role, if known, can be "view", "edit", or "admin".
+    # Scope RBAC role can be "view", "edit", "admin", "not found", or
+    # "permission denied".
     self.scope_rrb_role = scope_rrb_role
-    # Scope-level IAM role, if known, can be "roles/gkehub.scopeViewer",
-    # "roles/gkehub.scopeEditor", or "roles/gkehub.scopeAdmin".
+    # Scope-level IAM role can be "roles/gkehub.scopeViewer",
+    # "roles/gkehub.scopeEditor", "roles/gkehub.scopeAdmin", "not found", or
+    # "permission denied".
     self.scope_iam_role = scope_iam_role
-    # Project-level IAM role, if known, can be
-    # "roles/gkehub.scopeViewerProjectLevel", or
-    # "roles/gkehub.scopeEditorProjectLevel".
+    # Project-level IAM role can be "roles/gkehub.scopeViewerProjectLevel",
+    # "roles/gkehub.scopeEditorProjectLevel", "not found", or
+    # "permission denied".
     self.project_iam_role = project_iam_role
-    # Log view access can be True or False.
+    # Log view access can be "granted", "not found", or "permission denied".
     self.log_view_access = log_view_access
 
 

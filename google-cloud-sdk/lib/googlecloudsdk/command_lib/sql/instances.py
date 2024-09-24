@@ -732,6 +732,9 @@ class _BaseInstances(object):
       settings.advancedMachineFeatures = sql_messages.AdvancedMachineFeatures()
       settings.advancedMachineFeatures.threadsPerCore = args.threads_per_core
 
+    if args.time_zone is not None:
+      settings.timeZone = args.time_zone
+
     # BETA args.
     if IsBetaOrNewer(release_track):
       labels_diff = labels_util.ExplicitNullificationDiff.FromUpdateArgs(args)
@@ -764,11 +767,6 @@ class _BaseInstances(object):
         if not settings.ipConfiguration.pscConfig:
           settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
         settings.ipConfiguration.pscConfig.pscAutoConnections = []
-
-    # ALPHA args.
-    if _IsAlpha(release_track):
-      if args.time_zone is not None:
-        settings.timeZone = args.time_zone
 
     return settings
 

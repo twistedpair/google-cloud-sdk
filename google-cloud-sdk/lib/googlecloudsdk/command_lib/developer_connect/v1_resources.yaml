@@ -72,6 +72,31 @@ project_location_connection:
     attribute_name: connection
     help: The connection id of the {resource} resource.
   disable_auto_completers: false
+project_location_key_ring:
+  name: keyRing
+  plural_name: keyRings
+  collection: developerconnect.projects.locations.keyRings
+  attributes:
+  - *project
+  - *location
+  - &keyRing
+    parameter_name: keyRingsId
+    attribute_name: key_ring
+    help: The keyRing id of the {resource} resource.
+  disable_auto_completers: true
+project_location_key_ring_crypto_key:
+  name: cryptoKey
+  plural_name: cryptoKeys
+  collection: developerconnect.projects.locations.keyRings.cryptoKeys
+  attributes:
+  - *project
+  - *location
+  - *keyRing
+  - &cryptoKey
+    parameter_name: cryptoKeysId
+    attribute_name: crypto_key
+    help: The cryptoKey id of the {resource} resource.
+  disable_auto_completers: true
 project_location_connection_git_repository_link:
   name: gitRepositoryLink
   plural_name: gitRepositoryLinks

@@ -30,6 +30,8 @@ class Connection(_messages.Message):
     annotations: Optional. Allows clients to store small amounts of arbitrary
       data.
     createTime: Output only. [Output only] Create timestamp
+    cryptoKeyConfig: Optional. The crypto key configuration. This field is
+      used by the Customer-Managed Encryption Keys (CMEK) feature.
     deleteTime: Output only. [Output only] Delete timestamp
     disabled: Optional. If disabled is set to true, functionality is disabled
       for this connection. Repository based API methods and webhooks
@@ -105,19 +107,33 @@ class Connection(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   createTime = _messages.StringField(2)
-  deleteTime = _messages.StringField(3)
-  disabled = _messages.BooleanField(4)
-  etag = _messages.StringField(5)
-  githubConfig = _messages.MessageField('GitHubConfig', 6)
-  githubEnterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 7)
-  gitlabConfig = _messages.MessageField('GitLabConfig', 8)
-  gitlabEnterpriseConfig = _messages.MessageField('GitLabEnterpriseConfig', 9)
-  installationState = _messages.MessageField('InstallationState', 10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  name = _messages.StringField(12)
-  reconciling = _messages.BooleanField(13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  cryptoKeyConfig = _messages.MessageField('CryptoKeyConfig', 3)
+  deleteTime = _messages.StringField(4)
+  disabled = _messages.BooleanField(5)
+  etag = _messages.StringField(6)
+  githubConfig = _messages.MessageField('GitHubConfig', 7)
+  githubEnterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 8)
+  gitlabConfig = _messages.MessageField('GitLabConfig', 9)
+  gitlabEnterpriseConfig = _messages.MessageField('GitLabEnterpriseConfig', 10)
+  installationState = _messages.MessageField('InstallationState', 11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  name = _messages.StringField(13)
+  reconciling = _messages.BooleanField(14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
+
+
+class CryptoKeyConfig(_messages.Message):
+  r"""The crypto key configuration. This field is used by the Customer-managed
+  encryption keys (CMEK) feature.
+
+  Fields:
+    keyReference: Required. The name of the key which is used to
+      encrypt/decrypt customer data. For key in Cloud KMS, the key should be
+      in the format of `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
+  """
+
+  keyReference = _messages.StringField(1)
 
 
 class DeveloperconnectProjectsLocationsConnectionsCreateRequest(_messages.Message):
@@ -427,8 +443,8 @@ class DeveloperconnectProjectsLocationsConnectionsPatchRequest(_messages.Message
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the Connection resource by the update. The fields
+    updateMask: Optional. Required. Field mask is used to specify the fields
+      to be overwritten in the Connection resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the user
       does not provide a mask then all fields will be overwritten.

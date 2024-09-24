@@ -541,6 +541,56 @@ If you want to enable all scopes use the 'cloud-platform' scope.
       '--secondary-worker-boot-disk-type', help=boot_disk_type_detailed_help
   )
 
+  boot_disk_provisioned_iops_detailed_help = """\
+      Indicates how many IOPS to provision for the disk. This sets the number
+      of I/O operations per second that the disk can handle. Note that, this is
+      only supported if the bootdisk type is hyperdisk-balanced.
+      """
+
+  parser.add_argument(
+      '--master-boot-disk-provisioned-iops',
+      help=boot_disk_provisioned_iops_detailed_help,
+      type=int,
+      hidden=True,
+  )
+  parser.add_argument(
+      '--worker-boot-disk-provisioned-iops',
+      help=boot_disk_provisioned_iops_detailed_help,
+      type=int,
+      hidden=True,
+  )
+  parser.add_argument(
+      '--secondary-worker-boot-disk-provisioned-iops',
+      help=boot_disk_provisioned_iops_detailed_help,
+      type=int,
+      hidden=True,
+  )
+
+  boot_disk_provisioned_throughput_detailed_help = """\
+      Indicates how much throughput to provision for the disk. This sets the
+      number of throughput mb per second that the disk can handle. Note that,
+      this is only supported if the bootdisk type is hyperdisk-balanced.
+      """
+
+  parser.add_argument(
+      '--master-boot-disk-provisioned-throughput',
+      help=boot_disk_provisioned_throughput_detailed_help,
+      type=int,
+      hidden=True,
+  )
+  parser.add_argument(
+      '--worker-boot-disk-provisioned-throughput',
+      help=boot_disk_provisioned_throughput_detailed_help,
+      type=int,
+      hidden=True,
+  )
+  parser.add_argument(
+      '--secondary-worker-boot-disk-provisioned-throughput',
+      help=boot_disk_provisioned_throughput_detailed_help,
+      type=int,
+      hidden=True,
+  )
+
   if include_driver_pool_args:
     flags.AddDriverPoolId(parser)
     parser.add_argument(
@@ -1254,6 +1304,9 @@ def GetClusterConfig(
               master_boot_disk_size_gb,
               args.num_master_local_ssds,
               args.master_local_ssd_interface,
+              'Master',
+              args.master_boot_disk_provisioned_iops,
+              args.master_boot_disk_provisioned_throughput,
           ),
           minCpuPlatform=args.master_min_cpu_platform,
           instanceFlexibilityPolicy=GetInstanceFlexibilityPolicy(
@@ -1272,6 +1325,9 @@ def GetClusterConfig(
               worker_boot_disk_size_gb,
               args.num_worker_local_ssds,
               args.worker_local_ssd_interface,
+              'Worker',
+              args.worker_boot_disk_provisioned_iops,
+              args.worker_boot_disk_provisioned_throughput,
           ),
           minCpuPlatform=args.worker_min_cpu_platform,
           instanceFlexibilityPolicy=GetInstanceFlexibilityPolicy(
@@ -1467,6 +1523,9 @@ def GetClusterConfig(
                 secondary_worker_boot_disk_size_gb,
                 num_secondary_worker_local_ssds,
                 args.secondary_worker_local_ssd_interface,
+                'Secondary worker',
+                args.secondary_worker_boot_disk_provisioned_iops,
+                args.secondary_worker_boot_disk_provisioned_throughput,
             ),
             minCpuPlatform=args.worker_min_cpu_platform,
             preemptibility=_GetInstanceGroupPreemptibility(
@@ -1500,6 +1559,7 @@ def GetClusterConfig(
                             driver_pool_boot_disk_size_gb,
                             args.num_driver_pool_local_ssds,
                             args.driver_pool_local_ssd_interface,
+                            'Driver pool',
                         ),
                         minCpuPlatform=args.driver_pool_min_cpu_platform,
                     ),
@@ -1686,6 +1746,9 @@ def GetDiskConfig(
     boot_disk_size,
     num_local_ssds,
     local_ssd_interface,
+    node_type,
+    boot_disk_provisioned_iops=None,
+    boot_disk_provisioned_throughput=None,
 ):
   """Get dataproc cluster disk configuration.
 
@@ -1695,14 +1758,50 @@ def GetDiskConfig(
     boot_disk_size: Size of the boot disk
     num_local_ssds: Number of the Local SSDs
     local_ssd_interface: Interface used to attach local SSDs
+    node_type: Type of the dataproc node. One of Master, Worker, Secondary
+      worker, Driver pool
+    boot_disk_provisioned_iops: Provisioned IOPS of the boot disk
+    boot_disk_provisioned_throughput: Provisioned throughput of the boot disk
 
   Returns:
     disk_config: Dataproc cluster disk configuration
+  Raises:
+    exceptions.ArgumentError: If boot_disk_provisioned_iops or
+      boot_disk_provisioned_throughput is specified with boot_disk_type other
+      than hyperdisk-balanced or if the value is not positive.
   """
+
+  if boot_disk_provisioned_iops is not None:
+    if boot_disk_type is not None and boot_disk_type != 'hyperdisk-balanced':
+      raise exceptions.ArgumentError(
+          f'{node_type} bootdisk IOPS can be specified only with bootdisk type'
+          f' hyperdisk-balanced, provided {boot_disk_type}.'
+      )
+
+    if boot_disk_provisioned_iops <= 0:
+      raise exceptions.ArgumentError(
+          f'{node_type} bootdisk IOPS must be positive, provided'
+          f' {boot_disk_provisioned_iops}.'
+      )
+
+  if boot_disk_provisioned_throughput is not None:
+    if boot_disk_type is not None and boot_disk_type != 'hyperdisk-balanced':
+      raise exceptions.ArgumentError(
+          f'{node_type} bootdisk throughput can be specified only with bootdisk'
+          f' type hyperdisk-balanced, provided {boot_disk_type}.'
+      )
+
+    if boot_disk_provisioned_throughput <= 0:
+      raise exceptions.ArgumentError(
+          f'{node_type} bootdisk throughput must be positive, provided'
+          f' {boot_disk_provisioned_throughput}.'
+      )
 
   return dataproc.messages.DiskConfig(
       bootDiskType=boot_disk_type,
       bootDiskSizeGb=boot_disk_size,
+      bootDiskProvisionedIops=boot_disk_provisioned_iops,
+      bootDiskProvisionedThroughput=boot_disk_provisioned_throughput,
       numLocalSsds=num_local_ssds,
       localSsdInterface=local_ssd_interface,
   )
