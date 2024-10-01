@@ -453,6 +453,63 @@ class ForwardingRule(IapIamResource):
         collection=IAP_WEB_SERVICES_COLLECTION)
 
 
+CLOUD_RUN = 'cloud_run'
+
+
+class CloudRuns(IapIamResource):
+  """IAP IAM cloud runs resource.
+  """
+
+  def __init__(self, release_track, project, region_id):
+    super(CloudRuns, self).__init__(release_track, project)
+    self.region_id = region_id
+
+  def _Name(self):
+    return 'cloud runs'
+
+  def _IapWebId(self):
+    return '%s-%s' % (CLOUD_RUN, self.region_id)
+
+  def _Parse(self):
+    project = _GetProject(self.project)
+    iap_web_id = self._IapWebId()
+    return self.registry.Parse(
+        None,
+        params={
+            'project': project.projectNumber,
+            'iapWebId': iap_web_id,
+        },
+        collection=IAP_WEB_COLLECTION)
+
+
+class CloudRun(IapIamResource):
+  """IAP IAM cloud run resource.
+  """
+
+  def __init__(self, release_track, project, region_id, service_id):
+    super(CloudRun, self).__init__(release_track, project)
+    self.region_id = region_id
+    self.service_id = service_id
+
+  def _Name(self):
+    return 'cloud run'
+
+  def _IapWebId(self):
+    return '%s-%s' % (CLOUD_RUN, self.region_id)
+
+  def _Parse(self):
+    project = _GetProject(self.project)
+    iap_web_id = self._IapWebId()
+    return self.registry.Parse(
+        None,
+        params={
+            'project': project.projectNumber,
+            'iapWebId': iap_web_id,
+            'serviceId': self.service_id,
+        },
+        collection=IAP_WEB_SERVICES_COLLECTION)
+
+
 def _MakeIAPKwargs(is_backend_service, existing_iap_settings, enabled,
                    oauth2_client_id, oauth2_client_secret):
   """Make IAP kwargs for IAP settings.

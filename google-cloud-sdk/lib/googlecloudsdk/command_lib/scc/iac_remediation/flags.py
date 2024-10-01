@@ -49,3 +49,16 @@ TFSTATE_FILE_PATHS_LIST_FLAG = base.Argument(
     type=arg_parsers.ArgList(),
     required=False,
 )
+
+GIT_CONFIG_FILE_PATH_FLAG = base.Argument(
+    '--git-config-path',
+    help=""" Path to the git config file in YAML format to raise the PR.
+            Format: /path/to/file.yaml. Sample Config file:\n
+              remote: origin
+              main-branch-name: master
+              branch-prefix: iac-remediation-
+            """,
+    metavar='GIT_SETTINGS',
+    type=arg_parsers.YAMLFileContents(),
+    required=True,
+)

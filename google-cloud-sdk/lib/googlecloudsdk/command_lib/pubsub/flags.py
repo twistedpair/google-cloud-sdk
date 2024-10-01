@@ -259,7 +259,7 @@ def AddPushConfigFlags(
 
   current_group = parser
   if not is_modify_push_config_request:
-    # Dont create an outer group if this is an ModifyPushConfigRequest
+    # Don't create an outer group if this is a ModifyPushConfigRequest
     current_group = parser.add_group(
         mutex=False,
         help='Push Config Options. Configuration for a push delivery endpoint.'
@@ -349,13 +349,15 @@ def AddSubscriptionMessageRetentionFlags(parser, is_update):
     retention_parser = ParseSubscriptionRetentionDurationWithDefault
     retention_default_help = (
         'Specify "default" to use the default value of 7 days. The minimum is'
-        ' 10 minutes, and the maximum is 7 days.'
+        ' 10 minutes, and the maximum is 31 days.'
     )
   else:
-    retention_parser = arg_parsers.Duration(lower_bound='10m', upper_bound='7d')
+    retention_parser = arg_parsers.Duration(
+        lower_bound='10m', upper_bound='31d'
+    )
     retention_default_help = (
         'The default value is 7 days, the minimum is '
-        '10 minutes, and the maximum is 7 days.'
+        '10 minutes, and the maximum is 31 days.'
     )
 
   retention_parser = retention_parser or arg_parsers.Duration()
@@ -561,15 +563,23 @@ def AddCloudStorageConfigFlags(parser, is_update):
   cloud_storage_config_group.add_argument(
       '--cloud-storage-max-bytes',
       type=arg_parsers.BinarySize(
-          lower_bound='1KB',
+          lower_bound='1000B',
           upper_bound='10GB',
           default_unit='KB',
-          suggested_binary_size_scales=['KB', 'KiB', 'MB', 'MiB', 'GB', 'GiB'],
+          suggested_binary_size_scales=[
+              'B',
+              'KB',
+              'KiB',
+              'MB',
+              'MiB',
+              'GB',
+              'GiB',
+          ],
       ),
       default=None,
       help=(
           ' The maximum bytes that can be written to a Cloud Storage file'
-          ' before a new file is created. The value must be between 1KB to'
+          ' before a new file is created. The value must be between 1000B and'
           ' 10GB. If the unit is omitted, KB is assumed.'
       ),
   )
@@ -700,7 +710,7 @@ def ParseSubscriptionRetentionDurationWithDefault(value):
   if value == subscriptions.DEFAULT_MESSAGE_RETENTION_VALUE:
     return value
   return util.FormatDuration(
-      arg_parsers.Duration(lower_bound='10m', upper_bound='7d')(value)
+      arg_parsers.Duration(lower_bound='10m', upper_bound='31d')(value)
   )
 
 
@@ -1079,7 +1089,14 @@ def AddIngestionDatasourceFlags(
     )
     cloud_storage_group.add_argument(
         '--cloud-storage-ingestion-input-format',
+        type=arg_parsers.ArgList(
+            element_type=lambda x: str(x).lower(),
+            min_length=1,
+            max_length=1,
+            choices=['text', 'avro', 'pubsub_avro'],
+        ),
         default=None,
+        metavar='INPUT_FORMAT',
         help=(
             "The format of the data in the Cloud Storage bucket ('text',"
             " 'avro', 'pubsub_avro')."
@@ -1089,7 +1106,7 @@ def AddIngestionDatasourceFlags(
     cloud_storage_group.add_argument(
         '--cloud-storage-ingestion-text-delimiter',
         default=None,
-        help='Delimiter to use with text format when partioning the object.',
+        help='Delimiter to use with text format when partitioning the object.',
         required=False,
     )
     cloud_storage_group.add_argument(

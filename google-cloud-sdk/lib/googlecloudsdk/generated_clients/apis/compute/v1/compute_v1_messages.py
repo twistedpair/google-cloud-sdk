@@ -6241,8 +6241,8 @@ class BulkInsertInstanceResource(_messages.Message):
     count: The maximum number of instances to create.
     instanceProperties: The instance properties defining the VM instances to
       be created. Required if sourceInstanceTemplate is not provided.
-    locationPolicy: Policy for chosing target zone. For more information, see
-      Create VMs in bulk .
+    locationPolicy: Policy for choosing target zone. For more information, see
+      Create VMs in bulk.
     minCount: The minimum number of instances to create. If no min_count is
       specified then count is used as the default value. If min_count
       instances cannot be created, then no instances will be created and
@@ -6489,6 +6489,10 @@ class Commitment(_messages.Message):
       commitments should have a Type specified.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
+    customEndTimestamp: [Input Only] Optional, specifies the CUD end time
+      requested by the customer in RFC3339 text format. Needed when the
+      customer wants CUD's end date is later than the start date + term
+      duration.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     endTimestamp: [Output Only] Commitment end time in RFC3339 text format.
@@ -6519,6 +6523,7 @@ class Commitment(_messages.Message):
       THIRTY_SIX_MONTH (3 years).
     region: [Output Only] URL of the region where this commitment may be used.
     reservations: List of create-on-create reservations for this commitment.
+    resourceStatus: [Output Only] Status information for Commitment resource.
     resources: A list of commitment amounts for particular resources. Note
       that VCPU and MEMORY resource commitments must occur together.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -6640,24 +6645,26 @@ class Commitment(_messages.Message):
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
   creationTimestamp = _messages.StringField(3)
-  description = _messages.StringField(4)
-  endTimestamp = _messages.StringField(5)
-  existingReservations = _messages.StringField(6, repeated=True)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(8, default='compute#commitment')
-  licenseResource = _messages.MessageField('LicenseResourceCommitment', 9)
-  mergeSourceCommitments = _messages.StringField(10, repeated=True)
-  name = _messages.StringField(11)
-  plan = _messages.EnumField('PlanValueValuesEnum', 12)
-  region = _messages.StringField(13)
-  reservations = _messages.MessageField('Reservation', 14, repeated=True)
-  resources = _messages.MessageField('ResourceCommitment', 15, repeated=True)
-  selfLink = _messages.StringField(16)
-  splitSourceCommitment = _messages.StringField(17)
-  startTimestamp = _messages.StringField(18)
-  status = _messages.EnumField('StatusValueValuesEnum', 19)
-  statusMessage = _messages.StringField(20)
-  type = _messages.EnumField('TypeValueValuesEnum', 21)
+  customEndTimestamp = _messages.StringField(4)
+  description = _messages.StringField(5)
+  endTimestamp = _messages.StringField(6)
+  existingReservations = _messages.StringField(7, repeated=True)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(9, default='compute#commitment')
+  licenseResource = _messages.MessageField('LicenseResourceCommitment', 10)
+  mergeSourceCommitments = _messages.StringField(11, repeated=True)
+  name = _messages.StringField(12)
+  plan = _messages.EnumField('PlanValueValuesEnum', 13)
+  region = _messages.StringField(14)
+  reservations = _messages.MessageField('Reservation', 15, repeated=True)
+  resourceStatus = _messages.MessageField('CommitmentResourceStatus', 16)
+  resources = _messages.MessageField('ResourceCommitment', 17, repeated=True)
+  selfLink = _messages.StringField(18)
+  splitSourceCommitment = _messages.StringField(19)
+  startTimestamp = _messages.StringField(20)
+  status = _messages.EnumField('StatusValueValuesEnum', 21)
+  statusMessage = _messages.StringField(22)
+  type = _messages.EnumField('TypeValueValuesEnum', 23)
 
 
 class CommitmentAggregatedList(_messages.Message):
@@ -7012,6 +7019,19 @@ class CommitmentList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class CommitmentResourceStatus(_messages.Message):
+  r"""[Output Only] Contains output only fields.
+
+  Fields:
+    customTermEligibilityEndTimestamp: [Output Only] Indicates the end time of
+      customer's eligibility to send custom term requests in RFC3339 text
+      format. Term extension requests that (not the end time in the request)
+      after this time will be rejected.
+  """
+
+  customTermEligibilityEndTimestamp = _messages.StringField(1)
 
 
 class CommitmentsScopedList(_messages.Message):
@@ -10424,283 +10444,6 @@ class ComputeForwardingRulesSetTargetRequest(_messages.Message):
   region = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
   targetReference = _messages.MessageField('TargetReference', 5)
-
-
-class ComputeFutureReservationsAggregatedListRequest(_messages.Message):
-  r"""A ComputeFutureReservationsAggregatedListRequest object.
-
-  Fields:
-    filter: A filter expression that filters resources listed in the response.
-      Most Compute resources support two types of filter expressions:
-      expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. These two types of filter expressions
-      cannot be mixed in one request. If you want to use AIP-160, your
-      expression must specify the field name, an operator, and the value that
-      you want to use for filtering. The value must be a string, a number, or
-      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
-      or `:`. For example, if you are filtering Compute Engine instances, you
-      can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:*` comparison can be used to test whether a key
-      has been defined. For example, to find all objects with `owner` label
-      use: ``` labels.owner:* ``` You can also filter nested fields. For
-      example, you could specify `scheduling.automaticRestart = false` to
-      include instances only if they are not scheduled for automatic restarts.
-      You can use filtering on nested fields to filter based on resource
-      labels. To filter on multiple expressions, provide each separate
-      expression within parentheses. For example: ```
-      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
-      By default, each expression is an `AND` expression. However, you can
-      include `AND` and `OR` expressions explicitly. For example: ```
-      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
-      (scheduling.automaticRestart = true) ``` If you want to use a regular
-      expression, use the `eq` (equal) or `ne` (not equal) operator against a
-      single un-parenthesized expression with or without quotes or against
-      multiple parenthesized expressions. Examples: `fieldname eq unquoted
-      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
-      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
-      literal value is interpreted as a regular expression using Google RE2
-      library syntax. The literal value must match the entire field. For
-      example, to filter for instances that do not end with name "instance",
-      you would use `name ne .*instance`. You cannot combine constraints on
-      multiple fields using regular expressions.
-    includeAllScopes: Indicates whether every visible scope for each scope
-      type (zone, region, global) should be included in the response. For new
-      resource types added after this field, the flag has no effect as new
-      resource types will always include every visible scope for each scope
-      type in response. For resource types which predate this field, if this
-      flag is omitted or false, only scopes of the scope types where the
-      resource type is expected to be found will be included.
-    maxResults: The maximum number of results per page that should be
-      returned. If the number of available results is larger than
-      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
-      to get the next page of results in subsequent list requests. Acceptable
-      values are `0` to `500`, inclusive. (Default: `500`)
-    orderBy: Sorts list results by a certain order. By default, results are
-      returned in alphanumerical order based on the resource name. You can
-      also sort results in descending order based on the creation timestamp
-      using `orderBy="creationTimestamp desc"`. This sorts results based on
-      the `creationTimestamp` field in reverse chronological order (newest
-      result first). Use this to sort resources like operations so that the
-      newest operation is returned first. Currently, only sorting by `name` or
-      `creationTimestamp desc` is supported.
-    pageToken: Specifies a page token to use. Set `pageToken` to the
-      `nextPageToken` returned by a previous list request to get the next page
-      of results.
-    project: Project ID for this request.
-    returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false. For
-      example, when partial success behavior is enabled, aggregatedList for a
-      single zone scope either returns all resources in the zone or no
-      resources, with an error code.
-    serviceProjectNumber: The Shared VPC service project id or service project
-      number for which aggregated list request is invoked for subnetworks
-      list-usable api.
-  """
-
-  filter = _messages.StringField(1)
-  includeAllScopes = _messages.BooleanField(2)
-  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(4)
-  pageToken = _messages.StringField(5)
-  project = _messages.StringField(6, required=True)
-  returnPartialSuccess = _messages.BooleanField(7)
-  serviceProjectNumber = _messages.IntegerField(8)
-
-
-class ComputeFutureReservationsCancelRequest(_messages.Message):
-  r"""A ComputeFutureReservationsCancelRequest object.
-
-  Fields:
-    futureReservation: Name of the future reservation to retrieve. Name should
-      conform to RFC1035.
-    project: Project ID for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000).
-    zone: Name of the zone for this request. Name should conform to RFC1035.
-  """
-
-  futureReservation = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  zone = _messages.StringField(4, required=True)
-
-
-class ComputeFutureReservationsDeleteRequest(_messages.Message):
-  r"""A ComputeFutureReservationsDeleteRequest object.
-
-  Fields:
-    futureReservation: Name of the future reservation to retrieve. Name should
-      conform to RFC1035.
-    project: Project ID for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000).
-    zone: Name of the zone for this request. Name should conform to RFC1035.
-  """
-
-  futureReservation = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  zone = _messages.StringField(4, required=True)
-
-
-class ComputeFutureReservationsGetRequest(_messages.Message):
-  r"""A ComputeFutureReservationsGetRequest object.
-
-  Fields:
-    futureReservation: Name of the future reservation to retrieve. Name should
-      conform to RFC1035.
-    project: Project ID for this request.
-    zone: Name of the zone for this request. Name should conform to RFC1035.
-  """
-
-  futureReservation = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
-
-
-class ComputeFutureReservationsInsertRequest(_messages.Message):
-  r"""A ComputeFutureReservationsInsertRequest object.
-
-  Fields:
-    futureReservation: A FutureReservation resource to be passed as the
-      request body.
-    project: Project ID for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000).
-    zone: Name of the zone for this request. Name should conform to RFC1035.
-  """
-
-  futureReservation = _messages.MessageField('FutureReservation', 1)
-  project = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  zone = _messages.StringField(4, required=True)
-
-
-class ComputeFutureReservationsListRequest(_messages.Message):
-  r"""A ComputeFutureReservationsListRequest object.
-
-  Fields:
-    filter: A filter expression that filters resources listed in the response.
-      Most Compute resources support two types of filter expressions:
-      expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. These two types of filter expressions
-      cannot be mixed in one request. If you want to use AIP-160, your
-      expression must specify the field name, an operator, and the value that
-      you want to use for filtering. The value must be a string, a number, or
-      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
-      or `:`. For example, if you are filtering Compute Engine instances, you
-      can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:*` comparison can be used to test whether a key
-      has been defined. For example, to find all objects with `owner` label
-      use: ``` labels.owner:* ``` You can also filter nested fields. For
-      example, you could specify `scheduling.automaticRestart = false` to
-      include instances only if they are not scheduled for automatic restarts.
-      You can use filtering on nested fields to filter based on resource
-      labels. To filter on multiple expressions, provide each separate
-      expression within parentheses. For example: ```
-      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
-      By default, each expression is an `AND` expression. However, you can
-      include `AND` and `OR` expressions explicitly. For example: ```
-      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
-      (scheduling.automaticRestart = true) ``` If you want to use a regular
-      expression, use the `eq` (equal) or `ne` (not equal) operator against a
-      single un-parenthesized expression with or without quotes or against
-      multiple parenthesized expressions. Examples: `fieldname eq unquoted
-      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
-      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
-      literal value is interpreted as a regular expression using Google RE2
-      library syntax. The literal value must match the entire field. For
-      example, to filter for instances that do not end with name "instance",
-      you would use `name ne .*instance`. You cannot combine constraints on
-      multiple fields using regular expressions.
-    maxResults: The maximum number of results per page that should be
-      returned. If the number of available results is larger than
-      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
-      to get the next page of results in subsequent list requests. Acceptable
-      values are `0` to `500`, inclusive. (Default: `500`)
-    orderBy: Sorts list results by a certain order. By default, results are
-      returned in alphanumerical order based on the resource name. You can
-      also sort results in descending order based on the creation timestamp
-      using `orderBy="creationTimestamp desc"`. This sorts results based on
-      the `creationTimestamp` field in reverse chronological order (newest
-      result first). Use this to sort resources like operations so that the
-      newest operation is returned first. Currently, only sorting by `name` or
-      `creationTimestamp desc` is supported.
-    pageToken: Specifies a page token to use. Set `pageToken` to the
-      `nextPageToken` returned by a previous list request to get the next page
-      of results.
-    project: Project ID for this request.
-    returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false. For
-      example, when partial success behavior is enabled, aggregatedList for a
-      single zone scope either returns all resources in the zone or no
-      resources, with an error code.
-    zone: Name of the zone for this request. Name should conform to RFC1035.
-  """
-
-  filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
-  returnPartialSuccess = _messages.BooleanField(6)
-  zone = _messages.StringField(7, required=True)
-
-
-class ComputeFutureReservationsUpdateRequest(_messages.Message):
-  r"""A ComputeFutureReservationsUpdateRequest object.
-
-  Fields:
-    futureReservation: Name of the reservation to update. Name should conform
-      to RFC1035.
-    futureReservationResource: A FutureReservation resource to be passed as
-      the request body.
-    project: Project ID for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000).
-    updateMask: update_mask indicates fields to be updated as part of this
-      request.
-    zone: Name of the zone for this request. Name should conform to RFC1035.
-  """
-
-  futureReservation = _messages.StringField(1, required=True)
-  futureReservationResource = _messages.MessageField('FutureReservation', 2)
-  project = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  updateMask = _messages.StringField(5)
-  zone = _messages.StringField(6, required=True)
 
 
 class ComputeGlobalAddressesDeleteRequest(_messages.Message):
@@ -37861,859 +37604,6 @@ class ForwardingRulesScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
-class FutureReservation(_messages.Message):
-  r"""A FutureReservation object.
-
-  Enums:
-    PlanningStatusValueValuesEnum: Planning state before being submitted for
-      evaluation
-
-  Fields:
-    autoCreatedReservationsDeleteTime: Future timestamp when the FR auto-
-      created reservations will be deleted by Compute Engine. Format of this
-      field must be a valid
-      href="https://www.ietf.org/rfc/rfc3339.txt">RFC3339 value.
-    autoCreatedReservationsDuration: Specifies the duration of auto-created
-      reservations. It represents relative time to future reservation
-      start_time when auto-created reservations will be automatically deleted
-      by Compute Engine. Duration time unit is represented as a count of
-      seconds and fractions of seconds at nanosecond resolution.
-    autoDeleteAutoCreatedReservations: Setting for enabling or disabling
-      automatic deletion for auto-created reservation. If set to true, auto-
-      created reservations will be deleted at Future Reservation's end time
-      (default) or at user's defined timestamp if any of the
-      [auto_created_reservations_delete_time,
-      auto_created_reservations_duration] values is specified. For keeping
-      auto-created reservation indefinitely, this value should be set to
-      false.
-    creationTimestamp: [Output Only] The creation timestamp for this future
-      reservation in RFC3339 text format.
-    description: An optional description of this resource. Provide this
-      property when you create the future reservation.
-    id: [Output Only] A unique identifier for this future reservation. The
-      server defines this identifier.
-    kind: [Output Only] Type of the resource. Always compute#futureReservation
-      for future reservations.
-    name: The name of the resource, provided by the client when initially
-      creating the resource. The resource name must be 1-63 characters long,
-      and comply with RFC1035. Specifically, the name must be 1-63 characters
-      long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
-      means the first character must be a lowercase letter, and all following
-      characters must be a dash, lowercase letter, or digit, except the last
-      character, which cannot be a dash.
-    namePrefix: Name prefix for the reservations to be created at the time of
-      delivery. The name prefix must comply with RFC1035. Maximum allowed
-      length for name prefix is 20. Automatically created reservations name
-      format will be -date-####.
-    planningStatus: Planning state before being submitted for evaluation
-    selfLink: [Output Only] Server-defined fully-qualified URL for this
-      resource.
-    selfLinkWithId: [Output Only] Server-defined URL for this resource with
-      the resource id.
-    shareSettings: List of Projects/Folders to share with.
-    specificSkuProperties: Future Reservation configuration to indicate
-      instance properties and total count.
-    status: [Output only] Status of the Future Reservation
-    timeWindow: Time window for this Future Reservation.
-    zone: [Output Only] URL of the Zone where this future reservation resides.
-  """
-
-  class PlanningStatusValueValuesEnum(_messages.Enum):
-    r"""Planning state before being submitted for evaluation
-
-    Values:
-      DRAFT: Future Reservation is being drafted.
-      PLANNING_STATUS_UNSPECIFIED: <no description>
-      SUBMITTED: Future Reservation has been submitted for evaluation by GCP.
-    """
-    DRAFT = 0
-    PLANNING_STATUS_UNSPECIFIED = 1
-    SUBMITTED = 2
-
-  autoCreatedReservationsDeleteTime = _messages.StringField(1)
-  autoCreatedReservationsDuration = _messages.MessageField('Duration', 2)
-  autoDeleteAutoCreatedReservations = _messages.BooleanField(3)
-  creationTimestamp = _messages.StringField(4)
-  description = _messages.StringField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default='compute#futureReservation')
-  name = _messages.StringField(8)
-  namePrefix = _messages.StringField(9)
-  planningStatus = _messages.EnumField('PlanningStatusValueValuesEnum', 10)
-  selfLink = _messages.StringField(11)
-  selfLinkWithId = _messages.StringField(12)
-  shareSettings = _messages.MessageField('ShareSettings', 13)
-  specificSkuProperties = _messages.MessageField('FutureReservationSpecificSKUProperties', 14)
-  status = _messages.MessageField('FutureReservationStatus', 15)
-  timeWindow = _messages.MessageField('FutureReservationTimeWindow', 16)
-  zone = _messages.StringField(17)
-
-
-class FutureReservationSpecificSKUProperties(_messages.Message):
-  r"""A FutureReservationSpecificSKUProperties object.
-
-  Fields:
-    instanceProperties: Properties of the SKU instances being reserved.
-    sourceInstanceTemplate: The instance template that will be used to
-      populate the ReservedInstanceProperties of the future reservation
-    totalCount: Total number of instances for which capacity assurance is
-      requested at a future time period.
-  """
-
-  instanceProperties = _messages.MessageField('AllocationSpecificSKUAllocationReservedInstanceProperties', 1)
-  sourceInstanceTemplate = _messages.StringField(2)
-  totalCount = _messages.IntegerField(3)
-
-
-class FutureReservationStatus(_messages.Message):
-  r"""[Output only] Represents status related to the future reservation.
-
-  Enums:
-    AmendmentStatusValueValuesEnum: [Output Only] The current status of the
-      requested amendment.
-    ProcurementStatusValueValuesEnum: Current state of this Future Reservation
-
-  Fields:
-    amendmentStatus: [Output Only] The current status of the requested
-      amendment.
-    autoCreatedReservations: Fully qualified urls of the automatically created
-      reservations at start_time.
-    existingMatchingUsageInfo: [Output Only] Represents the existing matching
-      usage for the future reservation.
-    fulfilledCount: This count indicates the fulfilled capacity so far. This
-      is set during "PROVISIONING" state. This count also includes capacity
-      delivered as part of existing matching reservations.
-    lastKnownGoodState: [Output Only] This field represents the future
-      reservation before an amendment was requested. If the amendment is
-      declined, the Future Reservation will be reverted to the last known good
-      state. The last known good state is not set when updating a future
-      reservation whose Procurement Status is DRAFTING.
-    lockTime: Time when Future Reservation would become LOCKED, after which no
-      modifications to Future Reservation will be allowed. Applicable only
-      after the Future Reservation is in the APPROVED state. The lock_time is
-      an RFC3339 string. The procurement_status will transition to PROCURING
-      state at this time.
-    procurementStatus: Current state of this Future Reservation
-    specificSkuProperties: A FutureReservationStatusSpecificSKUProperties
-      attribute.
-  """
-
-  class AmendmentStatusValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The current status of the requested amendment.
-
-    Values:
-      AMENDMENT_APPROVED: The requested amendment to the Future Resevation has
-        been approved and applied by GCP.
-      AMENDMENT_DECLINED: The requested amendment to the Future Reservation
-        has been declined by GCP and the original state was restored.
-      AMENDMENT_IN_REVIEW: The requested amendment to the Future Reservation
-        is currently being reviewd by GCP.
-      AMENDMENT_STATUS_UNSPECIFIED: <no description>
-    """
-    AMENDMENT_APPROVED = 0
-    AMENDMENT_DECLINED = 1
-    AMENDMENT_IN_REVIEW = 2
-    AMENDMENT_STATUS_UNSPECIFIED = 3
-
-  class ProcurementStatusValueValuesEnum(_messages.Enum):
-    r"""Current state of this Future Reservation
-
-    Values:
-      APPROVED: Future reservation is approved by GCP.
-      CANCELLED: Future reservation is cancelled by the customer.
-      COMMITTED: Future reservation is committed by the customer.
-      DECLINED: Future reservation is rejected by GCP.
-      DRAFTING: Related status for PlanningStatus.Draft. Transitions to
-        PENDING_APPROVAL upon user submitting FR.
-      FAILED: Future reservation failed. No additional reservations were
-        provided.
-      FAILED_PARTIALLY_FULFILLED: Future reservation is partially fulfilled.
-        Additional reservations were provided but did not reach total_count
-        reserved instance slots.
-      FULFILLED: Future reservation is fulfilled completely.
-      PENDING_AMENDMENT_APPROVAL: An Amendment to the Future Reservation has
-        been requested. If the Amendment is declined, the Future Reservation
-        will be restored to the last known good state.
-      PENDING_APPROVAL: Future reservation is pending approval by GCP.
-      PROCUREMENT_STATUS_UNSPECIFIED: <no description>
-      PROCURING: Future reservation is being procured by GCP. Beyond this
-        point, Future reservation is locked and no further modifications are
-        allowed.
-      PROVISIONING: Future reservation capacity is being provisioned. This
-        state will be entered after start_time, while reservations are being
-        created to provide total_count reserved instance slots. This state
-        will not persist past start_time + 24h.
-    """
-    APPROVED = 0
-    CANCELLED = 1
-    COMMITTED = 2
-    DECLINED = 3
-    DRAFTING = 4
-    FAILED = 5
-    FAILED_PARTIALLY_FULFILLED = 6
-    FULFILLED = 7
-    PENDING_AMENDMENT_APPROVAL = 8
-    PENDING_APPROVAL = 9
-    PROCUREMENT_STATUS_UNSPECIFIED = 10
-    PROCURING = 11
-    PROVISIONING = 12
-
-  amendmentStatus = _messages.EnumField('AmendmentStatusValueValuesEnum', 1)
-  autoCreatedReservations = _messages.StringField(2, repeated=True)
-  existingMatchingUsageInfo = _messages.MessageField('FutureReservationStatusExistingMatchingUsageInfo', 3)
-  fulfilledCount = _messages.IntegerField(4)
-  lastKnownGoodState = _messages.MessageField('FutureReservationStatusLastKnownGoodState', 5)
-  lockTime = _messages.StringField(6)
-  procurementStatus = _messages.EnumField('ProcurementStatusValueValuesEnum', 7)
-  specificSkuProperties = _messages.MessageField('FutureReservationStatusSpecificSKUProperties', 8)
-
-
-class FutureReservationStatusExistingMatchingUsageInfo(_messages.Message):
-  r"""[Output Only] Represents the existing matching usage for the future
-  reservation.
-
-  Fields:
-    count: Count to represent min(FR total_count,
-      matching_reserved_capacity+matching_unreserved_instances)
-    timestamp: Timestamp when the matching usage was calculated
-  """
-
-  count = _messages.IntegerField(1)
-  timestamp = _messages.StringField(2)
-
-
-class FutureReservationStatusLastKnownGoodState(_messages.Message):
-  r"""The state that the future reservation will be reverted to should the
-  amendment be declined.
-
-  Enums:
-    ProcurementStatusValueValuesEnum: [Output Only] The status of the last
-      known good state for the Future Reservation.
-
-  Fields:
-    description: [Output Only] The description of the FutureReservation before
-      an amendment was requested.
-    existingMatchingUsageInfo: [Output Only] Represents the matching usage for
-      the future reservation before an amendment was requested.
-    futureReservationSpecs: A
-      FutureReservationStatusLastKnownGoodStateFutureReservationSpecs
-      attribute.
-    lockTime: [Output Only] The lock time of the FutureReservation before an
-      amendment was requested.
-    namePrefix: [Output Only] The name prefix of the Future Reservation before
-      an amendment was requested.
-    procurementStatus: [Output Only] The status of the last known good state
-      for the Future Reservation.
-  """
-
-  class ProcurementStatusValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The status of the last known good state for the Future
-    Reservation.
-
-    Values:
-      APPROVED: Future reservation is approved by GCP.
-      CANCELLED: Future reservation is cancelled by the customer.
-      COMMITTED: Future reservation is committed by the customer.
-      DECLINED: Future reservation is rejected by GCP.
-      DRAFTING: Related status for PlanningStatus.Draft. Transitions to
-        PENDING_APPROVAL upon user submitting FR.
-      FAILED: Future reservation failed. No additional reservations were
-        provided.
-      FAILED_PARTIALLY_FULFILLED: Future reservation is partially fulfilled.
-        Additional reservations were provided but did not reach total_count
-        reserved instance slots.
-      FULFILLED: Future reservation is fulfilled completely.
-      PENDING_AMENDMENT_APPROVAL: An Amendment to the Future Reservation has
-        been requested. If the Amendment is declined, the Future Reservation
-        will be restored to the last known good state.
-      PENDING_APPROVAL: Future reservation is pending approval by GCP.
-      PROCUREMENT_STATUS_UNSPECIFIED: <no description>
-      PROCURING: Future reservation is being procured by GCP. Beyond this
-        point, Future reservation is locked and no further modifications are
-        allowed.
-      PROVISIONING: Future reservation capacity is being provisioned. This
-        state will be entered after start_time, while reservations are being
-        created to provide total_count reserved instance slots. This state
-        will not persist past start_time + 24h.
-    """
-    APPROVED = 0
-    CANCELLED = 1
-    COMMITTED = 2
-    DECLINED = 3
-    DRAFTING = 4
-    FAILED = 5
-    FAILED_PARTIALLY_FULFILLED = 6
-    FULFILLED = 7
-    PENDING_AMENDMENT_APPROVAL = 8
-    PENDING_APPROVAL = 9
-    PROCUREMENT_STATUS_UNSPECIFIED = 10
-    PROCURING = 11
-    PROVISIONING = 12
-
-  description = _messages.StringField(1)
-  existingMatchingUsageInfo = _messages.MessageField('FutureReservationStatusExistingMatchingUsageInfo', 2)
-  futureReservationSpecs = _messages.MessageField('FutureReservationStatusLastKnownGoodStateFutureReservationSpecs', 3)
-  lockTime = _messages.StringField(4)
-  namePrefix = _messages.StringField(5)
-  procurementStatus = _messages.EnumField('ProcurementStatusValueValuesEnum', 6)
-
-
-class FutureReservationStatusLastKnownGoodStateFutureReservationSpecs(_messages.Message):
-  r"""The properties of the last known good state for the Future Reservation.
-
-  Fields:
-    shareSettings: [Output Only] The previous share settings of the Future
-      Reservation.
-    specificSkuProperties: [Output Only] The previous instance related
-      properties of the Future Reservation.
-    timeWindow: [Output Only] The previous time window of the Future
-      Reservation.
-  """
-
-  shareSettings = _messages.MessageField('ShareSettings', 1)
-  specificSkuProperties = _messages.MessageField('FutureReservationSpecificSKUProperties', 2)
-  timeWindow = _messages.MessageField('FutureReservationTimeWindow', 3)
-
-
-class FutureReservationStatusSpecificSKUProperties(_messages.Message):
-  r"""Properties to be set for the Future Reservation.
-
-  Fields:
-    sourceInstanceTemplateId: ID of the instance template used to populate the
-      Future Reservation properties.
-  """
-
-  sourceInstanceTemplateId = _messages.StringField(1)
-
-
-class FutureReservationTimeWindow(_messages.Message):
-  r"""A FutureReservationTimeWindow object.
-
-  Fields:
-    duration: A Duration attribute.
-    endTime: A string attribute.
-    startTime: Start time of the Future Reservation. The start_time is an
-      RFC3339 string.
-  """
-
-  duration = _messages.MessageField('Duration', 1)
-  endTime = _messages.StringField(2)
-  startTime = _messages.StringField(3)
-
-
-class FutureReservationsAggregatedListResponse(_messages.Message):
-  r"""Contains a list of future reservations.
-
-  Messages:
-    ItemsValue: A list of Future reservation resources.
-    WarningValue: [Output Only] Informational warning message.
-
-  Fields:
-    etag: A string attribute.
-    id: [Output Only] Unique identifier for the resource; defined by the
-      server.
-    items: A list of Future reservation resources.
-    kind: [Output Only] Type of resource. Always
-      compute#futureReservationsAggregatedListResponse for future resevation
-      aggregated list response.
-    nextPageToken: [Output Only] This token allows you to get the next page of
-      results for list requests. If the number of results is larger than
-      maxResults, use the nextPageToken as a value for the query parameter
-      pageToken in the next list request. Subsequent list requests will have
-      their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] Server-defined URL for this resource.
-    unreachables: [Output Only] Unreachable resources.
-    warning: [Output Only] Informational warning message.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ItemsValue(_messages.Message):
-    r"""A list of Future reservation resources.
-
-    Messages:
-      AdditionalProperty: An additional property for a ItemsValue object.
-
-    Fields:
-      additionalProperties: Name of the scope containing this set of future
-        reservations.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ItemsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A FutureReservationsScopedList attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('FutureReservationsScopedList', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  class WarningValue(_messages.Message):
-    r"""[Output Only] Informational warning message.
-
-    Enums:
-      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
-        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
-        results in the response.
-
-    Messages:
-      DataValueListEntry: A DataValueListEntry object.
-
-    Fields:
-      code: [Output Only] A warning code, if applicable. For example, Compute
-        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
-        response.
-      data: [Output Only] Metadata about this warning in key: value format.
-        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
-      message: [Output Only] A human-readable description of the warning code.
-    """
-
-    class CodeValueValuesEnum(_messages.Enum):
-      r"""[Output Only] A warning code, if applicable. For example, Compute
-      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
-      response.
-
-      Values:
-        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
-          by a failed operation.
-        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
-        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
-          has a type marked as deprecated
-        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
-          larger than image size.
-        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
-          resources has a type marked as experimental
-        EXTERNAL_API_WARNING: Warning that is present in an external api call
-        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
-          overridden. Deprecated unused field.
-        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
-          kernel, which is deprecated.
-        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
-          backend service is associated with a health check that is not of
-          type HTTP/HTTPS/HTTP2.
-        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
-          exceedingly large number of resources
-        LIST_OVERHEAD_QUOTA_EXCEED: Resource can't be retrieved due to list
-          overhead quota exceed which captures the amount of resources
-          filtered out by user-defined list filter.
-        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
-        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
-          assigned to an instance on the network.
-        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
-          forward.
-        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
-          URL refers to an instance that does not have an ipv6 interface on
-          the same network as the route.
-        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
-          an instance that does not exist.
-        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
-          refers to an instance that is not on the same network as the route.
-        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
-          status of RUNNING.
-        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
-          continue the process despite the mentioned error.
-        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
-        PARTIAL_SUCCESS: Success is reported, but some results may be missing
-          due to errors
-        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
-          requires a TOS they have not accepted.
-        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
-          in use.
-        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
-          could not be deleted because they were in use.
-        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
-          ignored.
-        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
-          group manager is valid as such, but its application does not make a
-          lot of sense, because it allows only single instance in instance
-          group.
-        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
-          present
-        UNREACHABLE: A given scope cannot be reached.
-      """
-      CLEANUP_FAILED = 0
-      DEPRECATED_RESOURCE_USED = 1
-      DEPRECATED_TYPE_USED = 2
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
-      EXPERIMENTAL_TYPE_USED = 4
-      EXTERNAL_API_WARNING = 5
-      FIELD_VALUE_OVERRIDEN = 6
-      INJECTED_KERNELS_DEPRECATED = 7
-      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
-      LARGE_DEPLOYMENT_WARNING = 9
-      LIST_OVERHEAD_QUOTA_EXCEED = 10
-      MISSING_TYPE_DEPENDENCY = 11
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 12
-      NEXT_HOP_CANNOT_IP_FORWARD = 13
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 14
-      NEXT_HOP_INSTANCE_NOT_FOUND = 15
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 16
-      NEXT_HOP_NOT_RUNNING = 17
-      NOT_CRITICAL_ERROR = 18
-      NO_RESULTS_ON_PAGE = 19
-      PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
-
-    class DataValueListEntry(_messages.Message):
-      r"""A DataValueListEntry object.
-
-      Fields:
-        key: [Output Only] A key that provides more detail on the warning
-          being returned. For example, for warnings where there are no results
-          in a list request for a particular zone, this key might be scope and
-          the key value might be the zone name. Other examples might be a key
-          indicating a deprecated resource and a suggested replacement, or a
-          warning about invalid network settings (for example, if an instance
-          attempts to perform IP forwarding but is not enabled for IP
-          forwarding).
-        value: [Output Only] A warning data value corresponding to the key.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    code = _messages.EnumField('CodeValueValuesEnum', 1)
-    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
-    message = _messages.StringField(3)
-
-  etag = _messages.StringField(1)
-  id = _messages.StringField(2)
-  items = _messages.MessageField('ItemsValue', 3)
-  kind = _messages.StringField(4, default='compute#futureReservationsAggregatedListResponse')
-  nextPageToken = _messages.StringField(5)
-  selfLink = _messages.StringField(6)
-  unreachables = _messages.StringField(7, repeated=True)
-  warning = _messages.MessageField('WarningValue', 8)
-
-
-class FutureReservationsListResponse(_messages.Message):
-  r"""A FutureReservationsListResponse object.
-
-  Messages:
-    WarningValue: [Output Only] Informational warning message.
-
-  Fields:
-    etag: A string attribute.
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A list of future reservation resources.
-    kind: [Output Only] Type of resource.Always
-      compute#FutureReservationsListResponse for lists of reservations
-    nextPageToken: [Output Only] This token allows you to get the next page of
-      results for list requests. If the number of results is larger than
-      maxResults, use the nextPageToken as a value for the query parameter
-      pageToken in the next list request. Subsequent list requests will have
-      their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] Server-defined URL for this resource.
-    unreachables: [Output Only] Unreachable resources.
-    warning: [Output Only] Informational warning message.
-  """
-
-  class WarningValue(_messages.Message):
-    r"""[Output Only] Informational warning message.
-
-    Enums:
-      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
-        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
-        results in the response.
-
-    Messages:
-      DataValueListEntry: A DataValueListEntry object.
-
-    Fields:
-      code: [Output Only] A warning code, if applicable. For example, Compute
-        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
-        response.
-      data: [Output Only] Metadata about this warning in key: value format.
-        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
-      message: [Output Only] A human-readable description of the warning code.
-    """
-
-    class CodeValueValuesEnum(_messages.Enum):
-      r"""[Output Only] A warning code, if applicable. For example, Compute
-      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
-      response.
-
-      Values:
-        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
-          by a failed operation.
-        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
-        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
-          has a type marked as deprecated
-        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
-          larger than image size.
-        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
-          resources has a type marked as experimental
-        EXTERNAL_API_WARNING: Warning that is present in an external api call
-        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
-          overridden. Deprecated unused field.
-        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
-          kernel, which is deprecated.
-        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
-          backend service is associated with a health check that is not of
-          type HTTP/HTTPS/HTTP2.
-        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
-          exceedingly large number of resources
-        LIST_OVERHEAD_QUOTA_EXCEED: Resource can't be retrieved due to list
-          overhead quota exceed which captures the amount of resources
-          filtered out by user-defined list filter.
-        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
-        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
-          assigned to an instance on the network.
-        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
-          forward.
-        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
-          URL refers to an instance that does not have an ipv6 interface on
-          the same network as the route.
-        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
-          an instance that does not exist.
-        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
-          refers to an instance that is not on the same network as the route.
-        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
-          status of RUNNING.
-        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
-          continue the process despite the mentioned error.
-        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
-        PARTIAL_SUCCESS: Success is reported, but some results may be missing
-          due to errors
-        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
-          requires a TOS they have not accepted.
-        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
-          in use.
-        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
-          could not be deleted because they were in use.
-        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
-          ignored.
-        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
-          group manager is valid as such, but its application does not make a
-          lot of sense, because it allows only single instance in instance
-          group.
-        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
-          present
-        UNREACHABLE: A given scope cannot be reached.
-      """
-      CLEANUP_FAILED = 0
-      DEPRECATED_RESOURCE_USED = 1
-      DEPRECATED_TYPE_USED = 2
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
-      EXPERIMENTAL_TYPE_USED = 4
-      EXTERNAL_API_WARNING = 5
-      FIELD_VALUE_OVERRIDEN = 6
-      INJECTED_KERNELS_DEPRECATED = 7
-      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
-      LARGE_DEPLOYMENT_WARNING = 9
-      LIST_OVERHEAD_QUOTA_EXCEED = 10
-      MISSING_TYPE_DEPENDENCY = 11
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 12
-      NEXT_HOP_CANNOT_IP_FORWARD = 13
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 14
-      NEXT_HOP_INSTANCE_NOT_FOUND = 15
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 16
-      NEXT_HOP_NOT_RUNNING = 17
-      NOT_CRITICAL_ERROR = 18
-      NO_RESULTS_ON_PAGE = 19
-      PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
-
-    class DataValueListEntry(_messages.Message):
-      r"""A DataValueListEntry object.
-
-      Fields:
-        key: [Output Only] A key that provides more detail on the warning
-          being returned. For example, for warnings where there are no results
-          in a list request for a particular zone, this key might be scope and
-          the key value might be the zone name. Other examples might be a key
-          indicating a deprecated resource and a suggested replacement, or a
-          warning about invalid network settings (for example, if an instance
-          attempts to perform IP forwarding but is not enabled for IP
-          forwarding).
-        value: [Output Only] A warning data value corresponding to the key.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    code = _messages.EnumField('CodeValueValuesEnum', 1)
-    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
-    message = _messages.StringField(3)
-
-  etag = _messages.StringField(1)
-  id = _messages.StringField(2)
-  items = _messages.MessageField('FutureReservation', 3, repeated=True)
-  kind = _messages.StringField(4, default='compute#futureReservationsListResponse')
-  nextPageToken = _messages.StringField(5)
-  selfLink = _messages.StringField(6)
-  unreachables = _messages.StringField(7, repeated=True)
-  warning = _messages.MessageField('WarningValue', 8)
-
-
-class FutureReservationsScopedList(_messages.Message):
-  r"""A FutureReservationsScopedList object.
-
-  Messages:
-    WarningValue: Informational warning which replaces the list of future
-      reservations when the list is empty.
-
-  Fields:
-    futureReservations: A list of future reservations contained in this scope.
-    warning: Informational warning which replaces the list of future
-      reservations when the list is empty.
-  """
-
-  class WarningValue(_messages.Message):
-    r"""Informational warning which replaces the list of future reservations
-    when the list is empty.
-
-    Enums:
-      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
-        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
-        results in the response.
-
-    Messages:
-      DataValueListEntry: A DataValueListEntry object.
-
-    Fields:
-      code: [Output Only] A warning code, if applicable. For example, Compute
-        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
-        response.
-      data: [Output Only] Metadata about this warning in key: value format.
-        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
-      message: [Output Only] A human-readable description of the warning code.
-    """
-
-    class CodeValueValuesEnum(_messages.Enum):
-      r"""[Output Only] A warning code, if applicable. For example, Compute
-      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
-      response.
-
-      Values:
-        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
-          by a failed operation.
-        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
-        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
-          has a type marked as deprecated
-        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
-          larger than image size.
-        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
-          resources has a type marked as experimental
-        EXTERNAL_API_WARNING: Warning that is present in an external api call
-        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
-          overridden. Deprecated unused field.
-        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
-          kernel, which is deprecated.
-        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
-          backend service is associated with a health check that is not of
-          type HTTP/HTTPS/HTTP2.
-        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
-          exceedingly large number of resources
-        LIST_OVERHEAD_QUOTA_EXCEED: Resource can't be retrieved due to list
-          overhead quota exceed which captures the amount of resources
-          filtered out by user-defined list filter.
-        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
-        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
-          assigned to an instance on the network.
-        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
-          forward.
-        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
-          URL refers to an instance that does not have an ipv6 interface on
-          the same network as the route.
-        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
-          an instance that does not exist.
-        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
-          refers to an instance that is not on the same network as the route.
-        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
-          status of RUNNING.
-        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
-          continue the process despite the mentioned error.
-        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
-        PARTIAL_SUCCESS: Success is reported, but some results may be missing
-          due to errors
-        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
-          requires a TOS they have not accepted.
-        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
-          in use.
-        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
-          could not be deleted because they were in use.
-        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
-          ignored.
-        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
-          group manager is valid as such, but its application does not make a
-          lot of sense, because it allows only single instance in instance
-          group.
-        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
-          present
-        UNREACHABLE: A given scope cannot be reached.
-      """
-      CLEANUP_FAILED = 0
-      DEPRECATED_RESOURCE_USED = 1
-      DEPRECATED_TYPE_USED = 2
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
-      EXPERIMENTAL_TYPE_USED = 4
-      EXTERNAL_API_WARNING = 5
-      FIELD_VALUE_OVERRIDEN = 6
-      INJECTED_KERNELS_DEPRECATED = 7
-      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
-      LARGE_DEPLOYMENT_WARNING = 9
-      LIST_OVERHEAD_QUOTA_EXCEED = 10
-      MISSING_TYPE_DEPENDENCY = 11
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 12
-      NEXT_HOP_CANNOT_IP_FORWARD = 13
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 14
-      NEXT_HOP_INSTANCE_NOT_FOUND = 15
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 16
-      NEXT_HOP_NOT_RUNNING = 17
-      NOT_CRITICAL_ERROR = 18
-      NO_RESULTS_ON_PAGE = 19
-      PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
-
-    class DataValueListEntry(_messages.Message):
-      r"""A DataValueListEntry object.
-
-      Fields:
-        key: [Output Only] A key that provides more detail on the warning
-          being returned. For example, for warnings where there are no results
-          in a list request for a particular zone, this key might be scope and
-          the key value might be the zone name. Other examples might be a key
-          indicating a deprecated resource and a suggested replacement, or a
-          warning about invalid network settings (for example, if an instance
-          attempts to perform IP forwarding but is not enabled for IP
-          forwarding).
-        value: [Output Only] A warning data value corresponding to the key.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    code = _messages.EnumField('CodeValueValuesEnum', 1)
-    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
-    message = _messages.StringField(3)
-
-  futureReservations = _messages.MessageField('FutureReservation', 1, repeated=True)
-  warning = _messages.MessageField('WarningValue', 2)
-
-
 class GRPCHealthCheck(_messages.Message):
   r"""A GRPCHealthCheck object.
 
@@ -54770,10 +53660,12 @@ class NetworkInterface(_messages.Message):
 
     Values:
       IPV4_IPV6: The network interface can have both IPv4 and IPv6 addresses.
-      IPV4_ONLY: The network interface will be assigned IPv4 address.
+      IPV4_ONLY: The network interface will only be assigned IPv4 addresses.
+      IPV6_ONLY: The network interface will only be assigned IPv6 addresses.
     """
     IPV4_IPV6 = 0
     IPV4_ONLY = 1
+    IPV6_ONLY = 2
 
   accessConfigs = _messages.MessageField('AccessConfig', 1, repeated=True)
   aliasIpRanges = _messages.MessageField('AliasIpRange', 2, repeated=True)
@@ -69404,6 +68296,17 @@ class ServiceAttachment(_messages.Message):
     producerForwardingRule: The URL of a forwarding rule with
       loadBalancingScheme INTERNAL* that is serving the endpoint identified by
       this service attachment.
+    propagatedConnectionLimit: The number of consumer spokes that connected
+      Private Service Connect endpoints can be propagated to through Network
+      Connectivity Center. This limit lets the service producer limit how many
+      propagated Private Service Connect connections can be established to
+      this service attachment from a single consumer. If the connection
+      preference of the service attachment is ACCEPT_MANUAL, the limit applies
+      to each project or network that is listed in the consumer accept list.
+      If the connection preference of the service attachment is
+      ACCEPT_AUTOMATIC, the limit applies to each project that contains a
+      connected endpoint. If unspecified, the default propagated connection
+      limit is 250.
     pscServiceAttachmentId: [Output Only] An 128-bit global unique ID of the
       PSC service attachment.
     reconcileConnections: This flag determines whether a consumer
@@ -69453,11 +68356,12 @@ class ServiceAttachment(_messages.Message):
   name = _messages.StringField(12)
   natSubnets = _messages.StringField(13, repeated=True)
   producerForwardingRule = _messages.StringField(14)
-  pscServiceAttachmentId = _messages.MessageField('Uint128', 15)
-  reconcileConnections = _messages.BooleanField(16)
-  region = _messages.StringField(17)
-  selfLink = _messages.StringField(18)
-  targetService = _messages.StringField(19)
+  propagatedConnectionLimit = _messages.IntegerField(15, variant=_messages.Variant.UINT32)
+  pscServiceAttachmentId = _messages.MessageField('Uint128', 16)
+  reconcileConnections = _messages.BooleanField(17)
+  region = _messages.StringField(18)
+  selfLink = _messages.StringField(19)
+  targetService = _messages.StringField(20)
 
 
 class ServiceAttachmentAggregatedList(_messages.Message):
@@ -69660,6 +68564,9 @@ class ServiceAttachmentConnectedEndpoint(_messages.Message):
   Fields:
     consumerNetwork: The url of the consumer network.
     endpoint: The url of a connected endpoint.
+    propagatedConnectionCount: The number of consumer Network Connectivity
+      Center spokes that the connected Private Service Connect endpoint has
+      propagated to.
     pscConnectionId: The PSC connection id of the connected endpoint.
     status: The status of a connected endpoint to this service attachment.
   """
@@ -69686,8 +68593,9 @@ class ServiceAttachmentConnectedEndpoint(_messages.Message):
 
   consumerNetwork = _messages.StringField(1)
   endpoint = _messages.StringField(2)
-  pscConnectionId = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  status = _messages.EnumField('StatusValueValuesEnum', 4)
+  propagatedConnectionCount = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
+  pscConnectionId = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  status = _messages.EnumField('StatusValueValuesEnum', 5)
 
 
 class ServiceAttachmentConsumerProjectLimit(_messages.Message):
@@ -74429,9 +73337,11 @@ class Subnetwork(_messages.Message):
     Values:
       IPV4_IPV6: New VMs in this subnet can have both IPv4 and IPv6 addresses.
       IPV4_ONLY: New VMs in this subnet will only be assigned IPv4 addresses.
+      IPV6_ONLY: New VMs in this subnet will only be assigned IPv6 addresses.
     """
     IPV4_IPV6 = 0
     IPV4_ONLY = 1
+    IPV6_ONLY = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""[Output Only] The state of the subnetwork, which can be one of the
@@ -79690,9 +78600,9 @@ class UrlMap(_messages.Message):
   management table. This resource defines mappings from hostnames and URL
   paths to either a backend service or a backend bucket. To use the global
   urlMaps resource, the backend service must have a loadBalancingScheme of
-  either EXTERNAL or INTERNAL_SELF_MANAGED. To use the regionUrlMaps resource,
-  the backend service must have a loadBalancingScheme of INTERNAL_MANAGED. For
-  more information, read URL Map Concepts.
+  either EXTERNAL, EXTERNAL_MANAGED, or INTERNAL_SELF_MANAGED. To use the
+  regionUrlMaps resource, the backend service must have a loadBalancingScheme
+  of INTERNAL_MANAGED. For more information, read URL Map Concepts.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -80619,9 +79529,11 @@ class UsableSubnetwork(_messages.Message):
     Values:
       IPV4_IPV6: New VMs in this subnet can have both IPv4 and IPv6 addresses.
       IPV4_ONLY: New VMs in this subnet will only be assigned IPv4 addresses.
+      IPV6_ONLY: New VMs in this subnet will only be assigned IPv6 addresses.
     """
     IPV4_IPV6 = 0
     IPV4_ONLY = 1
+    IPV6_ONLY = 2
 
   externalIpv6Prefix = _messages.StringField(1)
   internalIpv6Prefix = _messages.StringField(2)

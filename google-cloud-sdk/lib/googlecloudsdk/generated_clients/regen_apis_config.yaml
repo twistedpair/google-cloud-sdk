@@ -1324,6 +1324,10 @@ apis:
   runtimeconfig:
     v1beta1:
       discovery_doc: runtimeconfig_v1beta1.json
+  saasservicemgmt:
+    v1alpha1:
+      discovery_doc: saasservicemgmt_v1alpha1.json
+      default: true
   sasportal:
     v1alpha1:
       discovery_doc: sasportal_v1alpha1.json
@@ -2211,6 +2215,10 @@ canonical_surfaces:
   runtimeconfig:
     name: runtimeconfig
     command: runtime-config
+  saasservicemgmt:
+    name: saasservicemgmt
+    command: saas
+    hidden: true
   sasportal:
     name: sasportal
     hidden: true

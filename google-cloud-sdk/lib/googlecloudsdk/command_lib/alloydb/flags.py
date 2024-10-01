@@ -1350,22 +1350,18 @@ def AddRequireConnectors(parser):
   )
 
 
-def AddDatabaseVersion(parser, alloydb_messages, release_track):
+def AddDatabaseVersion(parser, alloydb_messages):
   """Adds Database Version flag.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
     alloydb_messages: Message module.
-    release_track: Release track of the command.
   """
   choices = [
       alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_14,
       alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_15,
+      alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_16,
   ]
-  if release_track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
-    choices.append(
-        alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_16
-    )
   parser.add_argument(
       '--database-version',
       required=False,
@@ -1415,6 +1411,34 @@ def AddSubscriptionType(parser, alloydb_messages):
       help='Subscription type of the cluster.',
   )
 
+
+def AddTags(parser):
+  """Makes the base.Argument for --tags flag."""
+  help_parts = [
+      'List of tags KEY=VALUE pairs to bind.',
+      'Each item must be expressed as',
+      '`<tag-key-namespaced-name>=<tag-value-short-name>`.\n',
+      'Example: `123/environment=production,123/costCenter=marketing`\n',
+  ]
+  parser.add_argument(
+      '--tags',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      action=arg_parsers.UpdateAction,
+      help='\n'.join(help_parts),
+      hidden=True,
+  )
+
+
+def GetTagsFromArgs(args, tags_message, tags_arg_name='tags'):
+  """Makes the tags message object."""
+  tags = getattr(args, tags_arg_name)
+  if not tags:
+    return None
+  # Sorted for test stability
+  return tags_message(additionalProperties=[
+      tags_message.AdditionalProperty(key=key, value=value)
+      for key, value in sorted(tags.items())])
 
 def AddAssignInboundPublicIp(parser):
   """Adds Assign Inbound Public IP flag.
@@ -1796,3 +1820,35 @@ def AddExportOptions(parser):
           ' existence before dropping it in clean_target_objects mode.'
       ),
   )
+
+
+def GetTagsArg(parser):
+  """Makes the base.Argument for --tags flag."""
+  help_parts = [
+      'List of tags KEY=VALUE pairs to bind.',
+      'Each item must be expressed as',
+      '`<tag-key-namespaced-name>=<tag-value-short-name>`.\n',
+      'Example: `123/environment=production,123/costCenter=marketing`\n',
+  ]
+  parser.add_argument(
+      '--tags', metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      action=arg_parsers.UpdateAction,
+      help='\n'.join(help_parts),
+      hidden=True,
+  )
+
+
+def GetTagsFromArgs(args, tags_message, tags_arg_name='tags'):
+  """Makes the tags message object."""
+  tags = getattr(args, tags_arg_name)
+  if not tags:
+    return None
+  # Sorted for test stability
+  return tags_message(
+      additionalProperties=[
+          tags_message.AdditionalProperty(key=key, value=value)
+          for key, value in sorted(tags.items())
+      ]
+  )
+

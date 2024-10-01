@@ -15,6 +15,7 @@
 """Utilities for flags for `gcloud notebook-executor` commands."""
 
 from googlecloudsdk.api_lib.notebook_executor import executions as executions_util
+from googlecloudsdk.api_lib.notebook_executor import schedules as schedules_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
@@ -48,9 +49,40 @@ def AddExecutionResourceArg(parser, verb):
   concept_parsers.ConceptParser.ForResource(
       'execution',
       GetExecutionResourceSpec(),
-      'Unique name of the execution {}. This was optionally provided by setting'
-      ' --execution-job-id in the create execution command or was'
-      ' system-generated if unspecified.'.format(verb),
+      'Unique resource name of the execution {}.'.format(verb),
+      required=True,
+  ).AddToParser(parser)
+
+
+def AddScheduleResourceArg(parser, verb):
+  """Add a resource argument for a schedule to the parser.
+
+  Args:
+    parser: argparse parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+
+  def GetScheduleResourceSpec(resource_name='schedule'):
+    """Add a resource argument for a schedule to the parser.
+
+    Args:
+      resource_name: str, the name of the resource to use in attribute help
+        text.
+
+    Returns:
+      A concepts.ResourceSpec for a schedule.
+    """
+    return concepts.ResourceSpec(
+        'aiplatform.projects.locations.schedules',
+        resource_name=resource_name,
+        projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+        locationsId=GetRegionAttributeConfig(),
+    )
+
+  concept_parsers.ConceptParser.ForResource(
+      'schedule',
+      GetScheduleResourceSpec(),
+      'Unique, system-generated resource name of the schedule {}.'.format(verb),
       required=True,
   ).AddToParser(parser)
 
@@ -243,66 +275,15 @@ def AddCreateExecutionFlags(parser):
       help='The service account to run the execution as.',
       required=False,
   )
-  AddKmsKeyResourceArg(
-      execution_group,
-      'The Cloud KMS encryption key (customer-managed encryption key) to'
-      ' protect the execution. If the notebook runtime template already'
-      ' specifies a customer-managed encryption key, that key will be used.'
-      ' If unspecified in both, Google-managed encryption keys will be used.',
-  )
   parser.add_argument(
       '--execution-job-id',
       help=(
           'The id to assign to the execution job. If not specified, a random id'
           ' will be generated.'
       ),
+      hidden=True,
   )
   base.ASYNC_FLAG.AddToParser(parser)
-
-
-def AddKmsKeyResourceArg(parser, help_text):
-  """Adds Resource arg for KMS key to the parser.
-
-  Args:
-    parser: argparse parser for the command.
-    help_text: str, the help text for the flag.
-  """
-  def GetKmsKeyResourceSpec():
-
-    def KmsKeyAttributeConfig():
-      # For anchor attribute, help text is generated automatically.
-      return concepts.ResourceParameterAttributeConfig(name='kms-key')
-
-    def KmsKeyringAttributeConfig():
-      return concepts.ResourceParameterAttributeConfig(
-          name='kms-keyring', help_text='KMS keyring id of the {resource}.'
-      )
-
-    def KmsLocationAttributeConfig():
-      return concepts.ResourceParameterAttributeConfig(
-          name='kms-location', help_text='Cloud location for the {resource}.'
-      )
-
-    def KmsProjectAttributeConfig():
-      return concepts.ResourceParameterAttributeConfig(
-          name='kms-project', help_text='Cloud project id for the {resource}.'
-      )
-
-    return concepts.ResourceSpec(
-        'cloudkms.projects.locations.keyRings.cryptoKeys',
-        resource_name='key',
-        cryptoKeysId=KmsKeyAttributeConfig(),
-        keyRingsId=KmsKeyringAttributeConfig(),
-        locationsId=KmsLocationAttributeConfig(),
-        projectsId=KmsProjectAttributeConfig(),
-    )
-
-  concept_parsers.ConceptParser.ForResource(
-      '--kms-key',
-      GetKmsKeyResourceSpec(),
-      help_text,
-      required=False,
-  ).AddToParser(parser)
 
 
 def AddDeleteExecutionFlags(parser):
@@ -316,7 +297,45 @@ def AddDescribeExecutionFlags(parser):
   AddExecutionResourceArg(parser, 'to describe')
 
 
-def AddListRuntimeTemplatesFlags(parser):
-  """Construct groups and arguments specific to listing runtime templates."""
+def AddListExecutionsFlags(parser):
+  """Construct groups and arguments specific to listing executions."""
   AddRegionResourceArg(parser, 'for which to list all executions')
   parser.display_info.AddUriFunc(executions_util.GetExecutionUri)
+
+
+def AddDescribeScheduleFlags(parser):
+  """Add flags for describing a schedule to the parser."""
+  AddScheduleResourceArg(parser, 'to describe')
+
+
+def AddDeleteScheduleFlags(parser):
+  """Adds flags for deleting a schedule to the parser."""
+  AddScheduleResourceArg(parser, 'to delete')
+  base.ASYNC_FLAG.AddToParser(parser)
+
+
+def AddPauseScheduleFlags(parser):
+  """Adds flags for pausing a schedule to the parser."""
+  AddScheduleResourceArg(parser, 'to pause')
+
+
+def AddResumeScheduleFlags(parser):
+  """Adds flags for resuming a schedule to the parser."""
+  AddScheduleResourceArg(parser, 'to resume')
+  parser.add_argument(
+      '--enable-catch-up',
+      help=(
+          'Enables backfilling missed runs when the schedule is resumed from'
+          ' PAUSED state. If enabled, all missed runs will be scheduled and new'
+          ' runs will be scheduled after the backfill is complete.'
+      ),
+      action='store_true',
+      dest='enable_catch_up',
+      default=False,
+  )
+
+
+def AddListSchedulesFlags(parser):
+  """Construct groups and arguments specific to listing schedules."""
+  AddRegionResourceArg(parser, 'for which to list all schedules')
+  parser.display_info.AddUriFunc(schedules_util.GetScheduleUri)

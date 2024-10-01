@@ -252,12 +252,27 @@ class Collections(enum.Enum):
       ['project', 'zone', 'instantSnapshot'],
       True
   )
+  INTERCONNECTATTACHMENTGROUPS = (
+      'interconnectAttachmentGroups',
+      'projects/{project}/global/interconnectAttachmentGroups/'
+      '{interconnectAttachmentGroup}',
+      {},
+      ['project', 'interconnectAttachmentGroup'],
+      True
+  )
   INTERCONNECTATTACHMENTS = (
       'interconnectAttachments',
       'projects/{project}/regions/{region}/interconnectAttachments/'
       '{interconnectAttachment}',
       {},
       ['project', 'region', 'interconnectAttachment'],
+      True
+  )
+  INTERCONNECTGROUPS = (
+      'interconnectGroups',
+      'projects/{project}/global/interconnectGroups/{interconnectGroup}',
+      {},
+      ['project', 'interconnectGroup'],
       True
   )
   INTERCONNECTLOCATIONS = (
@@ -535,6 +550,13 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/machineTypes/{machineType}',
       {},
       ['project', 'region', 'machineType'],
+      True
+  )
+  REGIONMULTIMIGS = (
+      'regionMultiMigs',
+      'projects/{project}/regions/{region}/multiMigs/{multiMig}',
+      {},
+      ['project', 'region', 'multiMig'],
       True
   )
   REGIONNETWORKENDPOINTGROUPS = (

@@ -630,6 +630,32 @@ class StorageV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Relocate(self, request, global_params=None):
+      r"""Initiates a long-running Relocate Bucket operation on the specified bucket.
+
+      Args:
+        request: (StorageBucketsRelocateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Relocate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Relocate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='storage.buckets.relocate',
+        ordered_params=['bucket'],
+        path_params=['bucket'],
+        query_params=[],
+        relative_path='b/{bucket}/relocate',
+        request_field='relocateBucketRequest',
+        request_type_name='StorageBucketsRelocateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Restore(self, request, global_params=None):
       r"""Restores a soft-deleted bucket.
 
@@ -1691,7 +1717,7 @@ class StorageV1(base_api.BaseApiClient):
         method_id='storage.objects.get',
         ordered_params=['bucket', 'object'],
         path_params=['bucket', 'object'],
-        query_params=['generation', 'ifGenerationMatch', 'ifGenerationNotMatch', 'ifMetagenerationMatch', 'ifMetagenerationNotMatch', 'projection', 'softDeleted', 'userProject'],
+        query_params=['generation', 'ifGenerationMatch', 'ifGenerationNotMatch', 'ifMetagenerationMatch', 'ifMetagenerationNotMatch', 'projection', 'restoreToken', 'softDeleted', 'userProject'],
         relative_path='b/{bucket}/o/{object}',
         request_field='',
         request_type_name='StorageObjectsGetRequest',
@@ -1825,7 +1851,7 @@ class StorageV1(base_api.BaseApiClient):
         method_id='storage.objects.restore',
         ordered_params=['bucket', 'object', 'generation'],
         path_params=['bucket', 'object'],
-        query_params=['copySourceAcl', 'generation', 'ifGenerationMatch', 'ifGenerationNotMatch', 'ifMetagenerationMatch', 'ifMetagenerationNotMatch', 'projection', 'userProject'],
+        query_params=['copySourceAcl', 'generation', 'ifGenerationMatch', 'ifGenerationNotMatch', 'ifMetagenerationMatch', 'ifMetagenerationNotMatch', 'projection', 'restoreToken', 'userProject'],
         relative_path='b/{bucket}/o/{object}/restore',
         request_field='',
         request_type_name='StorageObjectsRestoreRequest',

@@ -76,3 +76,20 @@ def CreateDeployPolicyNamesFromIDs(pipeline_ref, deploy_policy_ids):
       )
       policies.append(deploy_policy_resource_ref.RelativeName())
   return policies
+
+
+def GetDeployPolicy(deploy_policy_ref):
+  """Gets the deploy policy message by calling the get deploy policy API.
+
+  Args:
+    deploy_policy_ref: protorpc.messages.Message, protorpc.messages.Message,
+      deploy policy reference.
+
+  Returns:
+    Deploy policy message.
+  Raises:
+    Exceptions raised by DeployPoliciesClient's get functions
+  """
+  return deploy_policy.DeployPoliciesClient().Get(
+      deploy_policy_ref.RelativeName()
+  )

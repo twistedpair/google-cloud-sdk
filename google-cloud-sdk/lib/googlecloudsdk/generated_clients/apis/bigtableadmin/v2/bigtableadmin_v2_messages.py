@@ -3334,11 +3334,15 @@ class RestoreTableRequest(_messages.Message):
 
 
 class RowAffinity(_messages.Message):
-  r"""If enabled, the AFE will route the request based on the row key of the
+  r"""If enabled, Bigtable will route the request based on the row key of the
   request, rather than randomly. Instead, each row key will be assigned to a
   cluster, and will stick to that cluster. If clusters are added or removed,
   then this may affect which row keys stick to which clusters. To avoid this,
-  users can specify a group cluster.
+  users can use a cluster group to specify which clusters are to be used. In
+  this case, new clusters that are not a part of the cluster group will not be
+  routed to, and routing will be unaffected by the new cluster. Moreover,
+  clusters specified in the cluster group cannot be deleted unless removed
+  from the cluster group.
   """
 
 

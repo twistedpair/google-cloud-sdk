@@ -260,6 +260,127 @@ class ListViewsAsyncPager:
         return '{0}<{1!r}>'.format(self.__class__.__name__, self._response)
 
 
+class ListLogScopesPager:
+    """A pager for iterating through ``list_log_scopes`` requests.
+
+    This class thinly wraps an initial
+    :class:`googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.ListLogScopesResponse` object, and
+    provides an ``__iter__`` method to iterate through its
+    ``log_scopes`` field.
+
+    If there are more pages, the ``__iter__`` method will make additional
+    ``ListLogScopes`` requests and continue to iterate
+    through the ``log_scopes`` field on the
+    corresponding responses.
+
+    All the usual :class:`googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.ListLogScopesResponse`
+    attributes are available on the pager. If multiple requests are made, only
+    the most recent response is retained, and thus used for attribute lookup.
+    """
+    def __init__(self,
+            method: Callable[..., logging_config.ListLogScopesResponse],
+            request: logging_config.ListLogScopesRequest,
+            response: logging_config.ListLogScopesResponse,
+            *,
+            metadata: Sequence[Tuple[str, str]] = ()):
+        """Instantiate the pager.
+
+        Args:
+            method (Callable): The method that was originally called, and
+                which instantiated this pager.
+            request (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.ListLogScopesRequest):
+                The initial request object.
+            response (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.ListLogScopesResponse):
+                The initial response object.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+        """
+        self._method = method
+        self._request = logging_config.ListLogScopesRequest(request)
+        self._response = response
+        self._metadata = metadata
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._response, name)
+
+    @property
+    def pages(self) -> Iterator[logging_config.ListLogScopesResponse]:
+        yield self._response
+        while self._response.next_page_token:
+            self._request.page_token = self._response.next_page_token
+            self._response = self._method(self._request, metadata=self._metadata)
+            yield self._response
+
+    def __iter__(self) -> Iterator[logging_config.LogScope]:
+        for page in self.pages:
+            yield from page.log_scopes
+
+    def __repr__(self) -> str:
+        return '{0}<{1!r}>'.format(self.__class__.__name__, self._response)
+
+
+class ListLogScopesAsyncPager:
+    """A pager for iterating through ``list_log_scopes`` requests.
+
+    This class thinly wraps an initial
+    :class:`googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.ListLogScopesResponse` object, and
+    provides an ``__aiter__`` method to iterate through its
+    ``log_scopes`` field.
+
+    If there are more pages, the ``__aiter__`` method will make additional
+    ``ListLogScopes`` requests and continue to iterate
+    through the ``log_scopes`` field on the
+    corresponding responses.
+
+    All the usual :class:`googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.ListLogScopesResponse`
+    attributes are available on the pager. If multiple requests are made, only
+    the most recent response is retained, and thus used for attribute lookup.
+    """
+    def __init__(self,
+            method: Callable[..., Awaitable[logging_config.ListLogScopesResponse]],
+            request: logging_config.ListLogScopesRequest,
+            response: logging_config.ListLogScopesResponse,
+            *,
+            metadata: Sequence[Tuple[str, str]] = ()):
+        """Instantiates the pager.
+
+        Args:
+            method (Callable): The method that was originally called, and
+                which instantiated this pager.
+            request (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.ListLogScopesRequest):
+                The initial request object.
+            response (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.ListLogScopesResponse):
+                The initial response object.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+        """
+        self._method = method
+        self._request = logging_config.ListLogScopesRequest(request)
+        self._response = response
+        self._metadata = metadata
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._response, name)
+
+    @property
+    async def pages(self) -> AsyncIterator[logging_config.ListLogScopesResponse]:
+        yield self._response
+        while self._response.next_page_token:
+            self._request.page_token = self._response.next_page_token
+            self._response = await self._method(self._request, metadata=self._metadata)
+            yield self._response
+    def __aiter__(self) -> AsyncIterator[logging_config.LogScope]:
+        async def async_generator():
+            async for page in self.pages:
+                for response in page.log_scopes:
+                    yield response
+
+        return async_generator()
+
+    def __repr__(self) -> str:
+        return '{0}<{1!r}>'.format(self.__class__.__name__, self._response)
+
+
 class ListExclusionsPager:
     """A pager for iterating through ``list_exclusions`` requests.
 

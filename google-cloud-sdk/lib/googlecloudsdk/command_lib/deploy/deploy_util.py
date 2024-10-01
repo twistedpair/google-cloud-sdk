@@ -31,6 +31,7 @@ class ResourceType(enum.Enum):
   AUTOMATION = 'Automation'
   CUSTOM_TARGET_TYPE = 'CustomTargetType'
   DEPLOY_POLICY = 'DeployPolicy'
+  PIPELINE_ATTRIBUTE = 'DeliveryPipelineAttribute'
   TARGET_ATTRIBUTE = 'TargetAttribute'
 
 

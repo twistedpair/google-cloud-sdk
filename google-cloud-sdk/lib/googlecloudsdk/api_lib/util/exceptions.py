@@ -47,6 +47,8 @@ _ESCAPED_RIGHT_CURLY = 'R'
 
 # ErrorInfo identifier used for extracting domain based handlers.
 ERROR_INFO_SUFFIX = 'google.rpc.ErrorInfo'
+LOCALIZED_MESSAGE_SUFFIX = 'google.rpc.LocalizedMessage'
+HELP_SUFFIX = 'google.rpc.Help'
 
 
 def _Escape(s):
@@ -260,10 +262,14 @@ class HttpErrorPayload(FormattableErrorPayload):
     status_code: The HTTP status code number.
     status_description: The status_code description.
     status_message: Context specific status message.
+    unparsed_details: The unparsed details.
     type_details: ErrorDetails Indexed by type.
-    url: The HTTP url.
-    .<a>.<b>...: The <a>.<b>... attribute in the JSON content (synthesized in
-      get_field()).
+    url: The HTTP url. .<a>.<b>...: The <a>.<b>... attribute in the JSON content
+      (synthesized in get_field()).
+
+  Grammar:
+    Format strings inherit from python's string.formatter. where we pass tokens
+    obtained by the resource projection framework format strings.
 
   Examples:
     error_format values and resulting output:
@@ -368,10 +374,22 @@ class HttpErrorPayload(FormattableErrorPayload):
       self.field_violations = self._ExtractFieldViolations(self.details)
       self.type_details = self._IndexErrorDetailsByType(self.details)
       self.domain_details = self._IndexErrorInfoByDomain(self.details)
+      if properties.VALUES.core.parse_error_details.GetBool():
+        self.unparsed_details = self.RedactParsedTypes(self.details)
     except (KeyError, TypeError, ValueError):
       self.status_message = content
     except AttributeError:
       pass
+
+  def RedactParsedTypes(self, details):
+    """Redacts the parsed types from the details list."""
+    unparsed_details = []
+    for item in details:
+      error_type = item.get('@type', None)
+      error_suffix = error_type.split('/')[-1]
+      if error_suffix not in (LOCALIZED_MESSAGE_SUFFIX, HELP_SUFFIX):
+        unparsed_details.append(item)
+    return unparsed_details
 
   def _IndexErrorDetailsByType(self, details):
     """Extracts and indexes error details list by the type attribute."""
@@ -533,12 +551,25 @@ class HttpException(core_exceptions.Error):
   def __str__(self):
     error_format = self.error_format
     if error_format is None:
-      error_format = '{message}'
+      error_prefix = '{message?}'
       if properties.VALUES.core.parse_error_details.GetBool():
-        error_format += ('\n{type_details.LocalizedMessage'
-                         ':value(message.list(separator="\n"))}')
+        parsed_localized_messages = (
+            '{type_details.LocalizedMessage'
+            ':value(message.list(separator="\n"))?\n{?}}'
+        )
+        parsed_help_messages = (
+            '{type_details.Help'
+            ':value(links.flatten(show="values",separator="\n"))?\n{?}}'
+        )
+        unparsed_details = '{unparsed_details?\n{?}}'
+        error_format = (
+            error_prefix
+            + parsed_localized_messages
+            + parsed_help_messages
+            + unparsed_details
+        )
       else:
-        error_format += '{details?\n{?}}'
+        error_format = error_prefix + '{details?\n{?}}'
       if log.GetVerbosity() <= logging.DEBUG:
         error_format += '{.debugInfo?\n{?}}'
     return _Expand(self.payload.format(_Escape(error_format)))

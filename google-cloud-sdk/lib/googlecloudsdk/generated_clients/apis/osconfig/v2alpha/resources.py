@@ -63,6 +63,45 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS = (
+      'organizations',
+      'organizations/{organizationsId}',
+      {},
+      ['organizationsId'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS = (
+      'organizations.locations',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_GLOBAL_POLICYORCHESTRATORS = (
+      'organizations.locations.global.policyOrchestrators',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/global/'
+              'policyOrchestrators/{policyOrchestratorsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_OPERATIONS = (
+      'organizations.locations.operations',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
@@ -87,6 +126,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/'
               'agentPolicyAssignments/{agentPolicyAssignmentsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_GLOBAL_POLICYORCHESTRATORS = (
+      'projects.locations.global.policyOrchestrators',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/global/policyOrchestrators/'
+              '{policyOrchestratorsId}',
       },
       ['name'],
       True

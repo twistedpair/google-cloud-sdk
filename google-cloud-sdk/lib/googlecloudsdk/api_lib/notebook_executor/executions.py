@@ -42,8 +42,8 @@ def ParseExecutionOperation(operation_name):
   )
 
 
-def GetParentForExecution(args):
-  """Get the parent Location resource name for the execution.
+def GetParentForExecutionOrSchedule(args):
+  """Get the parent Location resource name for the execution or schedule resource.
 
   Args:
     args: Argparse object from Command.Run
@@ -65,24 +65,6 @@ def GetExecutionResourceName(args):
     projects/{project}/locations/{location}/notebookExecutionJobs/{execution_job_id}.
   """
   return args.CONCEPTS.execution.Parse().RelativeName()
-
-
-def CreateEncryptionSpecConfig(args, messages):
-  """Constructs the encryption spec from the kms key resource arg.
-
-  Args:
-    args: Argparse object from Command.Run
-    messages: Module containing messages definition for the aiplatform API.
-
-  Returns:
-    Encryption spec for the runtime template.
-  """
-  encryption_spec = messages.GoogleCloudAiplatformV1beta1EncryptionSpec
-  if args.IsSpecified('kms_key'):
-    return encryption_spec(
-        kmsKeyName=args.CONCEPTS.kms_key.Parse().RelativeName()
-    )
-  return None
 
 
 def GetDataformRepositorySourceFromArgs(args, messages):
@@ -198,7 +180,6 @@ def CreateNotebookExecutionJob(args, messages):
       ),
       directNotebookSource=GetDirectNotebookSourceFromArgs(args, messages),
       displayName=args.display_name,
-      encryptionSpec=CreateEncryptionSpecConfig(args, messages),
       executionTimeout=GetExecutionTimeoutFromArgs(args),
       executionUser=args.user_email,
       gcsNotebookSource=GetGcsNotebookSourceFromArgs(args, messages),
@@ -218,7 +199,7 @@ def CreateExecutionCreateRequest(args, messages):
   Returns:
     Instance of the NotebookExecutionJobsCreateRequest message.
   """
-  parent = GetParentForExecution(args)
+  parent = GetParentForExecutionOrSchedule(args)
   notebook_execution_job = CreateNotebookExecutionJob(args, messages)
   return messages.AiplatformProjectsLocationsNotebookExecutionJobsCreateRequest(
       googleCloudAiplatformV1beta1NotebookExecutionJob=notebook_execution_job,
@@ -275,6 +256,6 @@ def CreateExecutionListRequest(args, messages):
   """
   return (
       messages.AiplatformProjectsLocationsNotebookExecutionJobsListRequest(
-          parent=GetParentForExecution(args),
+          parent=GetParentForExecutionOrSchedule(args),
       )
   )

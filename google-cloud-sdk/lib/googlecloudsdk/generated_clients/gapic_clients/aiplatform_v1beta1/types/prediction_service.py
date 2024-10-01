@@ -944,6 +944,9 @@ class GenerateContentResponse(proto.Message):
     Attributes:
         candidates (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Candidate]):
             Output only. Generated candidates.
+        model_version (str):
+            Output only. The model version used to
+            generate the response.
         prompt_feedback (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GenerateContentResponse.PromptFeedback):
             Output only. Content filter results for a
             prompt sent in the request. Note: Sent only in
@@ -1041,6 +1044,10 @@ class GenerateContentResponse(proto.Message):
         proto.MESSAGE,
         number=2,
         message=content.Candidate,
+    )
+    model_version: str = proto.Field(
+        proto.STRING,
+        number=11,
     )
     prompt_feedback: PromptFeedback = proto.Field(
         proto.MESSAGE,

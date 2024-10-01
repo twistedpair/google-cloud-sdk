@@ -217,6 +217,17 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         return m.groupdict() if m else {}
 
     @staticmethod
+    def log_scope_path(project: str,location: str,log_scope: str,) -> str:
+        """Returns a fully-qualified log_scope string."""
+        return "projects/{project}/locations/{location}/logScopes/{log_scope}".format(project=project, location=location, log_scope=log_scope, )
+
+    @staticmethod
+    def parse_log_scope_path(path: str) -> Dict[str,str]:
+        """Parses a log_scope path into its component segments."""
+        m = re.match(r"^projects/(?P<project>.+?)/locations/(?P<location>.+?)/logScopes/(?P<log_scope>.+?)$", path)
+        return m.groupdict() if m else {}
+
+    @staticmethod
     def log_sink_path(project: str,sink: str,) -> str:
         """Returns a fully-qualified log_sink string."""
         return "projects/{project}/sinks/{sink}".format(project=project, sink=sink, )
@@ -2193,6 +2204,585 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.delete_view]
+
+         # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("name", request.name),
+            )),
+        )
+
+        # Validate the universe domain.
+        self._validate_universe_domain()
+
+        # Send the request.
+        rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+    def list_log_scopes(self,
+            request: Optional[Union[logging_config.ListLogScopesRequest, dict]] = None,
+            *,
+            parent: Optional[str] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> pagers.ListLogScopesPager:
+        r"""Lists log scopes.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import logging_v2
+
+            def sample_list_log_scopes():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.ListLogScopesRequest(
+                    parent="parent_value",
+                )
+
+                # Make the request
+                page_result = client.list_log_scopes(request=request)
+
+                # Handle the response
+                for response in page_result:
+                    print(response)
+
+        Args:
+            request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.ListLogScopesRequest, dict]):
+                The request object. The parameters to ``ListLogScopes``.
+            parent (str):
+                Required. The parent resource whose log scopes are to be
+                listed:
+
+                ::
+
+                    "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+
+                This corresponds to the ``parent`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            googlecloudsdk.generated_clients.gapic_clients.logging_v2.services.config_service_v2.pagers.ListLogScopesPager:
+                The response from ListLogScopes.
+                   Every project has a \_Default log scope that cannot
+                   be modified or deleted.
+
+                Iterating over this object will yield results and
+                resolve additional pages automatically.
+
+        """
+        # Create or coerce a protobuf request object.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
+        has_flattened_params = any([parent])
+        if request is not None and has_flattened_params:
+            raise ValueError('If the `request` argument is set, then none of '
+                             'the individual field arguments should be set.')
+
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.ListLogScopesRequest):
+            request = logging_config.ListLogScopesRequest(request)
+            # If we have keyword arguments corresponding to fields on the
+            # request, apply these.
+            if parent is not None:
+                request.parent = parent
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._transport._wrapped_methods[self._transport.list_log_scopes]
+
+         # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("parent", request.parent),
+            )),
+        )
+
+        # Validate the universe domain.
+        self._validate_universe_domain()
+
+        # Send the request.
+        response = rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # This method is paged; wrap the response in a pager, which provides
+        # an `__iter__` convenience method.
+        response = pagers.ListLogScopesPager(
+            method=rpc,
+            request=request,
+            response=response,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    def get_log_scope(self,
+            request: Optional[Union[logging_config.GetLogScopeRequest, dict]] = None,
+            *,
+            name: Optional[str] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> logging_config.LogScope:
+        r"""Gets a log scope.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import logging_v2
+
+            def sample_get_log_scope():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.GetLogScopeRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                response = client.get_log_scope(request=request)
+
+                # Handle the response
+                print(response)
+
+        Args:
+            request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.GetLogScopeRequest, dict]):
+                The request object. The parameters to ``GetLogScope``.
+            name (str):
+                Required. The resource name of the log scope:
+
+                ::
+
+                    "projects/[PROJECT_ID]/locations/[LOCATION_ID]/logScopes/[LOG_SCOPE_ID]"
+
+                For example:
+
+                ``"projects/my-project/locations/global/logScopes/my-log-scope"``
+
+                This corresponds to the ``name`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogScope:
+                Describes a group of resources to
+                read log entries from.
+
+        """
+        # Create or coerce a protobuf request object.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
+        has_flattened_params = any([name])
+        if request is not None and has_flattened_params:
+            raise ValueError('If the `request` argument is set, then none of '
+                             'the individual field arguments should be set.')
+
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.GetLogScopeRequest):
+            request = logging_config.GetLogScopeRequest(request)
+            # If we have keyword arguments corresponding to fields on the
+            # request, apply these.
+            if name is not None:
+                request.name = name
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._transport._wrapped_methods[self._transport.get_log_scope]
+
+         # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("name", request.name),
+            )),
+        )
+
+        # Validate the universe domain.
+        self._validate_universe_domain()
+
+        # Send the request.
+        response = rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    def create_log_scope(self,
+            request: Optional[Union[logging_config.CreateLogScopeRequest, dict]] = None,
+            *,
+            parent: Optional[str] = None,
+            log_scope: Optional[logging_config.LogScope] = None,
+            log_scope_id: Optional[str] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> logging_config.LogScope:
+        r"""Creates a log scope.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import logging_v2
+
+            def sample_create_log_scope():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                log_scope = logging_v2.LogScope()
+                log_scope.resource_names = ['resource_names_value1', 'resource_names_value2']
+
+                request = logging_v2.CreateLogScopeRequest(
+                    parent="parent_value",
+                    log_scope_id="log_scope_id_value",
+                    log_scope=log_scope,
+                )
+
+                # Make the request
+                response = client.create_log_scope(request=request)
+
+                # Handle the response
+                print(response)
+
+        Args:
+            request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.CreateLogScopeRequest, dict]):
+                The request object. The parameters to ``CreateLogScope``.
+            parent (str):
+                Required. The parent project in which to create the log
+                scope
+
+                ::
+
+                    "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+
+                For example:
+
+                ``"projects/my-project/locations/global"``
+
+                This corresponds to the ``parent`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            log_scope (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogScope):
+                Required. The new log scope.
+                This corresponds to the ``log_scope`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            log_scope_id (str):
+                Required. A client-assigned identifier such as
+                ``"log-scope"``. Identifiers are limited to 100
+                characters and can include only letters, digits,
+                underscores, hyphens, and periods. First character has
+                to be alphanumeric.
+
+                This corresponds to the ``log_scope_id`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogScope:
+                Describes a group of resources to
+                read log entries from.
+
+        """
+        # Create or coerce a protobuf request object.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
+        has_flattened_params = any([parent, log_scope, log_scope_id])
+        if request is not None and has_flattened_params:
+            raise ValueError('If the `request` argument is set, then none of '
+                             'the individual field arguments should be set.')
+
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.CreateLogScopeRequest):
+            request = logging_config.CreateLogScopeRequest(request)
+            # If we have keyword arguments corresponding to fields on the
+            # request, apply these.
+            if parent is not None:
+                request.parent = parent
+            if log_scope is not None:
+                request.log_scope = log_scope
+            if log_scope_id is not None:
+                request.log_scope_id = log_scope_id
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._transport._wrapped_methods[self._transport.create_log_scope]
+
+         # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("parent", request.parent),
+            )),
+        )
+
+        # Validate the universe domain.
+        self._validate_universe_domain()
+
+        # Send the request.
+        response = rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    def update_log_scope(self,
+            request: Optional[Union[logging_config.UpdateLogScopeRequest, dict]] = None,
+            *,
+            log_scope: Optional[logging_config.LogScope] = None,
+            update_mask: Optional[field_mask_pb2.FieldMask] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> logging_config.LogScope:
+        r"""Updates a log scope.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import logging_v2
+
+            def sample_update_log_scope():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                log_scope = logging_v2.LogScope()
+                log_scope.resource_names = ['resource_names_value1', 'resource_names_value2']
+
+                request = logging_v2.UpdateLogScopeRequest(
+                    log_scope=log_scope,
+                )
+
+                # Make the request
+                response = client.update_log_scope(request=request)
+
+                # Handle the response
+                print(response)
+
+        Args:
+            request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.UpdateLogScopeRequest, dict]):
+                The request object. The parameters to ``UpdateLogScope``. The ``_Default``
+                log scope cannot be modified.
+            log_scope (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogScope):
+                Required. The updated log scope.
+                This corresponds to the ``log_scope`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            update_mask (google.protobuf.field_mask_pb2.FieldMask):
+                Optional. Field mask that specifies the fields in
+                ``log_scope`` that need an update. A field will be
+                overwritten if, and only if, it is in the update mask.
+                ``name`` and output only fields cannot be updated.
+
+                For a detailed ``FieldMask`` definition, see
+                https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#google.protobuf.FieldMask
+
+                For example: ``updateMask=description``
+
+                This corresponds to the ``update_mask`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogScope:
+                Describes a group of resources to
+                read log entries from.
+
+        """
+        # Create or coerce a protobuf request object.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
+        has_flattened_params = any([log_scope, update_mask])
+        if request is not None and has_flattened_params:
+            raise ValueError('If the `request` argument is set, then none of '
+                             'the individual field arguments should be set.')
+
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.UpdateLogScopeRequest):
+            request = logging_config.UpdateLogScopeRequest(request)
+            # If we have keyword arguments corresponding to fields on the
+            # request, apply these.
+            if log_scope is not None:
+                request.log_scope = log_scope
+            if update_mask is not None:
+                request.update_mask = update_mask
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._transport._wrapped_methods[self._transport.update_log_scope]
+
+         # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("log_scope.name", request.log_scope.name),
+            )),
+        )
+
+        # Validate the universe domain.
+        self._validate_universe_domain()
+
+        # Send the request.
+        response = rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    def delete_log_scope(self,
+            request: Optional[Union[logging_config.DeleteLogScopeRequest, dict]] = None,
+            *,
+            name: Optional[str] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> None:
+        r"""Deletes a log scope.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import logging_v2
+
+            def sample_delete_log_scope():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.DeleteLogScopeRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                client.delete_log_scope(request=request)
+
+        Args:
+            request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.DeleteLogScopeRequest, dict]):
+                The request object. The parameters to ``DeleteLogScope``. The ``_Default``
+                log scope cannot be deleted.
+            name (str):
+                Required. The resource name of the log scope to delete:
+
+                ::
+
+                    "projects/[PROJECT_ID]/locations/[LOCATION_ID]/logScopes/[LOG_SCOPE_ID]"
+
+                For example:
+
+                ``"projects/my-project/locations/global/logScopes/my-log-scope"``
+
+                This corresponds to the ``name`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+        """
+        # Create or coerce a protobuf request object.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
+        has_flattened_params = any([name])
+        if request is not None and has_flattened_params:
+            raise ValueError('If the `request` argument is set, then none of '
+                             'the individual field arguments should be set.')
+
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.DeleteLogScopeRequest):
+            request = logging_config.DeleteLogScopeRequest(request)
+            # If we have keyword arguments corresponding to fields on the
+            # request, apply these.
+            if name is not None:
+                request.name = name
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._transport._wrapped_methods[self._transport.delete_log_scope]
 
          # Certain fields should be provided within the metadata header;
         # add these here.

@@ -32,7 +32,9 @@ from .types.content import GenerationConfig
 from .types.content import GroundingChunk
 from .types.content import GroundingMetadata
 from .types.content import GroundingSupport
+from .types.content import LogprobsResult
 from .types.content import Part
+from .types.content import RetrievalMetadata
 from .types.content import SafetyRating
 from .types.content import SafetySetting
 from .types.content import SearchEntryPoint
@@ -69,6 +71,7 @@ from .types.io import GcsDestination
 from .types.io import GcsSource
 from .types.io import GoogleDriveSource
 from .types.io import JiraSource
+from .types.io import SharePointSources
 from .types.io import SlackSource
 from .types.io import TFRecordDestination
 from .types.openapi import Schema
@@ -99,6 +102,7 @@ from .types.prediction_service import StreamingPredictResponse
 from .types.prediction_service import StreamingRawPredictRequest
 from .types.prediction_service import StreamingRawPredictResponse
 from .types.prediction_service import StreamRawPredictRequest
+from .types.tool import DynamicRetrievalConfig
 from .types.tool import FunctionCall
 from .types.tool import FunctionCallingConfig
 from .types.tool import FunctionDeclaration
@@ -142,6 +146,7 @@ __all__ = (
 'DirectRawPredictResponse',
 'DirectUploadSource',
 'DoubleArray',
+'DynamicRetrievalConfig',
 'Examples',
 'ExamplesOverride',
 'ExamplesRestrictionsNamespace',
@@ -174,6 +179,7 @@ __all__ = (
 'Int64Array',
 'IntegratedGradientsAttribution',
 'JiraSource',
+'LogprobsResult',
 'ModelExplanation',
 'Neighbor',
 'Part',
@@ -185,12 +191,14 @@ __all__ = (
 'Presets',
 'RawPredictRequest',
 'Retrieval',
+'RetrievalMetadata',
 'SafetyRating',
 'SafetySetting',
 'SampledShapleyAttribution',
 'Schema',
 'SearchEntryPoint',
 'Segment',
+'SharePointSources',
 'SlackSource',
 'SmoothGradConfig',
 'StreamDirectPredictRequest',

@@ -330,3 +330,17 @@ network_config:
 
       *external-ips*::: Indicate that the IP addresses for the node should be exteranl. The default will be
       only internal IP addresses.
+
+reservation:
+  api_field: queuedResource.reservationName
+  arg_name: reservation
+  type: str
+  required: false
+  help_text: |
+    The name of the reservation. This can either be the full name or just the name.
+
+    However, a full name is required if the reservation is not in the default project.
+
+    Full reservation name format is:
+
+    projects/<project>/reservations/<reservation-name>.

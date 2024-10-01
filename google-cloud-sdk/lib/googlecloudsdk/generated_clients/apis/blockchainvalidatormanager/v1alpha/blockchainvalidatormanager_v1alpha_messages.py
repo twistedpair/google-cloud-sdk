@@ -13,18 +13,6 @@ from apitools.base.py import extra_types
 package = 'blockchainvalidatormanager'
 
 
-class BlockchainNode(_messages.Message):
-  r"""Configuration for creating a new blockchain node to deploy the
-  blockchain validator(s) to.
-
-  Fields:
-    ethereumDetails: Additional configuration specific to Ethereum blockchain
-      nodes.
-  """
-
-  ethereumDetails = _messages.MessageField('EthereumNodeDetails', 1)
-
-
 class BlockchainValidatorConfig(_messages.Message):
   r"""Represents the configuration of a blockchain validator, as it would be
   configured on a validator client.
@@ -46,7 +34,7 @@ class BlockchainValidatorConfig(_messages.Message):
       produced). If this node is offline or deleted, the validator will be
       offline.
     blockchainType: Required. Immutable. The blockchain type of the validator.
-    createTime: Output only. [Output only] Create time stamp
+    createTime: Output only. [Output only] Create timestamp
     ethereumProtocolDetails: Optional. Ethereum-specific configuration for a
       blockchain validator.
     existingSeedPhraseReference: Optional. An existing seed phrase, read from
@@ -64,7 +52,7 @@ class BlockchainValidatorConfig(_messages.Message):
       service to use for signing attestations and blocks.
     seedPhraseReference: Optional. A new seed phrase, optionally written to
       Secret Manager.
-    updateTime: Output only. [Output only] Update time stamp
+    updateTime: Output only. [Output only] Update timestamp
     validationWorkEnabled: Required. True if the blockchain node requests and
       signs attestations and blocks on behalf of this validator, false if not.
       This does NOT define whether the blockchain expects work to occur, only
@@ -147,100 +135,6 @@ class BlockchainValidatorConfig(_messages.Message):
   votingPublicKey = _messages.StringField(13)
 
 
-class BlockchainValidatorTemplate(_messages.Message):
-  r"""A templatised set of blockchain validator configs, from which multiple
-  configurations can be generated.
-
-  Enums:
-    BlockchainNodeSourceValueValuesEnum: Required. Immutable. The source of
-      the blockchain node for the validator configurations to be deployed to.
-    BlockchainTypeValueValuesEnum: Required. Immutable. The blockchain type of
-      the validator.
-    KeySourceValueValuesEnum: Required. Immutable. The source of the voting
-      key for the blockchain validator.
-
-  Fields:
-    blockchainNodeSource: Required. Immutable. The source of the blockchain
-      node for the validator configurations to be deployed to.
-    blockchainType: Required. Immutable. The blockchain type of the validator.
-    ethereumProtocolDetails: Ethereum-specific configuration for a blockchain
-      validator.
-    existingBlockchainNodeSource: Configuration for deploying blockchain
-      validators to an existing blockchain node.
-    existingSeedPhraseReference: Optional. An existing seed phrase, read from
-      Secret Manager.
-    keySource: Required. Immutable. The source of the voting key for the
-      blockchain validator.
-    newBlockchainNodeSource: Configuration for creating a new blockchain node
-      to deploy the blockchain validator(s) to.
-    remoteWeb3Signer: Optional. Connection details of a remote Web3Signer
-      service to use for signing attestations and blocks.
-    seedPhraseReference: Optional. A new seed phrase, optionally written to
-      Secret Manager.
-    validationWorkEnabled: Required. True if the blockchain node requests and
-      signs attestations and blocks on behalf of this validator, false if not.
-      This does NOT define whether the blockchain expects work to occur, only
-      whether the blockchain node specified above is carrying out validation
-      tasks.
-  """
-
-  class BlockchainNodeSourceValueValuesEnum(_messages.Enum):
-    r"""Required. Immutable. The source of the blockchain node for the
-    validator configurations to be deployed to.
-
-    Values:
-      BLOCKCHAIN_NODE_SOURCE_UNSPECIFIED: Blockchain node source has not been
-        specified, but should be.
-      NEW_BLOCKCHAIN_NODE: Create a new blockchain node to deploy the
-        validators to.
-      EXISTING_BLOCKCHAIN_NODE: Deploying blockchain validators to an existing
-        blockchain node, or to no node.
-    """
-    BLOCKCHAIN_NODE_SOURCE_UNSPECIFIED = 0
-    NEW_BLOCKCHAIN_NODE = 1
-    EXISTING_BLOCKCHAIN_NODE = 2
-
-  class BlockchainTypeValueValuesEnum(_messages.Enum):
-    r"""Required. Immutable. The blockchain type of the validator.
-
-    Values:
-      BLOCKCHAIN_TYPE_UNSPECIFIED: Blockchain type has not been specified, but
-        should be.
-      ETHEREUM: The blockchain type is Ethereum.
-    """
-    BLOCKCHAIN_TYPE_UNSPECIFIED = 0
-    ETHEREUM = 1
-
-  class KeySourceValueValuesEnum(_messages.Enum):
-    r"""Required. Immutable. The source of the voting key for the blockchain
-    validator.
-
-    Values:
-      KEY_SOURCE_UNSPECIFIED: Voting key source has not been specified, but
-        should be.
-      REMOTE_WEB3_SIGNER: The voting key is stored in a remote signing service
-        (Web3Signer) and signing requests are delegated.
-      SEED_PHRASE_REFERENCE: Derive voting keys from new seed material.
-      EXISTING_SEED_PHRASE_REFERENCE: Derive voting keys from existing seed
-        material.
-    """
-    KEY_SOURCE_UNSPECIFIED = 0
-    REMOTE_WEB3_SIGNER = 1
-    SEED_PHRASE_REFERENCE = 2
-    EXISTING_SEED_PHRASE_REFERENCE = 3
-
-  blockchainNodeSource = _messages.EnumField('BlockchainNodeSourceValueValuesEnum', 1)
-  blockchainType = _messages.EnumField('BlockchainTypeValueValuesEnum', 2)
-  ethereumProtocolDetails = _messages.MessageField('EthereumDetailsTemplate', 3)
-  existingBlockchainNodeSource = _messages.MessageField('ExistingBlockchainNodeSource', 4)
-  existingSeedPhraseReference = _messages.MessageField('ExistingSeedPhraseReferenceTemplate', 5)
-  keySource = _messages.EnumField('KeySourceValueValuesEnum', 6)
-  newBlockchainNodeSource = _messages.MessageField('BlockchainNode', 7)
-  remoteWeb3Signer = _messages.MessageField('RemoteWeb3SignerTemplate', 8)
-  seedPhraseReference = _messages.MessageField('SeedPhraseReferenceTemplate', 9)
-  validationWorkEnabled = _messages.BooleanField(10)
-
-
 class BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorConfigsCreateRequest(_messages.Message):
   r"""A BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorConfigsC
   reateRequest object.
@@ -293,22 +187,6 @@ class BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorConfigsDelet
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
-
-
-class BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorConfigsGenerateRequest(_messages.Message):
-  r"""A BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorConfigsG
-  enerateRequest object.
-
-  Fields:
-    generateBlockchainValidatorConfigsRequest: A
-      GenerateBlockchainValidatorConfigsRequest resource to be passed as the
-      request body.
-    parent: Required. The parent location to create validator configurations
-      under. Format: projects/{project_number}/locations/{location}.
-  """
-
-  generateBlockchainValidatorConfigsRequest = _messages.MessageField('GenerateBlockchainValidatorConfigsRequest', 1)
-  parent = _messages.StringField(2, required=True)
 
 
 class BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorConfigsGetRequest(_messages.Message):
@@ -573,150 +451,6 @@ class EthereumDetails(_messages.Message):
   useBlockBuilderProposals = _messages.BooleanField(5)
 
 
-class EthereumDetailsTemplate(_messages.Message):
-  r"""Blockchain validator configuration unique to Ethereum blockchains.
-
-  Enums:
-    NetworkValueValuesEnum: Optional. Output only. The Ethereum network the
-      validator is deployed on. This is set on initial deployment to a
-      blockchain node and cannot be changed.
-
-  Fields:
-    gasLimit: Optional. Immutable. Optionally requested (not enforced) maximum
-      gas per block. This is sent to the block builder service, however
-      whether it is followed depends on the service. This field is only read
-      if the field use_block_builder_proposals is set to true. If not
-      specified, the validator client will use a default value.
-    graffiti: Optional. Input only. Graffiti is a custom string published in
-      blocks proposed by the validator. This can only be written, as the
-      current value cannot be read back from the validator client API. See
-      https://lighthouse-book.sigmaprime.io/graffiti.html for an example of
-      how this is used. If not set, the validator client's default is used. If
-      no blockchain node is specified, this has no effect as no validator
-      client is run.
-    network: Optional. Output only. The Ethereum network the validator is
-      deployed on. This is set on initial deployment to a blockchain node and
-      cannot be changed.
-    suggestedFeeRecipient: Required. Immutable. The Ethereum address to which
-      fee rewards should be sent. This can only be set when creating the
-      validator. If no blockchain node is specified for the validator, this
-      has no effect as no validator client is run. See also
-      https://lighthouse-book.sigmaprime.io/suggested-fee-recipient.html for
-      more context.
-    useBlockBuilderProposals: Optional. Immutable. Enable use of the external
-      block building services (MEV).
-  """
-
-  class NetworkValueValuesEnum(_messages.Enum):
-    r"""Optional. Output only. The Ethereum network the validator is deployed
-    on. This is set on initial deployment to a blockchain node and cannot be
-    changed.
-
-    Values:
-      NETWORK_UNSPECIFIED: The network has not been specified, but should be.
-      MAINNET: The Ethereum Mainnet.
-      TESTNET_GOERLI_PRATER: Deprecated: The Ethereum Testnet based on Goerli
-        protocol. Holesky (TESTNET_HOLESKY) is the recommended testnet to
-        replace Goerli.
-      TESTNET_SEPOLIA: The Ethereum Testnet based on Sepolia/Bepolia protocol.
-        See https://github.com/eth-clients/sepolia.
-      TESTNET_HOLESKY: The Ethereum Testnet based on Holesky specification.
-        See https://github.com/eth-clients/holesky.
-    """
-    NETWORK_UNSPECIFIED = 0
-    MAINNET = 1
-    TESTNET_GOERLI_PRATER = 2
-    TESTNET_SEPOLIA = 3
-    TESTNET_HOLESKY = 4
-
-  gasLimit = _messages.IntegerField(1)
-  graffiti = _messages.StringField(2)
-  network = _messages.EnumField('NetworkValueValuesEnum', 3)
-  suggestedFeeRecipient = _messages.StringField(4)
-  useBlockBuilderProposals = _messages.BooleanField(5)
-
-
-class EthereumNodeDetails(_messages.Message):
-  r"""Ethereum-specific blockchain node details.
-
-  Enums:
-    ConsensusClientValueValuesEnum: Required. Immutable. The consensus client.
-    ExecutionClientValueValuesEnum: Required. Immutable. The execution client
-    NetworkValueValuesEnum: Required. Immutable. The Ethereum environment
-      being accessed.
-
-  Fields:
-    consensusClient: Required. Immutable. The consensus client.
-    executionClient: Required. Immutable. The execution client
-    mevRelayUrls: Optional. URLs for MEV-relay services to use for block
-      building. When set, a Google Cloud managed MEV-boost service is
-      configured on the beacon client.
-    network: Required. Immutable. The Ethereum environment being accessed.
-  """
-
-  class ConsensusClientValueValuesEnum(_messages.Enum):
-    r"""Required. Immutable. The consensus client.
-
-    Values:
-      CONSENSUS_CLIENT_UNSPECIFIED: Consensus client has not been specified,
-        but should be.
-      LIGHTHOUSE: Consensus client implementation written in Rust, maintained
-        by Sigma Prime. See [Lighthouse - Sigma
-        Prime](https://lighthouse.sigmaprime.io/) for details.
-    """
-    CONSENSUS_CLIENT_UNSPECIFIED = 0
-    LIGHTHOUSE = 1
-
-  class ExecutionClientValueValuesEnum(_messages.Enum):
-    r"""Required. Immutable. The execution client
-
-    Values:
-      EXECUTION_CLIENT_UNSPECIFIED: Execution client has not been specified,
-        but should be.
-      GETH: Official Go implementation of the Ethereum protocol. See [go-
-        ethereum](https://geth.ethereum.org/) for details.
-    """
-    EXECUTION_CLIENT_UNSPECIFIED = 0
-    GETH = 1
-
-  class NetworkValueValuesEnum(_messages.Enum):
-    r"""Required. Immutable. The Ethereum environment being accessed.
-
-    Values:
-      NETWORK_UNSPECIFIED: The network has not been specified, but should be.
-      MAINNET: The Ethereum Mainnet.
-      TESTNET_GOERLI_PRATER: Deprecated: The Ethereum Testnet based on Goerli
-        protocol. Holesky (TESTNET_HOLESKY) is the recommended testnet to
-        replace Goerli.
-      TESTNET_SEPOLIA: The Ethereum Testnet based on Sepolia/Bepolia protocol.
-        See https://github.com/eth-clients/sepolia.
-      TESTNET_HOLESKY: The Ethereum Testnet based on Holesky specification.
-        See https://github.com/eth-clients/holesky.
-    """
-    NETWORK_UNSPECIFIED = 0
-    MAINNET = 1
-    TESTNET_GOERLI_PRATER = 2
-    TESTNET_SEPOLIA = 3
-    TESTNET_HOLESKY = 4
-
-  consensusClient = _messages.EnumField('ConsensusClientValueValuesEnum', 1)
-  executionClient = _messages.EnumField('ExecutionClientValueValuesEnum', 2)
-  mevRelayUrls = _messages.StringField(3, repeated=True)
-  network = _messages.EnumField('NetworkValueValuesEnum', 4)
-
-
-class ExistingBlockchainNodeSource(_messages.Message):
-  r"""Configuration for deploying blockchain validators to an existing
-  blockchain node.
-
-  Fields:
-    blockchainNodeId: Optional. Name of the blockchain node to deploy the
-      validators to. If not set, the validators are not deployed.
-  """
-
-  blockchainNodeId = _messages.StringField(1)
-
-
 class ExistingSeedPhraseReference(_messages.Message):
   r"""Location of existing seed material, and derivation path used to generate
   the voting key.
@@ -737,34 +471,6 @@ class ExistingSeedPhraseReference(_messages.Message):
   depositTxData = _messages.StringField(1)
   derivationIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   seedPhraseSecret = _messages.StringField(3)
-
-
-class ExistingSeedPhraseReferenceTemplate(_messages.Message):
-  r"""Location of the seed material, and derivation path used to generate the
-  voting key.
-
-  Fields:
-    derivationBase: Optional. The first derivation index to use when deriving
-      keys. Must be 0 or greater.
-    keyCount: Required. Number of keys (and therefore validators) to derive
-      from the seed phrase. Must be between 1 and 1,000.
-    seedPhraseSecret: Required. Immutable. Reference into Secret Manager for
-      where the seed phrase is stored.
-  """
-
-  derivationBase = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  keyCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  seedPhraseSecret = _messages.StringField(3)
-
-
-class GenerateBlockchainValidatorConfigsRequest(_messages.Message):
-  r"""Generate a number of validator configurations from a common template.
-
-  Fields:
-    blockchainValidatorConfigTemplate: Required. The resources being created.
-  """
-
-  blockchainValidatorConfigTemplate = _messages.MessageField('BlockchainValidatorTemplate', 1)
 
 
 class ListBlockchainValidatorConfigsResponse(_messages.Message):
@@ -1058,35 +764,6 @@ class RemoteWeb3Signer(_messages.Message):
   web3signerUri = _messages.StringField(5)
 
 
-class RemoteWeb3SignerTemplate(_messages.Message):
-  r"""Configuration to use an external key signing service, such as the
-  service endpoint. The external key signer is expected to be managed entirely
-  by the customer. For reference see https://docs.web3signer.consensys.net/
-  for details on Web3Signer and
-  https://docs.web3signer.consensys.net/reference/api/json-rpc for the API
-  exposed by the external service.
-
-  Fields:
-    rootCertificate: Optional. Immutable. PEM-format X.509 certificate
-      corresponding to the URI of the Web3Signer. An example of this can be
-      found on https://www.ssl.com/guide/pem-der-crt-and-cer-x-509-encodings-
-      and-conversions/ When not set, the validator client will only accept TLS
-      certificates signed by well known certificate authorities (as in, the
-      set configured by default in the OS Docker image).
-    timeoutDuration: Optional. Timeout for requests to the Web3Signer service.
-    votingPublicKeys: Required. The public key of the validator, as a
-      hexadecimal string prefixed with "0x". This is used as the identifier
-      for the key when sending requests to the Web3Signer service.
-    web3signerUri: Required. URI of the Web3Signer service the validator
-      client connects to, to request signing of attestations, blocks, etc.
-  """
-
-  rootCertificate = _messages.StringField(1)
-  timeoutDuration = _messages.StringField(2)
-  votingPublicKeys = _messages.StringField(3, repeated=True)
-  web3signerUri = _messages.StringField(4)
-
-
 class SeedPhraseReference(_messages.Message):
   r"""Derivation path used to generate the voting key, and optionally Secret
   Manager secret to backup the seed phrase to.
@@ -1110,24 +787,6 @@ class SeedPhraseReference(_messages.Message):
   derivationIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   exportSeedPhrase = _messages.BooleanField(3)
   seedPhraseSecret = _messages.StringField(4)
-
-
-class SeedPhraseReferenceTemplate(_messages.Message):
-  r"""Configuration for creating voting keys from a new seed phrase, and
-  optionally location to back it up to, in Secret Manager.
-
-  Fields:
-    exportSeedPhrase: Optional. Immutable. True to export the seed phrase to
-      Secret Manager.
-    keyCount: Required. Number of keys (and therefore validators) to derive
-      from the seed phrase. Must be between 1 and 1,000.
-    seedPhraseSecret: Required. Immutable. Reference into Secret Manager for
-      where the seed phrase is stored.
-  """
-
-  exportSeedPhrase = _messages.BooleanField(1)
-  keyCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  seedPhraseSecret = _messages.StringField(3)
 
 
 class StandardQueryParameters(_messages.Message):

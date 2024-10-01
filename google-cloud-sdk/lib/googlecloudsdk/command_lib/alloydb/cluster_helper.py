@@ -212,6 +212,7 @@ def _ConstructClusterForCreateRequestBeta(alloydb_messages, args):
     cluster.maintenanceUpdatePolicy.denyMaintenancePeriods = (
         _ConstructDenyPeriods(alloydb_messages, args)
     )
+  cluster.tags = flags.GetTagsFromArgs(args, alloydb_messages.Cluster.TagsValue)
   return cluster
 
 

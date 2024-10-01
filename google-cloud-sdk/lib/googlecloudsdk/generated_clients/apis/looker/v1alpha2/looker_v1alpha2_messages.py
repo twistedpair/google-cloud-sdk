@@ -409,6 +409,19 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GeminiAiConfig(_messages.Message):
+  r"""Information for Gemini AI setup for a Looker instance.
+
+  Fields:
+    promptLogging: Optional. Whether to enable prompt logging for Gemini AI.
+    trustedTester: Optional. Whether customer opt in for Gemini AI public
+      preview.
+  """
+
+  promptLogging = _messages.BooleanField(1)
+  trustedTester = _messages.BooleanField(2)
+
+
 class ImportInstanceRequest(_messages.Message):
   r"""Requestion options for importing looker data to an Instance
 
@@ -442,6 +455,7 @@ class Instance(_messages.Message):
     encryptionConfig: Encryption configuration (CMEK). Only set if CMEK has
       been enabled on the instance.
     fipsEnabled: Optional. Whether FIPS is enabled on the Looker instance.
+    geminiAiConfig: Optional. Gemini AI configuration
     geminiEnabled: Optional. Whether Gemini feature is enabled on the Looker
       instance or not.
     ingressPrivateIp: Output only. Private Ingress IP (IPv4).
@@ -543,27 +557,28 @@ class Instance(_messages.Message):
   egressPublicIp = _messages.StringField(6)
   encryptionConfig = _messages.MessageField('EncryptionConfig', 7)
   fipsEnabled = _messages.BooleanField(8)
-  geminiEnabled = _messages.BooleanField(9)
-  ingressPrivateIp = _messages.StringField(10)
-  ingressPublicIp = _messages.StringField(11)
-  lastDenyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 12)
-  linkedLspProjectNumber = _messages.IntegerField(13)
-  lookerUri = _messages.StringField(14)
-  lookerVersion = _messages.StringField(15)
-  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 16)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 17)
-  name = _messages.StringField(18)
-  oauthConfig = _messages.MessageField('OAuthConfig', 19)
-  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 20)
-  privateIpEnabled = _messages.BooleanField(21)
-  pscConfig = _messages.MessageField('PscConfig', 22)
-  pscEnabled = _messages.BooleanField(23)
-  publicIpEnabled = _messages.BooleanField(24)
-  reservedRange = _messages.StringField(25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
-  tier = _messages.EnumField('TierValueValuesEnum', 27)
-  updateTime = _messages.StringField(28)
-  userMetadata = _messages.MessageField('UserMetadata', 29)
+  geminiAiConfig = _messages.MessageField('GeminiAiConfig', 9)
+  geminiEnabled = _messages.BooleanField(10)
+  ingressPrivateIp = _messages.StringField(11)
+  ingressPublicIp = _messages.StringField(12)
+  lastDenyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 13)
+  linkedLspProjectNumber = _messages.IntegerField(14)
+  lookerUri = _messages.StringField(15)
+  lookerVersion = _messages.StringField(16)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 17)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 18)
+  name = _messages.StringField(19)
+  oauthConfig = _messages.MessageField('OAuthConfig', 20)
+  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 21)
+  privateIpEnabled = _messages.BooleanField(22)
+  pscConfig = _messages.MessageField('PscConfig', 23)
+  pscEnabled = _messages.BooleanField(24)
+  publicIpEnabled = _messages.BooleanField(25)
+  reservedRange = _messages.StringField(26)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
+  tier = _messages.EnumField('TierValueValuesEnum', 28)
+  updateTime = _messages.StringField(29)
+  userMetadata = _messages.MessageField('UserMetadata', 30)
 
 
 class InstanceBackup(_messages.Message):

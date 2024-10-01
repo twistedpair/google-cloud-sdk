@@ -75,6 +75,7 @@ class ActiveDirectory(_messages.Message):
       IN_USE: Active Directory State is In use
       DELETING: Active Directory State is Deleting
       ERROR: Active Directory State is Error
+      DIAGNOSING: Active Directory State is Diagnosing.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -83,6 +84,7 @@ class ActiveDirectory(_messages.Message):
     IN_USE = 4
     DELETING = 5
     ERROR = 6
+    DIAGNOSING = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -478,11 +480,14 @@ class EstablishPeeringRequest(_messages.Message):
       peering.
     peerSvmName: Required. Name of the user's local source vserver svm to be
       peered with the destination vserver svm.
+    peerVolumeName: Required. Name of the user's local source volume to be
+      peered with the destination volume.
   """
 
   peerClusterName = _messages.StringField(1)
   peerIpAddresses = _messages.StringField(2, repeated=True)
   peerSvmName = _messages.StringField(3)
+  peerVolumeName = _messages.StringField(4)
 
 
 class ExportPolicy(_messages.Message):

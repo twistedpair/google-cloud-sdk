@@ -205,6 +205,15 @@ def GetRequiredAttachmentFlag():
   )
 
 
+def GetOptionalAttachmentFlag():
+  return concept_parsers.ConceptParser.ForResource(
+      'attachment',
+      GetAttachmentResourceSpec(),
+      'The Artifact Registry attachment name.',
+      required=False,
+  )
+
+
 def GetAllowOverwriteFlag():
   return base.Argument(
       '--allow-overwrite',
@@ -247,8 +256,7 @@ def GetOptionalLocationFlag():
 def GetOptionalAALocationFlag():
   return base.Argument(
       '--location',
-      hidden=True,
-      help=('If specified, all requests to artifact analysis for occurrences'
+      help=('If specified, all requests to Artifact Analysis for occurrences'
             ' will go to location specified'),
       required=False,
   )

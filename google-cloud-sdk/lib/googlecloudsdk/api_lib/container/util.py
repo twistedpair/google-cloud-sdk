@@ -236,6 +236,15 @@ def _GetClusterEndpoint(
   ) and (use_internal_ip or cross_connect_subnetwork or use_private_fqdn):
     raise IPEndpointsIsDisabledError(cluster)
 
+  if (
+      use_dns_endpoint
+      and cluster.controlPlaneEndpointsConfig is not None
+      and cluster.controlPlaneEndpointsConfig.dnsEndpointConfig is not None
+      and not (cluster.controlPlaneEndpointsConfig.dnsEndpointConfig
+               .allowExternalTraffic)
+  ):
+    raise AllowExternalTrafficIsDisabledError(cluster)
+
   if use_dns_endpoint or (
       # TODO(b/365115169)
       cluster.controlPlaneEndpointsConfig is not None
@@ -370,6 +379,16 @@ class IPEndpointsIsDisabledError(Error):
   def __init__(self, cluster):
     super(IPEndpointsIsDisabledError, self).__init__(
         'IP access is disabled for cluster {0}.'.format(cluster.name)
+    )
+
+
+class AllowExternalTrafficIsDisabledError(Error):
+  """Error for attempting to persist DNS endpoint for cluster with allowExternalTraffic disabled."""
+
+  def __init__(self, cluster):
+    super(AllowExternalTrafficIsDisabledError, self).__init__(
+        'controlPlaneEndpointsConfig.dnsEndpointConfig.allowExternalTraffic is'
+        ' disabled for cluster {0}.'.format(cluster.name)
     )
 
 

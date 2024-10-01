@@ -3453,6 +3453,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'saasservicemgmt': {
+        'v1alpha1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.saasservicemgmt.v1alpha1',
+                    client_classpath='saasservicemgmt_v1alpha1_client.SaasservicemgmtV1alpha1',
+                    base_url='https://saasservicemgmt.googleapis.com/',
+                    messages_modulepath='saasservicemgmt_v1alpha1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'sasportal': {
         'v1alpha1':
             APIDef(

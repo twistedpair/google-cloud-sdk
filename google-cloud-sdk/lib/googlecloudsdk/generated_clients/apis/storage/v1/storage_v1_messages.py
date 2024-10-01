@@ -1465,6 +1465,9 @@ class Object(_messages.Message):
     name: The name of the object. Required if not specified by URL parameter.
     owner: The owner of the object. This will always be the uploader of the
       object.
+    restoreToken: Restore token used to differentiate deleted objects with the
+      same name and generation. This field is only returned for deleted
+      objects in hierarchical namespace buckets.
     retention: A collection of object level retention parameters.
     retentionExpirationTime: A server-determined value that specifies the
       earliest time that the object's retention period expires. This value is
@@ -1584,17 +1587,18 @@ class Object(_messages.Message):
   metageneration = _messages.IntegerField(22)
   name = _messages.StringField(23)
   owner = _messages.MessageField('OwnerValue', 24)
-  retention = _messages.MessageField('RetentionValue', 25)
-  retentionExpirationTime = _message_types.DateTimeField(26)
-  selfLink = _messages.StringField(27)
-  size = _messages.IntegerField(28, variant=_messages.Variant.UINT64)
-  softDeleteTime = _message_types.DateTimeField(29)
-  storageClass = _messages.StringField(30)
-  temporaryHold = _messages.BooleanField(31)
-  timeCreated = _message_types.DateTimeField(32)
-  timeDeleted = _message_types.DateTimeField(33)
-  timeStorageClassUpdated = _message_types.DateTimeField(34)
-  updated = _message_types.DateTimeField(35)
+  restoreToken = _messages.StringField(25)
+  retention = _messages.MessageField('RetentionValue', 26)
+  retentionExpirationTime = _message_types.DateTimeField(27)
+  selfLink = _messages.StringField(28)
+  size = _messages.IntegerField(29, variant=_messages.Variant.UINT64)
+  softDeleteTime = _message_types.DateTimeField(30)
+  storageClass = _messages.StringField(31)
+  temporaryHold = _messages.BooleanField(32)
+  timeCreated = _message_types.DateTimeField(33)
+  timeDeleted = _message_types.DateTimeField(34)
+  timeStorageClassUpdated = _message_types.DateTimeField(35)
+  updated = _message_types.DateTimeField(36)
 
 
 class ObjectAccessControl(_messages.Message):
@@ -1768,6 +1772,36 @@ class Policy(_messages.Message):
   kind = _messages.StringField(3, default='storage#policy')
   resourceId = _messages.StringField(4)
   version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class RelocateBucketRequest(_messages.Message):
+  r"""A Relocate Bucket request.
+
+  Messages:
+    DestinationCustomPlacementConfigValue: The bucket's new custom placement
+      configuration if relocating to a Custom Dual Region.
+
+  Fields:
+    destinationCustomPlacementConfig: The bucket's new custom placement
+      configuration if relocating to a Custom Dual Region.
+    destinationLocation: The new location the bucket will be relocated to.
+    validateOnly: If true, validate the operation, but do not actually
+      relocate the bucket.
+  """
+
+  class DestinationCustomPlacementConfigValue(_messages.Message):
+    r"""The bucket's new custom placement configuration if relocating to a
+    Custom Dual Region.
+
+    Fields:
+      dataLocations: The list of regional locations in which data is placed.
+    """
+
+    dataLocations = _messages.StringField(1, repeated=True)
+
+  destinationCustomPlacementConfig = _messages.MessageField('DestinationCustomPlacementConfigValue', 1)
+  destinationLocation = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
 
 
 class RewriteResponse(_messages.Message):
@@ -2403,6 +2437,19 @@ class StorageBucketsPatchRequest(_messages.Message):
   predefinedDefaultObjectAcl = _messages.EnumField('PredefinedDefaultObjectAclValueValuesEnum', 6)
   projection = _messages.EnumField('ProjectionValueValuesEnum', 7)
   userProject = _messages.StringField(8)
+
+
+class StorageBucketsRelocateRequest(_messages.Message):
+  r"""A StorageBucketsRelocateRequest object.
+
+  Fields:
+    bucket: Name of the bucket to be moved.
+    relocateBucketRequest: A RelocateBucketRequest resource to be passed as
+      the request body.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  relocateBucketRequest = _messages.MessageField('RelocateBucketRequest', 2)
 
 
 class StorageBucketsRestoreRequest(_messages.Message):
@@ -3384,6 +3431,11 @@ class StorageObjectsGetRequest(_messages.Message):
       Parts](https://cloud.google.com/storage/docs/request-
       endpoints#encoding).
     projection: Set of properties to return. Defaults to noAcl.
+    restoreToken: Restore token used to differentiate soft-deleted objects
+      with the same name and generation. Only applicable for hierarchical
+      namespace buckets and if softDeleted is set to true. This parameter is
+      optional, and is only required in the rare case when there are multiple
+      soft-deleted objects with the same name and generation.
     softDeleted: If true, only soft-deleted object versions will be listed.
       The default is false. For more information, see [Soft
       Delete](https://cloud.google.com/storage/docs/soft-delete).
@@ -3409,8 +3461,9 @@ class StorageObjectsGetRequest(_messages.Message):
   ifMetagenerationNotMatch = _messages.IntegerField(6)
   object = _messages.StringField(7, required=True)
   projection = _messages.EnumField('ProjectionValueValuesEnum', 8)
-  softDeleted = _messages.BooleanField(9)
-  userProject = _messages.StringField(10)
+  restoreToken = _messages.StringField(9)
+  softDeleted = _messages.BooleanField(10)
+  userProject = _messages.StringField(11)
 
 
 class StorageObjectsInsertRequest(_messages.Message):
@@ -3691,6 +3744,11 @@ class StorageObjectsRestoreRequest(_messages.Message):
       Parts](https://cloud.google.com/storage/docs/request-
       endpoints#encoding).
     projection: Set of properties to return. Defaults to full.
+    restoreToken: Restore token used to differentiate sof-deleted objects with
+      the same name and generation. Only applicable for hierarchical namespace
+      buckets. This parameter is optional, and is only required in the rare
+      case when there are multiple soft-deleted objects with the same name and
+      generation.
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
   """
@@ -3714,7 +3772,8 @@ class StorageObjectsRestoreRequest(_messages.Message):
   ifMetagenerationNotMatch = _messages.IntegerField(7)
   object = _messages.StringField(8, required=True)
   projection = _messages.EnumField('ProjectionValueValuesEnum', 9)
-  userProject = _messages.StringField(10)
+  restoreToken = _messages.StringField(10)
+  userProject = _messages.StringField(11)
 
 
 class StorageObjectsRewriteRequest(_messages.Message):

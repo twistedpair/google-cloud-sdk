@@ -96,15 +96,17 @@ def FetchIAMBinding(
       "iamBindings"
   ]:
     if binding["member"] not in iam_bindings:
-      iam_bindings[binding["member"]] = Dict()
+      iam_bindings[binding["member"]] = dict()
     if binding["action"] == "ADD":
       if "ADD" not in iam_bindings[binding["member"]]:
         iam_bindings[binding["member"]]["ADD"] = []
-      iam_bindings[binding["member"]]["ADD"].append(binding["role"])
+      if binding["role"] not in iam_bindings[binding["member"]]["ADD"]:
+        iam_bindings[binding["member"]]["ADD"].append(binding["role"])
     elif binding["action"] == "REMOVE":
       if "REMOVE" not in iam_bindings[binding["member"]]:
         iam_bindings[binding["member"]]["REMOVE"] = []
-      iam_bindings[binding["member"]]["REMOVE"].append(binding["role"])
+      if binding["role"] not in iam_bindings[binding["member"]]["REMOVE"]:
+        iam_bindings[binding["member"]]["REMOVE"].append(binding["role"])
   return iam_bindings
 
 
@@ -128,10 +130,15 @@ def ValidateFinding(finding_data):
   """
   try:
     finding_data = json.loads(finding_data)
-    finding_category = finding_data["listFindingsResults"][0]["finding"][
-        "category"
-    ]
-    if finding_category not in const.SUPPORTED_FINDING_CATEGORIES:
-      raise errors.UnsupportedFindingCategoryError(finding_category)
+    finding = finding_data["listFindingsResults"][0]["finding"]
   except:
     raise errors.FindingNotFoundError()
+  finding_category = finding["category"]
+  if finding_category not in const.SUPPORTED_FINDING_CATEGORIES:
+    raise errors.UnsupportedFindingCategoryError(finding_category)
+  iam_bindings = FetchIAMBinding(finding_data)
+  if (
+      len(iam_bindings) > const.SUPPORTED_IAM_MEMBER_COUNT_LIMIT
+      or len(iam_bindings) < 1
+  ):
+    raise errors.ExcessiveMembersError(len(iam_bindings))

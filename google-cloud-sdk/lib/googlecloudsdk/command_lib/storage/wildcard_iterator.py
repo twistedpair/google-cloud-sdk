@@ -80,6 +80,7 @@ def get_wildcard_iterator(
     object_state=cloud_api.ObjectState.LIVE,
     preserve_symlinks=False,
     raise_managed_folder_precondition_errors=False,
+    soft_deleted_buckets=False,
 ):
   """Instantiate a WildcardIterator for the given URL string.
 
@@ -115,6 +116,7 @@ def get_wildcard_iterator(
       precondition errors from managed folder listing. Otherwise, suppresses
       these errors. This is helpful in commands that list managed folders by
       default.
+    soft_deleted_buckets (bool): If true, soft deleted buckets will be queried.
 
   Returns:
     A WildcardIterator object.
@@ -135,6 +137,7 @@ def get_wildcard_iterator(
         next_page_token=next_page_token,
         object_state=object_state,
         raise_managed_folder_precondition_errors=raise_managed_folder_precondition_errors,
+        soft_deleted_buckets=soft_deleted_buckets,
     )
   elif isinstance(url, storage_url.FileUrl):
     return FileWildcardIterator(
@@ -340,6 +343,7 @@ class CloudWildcardIterator(WildcardIterator):
       next_page_token=None,
       object_state=cloud_api.ObjectState.LIVE,
       raise_managed_folder_precondition_errors=True,
+      soft_deleted_buckets=False,
   ):
     """Instantiates an iterator that matches the wildcard URL.
 
@@ -371,6 +375,8 @@ class CloudWildcardIterator(WildcardIterator):
         precondition errors from managed folder listing. Otherwise, suppresses
         these errors. This is helpful in commands that list managed folders by
         default.
+      soft_deleted_buckets (bool): If true, soft deleted buckets will be
+        queried.
     """
     super(CloudWildcardIterator, self).__init__(
         url, exclude_patterns=exclude_patterns, files_only=files_only
@@ -388,6 +394,7 @@ class CloudWildcardIterator(WildcardIterator):
     self._raise_managed_folder_precondition_errors = (
         raise_managed_folder_precondition_errors
     )
+    self._soft_deleted_buckets = soft_deleted_buckets
 
     if (
         object_state is cloud_api.ObjectState.LIVE
@@ -406,7 +413,10 @@ class CloudWildcardIterator(WildcardIterator):
     if self._files_only and (self._url.is_provider() or self._url.is_bucket()):
       return
     if self._url.is_provider():
-      for bucket_resource in self._client.list_buckets(self._fields_scope):
+      for bucket_resource in self._client.list_buckets(
+          fields_scope=self._fields_scope,
+          soft_deleted=self._soft_deleted_buckets,
+      ):
         yield bucket_resource
     else:
       for bucket_or_unknown_resource in self._fetch_buckets():
@@ -870,7 +880,11 @@ class CloudWildcardIterator(WildcardIterator):
       return self._expand_bucket_wildcards(self._url.bucket_name)
     elif self._url.is_bucket() and self._get_bucket_metadata:
       return [
-          self._client.get_bucket(self._url.bucket_name, self._fields_scope)
+          self._client.get_bucket(
+              bucket_name=self._url.bucket_name,
+              fields_scope=self._fields_scope,
+              soft_deleted=self._soft_deleted_buckets,
+          )
       ]
     else:
       # Avoids API call.
@@ -887,7 +901,10 @@ class CloudWildcardIterator(WildcardIterator):
     """
     regex = fnmatch.translate(bucket_name)
     bucket_pattern = re.compile(regex)
-    for bucket_resource in self._client.list_buckets(self._fields_scope):
+    for bucket_resource in self._client.list_buckets(
+        fields_scope=self._fields_scope,
+        soft_deleted=self._soft_deleted_buckets,
+    ):
       if bucket_pattern.match(bucket_resource.name):
         yield bucket_resource
 

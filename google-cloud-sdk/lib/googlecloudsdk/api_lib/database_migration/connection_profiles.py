@@ -354,6 +354,13 @@ class ConnectionProfilesClient(object):
 
     return cp_type.DatabaseVersionValueValuesEnum.lookup_by_name(version)
 
+  def _GetAlloyDbAuthorizedNetworks(self, args):
+    authorized_network = self.messages.AuthorizedNetwork
+    return [
+        authorized_network(cidrRange=r)
+        for r in args.authorized_network_cidr_ranges
+    ]
+
   def _GetAuthorizedNetworks(self, networks):
     acl_entry = self.messages.SqlAclEntry
     return [
@@ -498,10 +505,15 @@ class ConnectionProfilesClient(object):
 
     primary_settings = primary_settings(
         id=args.primary_id,
-        machineConfig=self.messages.MachineConfig(
-            cpuCount=args.cpu_count),
+        machineConfig=self.messages.MachineConfig(cpuCount=args.cpu_count),
+        instanceNetworkConfig=self.messages.InstanceNetworkConfig(
+            enablePublicIp=args.enable_public_ip,
+            enableOutboundPublicIp=args.enable_outbound_public_ip,
+            authorizedExternalNetworks=self._GetAlloyDbAuthorizedNetworks(args),
+        ),
         databaseFlags=database_flags,
-        labels=primary_labels)
+        labels=primary_labels,
+    )
     cluster_settings = cluster_settings(
         initialUser=self.messages.UserPassword(
             user='postgres', password=args.password),

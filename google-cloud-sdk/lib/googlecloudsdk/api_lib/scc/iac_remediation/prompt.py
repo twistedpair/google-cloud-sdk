@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import json
 from typing import Dict, List
+
 from googlecloudsdk.api_lib.scc.iac_remediation import prompt_format
 from googlecloudsdk.core.util import files
 
@@ -42,6 +43,7 @@ def fetch_input_prompt(
     iam_bindings: Dict[str, Dict[str, List[str]]],
     resource_name: str,
     tf_files: List[str],
+    member: str,
 ) -> str:
   """Generates the prompt for iam policy.
 
@@ -50,6 +52,7 @@ def fetch_input_prompt(
     iam_bindings: IAM bindings for the resource.
     resource_name: Resource name for which the finding was generated.
     tf_files: List of TF files.
+    member: Member for which the prompt is generated.
 
   Returns:
     Prompt string.
@@ -65,6 +68,7 @@ def fetch_input_prompt(
       resource_name,
       tf_files,
       prompt_str,
+      member,
   )
 
 
@@ -74,6 +78,7 @@ def _fetch_prompt(
     resource_name: str,
     tf_files: List[str],
     prompt_str: str,
+    member: str,
 ) -> str:
   """Generates the prompt string.
 
@@ -83,11 +88,17 @@ def _fetch_prompt(
     resource_name: Resource name for which the finding was generated.
     tf_files: List of TF files.
     prompt_str: Prompt file name.
+    member: Member for which the prompt is generated.
 
   Returns:
     Prompt for iam policy.
   """
-  prompt_str = prompt_str.replace("{{iam_bindings}}", json.dumps(iam_bindings))
+  iam_bindings_str = "member: " + member + "\n"
+  for action, roles in iam_bindings.items():
+    iam_bindings_str += action + " : \n" + json.dumps(roles) + "\n"
+  prompt_str = prompt_str.replace(
+      "{{iam_bindings}}", iam_bindings_str
+  )
   prompt_str = prompt_str.replace(
       "{{tfstate_information}}", json.dumps(tfstate_information)
   )
@@ -117,6 +128,8 @@ def llm_response_parser(
   for line in response.splitlines():
     if line.startswith("FilePath"):
       if file_path:
+        file_content = file_content.replace("```\n", "")
+        file_content = file_content.replace("\n```", "")
         file_content = file_content.replace("```", "")
         response_dict[file_path] = file_content
       file_path = line.split("=")[1].strip()
@@ -124,6 +137,8 @@ def llm_response_parser(
     else:
       file_content += line + "\n"
   if file_path:
+    file_content = file_content.replace("```\n", "")
+    file_content = file_content.replace("\n```", "")
     file_content = file_content.replace("```", "")
     response_dict[file_path] = file_content
   return response_dict

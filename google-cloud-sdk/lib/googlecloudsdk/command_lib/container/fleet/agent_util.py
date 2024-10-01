@@ -19,8 +19,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.container.fleet import gkehub_api_adapter
-from googlecloudsdk.api_lib.container.fleet import gkehub_api_util
 from googlecloudsdk.command_lib.container.fleet import api_util
 from googlecloudsdk.command_lib.container.fleet import kube_util
 from googlecloudsdk.command_lib.projects import util as p_util
@@ -199,19 +197,6 @@ def _PurgeAlphaInstaller(kube_client, namespace, project_id):
           err))
 
 
-def _GetConnectAgentOptions(args, upgrade, namespace, image_pull_secret_data,
-                            membership_ref):
-  return gkehub_api_adapter.ConnectAgentOption(
-      name=args.MEMBERSHIP_NAME,
-      proxy=args.proxy or '',
-      namespace=namespace,
-      is_upgrade=upgrade,
-      version=args.version or '',
-      registry=args.docker_registry or '',
-      image_pull_secret_content=image_pull_secret_data or '',
-      membership_ref=membership_ref)
-
-
 def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
                       upgrade, membership_ref, release_track=None):
   """Generate the manifest for connect agent from API.
@@ -231,38 +216,24 @@ def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
   Returns:
     The full manifest to deploy the connect agent resources.
   """
-  api_version = gkehub_api_util.GetApiVersionForTrack(release_track)
-  delimeter = '---\n'
+  delimiter = '---\n'
   full_manifest = ''
 
-  # Based on the API version, use api_adapter if GenerateConnectAgentManifest is
-  # a nested message, else use the default api_client.
-  if api_version in ['v1beta1']:
-    adapter = gkehub_api_adapter.NewAPIAdapter(api_version)
-    connect_agent_ref = _GetConnectAgentOptions(args, upgrade,
-                                                DEFAULT_NAMESPACE,
-                                                image_pull_secret_data,
-                                                membership_ref)
-    manifest_resources = adapter.GenerateConnectAgentManifest(connect_agent_ref)
-    for resource in manifest_resources:
-      full_manifest = full_manifest + (getattr(resource, 'manifest') if hasattr(
-          resource, 'manifest') else '') + delimeter
-  else:
-    # If Workload Identity is enabled, the Hub API will detect the issuer on
-    # the membership resource and seamlessly return a manifest that correctly
-    # configures the Connect Agent to use Workload Identity.
-    manifest_resources = api_util.GenerateConnectAgentManifest(
-        membership_ref,
-        image_pull_secret_content=image_pull_secret_data,
-        is_upgrade=upgrade,
-        namespace=DEFAULT_NAMESPACE,
-        proxy=args.proxy,
-        registry=args.docker_registry,
-        version=args.version,
-        release_track=release_track)
+  # If Workload Identity is enabled, the Hub API will detect the issuer on
+  # the membership resource and seamlessly return a manifest that correctly
+  # configures the Connect Agent to use Workload Identity.
+  manifest_resources = api_util.GenerateConnectAgentManifest(
+      membership_ref,
+      image_pull_secret_content=image_pull_secret_data,
+      is_upgrade=upgrade,
+      namespace=DEFAULT_NAMESPACE,
+      proxy=args.proxy,
+      registry=args.docker_registry,
+      version=args.version,
+      release_track=release_track)
 
-    for resource in manifest_resources.manifest:
-      full_manifest = full_manifest + resource.manifest + delimeter
+  for resource in manifest_resources.manifest:
+    full_manifest = full_manifest + resource.manifest + delimiter
 
   # Append creds secret.
   full_manifest = full_manifest + CREDENTIAL_SECRET_TEMPLATE.format(

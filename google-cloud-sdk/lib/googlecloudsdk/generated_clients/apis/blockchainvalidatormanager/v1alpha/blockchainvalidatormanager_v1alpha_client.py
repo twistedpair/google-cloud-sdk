@@ -108,33 +108,6 @@ class BlockchainvalidatormanagerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Generate(self, request, global_params=None):
-      r"""Create one or more blockchain validator configurations, derived based on the specification provided.
-
-      Args:
-        request: (BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorConfigsGenerateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Generate')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Generate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/blockchainValidatorConfigs:generate',
-        http_method='POST',
-        method_id='blockchainvalidatormanager.projects.locations.blockchainValidatorConfigs.generate',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1alpha/{+parent}/blockchainValidatorConfigs:generate',
-        request_field='generateBlockchainValidatorConfigsRequest',
-        request_type_name='BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorConfigsGenerateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       r"""Gets details of a single blockchain validator configuration.
 

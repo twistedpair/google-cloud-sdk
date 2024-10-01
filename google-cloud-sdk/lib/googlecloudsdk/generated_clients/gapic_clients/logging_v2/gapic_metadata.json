@@ -35,6 +35,11 @@
                 "create_link"
               ]
             },
+            "CreateLogScope": {
+              "methods": [
+                "create_log_scope"
+              ]
+            },
             "CreateSavedQuery": {
               "methods": [
                 "create_saved_query"
@@ -63,6 +68,11 @@
             "DeleteLink": {
               "methods": [
                 "delete_link"
+              ]
+            },
+            "DeleteLogScope": {
+              "methods": [
+                "delete_log_scope"
               ]
             },
             "DeleteSavedQuery": {
@@ -100,6 +110,11 @@
                 "get_link"
               ]
             },
+            "GetLogScope": {
+              "methods": [
+                "get_log_scope"
+              ]
+            },
             "GetSavedQuery": {
               "methods": [
                 "get_saved_query"
@@ -133,6 +148,11 @@
             "ListLinks": {
               "methods": [
                 "list_links"
+              ]
+            },
+            "ListLogScopes": {
+              "methods": [
+                "list_log_scopes"
               ]
             },
             "ListRecentQueries": {
@@ -178,6 +198,11 @@
             "UpdateExclusion": {
               "methods": [
                 "update_exclusion"
+              ]
+            },
+            "UpdateLogScope": {
+              "methods": [
+                "update_log_scope"
               ]
             },
             "UpdateSavedQuery": {
@@ -230,6 +255,11 @@
                 "create_link"
               ]
             },
+            "CreateLogScope": {
+              "methods": [
+                "create_log_scope"
+              ]
+            },
             "CreateSavedQuery": {
               "methods": [
                 "create_saved_query"
@@ -258,6 +288,11 @@
             "DeleteLink": {
               "methods": [
                 "delete_link"
+              ]
+            },
+            "DeleteLogScope": {
+              "methods": [
+                "delete_log_scope"
               ]
             },
             "DeleteSavedQuery": {
@@ -295,6 +330,11 @@
                 "get_link"
               ]
             },
+            "GetLogScope": {
+              "methods": [
+                "get_log_scope"
+              ]
+            },
             "GetSavedQuery": {
               "methods": [
                 "get_saved_query"
@@ -328,6 +368,11 @@
             "ListLinks": {
               "methods": [
                 "list_links"
+              ]
+            },
+            "ListLogScopes": {
+              "methods": [
+                "list_log_scopes"
               ]
             },
             "ListRecentQueries": {
@@ -373,6 +418,11 @@
             "UpdateExclusion": {
               "methods": [
                 "update_exclusion"
+              ]
+            },
+            "UpdateLogScope": {
+              "methods": [
+                "update_log_scope"
               ]
             },
             "UpdateSavedQuery": {
@@ -425,6 +475,11 @@
                 "create_link"
               ]
             },
+            "CreateLogScope": {
+              "methods": [
+                "create_log_scope"
+              ]
+            },
             "CreateSavedQuery": {
               "methods": [
                 "create_saved_query"
@@ -453,6 +508,11 @@
             "DeleteLink": {
               "methods": [
                 "delete_link"
+              ]
+            },
+            "DeleteLogScope": {
+              "methods": [
+                "delete_log_scope"
               ]
             },
             "DeleteSavedQuery": {
@@ -490,6 +550,11 @@
                 "get_link"
               ]
             },
+            "GetLogScope": {
+              "methods": [
+                "get_log_scope"
+              ]
+            },
             "GetSavedQuery": {
               "methods": [
                 "get_saved_query"
@@ -523,6 +588,11 @@
             "ListLinks": {
               "methods": [
                 "list_links"
+              ]
+            },
+            "ListLogScopes": {
+              "methods": [
+                "list_log_scopes"
               ]
             },
             "ListRecentQueries": {
@@ -568,6 +638,11 @@
             "UpdateExclusion": {
               "methods": [
                 "update_exclusion"
+              ]
+            },
+            "UpdateLogScope": {
+              "methods": [
+                "update_log_scope"
               ]
             },
             "UpdateSavedQuery": {

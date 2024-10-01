@@ -34,18 +34,25 @@ COMPUTE_RESOURCE_TYPE = 'compute'
 ORG_RESOURCE_TYPE = 'organization'
 FOLDER_RESOURCE_TYPE = 'folder'
 FORWARDING_RULE_RESOURCE_TYPE = 'forwarding-rule'
-RESOURCE_TYPE_ENUM = (
+CLOUD_RUN_RESOURCE_TYPE = 'cloud-run'
+WEB_ENABLE_DISABLE_RESOURCE_TYPE_ENUM = (
     APP_ENGINE_RESOURCE_TYPE,
     BACKEND_SERVICES_RESOURCE_TYPE,
-)
-RESOURCE_TYPE_ENUM_ALPHA = (
-    APP_ENGINE_RESOURCE_TYPE,
-    BACKEND_SERVICES_RESOURCE_TYPE,
-    FORWARDING_RULE_RESOURCE_TYPE,
 )
 IAM_RESOURCE_TYPE_ENUM = (
     APP_ENGINE_RESOURCE_TYPE,
     BACKEND_SERVICES_RESOURCE_TYPE,
+)
+IAM_RESOURCE_TYPE_ENUM_ALPHA = (
+    APP_ENGINE_RESOURCE_TYPE,
+    BACKEND_SERVICES_RESOURCE_TYPE,
+    FORWARDING_RULE_RESOURCE_TYPE,
+    CLOUD_RUN_RESOURCE_TYPE,
+)
+IAM_RESOURCE_TYPE_ENUM_BETA = (
+    APP_ENGINE_RESOURCE_TYPE,
+    BACKEND_SERVICES_RESOURCE_TYPE,
+    FORWARDING_RULE_RESOURCE_TYPE,
 )
 SETTING_RESOURCE_TYPE_ENUM = (
     APP_ENGINE_RESOURCE_TYPE,
@@ -54,8 +61,16 @@ SETTING_RESOURCE_TYPE_ENUM = (
     ORG_RESOURCE_TYPE,
     FOLDER_RESOURCE_TYPE,
 )
-
 SETTING_RESOURCE_TYPE_ENUM_ALPHA = (
+    APP_ENGINE_RESOURCE_TYPE,
+    WEB_RESOURCE_TYPE,
+    COMPUTE_RESOURCE_TYPE,
+    ORG_RESOURCE_TYPE,
+    FOLDER_RESOURCE_TYPE,
+    FORWARDING_RULE_RESOURCE_TYPE,
+    CLOUD_RUN_RESOURCE_TYPE,
+)
+SETTING_RESOURCE_TYPE_ENUM_BETA = (
     APP_ENGINE_RESOURCE_TYPE,
     WEB_RESOURCE_TYPE,
     COMPUTE_RESOURCE_TYPE,
@@ -145,37 +160,60 @@ def AddDestGroupListRegionArgs(parser):
       default='-')
 
 
-def AddIapIamResourceArgs(parser, use_forwarding_rule=False):
+def AddIapIamResourceArgs(parser, is_alpha=False, is_beta=False):
   """Adds flags for an IAP IAM resource.
 
   Args:
     parser: An argparse.ArgumentParser-like object. It is mocked out in order to
       capture some information, but behaves like an ArgumentParser.
-    use_forwarding_rule: bool, whether to use forwarding rule resource type.
+    is_alpha: bool, provide support to forwarding-rule and cloud-run
+      resource-type.
+    is_beta: bool, provide support to forwarding-rule resource-type.
   """
   group = parser.add_group()
 
-  if use_forwarding_rule:
+  if is_alpha:
     group.add_argument(
         '--resource-type',
-        choices=RESOURCE_TYPE_ENUM_ALPHA,
+        choices=IAM_RESOURCE_TYPE_ENUM_ALPHA,
+        help=(
+            'Resource type of the IAP resource. `--resource-type=cloud-run` is'
+            ' private priview feature and reach out to cloud-run team if you'
+            ' want to test it.'
+        ),
+    )
+  elif is_beta:
+    group.add_argument(
+        '--resource-type',
+        choices=IAM_RESOURCE_TYPE_ENUM_BETA,
         help='Resource type of the IAP resource.',
     )
   else:
     group.add_argument(
         '--resource-type',
-        choices=RESOURCE_TYPE_ENUM,
+        choices=IAM_RESOURCE_TYPE_ENUM,
         help='Resource type of the IAP resource.',
     )
   group.add_argument('--service', help='Service name.')
-  group.add_argument(
-      '--region',
-      help=(
-          'Region name. Should only be specified with'
-          ' `--resource-type=backend-services` if it is a regional scoped. Not'
-          ' applicable for global scoped backend services.'
-      ),
-  )
+  if is_alpha:
+    group.add_argument(
+        '--region',
+        help=(
+            'Region name. Not applicable for `resource-type=app-engine`.'
+            ' Required when `resource-type=backend-services` and regional'
+            ' scoped. Not applicable for global backend-services. Required when'
+            ' `resource-type=cloud-run`.'
+        ),
+    )
+  else:
+    group.add_argument(
+        '--region',
+        help=(
+            'Region name. Should only be specified with'
+            ' `--resource-type=backend-services` if it is a regional scoped.'
+            ' Not applicable for global scoped backend services.'
+        ),
+    )
   group.add_argument(
       '--version',
       help=(
@@ -196,31 +234,42 @@ def AddIapResourceArgs(parser):
   group.add_argument(
       '--resource-type',
       required=True,
-      choices=RESOURCE_TYPE_ENUM,
+      choices=WEB_ENABLE_DISABLE_RESOURCE_TYPE_ENUM,
       help='Resource type of the IAP resource.')
   group.add_argument(
       '--service',
       help='Service name. Required with `--resource-type=backend-services`.')
 
 
-def AddIapSettingArg(parser, use_forwarding_rule=False):
+def AddIapSettingArg(parser, is_alpha=False, is_beta=False):
   """Adds flags for an IAP settings resource.
 
   Args:
     parser: An argparse.ArgumentParser-like object. It is mocked out in order to
       capture some information, but behaves like an ArgumentParser.
-    use_forwarding_rule: bool, whether to use forwarding rule resource type.
-
+    is_alpha: bool, provide support to forwarding-rule and cloud-run
+      resource-type.
+    is_beta: bool, provide support to forwarding-rule resource-type.
   """
   group = parser.add_group()
   group.add_argument('--organization', help='Organization ID.')
   group.add_argument('--folder', help='Folder ID.')
   group.add_argument('--project', help='Project ID.')
 
-  if use_forwarding_rule:
+  if is_alpha:
     group.add_argument(
         '--resource-type',
         choices=SETTING_RESOURCE_TYPE_ENUM_ALPHA,
+        help=(
+            'Resource type of the IAP resource. `--resource-type=cloud-run` is'
+            ' private priview feature and reach out to cloud-run team if you'
+            ' want to test it.'
+        ),
+    )
+  elif is_beta:
+    group.add_argument(
+        '--resource-type',
+        choices=SETTING_RESOURCE_TYPE_ENUM_BETA,
         help='Resource type of the IAP resource.',
     )
   else:
@@ -233,23 +282,34 @@ def AddIapSettingArg(parser, use_forwarding_rule=False):
   group.add_argument(
       '--service',
       help=(
-          "Service name. Optional when ``resource-type'' is ``compute'' or"
-          " ``app-engine''."
+          'Service name. Optional when `resource-type` is `compute` or'
+          ' `app-engine`.'
       ),
   )
-  group.add_argument(
-      '--region',
-      help=(
-          "Region name. Not applicable for ``app-engine''. Required when"
-          " ``resource-type'' is ``compute'' and ``regional scoped''. Not"
-          " applicable for ``compute'' when ``global scoped''."
-      ),
-  )
+  if is_alpha:
+    group.add_argument(
+        '--region',
+        help=(
+            'Region name. Not applicable for `app-engine`. Required when'
+            ' `resource-type=compute` and regional scoped. Not'
+            ' applicable for global scoped compute. Required when'
+            ' `resource-type=cloud-run`.'
+        ),
+    )
+  else:
+    group.add_argument(
+        '--region',
+        help=(
+            'Region name. Not applicable for `app-engine`. Required when'
+            ' `resource-type=compute` and regional scoped. Not'
+            ' applicable for global scoped compute.'
+        ),
+    )
   group.add_argument(
       '--version',
       help=(
-          "Version name. Not applicable for ``compute''. Optional when"
-          " ``resource-type'' is ``app-engine''."
+          'Version name. Not applicable for `compute`. Optional when'
+          ' `resource-type=app-engine`.'
       ),
   )
 
@@ -437,6 +497,26 @@ def ParseIapIamResource(release_track, args):
                                     args.service)
     else:
       return iap_api.ForwardingRules(release_track, project, args.region)
+  elif (
+      release_track == base.ReleaseTrack.ALPHA
+      and args.resource_type == CLOUD_RUN_RESOURCE_TYPE
+  ):
+    if args.version:
+      raise calliope_exc.InvalidArgumentException(
+          '--version',
+          '`--version` cannot be specified for '
+          '`--resource-type=cloud-run`.',
+      )
+    if not args.region:
+      raise calliope_exc.InvalidArgumentException(
+          '--region',
+          '`--region` must be specified for '
+          '`--resource-type=cloud-run`.',
+      )
+    if args.service:
+      return iap_api.CloudRun(release_track, project, args.region, args.service)
+    else:
+      return iap_api.CloudRuns(release_track, project, args.region)
 
   # This shouldn't be reachable, based on the IAP IAM resource parsing logic.
   raise iap_exc.InvalidIapIamResourceError('Could not parse IAP IAM resource.')
@@ -579,6 +659,25 @@ def ParseIapSettingsResource(release_track, args):
           path.append('forwarding_rule-{}'.format(args.region))
         else:
           path.append('forwarding_rule')
+        if args.service:
+          path.extend(['services', args.service])
+        return iap_api.IapSettingsResource(release_track, '/'.join(path))
+      elif (release_track == base.ReleaseTrack.ALPHA and
+            args.resource_type == CLOUD_RUN_RESOURCE_TYPE):
+        path = ['projects', args.project, 'iap_web']
+        if args.version:
+          raise calliope_exc.InvalidArgumentException(
+              '--version',
+              '`--version` cannot be specified for '
+              '`--resource-type=cloud-run`.',
+          )
+        if not args.region:
+          raise calliope_exc.InvalidArgumentException(
+              '--region',
+              '`--region` must be specified for '
+              '`--resource-type=cloud-run`.',
+          )
+        path.append('cloud_run-{}'.format(args.region))
         if args.service:
           path.extend(['services', args.service])
         return iap_api.IapSettingsResource(release_track, '/'.join(path))

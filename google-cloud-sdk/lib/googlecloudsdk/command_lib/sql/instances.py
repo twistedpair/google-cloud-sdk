@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.sql import constants
 from googlecloudsdk.api_lib.sql import instance_prop_reducers as reducers
 from googlecloudsdk.api_lib.sql import instances as api_util
@@ -127,9 +129,15 @@ def DoesEnterprisePlusReplicaInferTierForDatabaseType(
     True if the replica infers the tier from the primary (database version is
     PG16+).
   """
+  if replica_database_version.startswith('POSTGRES_'):
+    # Extract the database major version from the database version string:
+    # POSTGRES_16 -> 16
+    database_major_version = int(
+        re.search(r'^POSTGRES_(\d+).*', replica_database_version).group(1)
+    )
+    return database_major_version > 15
   database_type = ParseDatabaseVersion(sql_messages, replica_database_version)
   return database_type in (
-      sql_messages.DatabaseInstance.DatabaseVersionValueValuesEnum.POSTGRES_16,
       sql_messages.DatabaseInstance.DatabaseVersionValueValuesEnum.MYSQL_8_4,
   )
 

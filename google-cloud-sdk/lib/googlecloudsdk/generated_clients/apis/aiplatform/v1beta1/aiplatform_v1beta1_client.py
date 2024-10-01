@@ -162,6 +162,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     self.projects_locations_tensorboards = self.ProjectsLocationsTensorboardsService(self)
     self.projects_locations_trainingPipelines_operations = self.ProjectsLocationsTrainingPipelinesOperationsService(self)
     self.projects_locations_trainingPipelines = self.ProjectsLocationsTrainingPipelinesService(self)
+    self.projects_locations_tuningJobs_operations = self.ProjectsLocationsTuningJobsOperationsService(self)
     self.projects_locations_tuningJobs = self.ProjectsLocationsTuningJobsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -18661,6 +18662,43 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsTuningJobsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_tuningJobs_operations resource."""
+
+    _NAME = 'projects_locations_tuningJobs_operations'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectsLocationsTuningJobsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (AiplatformProjectsLocationsTuningJobsOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tuningJobs/{tuningJobsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.tuningJobs.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTuningJobsOperationsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
   class ProjectsLocationsTuningJobsService(base_api.BaseApiService):
     """Service class for the projects_locations_tuningJobs resource."""
 
@@ -18776,6 +18814,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformProjectsLocationsTuningJobsListRequest',
         response_type_name='GoogleCloudAiplatformV1beta1ListTuningJobsResponse',
+        supports_download=False,
+    )
+
+    def RebaseTunedModel(self, request, global_params=None):
+      r"""Rebase a TunedModel.
+
+      Args:
+        request: (AiplatformProjectsLocationsTuningJobsRebaseTunedModelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('RebaseTunedModel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RebaseTunedModel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tuningJobs:rebaseTunedModel',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.tuningJobs.rebaseTunedModel',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/tuningJobs:rebaseTunedModel',
+        request_field='googleCloudAiplatformV1beta1RebaseTunedModelRequest',
+        request_type_name='AiplatformProjectsLocationsTuningJobsRebaseTunedModelRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

@@ -377,6 +377,7 @@ def ModifyOrchestrorPolicyCreateRequest(ref, args, req):
     )
 
   req.googleCloudOsconfigV2alphaPolicyOrchestrator.action = args.action.upper()
+  req.googleCloudOsconfigV2alphaPolicyOrchestrator.state = args.state.upper()
   req = ModifyOrchestratorPolicySetSelectors(args, req, messages)
 
   # Setting request-level fields.

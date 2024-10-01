@@ -862,7 +862,9 @@ class Cluster(_messages.Message):
       a random password will be generated, and a client certificate will be
       issued.
     masterAuthorizedNetworksConfig: The configuration options for master
-      authorized networks feature.
+      authorized networks feature. Deprecated: Use
+      ControlPlaneEndpointsConfig.IPEndpointsConfig.authorized_networks_config
+      instead.
     meshCertificates: Configuration for issuance of mTLS keys and certificates
       to Kubernetes pods.
     monitoringConfig: Monitoring configuration for the cluster.
@@ -909,6 +911,7 @@ class Cluster(_messages.Message):
     parentProductConfig: The configuration of the parent product of the
       cluster. This field is used by Google internal products that are built
       on top of the GKE cluster and take the ownership of the cluster.
+    podAutoscaling: The config for pod autoscaling.
     privateClusterConfig: Configuration for private cluster.
     rbacBindingConfig: RBACBindingConfig allows user to restrict
       ClusterRoleBindings an RoleBindings that can be created.
@@ -1067,27 +1070,28 @@ class Cluster(_messages.Message):
   nodePools = _messages.MessageField('NodePool', 56, repeated=True)
   notificationConfig = _messages.MessageField('NotificationConfig', 57)
   parentProductConfig = _messages.MessageField('ParentProductConfig', 58)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 59)
-  rbacBindingConfig = _messages.MessageField('RBACBindingConfig', 60)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 61)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 62)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 63)
-  runtimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 64)
-  satisfiesPzi = _messages.BooleanField(65)
-  satisfiesPzs = _messages.BooleanField(66)
-  secretManagerConfig = _messages.MessageField('SecretManagerConfig', 67)
-  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 68)
-  selfLink = _messages.StringField(69)
-  servicesIpv4Cidr = _messages.StringField(70)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 71)
-  status = _messages.EnumField('StatusValueValuesEnum', 72)
-  statusMessage = _messages.StringField(73)
-  subnetwork = _messages.StringField(74)
-  tpuIpv4CidrBlock = _messages.StringField(75)
-  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 76)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 77)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 78)
-  zone = _messages.StringField(79)
+  podAutoscaling = _messages.MessageField('PodAutoscaling', 59)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 60)
+  rbacBindingConfig = _messages.MessageField('RBACBindingConfig', 61)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 62)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 63)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 64)
+  runtimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 65)
+  satisfiesPzi = _messages.BooleanField(66)
+  satisfiesPzs = _messages.BooleanField(67)
+  secretManagerConfig = _messages.MessageField('SecretManagerConfig', 68)
+  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 69)
+  selfLink = _messages.StringField(70)
+  servicesIpv4Cidr = _messages.StringField(71)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 72)
+  status = _messages.EnumField('StatusValueValuesEnum', 73)
+  statusMessage = _messages.StringField(74)
+  subnetwork = _messages.StringField(75)
+  tpuIpv4CidrBlock = _messages.StringField(76)
+  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 77)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 78)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 79)
+  zone = _messages.StringField(80)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -1203,7 +1207,7 @@ class ClusterUpdate(_messages.Message):
     desiredDatabaseEncryption: Configuration of etcd encryption.
     desiredDatapathProvider: The desired datapath provider for the cluster.
     desiredDefaultEnablePrivateNodes: Override the default setting of whether
-      furture created nodes have private IP addresses only, namely
+      future created nodes have private IP addresses only, namely
       NetworkConfig.default_enable_private_nodes
     desiredDefaultSnatStatus: The desired status of whether to disable default
       sNAT for this cluster.
@@ -1217,7 +1221,10 @@ class ClusterUpdate(_messages.Message):
     desiredEnableMultiNetworking: Enable/Disable Multi-Networking for the
       cluster
     desiredEnablePrivateEndpoint: Enable/Disable private endpoint for the
-      cluster's master.
+      cluster's master. Deprecated: Use desired_control_plane_endpoints_config
+      .ip_endpoints_config.enable_public_endpoint instead. Note that the value
+      of enable_public_endpoint is reversed: if enable_private_endpoint is
+      false, then enable_public_endpoint will be true.
     desiredEnterpriseConfig: The desired enterprise configuration for the
       cluster.
     desiredFleet: The desired fleet configuration for the cluster.
@@ -1258,7 +1265,9 @@ class ClusterUpdate(_messages.Message):
       versions.
     desiredManagedConfig: The desired managed config for the cluster.
     desiredMasterAuthorizedNetworksConfig: The desired configuration options
-      for master authorized networks feature.
+      for master authorized networks feature. Deprecated: Use desired_control_
+      plane_endpoints_config.ip_endpoints_config.authorized_networks_config
+      instead.
     desiredMasterVersion: The Kubernetes version to change the master to.
       Users may specify either explicit versions offered by Kubernetes Engine
       or version aliases, which have the following behavior: - "latest": picks
@@ -1313,10 +1322,13 @@ class ClusterUpdate(_messages.Message):
     desiredNotificationConfig: The desired notification configuration.
     desiredParentProductConfig: The desired parent product config for the
       cluster.
+    desiredPodAutoscaling: The desired config for pod autoscaling.
     desiredPrivateClusterConfig: The desired private cluster configuration.
       master_global_access_config is the only field that can be changed via
       this field. See also ClusterUpdate.desired_enable_private_endpoint for
-      modifying other fields within PrivateClusterConfig.
+      modifying other fields within PrivateClusterConfig. Deprecated: Use
+      desired_control_plane_endpoints_config.ip_endpoints_config.global_access
+      instead.
     desiredPrivateIpv6GoogleAccess: The desired state of IPv6 connectivity to
       Google Services.
     desiredRbacBindingConfig: RBACBindingConfig allows user to restrict
@@ -1473,23 +1485,24 @@ class ClusterUpdate(_messages.Message):
   desiredNodeVersion = _messages.StringField(56)
   desiredNotificationConfig = _messages.MessageField('NotificationConfig', 57)
   desiredParentProductConfig = _messages.MessageField('ParentProductConfig', 58)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 59)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 60)
-  desiredRbacBindingConfig = _messages.MessageField('RBACBindingConfig', 61)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 62)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 63)
-  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 64)
-  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 65)
-  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 66)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 67)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 68)
-  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 69)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 70)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 71)
-  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 72)
-  etag = _messages.StringField(73)
-  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 74)
-  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 75)
+  desiredPodAutoscaling = _messages.MessageField('PodAutoscaling', 59)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 60)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 61)
+  desiredRbacBindingConfig = _messages.MessageField('RBACBindingConfig', 62)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 63)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 64)
+  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 65)
+  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 66)
+  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 67)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 68)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 69)
+  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 70)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 71)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 72)
+  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 73)
+  etag = _messages.StringField(74)
+  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 75)
+  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 76)
 
 
 class ClusterUpgradeInfo(_messages.Message):
@@ -2310,7 +2323,8 @@ class ControlPlaneEndpointsConfig(_messages.Message):
 
   Fields:
     dnsEndpointConfig: DNS endpoint configuration.
-    enhancedIngress: Enhanced KCP ingress configuration.
+    enhancedIngress: Enhanced KCP ingress configuration. Deprecated: Use
+      dns_endpoint_config or ip_endpoints_config instead.
     ipEndpointsConfig: IP endpoints configuration.
   """
 
@@ -2465,7 +2479,8 @@ class DNSEndpointConfig(_messages.Message):
     enabled: Controls whether this endpoint is available.
     endpoint: Output only. The cluster's DNS endpoint configuration. A DNS
       format address. This is accessible from the public internet. Ex: uid.us-
-      central1.gke.goog.
+      central1.gke.goog. Always present, but the behavior may change according
+      to the value of DNSEndpointConfig.allow_external_traffic.
   """
 
   allowExternalTraffic = _messages.BooleanField(1)
@@ -2628,7 +2643,8 @@ class Empty(_messages.Message):
 
 
 class EnhancedKCPIngress(_messages.Message):
-  r"""Enhanced KCP ingress configuration.
+  r"""Enhanced KCP ingress configuration. Deprecated: Use IPEndpointsConfig
+  and DNSEndpointConfig instead.
 
   Fields:
     enabled: Controls whether the cluster is configured to use enhanced KCP
@@ -3768,11 +3784,14 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
     enabled: Whether or not master authorized networks is enabled.
     gcpPublicCidrsAccessEnabled: Whether master is accessbile via Google
       Compute Engine Public IP addresses.
+    privateEndpointEnforcementEnabled: Whether master authorized networks is
+      enforced on private endpoint or not.
   """
 
   cidrBlocks = _messages.MessageField('CidrBlock', 1, repeated=True)
   enabled = _messages.BooleanField(2)
   gcpPublicCidrsAccessEnabled = _messages.BooleanField(3)
+  privateEndpointEnforcementEnabled = _messages.BooleanField(4)
 
 
 class MaxPodsConstraint(_messages.Message):
@@ -4150,6 +4169,8 @@ class NodeConfig(_messages.Message):
       the cgroup mode actually used by the node pool. It is determined by the
       cgroup mode specified in the LinuxNodeConfig or the default cgroup mode
       based on the cluster creation version.
+    LocalSsdEncryptionModeValueValuesEnum: Specifies which method should be
+      used for encrypting the Local SSDs attahced to the node.
 
   Messages:
     LabelsValue: The map of Kubernetes labels (key/value pairs) to be applied
@@ -4230,6 +4251,8 @@ class NodeConfig(_messages.Message):
       available on a machine per zone. See:
       https://cloud.google.com/compute/docs/disks/local-ssd for more
       information.
+    localSsdEncryptionMode: Specifies which method should be used for
+      encrypting the Local SSDs attahced to the node.
     loggingConfig: Logging configuration.
     machineType: The name of a Google Compute Engine [machine
       type](https://cloud.google.com/compute/docs/machine-types) If
@@ -4329,6 +4352,25 @@ class NodeConfig(_messages.Message):
     EFFECTIVE_CGROUP_MODE_UNSPECIFIED = 0
     EFFECTIVE_CGROUP_MODE_V1 = 1
     EFFECTIVE_CGROUP_MODE_V2 = 2
+
+  class LocalSsdEncryptionModeValueValuesEnum(_messages.Enum):
+    r"""Specifies which method should be used for encrypting the Local SSDs
+    attahced to the node.
+
+    Values:
+      LOCAL_SSD_ENCRYPTION_MODE_UNSPECIFIED: The given node will be encrypted
+        using keys managed by Google infrastructure and the keys will be
+        deleted when the node is deleted.
+      STANDARD_ENCRYPTION: The given node will be encrypted using keys managed
+        by Google infrastructure and the keys will be deleted when the node is
+        deleted.
+      EPHEMERAL_KEY_ENCRYPTION: The given node will opt-in for using ephemeral
+        key for encryption of Local SSDs. The Local SSDs will not be able to
+        recover data in case of node crash.
+    """
+    LOCAL_SSD_ENCRYPTION_MODE_UNSPECIFIED = 0
+    STANDARD_ENCRYPTION = 1
+    EPHEMERAL_KEY_ENCRYPTION = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -4444,30 +4486,31 @@ class NodeConfig(_messages.Message):
   linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 18)
   localNvmeSsdBlockConfig = _messages.MessageField('LocalNvmeSsdBlockConfig', 19)
   localSsdCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 21)
-  machineType = _messages.StringField(22)
-  maxRunDuration = _messages.StringField(23)
-  metadata = _messages.MessageField('MetadataValue', 24)
-  minCpuPlatform = _messages.StringField(25)
-  nodeGroup = _messages.StringField(26)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 27)
-  oauthScopes = _messages.StringField(28, repeated=True)
-  preemptible = _messages.BooleanField(29)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 30)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 31)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 32)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 33)
-  secondaryBootDiskUpdateStrategy = _messages.MessageField('SecondaryBootDiskUpdateStrategy', 34)
-  secondaryBootDisks = _messages.MessageField('SecondaryBootDisk', 35, repeated=True)
-  serviceAccount = _messages.StringField(36)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 37)
-  soleTenantConfig = _messages.MessageField('SoleTenantConfig', 38)
-  spot = _messages.BooleanField(39)
-  storagePools = _messages.StringField(40, repeated=True)
-  tags = _messages.StringField(41, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 42, repeated=True)
-  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 43)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 44)
+  localSsdEncryptionMode = _messages.EnumField('LocalSsdEncryptionModeValueValuesEnum', 21)
+  loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 22)
+  machineType = _messages.StringField(23)
+  maxRunDuration = _messages.StringField(24)
+  metadata = _messages.MessageField('MetadataValue', 25)
+  minCpuPlatform = _messages.StringField(26)
+  nodeGroup = _messages.StringField(27)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 28)
+  oauthScopes = _messages.StringField(29, repeated=True)
+  preemptible = _messages.BooleanField(30)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 31)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 32)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 33)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 34)
+  secondaryBootDiskUpdateStrategy = _messages.MessageField('SecondaryBootDiskUpdateStrategy', 35)
+  secondaryBootDisks = _messages.MessageField('SecondaryBootDisk', 36, repeated=True)
+  serviceAccount = _messages.StringField(37)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 38)
+  soleTenantConfig = _messages.MessageField('SoleTenantConfig', 39)
+  spot = _messages.BooleanField(40)
+  storagePools = _messages.StringField(41, repeated=True)
+  tags = _messages.StringField(42, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 43, repeated=True)
+  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 44)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 45)
 
 
 class NodeConfigDefaults(_messages.Message):
@@ -4613,7 +4656,7 @@ class NodeNetworkConfig(_messages.Message):
       cannot be changed after the node pool has been created.
     enablePrivateNodes: Whether nodes have internal IP addresses only. If
       enable_private_nodes is not specified, then the value is derived from
-      cluster.privateClusterConfig.enablePrivateNodes
+      Cluster.NetworkConfig.default_enable_private_nodes
     networkPerformanceConfig: Network bandwidth tier configuration.
     podCidrOverprovisionConfig: [PRIVATE FIELD] Pod CIDR size overprovisioning
       config for the nodepool. Pod CIDR size per node depends on
@@ -5316,6 +5359,18 @@ class PlacementPolicy(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
+class PodAutoscaling(_messages.Message):
+  r"""PodAutoscaling is used for configuration of parameters for workload
+  autoscaling.
+
+  Fields:
+    directMetricsOptIn: Indicates the cluster has opted-into direct metrics
+      collection.
+  """
+
+  directMetricsOptIn = _messages.BooleanField(1)
+
+
 class PodCIDROverprovisionConfig(_messages.Message):
   r"""[PRIVATE FIELD] Config for pod CIDR size overprovisioning.
 
@@ -5367,11 +5422,19 @@ class PrivateClusterConfig(_messages.Message):
 
   Fields:
     enablePrivateEndpoint: Whether the master's internal IP address is used as
-      the cluster endpoint.
+      the cluster endpoint. Deprecated: Use
+      ControlPlaneEndpointsConfig.IPEndpointsConfig.enable_public_endpoint
+      instead. Note that the value of enable_public_endpoint is reversed: if
+      enable_private_endpoint is false, then enable_public_endpoint will be
+      true.
     enablePrivateNodes: Whether nodes have internal IP addresses only. If
       enabled, all nodes are given only RFC 1918 private addresses and
-      communicate with the master via private networking.
+      communicate with the master via private networking. Deprecated: Use
+      NetworkConfig.default_enable_private_nodes instead.
     masterGlobalAccessConfig: Controls master global access settings.
+      Deprecated: Use
+      ControlPlaneEndpointsConfig.IPEndpointsConfig.enable_global_access
+      instead.
     masterIpv4CidrBlock: The IP range in CIDR notation to use for the hosted
       master network. This range will be used for assigning internal IP
       addresses to the master or set of masters, as well as the ILB VIP. This
@@ -5380,12 +5443,15 @@ class PrivateClusterConfig(_messages.Message):
     peeringName: Output only. The peering name in the customer VPC used by
       this cluster.
     privateEndpoint: Output only. The internal IP address of this cluster's
-      master endpoint.
+      master endpoint. Deprecated: Use
+      ControlPlaneEndpointsConfig.IPEndpointsConfig.private_endpoint instead.
     privateEndpointSubnetwork: Subnet to provision the master's private
       endpoint during cluster creation. Specified in
-      projects/*/regions/*/subnetworks/* format.
+      projects/*/regions/*/subnetworks/* format. Deprecated: Use ControlPlaneE
+      ndpointsConfig.IPEndpointsConfig.private_endpoint_subnetwork instead.
     publicEndpoint: Output only. The external IP address of this cluster's
-      master endpoint.
+      master endpoint. Deprecated:Use
+      ControlPlaneEndpointsConfig.IPEndpointsConfig.public_endpoint instead.
   """
 
   enablePrivateEndpoint = _messages.BooleanField(1)
@@ -5629,6 +5695,8 @@ class ReleaseChannelConfig(_messages.Message):
     channel: The release channel this configuration applies to.
     defaultVersion: The default version for newly created clusters on the
       channel.
+    upgradeTargetVersion: The auto upgrade target version for clusters on the
+      channel.
     validVersions: List of valid versions for the channel.
   """
 
@@ -5658,7 +5726,8 @@ class ReleaseChannelConfig(_messages.Message):
 
   channel = _messages.EnumField('ChannelValueValuesEnum', 1)
   defaultVersion = _messages.StringField(2)
-  validVersions = _messages.StringField(3, repeated=True)
+  upgradeTargetVersion = _messages.StringField(3)
+  validVersions = _messages.StringField(4, repeated=True)
 
 
 class ReservationAffinity(_messages.Message):

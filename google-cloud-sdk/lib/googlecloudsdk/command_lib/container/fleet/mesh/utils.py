@@ -116,6 +116,12 @@ def ParseFleetDefaultMemberConfig(yaml_config, msg):
             'CONFIG_API_GATEWAY'
         )
     )
+  elif configapi is None or configapi == 'unspecified':
+    member_config.configApi = (
+        msg.ServiceMeshMembershipSpec.ConfigApiValueValuesEnum(
+            'CONFIG_API_UNSPECIFIED'
+        )
+    )
   else:
     status_msg = (
         'configapi [{}] is not supported. Use one of istio or gateway'

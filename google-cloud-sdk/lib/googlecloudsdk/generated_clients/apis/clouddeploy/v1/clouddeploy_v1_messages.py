@@ -3115,6 +3115,98 @@ class DeployPolicy(_messages.Message):
   updateTime = _messages.StringField(11)
 
 
+class DeployPolicyEvaluationEvent(_messages.Message):
+  r"""Payload proto for "clouddeploy.googleapis.com/deploypolicy_evaluation"
+
+  Platform Log event that describes the deploy policy evaluation event.
+
+  Enums:
+    InvokerValueValuesEnum: What invoked the action (e.g. a user or
+      automation).
+    OverridesValueListEntryValuesEnum:
+    VerdictValueValuesEnum: The policy verdict of the request.
+
+  Fields:
+    allowed: Whether the request is allowed. Allowed is set as true if: (1)
+      the request complies with the policy; or (2) the request doesn't comply
+      with the policy but the policy was overridden; or (3) the request
+      doesn't comply with the policy but the policy was suspended
+    deliveryPipeline: The name of the `Delivery Pipeline`.
+    deployPolicy: The name of the `DeployPolicy`.
+    deployPolicyUid: Unique identifier of the `DeployPolicy`.
+    invoker: What invoked the action (e.g. a user or automation).
+    message: Debug message for when a deploy policy event occurs.
+    overrides: Things that could have overridden the policy verdict. Overrides
+      together with verdict decide whether the request is allowed.
+    pipelineUid: Unique identifier of the `Delivery Pipeline`.
+    rule: Rule id.
+    ruleType: Rule type (e.g. Restrict Rollouts).
+    target: The name of the `Target`. This is an optional field, as a `Target`
+      may not always be applicable to a policy.
+    targetUid: Unique identifier of the `Target`. This is an optional field,
+      as a `Target` may not always be applicable to a policy.
+    verdict: The policy verdict of the request.
+  """
+
+  class InvokerValueValuesEnum(_messages.Enum):
+    r"""What invoked the action (e.g. a user or automation).
+
+    Values:
+      INVOKER_UNSPECIFIED: Unspecified.
+      USER: The action is user-driven. For example, creating a rollout
+        manually via a gcloud create command.
+      DEPLOY_AUTOMATION: Automated action by Cloud Deploy.
+    """
+
+    INVOKER_UNSPECIFIED = 0
+    USER = 1
+    DEPLOY_AUTOMATION = 2
+
+  class OverridesValueListEntryValuesEnum(_messages.Enum):
+    r"""OverridesValueListEntryValuesEnum enum type.
+
+    Values:
+      POLICY_VERDICT_OVERRIDE_UNSPECIFIED: This should never happen.
+      POLICY_OVERRIDDEN: The policy was overridden.
+      POLICY_SUSPENDED: The policy was suspended.
+    """
+
+    POLICY_VERDICT_OVERRIDE_UNSPECIFIED = 0
+    POLICY_OVERRIDDEN = 1
+    POLICY_SUSPENDED = 2
+
+  class VerdictValueValuesEnum(_messages.Enum):
+    r"""The policy verdict of the request.
+
+    Values:
+      POLICY_VERDICT_UNSPECIFIED: This should never happen.
+      ALLOWED_BY_POLICY: Allowed by policy. This enum value is not currently
+        used but may be used in the future. Currently logs are only generated
+        when a request is denied by policy.
+      DENIED_BY_POLICY: Denied by policy.
+    """
+
+    POLICY_VERDICT_UNSPECIFIED = 0
+    ALLOWED_BY_POLICY = 1
+    DENIED_BY_POLICY = 2
+
+  allowed = _messages.BooleanField(1)
+  deliveryPipeline = _messages.StringField(2)
+  deployPolicy = _messages.StringField(3)
+  deployPolicyUid = _messages.StringField(4)
+  invoker = _messages.EnumField('InvokerValueValuesEnum', 5)
+  message = _messages.StringField(6)
+  overrides = _messages.EnumField(
+      'OverridesValueListEntryValuesEnum', 7, repeated=True
+  )
+  pipelineUid = _messages.StringField(8)
+  rule = _messages.StringField(9)
+  ruleType = _messages.StringField(10)
+  target = _messages.StringField(11)
+  targetUid = _messages.StringField(12)
+  verdict = _messages.EnumField('VerdictValueValuesEnum', 13)
+
+
 class DeployPolicyNotificationEvent(_messages.Message):
   r"""Payload proto for
   "clouddeploy.googleapis.com/deploypolicy_notification". Platform Log event
@@ -3207,7 +3299,6 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
 
 
 class ExecutionConfig(_messages.Message):
@@ -4205,12 +4296,10 @@ class PolicyRule(_messages.Message):
   r"""Deploy Policy rule.
 
   Fields:
-    restrictRollouts: Rollout restrictions.
     rolloutRestriction: Rollout restrictions.
   """
 
-  restrictRollouts = _messages.MessageField('RestrictRollout', 1)
-  rolloutRestriction = _messages.MessageField('RolloutRestriction', 2)
+  rolloutRestriction = _messages.MessageField('RolloutRestriction', 1)
 
 
 class PolicyViolation(_messages.Message):
@@ -4467,49 +4556,6 @@ class PromoteReleaseRule(_messages.Message):
   id = _messages.StringField(4)
   wait = _messages.StringField(5)
   waitPolicy = _messages.EnumField('WaitPolicyValueValuesEnum', 6)
-
-
-class Range(_messages.Message):
-  r"""Range within which actions are restricted.
-
-  Enums:
-    DayOfWeekValueListEntryValuesEnum:
-
-  Fields:
-    dayOfWeek: Days of week.
-    endDate: End date.
-    endTimeOfDay: End time of day.
-    startDate: Start date.
-    startTimeOfDay: Start time of day.
-  """
-
-  class DayOfWeekValueListEntryValuesEnum(_messages.Enum):
-    r"""DayOfWeekValueListEntryValuesEnum enum type.
-
-    Values:
-      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
-      MONDAY: Monday
-      TUESDAY: Tuesday
-      WEDNESDAY: Wednesday
-      THURSDAY: Thursday
-      FRIDAY: Friday
-      SATURDAY: Saturday
-      SUNDAY: Sunday
-    """
-    DAY_OF_WEEK_UNSPECIFIED = 0
-    MONDAY = 1
-    TUESDAY = 2
-    WEDNESDAY = 3
-    THURSDAY = 4
-    FRIDAY = 5
-    SATURDAY = 6
-    SUNDAY = 7
-
-  dayOfWeek = _messages.EnumField('DayOfWeekValueListEntryValuesEnum', 1, repeated=True)
-  endDate = _messages.MessageField('Date', 2)
-  endTimeOfDay = _messages.MessageField('TimeOfDay', 3)
-  startDate = _messages.MessageField('Date', 4)
-  startTimeOfDay = _messages.MessageField('TimeOfDay', 5)
 
 
 class Release(_messages.Message):
@@ -5028,66 +5074,6 @@ class RepairRolloutRule(_messages.Message):
   phases = _messages.StringField(4, repeated=True)
   repairPhases = _messages.MessageField('RepairPhaseConfig', 5, repeated=True)
   waitPolicy = _messages.EnumField('WaitPolicyValueValuesEnum', 6)
-
-
-class RestrictRollout(_messages.Message):
-  r"""Rollout restrictions.
-
-  Enums:
-    ActionsValueListEntryValuesEnum:
-    InvokersValueListEntryValuesEnum:
-
-  Fields:
-    actions: Rollout actions to be restricted as part of the policy. If left
-      empty, all actions will be restricted.
-    id: Optional. Restriction rule ID. Required and must be unique within a
-      DeployPolicy. The format is `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`.
-    invokers: Optional. What invoked the action. If left empty, all invoker
-      types will be restricted.
-    timeWindow: Required. Time window within which actions are restricted.
-  """
-
-  class ActionsValueListEntryValuesEnum(_messages.Enum):
-    r"""ActionsValueListEntryValuesEnum enum type.
-
-    Values:
-      ACTIONS_UNSPECIFIED: Unspecified.
-      ADVANCE: Advance the rollout to the next phase.
-      APPROVE: Approve the rollout.
-      CANCEL: Cancel the rollout.
-      CREATE: Create a rollout.
-      IGNORE_JOB: Ignore a job result on the rollout.
-      RETRY_JOB: Retry a job for a rollout.
-      ROLLBACK: Rollback a rollout.
-      TERMINATE_JOBRUN: Terminate a jobrun.
-    """
-    ACTIONS_UNSPECIFIED = 0
-    ADVANCE = 1
-    APPROVE = 2
-    CANCEL = 3
-    CREATE = 4
-    IGNORE_JOB = 5
-    RETRY_JOB = 6
-    ROLLBACK = 7
-    TERMINATE_JOBRUN = 8
-
-  class InvokersValueListEntryValuesEnum(_messages.Enum):
-    r"""InvokersValueListEntryValuesEnum enum type.
-
-    Values:
-      INVOKER_UNSPECIFIED: Unspecified.
-      USER: The action is user-driven. For example, creating a rollout
-        manually via a gcloud create command.
-      DEPLOY_AUTOMATION: Automated action by Cloud Deploy.
-    """
-    INVOKER_UNSPECIFIED = 0
-    USER = 1
-    DEPLOY_AUTOMATION = 2
-
-  actions = _messages.EnumField('ActionsValueListEntryValuesEnum', 1, repeated=True)
-  id = _messages.StringField(2)
-  invokers = _messages.EnumField('InvokersValueListEntryValuesEnum', 3, repeated=True)
-  timeWindow = _messages.MessageField('TimeWindow', 4)
 
 
 class Retry(_messages.Message):
@@ -6679,19 +6665,6 @@ class TimeOfDay(_messages.Message):
   minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-
-
-class TimeWindow(_messages.Message):
-  r"""Time window within which actions are restricted.
-
-  Fields:
-    ranges: Required. Range within which actions are restricted.
-    timeZone: Required. The time zone in IANA format [IANA Time Zone
-      Database](https://www.iana.org/time-zones) (e.g. America/New_York).
-  """
-
-  ranges = _messages.MessageField('Range', 1, repeated=True)
-  timeZone = _messages.StringField(2)
 
 
 class TimeWindows(_messages.Message):

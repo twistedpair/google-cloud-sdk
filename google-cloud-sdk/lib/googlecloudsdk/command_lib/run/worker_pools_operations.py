@@ -43,7 +43,43 @@ class WorkerPoolsOperations(object):
         name=worker_pool_ref.RelativeName()
     )
     try:
-      # TODO(b/357135595): Add and record durations metrics
+      # TODO(b/368113428): Record durations metrics
       return worker_pools.get_worker_pool(get_request)
     except exceptions.NotFound:
       return None
+
+  def DeleteWorkerPool(self, worker_pool_ref):
+    """Delete the WorkerPool.
+
+    Args:
+      worker_pool_ref: Resource, WorkerPool to delete.
+
+    Returns:
+      A LRO for delete operation.
+    """
+    worker_pools = self._client.worker
+    delete_request = self._client.types.DeleteWorkerPoolRequest(
+        name=worker_pool_ref.RelativeName()
+    )
+    try:
+      # TODO(b/368113428): Record durations metrics
+      return worker_pools.delete_worker_pool(delete_request)
+    except exceptions.NotFound:
+      return None
+
+  def ListWorkerPools(self, region_ref):
+    """List the WorkerPools in a region.
+
+    Args:
+      region_ref: Resource, Region to get the list of WorkerPools from.
+
+    Returns:
+      A list of WorkerPool objects.
+    """
+    worker_pools = self._client.worker
+    list_request = self._client.types.ListWorkerPoolsRequest(
+        parent=region_ref.RelativeName()
+    )
+    # TODO(b/357135595): Add and record durations metrics
+    # TODO(b/366501494): Support `next_page_token`
+    return worker_pools.list_worker_pools(list_request)

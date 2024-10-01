@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.scc.iac_remediation import const
 from googlecloudsdk.core import exceptions
 
 
@@ -57,4 +58,54 @@ class FindingNotFoundError(Error):
   def __init__(self):
     super(Error, self).__init__(
         'Finding not found for the given name and organization.'
+    )
+
+
+class GitRepoNotFoundError(Error):
+  """An error representing a git repo not found error."""
+
+  def __init__(self):
+    super(Error, self).__init__(
+        'Command is being invoked from a non-git repo'
+    )
+
+
+class InvalidGitConfigError(Error):
+  """An error representing missing field in the git config file."""
+
+  def __init__(self, missing_field: str):
+    if missing_field is None:
+      super(Error, self).__init__('Missing git config field name.')
+    else:
+      super(Error, self).__init__(
+          f'Field missing from the git config file: {missing_field}.'
+      )
+
+
+class EmptyLLMResponseError(Error):
+  """An error representing an invalid LLM response error."""
+
+  def __init__(self):
+    super(Error, self).__init__(
+        'LLM response is empty.'
+    )
+
+
+class InvalidLLMResponseError(Error):
+  """An error representing an invalid LLM response error."""
+
+  def __init__(self, error_message: str):
+    if error_message is None:
+      super(Error, self).__init__('Invalid LLM response.')
+    else:
+      super(Error, self).__init__(f'Invalid LLM response: {error_message}')
+
+
+class ExcessiveMembersError(Error):
+  """An error representing an excessive members error."""
+
+  def __init__(self, num_members: int):
+    super(Error, self).__init__(
+        f'Excessive members in the finding: {num_members}, expected atmost'
+        f' {const.SUPPORTED_IAM_MEMBER_COUNT_LIMIT}.'
     )

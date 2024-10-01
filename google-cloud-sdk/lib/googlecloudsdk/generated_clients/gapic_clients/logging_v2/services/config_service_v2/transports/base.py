@@ -188,6 +188,31 @@ class ConfigServiceV2Transport(abc.ABC):
                 default_timeout=None,
                 client_info=client_info,
             ),
+            self.list_log_scopes: gapic_v1.method.wrap_method(
+                self.list_log_scopes,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.get_log_scope: gapic_v1.method.wrap_method(
+                self.get_log_scope,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.create_log_scope: gapic_v1.method.wrap_method(
+                self.create_log_scope,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.update_log_scope: gapic_v1.method.wrap_method(
+                self.update_log_scope,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.delete_log_scope: gapic_v1.method.wrap_method(
+                self.delete_log_scope,
+                default_timeout=None,
+                client_info=client_info,
+            ),
             self.list_exclusions: gapic_v1.method.wrap_method(
                 self.list_exclusions,
                 default_retry=retries.Retry(
@@ -517,6 +542,51 @@ class ConfigServiceV2Transport(abc.ABC):
     @property
     def delete_view(self) -> Callable[
             [logging_config.DeleteViewRequest],
+            Union[
+                empty_pb2.Empty,
+                Awaitable[empty_pb2.Empty]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def list_log_scopes(self) -> Callable[
+            [logging_config.ListLogScopesRequest],
+            Union[
+                logging_config.ListLogScopesResponse,
+                Awaitable[logging_config.ListLogScopesResponse]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def get_log_scope(self) -> Callable[
+            [logging_config.GetLogScopeRequest],
+            Union[
+                logging_config.LogScope,
+                Awaitable[logging_config.LogScope]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def create_log_scope(self) -> Callable[
+            [logging_config.CreateLogScopeRequest],
+            Union[
+                logging_config.LogScope,
+                Awaitable[logging_config.LogScope]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def update_log_scope(self) -> Callable[
+            [logging_config.UpdateLogScopeRequest],
+            Union[
+                logging_config.LogScope,
+                Awaitable[logging_config.LogScope]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def delete_log_scope(self) -> Callable[
+            [logging_config.DeleteLogScopeRequest],
             Union[
                 empty_pb2.Empty,
                 Awaitable[empty_pb2.Empty]

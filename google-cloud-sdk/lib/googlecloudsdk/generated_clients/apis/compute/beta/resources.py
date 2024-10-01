@@ -493,6 +493,13 @@ class Collections(enum.Enum):
       ['project', 'region', 'instantSnapshot'],
       True
   )
+  REGIONMULTIMIGS = (
+      'regionMultiMigs',
+      'projects/{project}/regions/{region}/multiMigs/{multiMig}',
+      {},
+      ['project', 'region', 'multiMig'],
+      True
+  )
   REGIONNETWORKENDPOINTGROUPS = (
       'regionNetworkEndpointGroups',
       'projects/{project}/regions/{region}/networkEndpointGroups/'

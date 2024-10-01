@@ -3815,18 +3815,6 @@ def WarnForUnspecifiedKubeletReadonlyPort():
   )
 
 
-# TODO(b/110368338): Drop this warning when changing the default value of the
-# flag.
-def WarnForUnspecifiedIpAllocationPolicy(args):
-  if not args.IsSpecified('enable_ip_alias'):
-    log.status.Print(
-        'Default change: VPC-native is the default mode during cluster '
-        'creation for versions greater than 1.21.0-gke.1500. To create '
-        'advanced routes based clusters, please pass the '
-        '`--no-enable-ip-alias` flag'
-    )
-
-
 def WarnForNodeModification(args, enable_autorepair):
   if not (args.image_type or '').lower().startswith('ubuntu'):
     return
@@ -6925,4 +6913,32 @@ def AddClusterTierFlag(parser, hidden=True):
       help=help_text,
       hidden=hidden,
       choices=['standard', 'enterprise'],
+  )
+
+
+def AddAutoprovisioningCgroupModeFlag(parser, hidden=True):
+  """Adds a --autoprovisioning-cgroup-mode to the given cluster parser."""
+  help_text = textwrap.dedent("""\
+      Sets the cgroup mode for auto-provisioned nodes.
+
+      Updating this flag triggers an update using surge upgrades of all existing
+      auto-provisioned nodes to apply the new value of cgroup mode.
+
+      For an Autopilot cluster, the specified cgroup mode will be set on all existing and new nodes in the cluster.
+      For a Standard cluster, the specified cgroup mode will be set on all existing and new auto-provisioned node pools in the cluster.
+
+      If not set, GKE uses cgroupv2 for new nodes when the cluster was created running 1.26 or later,
+      and cgroupv1 for clusters created running 1.25 or earlier. To check your initial cluster version, run
+      `gcloud container clusters describe [NAME] --format="value(initialClusterVersion)"`
+
+      For clusters created running version 1.26 or later, you can't set the cgroup mode to v1.
+
+      To learn more, see: https://cloud.google.com/kubernetes-engine/docs/how-to/migrate-cgroupv2
+  """)
+  parser.add_argument(
+      '--autoprovisioning-cgroup-mode',
+      default=None,
+      choices=['default', 'v1', 'v2'],
+      help=help_text,
+      hidden=hidden,
   )

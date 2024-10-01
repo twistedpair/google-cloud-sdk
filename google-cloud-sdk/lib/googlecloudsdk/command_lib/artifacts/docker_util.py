@@ -64,6 +64,14 @@ A valid container image that can be referenced by tag or digest, has the format 
   LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID/IMAGE@sha256:digest
 """
 
+_INVALID_VERSION_STR_ERROR = """Invalid Docker image/Version.
+
+A valid container image that can be referenced by tag or digest, has the format of
+  projects/PROJECT-ID/locations/LOCATION/repositories/REPOSITORY-ID/packages/PACKAGE-ID/versions/sha256:digest
+  LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID/IMAGE:tag
+  LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID/IMAGE@sha256:digest
+"""
+
 _INVALID_DOCKER_IMAGE_ERROR = """Invalid Docker image.
 
 A valid container image can be referenced by tag or digest, has the format of
@@ -213,6 +221,57 @@ def _ParseDockerImage(img_str, err_msg, strict=True):
                              whole_img_match.group("img").strip("/"))
     return docker_img, None if strict else DockerTag(docker_img, "latest")
   raise ar_exceptions.InvalidInputValueError(err_msg)
+
+
+def ParseDockerVersionStr(version_str):
+  """Validates and parses an image string into a DockerImage.
+
+  Args:
+    version_str: str, User input docker formatted or AR version resource string.
+
+  Raises:
+    ar_exceptions.InvalidInputValueError if user input is invalid.
+    ar_exceptions.UnsupportedLocationError if provided location is invalid.
+
+  Returns:
+    A DockerVersion.
+  """
+  try:
+    version_resource = resources.REGISTRY.ParseRelativeName(
+        version_str,
+        collection=_VERSION_COLLECTION_NAME,
+    )
+    return DockerVersion(
+        DockerImage(
+            DockerRepo(
+                version_resource.projectsId,
+                version_resource.locationsId,
+                version_resource.repositoriesId,
+            ),
+            version_resource.packagesId,
+        ),
+        version_resource.versionsId,
+    )
+  except resources.InvalidResourceException:
+    pass
+
+  try:
+    docker_repo = _ParseInput(version_str)
+  except ar_exceptions.InvalidInputValueError:
+    raise ar_exceptions.InvalidInputValueError(_INVALID_VERSION_STR_ERROR)
+
+  uri_digest_match = re.match(DOCKER_IMG_BY_DIGEST_REGEX, version_str)
+  uri_tag_match = re.match(DOCKER_IMG_BY_TAG_REGEX, version_str)
+
+  if uri_digest_match:
+    docker_img = DockerImage(docker_repo, uri_digest_match.group("img"))
+    return DockerVersion(docker_img, uri_digest_match.group("digest"))
+  elif uri_tag_match:
+    docker_img = DockerImage(docker_repo, uri_tag_match.group("img"))
+    tag = DockerTag(docker_img, uri_tag_match.group("tag"))
+    return _ValidateAndGetDockerVersion(tag)
+
+  raise ar_exceptions.InvalidInputValueError(_INVALID_VERSION_STR_ERROR)
 
 
 def _ParseDockerTag(tag):
@@ -435,8 +494,10 @@ class DockerRepo(object):
     )
 
   def GetRepositoryName(self):
+    loc = RemoveEndpointPrefix(self.location)
     return "projects/{}/locations/{}/repositories/{}".format(
-        self.project, self.location, self.repo)
+        self.project, loc, self.repo
+    )
 
 
 class DockerImage(object):
@@ -1027,6 +1088,14 @@ def IsARDockerImage(uri):
 def IsGCRImage(uri):
   return (
       re.match(GCR_DOCKER_REPO_REGEX, uri) is not None
-      or re.match(GCR_DOCKER_DOMAIN_SCOPED_REPO_REGEX, uri)
-      is not None
+      or re.match(GCR_DOCKER_DOMAIN_SCOPED_REPO_REGEX, uri) is not None
+  )
+
+
+def RemoveEndpointPrefix(location):
+  endpoint_prefix = properties.VALUES.artifacts.registry_endpoint_prefix.Get()
+  return (
+      location[len(endpoint_prefix) :]
+      if location.startswith(endpoint_prefix)
+      else location
   )

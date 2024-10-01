@@ -32,6 +32,7 @@ __protobuf__ = proto.module(
         'IndexConfig',
         'LogBucket',
         'LogView',
+        'LogScope',
         'LogExclusion',
         'BigQueryOptions',
         'LogSink',
@@ -56,6 +57,12 @@ __protobuf__ = proto.module(
         'CreateViewRequest',
         'UpdateViewRequest',
         'DeleteViewRequest',
+        'ListLogScopesRequest',
+        'ListLogScopesResponse',
+        'GetLogScopeRequest',
+        'CreateLogScopeRequest',
+        'UpdateLogScopeRequest',
+        'DeleteLogScopeRequest',
         'ListExclusionsRequest',
         'ListExclusionsResponse',
         'GetExclusionRequest',
@@ -221,8 +228,6 @@ class IndexConfig(proto.Message):
 class LogBucket(proto.Message):
     r"""Describes a repository in which log entries are stored.
 
-    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
-
     Attributes:
         name (str):
             Output only. The resource name of the bucket.
@@ -264,12 +269,10 @@ class LogBucket(proto.Message):
         lifecycle_state (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LifecycleState):
             Output only. The bucket lifecycle state.
         analytics_enabled (bool):
-            Whether log analytics is enabled for this
-            bucket.
+            Optional. Whether log analytics is enabled
+            for this bucket.
             Once enabled, log analytics features cannot be
             disabled.
-
-            This field is a member of `oneof`_ ``_analytics_enabled``.
         restricted_fields (MutableSequence[str]):
             Optional. Log entry field paths that are denied access in
             this bucket.
@@ -328,7 +331,6 @@ class LogBucket(proto.Message):
     analytics_enabled: bool = proto.Field(
         proto.BOOL,
         number=14,
-        optional=True,
     )
     restricted_fields: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,
@@ -406,6 +408,64 @@ class LogView(proto.Message):
     filter: str = proto.Field(
         proto.STRING,
         number=7,
+    )
+
+
+class LogScope(proto.Message):
+    r"""Describes a group of resources to read log entries from.
+
+    Attributes:
+        name (str):
+            Output only. The resource name of the log scope.
+
+            For example:
+
+            ``projects/my-project/locations/global/logScopes/my-log-scope``
+        resource_names (MutableSequence[str]):
+            Required. Names of one or more parent resources:
+
+            -  ``projects/[PROJECT_ID]``
+
+            May alternatively be one or more views:
+
+            -  ``projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]``
+
+            A log scope can include a maximum of 50 projects and a
+            maximum of 100 resources in total.
+        description (str):
+            Optional. Describes this log scope.
+
+            The maximum length of the description is 8000
+            characters.
+        create_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. The creation timestamp of the
+            log scope.
+        update_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. The last update timestamp of the
+            log scope.
+    """
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    resource_names: MutableSequence[str] = proto.RepeatedField(
+        proto.STRING,
+        number=2,
+    )
+    description: str = proto.Field(
+        proto.STRING,
+        number=3,
+    )
+    create_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        message=timestamp_pb2.Timestamp,
+    )
+    update_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        message=timestamp_pb2.Timestamp,
     )
 
 
@@ -1823,6 +1883,190 @@ class DeleteViewRequest(proto.Message):
             ::
 
                `"projects/my-project/locations/global/buckets/my-bucket/views/my-view"`
+    """
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+
+
+class ListLogScopesRequest(proto.Message):
+    r"""The parameters to ``ListLogScopes``.
+
+    Attributes:
+        parent (str):
+            Required. The parent resource whose log scopes are to be
+            listed:
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]".
+        page_token (str):
+            Optional. If present, then retrieve the next batch of
+            results from the preceding call to this method.
+            ``pageToken`` must be the value of ``nextPageToken`` from
+            the previous response. The values of other method parameters
+            should be identical to those in the previous call.
+        page_size (int):
+            Optional. The maximum number of results to return from this
+            request.
+
+            Non-positive values are ignored. The presence of
+            ``nextPageToken`` in the response indicates that more
+            results might be available.
+    """
+
+    parent: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    page_token: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    page_size: int = proto.Field(
+        proto.INT32,
+        number=3,
+    )
+
+
+class ListLogScopesResponse(proto.Message):
+    r"""The response from ``ListLogScopes``. Every project has a
+    ``_Default`` log scope that cannot be modified or deleted.
+
+    Attributes:
+        log_scopes (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogScope]):
+            A list of log scopes.
+        next_page_token (str):
+            If there might be more results than appear in this response,
+            then ``nextPageToken`` is included. To get the next set of
+            results, call the same method again using the value of
+            ``nextPageToken`` as ``pageToken``.
+    """
+
+    @property
+    def raw_page(self):
+        return self
+
+    log_scopes: MutableSequence['LogScope'] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=1,
+        message='LogScope',
+    )
+    next_page_token: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+
+
+class GetLogScopeRequest(proto.Message):
+    r"""The parameters to ``GetLogScope``.
+
+    Attributes:
+        name (str):
+            Required. The resource name of the log scope:
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/logScopes/[LOG_SCOPE_ID]"
+
+            For example:
+
+            ``"projects/my-project/locations/global/logScopes/my-log-scope"``
+    """
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+
+
+class CreateLogScopeRequest(proto.Message):
+    r"""The parameters to ``CreateLogScope``.
+
+    Attributes:
+        parent (str):
+            Required. The parent project in which to create the log
+            scope
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+
+            For example:
+
+            ``"projects/my-project/locations/global"``
+        log_scope_id (str):
+            Required. A client-assigned identifier such as
+            ``"log-scope"``. Identifiers are limited to 100 characters
+            and can include only letters, digits, underscores, hyphens,
+            and periods. First character has to be alphanumeric.
+        log_scope (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogScope):
+            Required. The new log scope.
+    """
+
+    parent: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    log_scope_id: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    log_scope: 'LogScope' = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        message='LogScope',
+    )
+
+
+class UpdateLogScopeRequest(proto.Message):
+    r"""The parameters to ``UpdateLogScope``. The ``_Default`` log scope
+    cannot be modified.
+
+    Attributes:
+        log_scope (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogScope):
+            Required. The updated log scope.
+        update_mask (google.protobuf.field_mask_pb2.FieldMask):
+            Optional. Field mask that specifies the fields in
+            ``log_scope`` that need an update. A field will be
+            overwritten if, and only if, it is in the update mask.
+            ``name`` and output only fields cannot be updated.
+
+            For a detailed ``FieldMask`` definition, see
+            https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#google.protobuf.FieldMask
+
+            For example: ``updateMask=description``
+    """
+
+    log_scope: 'LogScope' = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message='LogScope',
+    )
+    update_mask: field_mask_pb2.FieldMask = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        message=field_mask_pb2.FieldMask,
+    )
+
+
+class DeleteLogScopeRequest(proto.Message):
+    r"""The parameters to ``DeleteLogScope``. The ``_Default`` log scope
+    cannot be deleted.
+
+    Attributes:
+        name (str):
+            Required. The resource name of the log scope to delete:
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/logScopes/[LOG_SCOPE_ID]"
+
+            For example:
+
+            ``"projects/my-project/locations/global/logScopes/my-log-scope"``
     """
 
     name: str = proto.Field(

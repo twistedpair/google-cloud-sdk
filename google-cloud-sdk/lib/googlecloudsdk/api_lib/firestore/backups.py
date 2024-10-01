@@ -14,11 +14,9 @@
 # limitations under the License.
 """Useful commands for interacting with the Cloud Firestore Backups API."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.firestore import api_utils
+from googlecloudsdk.core import log
 
 
 def _GetBackupService():
@@ -36,15 +34,19 @@ def ListBackups(project, location):
   Returns:
     a List of Backups.
   """
-  return list(
-      _GetBackupService()
-      .List(
-          api_utils.GetMessages().FirestoreProjectsLocationsBackupsListRequest(
-              parent='projects/{}/locations/{}'.format(project, location)
-          )
+  result = _GetBackupService().List(
+      api_utils.GetMessages().FirestoreProjectsLocationsBackupsListRequest(
+          parent='projects/{}/locations/{}'.format(project, location)
       )
-      .backups
   )
+  if result.unreachable:
+    for unreachable in result.unreachable:
+      log.status.Print(
+          f'Failed to list backups for location {unreachable}, please retry'
+          ' with command gcloud {version} firestore backups list'
+          f' --location={unreachable} to get a more concrete error'
+      )
+  return list(result.backups)
 
 
 def GetBackup(project, location, backup):

@@ -84,6 +84,7 @@ COMMERCE_CATEGORY = 'Commerce'
 DECLARATIVE_CONFIGURATION_CATEGORY = 'Declarative Resource Management'
 MICROSERVICES_CATEGORY = 'Microservices'
 WEB3_CATEGORY = 'Web3'
+SAAS_CATEGORY = 'SaaS'
 
 
 # Common markdown.

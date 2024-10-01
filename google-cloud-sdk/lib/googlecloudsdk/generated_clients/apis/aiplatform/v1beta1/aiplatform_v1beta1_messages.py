@@ -3724,9 +3724,10 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesBatchCreateRequ
     googleCloudAiplatformV1beta1BatchCreateFeaturesRequest: A
       GoogleCloudAiplatformV1beta1BatchCreateFeaturesRequest resource to be
       passed as the request body.
-    parent: Required. The resource name of the EntityType to create the batch
-      of Features under. Format: `projects/{project}/locations/{location}/feat
-      urestores/{featurestore}/entityTypes/{entity_type}`
+    parent: Required. The resource name of the EntityType/FeatureGroup to
+      create the batch of Features under. Format: `projects/{project}/location
+      s/{location}/featurestores/{featurestore}/entityTypes/{entity_type}`
+      `projects/{project}/locations/{location}/featureGroups/{feature_group}`
   """
 
   googleCloudAiplatformV1beta1BatchCreateFeaturesRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchCreateFeaturesRequest', 1)
@@ -8837,7 +8838,7 @@ class AiplatformProjectsLocationsReasoningEnginesPatchRequest(_messages.Message)
       GoogleCloudAiplatformV1beta1ReasoningEngine resource to be passed as the
       request body.
     name: Identifier. The resource name of the ReasoningEngine.
-    updateMask: Required. Mask specifying which fields to update.
+    updateMask: Optional. Mask specifying which fields to update.
   """
 
   googleCloudAiplatformV1beta1ReasoningEngine = _messages.MessageField('GoogleCloudAiplatformV1beta1ReasoningEngine', 1)
@@ -10607,6 +10608,31 @@ class AiplatformProjectsLocationsTuningJobsListRequest(_messages.Message):
   parent = _messages.StringField(4, required=True)
 
 
+class AiplatformProjectsLocationsTuningJobsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTuningJobsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTuningJobsRebaseTunedModelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTuningJobsRebaseTunedModelRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1RebaseTunedModelRequest: A
+      GoogleCloudAiplatformV1beta1RebaseTunedModelRequest resource to be
+      passed as the request body.
+    parent: Required. The resource name of the Location into which to rebase
+      the Model. Format: `projects/{project}/locations/{location}`
+  """
+
+  googleCloudAiplatformV1beta1RebaseTunedModelRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1RebaseTunedModelRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class AiplatformPublishersModelsComputeTokensRequest(_messages.Message):
   r"""A AiplatformPublishersModelsComputeTokensRequest object.
 
@@ -11860,14 +11886,15 @@ class GoogleCloudAiplatformV1beta1BatchCreateFeaturesOperationMetadata(_messages
 
 
 class GoogleCloudAiplatformV1beta1BatchCreateFeaturesRequest(_messages.Message):
-  r"""Request message for FeaturestoreService.BatchCreateFeatures.
+  r"""Request message for FeaturestoreService.BatchCreateFeatures. Request
+  message for FeatureRegistryService.BatchCreateFeatures.
 
   Fields:
     requests: Required. The request message specifying the Features to create.
-      All Features must be created under the same parent EntityType. The
-      `parent` field in each child request message can be omitted. If `parent`
-      is set in a child request, then the value must match the `parent` value
-      in this request message.
+      All Features must be created under the same parent EntityType /
+      FeatureGroup. The `parent` field in each child request message can be
+      omitted. If `parent` is set in a child request, then the value must
+      match the `parent` value in this request message.
   """
 
   requests = _messages.MessageField('GoogleCloudAiplatformV1beta1CreateFeatureRequest', 1, repeated=True)
@@ -12781,6 +12808,8 @@ class GoogleCloudAiplatformV1beta1Candidate(_messages.Message):
     groundingMetadata: Output only. Metadata specifies sources used to ground
       generated content.
     index: Output only. Index of the candidate.
+    logprobsResult: Output only. Log-likelihood scores for the response tokens
+      and top tokens
     safetyRatings: Output only. List of ratings for the safety of a response
       candidate. There is at most one rating per category.
   """
@@ -12828,7 +12857,8 @@ class GoogleCloudAiplatformV1beta1Candidate(_messages.Message):
   finishReason = _messages.EnumField('FinishReasonValueValuesEnum', 5)
   groundingMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GroundingMetadata', 6)
   index = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  safetyRatings = _messages.MessageField('GoogleCloudAiplatformV1beta1SafetyRating', 8, repeated=True)
+  logprobsResult = _messages.MessageField('GoogleCloudAiplatformV1beta1LogprobsResult', 8)
+  safetyRatings = _messages.MessageField('GoogleCloudAiplatformV1beta1SafetyRating', 9, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateMetatdata(_messages.Message):
@@ -15288,6 +15318,33 @@ class GoogleCloudAiplatformV1beta1DoubleArray(_messages.Message):
   values = _messages.FloatField(1, repeated=True)
 
 
+class GoogleCloudAiplatformV1beta1DynamicRetrievalConfig(_messages.Message):
+  r"""Describes the options to customize dynamic retrieval.
+
+  Enums:
+    ModeValueValuesEnum: The mode of the predictor to be used in dynamic
+      retrieval.
+
+  Fields:
+    dynamicThreshold: Optional. The threshold to be used in dynamic retrieval.
+      If not set, a system default value is used.
+    mode: The mode of the predictor to be used in dynamic retrieval.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""The mode of the predictor to be used in dynamic retrieval.
+
+    Values:
+      MODE_UNSPECIFIED: Always trigger retrieval.
+      MODE_DYNAMIC: Run retrieval only when system decides it is necessary.
+    """
+    MODE_UNSPECIFIED = 0
+    MODE_DYNAMIC = 1
+
+  dynamicThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  mode = _messages.EnumField('ModeValueValuesEnum', 2)
+
+
 class GoogleCloudAiplatformV1beta1EncryptionSpec(_messages.Message):
   r"""Represents a customer-managed encryption key spec that can be applied to
   a top-level resource.
@@ -15345,6 +15402,9 @@ class GoogleCloudAiplatformV1beta1Endpoint(_messages.Message):
       secured by this key.
     etag: Used to perform consistent read-modify-write updates. If not set, a
       blind "overwrite" update happens.
+    gdceConfig: Configures the Google Distributed Cloud Edge (GDCE)
+      environment for online prediction. Only set this field when the Endpoint
+      is to be deployed in a GDCE environment.
     labels: The labels with user-defined metadata to organize your Endpoints.
       Label keys and values can be no longer than 64 characters (Unicode
       codepoints), can only contain lowercase letters, numeric characters,
@@ -15446,16 +15506,17 @@ class GoogleCloudAiplatformV1beta1Endpoint(_messages.Message):
   enablePrivateServiceConnect = _messages.BooleanField(7)
   encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 8)
   etag = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  modelDeploymentMonitoringJob = _messages.StringField(11)
-  name = _messages.StringField(12)
-  network = _messages.StringField(13)
-  predictRequestResponseLoggingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1PredictRequestResponseLoggingConfig', 14)
-  privateServiceConnectConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1PrivateServiceConnectConfig', 15)
-  satisfiesPzi = _messages.BooleanField(16)
-  satisfiesPzs = _messages.BooleanField(17)
-  trafficSplit = _messages.MessageField('TrafficSplitValue', 18)
-  updateTime = _messages.StringField(19)
+  gdceConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1GdceConfig', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  modelDeploymentMonitoringJob = _messages.StringField(12)
+  name = _messages.StringField(13)
+  network = _messages.StringField(14)
+  predictRequestResponseLoggingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1PredictRequestResponseLoggingConfig', 15)
+  privateServiceConnectConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1PrivateServiceConnectConfig', 16)
+  satisfiesPzi = _messages.BooleanField(17)
+  satisfiesPzs = _messages.BooleanField(18)
+  trafficSplit = _messages.MessageField('TrafficSplitValue', 19)
+  updateTime = _messages.StringField(20)
 
 
 class GoogleCloudAiplatformV1beta1EntityIdSelector(_messages.Message):
@@ -18126,6 +18187,8 @@ class GoogleCloudAiplatformV1beta1FeatureView(_messages.Message):
     name: Identifier. Name of the FeatureView. Format: `projects/{project}/loc
       ations/{location}/featureOnlineStores/{feature_online_store}/featureView
       s/{feature_view}`
+    optimizedConfig: Optional. Configuration for FeatureView created under
+      Optimized FeatureOnlineStore.
     satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     serviceAccountEmail: Output only. A Service Account unique to this
@@ -18209,14 +18272,15 @@ class GoogleCloudAiplatformV1beta1FeatureView(_messages.Message):
   indexConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureViewIndexConfig', 5)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
-  satisfiesPzi = _messages.BooleanField(8)
-  satisfiesPzs = _messages.BooleanField(9)
-  serviceAccountEmail = _messages.StringField(10)
-  serviceAgentType = _messages.EnumField('ServiceAgentTypeValueValuesEnum', 11)
-  syncConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureViewSyncConfig', 12)
-  updateTime = _messages.StringField(13)
-  vectorSearchConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureViewVectorSearchConfig', 14)
-  vertexRagSource = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureViewVertexRagSource', 15)
+  optimizedConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureViewOptimizedConfig', 8)
+  satisfiesPzi = _messages.BooleanField(9)
+  satisfiesPzs = _messages.BooleanField(10)
+  serviceAccountEmail = _messages.StringField(11)
+  serviceAgentType = _messages.EnumField('ServiceAgentTypeValueValuesEnum', 12)
+  syncConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureViewSyncConfig', 13)
+  updateTime = _messages.StringField(14)
+  vectorSearchConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureViewVectorSearchConfig', 15)
+  vertexRagSource = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureViewVertexRagSource', 16)
 
 
 class GoogleCloudAiplatformV1beta1FeatureViewBigQuerySource(_messages.Message):
@@ -18359,6 +18423,21 @@ class GoogleCloudAiplatformV1beta1FeatureViewIndexConfigTreeAHConfig(_messages.M
   """
 
   leafNodeEmbeddingCount = _messages.IntegerField(1)
+
+
+class GoogleCloudAiplatformV1beta1FeatureViewOptimizedConfig(_messages.Message):
+  r"""Configuration for FeatureViews created in Optimized FeatureOnlineStore.
+
+  Fields:
+    automaticResources: Optional. A description of resources that the
+      FeatureView uses, which to large degree are decided by Vertex AI, and
+      optionally allows only a modest additional configuration. If
+      min_replica_count is not set, the default value is 2. If
+      max_replica_count is not set, the default value is 6. The max allowed
+      replica count is 1000.
+  """
+
+  automaticResources = _messages.MessageField('GoogleCloudAiplatformV1beta1AutomaticResources', 1)
 
 
 class GoogleCloudAiplatformV1beta1FeatureViewSync(_messages.Message):
@@ -19443,6 +19522,17 @@ class GoogleCloudAiplatformV1beta1GcsSource(_messages.Message):
   uris = _messages.StringField(1, repeated=True)
 
 
+class GoogleCloudAiplatformV1beta1GdceConfig(_messages.Message):
+  r"""Google Distributed Cloud Edge (GDCE) config.
+
+  Fields:
+    zone: GDCE zone. A cluster will be designated for the Vertex AI workload
+      in this zone. Format: `-edge-[-]#`. Example: us-central1-edge-att-dfw1.
+  """
+
+  zone = _messages.StringField(1)
+
+
 class GoogleCloudAiplatformV1beta1GenerateAccessTokenRequest(_messages.Message):
   r"""Request message for NotebookInternalService.GenerateAccessToken.
 
@@ -19561,6 +19651,8 @@ class GoogleCloudAiplatformV1beta1GenerateContentResponse(_messages.Message):
 
   Fields:
     candidates: Output only. Generated candidates.
+    modelVersion: Output only. The model version used to generate the
+      response.
     promptFeedback: Output only. Content filter results for a prompt sent in
       the request. Note: Sent only in the first stream chunk. Only happens
       when no candidates were generated due to content violations.
@@ -19568,8 +19660,9 @@ class GoogleCloudAiplatformV1beta1GenerateContentResponse(_messages.Message):
   """
 
   candidates = _messages.MessageField('GoogleCloudAiplatformV1beta1Candidate', 1, repeated=True)
-  promptFeedback = _messages.MessageField('GoogleCloudAiplatformV1beta1GenerateContentResponsePromptFeedback', 2)
-  usageMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenerateContentResponseUsageMetadata', 3)
+  modelVersion = _messages.StringField(2)
+  promptFeedback = _messages.MessageField('GoogleCloudAiplatformV1beta1GenerateContentResponsePromptFeedback', 3)
+  usageMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenerateContentResponseUsageMetadata', 4)
 
 
 class GoogleCloudAiplatformV1beta1GenerateContentResponsePromptFeedback(_messages.Message):
@@ -19646,9 +19739,12 @@ class GoogleCloudAiplatformV1beta1GenerationConfig(_messages.Message):
   Fields:
     candidateCount: Optional. Number of candidates to generate.
     frequencyPenalty: Optional. Frequency penalties.
+    logprobs: Optional. Logit probabilities.
     maxOutputTokens: Optional. The maximum number of output tokens to generate
       per message.
     presencePenalty: Optional. Positive penalties.
+    responseLogprobs: Optional. If true, export the logprobs results in
+      response.
     responseMimeType: Optional. Output response mimetype of the generated
       candidate text. Supported mimetype: - `text/plain`: (default) Text
       output. - `application/json`: JSON response in the candidates. The model
@@ -19670,16 +19766,18 @@ class GoogleCloudAiplatformV1beta1GenerationConfig(_messages.Message):
 
   candidateCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   frequencyPenalty = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  maxOutputTokens = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  presencePenalty = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
-  responseMimeType = _messages.StringField(5)
-  responseSchema = _messages.MessageField('GoogleCloudAiplatformV1beta1Schema', 6)
-  routingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1GenerationConfigRoutingConfig', 7)
-  seed = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  stopSequences = _messages.StringField(9, repeated=True)
-  temperature = _messages.FloatField(10, variant=_messages.Variant.FLOAT)
-  topK = _messages.FloatField(11, variant=_messages.Variant.FLOAT)
-  topP = _messages.FloatField(12, variant=_messages.Variant.FLOAT)
+  logprobs = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maxOutputTokens = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  presencePenalty = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  responseLogprobs = _messages.BooleanField(6)
+  responseMimeType = _messages.StringField(7)
+  responseSchema = _messages.MessageField('GoogleCloudAiplatformV1beta1Schema', 8)
+  routingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1GenerationConfigRoutingConfig', 9)
+  seed = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  stopSequences = _messages.StringField(11, repeated=True)
+  temperature = _messages.FloatField(12, variant=_messages.Variant.FLOAT)
+  topK = _messages.FloatField(13, variant=_messages.Variant.FLOAT)
+  topP = _messages.FloatField(14, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudAiplatformV1beta1GenerationConfigRoutingConfig(_messages.Message):
@@ -19801,7 +19899,14 @@ class GoogleCloudAiplatformV1beta1GoogleDriveSourceResourceId(_messages.Message)
 
 
 class GoogleCloudAiplatformV1beta1GoogleSearchRetrieval(_messages.Message):
-  r"""Tool to retrieve public web data for grounding, powered by Google."""
+  r"""Tool to retrieve public web data for grounding, powered by Google.
+
+  Fields:
+    dynamicRetrievalConfig: Specifies the dynamic retrieval configuration for
+      the given source.
+  """
+
+  dynamicRetrievalConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1DynamicRetrievalConfig', 1)
 
 
 class GoogleCloudAiplatformV1beta1GroundednessInput(_messages.Message):
@@ -19897,6 +20002,7 @@ class GoogleCloudAiplatformV1beta1GroundingMetadata(_messages.Message):
     groundingChunks: List of supporting references retrieved from specified
       grounding source.
     groundingSupports: Optional. List of grounding support.
+    retrievalMetadata: Optional. Output only. Retrieval metadata.
     retrievalQueries: Optional. Queries executed by the retrieval tools.
     searchEntryPoint: Optional. Google search entry for the following-up web
       searches.
@@ -19906,9 +20012,10 @@ class GoogleCloudAiplatformV1beta1GroundingMetadata(_messages.Message):
 
   groundingChunks = _messages.MessageField('GoogleCloudAiplatformV1beta1GroundingChunk', 1, repeated=True)
   groundingSupports = _messages.MessageField('GoogleCloudAiplatformV1beta1GroundingSupport', 2, repeated=True)
-  retrievalQueries = _messages.StringField(3, repeated=True)
-  searchEntryPoint = _messages.MessageField('GoogleCloudAiplatformV1beta1SearchEntryPoint', 4)
-  webSearchQueries = _messages.StringField(5, repeated=True)
+  retrievalMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1RetrievalMetadata', 3)
+  retrievalQueries = _messages.StringField(4, repeated=True)
+  searchEntryPoint = _messages.MessageField('GoogleCloudAiplatformV1beta1SearchEntryPoint', 5)
+  webSearchQueries = _messages.StringField(6, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1GroundingSupport(_messages.Message):
@@ -20389,6 +20496,7 @@ class GoogleCloudAiplatformV1beta1ImportRagFilesConfig(_messages.Message):
     ragFileChunkingConfig: Specifies the size and overlap of chunks after
       importing RagFiles.
     ragFileParsingConfig: Specifies the parsing config for RagFiles.
+    sharePointSources: SharePoint sources.
     slackSource: Slack channels with their corresponding access tokens.
   """
 
@@ -20400,7 +20508,8 @@ class GoogleCloudAiplatformV1beta1ImportRagFilesConfig(_messages.Message):
   partialFailureGcsSink = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 6)
   ragFileChunkingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1RagFileChunkingConfig', 7)
   ragFileParsingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1RagFileParsingConfig', 8)
-  slackSource = _messages.MessageField('GoogleCloudAiplatformV1beta1SlackSource', 9)
+  sharePointSources = _messages.MessageField('GoogleCloudAiplatformV1beta1SharePointSources', 9)
+  slackSource = _messages.MessageField('GoogleCloudAiplatformV1beta1SlackSource', 10)
 
 
 class GoogleCloudAiplatformV1beta1ImportRagFilesRequest(_messages.Message):
@@ -21806,6 +21915,43 @@ class GoogleCloudAiplatformV1beta1ListTuningJobsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   tuningJobs = _messages.MessageField('GoogleCloudAiplatformV1beta1TuningJob', 2, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1LogprobsResult(_messages.Message):
+  r"""Logprobs Result
+
+  Fields:
+    chosenCandidates: Length = total number of decoding steps. The chosen
+      candidates may or may not be in top_candidates.
+    topCandidates: Length = total number of decoding steps.
+  """
+
+  chosenCandidates = _messages.MessageField('GoogleCloudAiplatformV1beta1LogprobsResultCandidate', 1, repeated=True)
+  topCandidates = _messages.MessageField('GoogleCloudAiplatformV1beta1LogprobsResultTopCandidates', 2, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1LogprobsResultCandidate(_messages.Message):
+  r"""Candidate for the logprobs token and score.
+
+  Fields:
+    logProbability: The candidate's log probability.
+    token: The candidate's token string value.
+    tokenId: The candidate's token id value.
+  """
+
+  logProbability = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  token = _messages.StringField(2)
+  tokenId = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1LogprobsResultTopCandidates(_messages.Message):
+  r"""Candidates with top log probabilities at each decoding step.
+
+  Fields:
+    candidates: Sorted by log probability in descending order.
+  """
+
+  candidates = _messages.MessageField('GoogleCloudAiplatformV1beta1LogprobsResultCandidate', 1, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1LookupStudyRequest(_messages.Message):
@@ -27222,6 +27368,10 @@ class GoogleCloudAiplatformV1beta1PrivateServiceConnectConfig(_messages.Message)
   Fields:
     enablePrivateServiceConnect: Required. If true, expose the IndexEndpoint
       via private service connect.
+    enableSecurePrivateServiceConnect: Optional. If set to true, enable secure
+      private service connect with IAM authorization. Otherwise, private
+      service connect will be done without authorization. Note latency will be
+      slightly increased if authorization is enabled.
     projectAllowlist: A list of Projects from which the forwarding rule will
       target the service attachment.
     serviceAttachment: Output only. The name of the generated service
@@ -27230,8 +27380,9 @@ class GoogleCloudAiplatformV1beta1PrivateServiceConnectConfig(_messages.Message)
   """
 
   enablePrivateServiceConnect = _messages.BooleanField(1)
-  projectAllowlist = _messages.StringField(2, repeated=True)
-  serviceAttachment = _messages.StringField(3)
+  enableSecurePrivateServiceConnect = _messages.BooleanField(2)
+  projectAllowlist = _messages.StringField(3, repeated=True)
+  serviceAttachment = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1beta1Probe(_messages.Message):
@@ -28252,10 +28403,9 @@ class GoogleCloudAiplatformV1beta1RagContextsContext(_messages.Message):
   Fields:
     distance: The distance between the query dense embedding vector and the
       context text vector.
-    sourceUri: For vertex RagStore, if the file is imported from Cloud Storage
-      or Google Drive, source_uri will be original file URI in Cloud Storage
-      or Google Drive; if file is uploaded, source_uri will be file display
-      name.
+    sourceUri: If the file is imported from Cloud Storage or Google Drive,
+      source_uri will be original file URI in Cloud Storage or Google Drive;
+      if file is uploaded, source_uri will be file display name.
     sparseDistance: The distance between the query sparse embedding vector and
       the context text vector.
     text: The text chunk.
@@ -28394,6 +28544,7 @@ class GoogleCloudAiplatformV1beta1RagFile(_messages.Message):
     jiraSource: The RagFile is imported from a Jira query.
     name: Output only. The resource name of the RagFile.
     ragFileType: Output only. The type of the RagFile.
+    sharePointSources: The RagFile is imported from a SharePoint source.
     sizeBytes: Output only. The size of the RagFile in bytes.
     slackSource: The RagFile is imported from a Slack channel.
     updateTime: Output only. Timestamp when this RagFile was last updated.
@@ -28421,9 +28572,10 @@ class GoogleCloudAiplatformV1beta1RagFile(_messages.Message):
   jiraSource = _messages.MessageField('GoogleCloudAiplatformV1beta1JiraSource', 8)
   name = _messages.StringField(9)
   ragFileType = _messages.EnumField('RagFileTypeValueValuesEnum', 10)
-  sizeBytes = _messages.IntegerField(11)
-  slackSource = _messages.MessageField('GoogleCloudAiplatformV1beta1SlackSource', 12)
-  updateTime = _messages.StringField(13)
+  sharePointSources = _messages.MessageField('GoogleCloudAiplatformV1beta1SharePointSources', 11)
+  sizeBytes = _messages.IntegerField(12)
+  slackSource = _messages.MessageField('GoogleCloudAiplatformV1beta1SlackSource', 13)
+  updateTime = _messages.StringField(14)
 
 
 class GoogleCloudAiplatformV1beta1RagFileChunkingConfig(_messages.Message):
@@ -28480,15 +28632,30 @@ class GoogleCloudAiplatformV1beta1RagVectorDbConfig(_messages.Message):
 
   Fields:
     apiAuth: Authentication config for the chosen Vector DB.
+    pinecone: The config for the Pinecone.
     ragManagedDb: The config for the RAG-managed Vector DB.
     vertexFeatureStore: The config for the Vertex Feature Store.
+    vertexVectorSearch: The config for the Vertex Vector Search.
     weaviate: The config for the Weaviate.
   """
 
   apiAuth = _messages.MessageField('GoogleCloudAiplatformV1beta1ApiAuth', 1)
-  ragManagedDb = _messages.MessageField('GoogleCloudAiplatformV1beta1RagVectorDbConfigRagManagedDb', 2)
-  vertexFeatureStore = _messages.MessageField('GoogleCloudAiplatformV1beta1RagVectorDbConfigVertexFeatureStore', 3)
-  weaviate = _messages.MessageField('GoogleCloudAiplatformV1beta1RagVectorDbConfigWeaviate', 4)
+  pinecone = _messages.MessageField('GoogleCloudAiplatformV1beta1RagVectorDbConfigPinecone', 2)
+  ragManagedDb = _messages.MessageField('GoogleCloudAiplatformV1beta1RagVectorDbConfigRagManagedDb', 3)
+  vertexFeatureStore = _messages.MessageField('GoogleCloudAiplatformV1beta1RagVectorDbConfigVertexFeatureStore', 4)
+  vertexVectorSearch = _messages.MessageField('GoogleCloudAiplatformV1beta1RagVectorDbConfigVertexVectorSearch', 5)
+  weaviate = _messages.MessageField('GoogleCloudAiplatformV1beta1RagVectorDbConfigWeaviate', 6)
+
+
+class GoogleCloudAiplatformV1beta1RagVectorDbConfigPinecone(_messages.Message):
+  r"""The config for the Pinecone.
+
+  Fields:
+    indexName: Pinecone index name. This value cannot be changed after it's
+      set.
+  """
+
+  indexName = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1beta1RagVectorDbConfigRagManagedDb(_messages.Message):
@@ -28505,6 +28672,21 @@ class GoogleCloudAiplatformV1beta1RagVectorDbConfigVertexFeatureStore(_messages.
   """
 
   featureViewResourceName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1RagVectorDbConfigVertexVectorSearch(_messages.Message):
+  r"""The config for the Vertex Vector Search.
+
+  Fields:
+    index: The resource name of the Index. Format:
+      `projects/{project}/locations/{location}/indexes/{index}`
+    indexEndpoint: The resource name of the Index Endpoint. Format:
+      `projects/{project}/locations/{location}/indexEndpoints/{index_endpoint}
+      `
+  """
+
+  index = _messages.StringField(1)
+  indexEndpoint = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1RagVectorDbConfigWeaviate(_messages.Message):
@@ -28919,6 +29101,28 @@ class GoogleCloudAiplatformV1beta1ReasoningEngineSpecPackageSpec(_messages.Messa
   requirementsGcsUri = _messages.StringField(4)
 
 
+class GoogleCloudAiplatformV1beta1RebaseTunedModelRequest(_messages.Message):
+  r"""Request message for GenAiTuningService.RebaseTunedModel.
+
+  Fields:
+    artifactDestination: Optional. The Google Cloud Storage location to write
+      the artifacts.
+    deployToSameEndpoint: Optional. By default, bison to gemini migration will
+      always create new model/endpoint, but for gemini-1.0 to gemini-1.5
+      migration, we default deploy to the same endpoint. See details in this
+      Section.
+    tunedModelRef: Required. TunedModel reference to retrieve the legacy model
+      information.
+    tuningJob: Optional. The TuningJob to be updated. Users can use this
+      TuningJob field to overwrite tuning configs.
+  """
+
+  artifactDestination = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 1)
+  deployToSameEndpoint = _messages.BooleanField(2)
+  tunedModelRef = _messages.MessageField('GoogleCloudAiplatformV1beta1TunedModelRef', 3)
+  tuningJob = _messages.MessageField('GoogleCloudAiplatformV1beta1TuningJob', 4)
+
+
 class GoogleCloudAiplatformV1beta1RebootPersistentResourceOperationMetadata(_messages.Message):
   r"""Details of operations that perform reboot PersistentResource.
 
@@ -29290,6 +29494,21 @@ class GoogleCloudAiplatformV1beta1Retrieval(_messages.Message):
   disableAttribution = _messages.BooleanField(1)
   vertexAiSearch = _messages.MessageField('GoogleCloudAiplatformV1beta1VertexAISearch', 2)
   vertexRagStore = _messages.MessageField('GoogleCloudAiplatformV1beta1VertexRagStore', 3)
+
+
+class GoogleCloudAiplatformV1beta1RetrievalMetadata(_messages.Message):
+  r"""Metadata related to retrieval in the grounding flow.
+
+  Fields:
+    googleSearchDynamicRetrievalScore: Optional. Score indicating how likely
+      information from google search could help answer the prompt. The score
+      is in the range [0, 1], where 0 is the least likely and 1 is the most
+      likely. This score is only populated when google search grounding and
+      dynamic retrieval is enabled. It will be compared to the threshold to
+      determine whether to trigger google search.
+  """
+
+  googleSearchDynamicRetrievalScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudAiplatformV1beta1RetrieveContextsRequest(_messages.Message):
@@ -30117,6 +30336,8 @@ class GoogleCloudAiplatformV1beta1Schema(_messages.Message):
       Type.OBJECT.
 
   Fields:
+    anyOf: Optional. The value should be validated against any (one or more)
+      of the subschemas in the list.
     default: Optional. Default value of the data.
     description: Optional. The description of the data.
     enum: Optional. Possible values of the element of Type.STRING with enum
@@ -30196,27 +30417,28 @@ class GoogleCloudAiplatformV1beta1Schema(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  default = _messages.MessageField('extra_types.JsonValue', 1)
-  description = _messages.StringField(2)
-  enum = _messages.StringField(3, repeated=True)
-  example = _messages.MessageField('extra_types.JsonValue', 4)
-  format = _messages.StringField(5)
-  items = _messages.MessageField('GoogleCloudAiplatformV1beta1Schema', 6)
-  maxItems = _messages.IntegerField(7)
-  maxLength = _messages.IntegerField(8)
-  maxProperties = _messages.IntegerField(9)
-  maximum = _messages.FloatField(10)
-  minItems = _messages.IntegerField(11)
-  minLength = _messages.IntegerField(12)
-  minProperties = _messages.IntegerField(13)
-  minimum = _messages.FloatField(14)
-  nullable = _messages.BooleanField(15)
-  pattern = _messages.StringField(16)
-  properties = _messages.MessageField('PropertiesValue', 17)
-  propertyOrdering = _messages.StringField(18, repeated=True)
-  required = _messages.StringField(19, repeated=True)
-  title = _messages.StringField(20)
-  type = _messages.EnumField('TypeValueValuesEnum', 21)
+  anyOf = _messages.MessageField('GoogleCloudAiplatformV1beta1Schema', 1, repeated=True)
+  default = _messages.MessageField('extra_types.JsonValue', 2)
+  description = _messages.StringField(3)
+  enum = _messages.StringField(4, repeated=True)
+  example = _messages.MessageField('extra_types.JsonValue', 5)
+  format = _messages.StringField(6)
+  items = _messages.MessageField('GoogleCloudAiplatformV1beta1Schema', 7)
+  maxItems = _messages.IntegerField(8)
+  maxLength = _messages.IntegerField(9)
+  maxProperties = _messages.IntegerField(10)
+  maximum = _messages.FloatField(11)
+  minItems = _messages.IntegerField(12)
+  minLength = _messages.IntegerField(13)
+  minProperties = _messages.IntegerField(14)
+  minimum = _messages.FloatField(15)
+  nullable = _messages.BooleanField(16)
+  pattern = _messages.StringField(17)
+  properties = _messages.MessageField('PropertiesValue', 18)
+  propertyOrdering = _messages.StringField(19, repeated=True)
+  required = _messages.StringField(20, repeated=True)
+  title = _messages.StringField(21)
+  type = _messages.EnumField('TypeValueValuesEnum', 22)
 
 
 class GoogleCloudAiplatformV1beta1SchemaAnnotationSpecColor(_messages.Message):
@@ -34310,6 +34532,46 @@ class GoogleCloudAiplatformV1beta1ServiceAccountSpec(_messages.Message):
   serviceAccount = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1beta1SharePointSources(_messages.Message):
+  r"""The SharePointSources to pass to ImportRagFiles.
+
+  Fields:
+    sharePointSources: The SharePoint sources.
+  """
+
+  sharePointSources = _messages.MessageField('GoogleCloudAiplatformV1beta1SharePointSourcesSharePointSource', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1SharePointSourcesSharePointSource(_messages.Message):
+  r"""An individual SharePointSource.
+
+  Fields:
+    clientId: The Application ID for the app registered in Microsoft Azure
+      Portal. The application must also be configured with MS Graph
+      permissions "Files.ReadAll", "Sites.ReadAll" and
+      BrowserSiteLists.Read.All.
+    clientSecret: The application secret for the app registered in Azure.
+    driveId: The ID of the drive to download from.
+    driveName: The name of the drive to download from.
+    fileId: Output only. The SharePoint file id. Output only.
+    sharepointFolderId: The ID of the SharePoint folder to download from.
+    sharepointFolderPath: The path of the SharePoint folder to download from.
+    sharepointSiteName: The name of the SharePoint site to download from. This
+      can be the site name or the site id.
+    tenantId: Unique identifier of the Azure Active Directory Instance.
+  """
+
+  clientId = _messages.StringField(1)
+  clientSecret = _messages.MessageField('GoogleCloudAiplatformV1beta1ApiAuthApiKeyConfig', 2)
+  driveId = _messages.StringField(3)
+  driveName = _messages.StringField(4)
+  fileId = _messages.StringField(5)
+  sharepointFolderId = _messages.StringField(6)
+  sharepointFolderPath = _messages.StringField(7)
+  sharepointSiteName = _messages.StringField(8)
+  tenantId = _messages.StringField(9)
+
+
 class GoogleCloudAiplatformV1beta1ShieldedVmConfig(_messages.Message):
   r"""A set of Shielded Instance options. See [Images using supported Shielded
   VM features](https://cloud.google.com/compute/docs/instances/modifying-
@@ -35575,7 +35837,7 @@ class GoogleCloudAiplatformV1beta1SupervisedTuningDatasetDistributionDatasetBuck
 
 
 class GoogleCloudAiplatformV1beta1SupervisedTuningSpec(_messages.Message):
-  r"""Tuning Spec for Supervised Tuning.
+  r"""Tuning Spec for Supervised Tuning for first party models.
 
   Fields:
     hyperParameters: Optional. Hyperparameters for SFT.
@@ -36244,7 +36506,7 @@ class GoogleCloudAiplatformV1beta1Tool(_messages.Message):
       populating FunctionCall in the response. User should provide a
       FunctionResponse for each function call in the next turn. Based on the
       function responses, Model will generate the final response back to the
-      user. Maximum 64 function declarations can be provided.
+      user. Maximum 128 function declarations can be provided.
     googleSearchRetrieval: Optional. GoogleSearchRetrieval tool type.
       Specialized retrieval tool that is powered by Google search.
     retrieval: Optional. Retrieval tool type. System will always execute the
@@ -36903,6 +37165,22 @@ class GoogleCloudAiplatformV1beta1TunedModel(_messages.Message):
 
   endpoint = _messages.StringField(1)
   model = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1TunedModelRef(_messages.Message):
+  r"""TunedModel Reference for legacy model migration.
+
+  Fields:
+    pipelineJob: Support migration from tuning job list page, from bison model
+      to gemini model.
+    tunedModel: Support migration from model registry.
+    tuningJob: Support migration from tuning job list page, from
+      gemini-1.0-pro-002 to 1.5 and above.
+  """
+
+  pipelineJob = _messages.StringField(1)
+  tunedModel = _messages.StringField(2)
+  tuningJob = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1TuningDataStats(_messages.Message):

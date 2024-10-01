@@ -20,6 +20,66 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 
+_IP_ADDRESS_PART = r'(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})'  # Match decimal 0-255
+_CIDR_PREFIX_PART = r'([0-9]|[1-2][0-9]|3[0-2])'  # Match decimal 0-32
+# Matches either IPv4 range in CIDR notation or a naked IPv4 address.
+_CIDR_REGEX = r'{addr_part}(\.{addr_part}){{3}}(\/{prefix_part})?$'.format(
+    addr_part=_IP_ADDRESS_PART, prefix_part=_CIDR_PREFIX_PART
+)
+
+
+def AddEnablePublicIpFlag(parser):
+  """Adds a --enable-public-ip flag to the given parser."""
+  help_text = """\
+    If true, the AlloyDB instance will be accessible via public IP.
+    """
+  parser.add_argument(
+      '--enable-public-ip',
+      required=False,
+      action='store_true',
+      dest='enable_public_ip',
+      default=False,
+      help=help_text,
+  )
+
+
+def AddEnableOutboundPublicIpFlag(parser):
+  """Adds a --enable-outbound-public-ip flag to the given parser."""
+  help_text = """\
+    If true, Enables an outbound public IP address to support a database
+    server sending requests out into the internet.
+    """
+  parser.add_argument(
+      '--enable-outbound-public-ip',
+      required=False,
+      action='store_true',
+      dest='enable_outbound_public_ip',
+      default=False,
+      help=help_text,
+  )
+
+
+def AddAuthorizedNetworkCidrRangesFlag(parser):
+  """Adds a --authorized-network-cidr-ranges flag to the given parser."""
+  cidr_validator = arg_parsers.RegexpValidator(
+      _CIDR_REGEX,
+      (
+          'Must be specified in CIDR notation, also known as '
+          "'slash' notation (e.g. 192.168.100.0/24)."
+      ),
+  )
+  help_text = """\
+    Comma-separated list of CIDR ranges that can connect to the AlloyDB instance.
+    """
+  parser.add_argument(
+      '--authorized-network-cidr-ranges',
+      required=False,
+      type=arg_parsers.ArgList(element_type=cidr_validator),
+      metavar='NETWORK',
+      default=[],
+      help=help_text,
+  )
+
 
 def AddPasswordFlag(parser):
   """Add the password field to the parser."""

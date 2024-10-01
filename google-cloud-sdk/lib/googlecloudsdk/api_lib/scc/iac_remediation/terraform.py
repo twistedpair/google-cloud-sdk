@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
-import json
 import os
 import re
 
@@ -31,9 +30,9 @@ import hcl2
 
 def get_tfstate_information_per_member(
     iam_bindings: Dict[str, Dict[str, List[str]]],
-    tfstate_json_list: List[json],
+    tfstate_json_list: List[Dict[str, str]],
     resource_name: str,
-) -> Dict[str, List[json]]:
+) -> Dict[str, List[Dict[str, str]]]:
   """Gets the TFState information for the given IAM bindings.
 
   Args:
@@ -44,26 +43,59 @@ def get_tfstate_information_per_member(
   Returns:
     List of TFState information for the given IAM bindings.
   """
-  tfstate_information = Dict[str, List[json]]()
+  tfstate_information: Dict[str, List[Dict[str, str]]] = {}
   for member, binding in iam_bindings.items():
     for tfstate_json in tfstate_json_list:
-      for role in binding["ADD"]:
-        resource_data = fetch_relevant_modules(
-            tfstate_json, resource_name, role, member
-        )
-        if resource_data:
-          if member not in tfstate_information:
-            tfstate_information[member] = []
-          tfstate_information[member].append(resource_data)
-      for role in binding["REMOVE"]:
-        resource_data = fetch_relevant_modules(
-            tfstate_json, resource_name, role, member
-        )
-        if resource_data:
-          if member not in tfstate_information:
-            tfstate_information[member] = []
-          tfstate_information[member].append(resource_data)
+      if "ADD" in binding:
+        for role in binding["ADD"]:
+          resource_data = fetch_relevant_modules(
+              tfstate_json, resource_name, role, member
+          )
+          if resource_data:
+            if member not in tfstate_information:
+              tfstate_information[member] = []
+            tfstate_information[member].append(resource_data)
+      if "REMOVE" in binding:
+        for role in binding["REMOVE"]:
+          resource_data = fetch_relevant_modules(
+              tfstate_json, resource_name, role, member
+          )
+          if resource_data:
+            if member not in tfstate_information:
+              tfstate_information[member] = []
+            tfstate_information[member].append(resource_data)
     return tfstate_information
+
+
+def read_original_files_content(
+    tf_files_paths: List[str],
+)-> Dict[str, str]:
+  """Reads the original files content.
+
+  Args:
+    tf_files_paths: List of TF files paths.
+
+  Returns:
+    Dict of file path and file content.
+  """
+  original_tf_files = dict[str, str]()
+  for file_path in tf_files_paths:
+    original_file_content = files.ReadFileContents(file_path)
+    original_tf_files[file_path] = original_file_content
+  return original_tf_files
+
+
+def update_tf_files(
+    response_dict: Dict[str, str],
+):
+  """Updates the TF files with the response dict.
+
+  Args:
+    response_dict: Response dict containing the updated TF files.
+
+  """
+  for file_path, file_data in response_dict.items():
+    _ = files.WriteFileContents(file_path, file_data)
 
 
 def validate_tf_files(
@@ -79,38 +111,30 @@ def validate_tf_files(
     updated_response_dict: Updated response dict containing the original TF
     files.
   """
-  original_tf_files = Dict[str, str]()
+  original_tf_files = dict[str, str]()
   for file_path, file_data in response_dict.items():
     original_file_content = files.ReadFileContents(file_path)
     original_tf_files[file_path] = original_file_content
-    _ = files.WriteFileContents(file_path, file_data)
-    cmd = ["terraform", "fmt", "-write=true", file_path]
-    run_subprocess.GetOutputLines(cmd, timeout_sec=10)
-    response_dict[file_path] = files.ReadFileContents(file_path)
+    try:
+      _ = files.WriteFileContents(file_path, file_data)
+      cmd = ["terraform", "fmt", "-write=true", file_path]
+      run_subprocess.GetOutputLines(cmd, timeout_sec=25, show_stderr=False)
+      response_dict[file_path] = files.ReadFileContents(file_path)
+    except Exception as e:  # pylint: disable=broad-exception-caught
+      update_tf_files(original_tf_files)
+      return False, e
   cmd = ["terraform", "validate"]
   try:
     validate_output = run_subprocess.GetOutputLines(
         cmd, timeout_sec=25, show_stderr=False
     )
-  except Exception:  # pylint: disable=broad-exception-caught
-    clean_up_tf_files(original_tf_files)
-    return False, None
-  clean_up_tf_files(original_tf_files)
+  except Exception as e:  # pylint: disable=broad-exception-caught
+    update_tf_files(original_tf_files)
+    return False, e
+  update_tf_files(original_tf_files)
   if  re.search("Success", validate_output[0], re.IGNORECASE):
     return True, response_dict
   return False, None
-
-
-def clean_up_tf_files(original_tf_files: Dict[str, str]) -> None:
-  """Updates the TF files with the original content.
-
-  Args:
-    original_tf_files: Original TF files.
-  """
-  for file_path, file_data in original_tf_files.items():
-    _ = files.WriteFileContents(
-        file_path, file_data
-    )
 
 
 def fetch_tfstate_json_from_dir(dir_path: str) -> str:
@@ -127,9 +151,12 @@ def fetch_tfstate_json_from_dir(dir_path: str) -> str:
     cmd = ["terraform", "init"]
     run_subprocess.GetOutputLines(cmd, timeout_sec=10)
   except Exception as _:  # pylint: disable=broad-exception-caught
-    return None
-  cmd = ["terraform", "show", "-json"]
-  tfstate_json = run_subprocess.GetOutputLines(cmd, timeout_sec=10)
+    return ""
+  try:
+    cmd = ["terraform", "show", "-json"]
+    tfstate_json = run_subprocess.GetOutputLines(cmd, timeout_sec=10)
+  except Exception as _:  # pylint: disable=broad-exception-caught
+    return ""
   return tfstate_json
 
 
@@ -148,11 +175,11 @@ def fetch_tfstate_json_from_file(file_path: str) -> str:
 
 
 def fetch_relevant_modules(
-    tfstate_json: json, resource_name: str, role_name: str, member_name: str
+    tfstate_json: Dict[str, str],
+    resource_name: str, role_name: str, member_name: str,
 ) -> str:
   """Fetches the relevant modules from the given TFState files."""
   resource_data = ""
-  tfstate_json = json.loads(tfstate_json[0])
   if (
       "values" not in tfstate_json
       or "root_module" not in tfstate_json["values"]
@@ -201,9 +228,9 @@ def find_tf_files(root_dir: str) -> List[str]:
 
 
 def fetch_tfstate_list(
-    tfstate_file_paths: List[str] | None,
+    tfstate_file_paths: List[str],
     root_dir: str,
-) -> List[json]:
+) -> List[Dict[str, str]]:
   """Fetches the TFState list for the given TFState file paths.
 
   Args:
@@ -226,7 +253,7 @@ def fetch_tfstate_list(
 
 def find_tfstate_jsons(
     dir_path: str
-) -> List[json]:
+) -> List[Dict[str, str]]:
   """Finds the TFState jsons in the given directory.
 
   Args:

@@ -40,11 +40,13 @@ __protobuf__ = proto.module(
         'CitationMetadata',
         'Citation',
         'Candidate',
+        'LogprobsResult',
         'Segment',
         'GroundingChunk',
         'GroundingSupport',
         'GroundingMetadata',
         'SearchEntryPoint',
+        'RetrievalMetadata',
     },
 )
 
@@ -297,6 +299,15 @@ class GenerationConfig(proto.Message):
             This field is a member of `oneof`_ ``_max_output_tokens``.
         stop_sequences (MutableSequence[str]):
             Optional. Stop sequences.
+        response_logprobs (bool):
+            Optional. If true, export the logprobs
+            results in response.
+
+            This field is a member of `oneof`_ ``_response_logprobs``.
+        logprobs (int):
+            Optional. Logit probabilities.
+
+            This field is a member of `oneof`_ ``_logprobs``.
         presence_penalty (float):
             Optional. Positive penalties.
 
@@ -458,6 +469,16 @@ class GenerationConfig(proto.Message):
     stop_sequences: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,
         number=6,
+    )
+    response_logprobs: bool = proto.Field(
+        proto.BOOL,
+        number=18,
+        optional=True,
+    )
+    logprobs: int = proto.Field(
+        proto.INT32,
+        number=7,
+        optional=True,
     )
     presence_penalty: float = proto.Field(
         proto.FLOAT,
@@ -731,6 +752,9 @@ class Candidate(proto.Message):
         avg_logprobs (float):
             Output only. Average log probability score of
             the candidate.
+        logprobs_result (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.LogprobsResult):
+            Output only. Log-likelihood scores for the
+            response tokens and top tokens
         finish_reason (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Candidate.FinishReason):
             Output only. The reason why the model stopped
             generating tokens. If empty, the model has not
@@ -814,6 +838,11 @@ class Candidate(proto.Message):
         proto.DOUBLE,
         number=9,
     )
+    logprobs_result: 'LogprobsResult' = proto.Field(
+        proto.MESSAGE,
+        number=10,
+        message='LogprobsResult',
+    )
     finish_reason: FinishReason = proto.Field(
         proto.ENUM,
         number=3,
@@ -838,6 +867,80 @@ class Candidate(proto.Message):
         proto.MESSAGE,
         number=7,
         message='GroundingMetadata',
+    )
+
+
+class LogprobsResult(proto.Message):
+    r"""Logprobs Result
+
+    Attributes:
+        top_candidates (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.LogprobsResult.TopCandidates]):
+            Length = total number of decoding steps.
+        chosen_candidates (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.LogprobsResult.Candidate]):
+            Length = total number of decoding steps. The chosen
+            candidates may or may not be in top_candidates.
+    """
+
+    class Candidate(proto.Message):
+        r"""Candidate for the logprobs token and score.
+
+        .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+        Attributes:
+            token (str):
+                The candidate's token string value.
+
+                This field is a member of `oneof`_ ``_token``.
+            token_id (int):
+                The candidate's token id value.
+
+                This field is a member of `oneof`_ ``_token_id``.
+            log_probability (float):
+                The candidate's log probability.
+
+                This field is a member of `oneof`_ ``_log_probability``.
+        """
+
+        token: str = proto.Field(
+            proto.STRING,
+            number=1,
+            optional=True,
+        )
+        token_id: int = proto.Field(
+            proto.INT32,
+            number=3,
+            optional=True,
+        )
+        log_probability: float = proto.Field(
+            proto.FLOAT,
+            number=2,
+            optional=True,
+        )
+
+    class TopCandidates(proto.Message):
+        r"""Candidates with top log probabilities at each decoding step.
+
+        Attributes:
+            candidates (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.LogprobsResult.Candidate]):
+                Sorted by log probability in descending
+                order.
+        """
+
+        candidates: MutableSequence['LogprobsResult.Candidate'] = proto.RepeatedField(
+            proto.MESSAGE,
+            number=1,
+            message='LogprobsResult.Candidate',
+        )
+
+    top_candidates: MutableSequence[TopCandidates] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=1,
+        message=TopCandidates,
+    )
+    chosen_candidates: MutableSequence[Candidate] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=2,
+        message=Candidate,
     )
 
 
@@ -1030,6 +1133,10 @@ class GroundingMetadata(proto.Message):
             specified grounding source.
         grounding_supports (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GroundingSupport]):
             Optional. List of grounding support.
+        retrieval_metadata (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.RetrievalMetadata):
+            Optional. Output only. Retrieval metadata.
+
+            This field is a member of `oneof`_ ``_retrieval_metadata``.
     """
 
     web_search_queries: MutableSequence[str] = proto.RepeatedField(
@@ -1056,6 +1163,12 @@ class GroundingMetadata(proto.Message):
         number=6,
         message='GroundingSupport',
     )
+    retrieval_metadata: 'RetrievalMetadata' = proto.Field(
+        proto.MESSAGE,
+        number=7,
+        optional=True,
+        message='RetrievalMetadata',
+    )
 
 
 class SearchEntryPoint(proto.Message):
@@ -1076,6 +1189,26 @@ class SearchEntryPoint(proto.Message):
     )
     sdk_blob: bytes = proto.Field(
         proto.BYTES,
+        number=2,
+    )
+
+
+class RetrievalMetadata(proto.Message):
+    r"""Metadata related to retrieval in the grounding flow.
+
+    Attributes:
+        google_search_dynamic_retrieval_score (float):
+            Optional. Score indicating how likely information from
+            google search could help answer the prompt. The score is in
+            the range [0, 1], where 0 is the least likely and 1 is the
+            most likely. This score is only populated when google search
+            grounding and dynamic retrieval is enabled. It will be
+            compared to the threshold to determine whether to trigger
+            google search.
+    """
+
+    google_search_dynamic_retrieval_score: float = proto.Field(
+        proto.FLOAT,
         number=2,
     )
 

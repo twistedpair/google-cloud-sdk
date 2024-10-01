@@ -52,6 +52,10 @@ class InsightApiError(core_exceptions.Error):
   pass
 
 
+class StorageBatchOperationsApiError(core_exceptions.Error):
+  pass
+
+
 class RetryableApiError(CloudApiError):
   """Error raised to indicate a transient network error."""
   pass

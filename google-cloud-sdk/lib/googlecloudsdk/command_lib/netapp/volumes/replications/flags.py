@@ -112,17 +112,20 @@ def AddReplicationDestinationVolumeParametersArg(parser):
   )
 
 
-def AddReplicationClusterLocationArg(parser):
+# TODO(b/367361219): Remove hidden arg for cluster-location flag after GA
+def AddReplicationClusterLocationArg(parser, hidden=True):
   """Adds the Cluster Location (--cluster-location) arg to the given parser.
 
   Args:
     parser: Argparse parser.
+    hidden: If the Cluster Location is hidden.
   """
   parser.add_argument(
       '--cluster-location',
       type=str,
       required=False,
       help='Location of the user cluster.',
+      hidden=hidden,
   )
 
 
@@ -156,11 +159,28 @@ def AddReplicationPeerSvmNameArg(parser, required=True):
   )
 
 
+def AddReplicationPeerVolumeNameArg(parser, required=True):
+  """Adds the Peer Volume Name (--peer-volume-name) arg to the given parser.
+
+  Args:
+    parser: Argparse parser.
+    required: Required to establish both cluster and svm peering.
+  """
+  parser.add_argument(
+      '--peer-volume-name',
+      type=str,
+      required=required,
+      help="""Name of the source volume to be peered with the destination volume.""",
+  )
+
+
 def AddReplicationPeerIpAddressesArg(parser):
   """Adds the Peer IP Addresses (--peer-ip-addresses) arg to the given parser.
 
   Args:
     parser: Argparse parser.
+
+  Not required for svm peering.
   """
   parser.add_argument(
       '--peer-ip-addresses',

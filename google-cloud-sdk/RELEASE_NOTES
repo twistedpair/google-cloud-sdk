@@ -5,6 +5,108 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 495.0.0 (2024-10-01)
+
+### Breaking Changes
+
+*   **(GKE Hub)** Modified `gcloud container fleet memberships get-credentials` to require the
+    permission `gkehub.gateway.generateCredentials` (automatically included in
+    roles `gkehub.gatewayReader`, `gkehub.gatewayEditor`, and
+    `gkehub.gatewayAdmin`), as well as network access to
+    `*connectgateway.googleapis.com`.
+
+
+### Google Cloud CLI
+
+* Updated property `core/parse_error_details` default to be set to `True`, `gcloud` CLI
+will parse and display errors in a more human readable format, where available.
+
+### App Engine
+
+* Fixed customer bug (https://issuetracker.google.com/issues/364466911) for
+the local dev_appserver.py running go apps on Windows.
+* Added the new runtime go1.23 support for dev_appserver.py.
+
+### Artifact Registry
+
+* Added `gcloud artifacts attachments create` to support creating an Attachment for an artifact.
+* Added `gcloud artifacts attachments download` to support downloading an Attachment.
+* Added `gcloud artifacts attachments list` to support listing Attachments in a repository.
+* Added `gcloud artifacts attachments delete` to support deleting an Attachment.
+* Added location flag from artifacts sbom export, artifacts sbom list,
+  artifacts sbom load, artifacts vulnerabilities list, and artifacts
+  vulnerabilities load-vex.
+* Changed default answer for prompts in enable-upgrade-redirection and disable-upgrade-redirection to Y.
+
+### Cloud Access Context Manager
+
+* Added `--binding-file` flag to `gcloud access-context-manager cloud-bindings`
+  for setting ScopedAccessSettings in GcpUserAccessBinding.
+
+### Cloud Firestore
+
+* Updated `gcloud firestore backups list` to return the unavailable locations.
+
+### Cloud Identity-Aware Proxy
+
+* Added `--resource-type=cloud-run` to `gcloud iap setting` and `gcloud iap web iam` in ALPHA.
+
+### Cloud Pub/Sub
+
+*   Increased upper bound for `--message-retention-duration` flag of
+    `gcloud pubsub subscriptions create` from 7 days to 31 days.
+*   Increased upper bound for `--message-retention-duration` flag of
+    `gcloud pubsub subscriptions update` from 7 days to 31 days.
+*   Fixed `--cloud-storage-max-bytes` flag of
+    `gcloud pubsub subscriptions create` to accept values down to 1000 bytes.
+*   Fixed `--cloud-storage-max-bytes` flag of
+    `gcloud pubsub subscriptions update` to accept values down to 1000 bytes.
+
+### Cloud Run
+
+* Promoted `--service-min-instances` flag of `gcloud run deploy` and
+ `gcloud run services update` to GA.
+
+### Cloud SQL
+
+* Promote `gcloud sql ssl server-ca-certs` to GA.
+
+### Cloud Spanner
+
+* Promoted `gcloud spanner backup-schedules` to GA.
+* Added new columns to `gcloud spanner backups list` command.
+
+### Database Migration
+
+* Added `--authorized-network-cidr-ranges`, `--enable-outbound-public-ip`, and
+`--enable-public-ip` flags to `gcloud database-migration connection-profiles create alloydb`.
+
+### GKE Hub
+
+* Migrated `gcloud container fleet memberships register` from calling v1beta1 gkehub APIs to standard versions (v1, v1beta, v1alpha).
+* Migrated `gcloud container fleet memberships unregister` from calling v1beta1 gkehub APIs to standard versions (v1, v1beta, v1alpha).
+
+### Kubernetes Engine
+
+* Promoted `--enable-confidential-storage` flag on cluster/node-pool create to GA to enable creating boot disk with confidential mode.
+
+### Network Connectivity
+
+* Added FOR_MIGRATION usage type  support to Internal Range.
+
+### Notebook Executor
+
+*   Added `gcloud beta notebook-executor executions surface and commands`.
+
+### Policy Simulator
+
+* Added `gcloud policy-intelligence simulate` command group. Commands in this
+  group simulate changes to organization policies.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 494.0.0 (2024-09-24)
 
 ### Breaking Changes
@@ -35,10 +137,6 @@ for the following commands in the GA track:
 <https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.30>.
 * Updated the Jetty9 and Jetty12 WebServer to latest Version.
 * Fixed a customer bug regarding running multiple services in the local devappserver.
-
-### Cloud Bigtable
-
-*   Added support for Data Boost in `gcloud bigtable app-profiles`.
 
 ### Cloud Bigtable Emulator
 

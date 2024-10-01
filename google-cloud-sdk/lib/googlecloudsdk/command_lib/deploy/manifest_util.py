@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import datetime
 import re
 
 from dateutil import parser
@@ -33,7 +34,9 @@ from googlecloudsdk.core import resources
 
 PIPELINE_UPDATE_MASK = '*,labels'
 DELIVERY_PIPELINE_KIND_V1BETA1 = 'DeliveryPipeline'
+DELIVERY_PIPELINE = 'deliveryPipeline'
 TARGET_KIND_V1BETA1 = 'Target'
+TARGET = 'target'
 AUTOMATION_KIND = 'Automation'
 CUSTOM_TARGET_TYPE_KIND = 'CustomTargetType'
 DEPLOY_POLICY_KIND = 'DeployPolicy'
@@ -308,6 +311,8 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
             'failed to parse deploy policy {}, selectors are defined'
             ' incorrectly'.format(resource_ref.Name()),
         )
+        SetDeployPolicySelector(messages, resource, selectors)
+        continue
       setattr(resource, field, value)
 
   # Sets the properties in metadata.
@@ -399,7 +404,7 @@ def _SetRolloutRestriction(
             valid_choices=INVOKER_CHOICES,
         )
     )
-  # Parse and set the timeWindow field on the restrictRollout message.
+  # Parse and set the timeWindow field on the rolloutRestriction message.
   time_windows = rollout_restriction.get('timeWindows')
   time_windows_message = messages.TimeWindows()
   _SetTimeWindows(messages, time_windows_message, time_windows)
@@ -478,17 +483,30 @@ def _SetDateTimeFields(
 
   Raises:
     c_exceptions.InvalidArgumentException: if the start or end field is not a
-    valid ISO 8601 string.
+    valid ISO 8601 string or contains a timezone offset or UTC.
   """
+  date_str = one_time_window.get(field_name)
   try:
-    date_time = parser.isoparse(one_time_window.get(field_name))
+    date_time = parser.isoparse(date_str)
   except ValueError:
     raise c_exceptions.InvalidArgumentException(
         field_name,
         'invalid date string: "{}". Must be a valid date in ISO 8601 format'
-        ' (e.g. {}: 2024-12-24 17:00)'.format(
-            one_time_window.get(field_name), field_name
-        ),
+        ' (e.g. {}: 2024-12-24 17:00)'.format(date_str, field_name),
+    )
+  except TypeError:
+    raise c_exceptions.InvalidArgumentException(
+        field_name,
+        'invalid date string: {}. Make sure to put quotes around the date'
+        " string (e.g. {}: '2024-09-27 18:30:31.123') so that it is interpreted"
+        ' as a string and not a yaml timestamp.'.format(date_str, field_name),
+    )
+  if date_time.tzinfo is not None:
+    raise c_exceptions.InvalidArgumentException(
+        field_name,
+        'invalid date string: {}. Do not include a timezone or timezone offset'
+        ' in the date string. Specify the timezone in the timeZone field.'
+        .format(date_str),
     )
   # Set the date field (e.g. startDate or endDate).
   date_obj = _ConvertDate(date_time, messages)
@@ -531,8 +549,8 @@ def _SetWeeklyWindow(messages, weekly_window, time_windows_message):
   """
   weekly_window_message = messages.WeeklyWindow()
   for field in weekly_window:
-    if field != 'daysOfWeek':
-      setattr(weekly_window_message, field, weekly_window.get(field))
+    if field == 'startTime' or field == 'endTime':
+      _SetTime(messages, weekly_window_message, weekly_window.get(field), field)
   days_of_week = weekly_window.get('daysOfWeek') or []
   for d in days_of_week:
     weekly_window_message.daysOfWeek.append(
@@ -544,6 +562,36 @@ def _SetWeeklyWindow(messages, weekly_window, time_windows_message):
         )
     )
   time_windows_message.weeklyWindows.append(weekly_window_message)
+
+
+def _SetTime(messages, weekly_window_message, value, field):
+  """Sets the time field of a weeklyWindow message."""
+  if isinstance(value, str):
+    # First, check if the hour is 24. If so replace with 00, because
+    # fromisoformat() doesn't support 24.
+    hour_24 = False
+    if value.startswith('24:'):
+      hour_24 = True
+      value = value.replace('24', '00', 1)
+    try:
+      time_obj = datetime.time.fromisoformat(value)
+    except ValueError:
+      raise c_exceptions.InvalidArgumentException(
+          field,
+          'invalid time string: "{}" for field {}'.format(value, field),
+      )
+    hour_value = time_obj.hour
+    if hour_24:
+      hour_value = 24
+    time_of_day = messages.TimeOfDay(
+        hours=hour_value,
+        minutes=time_obj.minute,
+        seconds=time_obj.second,
+        nanos=time_obj.microsecond * 1000,
+    )
+    setattr(weekly_window_message, field, time_of_day)
+  else:
+    setattr(weekly_window_message, field, value)
 
 
 def _CreateTargetResource(messages, target_name_or_id, project, region):
@@ -657,6 +705,12 @@ def ProtoToManifest(resource, resource_ref, kind):
         continue
       if f.name == RULES_FIELD and kind == AUTOMATION_KIND:
         ExportAutomationRules(manifest, v)
+        continue
+      # Special handling for the deploy policy rules field.
+      # The rollout restriction rule accepts date/time strings in YAML which
+      # then need to be parsed into the correct fields in the API.
+      if f.name == RULES_FIELD and kind == DEPLOY_POLICY_KIND:
+        ExportDeployPolicyRules(manifest, v)
         continue
       manifest[f.name] = v
 
@@ -878,6 +932,59 @@ def SetAutomationSelector(messages, automation, selectors):
       _AddTargetAttribute(messages, automation.selector, message)
 
 
+def SetDeployPolicySelector(messages, deploy_policy, selectors):
+  """Sets the selectors field of cloud deploy deploy policy resource message.
+
+  Args:
+    messages: module containing the definitions of messages for Cloud Deploy.
+    deploy_policy:
+      googlecloudsdk.generated_clients.apis.clouddeploy.DeployPolicy message.
+    selectors:
+      [googlecloudsdk.generated_clients.apis.clouddeploy.DeployPolicyResourceSelector],
+      list of DeployPolicyResourceSelector messages.
+  """
+  for selector in selectors:
+    selector_message = messages.DeployPolicyResourceSelector()
+    for field in selector:
+      if field == DELIVERY_PIPELINE:
+        dp_attribute_value = selector.get(field)
+        dp_attribute_msg = messages.DeliveryPipelineAttribute()
+        dp_attribute_populated = _SetSelectorAttributes(
+            messages,
+            dp_attribute_value,
+            dp_attribute_msg,
+            deploy_util.ResourceType.PIPELINE_ATTRIBUTE,
+        )
+        setattr(selector_message, DELIVERY_PIPELINE, dp_attribute_populated)
+      if field == TARGET:
+        target_attribute_value = selector.get(field)
+        target_attribute_msg = messages.TargetAttribute()
+        target_attribute_populated = _SetSelectorAttributes(
+            messages,
+            target_attribute_value,
+            target_attribute_msg,
+            deploy_util.ResourceType.TARGET_ATTRIBUTE,
+        )
+        setattr(selector_message, TARGET, target_attribute_populated)
+    deploy_policy.selectors.append(selector_message)
+
+
+def _SetSelectorAttributes(messages, attribute, attribute_msg, resource_type):
+  """Sets the attribute message within a selector."""
+  for field in attribute:
+    if field == ID_FIELD:
+      setattr(attribute_msg, field, attribute.get(field))
+    if field == LABELS_FIELD:
+      deploy_util.SetMetadata(
+          messages,
+          attribute_msg,
+          resource_type,
+          None,
+          attribute.get(field),
+      )
+  return attribute_msg
+
+
 def SetAutomationRules(messages, automation, automation_ref, rules):
   """Sets the rules field of cloud deploy automation resource message.
 
@@ -1026,6 +1133,125 @@ def ExportAutomationRules(manifest, rules):
             message, DESTINATION_PHASE_FIELD
         )
     manifest[RULES_FIELD].append(resource)
+
+
+def ExportDeployPolicyRules(manifest, rules):
+  """Exports the policy rules field of the Deploy Policy resource.
+
+  Args:
+    manifest: A dictionary that represents the Deploy Policy rules resource.
+    rules: [googlecloudsdk.generated_clients.apis.clouddeploy.PolicyRule], list
+      of PolicyRule messages.
+  """
+  manifest['rules'] = []
+  for rule in rules:
+    if getattr(rule, 'rolloutRestriction'):
+      rollout_restriction_rule = _ExportRolloutRestriction(rule)
+      manifest['rules'].append(rollout_restriction_rule)
+
+
+def _ExportRolloutRestriction(rule):
+  """Exports the rolloutRestriction field of the Deploy Policy resource."""
+  # This is a map of all the fields within the rolloutRestriction rule. It gets
+  # populated as we parse the rolloutRestriction rule.
+  rollout_restriction = {}
+  # This is a map of rolloutRestriction: map of all the key/value pairs.
+  rollout_restriction_rule = {}
+  # Get the value of the rolloutRestriction rule.
+  rollout_restriction_value = getattr(rule, 'rolloutRestriction')
+  # id is required for the rolloutRestriction rule.
+  rollout_restriction['id'] = rollout_restriction_value.id
+
+  # Actions and invokers are optional for the rolloutRestriction rule. If not
+  # specified, it implies all actions and all invokers are subject to the
+  # Deploy Policy.
+  if rollout_restriction_value.actions:
+    rollout_restriction['actions'] = rollout_restriction_value.actions
+  if rollout_restriction_value.invokers:
+    rollout_restriction['invokers'] = rollout_restriction_value.invokers
+
+  # Special handling needed for the timeWindows field. Specifically to
+  # export the oneTimeWindows as a datetime string (e.g. '2024-01-01 00:00:00')
+  # instead of the individual fields stored in the db. This is becuase a string
+  # is much easier to read and adjust.
+  time_windows_value = rollout_restriction_value.timeWindows
+  # Populate the timeWindows field of the rolloutRestriction
+  time_windows = {}
+  _ExportTimeWindows(time_windows_value, time_windows)
+  rollout_restriction['timeWindows'] = time_windows
+  rollout_restriction_rule['rolloutRestriction'] = rollout_restriction
+  return rollout_restriction_rule
+
+
+def _ExportTimeWindows(time_windows_value, time_windows):
+  """Exports the timeWindows field of the Deploy Policy resource."""
+  time_windows['timeZone'] = time_windows_value.timeZone
+  if time_windows_value.oneTimeWindows:
+    _ExportOneTimeWindows(time_windows_value.oneTimeWindows, time_windows)
+  if time_windows_value.weeklyWindows:
+    _ExportWeeklyWindows(time_windows_value.weeklyWindows, time_windows)
+
+
+def _ExportOneTimeWindows(one_time_windows, time_windows):
+  """Exports the oneTimeWindows field of the Deploy Policy resource."""
+  time_windows['oneTimeWindows'] = []
+  for one_time_window in one_time_windows:
+    one_time = {}
+    start_date_time = _DateTimeIsoString(
+        one_time_window.startDate, one_time_window.startTime
+    )
+    end_date_time = _DateTimeIsoString(
+        one_time_window.endDate, one_time_window.endTime
+    )
+    one_time['start'] = start_date_time
+    one_time['end'] = end_date_time
+    time_windows['oneTimeWindows'].append(one_time)
+
+
+def _DateTimeIsoString(date_obj, time_obj):
+  """Converts a date and time to a string."""
+  date_str = _FormatDate(date_obj)
+  time_str = _FormatTime(time_obj)
+  return f'{date_str} {time_str}'
+
+
+def _FormatDate(date):
+  """Converts a date object to a string."""
+  return f'{date.year:04}-{date.month:02}-{date.day:02}'
+
+
+def _ExportWeeklyWindows(weekly_windows, time_windows):
+  """Exports the weeklyWindows field of the Deploy Policy resource."""
+  time_windows['weeklyWindows'] = []
+  for weekly_window in weekly_windows:
+    weekly = {}
+    start_time = weekly_window.startTime
+    start = _FormatTime(start_time)
+    weekly['startTime'] = start
+
+    end_time = weekly_window.endTime
+    end = _FormatTime(end_time)
+    weekly['endTime'] = end
+    if weekly_window.daysOfWeek:
+      days = []
+      for day in weekly_window.daysOfWeek:
+        days.append(day.name)
+      weekly['daysOfWeek'] = days
+    time_windows['weeklyWindows'].append(weekly)
+
+
+def _FormatTime(time_obj):
+  """Converts a time object to a string."""
+  hours = time_obj.hours or 0
+  minutes = time_obj.minutes or 0
+  time_str = f'{hours:02}:{minutes:02}'
+  if time_obj.seconds or time_obj.nanos:
+    seconds = time_obj.seconds or 0
+    time_str += f':{seconds:02}'
+  if time_obj.nanos:
+    millis = time_obj.nanos / 1000000
+    time_str += f'.{millis:03.0f}'
+  return time_str
 
 
 def _WaitMinToSec(wait):

@@ -1436,6 +1436,22 @@ class ListLogMetricsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListLogScopesResponse(_messages.Message):
+  r"""The response from ListLogScopes. Every project has a _Default log scope
+  that cannot be modified or deleted.
+
+  Fields:
+    logScopes: A list of log scopes.
+    nextPageToken: If there might be more results than appear in this
+      response, then nextPageToken is included. To get the next set of
+      results, call the same method again using the value of nextPageToken as
+      pageToken.
+  """
+
+  logScopes = _messages.MessageField('LogScope', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListLogsResponse(_messages.Message):
   r"""Result returned from ListLogs.
 
@@ -1660,8 +1676,8 @@ class LogBucket(_messages.Message):
     UnmetAnalyticsUpgradeRequirementsValueListEntryValuesEnum:
 
   Fields:
-    analyticsEnabled: Whether log analytics is enabled for this bucket.Once
-      enabled, log analytics features cannot be disabled.
+    analyticsEnabled: Optional. Whether log analytics is enabled for this
+      bucket.Once enabled, log analytics features cannot be disabled.
     analyticsUpgradeTime: Output only. The time that the bucket was upgraded
       to enable analytics. This will eventually be deprecated once there is
       not a need to upgrade existing buckets (i.e. when analytics becomes
@@ -2387,6 +2403,30 @@ class LogMetric(_messages.Message):
   updateTime = _messages.StringField(11)
   valueExtractor = _messages.StringField(12)
   version = _messages.EnumField('VersionValueValuesEnum', 13)
+
+
+class LogScope(_messages.Message):
+  r"""Describes a group of resources to read log entries from.
+
+  Fields:
+    createTime: Output only. The creation timestamp of the log scope.
+    description: Optional. Describes this log scope.The maximum length of the
+      description is 8000 characters.
+    name: Output only. The resource name of the log scope.For
+      example:projects/my-project/locations/global/logScopes/my-log-scope
+    resourceNames: Required. Names of one or more parent resources:
+      projects/[PROJECT_ID]May alternatively be one or more views: projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]A
+      log scope can include a maximum of 50 projects and a maximum of 100
+      resources in total.
+    updateTime: Output only. The last update timestamp of the log scope.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+  resourceNames = _messages.StringField(4, repeated=True)
+  updateTime = _messages.StringField(5)
 
 
 class LogSink(_messages.Message):
@@ -4162,6 +4202,92 @@ class LoggingFoldersLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class LoggingFoldersLocationsLogScopesCreateRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsLogScopesCreateRequest object.
+
+  Fields:
+    logScope: A LogScope resource to be passed as the request body.
+    logScopeId: Required. A client-assigned identifier such as "log-scope".
+      Identifiers are limited to 100 characters and can include only letters,
+      digits, underscores, hyphens, and periods. First character has to be
+      alphanumeric.
+    parent: Required. The parent project in which to create the log scope
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For
+      example:"projects/my-project/locations/global"
+  """
+
+  logScope = _messages.MessageField('LogScope', 1)
+  logScopeId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingFoldersLocationsLogScopesDeleteRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsLogScopesDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the log scope to delete:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/logScopes/[LOG_SCOPE_ID]"
+      For example:"projects/my-project/locations/global/logScopes/my-log-
+      scope"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingFoldersLocationsLogScopesGetRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsLogScopesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the log scope:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/logScopes/[LOG_SCOPE_ID]"
+      For example:"projects/my-project/locations/global/logScopes/my-log-
+      scope"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingFoldersLocationsLogScopesListRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsLogScopesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request.Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The parent resource whose log scopes are to be listed:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingFoldersLocationsLogScopesPatchRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsLogScopesPatchRequest object.
+
+  Fields:
+    logScope: A LogScope resource to be passed as the request body.
+    name: Output only. The resource name of the log scope.For
+      example:projects/my-project/locations/global/logScopes/my-log-scope
+    updateMask: Optional. Field mask that specifies the fields in log_scope
+      that need an update. A field will be overwritten if, and only if, it is
+      in the update mask. name and output only fields cannot be updated.For a
+      detailed FieldMask definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=description
+  """
+
+  logScope = _messages.MessageField('LogScope', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class LoggingFoldersLocationsOperationsApproveRedactionRequest(_messages.Message):
   r"""A LoggingFoldersLocationsOperationsApproveRedactionRequest object.
 
@@ -5735,6 +5861,92 @@ class LoggingOrganizationsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class LoggingOrganizationsLocationsLogScopesCreateRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsLogScopesCreateRequest object.
+
+  Fields:
+    logScope: A LogScope resource to be passed as the request body.
+    logScopeId: Required. A client-assigned identifier such as "log-scope".
+      Identifiers are limited to 100 characters and can include only letters,
+      digits, underscores, hyphens, and periods. First character has to be
+      alphanumeric.
+    parent: Required. The parent project in which to create the log scope
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For
+      example:"projects/my-project/locations/global"
+  """
+
+  logScope = _messages.MessageField('LogScope', 1)
+  logScopeId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingOrganizationsLocationsLogScopesDeleteRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsLogScopesDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the log scope to delete:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/logScopes/[LOG_SCOPE_ID]"
+      For example:"projects/my-project/locations/global/logScopes/my-log-
+      scope"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingOrganizationsLocationsLogScopesGetRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsLogScopesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the log scope:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/logScopes/[LOG_SCOPE_ID]"
+      For example:"projects/my-project/locations/global/logScopes/my-log-
+      scope"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingOrganizationsLocationsLogScopesListRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsLogScopesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request.Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The parent resource whose log scopes are to be listed:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingOrganizationsLocationsLogScopesPatchRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsLogScopesPatchRequest object.
+
+  Fields:
+    logScope: A LogScope resource to be passed as the request body.
+    name: Output only. The resource name of the log scope.For
+      example:projects/my-project/locations/global/logScopes/my-log-scope
+    updateMask: Optional. Field mask that specifies the fields in log_scope
+      that need an update. A field will be overwritten if, and only if, it is
+      in the update mask. name and output only fields cannot be updated.For a
+      detailed FieldMask definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=description
+  """
+
+  logScope = _messages.MessageField('LogScope', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class LoggingOrganizationsLocationsOperationsApproveRedactionRequest(_messages.Message):
   r"""A LoggingOrganizationsLocationsOperationsApproveRedactionRequest object.
 
@@ -6789,6 +7001,92 @@ class LoggingProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class LoggingProjectsLocationsLogScopesCreateRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsLogScopesCreateRequest object.
+
+  Fields:
+    logScope: A LogScope resource to be passed as the request body.
+    logScopeId: Required. A client-assigned identifier such as "log-scope".
+      Identifiers are limited to 100 characters and can include only letters,
+      digits, underscores, hyphens, and periods. First character has to be
+      alphanumeric.
+    parent: Required. The parent project in which to create the log scope
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For
+      example:"projects/my-project/locations/global"
+  """
+
+  logScope = _messages.MessageField('LogScope', 1)
+  logScopeId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingProjectsLocationsLogScopesDeleteRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsLogScopesDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the log scope to delete:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/logScopes/[LOG_SCOPE_ID]"
+      For example:"projects/my-project/locations/global/logScopes/my-log-
+      scope"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingProjectsLocationsLogScopesGetRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsLogScopesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the log scope:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/logScopes/[LOG_SCOPE_ID]"
+      For example:"projects/my-project/locations/global/logScopes/my-log-
+      scope"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingProjectsLocationsLogScopesListRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsLogScopesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request.Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The parent resource whose log scopes are to be listed:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingProjectsLocationsLogScopesPatchRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsLogScopesPatchRequest object.
+
+  Fields:
+    logScope: A LogScope resource to be passed as the request body.
+    name: Output only. The resource name of the log scope.For
+      example:projects/my-project/locations/global/logScopes/my-log-scope
+    updateMask: Optional. Field mask that specifies the fields in log_scope
+      that need an update. A field will be overwritten if, and only if, it is
+      in the update mask. name and output only fields cannot be updated.For a
+      detailed FieldMask definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=description
+  """
+
+  logScope = _messages.MessageField('LogScope', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class LoggingProjectsLocationsOperationsApproveRedactionRequest(_messages.Message):
@@ -8533,50 +8831,6 @@ class QueryDataResponse(_messages.Message):
   restrictionConflicts = _messages.MessageField('QueryRestrictionConflict', 3, repeated=True)
 
 
-class QueryLogEntriesRequest(_messages.Message):
-  r"""The parameters to QueryLogEntries.
-
-  Fields:
-    disableQueryCaching: Optional. If set to true, turns off all query caching
-      on both the Analytics and BigQuery sides.
-    pageSize: Optional. The maximum number of rows to return in the results.
-      Responses are limited to 10 MB in size.By default, there is no maximum
-      row count, and only the byte limit applies. When the byte limit is
-      reached, the rest of query results will be paginated.
-    pageToken: Optional. Page token returned by a previous call to
-      QueryLogEntries to paginate through the response rows.
-    query: Optional. A query string, following the BigQuery SQL query syntax.
-      The FROM clause should specify a fully qualified log view corresponding
-      to the log view in the resource_names in dot separated format like
-      PROJECT_ID.LOCATION_ID.BUCKET_ID.VIEW_ID.For example: SELECT count(*)
-      FROM my_project.us.my_bucket._AllLogs;If any of the dot separated
-      components have special characters, that component needs to be escaped
-      separately like the following example:SELECT count(*) FROM
-      company.com:abc.us.my-bucket._AllLogs;
-    queryRestriction: Optional. Restrictions being requested.
-    resourceNames: Required. Names of one or more views to run a SQL query.
-      Currently, only a single view is supported. Multiple view selection may
-      be supported in the future.Example: projects/[PROJECT_ID]/locations/[LOC
-      ATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]Requires
-      'logging.views.access' on the specified view resources.
-    resultReference: Optional. Reference to a result from a previous query. If
-      the results have expired the query will return a NOT_FOUND error.
-    validateOnly: Optional. If set to true, the query is not executed.
-      Instead, if the query is valid, statistics is returned about the query
-      such as how many bytes would be processed. If the query is invalid, an
-      error returns. The default value is false.
-  """
-
-  disableQueryCaching = _messages.BooleanField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  query = _messages.StringField(4)
-  queryRestriction = _messages.MessageField('QueryRestriction', 5)
-  resourceNames = _messages.StringField(6, repeated=True)
-  resultReference = _messages.StringField(7)
-  validateOnly = _messages.BooleanField(8)
-
-
 class QueryParameter(_messages.Message):
   r"""A parameter given to a query.
 
@@ -9241,16 +9495,16 @@ class Settings(_messages.Message):
         resource level, it will inherit from the closest ancester which has a
         defined analytics mode. If there is no specified analytics mode across
         the resource hierarchy, analytics will be disabled by default.
-      ANALYTICS_ENABLED: By default, analytics will be enabled for all new
-        project-level buckets unless explicitly specified otherwise at bucket
-        creation time.
-      ANALYTICS_DISABLED: By default, analytics will be disabled for new
+      ANALYTICS_REQUIRED: By default, analytics will be enabled for all new
+        project-level buckets, even if analytics_enabled is set to false
+        during the creation request.
+      ANALYTICS_OPTIONAL: By default, analytics will be disabled for new
         project-level buckets unless explicitly specified otherwise at bucket
         creation time.
     """
     ANALYTICS_MODE_UNSPECIFIED = 0
-    ANALYTICS_ENABLED = 1
-    ANALYTICS_DISABLED = 2
+    ANALYTICS_REQUIRED = 1
+    ANALYTICS_OPTIONAL = 2
 
   analyticsMode = _messages.EnumField('AnalyticsModeValueValuesEnum', 1)
   defaultSinkConfig = _messages.MessageField('DefaultSinkConfig', 2)

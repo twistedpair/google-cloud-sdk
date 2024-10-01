@@ -633,6 +633,7 @@ def GetRegionResourceSpec():
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
       resource_name='Region',
+      api_version='v2',
   )
 
 

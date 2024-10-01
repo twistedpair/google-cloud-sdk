@@ -622,6 +622,136 @@ class ConfigServiceV2GrpcTransport(ConfigServiceV2Transport):
         return self._stubs['delete_view']
 
     @property
+    def list_log_scopes(self) -> Callable[
+            [logging_config.ListLogScopesRequest],
+            logging_config.ListLogScopesResponse]:
+        r"""Return a callable for the list log scopes method over gRPC.
+
+        Lists log scopes.
+
+        Returns:
+            Callable[[~.ListLogScopesRequest],
+                    ~.ListLogScopesResponse]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'list_log_scopes' not in self._stubs:
+            self._stubs['list_log_scopes'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/ListLogScopes',
+                request_serializer=logging_config.ListLogScopesRequest.serialize,
+                response_deserializer=logging_config.ListLogScopesResponse.deserialize,
+            )
+        return self._stubs['list_log_scopes']
+
+    @property
+    def get_log_scope(self) -> Callable[
+            [logging_config.GetLogScopeRequest],
+            logging_config.LogScope]:
+        r"""Return a callable for the get log scope method over gRPC.
+
+        Gets a log scope.
+
+        Returns:
+            Callable[[~.GetLogScopeRequest],
+                    ~.LogScope]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'get_log_scope' not in self._stubs:
+            self._stubs['get_log_scope'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/GetLogScope',
+                request_serializer=logging_config.GetLogScopeRequest.serialize,
+                response_deserializer=logging_config.LogScope.deserialize,
+            )
+        return self._stubs['get_log_scope']
+
+    @property
+    def create_log_scope(self) -> Callable[
+            [logging_config.CreateLogScopeRequest],
+            logging_config.LogScope]:
+        r"""Return a callable for the create log scope method over gRPC.
+
+        Creates a log scope.
+
+        Returns:
+            Callable[[~.CreateLogScopeRequest],
+                    ~.LogScope]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'create_log_scope' not in self._stubs:
+            self._stubs['create_log_scope'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/CreateLogScope',
+                request_serializer=logging_config.CreateLogScopeRequest.serialize,
+                response_deserializer=logging_config.LogScope.deserialize,
+            )
+        return self._stubs['create_log_scope']
+
+    @property
+    def update_log_scope(self) -> Callable[
+            [logging_config.UpdateLogScopeRequest],
+            logging_config.LogScope]:
+        r"""Return a callable for the update log scope method over gRPC.
+
+        Updates a log scope.
+
+        Returns:
+            Callable[[~.UpdateLogScopeRequest],
+                    ~.LogScope]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'update_log_scope' not in self._stubs:
+            self._stubs['update_log_scope'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/UpdateLogScope',
+                request_serializer=logging_config.UpdateLogScopeRequest.serialize,
+                response_deserializer=logging_config.LogScope.deserialize,
+            )
+        return self._stubs['update_log_scope']
+
+    @property
+    def delete_log_scope(self) -> Callable[
+            [logging_config.DeleteLogScopeRequest],
+            empty_pb2.Empty]:
+        r"""Return a callable for the delete log scope method over gRPC.
+
+        Deletes a log scope.
+
+        Returns:
+            Callable[[~.DeleteLogScopeRequest],
+                    ~.Empty]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'delete_log_scope' not in self._stubs:
+            self._stubs['delete_log_scope'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/DeleteLogScope',
+                request_serializer=logging_config.DeleteLogScopeRequest.serialize,
+                response_deserializer=empty_pb2.Empty.FromString,
+            )
+        return self._stubs['delete_log_scope']
+
+    @property
     def list_exclusions(self) -> Callable[
             [logging_config.ListExclusionsRequest],
             logging_config.ListExclusionsResponse]:

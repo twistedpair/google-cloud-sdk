@@ -186,6 +186,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  FOLDERS_LOCATIONS_LOGSCOPES = (
+      'folders.locations.logScopes',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/logScopes/'
+              '{logScopesId}',
+      },
+      ['name'],
+      True
+  )
   FOLDERS_LOCATIONS_OPERATIONS = (
       'folders.locations.operations',
       '{+name}',
@@ -331,6 +342,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_LOGSCOPES = (
+      'organizations.locations.logScopes',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'logScopes/{logScopesId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_OPERATIONS = (
       'organizations.locations.operations',
       '{+name}',
@@ -419,6 +441,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/buckets/'
               '{bucketsId}/views/{viewsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_LOGSCOPES = (
+      'projects.locations.logScopes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/logScopes/'
+              '{logScopesId}',
       },
       ['name'],
       True

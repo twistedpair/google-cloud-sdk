@@ -129,28 +129,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_MESSAGEPUBLISHINGROUTES = (
-      'projects.locations.messagePublishingRoutes',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'messagePublishingRoutes/{messagePublishingRoutesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_MESSAGESUBSCRIPTIONS = (
-      'projects.locations.messageSubscriptions',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'messageSubscriptions/{messageSubscriptionsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -202,6 +180,28 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/tlsRoutes/'
               '{tlsRoutesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_WASMPLUGINS = (
+      'projects.locations.wasmPlugins',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/wasmPlugins/'
+              '{wasmPluginsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_WASMPLUGINS_VERSIONS = (
+      'projects.locations.wasmPlugins.versions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/wasmPlugins/'
+              '{wasmPluginsId}/versions/{versionsId}',
       },
       ['name'],
       True

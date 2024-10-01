@@ -143,3 +143,18 @@ def AddCompressionMode(parser):
       DISABLED - disables compression. Existing compressed responses cached
       by Cloud CDN will not be served to clients.
       """)
+
+
+def AddLoadBalancingScheme(parser):
+  """Add support for --load-balancing-scheme flag."""
+  return parser.add_argument(
+      '--load-balancing-scheme',
+      choices=['INTERNAL_MANAGED'],
+      type=arg_utils.ChoiceToEnumName,
+      required=False,
+      help="""\
+      The load balancing scheme of the backend bucket.
+      If left blank, the backend bucket will be compatible with Global External
+      Application Load Balancer or Classic Application Load Balancer.
+      """,
+  )

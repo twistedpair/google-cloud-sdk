@@ -292,6 +292,7 @@ class ReplicationsClient(object):
       self,
       peer_cluster_name,
       peer_svm_name,
+      peer_volume_name,
       peer_ip_addresses=None,
   ):
     """Parse the command line arguments for Establish Peering into a config.
@@ -299,6 +300,7 @@ class ReplicationsClient(object):
     Args:
       peer_cluster_name: the name of the peer cluster.
       peer_svm_name: the name of the peer svm.
+      peer_volume_name: the name of the peer volume.
       peer_ip_addresses: the ip addresses of the peer cluster.
 
     Returns:
@@ -306,7 +308,7 @@ class ReplicationsClient(object):
       peering for Hybrid Replication.
     """
     return self._adapter.ParseEstablishPeeringRequestConfig(
-        peer_cluster_name, peer_svm_name, peer_ip_addresses
+        peer_cluster_name, peer_svm_name, peer_volume_name, peer_ip_addresses
     )
 
   def EstablishPeering(
@@ -459,12 +461,17 @@ class ReplicationsAdapter(object):
     )
 
   def ParseEstablishPeeringRequestConfig(
-      self, peer_cluster_name, peer_svm_name, peer_ip_addresses
+      self,
+      peer_cluster_name,
+      peer_svm_name,
+      peer_volume_name,
+      peer_ip_addresses,
   ):
     """Parse establish peering request for the Cloud NetApp Volume Replication."""
     establish_peering_request = self.messages.EstablishPeeringRequest(
         peerClusterName=peer_cluster_name,
         peerSvmName=peer_svm_name,
+        peerVolumeName=peer_volume_name,
         peerIpAddresses=peer_ip_addresses if peer_ip_addresses else [],
     )
     return establish_peering_request

@@ -1369,6 +1369,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.runapps = self._Add('runapps', hidden=True)
     self.runtimeconfig = self._Add(
         'runtimeconfig', command='gcloud runtime-config')
+    self.saasservicemgmt = self._Add(
+        'saasservicemgmt', command='gcloud saas', hidden=True)
     self.sasportal = self._Add('sasportal', hidden=True)
     self.scc = self._Add('securitycenter', command='gcloud scc')
     self.sddc = self._Add('sddc', command='gcloud vmware sddc')
@@ -1598,9 +1600,20 @@ class _SectionArtifacts(_Section):
         help_text='Default batching size for BatchCreateNotes requests.',
     )
 
+    self.allow_unrecongized_registry = self._AddBool(
+        'allow_unrecongized_registry',
+        default=False,
+        hidden=True,
+        help_text=(
+            'If set to true, bypass the check against the list of known'
+            ' registries'
+        ),
+    )
+
 
 class _SectionAuth(_Section):
   """Contains the properties for the 'auth' section."""
+
   DEFAULT_AUTH_HOST = 'https://accounts.google.com/o/oauth2/auth'
   DEFAULT_TOKEN_HOST = 'https://oauth2.googleapis.com/token'
   DEFAULT_MTLS_TOKEN_HOST = 'https://oauth2.mtls.googleapis.com/token'
@@ -2374,10 +2387,13 @@ class _SectionCore(_Section):
 
     self.parse_error_details = self._Add(
         'parse_error_details',
-        help_text='If True, `gcloud` will attempt to parse and interpret '
-        'error details in API originating errors. If False, `gcloud` will '
-        ' write flush error details as is to stderr/log.',
-        default=False)
+        help_text=(
+            'If True, `gcloud` will attempt to parse and interpret '
+            'error details in API originating errors. If False, `gcloud` will '
+            ' write flush error details as is to stderr/log.'
+        ),
+        default=True,
+    )
 
     self.custom_ca_certs_file = self._Add(
         'custom_ca_certs_file',

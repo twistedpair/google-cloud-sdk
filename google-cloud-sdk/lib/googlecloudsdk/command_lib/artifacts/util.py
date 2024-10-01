@@ -45,6 +45,7 @@ from googlecloudsdk.api_lib.container.images import util
 from googlecloudsdk.api_lib.util import common_args
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.artifacts import docker_util
 from googlecloudsdk.command_lib.artifacts import remote_repo_util
 from googlecloudsdk.command_lib.artifacts import requests as ar_requests
 from googlecloudsdk.command_lib.artifacts import upgrade_util
@@ -346,8 +347,10 @@ def AddTargetForAttachments(unused_repo_ref, repo_args, request):
   """
   if not repo_args.target:
     return request
-
-  request.filter = 'target="{target}"'.format(target=repo_args.target)
+  docker_version = docker_util.ParseDockerVersionStr(repo_args.target)
+  request.filter = 'target="{target}"'.format(
+      target=docker_version.GetVersionName()
+  )
   return request
 
 
@@ -2286,7 +2289,7 @@ def EnableUpgradeRedirection(unused_ref, args):
       " After enabling redirection, you can route traffic back to Container "
       "Registry if needed."
       .format(project),
-      default=False)
+      default=True)
   if not update:
     log.status.Print("No changes made.")
     return None
@@ -2319,7 +2322,7 @@ def DisableUpgradeRedirection(unused_ref, args):
       "This action will disable the redirection of Container Registry traffic "
       "to Artifact Registry for project {}"
       .format(project),
-      default=False)
+      default=True)
   if not update:
     log.status.Print("No changes made.")
     return None

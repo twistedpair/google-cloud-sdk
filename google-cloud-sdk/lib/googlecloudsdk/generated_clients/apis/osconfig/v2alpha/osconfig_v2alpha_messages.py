@@ -168,7 +168,7 @@ class GoogleCloudOsconfigV2alphaAgentPolicyAssignment(_messages.Message):
     createTime: Output only. When the AgentPolicyAssignment was created.
     description: Optional. Agent policy assignment description.
     etag: Output only. The etag for this assignment.
-    instanceSelector: Optional. Selector to target VMs for an assignment.
+    instanceSelectors: Optional. Selector to target VMs for an assignment.
       There is a logical "AND" between instance_selectors.
     name: Immutable. Identifier. Name of resource, in format: `projects/{proje
       ct_number}/locations/{location}/agentPolicyAssignments/{agent_policy_ass
@@ -207,7 +207,7 @@ class GoogleCloudOsconfigV2alphaAgentPolicyAssignment(_messages.Message):
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
   etag = _messages.StringField(4)
-  instanceSelector = _messages.MessageField('GoogleCloudOsconfigV2alphaAgentPolicyAssignmentInstanceSelector', 5, repeated=True)
+  instanceSelectors = _messages.MessageField('GoogleCloudOsconfigV2alphaAgentPolicyAssignmentInstanceSelector', 5, repeated=True)
   name = _messages.StringField(6)
   updateTime = _messages.StringField(7)
 
@@ -355,26 +355,35 @@ class GoogleCloudOsconfigV2alphaOrchestratedResource(_messages.Message):
   orchestrator.
 
   Fields:
+    agentPolicyAssignmentV2alphaPayload: Optional. OSAgentPolicyAssignment
+      resource to be created or updated. Name field is ignored and replace
+      with a generated value. With this field set, orchestrator will perform
+      actions on
+      `project/{project}/locations/{zone}/agentPolicyAssignment/{resource_id}`
+      resources, where `project` and `zone` pairs come from the expanded
+      scope, and `resource_id` comes from the `resource_id` field of
+      orchestrator resource.
     id: Optional. ID of the resource to be used while generating set of
-      affected resources. For UPSERT action, the value is auto-generated
-      during PolicyOrchestrator creation, when not set. When the value is set,
-      it should following next restrictions: * Must contain only lowercase
+      affected resources. For UPSERT action the value is auto-generated during
+      PolicyOrchestrator creation when not set. When the value is set it
+      should following next restrictions: * Must contain only lowercase
       letters, numbers, and hyphens. * Must start with a letter. * Must be
       between 1-63 characters. * Must end with a number or a letter. * Must be
-      unique within the project. For DELETE action, it must be specified
+      unique within the project. For DELETE action, ID must be specified
       explicitly during PolicyOrchestrator creation.
     osPolicyAssignmentV1Payload: Optional. OSPolicyAssignment resource to be
       created, updated or deleted. Name field is ignored and replace with a
-      generated value. With this field set, orchestrator will end up making
-      actions on
+      generated value. With this field set, orchestrator will perform actions
+      on
       `project/{project}/locations/{zone}/osPolicyAssignments/{resource_id}`
       resources, where `project` and `zone` pairs come from the expanded
       scope, and `resource_id` comes from the `resource_id` field of
       orchestrator resource.
   """
 
-  id = _messages.StringField(1)
-  osPolicyAssignmentV1Payload = _messages.MessageField('OSPolicyAssignment', 2)
+  agentPolicyAssignmentV2alphaPayload = _messages.MessageField('GoogleCloudOsconfigV2alphaAgentPolicyAssignment', 1)
+  id = _messages.StringField(2)
+  osPolicyAssignmentV1Payload = _messages.MessageField('OSPolicyAssignment', 3)
 
 
 class GoogleCloudOsconfigV2alphaOrchestrationScope(_messages.Message):
@@ -383,7 +392,9 @@ class GoogleCloudOsconfigV2alphaOrchestrationScope(_messages.Message):
 
   Fields:
     selectors: Optional. Selectors of the orchestration scope. There is a
-      logical AND between each selector defined.
+      logical AND between each selector defined. When there is no explicit
+      `ResourceHierarchySelector` selector specified, the scope is by default
+      bounded to the parent of the policy orchestrator resource.
   """
 
   selectors = _messages.MessageField('GoogleCloudOsconfigV2alphaOrchestrationScopeSelector', 1, repeated=True)
@@ -393,7 +404,7 @@ class GoogleCloudOsconfigV2alphaOrchestrationScopeLocationSelector(_messages.Mes
   r"""Selector containing locations in scope.
 
   Fields:
-    includedLocations: Names of the locations in scope. Format: `us-
+    includedLocations: Optional. Names of the locations in scope. Format: `us-
       central1-a`
   """
 
@@ -404,14 +415,17 @@ class GoogleCloudOsconfigV2alphaOrchestrationScopeResourceHierarchySelector(_mes
   r"""Selector containing Cloud Resource Manager resource hierarchy nodes.
 
   Fields:
-    includedFolders: Names of the folders in scope. Format:
+    includedFolders: Optional. Names of the folders in scope. Format:
       `folders/{folder_id}`
-    includedProjects: Names of the projects in scope. Format:
-      `projects/{project_id}`
+    includedOrganizations: Optional. Names of the orgs in scope. Format:
+      `organizations/{organization_id}`
+    includedProjects: Optional. Names of the projects in scope. Format:
+      `projects/{project_number}`
   """
 
   includedFolders = _messages.StringField(1, repeated=True)
-  includedProjects = _messages.StringField(2, repeated=True)
+  includedOrganizations = _messages.StringField(2, repeated=True)
+  includedProjects = _messages.StringField(3, repeated=True)
 
 
 class GoogleCloudOsconfigV2alphaOrchestrationScopeSelector(_messages.Message):
@@ -427,19 +441,21 @@ class GoogleCloudOsconfigV2alphaOrchestrationScopeSelector(_messages.Message):
 
 
 class GoogleCloudOsconfigV2alphaPolicyOrchestrator(_messages.Message):
-  r"""PolicyOrchestrator helps managing project+zone level policy resources,
-  by providing tools to create, update and delete them across projects and
-  locations, at scale. Policy orchestrator functions as an endless loop. Each
-  loop iterations, orchestrator computes a set of resources that should be
-  affected, and progressivly applies changes to them. If for some reasone,
-  this set of resources changes over time (e.g. new projects are added), the
-  future loop iterations will address that. Orchestrator can either upsert or
-  delete policy resources. For more details, see the description of the
-  `action`, `policy_id` and `payload` fields. Note that policy orchestrator do
-  not "manage" the resources it creates. Every iteration is independent and
-  only minimal history of past actions is retained (apart from Cloud Logging).
-  If orchestrator gets deleted, it does not affect the resources it created in
-  the past at all. Those will remain where they were.
+  r"""PolicyOrchestrator helps managing project+zone level policy resources
+  (e.g. OS Policy Assignments), by providing tools to create, update and
+  delete them across projects and locations, at scale. Policy orchestrator
+  functions as an endless loop. Each iteration orchestrator computes a set of
+  resources that should be affected, then progressively applies changes to
+  them. If for some reason this set of resources changes over time (e.g. new
+  projects are added), the future loop iterations will address that.
+  Orchestrator can either upsert or delete policy resources. For more details,
+  see the description of the `action`, and `orchestrated_resource` fields.
+  Note that policy orchestrator do not "manage" the resources it creates.
+  Every iteration is independent and only minimal history of past actions is
+  retained (apart from Cloud Logging). If orchestrator gets deleted, it does
+  not affect the resources it created in the past. Those will remain where
+  they were. Same applies if projects are removed from the orchestrator's
+  scope.
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs
@@ -449,36 +465,36 @@ class GoogleCloudOsconfigV2alphaPolicyOrchestrator(_messages.Message):
       `projects/{project_id}/zones/{zone_id}` locations defined by the
       `orchestration_scope`. Allowed values: - `UPSERT` - Orchestrator will
       create or update target resources. - `DELETE` - Orchestrator will delete
-      target resources, if they exist Note: There might be more action types
-      added in the future. We use string here instead of an enum, to avoid the
-      need of propagating new states to all the client code.
+      target resources, if they exist
     createTime: Output only. Timestamp when the policy orchestrator resource
       was created.
-    description: Freeform text describing the purpose of the resource.
+    description: Optional. Freeform text describing the purpose of the
+      resource.
     etag: Output only. This checksum is computed by the server based on the
-      value of other fields, and may be sent on update and delete rests to
-      nsure the client has an up-to-date value before proceeding.
+      value of other fields, and may be sent on update and delete requests to
+      ensure the client has an up-to-date value before proceeding.
     labels: Optional. Labels as key value pairs
-    name: Immutable. Identifier. ## In form of: ## projects/{project_id}/locat
-      ions/global/policyOrchestrators/{orchestrator_id} ## folders/{folder_id}
-      /locations/global/policyOrchestrators/{orchestrator_id} organizations/{o
-      rganization_id}/locations/global/policyOrchestrators/{orchestrator_id}
+    name: Immutable. Identifier. In form of * `organizations/{organization_id}
+      /locations/global/policyOrchestrators/{orchestrator_id}` * `folders/{fol
+      der_id}/locations/global/policyOrchestrators/{orchestrator_id}` * `proje
+      cts/{project_id_or_number}/locations/global/policyOrchestrators/{orchest
+      rator_id}`
     orchestratedResource: Required. Resource to be orchestrated by the policy
       orchestrator.
     orchestrationScope: Optional. Defines scope for the orchestration, in
       context of the enclosing PolicyOrchestrator resource. Scope is expanded
       into a list of pairs, in which the rollout action will take place.
-      Expansion starts with a Project / Folder / Organization resource
-      parenting the PolicyOrchestrator resource: - All the descendant projects
-      are listed (or a single one, if parent is a project already). - List of
-      project is cross joined with a list of all available zones. - Resulting
-      list of pairs is filtered according to the selectors.
+      Expansion starts with a Folder resource parenting the PolicyOrchestrator
+      resource: - All the descendant projects are listed. - List of project is
+      cross joined with a list of all available zones. - Resulting list of
+      pairs is filtered according to the selectors.
     orchestrationState: Output only. State of the orchestration.
-    reconciling: Output only. Set to true, if the resource is currently being
-      updated / deleted.
-    state: State of the orchestrator. Can be updated to change orchestrator
-      behaviour. Allowed values: - `ACTIVE` - orchestrator is actively looking
-      for actions to be taken. Note: There might be more states added in the
+    reconciling: Output only. Set to true, if the there are ongoing changes
+      being applied by the orchestrator.
+    state: Optional. State of the orchestrator. Can be updated to change
+      orchestrator behaviour. Allowed values: - `ACTIVE` - orchestrator is
+      actively looking for actions to be taken. - `STOPPED` - orchestrator
+      won't make any changes. Note: There might be more states added in the
       future. We use string here instead of an enum, to avoid the need of
       propagating new states to all the client code.
     updateTime: Output only. Timestamp when the policy orchestrator resource
@@ -524,43 +540,43 @@ class GoogleCloudOsconfigV2alphaPolicyOrchestrator(_messages.Message):
 
 
 class GoogleCloudOsconfigV2alphaPolicyOrchestratorIterationState(_messages.Message):
-  r"""A GoogleCloudOsconfigV2alphaPolicyOrchestratorIterationState object.
+  r"""Describes the state of a single iteration of the orchestrator.
 
   Enums:
-    StateValueValuesEnum: State of the iteration.
+    StateValueValuesEnum: Output only. State of the iteration.
 
   Fields:
-    error: Error thrown in the wave iteration.
-    failedActions: Number of orchestration actions which failed so far. For
-      more details, query the Cloud Logs.
-    finishTime: Finish time of the wave iteration.
-    performedActions: Overall number of actions done by the orchestrator so
-      far.
-    progress: An estimated percentage of the progress. Number between 0 and
-      100.
-    rolloutResource: Handle to the Progressive Rollouts API rollout resource,
-      which contains detailed information about a particular orchestration
-      iteration.
-    startTime: Start time of the wave iteration.
-    state: State of the iteration.
+    error: Output only. Error thrown in the wave iteration.
+    failedActions: Output only. Number of orchestration actions which failed
+      so far. For more details, query the Cloud Logs.
+    finishTime: Output only. Finish time of the wave iteration.
+    performedActions: Output only. Overall number of actions done by the
+      orchestrator so far.
+    progress: Output only. An estimated percentage of the progress. Number
+      between 0 and 100.
+    rolloutResource: Output only. Handle to the Progressive Rollouts API
+      rollout resource, which contains detailed information about a particular
+      orchestration iteration.
+    startTime: Output only. Start time of the wave iteration.
+    state: Output only. State of the iteration.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""State of the iteration.
+    r"""Output only. State of the iteration.
 
     Values:
       STATE_UNSPECIFIED: Default value. This value is unused.
       PROCESSING: Iteration is in progress.
       COMPLETED: Iteration completed, with all actions being successful.
       FAILED: Iteration completed, with failures.
-      CANCELED: Iteration was explicitly cancelled.
+      CANCELLED: Iteration was explicitly cancelled.
       UNKNOWN: Impossible to determine current state of the iteration.
     """
     STATE_UNSPECIFIED = 0
     PROCESSING = 1
     COMPLETED = 2
     FAILED = 3
-    CANCELED = 4
+    CANCELLED = 4
     UNKNOWN = 5
 
   error = _messages.MessageField('Status', 1)
@@ -574,15 +590,69 @@ class GoogleCloudOsconfigV2alphaPolicyOrchestratorIterationState(_messages.Messa
 
 
 class GoogleCloudOsconfigV2alphaPolicyOrchestratorOrchestrationState(_messages.Message):
-  r"""A GoogleCloudOsconfigV2alphaPolicyOrchestratorOrchestrationState object.
+  r"""Describes the state of the orchestration process.
 
   Fields:
-    currentIterationState: Current Wave iteration state.
-    previousIterationState: Previous Wave iteration state.
+    currentIterationState: Output only. Current Wave iteration state.
+    previousIterationState: Output only. Previous Wave iteration state.
   """
 
   currentIterationState = _messages.MessageField('GoogleCloudOsconfigV2alphaPolicyOrchestratorIterationState', 1)
   previousIterationState = _messages.MessageField('GoogleCloudOsconfigV2alphaPolicyOrchestratorIterationState', 2)
+
+
+class GoogleCloudOsconfigV2betaAgentPolicyAssignmentOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have been
+      cancelled successfully have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
+class GoogleCloudOsconfigV2betaOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have been
+      cancelled successfully have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
 
 
 class GoogleCloudOsconfigV2mainAgentPolicyAssignmentOperationMetadata(_messages.Message):
@@ -1123,7 +1193,7 @@ class OSPolicyResourceExecResourceExec(_messages.Message):
       (that is created by this Exec) whose content will be recorded in
       OSPolicyResourceCompliance after a successful run. Absence or failure to
       read this file will result in this ExecResource being non-compliant.
-      Output file size is limited to 100K bytes.
+      Output file size is limited to 500K bytes.
     script: An inline script. The size of the script is limited to 32KiB.
   """
 
@@ -1626,10 +1696,9 @@ class OsconfigFoldersLocationsGlobalPolicyOrchestratorsCreateRequest(_messages.M
     googleCloudOsconfigV2alphaPolicyOrchestrator: A
       GoogleCloudOsconfigV2alphaPolicyOrchestrator resource to be passed as
       the request body.
-    parent: Required. The parent resource name in the form of: -
-      projects/{project_id}/locations/global -
-      folders/{folder_id}/locations/global -
-      organizations/{organization_id}/locations/global
+    parent: Required. The parent resource name in the form of:
+      `organizations/{organization_id}/locations/global`
+      `folders/{folder_id}/locations/global`
     policyOrchestratorId: Required. The logical identifier of the policy
       orchestrator, with the following restrictions: * Must contain only
       lowercase letters, numbers, and hyphens. * Must start with a letter. *
@@ -1658,6 +1727,9 @@ class OsconfigFoldersLocationsGlobalPolicyOrchestratorsDeleteRequest(_messages.M
   r"""A OsconfigFoldersLocationsGlobalPolicyOrchestratorsDeleteRequest object.
 
   Fields:
+    etag: Optional. The current etag of the policy orchestrator. If an etag is
+      provided and does not match the current etag of the policy orchestrator,
+      deletion will be blocked and an ABORTED error will be returned.
     name: Required. Name of the resource to be deleted.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -1672,8 +1744,9 @@ class OsconfigFoldersLocationsGlobalPolicyOrchestratorsDeleteRequest(_messages.M
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class OsconfigFoldersLocationsGlobalPolicyOrchestratorsGetRequest(_messages.Message):
@@ -1704,6 +1777,26 @@ class OsconfigFoldersLocationsGlobalPolicyOrchestratorsListRequest(_messages.Mes
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class OsconfigFoldersLocationsGlobalPolicyOrchestratorsPatchRequest(_messages.Message):
+  r"""A OsconfigFoldersLocationsGlobalPolicyOrchestratorsPatchRequest object.
+
+  Fields:
+    googleCloudOsconfigV2alphaPolicyOrchestrator: A
+      GoogleCloudOsconfigV2alphaPolicyOrchestrator resource to be passed as
+      the request body.
+    name: Immutable. Identifier. In form of * `organizations/{organization_id}
+      /locations/global/policyOrchestrators/{orchestrator_id}` * `folders/{fol
+      der_id}/locations/global/policyOrchestrators/{orchestrator_id}` * `proje
+      cts/{project_id_or_number}/locations/global/policyOrchestrators/{orchest
+      rator_id}`
+    updateMask: Optional. The list of fields to update.
+  """
+
+  googleCloudOsconfigV2alphaPolicyOrchestrator = _messages.MessageField('GoogleCloudOsconfigV2alphaPolicyOrchestrator', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class OsconfigFoldersLocationsListRequest(_messages.Message):
@@ -1764,6 +1857,203 @@ class OsconfigFoldersLocationsOperationsGetRequest(_messages.Message):
 
 class OsconfigFoldersLocationsOperationsListRequest(_messages.Message):
   r"""A OsconfigFoldersLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class OsconfigOrganizationsLocationsGetRequest(_messages.Message):
+  r"""A OsconfigOrganizationsLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsCreateRequest(_messages.Message):
+  r"""A OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsCreateRequest
+  object.
+
+  Fields:
+    googleCloudOsconfigV2alphaPolicyOrchestrator: A
+      GoogleCloudOsconfigV2alphaPolicyOrchestrator resource to be passed as
+      the request body.
+    parent: Required. The parent resource name in the form of:
+      `organizations/{organization_id}/locations/global`
+      `folders/{folder_id}/locations/global`
+    policyOrchestratorId: Required. The logical identifier of the policy
+      orchestrator, with the following restrictions: * Must contain only
+      lowercase letters, numbers, and hyphens. * Must start with a letter. *
+      Must be between 1-63 characters. * Must end with a number or a letter. *
+      Must be unique within the parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  googleCloudOsconfigV2alphaPolicyOrchestrator = _messages.MessageField('GoogleCloudOsconfigV2alphaPolicyOrchestrator', 1)
+  parent = _messages.StringField(2, required=True)
+  policyOrchestratorId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsDeleteRequest(_messages.Message):
+  r"""A OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsDeleteRequest
+  object.
+
+  Fields:
+    etag: Optional. The current etag of the policy orchestrator. If an etag is
+      provided and does not match the current etag of the policy orchestrator,
+      deletion will be blocked and an ABORTED error will be returned.
+    name: Required. Name of the resource to be deleted.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsGetRequest(_messages.Message):
+  r"""A OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsListRequest(_messages.Message):
+  r"""A OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The parent resource name.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsPatchRequest(_messages.Message):
+  r"""A OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsPatchRequest
+  object.
+
+  Fields:
+    googleCloudOsconfigV2alphaPolicyOrchestrator: A
+      GoogleCloudOsconfigV2alphaPolicyOrchestrator resource to be passed as
+      the request body.
+    name: Immutable. Identifier. In form of * `organizations/{organization_id}
+      /locations/global/policyOrchestrators/{orchestrator_id}` * `folders/{fol
+      der_id}/locations/global/policyOrchestrators/{orchestrator_id}` * `proje
+      cts/{project_id_or_number}/locations/global/policyOrchestrators/{orchest
+      rator_id}`
+    updateMask: Optional. The list of fields to update.
+  """
+
+  googleCloudOsconfigV2alphaPolicyOrchestrator = _messages.MessageField('GoogleCloudOsconfigV2alphaPolicyOrchestrator', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class OsconfigOrganizationsLocationsListRequest(_messages.Message):
+  r"""A OsconfigOrganizationsLocationsListRequest object.
+
+  Fields:
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like `"displayName=tokyo"`, and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
+    includeUnrevealedLocations: If true, the returned list will include
+      locations which are not yet revealed.
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The maximum number of results to return. If not set, the service
+      selects a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
+  """
+
+  filter = _messages.StringField(1)
+  includeUnrevealedLocations = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+
+
+class OsconfigOrganizationsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A OsconfigOrganizationsLocationsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class OsconfigOrganizationsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A OsconfigOrganizationsLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigOrganizationsLocationsOperationsGetRequest(_messages.Message):
+  r"""A OsconfigOrganizationsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigOrganizationsLocationsOperationsListRequest(_messages.Message):
+  r"""A OsconfigOrganizationsLocationsOperationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -1906,6 +2196,118 @@ class OsconfigProjectsLocationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class OsconfigProjectsLocationsGlobalPolicyOrchestratorsCreateRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsGlobalPolicyOrchestratorsCreateRequest
+  object.
+
+  Fields:
+    googleCloudOsconfigV2alphaPolicyOrchestrator: A
+      GoogleCloudOsconfigV2alphaPolicyOrchestrator resource to be passed as
+      the request body.
+    parent: Required. The parent resource name in the form of:
+      `organizations/{organization_id}/locations/global`
+      `folders/{folder_id}/locations/global`
+    policyOrchestratorId: Required. The logical identifier of the policy
+      orchestrator, with the following restrictions: * Must contain only
+      lowercase letters, numbers, and hyphens. * Must start with a letter. *
+      Must be between 1-63 characters. * Must end with a number or a letter. *
+      Must be unique within the parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  googleCloudOsconfigV2alphaPolicyOrchestrator = _messages.MessageField('GoogleCloudOsconfigV2alphaPolicyOrchestrator', 1)
+  parent = _messages.StringField(2, required=True)
+  policyOrchestratorId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class OsconfigProjectsLocationsGlobalPolicyOrchestratorsDeleteRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsGlobalPolicyOrchestratorsDeleteRequest
+  object.
+
+  Fields:
+    etag: Optional. The current etag of the policy orchestrator. If an etag is
+      provided and does not match the current etag of the policy orchestrator,
+      deletion will be blocked and an ABORTED error will be returned.
+    name: Required. Name of the resource to be deleted.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class OsconfigProjectsLocationsGlobalPolicyOrchestratorsGetRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsGlobalPolicyOrchestratorsGetRequest object.
+
+  Fields:
+    name: Required. The resource name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigProjectsLocationsGlobalPolicyOrchestratorsListRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsGlobalPolicyOrchestratorsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The parent resource name.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class OsconfigProjectsLocationsGlobalPolicyOrchestratorsPatchRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsGlobalPolicyOrchestratorsPatchRequest object.
+
+  Fields:
+    googleCloudOsconfigV2alphaPolicyOrchestrator: A
+      GoogleCloudOsconfigV2alphaPolicyOrchestrator resource to be passed as
+      the request body.
+    name: Immutable. Identifier. In form of * `organizations/{organization_id}
+      /locations/global/policyOrchestrators/{orchestrator_id}` * `folders/{fol
+      der_id}/locations/global/policyOrchestrators/{orchestrator_id}` * `proje
+      cts/{project_id_or_number}/locations/global/policyOrchestrators/{orchest
+      rator_id}`
+    updateMask: Optional. The list of fields to update.
+  """
+
+  googleCloudOsconfigV2alphaPolicyOrchestrator = _messages.MessageField('GoogleCloudOsconfigV2alphaPolicyOrchestrator', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class OsconfigProjectsLocationsListRequest(_messages.Message):

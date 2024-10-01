@@ -59,6 +59,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.folders_locations_buckets_views_logs = self.FoldersLocationsBucketsViewsLogsService(self)
     self.folders_locations_buckets_views = self.FoldersLocationsBucketsViewsService(self)
     self.folders_locations_buckets = self.FoldersLocationsBucketsService(self)
+    self.folders_locations_logScopes = self.FoldersLocationsLogScopesService(self)
     self.folders_locations_operations = self.FoldersLocationsOperationsService(self)
     self.folders_locations_recentQueries = self.FoldersLocationsRecentQueriesService(self)
     self.folders_locations_savedQueries = self.FoldersLocationsSavedQueriesService(self)
@@ -78,6 +79,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.organizations_locations_buckets_views_logs = self.OrganizationsLocationsBucketsViewsLogsService(self)
     self.organizations_locations_buckets_views = self.OrganizationsLocationsBucketsViewsService(self)
     self.organizations_locations_buckets = self.OrganizationsLocationsBucketsService(self)
+    self.organizations_locations_logScopes = self.OrganizationsLocationsLogScopesService(self)
     self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
     self.organizations_locations_recentQueries = self.OrganizationsLocationsRecentQueriesService(self)
     self.organizations_locations_savedQueries = self.OrganizationsLocationsSavedQueriesService(self)
@@ -90,6 +92,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.projects_locations_buckets_views_logs = self.ProjectsLocationsBucketsViewsLogsService(self)
     self.projects_locations_buckets_views = self.ProjectsLocationsBucketsViewsService(self)
     self.projects_locations_buckets = self.ProjectsLocationsBucketsService(self)
+    self.projects_locations_logScopes = self.ProjectsLocationsLogScopesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_recentQueries = self.ProjectsLocationsRecentQueriesService(self)
     self.projects_locations_savedQueries = self.ProjectsLocationsSavedQueriesService(self)
@@ -1614,32 +1617,6 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Query(self, request, global_params=None):
-      r"""This call is DEPRECATED - please use QueryData instead.
-
-      Args:
-        request: (QueryLogEntriesRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (QueryResults) The response message.
-      """
-      config = self.GetMethodConfig('Query')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Query.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='logging.entries.query',
-        ordered_params=[],
-        path_params=[],
-        query_params=[],
-        relative_path='v2/entries:query',
-        request_field='<request>',
-        request_type_name='QueryLogEntriesRequest',
-        response_type_name='QueryResults',
-        supports_download=False,
-    )
-
     def Redact(self, request, global_params=None):
       r"""Redacts the contents of log entries. This method replaces the payload of entries in a log bucket that match a filter with a RedactedLogEntryTombstone message.
 
@@ -2639,6 +2616,151 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='logBucket',
         request_type_name='LoggingFoldersLocationsBucketsUpdateAsyncRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class FoldersLocationsLogScopesService(base_api.BaseApiService):
+    """Service class for the folders_locations_logScopes resource."""
+
+    _NAME = 'folders_locations_logScopes'
+
+    def __init__(self, client):
+      super(LoggingV2.FoldersLocationsLogScopesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a log scope.
+
+      Args:
+        request: (LoggingFoldersLocationsLogScopesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogScope) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/logScopes',
+        http_method='POST',
+        method_id='logging.folders.locations.logScopes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['logScopeId'],
+        relative_path='v2/{+parent}/logScopes',
+        request_field='logScope',
+        request_type_name='LoggingFoldersLocationsLogScopesCreateRequest',
+        response_type_name='LogScope',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a log scope.
+
+      Args:
+        request: (LoggingFoldersLocationsLogScopesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/logScopes/{logScopesId}',
+        http_method='DELETE',
+        method_id='logging.folders.locations.logScopes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingFoldersLocationsLogScopesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a log scope.
+
+      Args:
+        request: (LoggingFoldersLocationsLogScopesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogScope) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/logScopes/{logScopesId}',
+        http_method='GET',
+        method_id='logging.folders.locations.logScopes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingFoldersLocationsLogScopesGetRequest',
+        response_type_name='LogScope',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists log scopes.
+
+      Args:
+        request: (LoggingFoldersLocationsLogScopesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLogScopesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/logScopes',
+        http_method='GET',
+        method_id='logging.folders.locations.logScopes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/logScopes',
+        request_field='',
+        request_type_name='LoggingFoldersLocationsLogScopesListRequest',
+        response_type_name='ListLogScopesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a log scope.
+
+      Args:
+        request: (LoggingFoldersLocationsLogScopesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogScope) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/logScopes/{logScopesId}',
+        http_method='PATCH',
+        method_id='logging.folders.locations.logScopes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='logScope',
+        request_type_name='LoggingFoldersLocationsLogScopesPatchRequest',
+        response_type_name='LogScope',
         supports_download=False,
     )
 
@@ -4991,6 +5113,151 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsLocationsLogScopesService(base_api.BaseApiService):
+    """Service class for the organizations_locations_logScopes resource."""
+
+    _NAME = 'organizations_locations_logScopes'
+
+    def __init__(self, client):
+      super(LoggingV2.OrganizationsLocationsLogScopesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a log scope.
+
+      Args:
+        request: (LoggingOrganizationsLocationsLogScopesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogScope) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/logScopes',
+        http_method='POST',
+        method_id='logging.organizations.locations.logScopes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['logScopeId'],
+        relative_path='v2/{+parent}/logScopes',
+        request_field='logScope',
+        request_type_name='LoggingOrganizationsLocationsLogScopesCreateRequest',
+        response_type_name='LogScope',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a log scope.
+
+      Args:
+        request: (LoggingOrganizationsLocationsLogScopesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/logScopes/{logScopesId}',
+        http_method='DELETE',
+        method_id='logging.organizations.locations.logScopes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingOrganizationsLocationsLogScopesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a log scope.
+
+      Args:
+        request: (LoggingOrganizationsLocationsLogScopesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogScope) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/logScopes/{logScopesId}',
+        http_method='GET',
+        method_id='logging.organizations.locations.logScopes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingOrganizationsLocationsLogScopesGetRequest',
+        response_type_name='LogScope',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists log scopes.
+
+      Args:
+        request: (LoggingOrganizationsLocationsLogScopesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLogScopesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/logScopes',
+        http_method='GET',
+        method_id='logging.organizations.locations.logScopes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/logScopes',
+        request_field='',
+        request_type_name='LoggingOrganizationsLocationsLogScopesListRequest',
+        response_type_name='ListLogScopesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a log scope.
+
+      Args:
+        request: (LoggingOrganizationsLocationsLogScopesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogScope) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/logScopes/{logScopesId}',
+        http_method='PATCH',
+        method_id='logging.organizations.locations.logScopes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='logScope',
+        request_type_name='LoggingOrganizationsLocationsLogScopesPatchRequest',
+        response_type_name='LogScope',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the organizations_locations_operations resource."""
 
@@ -6512,6 +6779,151 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='logBucket',
         request_type_name='LoggingProjectsLocationsBucketsUpdateAsyncRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsLogScopesService(base_api.BaseApiService):
+    """Service class for the projects_locations_logScopes resource."""
+
+    _NAME = 'projects_locations_logScopes'
+
+    def __init__(self, client):
+      super(LoggingV2.ProjectsLocationsLogScopesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a log scope.
+
+      Args:
+        request: (LoggingProjectsLocationsLogScopesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogScope) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/logScopes',
+        http_method='POST',
+        method_id='logging.projects.locations.logScopes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['logScopeId'],
+        relative_path='v2/{+parent}/logScopes',
+        request_field='logScope',
+        request_type_name='LoggingProjectsLocationsLogScopesCreateRequest',
+        response_type_name='LogScope',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a log scope.
+
+      Args:
+        request: (LoggingProjectsLocationsLogScopesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/logScopes/{logScopesId}',
+        http_method='DELETE',
+        method_id='logging.projects.locations.logScopes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingProjectsLocationsLogScopesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a log scope.
+
+      Args:
+        request: (LoggingProjectsLocationsLogScopesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogScope) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/logScopes/{logScopesId}',
+        http_method='GET',
+        method_id='logging.projects.locations.logScopes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingProjectsLocationsLogScopesGetRequest',
+        response_type_name='LogScope',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists log scopes.
+
+      Args:
+        request: (LoggingProjectsLocationsLogScopesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLogScopesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/logScopes',
+        http_method='GET',
+        method_id='logging.projects.locations.logScopes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/logScopes',
+        request_field='',
+        request_type_name='LoggingProjectsLocationsLogScopesListRequest',
+        response_type_name='ListLogScopesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a log scope.
+
+      Args:
+        request: (LoggingProjectsLocationsLogScopesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogScope) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/logScopes/{logScopesId}',
+        http_method='PATCH',
+        method_id='logging.projects.locations.logScopes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='logScope',
+        request_type_name='LoggingProjectsLocationsLogScopesPatchRequest',
+        response_type_name='LogScope',
         supports_download=False,
     )
 

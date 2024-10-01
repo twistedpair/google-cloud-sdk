@@ -68,6 +68,7 @@ class RepositoriesClient(object):
   def Create(
       self,
       repository_ref,
+      instance_id,
       description,
       default_branch,
       gitignores,
@@ -79,6 +80,8 @@ class RepositoriesClient(object):
     Args:
       repository_ref: a resource reference to
         securesourcemanager.projects.locations.repositories.
+      instance_id: a resource id for
+        securesourcemanager.projects.locations.instances.
       description: description of the repository
       default_branch: default branch name of the repository
       gitignores: list of gitignore template names
@@ -94,8 +97,18 @@ class RepositoriesClient(object):
         license=license_name,
         readme=readme,
     )
+    instance = self._resource_parser.Parse(
+        None,
+        params={
+            'projectsId': repository_ref.projectsId,
+            'locationsId': repository_ref.locationsId,
+            'instancesId': instance_id,
+        },
+        collection='securesourcemanager.projects.locations.instances',
+    )
     repository = self.messages.Repository(
         description=description,
+        instance=instance.RelativeName(),
         initialConfig=initial_config,
     )
     create_req = self.messages.SecuresourcemanagerProjectsLocationsRepositoriesCreateRequest(

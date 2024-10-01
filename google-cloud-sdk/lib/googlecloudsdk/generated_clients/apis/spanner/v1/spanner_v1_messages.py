@@ -1910,6 +1910,15 @@ class Instance(_messages.Message):
   hosted.
 
   Enums:
+    DefaultBackupScheduleTypeValueValuesEnum: Optional. Controls the default
+      backup behavior for new databases within the instance. If
+      default_backup_schedule_type is not specified in the
+      `CreateInstanceRequest`, it defaults to `AUTOMATIC`, except for free
+      instances. Note that `AUTOMATIC` is not permitted for free instances, as
+      backups and backup schedules are not allowed for free instances. In the
+      `GetInstance` or `ListInstances` response, if the value of
+      default_backup_schedule_type is unset or NONE, no default backup
+      schedule will be created for new databases within the instance.
     DefaultStorageTypeValueValuesEnum: The `StorageType` of the current
       instance. If unspecified, it will default to the first StorageType in
       the list of allowed_storage_types in the `InstanceConfig` for this
@@ -1949,6 +1958,15 @@ class Instance(_messages.Message):
       the form `projects//instanceConfigs/`. See also InstanceConfig and
       ListInstanceConfigs.
     createTime: Output only. The time at which the instance was created.
+    defaultBackupScheduleType: Optional. Controls the default backup behavior
+      for new databases within the instance. If default_backup_schedule_type
+      is not specified in the `CreateInstanceRequest`, it defaults to
+      `AUTOMATIC`, except for free instances. Note that `AUTOMATIC` is not
+      permitted for free instances, as backups and backup schedules are not
+      allowed for free instances. In the `GetInstance` or `ListInstances`
+      response, if the value of default_backup_schedule_type is unset or NONE,
+      no default backup schedule will be created for new databases within the
+      instance.
     defaultStorageType: The `StorageType` of the current instance. If
       unspecified, it will default to the first StorageType in the list of
       allowed_storage_types in the `InstanceConfig` for this instance.
@@ -2017,6 +2035,30 @@ class Instance(_messages.Message):
     updateTime: Output only. The time at which the instance was most recently
       updated.
   """
+
+  class DefaultBackupScheduleTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Controls the default backup behavior for new databases
+    within the instance. If default_backup_schedule_type is not specified in
+    the `CreateInstanceRequest`, it defaults to `AUTOMATIC`, except for free
+    instances. Note that `AUTOMATIC` is not permitted for free instances, as
+    backups and backup schedules are not allowed for free instances. In the
+    `GetInstance` or `ListInstances` response, if the value of
+    default_backup_schedule_type is unset or NONE, no default backup schedule
+    will be created for new databases within the instance.
+
+    Values:
+      DEFAULT_BACKUP_SCHEDULE_TYPE_UNSPECIFIED: Not specified.
+      NONE: No default backup schedule will be created automatically on
+        creation of a database within the instance.
+      AUTOMATIC: A default backup schedule will be created automatically on
+        creation of a database within the instance. The default backup
+        schedule creates a full backup every 24 hours and retains the backup
+        for a period of 7 days. Once created, the default backup schedule can
+        be edited/deleted similar to any other backup schedule.
+    """
+    DEFAULT_BACKUP_SCHEDULE_TYPE_UNSPECIFIED = 0
+    NONE = 1
+    AUTOMATIC = 2
 
   class DefaultStorageTypeValueValuesEnum(_messages.Enum):
     r"""The `StorageType` of the current instance. If unspecified, it will
@@ -2120,20 +2162,21 @@ class Instance(_messages.Message):
   autoscalingConfig = _messages.MessageField('AutoscalingConfig', 1)
   config = _messages.StringField(2)
   createTime = _messages.StringField(3)
-  defaultStorageType = _messages.EnumField('DefaultStorageTypeValueValuesEnum', 4)
-  displayName = _messages.StringField(5)
-  edition = _messages.EnumField('EditionValueValuesEnum', 6)
-  endpointUris = _messages.StringField(7, repeated=True)
-  freeInstanceMetadata = _messages.MessageField('FreeInstanceMetadata', 8)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  nodeCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  processingUnits = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  replicaComputeCapacity = _messages.MessageField('ReplicaComputeCapacity', 14, repeated=True)
-  ssdCache = _messages.StringField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  updateTime = _messages.StringField(17)
+  defaultBackupScheduleType = _messages.EnumField('DefaultBackupScheduleTypeValueValuesEnum', 4)
+  defaultStorageType = _messages.EnumField('DefaultStorageTypeValueValuesEnum', 5)
+  displayName = _messages.StringField(6)
+  edition = _messages.EnumField('EditionValueValuesEnum', 7)
+  endpointUris = _messages.StringField(8, repeated=True)
+  freeInstanceMetadata = _messages.MessageField('FreeInstanceMetadata', 9)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  nodeCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  processingUnits = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  replicaComputeCapacity = _messages.MessageField('ReplicaComputeCapacity', 15, repeated=True)
+  ssdCache = _messages.StringField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  updateTime = _messages.StringField(18)
 
 
 class InstanceConfig(_messages.Message):

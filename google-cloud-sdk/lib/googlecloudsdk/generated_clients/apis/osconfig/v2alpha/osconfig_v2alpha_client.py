@@ -44,7 +44,14 @@ class OsconfigV2alpha(base_api.BaseApiClient):
     self.folders_locations_operations = self.FoldersLocationsOperationsService(self)
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders = self.FoldersService(self)
+    self.organizations_locations_global_policyOrchestrators = self.OrganizationsLocationsGlobalPolicyOrchestratorsService(self)
+    self.organizations_locations_global = self.OrganizationsLocationsGlobalService(self)
+    self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
+    self.organizations_locations = self.OrganizationsLocationsService(self)
+    self.organizations = self.OrganizationsService(self)
     self.projects_locations_agentPolicyAssignments = self.ProjectsLocationsAgentPolicyAssignmentsService(self)
+    self.projects_locations_global_policyOrchestrators = self.ProjectsLocationsGlobalPolicyOrchestratorsService(self)
+    self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -60,7 +67,7 @@ class OsconfigV2alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new PolicyOrchestrator resource. `name` field of the given orchestrator are ignored and instead replaced by a product of `parent` and `policy_orchestrator_id`. Orchestrator state field might be only set to `ACTIVE` or omitted (in which case, the created resource will be in `ACTIVE` state anyway).
+      r"""Creates a new policy orchestrator under the given folder resource. `name` field of the given orchestrator are ignored and instead replaced by a product of `parent` and `policy_orchestrator_id`. Orchestrator state field might be only set to `ACTIVE`, `STOPPED` or omitted (in which case, the created resource will be in `ACTIVE` state anyway).
 
       Args:
         request: (OsconfigFoldersLocationsGlobalPolicyOrchestratorsCreateRequest) input message
@@ -87,7 +94,7 @@ class OsconfigV2alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an existing policy orchestrator resource.
+      r"""Deletes an existing policy orchestrator resource, parented by a folder.
 
       Args:
         request: (OsconfigFoldersLocationsGlobalPolicyOrchestratorsDeleteRequest) input message
@@ -105,7 +112,7 @@ class OsconfigV2alpha(base_api.BaseApiClient):
         method_id='osconfig.folders.locations.global.policyOrchestrators.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['requestId'],
+        query_params=['etag', 'requestId'],
         relative_path='v2alpha/{+name}',
         request_field='',
         request_type_name='OsconfigFoldersLocationsGlobalPolicyOrchestratorsDeleteRequest',
@@ -114,7 +121,7 @@ class OsconfigV2alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves an existing policy orchestrator.
+      r"""Retrieves an existing policy orchestrator, parented by a folder.
 
       Args:
         request: (OsconfigFoldersLocationsGlobalPolicyOrchestratorsGetRequest) input message
@@ -141,7 +148,7 @@ class OsconfigV2alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List the policy orchestrators under the parent folder resource.
+      r"""Lists the policy orchestrators under the given parent folder resource.
 
       Args:
         request: (OsconfigFoldersLocationsGlobalPolicyOrchestratorsListRequest) input message
@@ -164,6 +171,33 @@ class OsconfigV2alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='OsconfigFoldersLocationsGlobalPolicyOrchestratorsListRequest',
         response_type_name='GoogleCloudOsconfigV2alphaListPolicyOrchestratorsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing policy orchestrator, parented by a folder.
+
+      Args:
+        request: (OsconfigFoldersLocationsGlobalPolicyOrchestratorsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/folders/{foldersId}/locations/global/policyOrchestrators/{policyOrchestratorsId}',
+        http_method='PATCH',
+        method_id='osconfig.folders.locations.global.policyOrchestrators.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2alpha/{+name}',
+        request_field='googleCloudOsconfigV2alphaPolicyOrchestrator',
+        request_type_name='OsconfigFoldersLocationsGlobalPolicyOrchestratorsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -369,6 +403,353 @@ class OsconfigV2alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+  class OrganizationsLocationsGlobalPolicyOrchestratorsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_global_policyOrchestrators resource."""
+
+    _NAME = 'organizations_locations_global_policyOrchestrators'
+
+    def __init__(self, client):
+      super(OsconfigV2alpha.OrganizationsLocationsGlobalPolicyOrchestratorsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new policy orchestrator under the given organizations resource. `name` field of the given orchestrator are ignored and instead replaced by a product of `parent` and `policy_orchestrator_id`. Orchestrator state field might be only set to `ACTIVE`, `STOPPED` or omitted (in which case, the created resource will be in `ACTIVE` state anyway).
+
+      Args:
+        request: (OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/organizations/{organizationsId}/locations/global/policyOrchestrators',
+        http_method='POST',
+        method_id='osconfig.organizations.locations.global.policyOrchestrators.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['policyOrchestratorId', 'requestId'],
+        relative_path='v2alpha/{+parent}/policyOrchestrators',
+        request_field='googleCloudOsconfigV2alphaPolicyOrchestrator',
+        request_type_name='OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing policy orchestrator resource, parented by an organization.
+
+      Args:
+        request: (OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/organizations/{organizationsId}/locations/global/policyOrchestrators/{policyOrchestratorsId}',
+        http_method='DELETE',
+        method_id='osconfig.organizations.locations.global.policyOrchestrators.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'requestId'],
+        relative_path='v2alpha/{+name}',
+        request_field='',
+        request_type_name='OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves an existing policy orchestrator, parented by an organization.
+
+      Args:
+        request: (OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudOsconfigV2alphaPolicyOrchestrator) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/organizations/{organizationsId}/locations/global/policyOrchestrators/{policyOrchestratorsId}',
+        http_method='GET',
+        method_id='osconfig.organizations.locations.global.policyOrchestrators.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha/{+name}',
+        request_field='',
+        request_type_name='OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsGetRequest',
+        response_type_name='GoogleCloudOsconfigV2alphaPolicyOrchestrator',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the policy orchestrators under the given parent organization resource.
+
+      Args:
+        request: (OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudOsconfigV2alphaListPolicyOrchestratorsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/organizations/{organizationsId}/locations/global/policyOrchestrators',
+        http_method='GET',
+        method_id='osconfig.organizations.locations.global.policyOrchestrators.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v2alpha/{+parent}/policyOrchestrators',
+        request_field='',
+        request_type_name='OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsListRequest',
+        response_type_name='GoogleCloudOsconfigV2alphaListPolicyOrchestratorsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing policy orchestrator, parented by an organization.
+
+      Args:
+        request: (OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/organizations/{organizationsId}/locations/global/policyOrchestrators/{policyOrchestratorsId}',
+        http_method='PATCH',
+        method_id='osconfig.organizations.locations.global.policyOrchestrators.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2alpha/{+name}',
+        request_field='googleCloudOsconfigV2alphaPolicyOrchestrator',
+        request_type_name='OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsGlobalService(base_api.BaseApiService):
+    """Service class for the organizations_locations_global resource."""
+
+    _NAME = 'organizations_locations_global'
+
+    def __init__(self, client):
+      super(OsconfigV2alpha.OrganizationsLocationsGlobalService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_operations resource."""
+
+    _NAME = 'organizations_locations_operations'
+
+    def __init__(self, client):
+      super(OsconfigV2alpha.OrganizationsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (OsconfigOrganizationsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='osconfig.organizations.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='OsconfigOrganizationsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (OsconfigOrganizationsLocationsOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='osconfig.organizations.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha/{+name}',
+        request_field='',
+        request_type_name='OsconfigOrganizationsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (OsconfigOrganizationsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='osconfig.organizations.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha/{+name}',
+        request_field='',
+        request_type_name='OsconfigOrganizationsLocationsOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+      Args:
+        request: (OsconfigOrganizationsLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/organizations/{organizationsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='osconfig.organizations.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2alpha/{+name}/operations',
+        request_field='',
+        request_type_name='OsconfigOrganizationsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations resource."""
+
+    _NAME = 'organizations_locations'
+
+    def __init__(self, client):
+      super(OsconfigV2alpha.OrganizationsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets information about a location.
+
+      Args:
+        request: (OsconfigOrganizationsLocationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Location) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/organizations/{organizationsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='osconfig.organizations.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha/{+name}',
+        request_field='',
+        request_type_name='OsconfigOrganizationsLocationsGetRequest',
+        response_type_name='Location',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists information about the supported locations for this service.
+
+      Args:
+        request: (OsconfigOrganizationsLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/organizations/{organizationsId}/locations',
+        http_method='GET',
+        method_id='osconfig.organizations.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
+        relative_path='v2alpha/{+name}/locations',
+        request_field='',
+        request_type_name='OsconfigOrganizationsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsService(base_api.BaseApiService):
+    """Service class for the organizations resource."""
+
+    _NAME = 'organizations'
+
+    def __init__(self, client):
+      super(OsconfigV2alpha.OrganizationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
   class ProjectsLocationsAgentPolicyAssignmentsService(base_api.BaseApiService):
     """Service class for the projects_locations_agentPolicyAssignments resource."""
 
@@ -513,6 +894,161 @@ class OsconfigV2alpha(base_api.BaseApiClient):
         response_type_name='Operation',
         supports_download=False,
     )
+
+  class ProjectsLocationsGlobalPolicyOrchestratorsService(base_api.BaseApiService):
+    """Service class for the projects_locations_global_policyOrchestrators resource."""
+
+    _NAME = 'projects_locations_global_policyOrchestrators'
+
+    def __init__(self, client):
+      super(OsconfigV2alpha.ProjectsLocationsGlobalPolicyOrchestratorsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new policy orchestrator under the given project resource. `name` field of the given orchestrator are ignored and instead replaced by a product of `parent` and `policy_orchestrator_id`. Orchestrator state field might be only set to `ACTIVE`, `STOPPED` or omitted (in which case, the created resource will be in `ACTIVE` state anyway).
+
+      Args:
+        request: (OsconfigProjectsLocationsGlobalPolicyOrchestratorsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/projects/{projectsId}/locations/global/policyOrchestrators',
+        http_method='POST',
+        method_id='osconfig.projects.locations.global.policyOrchestrators.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['policyOrchestratorId', 'requestId'],
+        relative_path='v2alpha/{+parent}/policyOrchestrators',
+        request_field='googleCloudOsconfigV2alphaPolicyOrchestrator',
+        request_type_name='OsconfigProjectsLocationsGlobalPolicyOrchestratorsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing policy orchestrator resource, parented by a project.
+
+      Args:
+        request: (OsconfigProjectsLocationsGlobalPolicyOrchestratorsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/projects/{projectsId}/locations/global/policyOrchestrators/{policyOrchestratorsId}',
+        http_method='DELETE',
+        method_id='osconfig.projects.locations.global.policyOrchestrators.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'requestId'],
+        relative_path='v2alpha/{+name}',
+        request_field='',
+        request_type_name='OsconfigProjectsLocationsGlobalPolicyOrchestratorsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves an existing policy orchestrator, parented by a project.
+
+      Args:
+        request: (OsconfigProjectsLocationsGlobalPolicyOrchestratorsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudOsconfigV2alphaPolicyOrchestrator) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/projects/{projectsId}/locations/global/policyOrchestrators/{policyOrchestratorsId}',
+        http_method='GET',
+        method_id='osconfig.projects.locations.global.policyOrchestrators.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha/{+name}',
+        request_field='',
+        request_type_name='OsconfigProjectsLocationsGlobalPolicyOrchestratorsGetRequest',
+        response_type_name='GoogleCloudOsconfigV2alphaPolicyOrchestrator',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the policy orchestrators under the given parent project resource.
+
+      Args:
+        request: (OsconfigProjectsLocationsGlobalPolicyOrchestratorsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudOsconfigV2alphaListPolicyOrchestratorsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/projects/{projectsId}/locations/global/policyOrchestrators',
+        http_method='GET',
+        method_id='osconfig.projects.locations.global.policyOrchestrators.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v2alpha/{+parent}/policyOrchestrators',
+        request_field='',
+        request_type_name='OsconfigProjectsLocationsGlobalPolicyOrchestratorsListRequest',
+        response_type_name='GoogleCloudOsconfigV2alphaListPolicyOrchestratorsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing policy orchestrator, parented by a project.
+
+      Args:
+        request: (OsconfigProjectsLocationsGlobalPolicyOrchestratorsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/projects/{projectsId}/locations/global/policyOrchestrators/{policyOrchestratorsId}',
+        http_method='PATCH',
+        method_id='osconfig.projects.locations.global.policyOrchestrators.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2alpha/{+name}',
+        request_field='googleCloudOsconfigV2alphaPolicyOrchestrator',
+        request_type_name='OsconfigProjectsLocationsGlobalPolicyOrchestratorsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsGlobalService(base_api.BaseApiService):
+    """Service class for the projects_locations_global resource."""
+
+    _NAME = 'projects_locations_global'
+
+    def __init__(self, client):
+      super(OsconfigV2alpha.ProjectsLocationsGlobalService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""

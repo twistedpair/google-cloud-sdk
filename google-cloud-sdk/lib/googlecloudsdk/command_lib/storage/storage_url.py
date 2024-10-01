@@ -459,7 +459,7 @@ class CloudUrl(StorageUrl):
     if self.generation:
       # If bucket generation is present for the bucket url.
       if self.is_bucket():
-        return '{}{}{}#{}/'.format(
+        return '{}{}{}#{}'.format(
             self.scheme.value,
             SCHEME_DELIMITER,
             self.bucket_name,

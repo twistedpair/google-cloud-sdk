@@ -180,6 +180,7 @@ class LsExecutor(list_util.BaseListExecutor):
       readable_sizes=False,
       recursion_flag=False,
       use_gsutil_style=False,
+      soft_deleted_buckets=False,
   ):
     """See list_util.BaseListExecutor class for function doc strings."""
     super(LsExecutor, self).__init__(
@@ -195,6 +196,7 @@ class LsExecutor(list_util.BaseListExecutor):
         readable_sizes=readable_sizes,
         recursion_flag=recursion_flag,
         use_gsutil_style=use_gsutil_style,
+        soft_deleted_buckets=soft_deleted_buckets,
     )
 
     if use_gsutil_style:

@@ -1201,6 +1201,7 @@ class UpdateClusterOptions(object):
       disable_l4_lb_firewall_reconciliation=None,
       enable_l4_lb_firewall_reconciliation=None,
       tier=None,
+      autoprovisioning_cgroup_mode=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1384,6 +1385,7 @@ class UpdateClusterOptions(object):
         enable_l4_lb_firewall_reconciliation
     )
     self.tier = tier
+    self.autoprovisioning_cgroup_mode = autoprovisioning_cgroup_mode
 
 
 class SetMasterAuthOptions(object):
@@ -6160,6 +6162,32 @@ class APIAdapter(object):
     update = self.messages.ClusterUpdate(
         desiredRbacBindingConfig=rbac_binding_config
         )
+    op = self.client.projects_locations_clusters.Update(
+        self.messages.UpdateClusterRequest(
+            name=ProjectLocationCluster(
+                cluster_ref.projectId, cluster_ref.zone, cluster_ref.clusterId
+            ),
+            update=update,
+        )
+    )
+    return self.ParseOperation(op.name, cluster_ref.zone)
+
+  def ModifyAutoprovisioningCgroupMode(
+      self, cluster_ref, cgroup_mode
+  ):
+    """Updates the cgroup mode on autoprovisioned node-pools or on autopilot clusters."""
+    # pylint: disable=line-too-long
+    cgroup_mode_map = {
+        'default': self.messages.LinuxNodeConfig.CgroupModeValueValuesEnum.CGROUP_MODE_UNSPECIFIED,
+        'v1': self.messages.LinuxNodeConfig.CgroupModeValueValuesEnum.CGROUP_MODE_V1,
+        'v2': self.messages.LinuxNodeConfig.CgroupModeValueValuesEnum.CGROUP_MODE_V2,
+    }
+    linux_config = self.messages.LinuxNodeConfig(
+        cgroupMode=cgroup_mode_map[cgroup_mode]
+    )
+    update = self.messages.ClusterUpdate(
+        desiredNodePoolAutoConfigLinuxNodeConfig=linux_config
+    )
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
             name=ProjectLocationCluster(

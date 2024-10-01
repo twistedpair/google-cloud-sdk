@@ -35,7 +35,6 @@ from googlecloudsdk.command_lib.container.fleet.memberships import errors as mem
 from googlecloudsdk.command_lib.container.fleet.memberships import util
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import log
-from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import platforms
 
@@ -54,6 +53,7 @@ REQUIRED_CLIENT_PERMISSIONS = [
 class GetCredentialsCommand(hub_base.HubCommand, base.Command):
   """GetCredentialsCommand is a base class with util functions for Gateway credential generating commands."""
 
+  # TODO(b/368039642): Remove once we're sure server-side generation is stable
   def RunGetCredentials(self, membership_id, arg_location, arg_namespace=None):
     container_util.CheckKubectlInstalled()
     project_id = hub_base.HubCommand.Project()
@@ -185,7 +185,7 @@ class GetCredentialsCommand(hub_base.HubCommand, base.Command):
   def ReadClusterMembership(self, project_id, location, membership):
     resource_name = hubapi_util.MembershipRef(project_id, location, membership)
     # If membership doesn't exist, exception will be raised to caller.
-    return hubapi_util.GetMembership(resource_name, use_v1main_api=True)
+    return hubapi_util.GetMembership(resource_name)
 
   def GenerateKubeconfig(
       self,
@@ -276,21 +276,3 @@ def CheckGatewayApiEnablement(project_id, service_name):
       # Since we are not actually calling the API, there is nothing to retry,
       # so this signal to retry can be ignored
       pass
-
-
-def RecordClientSideFallback(e: Exception):
-  """Records that server-side Kubeconfig generation failed and the command fell back to client-side generation.
-
-  Logs to the debug log and reports a metric for analysis.
-
-  Args:
-    e: The caught error.
-  """
-  log.debug(
-      f'Server-side generation failed, fell back to client-side generation: {e}'
-  )
-  command_name = properties.VALUES.metrics.command_name.Get()
-  metrics.CustomTimedEvent('getCredentials_ClientSideFallback')
-  metrics.CustomKeyValue(
-      command_name, 'getCredentials_ClientSideFallback_Error', str(e)
-  )
