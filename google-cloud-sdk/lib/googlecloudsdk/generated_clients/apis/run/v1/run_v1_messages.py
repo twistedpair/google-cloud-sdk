@@ -418,7 +418,8 @@ class Container(_messages.Message):
       (0.0.0.0) within the container to be accessible. If omitted, a port
       number will be chosen and passed to the container through the PORT
       environment variable for the container to listen on.
-    readinessProbe: Not supported by Cloud Run.
+    readinessProbe: Readiness probe to be used for health checks. Not
+      supported by Cloud Run.
     resources: Compute Resources required by this container.
     securityContext: Not supported by Cloud Run.
     startupProbe: Startup probe of application within the container. All other
@@ -1358,9 +1359,12 @@ class GoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message):
         the same region as the build. The builder service account must have
         access to create and write to Cloud Storage buckets in the build
         project.
+      LEGACY_BUCKET: Bucket is located in a Google-owned project and is not
+        regionalized.
     """
     DEFAULT_LOGS_BUCKET_BEHAVIOR_UNSPECIFIED = 0
     REGIONAL_USER_OWNED_BUCKET = 1
+    LEGACY_BUCKET = 2
 
   class LogStreamingOptionValueValuesEnum(_messages.Enum):
     r"""Option to define build log streaming behavior to Cloud Storage.
@@ -2990,9 +2994,13 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/binary-authorization-breakglass`: Service, Job, *
       `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
       `run.googleapis.com/build-base-image`: Service. *
+      `run.googleapis.com/build-enable-automatic-updates`: Service. *
       `run.googleapis.com/build-environment-variables`: Service. *
+      `run.googleapis.com/build-function-target`: Service. *
       `run.googleapis.com/build-id`: Service. * `run.googleapis.com/build-
-      name`: Service. * `run.googleapis.com/build-service-account`: Service. *
+      image-uri`: Service. * `run.googleapis.com/build-name`: Service. *
+      `run.googleapis.com/build-service-account`: Service. *
+      `run.googleapis.com/build-source-location`: Service. *
       `run.googleapis.com/build-worker-pool`: Service. *
       `run.googleapis.com/client-name`: All resources. *
       `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
@@ -3000,21 +3008,18 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
       `run.googleapis.com/default-url-disabled`: Service. *
-      `run.googleapis.com/description`: Service. * `run.googleapis.com/enable-
-      automatic-updates`: Service. * `run.googleapis.com/encryption-key-
-      shutdown-hours`: Revision * `run.googleapis.com/encryption-key`:
-      Revision, Execution. * `run.googleapis.com/execution-environment`:
-      Revision, Execution. * `run.googleapis.com/function-target`: Service. *
+      `run.googleapis.com/description`: Service. *
+      `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
+      `run.googleapis.com/encryption-key`: Revision, Execution. *
+      `run.googleapis.com/execution-environment`: Revision, Execution. *
       `run.googleapis.com/gc-traffic-tags`: Service. *
-      `run.googleapis.com/image-uri`: Service. * `run.googleapis.com/ingress`:
-      Service. * `run.googleapis.com/launch-stage`: Service, Job. *
-      `run.googleapis.com/minScale`: Service (ALPHA) *
+      `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
+      stage`: Service, Job. * `run.googleapis.com/minScale`: Service *
       `run.googleapis.com/network-interfaces`: Revision, Execution. *
       `run.googleapis.com/post-key-revocation-action-type`: Revision. *
       `run.googleapis.com/secrets`: Revision, Execution. *
       `run.googleapis.com/secure-session-agent`: Revision. *
       `run.googleapis.com/sessionAffinity`: Revision. *
-      `run.googleapis.com/source-location`: Service. *
       `run.googleapis.com/startup-cpu-boost`: Revision. *
       `run.googleapis.com/vpc-access-connector`: Revision, Execution. *
       `run.googleapis.com/vpc-access-egress`: Revision, Execution.
@@ -3035,9 +3040,13 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/binary-authorization-breakglass`: Service, Job, *
       `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
       `run.googleapis.com/build-base-image`: Service. *
+      `run.googleapis.com/build-enable-automatic-updates`: Service. *
       `run.googleapis.com/build-environment-variables`: Service. *
+      `run.googleapis.com/build-function-target`: Service. *
       `run.googleapis.com/build-id`: Service. * `run.googleapis.com/build-
-      name`: Service. * `run.googleapis.com/build-service-account`: Service. *
+      image-uri`: Service. * `run.googleapis.com/build-name`: Service. *
+      `run.googleapis.com/build-service-account`: Service. *
+      `run.googleapis.com/build-source-location`: Service. *
       `run.googleapis.com/build-worker-pool`: Service. *
       `run.googleapis.com/client-name`: All resources. *
       `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
@@ -3045,21 +3054,18 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
       `run.googleapis.com/default-url-disabled`: Service. *
-      `run.googleapis.com/description`: Service. * `run.googleapis.com/enable-
-      automatic-updates`: Service. * `run.googleapis.com/encryption-key-
-      shutdown-hours`: Revision * `run.googleapis.com/encryption-key`:
-      Revision, Execution. * `run.googleapis.com/execution-environment`:
-      Revision, Execution. * `run.googleapis.com/function-target`: Service. *
+      `run.googleapis.com/description`: Service. *
+      `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
+      `run.googleapis.com/encryption-key`: Revision, Execution. *
+      `run.googleapis.com/execution-environment`: Revision, Execution. *
       `run.googleapis.com/gc-traffic-tags`: Service. *
-      `run.googleapis.com/image-uri`: Service. * `run.googleapis.com/ingress`:
-      Service. * `run.googleapis.com/launch-stage`: Service, Job. *
-      `run.googleapis.com/minScale`: Service (ALPHA) *
+      `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
+      stage`: Service, Job. * `run.googleapis.com/minScale`: Service *
       `run.googleapis.com/network-interfaces`: Revision, Execution. *
       `run.googleapis.com/post-key-revocation-action-type`: Revision. *
       `run.googleapis.com/secrets`: Revision, Execution. *
       `run.googleapis.com/secure-session-agent`: Revision. *
       `run.googleapis.com/sessionAffinity`: Revision. *
-      `run.googleapis.com/source-location`: Service. *
       `run.googleapis.com/startup-cpu-boost`: Revision. *
       `run.googleapis.com/vpc-access-connector`: Revision, Execution. *
       `run.googleapis.com/vpc-access-egress`: Revision, Execution.
@@ -3107,9 +3113,13 @@ class ObjectMeta(_messages.Message):
     images`: Service, Revision. * `run.googleapis.com/binary-authorization-
     breakglass`: Service, Job, * `run.googleapis.com/binary-authorization`:
     Service, Job, Execution. * `run.googleapis.com/build-base-image`: Service.
-    * `run.googleapis.com/build-environment-variables`: Service. *
-    `run.googleapis.com/build-id`: Service. * `run.googleapis.com/build-name`:
-    Service. * `run.googleapis.com/build-service-account`: Service. *
+    * `run.googleapis.com/build-enable-automatic-updates`: Service. *
+    `run.googleapis.com/build-environment-variables`: Service. *
+    `run.googleapis.com/build-function-target`: Service. *
+    `run.googleapis.com/build-id`: Service. * `run.googleapis.com/build-image-
+    uri`: Service. * `run.googleapis.com/build-name`: Service. *
+    `run.googleapis.com/build-service-account`: Service. *
+    `run.googleapis.com/build-source-location`: Service. *
     `run.googleapis.com/build-worker-pool`: Service. *
     `run.googleapis.com/client-name`: All resources. *
     `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
@@ -3117,21 +3127,18 @@ class ObjectMeta(_messages.Message):
     `run.googleapis.com/cpu-throttling`: Revision. *
     `run.googleapis.com/custom-audiences`: Service. *
     `run.googleapis.com/default-url-disabled`: Service. *
-    `run.googleapis.com/description`: Service. * `run.googleapis.com/enable-
-    automatic-updates`: Service. * `run.googleapis.com/encryption-key-
-    shutdown-hours`: Revision * `run.googleapis.com/encryption-key`: Revision,
-    Execution. * `run.googleapis.com/execution-environment`: Revision,
-    Execution. * `run.googleapis.com/function-target`: Service. *
+    `run.googleapis.com/description`: Service. *
+    `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
+    `run.googleapis.com/encryption-key`: Revision, Execution. *
+    `run.googleapis.com/execution-environment`: Revision, Execution. *
     `run.googleapis.com/gc-traffic-tags`: Service. *
-    `run.googleapis.com/image-uri`: Service. * `run.googleapis.com/ingress`:
-    Service. * `run.googleapis.com/launch-stage`: Service, Job. *
-    `run.googleapis.com/minScale`: Service (ALPHA) *
+    `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
+    stage`: Service, Job. * `run.googleapis.com/minScale`: Service *
     `run.googleapis.com/network-interfaces`: Revision, Execution. *
     `run.googleapis.com/post-key-revocation-action-type`: Revision. *
     `run.googleapis.com/secrets`: Revision, Execution. *
     `run.googleapis.com/secure-session-agent`: Revision. *
     `run.googleapis.com/sessionAffinity`: Revision. *
-    `run.googleapis.com/source-location`: Service. *
     `run.googleapis.com/startup-cpu-boost`: Revision. *
     `run.googleapis.com/vpc-access-connector`: Revision, Execution. *
     `run.googleapis.com/vpc-access-egress`: Revision, Execution.

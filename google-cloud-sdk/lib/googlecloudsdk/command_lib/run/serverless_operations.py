@@ -864,6 +864,7 @@ class ServerlessOperations(object):
       )
       if image_digest is None:
         return
+      self._ClearRunFunctionsAnnotations(config_changes)
       self._AddRunFunctionsAnnotations(
           config_changes=config_changes,
           uploaded_source=uploaded_source,
@@ -1816,6 +1817,29 @@ class ServerlessOperations(object):
         service_ref, config_changes, with_code=True, serv=serv, dry_run=True
     )
     config_changes.pop()
+
+  def _ClearRunFunctionsAnnotations(self, config_changes):
+    """Clear run functions annotations to the service before setting them."""
+    config_changes.append(
+        config_changes_mod.DeleteAnnotationChange(
+            service.RUN_FUNCTIONS_BUILD_SOURCE_LOCATION_ANNOTATION
+            )
+    )
+    config_changes.append(
+        config_changes_mod.DeleteAnnotationChange(
+            service.RUN_FUNCTIONS_BUILD_FUNCTION_TARGET_ANNOTATION
+        )
+    )
+    config_changes.append(
+        config_changes_mod.DeleteAnnotationChange(
+            service.RUN_FUNCTIONS_BUILD_IMAGE_URI_ANNOTATION
+        )
+    )
+    config_changes.append(
+        config_changes_mod.DeleteAnnotationChange(
+            service.RUN_FUNCTIONS_BUILD_ENABLE_AUTOMATIC_UPDATES
+        )
+    )
 
   def _AddRunFunctionsAnnotations(
       self,

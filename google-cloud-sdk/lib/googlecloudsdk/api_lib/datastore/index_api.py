@@ -19,16 +19,21 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import re
-
+from typing import Sequence, Set, Tuple
 
 from googlecloudsdk.api_lib.datastore import util
 from googlecloudsdk.api_lib.firestore import api_utils as firestore_utils
 from googlecloudsdk.api_lib.firestore import indexes as firestore_indexes
 from googlecloudsdk.core.console import progress_tracker
+from googlecloudsdk.generated_clients.apis.datastore.v1 import datastore_v1_client
+from googlecloudsdk.generated_clients.apis.datastore.v1 import datastore_v1_messages
+from googlecloudsdk.generated_clients.apis.firestore.v1 import firestore_v1_messages
 from googlecloudsdk.third_party.appengine.datastore import datastore_index
 
 
-def GetIndexesService():
+def GetIndexesService() -> (
+    datastore_v1_client.DatastoreV1.ProjectsIndexesService
+):
   """Returns the service for interacting with the Datastore Admin Service.
 
   This is used to manage the datastore indexes (create/delete).
@@ -77,7 +82,9 @@ FIRESTORE_DESCENDING = (
 )
 
 
-def ApiMessageToIndexDefinition(proto):
+def ApiMessageToIndexDefinition(
+    proto: datastore_v1_messages.GoogleDatastoreAdminV1Index,
+) -> Tuple[str, datastore_index.Index]:
   """Converts a GoogleDatastoreAdminV1Index to an index definition structure."""
   properties = []
   for prop_proto in proto.properties:
@@ -98,7 +105,9 @@ def _Fullmatch(regex, string):
   return re.match('(?:' + regex + r')\Z', string, flags=0)
 
 
-def CollectionIdAndIndexIdFromResourcePath(resource_path):
+def CollectionIdAndIndexIdFromResourcePath(
+    resource_path: str,
+) -> Tuple[str, str]:
   """Extracts collectionId and indexId from a collectionGroup resource path.
 
   Args:
@@ -120,7 +129,9 @@ def CollectionIdAndIndexIdFromResourcePath(resource_path):
   return match.group(3), match.group(4)
 
 
-def FirestoreApiMessageToIndexDefinition(proto):
+def FirestoreApiMessageToIndexDefinition(
+    proto: firestore_v1_messages.GoogleFirestoreAdminV1Index,
+) -> Tuple[str, datastore_index.Index]:
   """Converts a GoogleFirestoreAdminV1Index to an index definition structure.
 
   Args:
@@ -158,7 +169,12 @@ def FirestoreApiMessageToIndexDefinition(proto):
   return index_id, index
 
 
-def BuildIndexProto(ancestor, kind, project_id, properties):
+def BuildIndexProto(
+    ancestor: datastore_v1_messages.GoogleDatastoreAdminV1Index.AncestorValueValuesEnum,
+    kind: str,
+    project_id: str,
+    properties: Sequence[datastore_index.Property],
+) -> datastore_v1_messages.GoogleDatastoreAdminV1Index:
   """Builds and returns a GoogleDatastoreAdminV1Index."""
   messages = util.GetMessages()
   proto = messages.GoogleDatastoreAdminV1Index()
@@ -179,11 +195,16 @@ def BuildIndexProto(ancestor, kind, project_id, properties):
   return proto
 
 
-def BuildIndexFirestoreProto(is_ancestor, properties):
+def BuildIndexFirestoreProto(
+    name: str,
+    is_ancestor: bool,
+    properties: Sequence[datastore_index.Property],
+) -> firestore_v1_messages.GoogleFirestoreAdminV1Index:
   """Builds and returns a GoogleFirestoreAdminV1Index."""
   messages = firestore_utils.GetMessages()
   proto = messages.GoogleFirestoreAdminV1Index()
 
+  proto.name = name
   proto.queryScope = COLLECTION_RECURSIVE if is_ancestor else COLLECTION_GROUP
   proto.apiScope = DATASTORE_API_SCOPE
   fields = []
@@ -199,7 +220,11 @@ def BuildIndexFirestoreProto(is_ancestor, properties):
   return proto
 
 
-def BuildIndex(is_ancestor, kind, properties):
+def BuildIndex(
+    is_ancestor: bool,
+    kind: str,
+    properties: Sequence[Tuple[str, str]],
+) -> datastore_v1_messages.GoogleDatastoreAdminV1Index:
   """Builds and returns an index rep via GoogleDatastoreAdminV1Index."""
   index = datastore_index.Index(
       kind=str(kind),
@@ -212,26 +237,34 @@ def BuildIndex(is_ancestor, kind, properties):
   return index
 
 
-def NormalizeIndexes(indexes):
+def NormalizeIndexes(
+    indexes: Sequence[datastore_index.Index],
+) -> Set[datastore_index.Index]:
   """Removes the last index property if it is __key__:asc which is redundant."""
   if not indexes:
     return set()
   for index in indexes:
-    if (
-        index.properties
-        and (
-            # The key property path is represented as __key__ in Datastore API
-            # and __name__ in Firestore API.
-            index.properties[-1].name == '__key__'
-            or index.properties[-1].name == '__name__'
-        )
-        and index.properties[-1].direction == 'asc'
-    ):
-      index.properties.pop()
+    NormalizeIndex(index)
   return set(indexes)
 
 
-def ListIndexes(project_id):
+def NormalizeIndex(index: datastore_index.Index) -> datastore_index.Index:
+  """Removes the last index property if it is __key__:asc which is redundant."""
+  if (
+      index.properties
+      and (
+          # The key property path is represented as __key__ in Datastore API
+          # and __name__ in Firestore API.
+          index.properties[-1].name == '__key__'
+          or index.properties[-1].name == '__name__'
+      )
+      and index.properties[-1].direction == 'asc'
+  ):
+    index.properties.pop()
+  return index
+
+
+def ListIndexes(project_id: str) -> Sequence[datastore_index.Index]:
   """Lists all datastore indexes under a database with Datastore Admin API."""
   response = GetIndexesService().List(
       util.GetMessages().DatastoreProjectsIndexesListRequest(
@@ -241,7 +274,10 @@ def ListIndexes(project_id):
   return {ApiMessageToIndexDefinition(index) for index in response.indexes}
 
 
-def ListDatastoreIndexesViaFirestoreApi(project_id, database_id):
+def ListDatastoreIndexesViaFirestoreApi(
+    project_id: str,
+    database_id: str,
+) -> Sequence[datastore_index.Index]:
   """Lists all datastore indexes under a database with Firestore Admin API.
 
   Args:
@@ -259,8 +295,11 @@ def ListDatastoreIndexesViaFirestoreApi(project_id, database_id):
   }
 
 
-def CreateIndexes(project_id, indexes_to_create):
-  """Sends the index creation requests."""
+def CreateIndexes(
+    project_id: str,
+    indexes_to_create: Sequence[datastore_index.Index],
+) -> None:
+  """Sends the index creation requests via the Datastore Admin API."""
   cnt = 0
   detail_message = None
   with progress_tracker.ProgressTracker(
@@ -280,8 +319,12 @@ def CreateIndexes(project_id, indexes_to_create):
       pt.Tick()
 
 
-def CreateIndexesViaFirestoreApi(project_id, database_id, indexes_to_create):
-  """Sends the index creation requests via Firestore API."""
+def CreateIndexesViaFirestoreApi(
+    project_id: str,
+    database_id: str,
+    indexes_to_create: Sequence[datastore_index.Index],
+) -> None:
+  """Sends the index creation requests via the Firestore Admin API."""
   detail_message = None
   with progress_tracker.ProgressTracker(
       '.', autotick=False, detail_message_callback=lambda: detail_message
@@ -291,14 +334,19 @@ def CreateIndexesViaFirestoreApi(project_id, database_id, indexes_to_create):
           project_id,
           database_id,
           index.kind,
-          BuildIndexFirestoreProto(index.ancestor, index.properties),
+          BuildIndexFirestoreProto(
+              name=None, is_ancestor=index.ancestor, properties=index.properties
+          ),
       )
       detail_message = '{0:.0%}'.format(i / len(indexes_to_create))
       pt.Tick()
 
 
-def DeleteIndexes(project_id, indexes_to_delete_ids):
-  """Sends the index deletion requests."""
+def DeleteIndexes(
+    project_id: str,
+    indexes_to_delete_ids: Sequence[str],
+) -> None:
+  """Sends the index deletion requests via the Datastore Admin API."""
   cnt = 0
   detail_message = None
   with progress_tracker.ProgressTracker(
@@ -317,7 +365,31 @@ def DeleteIndexes(project_id, indexes_to_delete_ids):
       pt.Tick()
 
 
-def CreateMissingIndexes(project_id, index_definitions):
+def DeleteIndexesViaFirestoreApi(
+    project_id: str,
+    database_id: str,
+    indexes_to_delete_ids: Sequence[str],
+) -> None:
+  """Sends the index deletion requests via the Firestore Admin API."""
+  cnt = 0
+  detail_message = None
+  delete_cnt = len(indexes_to_delete_ids)
+  with progress_tracker.ProgressTracker(
+      '.',
+      autotick=False,
+      detail_message_callback=lambda: detail_message,
+  ) as pt:
+    for index_id in indexes_to_delete_ids:
+      firestore_indexes.DeleteIndex(project_id, database_id, index_id)
+      cnt = cnt + 1
+      detail_message = '{0:.0%}'.format(cnt / delete_cnt)
+      pt.Tick()
+
+
+def CreateMissingIndexes(
+    project_id: str,
+    index_definitions: datastore_index.IndexDefinitions,
+) -> None:
   """Creates the indexes if the index configuration is not present."""
   indexes = ListIndexes(project_id)
   normalized_indexes = NormalizeIndexes(index_definitions.indexes)
@@ -326,8 +398,10 @@ def CreateMissingIndexes(project_id, index_definitions):
 
 
 def CreateMissingIndexesViaFirestoreApi(
-    project_id, database_id, index_definitions
-):
+    project_id: str,
+    database_id: str,
+    index_definitions: datastore_index.IndexDefinitions,
+) -> None:
   """Creates the indexes via Firestore API if the index configuration is not present."""
   existing_indexes = ListDatastoreIndexesViaFirestoreApi(
       project_id, database_id

@@ -40,6 +40,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
+    self.organizations_locations_workloads_updates = self.OrganizationsLocationsWorkloadsUpdatesService(self)
     self.organizations_locations_workloads_violations = self.OrganizationsLocationsWorkloadsViolationsService(self)
     self.organizations_locations_workloads = self.OrganizationsLocationsWorkloadsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
@@ -106,6 +107,70 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AssuredworkloadsOrganizationsLocationsOperationsListRequest',
         response_type_name='GoogleLongrunningListOperationsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsWorkloadsUpdatesService(base_api.BaseApiService):
+    """Service class for the organizations_locations_workloads_updates resource."""
+
+    _NAME = 'organizations_locations_workloads_updates'
+
+    def __init__(self, client):
+      super(AssuredworkloadsV1beta1.OrganizationsLocationsWorkloadsUpdatesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Apply(self, request, global_params=None):
+      r"""This endpoint creates a new operation to apply the given update.
+
+      Args:
+        request: (AssuredworkloadsOrganizationsLocationsWorkloadsUpdatesApplyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Apply')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Apply.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}/updates/{updatesId}:apply',
+        http_method='POST',
+        method_id='assuredworkloads.organizations.locations.workloads.updates.apply',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:apply',
+        request_field='googleCloudAssuredworkloadsV1beta1ApplyWorkloadUpdateRequest',
+        request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsUpdatesApplyRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""This endpoint lists all updates for the given workload.
+
+      Args:
+        request: (AssuredworkloadsOrganizationsLocationsWorkloadsUpdatesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAssuredworkloadsV1beta1ListWorkloadUpdatesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}/updates',
+        http_method='GET',
+        method_id='assuredworkloads.organizations.locations.workloads.updates.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/updates',
+        request_field='',
+        request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsUpdatesListRequest',
+        response_type_name='GoogleCloudAssuredworkloadsV1beta1ListWorkloadUpdatesResponse',
         supports_download=False,
     )
 

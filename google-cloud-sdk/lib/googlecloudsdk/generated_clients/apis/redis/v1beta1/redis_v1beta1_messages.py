@@ -118,6 +118,84 @@ class AvailabilityConfiguration(_messages.Message):
   promotableReplicaConfigured = _messages.BooleanField(5)
 
 
+class Backup(_messages.Message):
+  r"""Backup of a cluster.
+
+  Enums:
+    NodeTypeValueValuesEnum: Output only. Node type of the cluster.
+
+  Fields:
+    backupFiles: Output only. List of backup files of the backup.
+    cluster: Output only. Cluster resource path of this backup.
+    clusterUid: Output only. Cluster uid of this backup.
+    createTime: Output only. The time when the backup was created.
+    engineVersion: Output only. redis-7.2, valkey-7.5
+    expireTime: Output only. The time when the backup will expire.
+    name: Identifier. Full resource path of the backup. the last part of the
+      name is the backup id with the following format:
+      [YYYYMMDDHHMMSS]_[Shorted Cluster UID] OR customer specified while
+      backup cluster. Example: 20240515123000_1234
+    nodeType: Output only. Node type of the cluster.
+    replicaCount: Output only. Number of replicas for the cluster.
+    shardCount: Output only. Number of shards for the cluster.
+    totalSizeBytes: Output only. Total size of the backup in bytes.
+  """
+
+  class NodeTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Node type of the cluster.
+
+    Values:
+      NODE_TYPE_UNSPECIFIED: Node type unspecified
+      REDIS_SHARED_CORE_NANO: Redis shared core nano node_type.
+      REDIS_HIGHMEM_MEDIUM: Redis highmem medium node_type.
+      REDIS_HIGHMEM_XLARGE: Redis highmem xlarge node_type.
+      REDIS_STANDARD_SMALL: Redis standard small node_type.
+    """
+    NODE_TYPE_UNSPECIFIED = 0
+    REDIS_SHARED_CORE_NANO = 1
+    REDIS_HIGHMEM_MEDIUM = 2
+    REDIS_HIGHMEM_XLARGE = 3
+    REDIS_STANDARD_SMALL = 4
+
+  backupFiles = _messages.MessageField('BackupFile', 1, repeated=True)
+  cluster = _messages.StringField(2)
+  clusterUid = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  engineVersion = _messages.StringField(5)
+  expireTime = _messages.StringField(6)
+  name = _messages.StringField(7)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 8)
+  replicaCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  totalSizeBytes = _messages.IntegerField(11)
+
+
+class BackupClusterRequest(_messages.Message):
+  r"""Request for [BackupCluster].
+
+  Fields:
+    backupId: Optional. The id of the backup to be created. If not specified,
+      the default value ([YYYYMMDDHHMMSS]_[Shortened Cluster UID] is used.
+    ttl: Optional. TTL for the backup to expire. If not specified, the default
+      value is infinite, the backup never expires.
+  """
+
+  backupId = _messages.StringField(1)
+  ttl = _messages.StringField(2)
+
+
+class BackupCollection(_messages.Message):
+  r"""BackupCollection of a cluster.
+
+  Fields:
+    clusterId: Output only. The cluster name of the backup collection.
+    clusterUid: Output only. The cluster uid of the backup collection.
+  """
+
+  clusterId = _messages.StringField(1)
+  clusterUid = _messages.StringField(2)
+
+
 class BackupConfiguration(_messages.Message):
   r"""Configuration for automatic backups
 
@@ -134,6 +212,30 @@ class BackupConfiguration(_messages.Message):
   automatedBackupEnabled = _messages.BooleanField(1)
   backupRetentionSettings = _messages.MessageField('RetentionSettings', 2)
   pointInTimeRecoveryEnabled = _messages.BooleanField(3)
+
+
+class BackupExportConfig(_messages.Message):
+  r"""Backup export configuration.
+
+  Fields:
+    gcsDestination: Google Cloud Storage destination.
+  """
+
+  gcsDestination = _messages.StringField(1)
+
+
+class BackupFile(_messages.Message):
+  r"""Backup is consisted of multiple backup files.
+
+  Fields:
+    createTime: Output only. The time when the backup file was created.
+    fileName: Output only. e.g: .rdb
+    sizeBytes: Output only. Size of the backup file in bytes.
+  """
+
+  createTime = _messages.StringField(1)
+  fileName = _messages.StringField(2)
+  sizeBytes = _messages.IntegerField(3)
 
 
 class BackupRun(_messages.Message):
@@ -233,8 +335,6 @@ class Cluster(_messages.Message):
     AuthorizationModeValueValuesEnum: Optional. The authorization mode of the
       Redis cluster. If not provided, auth feature is disabled for the
       cluster.
-    ClusterModeValueValuesEnum: Optional. The cluster mode config for the
-      cluster.
     NodeTypeValueValuesEnum: Optional. The type of a redis node in the
       cluster. NodeType determines the underlying machine-type of a redis
       node.
@@ -251,7 +351,6 @@ class Cluster(_messages.Message):
   Fields:
     authorizationMode: Optional. The authorization mode of the Redis cluster.
       If not provided, auth feature is disabled for the cluster.
-    clusterMode: Optional. The cluster mode config for the cluster.
     createTime: Output only. The timestamp associated with the cluster
       creation request.
     crossClusterReplicationConfig: Optional. Cross cluster replication config.
@@ -260,10 +359,16 @@ class Cluster(_messages.Message):
     discoveryEndpoints: Output only. Endpoints created on each given network,
       for Redis clients to connect to the cluster. Currently only one
       discovery endpoint is supported.
+    gcsSource: Optional. Backups stored in Cloud Storage buckets. The Cloud
+      Storage buckets need to be the same region as the clusters. Read
+      permission is required to import from the provided Cloud Storage
+      objects.
     maintenancePolicy: Optional. ClusterMaintenancePolicy determines when to
       allow or deny updates.
     maintenanceSchedule: Output only. ClusterMaintenanceSchedule Output only
       Published maintenance schedule.
+    managedBackupSource: Optional. Backups generated and managed by
+      memorystore service.
     name: Required. Identifier. Unique name of the resource in this scope
       including project and location using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
@@ -310,18 +415,6 @@ class Cluster(_messages.Message):
     AUTH_MODE_UNSPECIFIED = 0
     AUTH_MODE_IAM_AUTH = 1
     AUTH_MODE_DISABLED = 2
-
-  class ClusterModeValueValuesEnum(_messages.Enum):
-    r"""Optional. The cluster mode config for the cluster.
-
-    Values:
-      CLUSTER_MODE_UNSPECIFIED: Cluster mode is not specified.
-      ENABLED: Cluster mode is enabled.
-      DISABLED: Cluster mode is disabled.
-    """
-    CLUSTER_MODE_UNSPECIFIED = 0
-    ENABLED = 1
-    DISABLED = 2
 
   class NodeTypeValueValuesEnum(_messages.Enum):
     r"""Optional. The type of a redis node in the cluster. NodeType determines
@@ -398,30 +491,31 @@ class Cluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 1)
-  clusterMode = _messages.EnumField('ClusterModeValueValuesEnum', 2)
-  createTime = _messages.StringField(3)
-  crossClusterReplicationConfig = _messages.MessageField('CrossClusterReplicationConfig', 4)
-  deletionProtectionEnabled = _messages.BooleanField(5)
-  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 6, repeated=True)
+  createTime = _messages.StringField(2)
+  crossClusterReplicationConfig = _messages.MessageField('CrossClusterReplicationConfig', 3)
+  deletionProtectionEnabled = _messages.BooleanField(4)
+  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 5, repeated=True)
+  gcsSource = _messages.MessageField('GcsBackupSource', 6)
   maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 7)
   maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 8)
-  name = _messages.StringField(9)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 10)
-  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 11)
-  preciseSizeGb = _messages.FloatField(12)
-  pscConfigs = _messages.MessageField('PscConfig', 13, repeated=True)
-  pscConnections = _messages.MessageField('PscConnection', 14, repeated=True)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 15)
-  replicaCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  satisfiesPzi = _messages.BooleanField(17)
-  satisfiesPzs = _messages.BooleanField(18)
-  shardCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  sizeGb = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  stateInfo = _messages.MessageField('StateInfo', 22)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 23)
-  uid = _messages.StringField(24)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 25)
+  managedBackupSource = _messages.MessageField('ManagedBackupSource', 9)
+  name = _messages.StringField(10)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 11)
+  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 12)
+  preciseSizeGb = _messages.FloatField(13)
+  pscConfigs = _messages.MessageField('PscConfig', 14, repeated=True)
+  pscConnections = _messages.MessageField('PscConnection', 15, repeated=True)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 16)
+  replicaCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  satisfiesPzi = _messages.BooleanField(18)
+  satisfiesPzs = _messages.BooleanField(19)
+  shardCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  stateInfo = _messages.MessageField('StateInfo', 23)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 24)
+  uid = _messages.StringField(25)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 26)
 
 
 class ClusterDenyMaintenancePeriod(_messages.Message):
@@ -472,15 +566,12 @@ class ClusterMaintenanceSchedule(_messages.Message):
   Fields:
     endTime: Output only. The end time of any upcoming scheduled maintenance
       for this instance.
-    scheduleDeadlineTime: Output only. The deadline that the maintenance
-      schedule start time can not go beyond, including reschedule.
     startTime: Output only. The start time of any upcoming scheduled
       maintenance for this instance.
   """
 
   endTime = _messages.StringField(1)
-  scheduleDeadlineTime = _messages.StringField(2)
-  startTime = _messages.StringField(3)
+  startTime = _messages.StringField(2)
 
 
 class ClusterPersistenceConfig(_messages.Message):
@@ -525,7 +616,6 @@ class ClusterWeeklyMaintenanceWindow(_messages.Message):
 
   Fields:
     day: Allows to define schedule that runs specified day of the week.
-    duration: Duration of the time window.
     startTime: Start time of the window in UTC.
   """
 
@@ -552,8 +642,7 @@ class ClusterWeeklyMaintenanceWindow(_messages.Message):
     SUNDAY = 7
 
   day = _messages.EnumField('DayValueValuesEnum', 1)
-  duration = _messages.StringField(2)
-  startTime = _messages.MessageField('TimeOfDay', 3)
+  startTime = _messages.MessageField('TimeOfDay', 2)
 
 
 class Compliance(_messages.Message):
@@ -1186,10 +1275,13 @@ class DatabaseResourceId(_messages.Message):
 
 
 class DatabaseResourceMetadata(_messages.Message):
-  r"""Common model for database resource instance metadata. Next ID: 21
+  r"""Common model for database resource instance metadata. Next ID: 23
 
   Enums:
     CurrentStateValueValuesEnum: Current state of the instance.
+    EditionValueValuesEnum: Optional. Edition represents whether the instance
+      is ENTERPRISE or ENTERPRISE_PLUS. This information is core to Cloud SQL
+      only and is used to identify the edition of the instance.
     ExpectedStateValueValuesEnum: The state that the instance is expected to
       be in. For example, an instance state can transition to UNHEALTHY due to
       wrong patch update, while the expected state will remain at the HEALTHY.
@@ -1204,6 +1296,9 @@ class DatabaseResourceMetadata(_messages.Message):
       resource is created and recorded in partner service.
     currentState: Current state of the instance.
     customMetadata: Any custom metadata associated with the resource
+    edition: Optional. Edition represents whether the instance is ENTERPRISE
+      or ENTERPRISE_PLUS. This information is core to Cloud SQL only and is
+      used to identify the edition of the instance.
     entitlements: Entitlements associated with the resource
     expectedState: The state that the instance is expected to be in. For
       example, an instance state can transition to UNHEALTHY due to wrong
@@ -1217,6 +1312,9 @@ class DatabaseResourceMetadata(_messages.Message):
       Database resource. Else it would be NULL. REQUIRED if the immediate
       parent exists when first time resource is getting ingested, otherwise
       optional.
+    primaryResourceLocation: Primary resource location. REQUIRED if the
+      immediate parent exists when first time resource is getting ingested,
+      otherwise optional.
     product: The product this resource represents.
     resourceContainer: Closest parent Cloud Resource Manager container of this
       resource. It must be resource name of a Cloud Resource Manager project
@@ -1250,6 +1348,21 @@ class DatabaseResourceMetadata(_messages.Message):
     SUSPENDED = 3
     DELETED = 4
     STATE_OTHER = 5
+
+  class EditionValueValuesEnum(_messages.Enum):
+    r"""Optional. Edition represents whether the instance is ENTERPRISE or
+    ENTERPRISE_PLUS. This information is core to Cloud SQL only and is used to
+    identify the edition of the instance.
+
+    Values:
+      EDITION_UNSPECIFIED: Default, to make it consistent with instance
+        edition enum.
+      EDITION_ENTERPRISE: Represents the enterprise edition.
+      EDITION_ENTERPRISE_PLUS: Represents the enterprise plus edition.
+    """
+    EDITION_UNSPECIFIED = 0
+    EDITION_ENTERPRISE = 1
+    EDITION_ENTERPRISE_PLUS = 2
 
   class ExpectedStateValueValuesEnum(_messages.Enum):
     r"""The state that the instance is expected to be in. For example, an
@@ -1304,19 +1417,21 @@ class DatabaseResourceMetadata(_messages.Message):
   creationTime = _messages.StringField(4)
   currentState = _messages.EnumField('CurrentStateValueValuesEnum', 5)
   customMetadata = _messages.MessageField('CustomMetadataData', 6)
-  entitlements = _messages.MessageField('Entitlement', 7, repeated=True)
-  expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 8)
-  id = _messages.MessageField('DatabaseResourceId', 9)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 10)
-  location = _messages.StringField(11)
-  machineConfiguration = _messages.MessageField('MachineConfiguration', 12)
-  primaryResourceId = _messages.MessageField('DatabaseResourceId', 13)
-  product = _messages.MessageField('Product', 14)
-  resourceContainer = _messages.StringField(15)
-  resourceName = _messages.StringField(16)
-  tagsSet = _messages.MessageField('Tags', 17)
-  updationTime = _messages.StringField(18)
-  userLabelSet = _messages.MessageField('UserLabels', 19)
+  edition = _messages.EnumField('EditionValueValuesEnum', 7)
+  entitlements = _messages.MessageField('Entitlement', 8, repeated=True)
+  expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 9)
+  id = _messages.MessageField('DatabaseResourceId', 10)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 11)
+  location = _messages.StringField(12)
+  machineConfiguration = _messages.MessageField('MachineConfiguration', 13)
+  primaryResourceId = _messages.MessageField('DatabaseResourceId', 14)
+  primaryResourceLocation = _messages.StringField(15)
+  product = _messages.MessageField('Product', 16)
+  resourceContainer = _messages.StringField(17)
+  resourceName = _messages.StringField(18)
+  tagsSet = _messages.MessageField('Tags', 19)
+  updationTime = _messages.StringField(20)
+  userLabelSet = _messages.MessageField('UserLabels', 21)
 
 
 class DatabaseResourceRecommendationSignalData(_messages.Message):
@@ -1793,6 +1908,16 @@ class Entitlement(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
+class ExportBackupRequest(_messages.Message):
+  r"""Request for [ExportBackup].
+
+  Fields:
+    backupExportConfig: Required. Export configuration
+  """
+
+  backupExportConfig = _messages.MessageField('BackupExportConfig', 1)
+
+
 class ExportInstanceRequest(_messages.Message):
   r"""Request for Export.
 
@@ -1848,6 +1973,18 @@ class FailoverInstanceRequest(_messages.Message):
     FORCE_DATA_LOSS = 2
 
   dataProtectionMode = _messages.EnumField('DataProtectionModeValueValuesEnum', 1)
+
+
+class GcsBackupSource(_messages.Message):
+  r"""Backups stored in Cloud Storage buckets. The Cloud Storage buckets need
+  to be the same region as the clusters.
+
+  Fields:
+    uris: Optional. URIs of the GCS objects to import. Example:
+      gs://bucket1/object1, gs://bucket2/folder2/object2
+  """
+
+  uris = _messages.StringField(1, repeated=True)
 
 
 class GcsDestination(_messages.Message):
@@ -2514,6 +2651,44 @@ class IsolationExpectations(_messages.Message):
   zsRegionState = _messages.EnumField('ZsRegionStateValueValuesEnum', 8)
 
 
+class ListBackupCollectionsResponse(_messages.Message):
+  r"""Response for [ListBackupCollections].
+
+  Fields:
+    backupCollections: A list of backupCollections in the project. If the
+      `location_id` in the parent field of the request is "-", all regions
+      available to the project are queried, and the results aggregated. If in
+      such an aggregated query a location is unavailable, a placeholder
+      backupCollection entry is included in the response with the `name` field
+      set to a value of the form
+      `projects/{project_id}/locations/{location_id}/backupCollections/`- and
+      the `status` field set to ERROR and `status_message` field set to
+      "location not available for ListBackupCollections".
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    unreachable: Locations that could not be reached.
+  """
+
+  backupCollections = _messages.MessageField('BackupCollection', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListBackupsResponse(_messages.Message):
+  r"""Response for [ListBackups].
+
+  Fields:
+    backups: A list of backups in the project.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    unreachable: Backups that could not be reached.
+  """
+
+  backups = _messages.MessageField('Backup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListClustersResponse(_messages.Message):
   r"""Response for ListClusters.
 
@@ -2807,6 +2982,21 @@ class MaintenanceSchedule(_messages.Message):
   endTime = _messages.StringField(2)
   scheduleDeadlineTime = _messages.StringField(3)
   startTime = _messages.StringField(4)
+
+
+class ManagedBackupSource(_messages.Message):
+  r"""Backups that generated and managed by memorystore.
+
+  Fields:
+    backup: Optional. Example: //redis.googleapis.com/projects/{project}/locat
+      ions/{location}/backupCollections/{collection}/backups/{backup} A
+      shorter version (without the prefix) of the backup name is also
+      supported, like projects/{project}/locations/{location}/backupCollection
+      s/{collection}/backups/{backup_id} In this case, it assumes the backup
+      is under redis.googleapis.com.
+  """
+
+  backup = _messages.StringField(1)
 
 
 class ManagedCertificateAuthority(_messages.Message):
@@ -3321,7 +3511,7 @@ class PscConnection(_messages.Message):
       the form of projects/{project_id}/global/networks/{network_id}.
     projectId: Optional. Project ID of the consumer project where the
       forwarding rule is created in.
-    pscConnectionId: Optional. The PSC connection id of the forwarding rule
+    pscConnectionId: Required. The PSC connection id of the forwarding rule
       connected to the service attachment.
     serviceAttachment: Required. The service attachment which is the target of
       the PSC connection, in the form of projects/{project-
@@ -3400,6 +3590,116 @@ class ReconciliationOperationMetadata(_messages.Message):
 
   deleteResource = _messages.BooleanField(1)
   exclusiveAction = _messages.EnumField('ExclusiveActionValueValuesEnum', 2)
+
+
+class RedisProjectsLocationsBackupCollectionsBackupsDeleteRequest(_messages.Message):
+  r"""A RedisProjectsLocationsBackupCollectionsBackupsDeleteRequest object.
+
+  Fields:
+    name: Required. Redis backup resource name using the form: `projects/{proj
+      ect_id}/locations/{location_id}/backupCollections/{backup_collection_id}
+      /backups/{backup_id}`
+    requestId: Optional. Idempotent request UUID.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class RedisProjectsLocationsBackupCollectionsBackupsExportRequest(_messages.Message):
+  r"""A RedisProjectsLocationsBackupCollectionsBackupsExportRequest object.
+
+  Fields:
+    exportBackupRequest: A ExportBackupRequest resource to be passed as the
+      request body.
+    name: Required. Redis backup resource name using the form: `projects/{proj
+      ect_id}/locations/{location_id}/backupCollections/{backup_collection_id}
+      /backups/{backup_id}`
+  """
+
+  exportBackupRequest = _messages.MessageField('ExportBackupRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class RedisProjectsLocationsBackupCollectionsBackupsGetRequest(_messages.Message):
+  r"""A RedisProjectsLocationsBackupCollectionsBackupsGetRequest object.
+
+  Fields:
+    name: Required. Redis backup resource name using the form: `projects/{proj
+      ect_id}/locations/{location_id}/backupCollections/{backup_collection_id}
+      /backups/{backup_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RedisProjectsLocationsBackupCollectionsBackupsListRequest(_messages.Message):
+  r"""A RedisProjectsLocationsBackupCollectionsBackupsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return. If not
+      specified, a default value of 1000 will be used by the service.
+      Regardless of the page_size value, the response may include a partial
+      list and a caller should only rely on response's `next_page_token` to
+      determine if there are more clusters left to be queried.
+    pageToken: Optional. The `next_page_token` value returned from a previous
+      [ListBackupCollections] request, if any.
+    parent: Required. The resource name of the backupCollection using the
+      form: `projects/{project_id}/locations/{location_id}/backupCollections/{
+      backup_collection_id}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class RedisProjectsLocationsBackupCollectionsGetRequest(_messages.Message):
+  r"""A RedisProjectsLocationsBackupCollectionsGetRequest object.
+
+  Fields:
+    name: Required. Redis backupCollection resource name using the form: `proj
+      ects/{project_id}/locations/{location_id}/backupCollections/{backup_coll
+      ection_id}` where `location_id` refers to a GCP region.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RedisProjectsLocationsBackupCollectionsListRequest(_messages.Message):
+  r"""A RedisProjectsLocationsBackupCollectionsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return. If not
+      specified, a default value of 1000 will be used by the service.
+      Regardless of the page_size value, the response may include a partial
+      list and a caller should only rely on response's `next_page_token` to
+      determine if there are more clusters left to be queried.
+    pageToken: Optional. The `next_page_token` value returned from a previous
+      [ListBackupCollections] request, if any.
+    parent: Required. The resource name of the backupCollection location using
+      the form: `projects/{project_id}/locations/{location_id}` where
+      `location_id` refers to a GCP region.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class RedisProjectsLocationsClustersBackupRequest(_messages.Message):
+  r"""A RedisProjectsLocationsClustersBackupRequest object.
+
+  Fields:
+    backupClusterRequest: A BackupClusterRequest resource to be passed as the
+      request body.
+    name: Required. Redis cluster resource name using the form:
+      `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
+      where `location_id` refers to a GCP region.
+  """
+
+  backupClusterRequest = _messages.MessageField('BackupClusterRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class RedisProjectsLocationsClustersCreateRequest(_messages.Message):
@@ -3921,6 +4221,8 @@ class RetentionSettings(_messages.Message):
     RetentionUnitValueValuesEnum: The unit that 'retained_backups' represents.
 
   Fields:
+    durationBasedRetention: Duration based retention period i.e. 172800
+      seconds (2 days)
     quantityBasedRetention: A integer attribute.
     retentionUnit: The unit that 'retained_backups' represents.
     timeBasedRetention: A string attribute.
@@ -3934,17 +4236,22 @@ class RetentionSettings(_messages.Message):
         be treated as COUNT.
       COUNT: Retention will be by count, eg. "retain the most recent 7
         backups".
-      TIME: Retention will be by Time, eg. "retain the last 7 days backups".
+      TIME: Retention will be by Time, eg. "retain backups till a specific
+        time" i.e. till 2024-05-01T00:00:00Z.
+      DURATION: Retention will be by duration, eg. "retain the backups for
+        172800 seconds (2 days)".
       RETENTION_UNIT_OTHER: For rest of the other category
     """
     RETENTION_UNIT_UNSPECIFIED = 0
     COUNT = 1
     TIME = 2
-    RETENTION_UNIT_OTHER = 3
+    DURATION = 3
+    RETENTION_UNIT_OTHER = 4
 
-  quantityBasedRetention = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  retentionUnit = _messages.EnumField('RetentionUnitValueValuesEnum', 2)
-  timeBasedRetention = _messages.StringField(3)
+  durationBasedRetention = _messages.StringField(1)
+  quantityBasedRetention = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  retentionUnit = _messages.EnumField('RetentionUnitValueValuesEnum', 3)
+  timeBasedRetention = _messages.StringField(4)
 
 
 class SpannerLocation(_messages.Message):

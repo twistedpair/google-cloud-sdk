@@ -1793,9 +1793,13 @@ class GoogleCloudApihubV1Config(_messages.Message):
       /]+)/locations/([^/]+)/keyRings/([^/]+)/cryptoKeys/([^/]+)`, where the
       location must match the instance location. If the CMEK is not provided,
       a GMEK will be created for the instance.
+    disableSearch: Optional. If true, the search will be disabled for the
+      instance. The default value is false.
     encryptionType: Optional. Encryption type for the region. If the
       encryption type is CMEK, the cmek_key_name must be provided. If no
       encryption type is provided, GMEK will be used.
+    vertexLocation: Optional. The name of the Vertex AI location where the
+      data store is stored.
   """
 
   class EncryptionTypeValueValuesEnum(_messages.Enum):
@@ -1813,7 +1817,9 @@ class GoogleCloudApihubV1Config(_messages.Message):
     CMEK = 2
 
   cmekKeyName = _messages.StringField(1)
-  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 2)
+  disableSearch = _messages.BooleanField(2)
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 3)
+  vertexLocation = _messages.StringField(4)
 
 
 class GoogleCloudApihubV1Definition(_messages.Message):
@@ -2514,7 +2520,7 @@ class GoogleCloudApihubV1ListSpecsResponse(_messages.Message):
   Fields:
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
-    specs: The specs corresponding to an API.
+    specs: The specs corresponding to an API Version.
   """
 
   nextPageToken = _messages.StringField(1)

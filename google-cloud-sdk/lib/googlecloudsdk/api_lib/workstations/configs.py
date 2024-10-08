@@ -95,6 +95,7 @@ class Configs:
           ]
       )
     config.disableTcpConnections = args.disable_tcp_connections
+    config.maxUsableWorkstations = args.max_usable_workstations_count
 
     # GCE Instance Config
     config.host = self.messages.Host()
@@ -318,6 +319,10 @@ class Configs:
           ]
       )
       update_mask.append('labels')
+
+    if args.IsSpecified('max_usable_workstations_count'):
+      config.maxUsableWorkstations = args.max_usable_workstations_count
+      update_mask.append('max_usable_workstations')
 
     if (
         self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)

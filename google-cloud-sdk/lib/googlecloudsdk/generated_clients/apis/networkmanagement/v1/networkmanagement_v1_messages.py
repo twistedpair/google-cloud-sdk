@@ -800,6 +800,17 @@ class DropInfo(_messages.Message):
       REDIS_CLUSTER_UNSUPPORTED_PROTOCOL: Packet is dropped due to an
         unsupported protocol being used to connect to a Redis Cluster. Only
         TCP connections are accepted by a Redis Cluster.
+      NO_ADVERTISED_ROUTE_TO_GCP_DESTINATION: Packet from the non-GCP (on-
+        prem) or unknown GCP network is dropped due to the destination IP
+        address not belonging to any IP prefix advertised via BGP by the Cloud
+        Router.
+      NO_TRAFFIC_SELECTOR_TO_GCP_DESTINATION: Packet from the non-GCP (on-
+        prem) or unknown GCP network is dropped due to the destination IP
+        address not belonging to any IP prefix included to the local traffic
+        selector of the VPN tunnel.
+      NO_KNOWN_ROUTE_FROM_PEERED_NETWORK_TO_DESTINATION: Packet from the
+        unknown peered network is dropped due to no known route from the
+        source network to the destination IP address.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -881,6 +892,9 @@ class DropInfo(_messages.Message):
     REDIS_CLUSTER_UNSUPPORTED_PORT = 77
     REDIS_CLUSTER_NO_EXTERNAL_IP = 78
     REDIS_CLUSTER_UNSUPPORTED_PROTOCOL = 79
+    NO_ADVERTISED_ROUTE_TO_GCP_DESTINATION = 80
+    NO_TRAFFIC_SELECTOR_TO_GCP_DESTINATION = 81
+    NO_KNOWN_ROUTE_FROM_PEERED_NETWORK_TO_DESTINATION = 82
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationIp = _messages.StringField(2)
@@ -963,6 +977,10 @@ class Endpoint(_messages.Message):
       project. 2. When you are using Shared VPC and the IP address that you
       provide is from the service project. In this case, the network that the
       IP address resides in is defined in the host project.
+    redisCluster: A [Redis
+      Cluster](https://cloud.google.com/memorystore/docs/cluster) URI.
+    redisInstance: A [Redis
+      Instance](https://cloud.google.com/memorystore/docs/redis) URI.
   """
 
   class ForwardingRuleTargetValueValuesEnum(_messages.Enum):
@@ -1045,6 +1063,8 @@ class Endpoint(_messages.Message):
   networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 13)
   port = _messages.IntegerField(14, variant=_messages.Variant.INT32)
   projectId = _messages.StringField(15)
+  redisCluster = _messages.StringField(16)
+  redisInstance = _messages.StringField(17)
 
 
 class EndpointInfo(_messages.Message):
@@ -1770,16 +1790,24 @@ class NatInfo(_messages.Message):
 
 class NetworkInfo(_messages.Message):
   r"""For display only. Metadata associated with a Compute Engine network.
+  Next ID: 7
 
   Fields:
     displayName: Name of a Compute Engine network.
-    matchedIpRange: The IP range that matches the test.
+    matchedIpRange: The IP range of the subnet matching the source IP address
+      of the test.
+    matchedSubnetUri: URI of the subnet matching the source IP address of the
+      test.
+    region: The region of the subnet matching the source IP address of the
+      test.
     uri: URI of a Compute Engine network.
   """
 
   displayName = _messages.StringField(1)
   matchedIpRange = _messages.StringField(2)
-  uri = _messages.StringField(3)
+  matchedSubnetUri = _messages.StringField(3)
+  region = _messages.StringField(4)
+  uri = _messages.StringField(5)
 
 
 class NetworkmanagementProjectsLocationsGetRequest(_messages.Message):
@@ -2465,6 +2493,12 @@ class RouteInfo(_messages.Message):
     RouteTypeValueValuesEnum: Type of route.
 
   Fields:
+    advertisedRouteNextHopUri: For advertised routes, the URI of their next
+      hop, i.e. the URI of the hybrid endpoint (VPN tunnel, Interconnect
+      attachment, NCC router appliance) the advertised prefix is advertised
+      through, or URI of the source peered network.
+    advertisedRouteSourceRouterUri: For advertised dynamic routes, the URI of
+      the Cloud Router that advertised the corresponding IP prefix.
     destIpRange: Destination IP range of the route.
     destPortRanges: Destination port ranges of the route. Policy based routes
       only.
@@ -2477,14 +2511,13 @@ class RouteInfo(_messages.Message):
     nextHopType: Type of next hop.
     priority: Priority of the route.
     protocols: Protocols of the route. Policy based routes only.
+    region: Region of the route (if applicable).
     routeScope: Indicates where route is applicable.
     routeType: Type of route.
     srcIpRange: Source IP address range of the route. Policy based routes
       only.
     srcPortRanges: Source port ranges of the route. Policy based routes only.
-    uri: URI of a route. Dynamic, peering static and peering dynamic routes do
-      not have an URI. Advertised route from Google Cloud VPC to on-premises
-      network also does not have an URI.
+    uri: URI of a route (if applicable).
   """
 
   class NextHopTypeValueValuesEnum(_messages.Enum):
@@ -2552,6 +2585,9 @@ class RouteInfo(_messages.Message):
       PEERING_STATIC: A static route received from peering network.
       PEERING_DYNAMIC: A dynamic route received from peering network.
       POLICY_BASED: Policy based route.
+      ADVERTISED: Advertised route. Synthetic route which is used to
+        transition from the StartFromPrivateNetwork state in Connectivity
+        tests.
     """
     ROUTE_TYPE_UNSPECIFIED = 0
     SUBNET = 1
@@ -2561,23 +2597,27 @@ class RouteInfo(_messages.Message):
     PEERING_STATIC = 5
     PEERING_DYNAMIC = 6
     POLICY_BASED = 7
+    ADVERTISED = 8
 
-  destIpRange = _messages.StringField(1)
-  destPortRanges = _messages.StringField(2, repeated=True)
-  displayName = _messages.StringField(3)
-  instanceTags = _messages.StringField(4, repeated=True)
-  nccHubUri = _messages.StringField(5)
-  nccSpokeUri = _messages.StringField(6)
-  networkUri = _messages.StringField(7)
-  nextHop = _messages.StringField(8)
-  nextHopType = _messages.EnumField('NextHopTypeValueValuesEnum', 9)
-  priority = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  protocols = _messages.StringField(11, repeated=True)
-  routeScope = _messages.EnumField('RouteScopeValueValuesEnum', 12)
-  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 13)
-  srcIpRange = _messages.StringField(14)
-  srcPortRanges = _messages.StringField(15, repeated=True)
-  uri = _messages.StringField(16)
+  advertisedRouteNextHopUri = _messages.StringField(1)
+  advertisedRouteSourceRouterUri = _messages.StringField(2)
+  destIpRange = _messages.StringField(3)
+  destPortRanges = _messages.StringField(4, repeated=True)
+  displayName = _messages.StringField(5)
+  instanceTags = _messages.StringField(6, repeated=True)
+  nccHubUri = _messages.StringField(7)
+  nccSpokeUri = _messages.StringField(8)
+  networkUri = _messages.StringField(9)
+  nextHop = _messages.StringField(10)
+  nextHopType = _messages.EnumField('NextHopTypeValueValuesEnum', 11)
+  priority = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  protocols = _messages.StringField(13, repeated=True)
+  region = _messages.StringField(14)
+  routeScope = _messages.EnumField('RouteScopeValueValuesEnum', 15)
+  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 16)
+  srcIpRange = _messages.StringField(17)
+  srcPortRanges = _messages.StringField(18, repeated=True)
+  uri = _messages.StringField(19)
 
 
 class ServerlessNegInfo(_messages.Message):

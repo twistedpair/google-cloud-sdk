@@ -523,21 +523,12 @@ class RegionsChangeAnnotationChange(NonTemplateConfigChanger):
     annotation = (
         resource.annotations[k8s_object.MULTI_REGION_REGIONS_ANNOTATION] or None
     )
-    existing = set(annotation.split(',') if annotation else [])
-    to_add = set(self.to_add.split(',') if self.to_add else [])
-    to_remove = set(self.to_remove.split(',') if self.to_remove else [])
-    already_added = existing & to_add
-    if already_added:
-      raise exceptions.ConfigurationError(
-          'Multi-region Service already exists in {}'.format(already_added)
-      )
-    cant_remove = to_remove - (to_remove & existing)
-    if cant_remove:
-      raise exceptions.ConfigurationError(
-          'Multi-region Service not deployed to {}'.format(cant_remove)
-      )
-    final_list = ','.join((existing | to_add) - to_remove)
-    resource.annotations[k8s_object.MULTI_REGION_REGIONS_ANNOTATION] = (
+    existing = annotation.split(',') if annotation else []
+    to_add = self.to_add.split(',') if self.to_add else []
+    to_remove = self.to_remove.split(',') if self.to_remove else []
+    final_list = [x for x in existing if x not in to_remove]
+    final_list.extend([x for x in to_add if x not in existing])
+    resource.annotations[k8s_object.MULTI_REGION_REGIONS_ANNOTATION] = ','.join(
         final_list
     )
     return resource

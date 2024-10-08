@@ -118,7 +118,7 @@ def UpdateMembership(name,
     - apitools.base.py.HttpError: if the request returns an HTTP error
     - exceptions raised by waiter.WaitFor()
   """
-  client = gkehub_api_util.GetApiClientForTrack(release_track, v1main_only=True)
+  client = gkehub_api_util.GetApiClientForTrack(release_track)
   messages = client.MESSAGES_MODULE
   request = messages.GkehubProjectsLocationsMembershipsPatchRequest(
       membership=membership, name=name, updateMask=update_mask)
@@ -226,7 +226,7 @@ def CreateMembership(project,
     - apitools.base.py.HttpError: if the request returns an HTTP error
     - exceptions raised by waiter.WaitFor()
   """
-  client = gkehub_api_util.GetApiClientForTrack(release_track, v1main_only=True)
+  client = gkehub_api_util.GetApiClientForTrack(release_track)
   messages = client.MESSAGES_MODULE
   parent_ref = ParentRef(project, location)
 
@@ -285,7 +285,7 @@ def GetMembership(name, release_track=None):
 
   if _MEMBERSHIP_RE.match(name) is None:
     raise InvalidMembershipFormatError(name)
-  client = gkehub_api_util.GetApiClientForTrack(release_track, v1main_only=True)
+  client = gkehub_api_util.GetApiClientForTrack(release_track)
   return client.projects_locations_memberships.Get(
       client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsGetRequest(
           name=name))
@@ -306,7 +306,7 @@ def ProjectForClusterUUID(uuid, projects, release_track=None):
   Raises:
     apitools.base.py.HttpError: if any request returns an HTTP error
   """
-  client = gkehub_api_util.GetApiClientForTrack(release_track, v1main_only=True)
+  client = gkehub_api_util.GetApiClientForTrack(release_track)
   for project in projects:
     if project:
       parent = 'projects/{}/locations/global'.format(project)
@@ -354,7 +354,7 @@ def DeleteMembership(name, release_track=None):
     apitools.base.py.HttpError: if the request returns an HTTP error
   """
 
-  client = gkehub_api_util.GetApiClientForTrack(release_track, v1main_only=True)
+  client = gkehub_api_util.GetApiClientForTrack(release_track)
   op = client.projects_locations_memberships.Delete(
       client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsDeleteRequest(
           name=name))
@@ -460,7 +460,7 @@ def GenerateConnectAgentManifest(membership_ref,
     apitools.base.py.HttpError: if the request returns an HTTP error.
   """
 
-  client = gkehub_api_util.GetApiClientForTrack(release_track, v1main_only=True)
+  client = gkehub_api_util.GetApiClientForTrack(release_track)
   messages = client.MESSAGES_MODULE
   request = messages.GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest(
       name=membership_ref)
@@ -494,8 +494,6 @@ def ListMembershipsFull(filter_cluster_missing=False):
     'projects/*/locations/*/memberships/*'.
     A list of locations which were unreachable.
   """
-  # TODO: b/296872066 - Match the version of the client to the release track. It
-  # doesn't make much sense to use the Hub beta API for all tracks.
   client = core_apis.GetClientInstance('gkehub', 'v1beta')
   req = client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsListRequest(
       parent=hub_base.HubCommand.LocationResourceName(location='-')

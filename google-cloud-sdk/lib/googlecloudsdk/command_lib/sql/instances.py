@@ -112,9 +112,7 @@ def _GetSecondaryZone(args):
   return None
 
 
-def DoesEnterprisePlusReplicaInferTierForDatabaseType(
-    sql_messages, replica_database_version
-):
+def DoesEnterprisePlusReplicaInferTierForDatabaseType(replica_database_version):
   """Checks if the replica inherits the tier of the primary for E+ instances.
 
   Ideally, this would be the case for all database versions. However, changing
@@ -122,7 +120,6 @@ def DoesEnterprisePlusReplicaInferTierForDatabaseType(
   database types going forward.
 
   Args:
-    sql_messages: module, The messages module that should be used.
     replica_database_version: The database version of the replica.
 
   Returns:
@@ -136,10 +133,13 @@ def DoesEnterprisePlusReplicaInferTierForDatabaseType(
         re.search(r'^POSTGRES_(\d+).*', replica_database_version).group(1)
     )
     return database_major_version > 15
-  database_type = ParseDatabaseVersion(sql_messages, replica_database_version)
-  return database_type in (
-      sql_messages.DatabaseInstance.DatabaseVersionValueValuesEnum.MYSQL_8_4,
-  )
+  if replica_database_version.startswith('MYSQL_'):
+    # Extract the database major version from the database version string:
+    # MYSQL_8_4 -> 8.4
+    match = re.search(r'^MYSQL_(\d+)_(\d+).*', replica_database_version)
+    database_major_version = (int(match.group(1)), int(match.group(2)))
+    return database_major_version > (8, 0)
+  return False
 
 
 def _IsAlpha(release_track):
@@ -764,11 +764,11 @@ class _BaseInstances(object):
           settings.ipConfiguration = sql_messages.IpConfiguration()
         if not settings.ipConfiguration.pscConfig:
           settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
-          settings.ipConfiguration.pscConfig.pscAutoConnections = (
-              reducers.PscAutoConnections(
-                  sql_messages, args.psc_auto_connections
-              )
-          )
+        settings.ipConfiguration.pscConfig.pscAutoConnections = (
+            reducers.PscAutoConnections(
+                sql_messages, args.psc_auto_connections
+            )
+        )
       if args.IsKnownAndSpecified('clear_psc_auto_connections'):
         if not settings.ipConfiguration:
           settings.ipConfiguration = sql_messages.IpConfiguration()

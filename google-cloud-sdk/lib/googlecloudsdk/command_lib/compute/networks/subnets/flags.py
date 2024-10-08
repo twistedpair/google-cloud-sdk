@@ -106,9 +106,26 @@ def SubnetworkArgumentForNetworkAttachment(required=True):
       short_help='The subnetworks provided by the consumer for the producers')
 
 
+def IpCollectionArgument(required=False):
+  return compute_flags.ResourceArgument(
+      resource_name='ipCollection',
+      name='--ip-collection',
+      required=required,
+      regional_collection='compute.publicDelegatedPrefixes',
+      region_hidden=True,
+      short_help='Resource reference to a public delegated prefix.',
+      detailed_help="""
+          Resource reference to a public delegated prefix. The
+          PublicDelegatedPrefix must be a sub-prefix in
+          EXTERNAL_IPV6_SUBNETWORK_CREATION mode.
+          """
+  )
+
+
 def SubnetworkResolver():
   return compute_flags.ResourceResolver.FromMap(
-      'subnetwork', {compute_scope.ScopeEnum.REGION: 'compute.subnetworks'})
+      'subnetwork', {compute_scope.ScopeEnum.REGION: 'compute.subnetworks'}
+  )
 
 
 def AddUpdateArgs(

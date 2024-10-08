@@ -291,11 +291,14 @@ class CloudApi(object):
     """
     raise NotImplementedError('delete_bucket must be overridden.')
 
-  def get_bucket(self, bucket_name, fields_scope=None, soft_deleted=False):
+  def get_bucket(
+      self, bucket_name, generation=None, fields_scope=None, soft_deleted=False
+  ):
     """Gets bucket metadata.
 
     Args:
       bucket_name (str): Name of the bucket.
+      generation (int|None): Generation of the bucket.
       fields_scope (FieldsScope): Determines the fields and projection
         parameters of API call.
       soft_deleted (bool): If true, return the soft-deleted version of this

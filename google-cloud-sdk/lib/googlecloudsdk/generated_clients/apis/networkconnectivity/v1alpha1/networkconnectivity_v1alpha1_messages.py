@@ -480,7 +480,12 @@ class InternalRange(_messages.Message):
   Fields:
     createTime: Time when the internal range was created.
     description: A description of this resource.
-    ipCidrRange: IP range that this internal range defines.
+    immutable: Optional. Immutable ranges cannot have their fields modified,
+      except for labels and description.
+    ipCidrRange: IP range that this internal range defines. NOTE: IPv6 ranges
+      are limited to usage=EXTERNAL_TO_VPC and peering=FOR_SELF. NOTE: For
+      IPv6 Ranges this field is compulsory, i.e. the address range must be
+      specified explicitly.
     labels: User-defined labels.
     migration: Optional. Should be present if usage is set to FOR_MIGRATION.
     name: Immutable. The name of an internal range. Format:
@@ -496,10 +501,12 @@ class InternalRange(_messages.Message):
       the current internal range.
     peering: The type of peering set for this internal range.
     prefixLength: An alternative to ip_cidr_range. Can be set when trying to
-      create a reservation that automatically finds a free range of the given
-      size. If both ip_cidr_range and prefix_length are set, there is an error
-      if the range sizes do not match. Can also be used during updates to
-      change the range size.
+      create an IPv4 reservation that automatically finds a free range of the
+      given size. If both ip_cidr_range and prefix_length are set, there is an
+      error if the range sizes do not match. Can also be used during updates
+      to change the range size. NOTE: For IPv6 this field only works if
+      ip_cidr_range is set as well, and both fields must match. In other
+      words, with IPv6 this field only works as a redundant parameter.
     targetCidrRange: Optional. Can be set to narrow down or pick a different
       address space while searching for a free range. If not set, defaults to
       the "10.0.0.0/8" address space. This can be used to search in other
@@ -610,18 +617,19 @@ class InternalRange(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  ipCidrRange = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  migration = _messages.MessageField('Migration', 5)
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  overlaps = _messages.EnumField('OverlapsValueListEntryValuesEnum', 8, repeated=True)
-  peering = _messages.EnumField('PeeringValueValuesEnum', 9)
-  prefixLength = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  targetCidrRange = _messages.StringField(11, repeated=True)
-  updateTime = _messages.StringField(12)
-  usage = _messages.EnumField('UsageValueValuesEnum', 13)
-  users = _messages.StringField(14, repeated=True)
+  immutable = _messages.BooleanField(3)
+  ipCidrRange = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  migration = _messages.MessageField('Migration', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  overlaps = _messages.EnumField('OverlapsValueListEntryValuesEnum', 9, repeated=True)
+  peering = _messages.EnumField('PeeringValueValuesEnum', 10)
+  prefixLength = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  targetCidrRange = _messages.StringField(12, repeated=True)
+  updateTime = _messages.StringField(13)
+  usage = _messages.EnumField('UsageValueValuesEnum', 14)
+  users = _messages.StringField(15, repeated=True)
 
 
 class ListHubsResponse(_messages.Message):

@@ -441,6 +441,20 @@ def Edition(
   )
 
 
+# TODO(b/370068996): Unhide the flag.
+def DefaultBackupScheduleType(
+    required=False,
+    hidden=True,
+    text='The type of the default backup schedule to use for the instance.',
+):
+  return base.Argument(
+      '--default-backup-schedule-type',
+      required=required,
+      hidden=hidden,
+      help=text,
+  )
+
+
 def AddCapacityArgsForInstance(
     require_all_autoscaling_args,
     hide_autoscaling_args,

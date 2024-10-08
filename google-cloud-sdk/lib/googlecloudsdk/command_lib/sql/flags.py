@@ -1673,6 +1673,7 @@ def AddBakExportBakTypeArgument(parser):
   choices = [
       messages.ExportContext.BakExportOptionsValue.BakTypeValueValuesEnum.FULL.name,
       messages.ExportContext.BakExportOptionsValue.BakTypeValueValuesEnum.DIFF.name,
+      messages.ExportContext.BakExportOptionsValue.BakTypeValueValuesEnum.TLOG.name,
   ]
   help_text = (
       'Type of bak file that will be exported, FULL or DIFF. SQL Server only.'
@@ -1696,6 +1697,36 @@ def AddBakExportDifferentialBaseArgument(parser):
       help=(
           'Whether the bak file export can be used as differential base for'
           ' future differential backup. SQL Server only'
+      ),
+  )
+
+
+def AddBakExportLogStartTimeArgument(parser):
+  """Add the 'export-log-start-time' argument to the parser for bak export."""
+  parser.add_argument(
+      '--export-log-start-time',
+      type=arg_parsers.Datetime.Parse,
+      required=False,
+      help=(
+          'Optional flag. The start time of the transaction log files that are'
+          ' included in the export file. Use this flag to export transaction'
+          ' logs for Cloud SQL for SQL Server only. Format:'
+          ' YYYY-MM-DDTHH:MM:SSZ, UTC timezone only.'
+      ),
+  )
+
+
+def AddBakExportLogEndTimeArgument(parser):
+  """Add the 'xport-log-end-time' argument to the parser for bak import."""
+  parser.add_argument(
+      '--export-log-end-time',
+      type=arg_parsers.Datetime.Parse,
+      required=False,
+      help=(
+          'Optional flag. The end time of the transaction log files that are'
+          ' included in the export file. Use this flag to export transaction'
+          ' logs for Cloud SQL for SQL Server only. Format:'
+          ' YYYY-MM-DDTHH:MM:SSZ, UTC timezone only.'
       ),
   )
 

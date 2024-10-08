@@ -725,18 +725,19 @@ class DlpOrganizationsLocationsFileStoreDataProfilesListRequest(_messages.Messag
       by `AND` or `OR` logical operators. A sequence of restrictions
       implicitly uses `AND`. * A restriction has the form of `{field}
       {operator} {value}`. * Supported fields/values: - `project_id` - The
-      Google Cloud project ID. - `file_store_path` - The path like
-      "gs://bucket". - `data_source_type` - The profile's data source type,
-      like "google/storage/bucket". - `data_storage_location` - The location
-      where the file store's data is stored, like "us-central1". -
-      `sensitivity_level` - HIGH|MODERATE|LOW - `data_risk_level` -
-      HIGH|MODERATE|LOW - `resource_visibility`: PUBLIC|RESTRICTED -
-      `status_code` - an RPC status code as defined in https://github.com/goog
-      leapis/googleapis/blob/master/google/rpc/code.proto * The operator must
-      be `=` or `!=`. Examples: * `project_id = 12345 AND status_code = 1` *
-      `project_id = 12345 AND sensitivity_level = HIGH` * `project_id = 12345
-      AND resource_visibility = PUBLIC` * `file_store_path = "gs://mybucket"`
-      The length of this field should be no more than 500 characters.
+      Google Cloud project ID. - `account_id` - The AWS account ID. -
+      `file_store_path` - The path like "gs://bucket". - `data_source_type` -
+      The profile's data source type, like "google/storage/bucket". -
+      `data_storage_location` - The location where the file store's data is
+      stored, like "us-central1". - `sensitivity_level` - HIGH|MODERATE|LOW -
+      `data_risk_level` - HIGH|MODERATE|LOW - `resource_visibility`:
+      PUBLIC|RESTRICTED - `status_code` - an RPC status code as defined in htt
+      ps://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto
+      * The operator must be `=` or `!=`. Examples: * `project_id = 12345 AND
+      status_code = 1` * `project_id = 12345 AND sensitivity_level = HIGH` *
+      `project_id = 12345 AND resource_visibility = PUBLIC` * `file_store_path
+      = "gs://mybucket"` The length of this field should be no more than 500
+      characters.
     orderBy: Optional. Comma-separated list of fields to order by, followed by
       `asc` or `desc` postfix. This list is case insensitive. The default
       sorting order is ascending. Redundant space characters are
@@ -2519,18 +2520,19 @@ class DlpProjectsLocationsFileStoreDataProfilesListRequest(_messages.Message):
       by `AND` or `OR` logical operators. A sequence of restrictions
       implicitly uses `AND`. * A restriction has the form of `{field}
       {operator} {value}`. * Supported fields/values: - `project_id` - The
-      Google Cloud project ID. - `file_store_path` - The path like
-      "gs://bucket". - `data_source_type` - The profile's data source type,
-      like "google/storage/bucket". - `data_storage_location` - The location
-      where the file store's data is stored, like "us-central1". -
-      `sensitivity_level` - HIGH|MODERATE|LOW - `data_risk_level` -
-      HIGH|MODERATE|LOW - `resource_visibility`: PUBLIC|RESTRICTED -
-      `status_code` - an RPC status code as defined in https://github.com/goog
-      leapis/googleapis/blob/master/google/rpc/code.proto * The operator must
-      be `=` or `!=`. Examples: * `project_id = 12345 AND status_code = 1` *
-      `project_id = 12345 AND sensitivity_level = HIGH` * `project_id = 12345
-      AND resource_visibility = PUBLIC` * `file_store_path = "gs://mybucket"`
-      The length of this field should be no more than 500 characters.
+      Google Cloud project ID. - `account_id` - The AWS account ID. -
+      `file_store_path` - The path like "gs://bucket". - `data_source_type` -
+      The profile's data source type, like "google/storage/bucket". -
+      `data_storage_location` - The location where the file store's data is
+      stored, like "us-central1". - `sensitivity_level` - HIGH|MODERATE|LOW -
+      `data_risk_level` - HIGH|MODERATE|LOW - `resource_visibility`:
+      PUBLIC|RESTRICTED - `status_code` - an RPC status code as defined in htt
+      ps://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto
+      * The operator must be `=` or `!=`. Examples: * `project_id = 12345 AND
+      status_code = 1` * `project_id = 12345 AND sensitivity_level = HIGH` *
+      `project_id = 12345 AND resource_visibility = PUBLIC` * `file_store_path
+      = "gs://mybucket"` The length of this field should be no more than 500
+      characters.
     orderBy: Optional. Comma-separated list of fields to order by, followed by
       `asc` or `desc` postfix. This list is case insensitive. The default
       sorting order is ascending. Redundant space characters are
@@ -3243,6 +3245,79 @@ class GooglePrivacyDlpV2AllText(_messages.Message):
   r"""Apply to all text."""
 
 
+class GooglePrivacyDlpV2AmazonS3Bucket(_messages.Message):
+  r"""Amazon S3 bucket.
+
+  Fields:
+    awsAccount: The AWS account.
+    bucketName: Required. The bucket name.
+  """
+
+  awsAccount = _messages.MessageField('GooglePrivacyDlpV2AwsAccount', 1)
+  bucketName = _messages.StringField(2)
+
+
+class GooglePrivacyDlpV2AmazonS3BucketConditions(_messages.Message):
+  r"""Amazon S3 bucket conditions.
+
+  Enums:
+    BucketTypesValueListEntryValuesEnum:
+    ObjectStorageClassesValueListEntryValuesEnum:
+
+  Fields:
+    bucketTypes: Optional. Bucket types that should be profiled. Optional.
+      Defaults to TYPE_ALL_SUPPORTED if unspecified.
+    objectStorageClasses: Optional. Object classes that should be profiled.
+      Optional. Defaults to ALL_SUPPORTED_CLASSES if unspecified.
+  """
+
+  class BucketTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""BucketTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      TYPE_UNSPECIFIED: Unused.
+      TYPE_ALL_SUPPORTED: All supported classes.
+      TYPE_GENERAL_PURPOSE: A general purpose Amazon S3 bucket.
+    """
+    TYPE_UNSPECIFIED = 0
+    TYPE_ALL_SUPPORTED = 1
+    TYPE_GENERAL_PURPOSE = 2
+
+  class ObjectStorageClassesValueListEntryValuesEnum(_messages.Enum):
+    r"""ObjectStorageClassesValueListEntryValuesEnum enum type.
+
+    Values:
+      UNSPECIFIED: Unused.
+      ALL_SUPPORTED_CLASSES: All supported classes.
+      STANDARD: Standard object class.
+      STANDARD_INFREQUENT_ACCESS: Standard - infrequent access object class.
+      GLACIER_INSTANT_RETRIEVAL: Glacier - instant retrieval object class.
+      INTELLIGENT_TIERING: Objects in the S3 Intelligent-Tiering access tiers.
+    """
+    UNSPECIFIED = 0
+    ALL_SUPPORTED_CLASSES = 1
+    STANDARD = 2
+    STANDARD_INFREQUENT_ACCESS = 3
+    GLACIER_INSTANT_RETRIEVAL = 4
+    INTELLIGENT_TIERING = 5
+
+  bucketTypes = _messages.EnumField('BucketTypesValueListEntryValuesEnum', 1, repeated=True)
+  objectStorageClasses = _messages.EnumField('ObjectStorageClassesValueListEntryValuesEnum', 2, repeated=True)
+
+
+class GooglePrivacyDlpV2AmazonS3BucketRegex(_messages.Message):
+  r"""Amazon S3 bucket regex.
+
+  Fields:
+    awsAccountRegex: The AWS account regex.
+    bucketNameRegex: Optional. Regex to test the bucket name against. If
+      empty, all buckets match.
+  """
+
+  awsAccountRegex = _messages.MessageField('GooglePrivacyDlpV2AwsAccountRegex', 1)
+  bucketNameRegex = _messages.StringField(2)
+
+
 class GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails(_messages.Message):
   r"""Result of a risk analysis operation request.
 
@@ -3288,6 +3363,43 @@ class GooglePrivacyDlpV2AuxiliaryTable(_messages.Message):
   quasiIds = _messages.MessageField('GooglePrivacyDlpV2QuasiIdField', 1, repeated=True)
   relativeFrequency = _messages.MessageField('GooglePrivacyDlpV2FieldId', 2)
   table = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 3)
+
+
+class GooglePrivacyDlpV2AwsAccount(_messages.Message):
+  r"""AWS account.
+
+  Fields:
+    accountId: Required. AWS account ID.
+  """
+
+  accountId = _messages.StringField(1)
+
+
+class GooglePrivacyDlpV2AwsAccountRegex(_messages.Message):
+  r"""AWS account regex.
+
+  Fields:
+    accountIdRegex: Optional. Regex to test the AWS account ID against. If
+      empty, all accounts match.
+  """
+
+  accountIdRegex = _messages.StringField(1)
+
+
+class GooglePrivacyDlpV2AwsDiscoveryStartingLocation(_messages.Message):
+  r"""The AWS starting location for discovery.
+
+  Fields:
+    accountId: The AWS account ID that this discovery config applies to.
+      Within an AWS organization, you can find the AWS account ID inside an
+      AWS account ARN. Example: arn:{partition}:organizations::{management_acc
+      ount_id}:account/{org_id}/{account_id}
+    allAssetInventoryAssets: All AWS assets stored in Asset Inventory that
+      didn't match other AWS discovery configs.
+  """
+
+  accountId = _messages.StringField(1)
+  allAssetInventoryAssets = _messages.BooleanField(2)
 
 
 class GooglePrivacyDlpV2BigQueryDiscoveryTarget(_messages.Message):
@@ -4858,6 +4970,7 @@ class GooglePrivacyDlpV2DataProfileJobConfig(_messages.Message):
       scanned. For more information, see https://cloud.google.com/sensitive-
       data-protection/docs/data-profiles#data-residency.
     location: The data to scan.
+    otherCloudStartingLocation: Must be set only when scanning other clouds.
     projectId: The project that will run the scan. The DLP service account
       that exists within this project must have access to all resources that
       are profiled, and the Cloud DLP API must be enabled.
@@ -4866,7 +4979,8 @@ class GooglePrivacyDlpV2DataProfileJobConfig(_messages.Message):
   dataProfileActions = _messages.MessageField('GooglePrivacyDlpV2DataProfileAction', 1, repeated=True)
   inspectTemplates = _messages.StringField(2, repeated=True)
   location = _messages.MessageField('GooglePrivacyDlpV2DataProfileLocation', 3)
-  projectId = _messages.StringField(4)
+  otherCloudStartingLocation = _messages.MessageField('GooglePrivacyDlpV2OtherCloudDiscoveryStartingLocation', 4)
+  projectId = _messages.StringField(5)
 
 
 class GooglePrivacyDlpV2DataProfileLocation(_messages.Message):
@@ -5850,6 +5964,7 @@ class GooglePrivacyDlpV2DiscoveryConfig(_messages.Message):
       service when the DiscoveryConfig is created, for example `projects/dlp-
       test-project/locations/global/discoveryConfigs/53234423`.
     orgConfig: Only set when the parent is an org.
+    otherCloudStartingLocation: Must be set only when scanning other clouds.
     status: Required. A status for this configuration.
     targets: Target to match against for determining what to scan and how
       frequently.
@@ -5876,9 +5991,10 @@ class GooglePrivacyDlpV2DiscoveryConfig(_messages.Message):
   lastRunTime = _messages.StringField(6)
   name = _messages.StringField(7)
   orgConfig = _messages.MessageField('GooglePrivacyDlpV2OrgConfig', 8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  targets = _messages.MessageField('GooglePrivacyDlpV2DiscoveryTarget', 10, repeated=True)
-  updateTime = _messages.StringField(11)
+  otherCloudStartingLocation = _messages.MessageField('GooglePrivacyDlpV2OtherCloudDiscoveryStartingLocation', 9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  targets = _messages.MessageField('GooglePrivacyDlpV2DiscoveryTarget', 11, repeated=True)
+  updateTime = _messages.StringField(12)
 
 
 class GooglePrivacyDlpV2DiscoveryFileStoreConditions(_messages.Message):
@@ -5978,6 +6094,79 @@ class GooglePrivacyDlpV2DiscoveryInspectTemplateModifiedCadence(_messages.Messag
     UPDATE_FREQUENCY_MONTHLY = 3
 
   frequency = _messages.EnumField('FrequencyValueValuesEnum', 1)
+
+
+class GooglePrivacyDlpV2DiscoveryOtherCloudConditions(_messages.Message):
+  r"""Requirements that must be true before a resource is profiled for the
+  first time.
+
+  Fields:
+    amazonS3BucketConditions: Amazon S3 bucket conditions.
+    minAge: Minimum age a resource must be before Cloud DLP can profile it.
+      Value must be 1 hour or greater.
+  """
+
+  amazonS3BucketConditions = _messages.MessageField('GooglePrivacyDlpV2AmazonS3BucketConditions', 1)
+  minAge = _messages.StringField(2)
+
+
+class GooglePrivacyDlpV2DiscoveryOtherCloudFilter(_messages.Message):
+  r"""Determines which resources from the other cloud will have profiles
+  generated. Includes the ability to filter by resource names.
+
+  Fields:
+    collection: A collection of resources for this filter to apply to.
+    others: Optional. Catch-all. This should always be the last target in the
+      list because anything above it will apply first. Should only appear once
+      in a configuration. If none is specified, a default one will be added
+      automatically.
+    singleResource: The resource to scan. Configs using this filter can only
+      have one target (the target with this single resource reference).
+  """
+
+  collection = _messages.MessageField('GooglePrivacyDlpV2OtherCloudResourceCollection', 1)
+  others = _messages.MessageField('GooglePrivacyDlpV2AllOtherResources', 2)
+  singleResource = _messages.MessageField('GooglePrivacyDlpV2OtherCloudSingleResourceReference', 3)
+
+
+class GooglePrivacyDlpV2DiscoveryOtherCloudGenerationCadence(_messages.Message):
+  r"""How often existing resources should have their profiles refreshed. New
+  resources are scanned as quickly as possible depending on system capacity.
+
+  Enums:
+    RefreshFrequencyValueValuesEnum: Optional. Frequency to update profiles
+      regardless of whether the underlying resource has changes. Defaults to
+      never.
+
+  Fields:
+    inspectTemplateModifiedCadence: Optional. Governs when to update data
+      profiles when the inspection rules defined by the `InspectTemplate`
+      change. If not set, changing the template will not cause a data profile
+      to update.
+    refreshFrequency: Optional. Frequency to update profiles regardless of
+      whether the underlying resource has changes. Defaults to never.
+  """
+
+  class RefreshFrequencyValueValuesEnum(_messages.Enum):
+    r"""Optional. Frequency to update profiles regardless of whether the
+    underlying resource has changes. Defaults to never.
+
+    Values:
+      UPDATE_FREQUENCY_UNSPECIFIED: Unspecified.
+      UPDATE_FREQUENCY_NEVER: After the data profile is created, it will never
+        be updated.
+      UPDATE_FREQUENCY_DAILY: The data profile can be updated up to once every
+        24 hours.
+      UPDATE_FREQUENCY_MONTHLY: The data profile can be updated up to once
+        every 30 days. Default.
+    """
+    UPDATE_FREQUENCY_UNSPECIFIED = 0
+    UPDATE_FREQUENCY_NEVER = 1
+    UPDATE_FREQUENCY_DAILY = 2
+    UPDATE_FREQUENCY_MONTHLY = 3
+
+  inspectTemplateModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoveryInspectTemplateModifiedCadence', 1)
+  refreshFrequency = _messages.EnumField('RefreshFrequencyValueValuesEnum', 2)
 
 
 class GooglePrivacyDlpV2DiscoverySchemaModifiedCadence(_messages.Message):
@@ -6104,6 +6293,8 @@ class GooglePrivacyDlpV2DiscoveryTarget(_messages.Message):
       a table will be the one applied.
     cloudStorageTarget: Cloud Storage target for Discovery. The first target
       to match a table will be the one applied.
+    otherCloudTarget: Other clouds target for discovery. The first target to
+      match a resource will be the one applied.
     secretsTarget: Discovery target that looks for credentials and secrets
       stored in cloud resource metadata and reports them as vulnerabilities to
       Security Command Center. Only one target of this type is allowed.
@@ -6112,7 +6303,8 @@ class GooglePrivacyDlpV2DiscoveryTarget(_messages.Message):
   bigQueryTarget = _messages.MessageField('GooglePrivacyDlpV2BigQueryDiscoveryTarget', 1)
   cloudSqlTarget = _messages.MessageField('GooglePrivacyDlpV2CloudSqlDiscoveryTarget', 2)
   cloudStorageTarget = _messages.MessageField('GooglePrivacyDlpV2CloudStorageDiscoveryTarget', 3)
-  secretsTarget = _messages.MessageField('GooglePrivacyDlpV2SecretsDiscoveryTarget', 4)
+  otherCloudTarget = _messages.MessageField('GooglePrivacyDlpV2OtherCloudDiscoveryTarget', 4)
+  secretsTarget = _messages.MessageField('GooglePrivacyDlpV2SecretsDiscoveryTarget', 5)
 
 
 class GooglePrivacyDlpV2DlpJob(_messages.Message):
@@ -6528,7 +6720,8 @@ class GooglePrivacyDlpV2FileStoreCollection(_messages.Message):
 
 
 class GooglePrivacyDlpV2FileStoreDataProfile(_messages.Message):
-  r"""The profile for a file store. * Cloud Storage: maps 1:1 with a bucket.
+  r"""The profile for a file store. * Cloud Storage: maps 1:1 with a bucket. *
+  Amazon S3: maps 1:1 with a bucket.
 
   Enums:
     ResourceVisibilityValueValuesEnum: How broadly a resource has been shared.
@@ -6558,10 +6751,17 @@ class GooglePrivacyDlpV2FileStoreDataProfile(_messages.Message):
     fileStoreInfoTypeSummaries: InfoTypes detected in this file store.
     fileStoreIsEmpty: The file store does not have any files.
     fileStoreLocation: The location of the file store. * Cloud Storage:
-      https://cloud.google.com/storage/docs/locations#available-locations
-    fileStorePath: The file store path. * Cloud Storage: `gs://{bucket}`
+      https://cloud.google.com/storage/docs/locations#available-locations *
+      Amazon S3:
+      https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-
+      endpoints
+    fileStorePath: The file store path. * Cloud Storage: `gs://{bucket}` *
+      Amazon S3: `s3://{bucket}`
     fullResource: The resource name of the resource profiled.
       https://cloud.google.com/apis/design/resource_names#full_resource_name
+      Example format of an S3 bucket full resource name: `//cloudasset.googlea
+      pis.com/organizations/{org_id}/otherCloudConnections/aws/arn:aws:s3:::{b
+      ucket_name}`
     lastModifiedTime: The time the file store was last modified.
     locationType: The location type of the bucket (region, dual-region, multi-
       region, etc). If dual-region, expect data_storage_locations to be
@@ -6573,7 +6773,8 @@ class GooglePrivacyDlpV2FileStoreDataProfile(_messages.Message):
       generated.
     projectDataProfile: The resource name of the project data profile for this
       file store.
-    projectId: The Google Cloud project ID that owns the resource.
+    projectId: The Google Cloud project ID that owns the resource. For Amazon
+      S3 buckets, this is the AWS Account Id.
     resourceAttributes: Attributes of the resource being profiled. Currently
       used attributes: * customer_managed_encryption: boolean - true: the
       resource is encrypted with a customer-managed key. - false: the resource
@@ -8470,6 +8671,90 @@ class GooglePrivacyDlpV2OrgConfig(_messages.Message):
 
   location = _messages.MessageField('GooglePrivacyDlpV2DiscoveryStartingLocation', 1)
   projectId = _messages.StringField(2)
+
+
+class GooglePrivacyDlpV2OtherCloudDiscoveryStartingLocation(_messages.Message):
+  r"""The other cloud starting location for discovery.
+
+  Fields:
+    awsLocation: The AWS starting location for discovery.
+  """
+
+  awsLocation = _messages.MessageField('GooglePrivacyDlpV2AwsDiscoveryStartingLocation', 1)
+
+
+class GooglePrivacyDlpV2OtherCloudDiscoveryTarget(_messages.Message):
+  r"""Target used to match against for discovery of resources from other
+  clouds. An [AWS connector in Security Command Center
+  (Enterprise](https://cloud.google.com/security-command-center/docs/connect-
+  scc-to-aws) is required to use this feature.
+
+  Fields:
+    conditions: Optional. In addition to matching the filter, these conditions
+      must be true before a profile is generated.
+    dataSourceType: Required. The type of data profiles generated by this
+      discovery target. Supported values are: * aws/s3/bucket
+    disabled: Disable profiling for resources that match this filter.
+    filter: Required. The resources that the discovery cadence applies to. The
+      first target with a matching filter will be the one to apply to a
+      resource.
+    generationCadence: How often and when to update data profiles. New
+      resources that match both the filter and conditions are scanned as
+      quickly as possible depending on system capacity.
+  """
+
+  conditions = _messages.MessageField('GooglePrivacyDlpV2DiscoveryOtherCloudConditions', 1)
+  dataSourceType = _messages.MessageField('GooglePrivacyDlpV2DataSourceType', 2)
+  disabled = _messages.MessageField('GooglePrivacyDlpV2Disabled', 3)
+  filter = _messages.MessageField('GooglePrivacyDlpV2DiscoveryOtherCloudFilter', 4)
+  generationCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoveryOtherCloudGenerationCadence', 5)
+
+
+class GooglePrivacyDlpV2OtherCloudResourceCollection(_messages.Message):
+  r"""Match resources using regex filters.
+
+  Fields:
+    includeRegexes: A collection of regular expressions to match a resource
+      against.
+  """
+
+  includeRegexes = _messages.MessageField('GooglePrivacyDlpV2OtherCloudResourceRegexes', 1)
+
+
+class GooglePrivacyDlpV2OtherCloudResourceRegex(_messages.Message):
+  r"""A pattern to match against one or more resources. At least one pattern
+  must be specified. Regular expressions use RE2
+  [syntax](https://github.com/google/re2/wiki/Syntax); a guide can be found
+  under the google/re2 repository on GitHub.
+
+  Fields:
+    amazonS3BucketRegex: Regex for Amazon S3 buckets.
+  """
+
+  amazonS3BucketRegex = _messages.MessageField('GooglePrivacyDlpV2AmazonS3BucketRegex', 1)
+
+
+class GooglePrivacyDlpV2OtherCloudResourceRegexes(_messages.Message):
+  r"""A collection of regular expressions to determine what resources to match
+  against.
+
+  Fields:
+    patterns: A group of regular expression patterns to match against one or
+      more resources. Maximum of 100 entries. The sum of all regular
+      expression's length can't exceed 10 KiB.
+  """
+
+  patterns = _messages.MessageField('GooglePrivacyDlpV2OtherCloudResourceRegex', 1, repeated=True)
+
+
+class GooglePrivacyDlpV2OtherCloudSingleResourceReference(_messages.Message):
+  r"""Identifies a single resource, like a single Amazon S3 bucket.
+
+  Fields:
+    amazonS3Bucket: Amazon S3 bucket.
+  """
+
+  amazonS3Bucket = _messages.MessageField('GooglePrivacyDlpV2AmazonS3Bucket', 1)
 
 
 class GooglePrivacyDlpV2OtherInfoTypeSummary(_messages.Message):

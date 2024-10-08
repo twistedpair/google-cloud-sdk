@@ -51,3 +51,7 @@ class IntegrationsOperationError(exceptions.Error):
 
 class UnsupportedIntegrationsLocationError(exceptions.Error):
   """An error encountered when an unsupported location is provided."""
+
+
+class CRIUnavailableToNewUsersError(exceptions.Error):
+  """An error encountered by new users due to End Of Sale."""

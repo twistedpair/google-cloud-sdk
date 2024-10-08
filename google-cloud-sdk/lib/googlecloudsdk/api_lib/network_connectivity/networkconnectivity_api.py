@@ -239,6 +239,32 @@ class HubsClient(object):
     )
     return self.hub_service.RejectSpoke(reject_req)
 
+  def QueryHubStatus(
+      self,
+      hub_ref,
+      filter_expression=None,
+      group_by='',
+      order_by='',
+      page_size=100,
+      limit=5000,
+  ):
+    """Call API to query a hub's status in the GA release track."""
+    query_hub_status_req = self.messages.NetworkconnectivityProjectsLocationsGlobalHubsQueryStatusRequest(
+        name=hub_ref.RelativeName(),
+        pageSize=page_size,
+        filter=filter_expression,
+        orderBy=order_by,
+        groupBy=group_by,
+    )
+    return list_pager.YieldFromList(
+        self.hub_service,
+        query_hub_status_req,
+        field='hubStatusEntries',
+        limit=limit,
+        batch_size_attribute='pageSize',
+        method='QueryStatus',
+    )
+
 
 class GroupsClient(object):
   """Client for group service in network connectivity API."""

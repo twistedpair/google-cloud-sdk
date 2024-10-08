@@ -7155,6 +7155,10 @@ class Type(_messages.Message):
       PROTO: Encoded as a base64-encoded `string`, as described in RFC 4648,
         section 4.
       ENUM: Encoded as `string`, in decimal format.
+      INTERVAL: Encoded as `string`, in `ISO8601` duration format -
+        `P[n]Y[n]M[n]DT[n]H[n]M[n[.fraction]]S` where `n` is an integer. For
+        example, `P1Y2M3DT4H5M6.5S` represents time duration of 1 year, 2
+        months, 3 days, 4 hours, 5 minutes, and 6.5 seconds.
     """
     TYPE_CODE_UNSPECIFIED = 0
     BOOL = 1
@@ -7171,6 +7175,7 @@ class Type(_messages.Message):
     JSON = 12
     PROTO = 13
     ENUM = 14
+    INTERVAL = 15
 
   class TypeAnnotationValueValuesEnum(_messages.Enum):
     r"""The TypeAnnotationCode that disambiguates SQL type that Spanner will

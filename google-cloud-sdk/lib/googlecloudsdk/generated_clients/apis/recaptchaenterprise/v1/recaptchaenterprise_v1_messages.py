@@ -514,6 +514,7 @@ class GoogleCloudRecaptchaenterpriseV1FirewallActionBlockAction(_messages.Messag
   """
 
 
+
 class GoogleCloudRecaptchaenterpriseV1FirewallActionIncludeRecaptchaScriptAction(_messages.Message):
   r"""An include reCAPTCHA script action involves injecting reCAPTCHA
   JavaScript code into the HTML returned by the site backend. This reCAPTCHA
@@ -523,10 +524,12 @@ class GoogleCloudRecaptchaenterpriseV1FirewallActionIncludeRecaptchaScriptAction
   """
 
 
+
 class GoogleCloudRecaptchaenterpriseV1FirewallActionRedirectAction(_messages.Message):
   r"""A redirect action returns a 307 (temporary redirect) response, pointing
   the user to a reCAPTCHA interstitial page to attach a token.
   """
+
 
 
 class GoogleCloudRecaptchaenterpriseV1FirewallActionSetHeaderAction(_messages.Message):
@@ -1773,15 +1776,11 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
   allowAmpTraffic = _messages.BooleanField(2)
   allowedDomains = _messages.StringField(3, repeated=True)
   challengeSecurityPreference = _messages.EnumField('ChallengeSecurityPreferenceValueValuesEnum', 4)
-  challengeSettings = _messages.MessageField(
-      'GoogleCloudRecaptchaenterpriseV1WebKeySettingsChallengeSettings', 5
-  )
+  challengeSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WebKeySettingsChallengeSettings', 5)
   integrationType = _messages.EnumField('IntegrationTypeValueValuesEnum', 6)
 
 
-class GoogleCloudRecaptchaenterpriseV1WebKeySettingsActionSettings(
-    _messages.Message
-):
+class GoogleCloudRecaptchaenterpriseV1WebKeySettingsActionSettings(_messages.Message):
   r"""Per-action challenge settings.
 
   Fields:
@@ -1792,11 +1791,8 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettingsActionSettings(
   scoreThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
 
 
-class GoogleCloudRecaptchaenterpriseV1WebKeySettingsChallengeSettings(
-    _messages.Message
-):
+class GoogleCloudRecaptchaenterpriseV1WebKeySettingsChallengeSettings(_messages.Message):
   r"""Settings for SCORE_AND_CHALLENGE keys to control when a challenge is
-
   triggered.
 
   Messages:
@@ -1821,10 +1817,9 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettingsChallengeSettings(
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ActionSettingsValue(_messages.Message):
-    r"""Optional.
-
-    The action to score threshold map used for SCORE_AND_CHALLENGE keys. The
-    action name should be the same as the action name passed in a execute (see
+    r"""Optional. The action to score threshold map used for
+    SCORE_AND_CHALLENGE keys. The action name should be the same as the action
+    name passed in a execute (see
     https://cloud.google.com/recaptcha/docs/actions-website). Action names are
     case sensitive. There is a maximum of 100 action settings. An action name
     has a maximum length of 100.
@@ -1847,18 +1842,12 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettingsChallengeSettings(
       """
 
       key = _messages.StringField(1)
-      value = _messages.MessageField(
-          'GoogleCloudRecaptchaenterpriseV1WebKeySettingsActionSettings', 2
-      )
+      value = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WebKeySettingsActionSettings', 2)
 
-    additionalProperties = _messages.MessageField(
-        'AdditionalProperty', 1, repeated=True
-    )
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   actionSettings = _messages.MessageField('ActionSettingsValue', 1)
-  defaultSettings = _messages.MessageField(
-      'GoogleCloudRecaptchaenterpriseV1WebKeySettingsActionSettings', 2
-  )
+  defaultSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WebKeySettingsActionSettings', 2)
 
 
 class GoogleProtobufEmpty(_messages.Message):
@@ -1867,6 +1856,7 @@ class GoogleProtobufEmpty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class GoogleRpcStatus(_messages.Message):

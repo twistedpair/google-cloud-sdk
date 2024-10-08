@@ -258,8 +258,8 @@ class CaPool(_messages.Message):
     issuancePolicy: Optional. The IssuancePolicy to control how Certificates
       will be issued from this CaPool.
     labels: Optional. Labels with user-defined metadata.
-    name: Output only. The resource name for this CaPool in the format
-      `projects/*/locations/*/caPools/*`.
+    name: Output only. Identifier. The resource name for this CaPool in the
+      format `projects/*/locations/*/caPools/*`.
     publishingOptions: Optional. The PublishingOptions to follow when issuing
       Certificates from any CertificateAuthority in this CaPool.
     tier: Required. Immutable. The Tier of this CaPool.
@@ -2364,8 +2364,8 @@ class PrivatecaProjectsLocationsCaPoolsPatchRequest(_messages.Message):
 
   Fields:
     caPool: A CaPool resource to be passed as the request body.
-    name: Output only. The resource name for this CaPool in the format
-      `projects/*/locations/*/caPools/*`.
+    name: Output only. Identifier. The resource name for this CaPool in the
+      format `projects/*/locations/*/caPools/*`.
     requestId: Optional. An ID to identify requests. Specify a unique request
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will

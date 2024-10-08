@@ -315,6 +315,18 @@ class BackgroundJobLogEntry(_messages.Message):
   startTime = _messages.StringField(11)
 
 
+class BinaryLogParser(_messages.Message):
+  r"""Configuration to use Binary Log Parser CDC technique.
+
+  Fields:
+    logFileDirectories: Use Oracle directories.
+    oracleAsmLogFileAccess: Use Oracle ASM.
+  """
+
+  logFileDirectories = _messages.MessageField('LogFileDirectories', 1)
+  oracleAsmLogFileAccess = _messages.MessageField('OracleAsmLogFileAccess', 2)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -445,6 +457,7 @@ class CloudSqlSettings(_messages.Message):
     DataDiskTypeValueValuesEnum: The type of storage: `PD_SSD` (default) or
       `PD_HDD`.
     DatabaseVersionValueValuesEnum: The database engine type and version.
+      Deprecated. Use database_version_name instead.
     EditionValueValuesEnum: Optional. The edition of the given Cloud SQL
       instance.
 
@@ -486,7 +499,8 @@ class CloudSqlSettings(_messages.Message):
     databaseFlags: The database flags passed to the Cloud SQL instance at
       startup. An object containing a list of "key": value pairs. Example: {
       "name": "wrench", "mass": "1.3kg", "count": "3" }.
-    databaseVersion: The database engine type and version.
+    databaseVersion: The database engine type and version. Deprecated. Use
+      database_version_name instead.
     databaseVersionName: Optional. The database engine type and version name.
     edition: Optional. The edition of the given Cloud SQL instance.
     ipConfig: The settings for IP Management. This allows to enable or disable
@@ -560,7 +574,8 @@ class CloudSqlSettings(_messages.Message):
     PD_HDD = 2
 
   class DatabaseVersionValueValuesEnum(_messages.Enum):
-    r"""The database engine type and version.
+    r"""The database engine type and version. Deprecated. Use
+    database_version_name instead.
 
     Values:
       SQL_DATABASE_VERSION_UNSPECIFIED: Unspecified version.
@@ -3704,6 +3719,22 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class LogFileDirectories(_messages.Message):
+  r"""Configuration to specify the Oracle directories to access the log files.
+
+  Fields:
+    archivedLogDirectory: Required. Oracle directory for archived logs.
+    onlineLogDirectory: Required. Oracle directory for online logs.
+  """
+
+  archivedLogDirectory = _messages.StringField(1)
+  onlineLogDirectory = _messages.StringField(2)
+
+
+class LogMiner(_messages.Message):
+  r"""Configuration to use LogMiner CDC method."""
+
+
 class LookupMigrationJobObjectRequest(_messages.Message):
   r"""Request for looking up a specific migration job object by its source
   object identifier.
@@ -3977,6 +4008,9 @@ class MigrationJob(_messages.Message):
     name: The name (URI) of this migration job resource, in the form of:
       projects/{project}/locations/{location}/migrationJobs/{migrationJob}.
     objectsConfig: Optional. The objects that need to be migrated.
+    oracleToPostgresConfig: Configuration for heterogeneous **Oracle to Cloud
+      SQL for PostgreSQL** and **Oracle to AlloyDB for PostgreSQL**
+      migrations.
     performanceConfig: Optional. Data dump parallelism settings used by the
       migration.
     phase: Output only. The current migration job phase.
@@ -4127,17 +4161,18 @@ class MigrationJob(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 14)
   name = _messages.StringField(15)
   objectsConfig = _messages.MessageField('MigrationJobObjectsConfig', 16)
-  performanceConfig = _messages.MessageField('PerformanceConfig', 17)
-  phase = _messages.EnumField('PhaseValueValuesEnum', 18)
-  reverseSshConnectivity = _messages.MessageField('ReverseSshConnectivity', 19)
-  source = _messages.StringField(20)
-  sourceDatabase = _messages.MessageField('DatabaseType', 21)
-  sqlserverHomogeneousMigrationJobConfig = _messages.MessageField('SqlServerHomogeneousMigrationJobConfig', 22)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
-  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 24)
-  type = _messages.EnumField('TypeValueValuesEnum', 25)
-  updateTime = _messages.StringField(26)
-  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 27)
+  oracleToPostgresConfig = _messages.MessageField('OracleToPostgresConfig', 17)
+  performanceConfig = _messages.MessageField('PerformanceConfig', 18)
+  phase = _messages.EnumField('PhaseValueValuesEnum', 19)
+  reverseSshConnectivity = _messages.MessageField('ReverseSshConnectivity', 20)
+  source = _messages.StringField(21)
+  sourceDatabase = _messages.MessageField('DatabaseType', 22)
+  sqlserverHomogeneousMigrationJobConfig = _messages.MessageField('SqlServerHomogeneousMigrationJobConfig', 23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 25)
+  type = _messages.EnumField('TypeValueValuesEnum', 26)
+  updateTime = _messages.StringField(27)
+  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 28)
 
 
 class MigrationJobObject(_messages.Message):
@@ -4620,6 +4655,10 @@ class OracleAsmConfig(_messages.Message):
   username = _messages.StringField(7)
 
 
+class OracleAsmLogFileAccess(_messages.Message):
+  r"""Configuration to use Oracle ASM to access the log files."""
+
+
 class OracleConnectionProfile(_messages.Message):
   r"""Specifies connection parameters required specifically for Oracle
   databases.
@@ -4657,6 +4696,43 @@ class OracleConnectionProfile(_messages.Message):
   ssl = _messages.MessageField('SslConfig', 9)
   staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 10)
   username = _messages.StringField(11)
+
+
+class OracleSourceConfig(_messages.Message):
+  r"""Configuration for Oracle as a source in a migration.
+
+  Fields:
+    binaryLogParser: Use Binary Log Parser.
+    cdcStartPosition: Optional. The schema change number (SCN) to start CDC
+      data migration from.
+    logMiner: Use LogMiner.
+    maxConcurrentCdcConnections: Optional. Maximum number of connections
+      Database Migration Service will open to the source for CDC phase.
+    maxConcurrentFullDumpConnections: Optional. Maximum number of connections
+      Database Migration Service will open to the source for full dump phase.
+    skipFullDump: Optional. Whether to skip full dump or not.
+  """
+
+  binaryLogParser = _messages.MessageField('BinaryLogParser', 1)
+  cdcStartPosition = _messages.IntegerField(2)
+  logMiner = _messages.MessageField('LogMiner', 3)
+  maxConcurrentCdcConnections = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  maxConcurrentFullDumpConnections = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  skipFullDump = _messages.BooleanField(6)
+
+
+class OracleToPostgresConfig(_messages.Message):
+  r"""Configuration for heterogeneous **Oracle to Cloud SQL for PostgreSQL**
+  and **Oracle to AlloyDB for PostgreSQL** migrations.
+
+  Fields:
+    oracleSourceConfig: Optional. Configuration for Oracle source.
+    postgresDestinationConfig: Optional. Configuration for Postgres
+      destination.
+  """
+
+  oracleSourceConfig = _messages.MessageField('OracleSourceConfig', 1)
+  postgresDestinationConfig = _messages.MessageField('PostgresDestinationConfig', 2)
 
 
 class PackageEntity(_messages.Message):
@@ -4887,6 +4963,19 @@ class PostgreSqlConnectionProfile(_messages.Message):
   ssl = _messages.MessageField('SslConfig', 10)
   staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 11)
   username = _messages.StringField(12)
+
+
+class PostgresDestinationConfig(_messages.Message):
+  r"""Configuration for Postgres as a destination in a migration.
+
+  Fields:
+    maxConcurrentConnections: Optional. Maximum number of connections Database
+      Migration Service will open to the destination for data migration.
+    transactionTimeout: Optional. Timeout for data migration transactions.
+  """
+
+  maxConcurrentConnections = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  transactionTimeout = _messages.StringField(2)
 
 
 class PrimaryInstanceSettings(_messages.Message):

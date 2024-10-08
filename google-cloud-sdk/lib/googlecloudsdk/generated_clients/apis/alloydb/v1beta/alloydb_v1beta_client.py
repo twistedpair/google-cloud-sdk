@@ -872,7 +872,7 @@ class AlloydbV1beta(base_api.BaseApiClient):
     )
 
     def Switchover(self, request, global_params=None):
-      r"""Switches the role of PRIMARY and SECONDARY cluster without any data loss. This promotes the SECONDARY cluster to PRIMARY and sets up original PRIMARY cluster to replicate from this newly promoted cluster.
+      r"""Switches the roles of PRIMARY and SECONDARY clusters without any data loss. This promotes the SECONDARY cluster to PRIMARY and sets up the original PRIMARY cluster to replicate from this newly promoted cluster.
 
       Args:
         request: (AlloydbProjectsLocationsClustersSwitchoverRequest) input message

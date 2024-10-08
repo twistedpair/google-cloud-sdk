@@ -72,16 +72,7 @@ def ModifyCreateRequest(backup_ref, args, req):
   req.backup.sourceTable = f'projects/{backup_ref.projectsId}/instances/{backup_ref.instancesId}/tables/{args.table}'
 
   req.backup.expireTime = GetExpireTime(args)
-  # TODO: b/337328220 - Remove this try block after GA.
-  #
-  # We need this try block because `hot_to_standard_time` is only present in the
-  # Alpha track.
-  try:
-    hot_to_standard_time = GetHotToStandardTime(args)
-  except AttributeError:
-    pass
-  else:
-    req.backup.hotToStandardTime = hot_to_standard_time
+  req.backup.hotToStandardTime = GetHotToStandardTime(args)
   req.backupId = args.backup
   req.parent = backup_ref.Parent().RelativeName()
   return req
@@ -110,31 +101,23 @@ def AddBackupFieldsToUpdateMask(unused_backup_ref, args, req):
     req.backup.expireTime = expire_time
     req = AddFieldToUpdateMask('expire_time', req)
 
-  # TODO: b/337328220 - Remove this try block after GA.
-  #
-  # We need this try block because `hot_to_standard_time` is only present in the
-  # Alpha track.
-  try:
-    hot_to_standard_time = GetHotToStandardTime(args)
-  except AttributeError:
-    pass
-  else:
-    if hot_to_standard_time is not None:
-      req = AddFieldToUpdateMask('hot_to_standard_time', req)
-      # We don't have to explicitly check if `hot_to_standard_time` is an empty
-      # string because even though it can also be None, we have already checked
-      # that it is not None.
-      #
-      # `hot_to_standard_time` is a string flag, so this means that we can
-      # simply check whether the flag is falsy to determine if it is an empty
-      # string.
-      #
-      # An empty string means that the user wants to clear the
-      # `hot_to_standard_time` field.
-      if not hot_to_standard_time:
-        req.backup.hotToStandardTime = None
-      else:
-        req.backup.hotToStandardTime = hot_to_standard_time
+  hot_to_standard_time = GetHotToStandardTime(args)
+  if hot_to_standard_time is not None:
+    req = AddFieldToUpdateMask('hot_to_standard_time', req)
+    # We don't have to explicitly check if `hot_to_standard_time` is an empty
+    # string because even though it can also be None, we have already checked
+    # that it is not None.
+    #
+    # `hot_to_standard_time` is a string flag, so this means that we can
+    # simply check whether the flag is falsy to determine if it is an empty
+    # string.
+    #
+    # An empty string means that the user wants to clear the
+    # `hot_to_standard_time` field.
+    if not hot_to_standard_time:
+      req.backup.hotToStandardTime = None
+    else:
+      req.backup.hotToStandardTime = hot_to_standard_time
 
   return req
 

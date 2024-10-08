@@ -332,6 +332,103 @@ class Empty(_messages.Message):
 
 
 
+class Enrollment(_messages.Message):
+  r"""An enrollment represents a subscription for messages on a particular
+  message bus. It defines a matching criteria for messages on the bus and the
+  subscriber endpoint where matched messages should be delivered.
+
+  Messages:
+    AnnotationsValue: Optional. Resource annotations.
+    LabelsValue: Optional. Resource labels.
+
+  Fields:
+    annotations: Optional. Resource annotations.
+    celMatch: Required. A CEL expression identifying which messages this
+      enrollment applies to.
+    createTime: Output only. The creation time.
+    destination: Required. Destination is the Pipeline that the Enrollment is
+      delivering to. It must point to the full resource name of a Pipeline.
+      Format:
+      "projects/{PROJECT_ID}/locations/{region}/pipelines/{PIPELINE_ID)"
+    displayName: Optional. Resource display name.
+    etag: Output only. This checksum is computed by the server based on the
+      value of other fields, and might be sent only on update and delete
+      requests to ensure that the client has an up-to-date value before
+      proceeding.
+    labels: Optional. Resource labels.
+    messageBus: Required. Resource name of the message bus identifying the
+      source of the messages. It matches the form
+      projects/{project}/locations/{location}/messageBuses/{messageBus}.
+    name: Identifier. Resource name of the form
+      projects/{project}/locations/{location}/enrollments/{enrollment}
+    uid: Output only. Server assigned unique identifier for the channel. The
+      value is a UUID4 string and guaranteed to remain unchanged until the
+      resource is deleted.
+    updateTime: Output only. The last-modified time.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Resource annotations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Resource labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  celMatch = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  destination = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  messageBus = _messages.StringField(8)
+  name = _messages.StringField(9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+
+
 class EventFilter(_messages.Message):
   r"""Filters events based on exact matches on the CloudEvents attributes.
 
@@ -635,6 +732,163 @@ class EventarcProjectsLocationsChannelsTestIamPermissionsRequest(_messages.Messa
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class EventarcProjectsLocationsEnrollmentsCreateRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsEnrollmentsCreateRequest object.
+
+  Fields:
+    enrollment: A Enrollment resource to be passed as the request body.
+    enrollmentId: Required. The user-provided ID to be assigned to the
+      Enrollment. It should match the format
+      (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    parent: Required. The parent collection in which to add this enrollment.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not post it.
+  """
+
+  enrollment = _messages.MessageField('Enrollment', 1)
+  enrollmentId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class EventarcProjectsLocationsEnrollmentsDeleteRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsEnrollmentsDeleteRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, and the Enrollment is not found,
+      the request will succeed but no action will be taken on the server.
+    etag: Optional. If provided, the Enrollment will only be deleted if the
+      etag matches the current etag on the resource.
+    name: Required. The name of the Enrollment to be deleted.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not post it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class EventarcProjectsLocationsEnrollmentsGetIamPolicyRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsEnrollmentsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class EventarcProjectsLocationsEnrollmentsGetRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsEnrollmentsGetRequest object.
+
+  Fields:
+    name: Required. The name of the Enrollment to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class EventarcProjectsLocationsEnrollmentsListRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsEnrollmentsListRequest object.
+
+  Fields:
+    filter: Optional. The filter field that the list request will filter on.
+      Possible filtersare described in https://google.aip.dev/160.
+    orderBy: Optional. The sorting order of the resources returned. Value
+      should be a comma-separated list of fields. The default sorting order is
+      ascending. To specify descending order for a field, append a `desc`
+      suffix; for example: `name desc, update_time`.
+    pageSize: Optional. The maximum number of results to return on each page.
+      Note: The service may send fewer.
+    pageToken: Optional. The page token; provide the value from the
+      `next_page_token` field in a previous call to retrieve the subsequent
+      page. When paginating, all other parameters provided must match the
+      previous call that provided the page token.
+    parent: Required. The parent collection to list triggers on.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class EventarcProjectsLocationsEnrollmentsPatchRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsEnrollmentsPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, and the Enrollment is not found, a
+      new Enrollment will be created. In this situation, `update_mask` is
+      ignored.
+    enrollment: A Enrollment resource to be passed as the request body.
+    name: Identifier. Resource name of the form
+      projects/{project}/locations/{location}/enrollments/{enrollment}
+    updateMask: Optional. The fields to be updated; only fields explicitly
+      provided are updated. If no field mask is provided, all provided fields
+      in the request are updated. To update all fields, provide a field mask
+      of "*".
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not post it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  enrollment = _messages.MessageField('Enrollment', 2)
+  name = _messages.StringField(3, required=True)
+  updateMask = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class EventarcProjectsLocationsEnrollmentsSetIamPolicyRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsEnrollmentsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class EventarcProjectsLocationsEnrollmentsTestIamPermissionsRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsEnrollmentsTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class EventarcProjectsLocationsGetGoogleChannelConfigRequest(_messages.Message):
   r"""A EventarcProjectsLocationsGetGoogleChannelConfigRequest object.
 
@@ -655,6 +909,167 @@ class EventarcProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class EventarcProjectsLocationsGoogleApiSourcesCreateRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsGoogleApiSourcesCreateRequest object.
+
+  Fields:
+    googleApiSource: A GoogleApiSource resource to be passed as the request
+      body.
+    googleApiSourceId: Required. The user-provided ID to be assigned to the
+      GoogleApiSource. It should match the format
+      (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    parent: Required. The parent collection in which to add this google api
+      source.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not post it.
+  """
+
+  googleApiSource = _messages.MessageField('GoogleApiSource', 1)
+  googleApiSourceId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class EventarcProjectsLocationsGoogleApiSourcesDeleteRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsGoogleApiSourcesDeleteRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, and the MessageBus is not found,
+      the request will succeed but no action will be taken on the server.
+    etag: Optional. If provided, the MessageBus will only be deleted if the
+      etag matches the current etag on the resource.
+    name: Required. The name of the GoogleApiSource to be deleted.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not post it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class EventarcProjectsLocationsGoogleApiSourcesGetIamPolicyRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsGoogleApiSourcesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class EventarcProjectsLocationsGoogleApiSourcesGetRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsGoogleApiSourcesGetRequest object.
+
+  Fields:
+    name: Required. The name of the google api source to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class EventarcProjectsLocationsGoogleApiSourcesListRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsGoogleApiSourcesListRequest object.
+
+  Fields:
+    filter: Optional. The filter field that the list request will filter on.
+      Possible filtersare described in https://google.aip.dev/160.
+    orderBy: Optional. The sorting order of the resources returned. Value
+      should be a comma-separated list of fields. The default sorting order is
+      ascending. To specify descending order for a field, append a `desc`
+      suffix; for example: `name desc, update_time`.
+    pageSize: Optional. The maximum number of results to return on each page.
+      Note: The service may send fewer.
+    pageToken: Optional. The page token; provide the value from the
+      `next_page_token` field in a previous call to retrieve the subsequent
+      page. When paginating, all other parameters provided must match the
+      previous call that provided the page token.
+    parent: Required. The parent collection to list GoogleApiSources on.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class EventarcProjectsLocationsGoogleApiSourcesPatchRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsGoogleApiSourcesPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, and the GoogleApiSource is not
+      found, a new GoogleApiSource will be created. In this situation,
+      `update_mask` is ignored.
+    googleApiSource: A GoogleApiSource resource to be passed as the request
+      body.
+    name: Identifier. Resource name of the form projects/{project}/locations/{
+      location}/googleApiSources/{google_api_source}
+    updateMask: Optional. The fields to be updated; only fields explicitly
+      provided are updated. If no field mask is provided, all provided fields
+      in the request are updated. To update all fields, provide a field mask
+      of "*".
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not post it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  googleApiSource = _messages.MessageField('GoogleApiSource', 2)
+  name = _messages.StringField(3, required=True)
+  updateMask = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class EventarcProjectsLocationsGoogleApiSourcesSetIamPolicyRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsGoogleApiSourcesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class EventarcProjectsLocationsGoogleApiSourcesTestIamPermissionsRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsGoogleApiSourcesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class EventarcProjectsLocationsListRequest(_messages.Message):
   r"""A EventarcProjectsLocationsListRequest object.
 
@@ -673,6 +1088,181 @@ class EventarcProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class EventarcProjectsLocationsMessageBusesCreateRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsMessageBusesCreateRequest object.
+
+  Fields:
+    messageBus: A MessageBus resource to be passed as the request body.
+    messageBusId: Required. The user-provided ID to be assigned to the
+      MessageBus. It should match the format
+      (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$)
+    parent: Required. The parent collection in which to add this message bus.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not post it.
+  """
+
+  messageBus = _messages.MessageField('MessageBus', 1)
+  messageBusId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class EventarcProjectsLocationsMessageBusesDeleteRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsMessageBusesDeleteRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, and the MessageBus is not found,
+      the request will succeed but no action will be taken on the server.
+    etag: Optional. If provided, the MessageBus will only be deleted if the
+      etag matches the current etag on the resource.
+    name: Required. The name of the MessageBus to be deleted.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not post it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class EventarcProjectsLocationsMessageBusesGetIamPolicyRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsMessageBusesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class EventarcProjectsLocationsMessageBusesGetRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsMessageBusesGetRequest object.
+
+  Fields:
+    name: Required. The name of the message bus to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class EventarcProjectsLocationsMessageBusesListEnrollmentsRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsMessageBusesListEnrollmentsRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return on each page.
+      Note: The service may send fewer.
+    pageToken: Optional. The page token; provide the value from the
+      `next_page_token` field in a previous call to retrieve the subsequent
+      page. When paginating, all other parameters provided must match the
+      previous call that provided the page token.
+    parent: Required. The parent message bus to list enrollments on.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class EventarcProjectsLocationsMessageBusesListRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsMessageBusesListRequest object.
+
+  Fields:
+    filter: Optional. The filter field that the list request will filter on.
+      Possible filtersare described in https://google.aip.dev/160.
+    orderBy: Optional. The sorting order of the resources returned. Value
+      should be a comma-separated list of fields. The default sorting order is
+      ascending. To specify descending order for a field, append a `desc`
+      suffix; for example: `name desc, update_time`.
+    pageSize: Optional. The maximum number of results to return on each page.
+      Note: The service may send fewer.
+    pageToken: Optional. The page token; provide the value from the
+      `next_page_token` field in a previous call to retrieve the subsequent
+      page. When paginating, all other parameters provided must match the
+      previous call that provided the page token.
+    parent: Required. The parent collection to list triggers on.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class EventarcProjectsLocationsMessageBusesPatchRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsMessageBusesPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, and the MessageBus is not found, a
+      new MessageBus will be created. In this situation, `update_mask` is
+      ignored.
+    messageBus: A MessageBus resource to be passed as the request body.
+    name: Identifier. Resource name of the form
+      projects/{project}/locations/{location}/messageBuses/{message_bus}
+    updateMask: Optional. The fields to be updated; only fields explicitly
+      provided are updated. If no field mask is provided, all provided fields
+      in the request are updated. To update all fields, provide a field mask
+      of "*".
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not post it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  messageBus = _messages.MessageField('MessageBus', 2)
+  name = _messages.StringField(3, required=True)
+  updateMask = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class EventarcProjectsLocationsMessageBusesSetIamPolicyRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsMessageBusesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class EventarcProjectsLocationsMessageBusesTestIamPermissionsRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsMessageBusesTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class EventarcProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -723,6 +1313,162 @@ class EventarcProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class EventarcProjectsLocationsPipelinesCreateRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsPipelinesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent collection in which to add this pipeline.
+    pipeline: A Pipeline resource to be passed as the request body.
+    pipelineId: Required. The user-provided ID to be assigned to the Pipeline.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not post it.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  pipeline = _messages.MessageField('Pipeline', 2)
+  pipelineId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class EventarcProjectsLocationsPipelinesDeleteRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsPipelinesDeleteRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, and the Pipeline is not found, the
+      request will succeed but no action will be taken on the server.
+    etag: Optional. If provided, the Pipeline will only be deleted if the etag
+      matches the current etag on the resource.
+    name: Required. The name of the Pipeline to be deleted.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not post it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class EventarcProjectsLocationsPipelinesGetIamPolicyRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsPipelinesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class EventarcProjectsLocationsPipelinesGetRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsPipelinesGetRequest object.
+
+  Fields:
+    name: Required. The name of the pipeline to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class EventarcProjectsLocationsPipelinesListRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsPipelinesListRequest object.
+
+  Fields:
+    filter: Optional. The filter field that the list request will filter on.
+      Possible filters are described in https://google.aip.dev/160.
+    orderBy: Optional. The sorting order of the resources returned. Value
+      should be a comma-separated list of fields. The default sorting order is
+      ascending. To specify descending order for a field, append a `desc`
+      suffix; for example: `name desc, update_time`.
+    pageSize: Optional. The maximum number of results to return on each page.
+      Note: The service may send fewer.
+    pageToken: Optional. The page token; provide the value from the
+      `next_page_token` field in a previous call to retrieve the subsequent
+      page. When paginating, all other parameters provided must match the
+      previous call that provided the page token.
+    parent: Required. The parent collection to list pipelines on.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class EventarcProjectsLocationsPipelinesPatchRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsPipelinesPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, and the Pipeline is not found, a
+      new Pipeline will be created. In this situation, `update_mask` is
+      ignored.
+    name: Identifier. The resource name of the Pipeline. Must be unique within
+      the location of the project and must be in
+      `projects/{project}/locations/{location}/pipelines/{pipeline}` format.
+    pipeline: A Pipeline resource to be passed as the request body.
+    updateMask: Optional. The fields to be updated; only fields explicitly
+      provided are updated. If no field mask is provided, all provided fields
+      in the request are updated. To update all fields, provide a field mask
+      of "*".
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not post it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  pipeline = _messages.MessageField('Pipeline', 3)
+  updateMask = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class EventarcProjectsLocationsPipelinesSetIamPolicyRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsPipelinesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class EventarcProjectsLocationsPipelinesTestIamPermissionsRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsPipelinesTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class EventarcProjectsLocationsProvidersGetRequest(_messages.Message):
@@ -1014,6 +1760,102 @@ class GKE(_messages.Message):
   service = _messages.StringField(5)
 
 
+class GoogleApiSource(_messages.Message):
+  r"""A GoogleApiSource represents a subscription of 1P events from a
+  MessageBus.
+
+  Messages:
+    AnnotationsValue: Optional. Resource annotations.
+    LabelsValue: Optional. Resource labels.
+
+  Fields:
+    annotations: Optional. Resource annotations.
+    createTime: Output only. The creation time.
+    cryptoKeyName: Optional. Resource name of a KMS crypto key (managed by the
+      user) used to encrypt/decrypt their event data. It must match the
+      pattern `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
+    destination: Required. Destination is the message bus that the
+      GoogleApiSource is delivering to. It must be point to the full resource
+      name of a MessageBus. Format:
+      "projects/{PROJECT_ID}/locations/{region}/messagesBuses/{MESSAGE_BUS_ID)
+    displayName: Optional. Resource display name.
+    etag: Output only. This checksum is computed by the server based on the
+      value of other fields, and might be sent only on update and delete
+      requests to ensure that the client has an up-to-date value before
+      proceeding.
+    labels: Optional. Resource labels.
+    loggingConfig: Optional. Config to control Platform logging for the
+      GoogleApiSource.
+    name: Identifier. Resource name of the form projects/{project}/locations/{
+      location}/googleApiSources/{google_api_source}
+    uid: Output only. Server assigned unique identifier for the channel. The
+      value is a UUID4 string and guaranteed to remain unchanged until the
+      resource is deleted.
+    updateTime: Output only. The last-modified time.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Resource annotations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Resource labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  cryptoKeyName = _messages.StringField(3)
+  destination = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  loggingConfig = _messages.MessageField('LoggingConfig', 8)
+  name = _messages.StringField(9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+
+
 class GoogleChannelConfig(_messages.Message):
   r"""A GoogleChannelConfig is a resource that stores the custom settings
   respected by Eventarc first-party triggers in the matching region. Once
@@ -1032,6 +1874,349 @@ class GoogleChannelConfig(_messages.Message):
   cryptoKeyName = _messages.StringField(1)
   name = _messages.StringField(2)
   updateTime = _messages.StringField(3)
+
+
+class GoogleCloudEventarcV1PipelineDestination(_messages.Message):
+  r"""Represents a target of an invocation over HTTP.
+
+  Fields:
+    authenticationConfig: Optional. An authentication config used to
+      authenticate message requests, such that destinations can verify the
+      source. For example, this can be used with private GCP destinations that
+      require GCP credentials to access like Cloud Run. This field is optional
+      and should be set only by users interested in authenticated push
+    httpEndpoint: Optional. An HTTP endpoint destination described by an URI.
+      If a DNS FQDN is provided as the endpoint, Pipeline will create a
+      peering zone to the consumer VPC and forward DNS requests to the VPC
+      specified by network config to resolve the service endpoint. See:
+      https://cloud.google.com/dns/docs/zones/zones-overview#peering_zones
+    messageBindingHttpTemplate: Optional. The CEL expression used to construct
+      a new HTTP request to be sent to the final destination. The result of
+      the CEL expression must be a map of key/value pairs such that: - If a
+      map named `headers` exists on the result of the expression, then its
+      key/value pairs are directly mapped to the HTTP request headers. The
+      headers values are constructed from the corresponding value type's
+      canonical representation. If the `headers` field doesn't exist then the
+      resulting HTTP request will be without headers. - If a field named
+      `body` exists on the result of the expression then its value is directly
+      mapped to the body of the request. If the value of the `body` field is
+      of type bytes or string then it is used for the HTTP request body as-is,
+      with no conversion. If the body field is of any other type then it is
+      converted to a JSON string. If the body field doesn't exist then the
+      resulting HTTP request will be without a body. - Any other fields in the
+      resulting expression will be ignored. The CEL expression may access the
+      incoming CloudEvent message in its definition, as follows: - The `data`
+      field of the incoming CloudEvent message can be accessed using the
+      `message.data` value. - Each attribute of the incoming CloudEvent
+      message can be accessed using the `message.` value, where is replaced
+      with the name of the attribute. Headers added to the request by previous
+      filters in the chain can be accessed in the CEL expression using the
+      `headers` variable. The `headers` variable defines a map of key/value
+      pairs corresponding to the HTTP headers added by previous mediation
+      steps and not the headers present on the original incoming request. For
+      example, the following CEL expression can be used to construct a
+      Headers-only HTTP request by adding an additional header to the headers
+      added by previous mediations in the Pipeline: ``` {"headers":
+      headers.merge({"new-header-key": "new-header-value"})} ``` Additionally,
+      the following CEL extension functions are provided for use in this CEL
+      expression: - toBase64Url: map.toBase64Url() -> string - Converts a
+      CelValue to a base64url encoded string - toJsonString:
+      map.toJsonString() -> string - Converts a CelValue to a JSON string -
+      merge: map1.merge(map2) -> map3 - Merges the passed CEL map with the
+      existing CEL map the function is applied to. - If the same key exists in
+      both maps, if the key's value is type map both maps are merged else the
+      value from the passed map is used. - toMap: list(map).toMap() -> map -
+      Converts a CEL list of CEL maps to a single CEL map -
+      toDestinationPayloadFormat(): message.data.toDestinationPayloadFormat()
+      -> string or bytes - Converts the message data to the destination
+      payload format specified in Pipeline.Destination.output_payload_format -
+      This function is meant to be applied to the message.data field. - If the
+      destination payload format is not set, the function will return the
+      message data unchanged. - toCloudEventJsonWithPayloadFormat:
+      message.toCloudEventJsonWithPayloadFormat() -> map - Converts a message
+      to the corresponding structure of JSON format for CloudEvents - This
+      function applies toDestinationPayloadFormat() to the message data. It
+      also sets the corresponding datacontenttype of the CloudEvent, as
+      indicated by Pipeline.Destination.output_payload_format. If no
+      output_payload_format is set it will use the existing datacontenttype on
+      the CloudEvent if present, else leave datacontenttype absent. - This
+      function expects that the content of the message will adhere to the
+      standard CloudEvent format. If it doesn't then this function will fail.
+      - The result is a CEL map that corresponds to the JSON representation of
+      the CloudEvent. To convert that data to a JSON string it can be chained
+      with the toJsonString function.
+    messageBus: Optional. The resource name of the Message Bus to which events
+      should be published. The Message Bus resource should exist in the same
+      project as the Pipeline. Format:
+      `projects/{project}/locations/{location}/messageBuses/{message_bus}`
+    networkConfig: Optional. Network config is used to configure how Pipeline
+      resolves and connects to a destination.
+    outputPayloadFormat: Optional. The message format before it is delivered
+      to the destination. If not set, the message will be delivered in the
+      format it was originally delivered to the Pipeline. This field can only
+      be set if Pipeline.input_payload_format is also set.
+    topic: Optional. The resource name of the Pub/Sub topic to which events
+      should be published. Format:
+      `projects/{project}/locations/{location}/topics/{topic}`
+    workflow: Optional. The resource name of the Workflow whose Executions are
+      triggered by the events. The Workflow resource should be deployed in the
+      same project as the Pipeline. Format:
+      `projects/{project}/locations/{location}/workflows/{workflow}`
+  """
+
+  authenticationConfig = _messages.MessageField('GoogleCloudEventarcV1PipelineDestinationAuthenticationConfig', 1)
+  httpEndpoint = _messages.MessageField('GoogleCloudEventarcV1PipelineDestinationHttpEndpoint', 2)
+  messageBindingHttpTemplate = _messages.StringField(3)
+  messageBus = _messages.StringField(4)
+  networkConfig = _messages.MessageField('GoogleCloudEventarcV1PipelineDestinationNetworkConfig', 5)
+  outputPayloadFormat = _messages.MessageField('GoogleCloudEventarcV1PipelineMessagePayloadFormat', 6)
+  topic = _messages.StringField(7)
+  workflow = _messages.StringField(8)
+
+
+class GoogleCloudEventarcV1PipelineDestinationAuthenticationConfig(_messages.Message):
+  r"""Represents a config used to authenticate message requests.
+
+  Fields:
+    googleOidc: Optional. This authenticate method will apply Google OIDC
+      tokens signed by a GCP service account to the requests.
+    oauthToken: Optional. If specified, an [OAuth
+      token](https://developers.google.com/identity/protocols/OAuth2) will be
+      generated and attached as an `Authorization` header in the HTTP request.
+      This type of authorization should generally only be used when calling
+      Google APIs hosted on *.googleapis.com.
+  """
+
+  googleOidc = _messages.MessageField('GoogleCloudEventarcV1PipelineDestinationAuthenticationConfigOidcToken', 1)
+  oauthToken = _messages.MessageField('GoogleCloudEventarcV1PipelineDestinationAuthenticationConfigOAuthToken', 2)
+
+
+class GoogleCloudEventarcV1PipelineDestinationAuthenticationConfigOAuthToken(_messages.Message):
+  r"""Contains information needed for generating an [OAuth
+  token](https://developers.google.com/identity/protocols/OAuth2). This type
+  of authorization should generally only be used when calling Google APIs
+  hosted on *.googleapis.com.
+
+  Fields:
+    scope: Optional. OAuth scope to be used for generating OAuth access token.
+      If not specified, "https://www.googleapis.com/auth/cloud-platform" will
+      be used.
+    serviceAccount: Required. Service account email used to generate the
+      [OAuth token](https://developers.google.com/identity/protocols/OAuth2).
+      The principal who calls this API must have iam.serviceAccounts.actAs
+      permission in the service account. See
+      https://cloud.google.com/iam/docs/understanding-service-
+      accounts?hl=en#sa_common for more information. Eventarc service agents
+      must have roles/roles/iam.serviceAccountTokenCreator role to allow
+      Pipeline to create OAuth2 tokens for authenticated requests.
+  """
+
+  scope = _messages.StringField(1)
+  serviceAccount = _messages.StringField(2)
+
+
+class GoogleCloudEventarcV1PipelineDestinationAuthenticationConfigOidcToken(_messages.Message):
+  r"""Represents a config used to authenticate with a Google OIDC token using
+  a GCP service account. Use this authentication method to invoke your Cloud
+  Run and Cloud Functions destinations or HTTP endpoints that support Google
+  OIDC.
+
+  Fields:
+    audience: Optional. Audience to be used to generate the OIDC Token. The
+      audience claim identifies the recipient that the JWT is intended for. If
+      unspecified, the destination URI will be used.
+    serviceAccount: Required. Service account email used to generate the OIDC
+      Token. The principal who calls this API must have
+      iam.serviceAccounts.actAs permission in the service account. See
+      https://cloud.google.com/iam/docs/understanding-service-
+      accounts?hl=en#sa_common for more information. Eventarc service agents
+      must have roles/roles/iam.serviceAccountTokenCreator role to allow the
+      Pipeline to create OpenID tokens for authenticated requests.
+  """
+
+  audience = _messages.StringField(1)
+  serviceAccount = _messages.StringField(2)
+
+
+class GoogleCloudEventarcV1PipelineDestinationHttpEndpoint(_messages.Message):
+  r"""Represents a HTTP endpoint destination.
+
+  Fields:
+    messageBindingTemplate: Optional. The CEL expression used to construct a
+      new HTTP request to be sent to the final destination. The result of the
+      CEL expression must be a map of key/value pairs such that: - If a map
+      named `headers` exists on the result of the expression, then its
+      key/value pairs are directly mapped to the HTTP request headers. The
+      headers values are constructed from the corresponding value type's
+      canonical representation. If the `headers` field doesn't exist then the
+      resulting HTTP request will be without headers. - If a field named
+      `body` exists on the result of the expression then its value is directly
+      mapped to the body of the request. If the value of the `body` field is
+      of type bytes or string then it is used for the HTTP request body as-is,
+      with no conversion. If the body field is of any other type then it is
+      converted to a JSON string. If the body field doesn't exist then the
+      resulting HTTP request will be without a body. - Any other fields in the
+      resulting expression will be ignored. The CEL expression may access the
+      incoming CloudEvent message in its definition, as follows: - The `data`
+      field of the incoming CloudEvent message can be accessed using the
+      `message.data` value. - Each attribute of the incoming CloudEvent
+      message can be accessed using the `message.` value, where is replaced
+      with the name of the attribute. Headers added to the request by previous
+      filters in the chain can be accessed in the CEL expression using the
+      `headers` variable. The `headers` variable defines a map of key/value
+      pairs corresponding to the HTTP headers added by previous mediation
+      steps and not the headers present on the original incoming request. For
+      example, the following CEL expression can be used to construct a
+      Headers-only HTTP request by adding an additional header to the headers
+      added by previous mediations in the Pipeline: ``` {"headers":
+      headers.merge({"new-header-key": "new-header-value"})} ``` Additionally,
+      the following CEL extension functions are provided for use in this CEL
+      expression: - toBase64Url: map.toBase64Url() -> string - Converts a
+      CelValue to a base64url encoded string - toJsonString:
+      map.toJsonString() -> string - Converts a CelValue to a JSON string -
+      merge: map1.merge(map2) -> map3 - Merges the passed CEL map with the
+      existing CEL map the function is applied to. - If the same key exists in
+      both maps, if the key's value is type map both maps are merged else the
+      value from the passed map is used. - toMap: list(map).toMap() -> map -
+      Converts a CEL list of CEL maps to a single CEL map -
+      toDestinationPayloadFormat(): message.data.toDestinationPayloadFormat()
+      -> string or bytes - Converts the message data to the destination
+      payload format specified in Pipeline.Destination.output_payload_format -
+      This function is meant to be applied to the message.data field. - If the
+      destination payload format is not set, the function will return the
+      message data unchanged. - toCloudEventJsonWithPayloadFormat:
+      message.toCloudEventJsonWithPayloadFormat() -> map - Converts a message
+      to the corresponding structure of JSON format for CloudEvents - This
+      function applies toDestinationPayloadFormat() to the message data. It
+      also sets the corresponding datacontenttype of the CloudEvent, as
+      indicated by Pipeline.Destination.output_payload_format. If no
+      output_payload_format is set it will use the existing datacontenttype on
+      the CloudEvent if present, else leave datacontenttype absent. - This
+      function expects that the content of the message will adhere to the
+      standard CloudEvent format. If it doesn't then this function will fail.
+      - The result is a CEL map that corresponds to the JSON representation of
+      the CloudEvent. To convert that data to a JSON string it can be chained
+      with the toJsonString function. If a binding is not specified here, by
+      default the message is treated as a CloudEvent and is mapped to the HTTP
+      request according to the CloudEvent HTTP Protocol Binding Binary Content
+      Mode. The Pipeline converts the data field of the message to the format
+      provided in Pipeline.Destination.output_payload_format and maps it to
+      the body field of the result. It also sets the corresponding Content-
+      Type header to the output_payload_format type. If the
+      Pipeline.Destination.output_payload_format is not set, then the Pipeline
+      will treat the data field of the message as opaque binary data and
+      attach it to the request body as bytes. In this case the Content-type
+      header will be set to the value of the datacontenttype attribute set on
+      the incoming CloudEvent message if present and the `application/octet-
+      stream` MIME type otherwise. The Pipeline expects that the content of
+      the message will adhere to the standard CloudEvent format. If it doesn't
+      then the outgoing message request may fail with a persistent error.
+    method: Optional.
+    uri: Required. The URI of the HTTP enpdoint. The value must be a RFC2396
+      URI string. Examples: `http://10.10.10.8:80/route`, `http://svc.us-
+      central1.p.local:8080/`. Only HTTP and HTTPS protocols are supported.
+      The host can be either a static IP addressable from the VPC specified by
+      the network config, or an internal DNS hostname of the service
+      resolvable via Cloud DNS.
+  """
+
+  messageBindingTemplate = _messages.StringField(1)
+  method = _messages.StringField(2)
+  uri = _messages.StringField(3)
+
+
+class GoogleCloudEventarcV1PipelineDestinationNetworkConfig(_messages.Message):
+  r"""Represents a network config to be used for destination resolution and
+  connectivity.
+
+  Fields:
+    networkAttachment: Required. Name of the NetworkAttachment that allows
+      access to the consumer VPC. Format: `projects/{PROJECT_ID}/regions/{REGI
+      ON}/networkAttachments/{NETWORK_ATTACHMENT_NAME}`
+  """
+
+  networkAttachment = _messages.StringField(1)
+
+
+class GoogleCloudEventarcV1PipelineMediation(_messages.Message):
+  r"""Mediation defines different ways to modify the Pipeline.
+
+  Fields:
+    transformation: Optional. How the Pipeline is to transform messages
+  """
+
+  transformation = _messages.MessageField('GoogleCloudEventarcV1PipelineMediationTransformation', 1)
+
+
+class GoogleCloudEventarcV1PipelineMediationTransformation(_messages.Message):
+  r"""Transformation defines the way to transform an incoming message.
+
+  Fields:
+    transformationTemplate: Optional. The template to apply to transform
+      messages.
+  """
+
+  transformationTemplate = _messages.StringField(1)
+
+
+class GoogleCloudEventarcV1PipelineMessagePayloadFormat(_messages.Message):
+  r"""Represents the format of message data.
+
+  Fields:
+    avro: Optional. Avro format.
+    json: Optional. JSON format.
+    protobuf: Optional. Protobuf format.
+  """
+
+  avro = _messages.MessageField('GoogleCloudEventarcV1PipelineMessagePayloadFormatAvroFormat', 1)
+  json = _messages.MessageField('GoogleCloudEventarcV1PipelineMessagePayloadFormatJsonFormat', 2)
+  protobuf = _messages.MessageField('GoogleCloudEventarcV1PipelineMessagePayloadFormatProtobufFormat', 3)
+
+
+class GoogleCloudEventarcV1PipelineMessagePayloadFormatAvroFormat(_messages.Message):
+  r"""The format of an AVRO message payload.
+
+  Fields:
+    schemaDefinition: Optional. The entire schema definition is stored in this
+      field.
+  """
+
+  schemaDefinition = _messages.StringField(1)
+
+
+class GoogleCloudEventarcV1PipelineMessagePayloadFormatJsonFormat(_messages.Message):
+  r"""The format of a JSON message payload."""
+
+
+class GoogleCloudEventarcV1PipelineMessagePayloadFormatProtobufFormat(_messages.Message):
+  r"""The format of a Protobuf message payload.
+
+  Fields:
+    schemaDefinition: Optional. The entire schema definition is stored in this
+      field.
+  """
+
+  schemaDefinition = _messages.StringField(1)
+
+
+class GoogleCloudEventarcV1PipelineRetryPolicy(_messages.Message):
+  r"""The retry policy configuration for the Pipeline. The pipeline
+  exponentially backs off in case the destination is non responsive or returns
+  a retryable error code. The semantics are as follows: The backoff starts
+  with a 1 second delay and doubles the delay after each failed attempt (2
+  seconds, 4 seconds, 8 seconds, etc.). The delay is capped at 60 seconds.
+  Please note that if you set the min_retry_delay and max_retry_delay fields
+  to the same value this will make the duration between retries constant.
+
+  Fields:
+    maxAttempts: Optional. 5 (can be set to any positive real number).
+    maxRetryDelay: Optional. 60 seconds (can be set to any number of seconds).
+    minRetryDelay: Optional. 1 second (can be set to any number of seconds).
+  """
+
+  maxAttempts = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxRetryDelay = _messages.StringField(2)
+  minRetryDelay = _messages.StringField(3)
 
 
 class GoogleLongrunningCancelOperationRequest(_messages.Message):
@@ -1258,6 +2443,39 @@ class ListChannelsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListEnrollmentsResponse(_messages.Message):
+  r"""The response message for the `ListEnrollments` method.
+
+  Fields:
+    enrollments: The requested Enrollments, up to the number specified in
+      `page_size`.
+    nextPageToken: A page token that can be sent to `ListEnrollments` to
+      request the next page. If this is empty, then there are no more pages.
+    unreachable: Unreachable resources, if any.
+  """
+
+  enrollments = _messages.MessageField('Enrollment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListGoogleApiSourcesResponse(_messages.Message):
+  r"""The response message for the `ListGoogleApiSources` method.
+
+  Fields:
+    googleApiSources: The requested GoogleApiSources, up to the number
+      specified in `page_size`.
+    nextPageToken: A page token that can be sent to
+      `ListMessageBusEnrollments` to request the next page. If this is empty,
+      then there are no more pages.
+    unreachable: Unreachable resources, if any.
+  """
+
+  googleApiSources = _messages.MessageField('GoogleApiSource', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -1269,6 +2487,55 @@ class ListLocationsResponse(_messages.Message):
 
   locations = _messages.MessageField('Location', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListMessageBusEnrollmentsResponse(_messages.Message):
+  r"""The response message for the `ListMessageBusEnrollments` method.`
+
+  Fields:
+    enrollments: The requested enrollments, up to the number specified in
+      `page_size`.
+    nextPageToken: A page token that can be sent to
+      `ListMessageBusEnrollments` to request the next page. If this is empty,
+      then there are no more pages.
+    unreachable: Unreachable resources, if any.
+  """
+
+  enrollments = _messages.StringField(1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMessageBusesResponse(_messages.Message):
+  r"""The response message for the `ListMessageBuses` method.
+
+  Fields:
+    messageBuses: The requested message buses, up to the number specified in
+      `page_size`.
+    nextPageToken: A page token that can be sent to `ListMessageBuses` to
+      request the next page. If this is empty, then there are no more pages.
+    unreachable: Unreachable resources, if any.
+  """
+
+  messageBuses = _messages.MessageField('MessageBus', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListPipelinesResponse(_messages.Message):
+  r"""The response message for the ListPipelines method.
+
+  Fields:
+    nextPageToken: A page token that can be sent to `ListPipelines` to request
+      the next page. If this is empty, then there are no more pages.
+    pipelines: The requested pipelines, up to the number specified in
+      `page_size`.
+    unreachable: Unreachable resources, if any.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  pipelines = _messages.MessageField('Pipeline', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListProvidersResponse(_messages.Message):
@@ -1383,6 +2650,150 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class LoggingConfig(_messages.Message):
+  r"""The configuration for Platform Telemetry logging for Eventarc Avdvanced
+  resources.
+
+  Enums:
+    LogSeverityValueValuesEnum: Optional. The minimum severity of logs that
+      will be sent to Stackdriver/Platform Telemetry. Logs at severitiy
+      \\u2265 this value will be sent, unless it is NONE.
+
+  Fields:
+    logSeverity: Optional. The minimum severity of logs that will be sent to
+      Stackdriver/Platform Telemetry. Logs at severitiy \u2265 this value will
+      be sent, unless it is NONE.
+  """
+
+  class LogSeverityValueValuesEnum(_messages.Enum):
+    r"""Optional. The minimum severity of logs that will be sent to
+    Stackdriver/Platform Telemetry. Logs at severitiy \\u2265 this value will
+    be sent, unless it is NONE.
+
+    Values:
+      LOG_SEVERITY_UNSPECIFIED: Log severity is not specified. This value is
+        treated the same as NONE, but is used to distinguish between no update
+        and update to NONE in update_masks.
+      NONE: Default value at resource creation, presence of this value must be
+        treated as no logging/disable logging.
+      DEBUG: Debug or trace level logging.
+      INFO: Routine information, such as ongoing status or performance.
+      NOTICE: Normal but significant events, such as start up, shut down, or a
+        configuration change.
+      WARNING: Warning events might cause problems.
+      ERROR: Error events are likely to cause problems.
+      CRITICAL: Critical events cause more severe problems or outages.
+      ALERT: A person must take action immediately.
+      EMERGENCY: One or more systems are unusable.
+    """
+    LOG_SEVERITY_UNSPECIFIED = 0
+    NONE = 1
+    DEBUG = 2
+    INFO = 3
+    NOTICE = 4
+    WARNING = 5
+    ERROR = 6
+    CRITICAL = 7
+    ALERT = 8
+    EMERGENCY = 9
+
+  logSeverity = _messages.EnumField('LogSeverityValueValuesEnum', 1)
+
+
+class MessageBus(_messages.Message):
+  r"""MessageBus for the messages flowing through the system. The admin has
+  visibility and control over the messages being published and consumed and
+  can restrict publishers and subscribers to only a subset of data available
+  in the system by defining authorization policies.
+
+  Messages:
+    AnnotationsValue: Optional. Resource annotations.
+    LabelsValue: Optional. Resource labels.
+
+  Fields:
+    annotations: Optional. Resource annotations.
+    createTime: Output only. The creation time.
+    cryptoKeyName: Optional. Resource name of a KMS crypto key (managed by the
+      user) used to encrypt/decrypt their event data. It must match the
+      pattern `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
+    displayName: Optional. Resource display name.
+    etag: Output only. This checksum is computed by the server based on the
+      value of other fields, and might be sent only on update and delete
+      requests to ensure that the client has an up-to-date value before
+      proceeding.
+    labels: Optional. Resource labels.
+    loggingConfig: Optional. Config to control Platform logging for the
+      Message Bus. This log configuration is applied to the Message Bus
+      itself, and all the Enrollments attached to it.
+    name: Identifier. Resource name of the form
+      projects/{project}/locations/{location}/messageBuses/{message_bus}
+    uid: Output only. Server assigned unique identifier for the channel. The
+      value is a UUID4 string and guaranteed to remain unchanged until the
+      resource is deleted.
+    updateTime: Output only. The last-modified time.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Resource annotations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Resource labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  cryptoKeyName = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  loggingConfig = _messages.MessageField('LoggingConfig', 7)
+  name = _messages.StringField(8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
 class NetworkConfig(_messages.Message):
   r"""Network Configuration that can be inherited by other protos.
 
@@ -1420,6 +2831,130 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class Pipeline(_messages.Message):
+  r"""A representation of the Pipeline resource.
+
+  Messages:
+    AnnotationsValue: Optional. User-defined annotations. See
+      https://google.aip.dev/128#annotations.
+    LabelsValue: Optional. User labels attached to the Pipeline that can be
+      used to group resources. An object containing a list of "key": value
+      pairs. Example: { "name": "wrench", "mass": "1.3kg", "count": "3" }.
+
+  Fields:
+    annotations: Optional. User-defined annotations. See
+      https://google.aip.dev/128#annotations.
+    createTime: Output only. The creation time. A timestamp in RFC3339 UTC
+      "Zulu" format, with nanosecond resolution and up to nine fractional
+      digits. Examples: "2014-10-02T15:01:23Z" and
+      "2014-10-02T15:01:23.045123456Z".
+    cryptoKeyName: Optional. Resource name of a KMS crypto key (managed by the
+      user) used to encrypt/decrypt the event data. If not set, an internal
+      Google-owned key will be used to encrypt messages. It must match the
+      pattern "projects/{project}/locations/{location}/keyRings/{keyring}/cryp
+      toKeys/{key}".
+    destinations: Required. List of destinations to which messages will be
+      forwarded. Currently, exactly one destination is supported per Pipeline.
+    displayName: Optional. Display name of resource.
+    etag: Output only. This checksum is computed by the server based on the
+      value of other fields, and might be sent only on create requests to
+      ensure that the client has an up-to-date value before proceeding.
+    inputPayloadFormat: Optional. The payload format expected for the messages
+      received by the Pipeline. If input_payload_format is set then any
+      messages not matching this format will be treated as persistent errors.
+      If input_payload_format is not set, then the message data will be
+      treated as an opaque binary and no output format can be set on the
+      Pipeline through the Pipeline.Destination.output_payload_format field.
+      Any Mediations on the Pipeline that involve access to the data field
+      will fail as persistent errors.
+    labels: Optional. User labels attached to the Pipeline that can be used to
+      group resources. An object containing a list of "key": value pairs.
+      Example: { "name": "wrench", "mass": "1.3kg", "count": "3" }.
+    loggingConfig: Optional. Config to control Platform Logging for Pipelines.
+    mediations: Optional. List of mediation operations to be performed on the
+      message. Currently, only one Transformation operation is allowed in each
+      Pipeline.
+    name: Identifier. The resource name of the Pipeline. Must be unique within
+      the location of the project and must be in
+      `projects/{project}/locations/{location}/pipelines/{pipeline}` format.
+    retryPolicy: Optional. The retry policy to use in the pipeline.
+    uid: Output only. Server-assigned unique identifier for the Pipeline. The
+      value is a UUID4 string and guaranteed to remain unchanged until the
+      resource is deleted.
+    updateTime: Output only. The last-modified time. A timestamp in RFC3339
+      UTC "Zulu" format, with nanosecond resolution and up to nine fractional
+      digits. Examples: "2014-10-02T15:01:23Z" and
+      "2014-10-02T15:01:23.045123456Z".
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. User-defined annotations. See
+    https://google.aip.dev/128#annotations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User labels attached to the Pipeline that can be used to
+    group resources. An object containing a list of "key": value pairs.
+    Example: { "name": "wrench", "mass": "1.3kg", "count": "3" }.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  cryptoKeyName = _messages.StringField(3)
+  destinations = _messages.MessageField('GoogleCloudEventarcV1PipelineDestination', 4, repeated=True)
+  displayName = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  inputPayloadFormat = _messages.MessageField('GoogleCloudEventarcV1PipelineMessagePayloadFormat', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  loggingConfig = _messages.MessageField('LoggingConfig', 9)
+  mediations = _messages.MessageField('GoogleCloudEventarcV1PipelineMediation', 10, repeated=True)
+  name = _messages.StringField(11)
+  retryPolicy = _messages.MessageField('GoogleCloudEventarcV1PipelineRetryPolicy', 12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class Policy(_messages.Message):
@@ -1898,5 +3433,13 @@ encoding.AddCustomJsonFieldMapping(
     EventarcProjectsLocationsChannelConnectionsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     EventarcProjectsLocationsChannelsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    EventarcProjectsLocationsEnrollmentsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    EventarcProjectsLocationsGoogleApiSourcesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    EventarcProjectsLocationsMessageBusesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    EventarcProjectsLocationsPipelinesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     EventarcProjectsLocationsTriggersGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

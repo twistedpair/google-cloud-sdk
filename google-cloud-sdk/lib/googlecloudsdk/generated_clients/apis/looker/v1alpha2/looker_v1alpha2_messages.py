@@ -455,7 +455,7 @@ class Instance(_messages.Message):
     encryptionConfig: Encryption configuration (CMEK). Only set if CMEK has
       been enabled on the instance.
     fipsEnabled: Optional. Whether FIPS is enabled on the Looker instance.
-    geminiAiConfig: Optional. Gemini AI configuration
+    geminiAiConfig: Optional. Duet AI configuration
     geminiEnabled: Optional. Whether Gemini feature is enabled on the Looker
       instance or not.
     ingressPrivateIp: Output only. Private Ingress IP (IPv4).

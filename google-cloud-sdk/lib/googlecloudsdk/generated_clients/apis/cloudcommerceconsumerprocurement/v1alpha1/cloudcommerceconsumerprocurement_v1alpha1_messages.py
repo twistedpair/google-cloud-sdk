@@ -693,17 +693,18 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1CancelOrderRequest(_messages
   r"""Request message for ConsumerProcurementService.CancelOrder.
 
   Enums:
-    CancellationPolicyValueValuesEnum: Cancellation policy of this request.
+    CancellationPolicyValueValuesEnum: Optional. Cancellation policy of this
+      request.
 
   Fields:
-    cancellationPolicy: Cancellation policy of this request.
-    etag: The weak etag, which can be optionally populated, of the order that
-      this cancel request is based on. Validation checking will only happen if
-      the invoker supplies this field.
+    cancellationPolicy: Optional. Cancellation policy of this request.
+    etag: Optional. The weak etag, which can be optionally populated, of the
+      order that this cancel request is based on. Validation checking will
+      only happen if the invoker supplies this field.
   """
 
   class CancellationPolicyValueValuesEnum(_messages.Enum):
-    r"""Cancellation policy of this request.
+    r"""Optional. Cancellation policy of this request.
 
     Values:
       CANCELLATION_POLICY_UNSPECIFIED: If unspecified, cancellation will try
@@ -1462,16 +1463,16 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest(_messages
   Fields:
     displayName: Optional. Updated display name of the order, leave as empty
       if you do not want to update current display name.
-    etag: The weak etag, which can be optionally populated, of the order that
-      this modify request is based on. Validation checking will only happen if
-      the invoker supplies this field.
+    etag: Optional. The weak etag, which can be optionally populated, of the
+      order that this modify request is based on. Validation checking will
+      only happen if the invoker supplies this field.
     modifications: Optional. Modifications for an existing Order created by an
       Offer. Required when Offer based Order is being modified, except for
       when going from an offer to a public plan.
-    modifyProductsOrderRequest: Required. Modifies an existing non-quote
+    modifyProductsOrderRequest: Optional. Modifies an existing non-quote
       order. Should only be used for offer-based orders when going from an
       offer to a public plan.
-    modifyQuoteOrderRequest: Required. Modifies an existing order for quote.
+    modifyQuoteOrderRequest: Optional. Modifies an existing order for quote.
   """
 
   displayName = _messages.StringField(1)
@@ -1485,30 +1486,32 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequestModificati
   r"""Modifications to make on the order.
 
   Enums:
-    AutoRenewalBehaviorValueValuesEnum: Auto renewal behavior of the
+    AutoRenewalBehaviorValueValuesEnum: Optional. Auto renewal behavior of the
       subscription for the update. Applied when change_type is
       [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE]. Follows plan default
       config when this field is not specified.
     ChangeTypeValueValuesEnum: Required. Type of change to make.
 
   Fields:
-    autoRenewalBehavior: Auto renewal behavior of the subscription for the
-      update. Applied when change_type is
+    autoRenewalBehavior: Optional. Auto renewal behavior of the subscription
+      for the update. Applied when change_type is
       [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE]. Follows plan default
       config when this field is not specified.
     changeType: Required. Type of change to make.
-    lineItemId: ID of the existing line item to make change to. Required when
-      change type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE] or
+    lineItemId: Required. ID of the existing line item to make change to.
+      Required when change type is
+      [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE] or
       [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_CANCEL].
-    newLineItemInfo: The line item to update to. Required when change_type is
-      [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_CREATE] or
+    newLineItemInfo: Optional. The line item to update to. Required when
+      change_type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_CREATE] or
       [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE].
   """
 
   class AutoRenewalBehaviorValueValuesEnum(_messages.Enum):
-    r"""Auto renewal behavior of the subscription for the update. Applied when
-    change_type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE]. Follows
-    plan default config when this field is not specified.
+    r"""Optional. Auto renewal behavior of the subscription for the update.
+    Applied when change_type is
+    [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE]. Follows plan default
+    config when this field is not specified.
 
     Values:
       AUTO_RENEWAL_BEHAVIOR_UNSPECIFIED: If unspecified, the auto renewal
@@ -1844,9 +1847,9 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest(_messages.
       specified. TODO(b/241564581) Hide provider id in the consumer API.
     requestId: Optional. A unique identifier for this request. The server will
       ignore subsequent requests that provide a duplicate request ID for at
-      least 120 minutes after the first request. The request ID must be a
-      valid [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier
-      #Format).
+      least 24 hours after the first request. The request ID must be a valid [
+      UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier#Format
+      ).
     testConfig: Optional. Test configuration for the to-be-placed order.
       Placing test order is only allowed if the parent is a testing billing
       account for the service.

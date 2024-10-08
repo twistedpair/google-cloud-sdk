@@ -511,7 +511,7 @@ class FirewallEndpointAssociation(_messages.Message):
       ACTIVE: Active and ready for traffic.
       DELETING: Being deleted.
       INACTIVE: Down or in an error state.
-      ORPHAN: The GCP project that housed the association has been deleted.
+      ORPHAN: The project that housed the association has been deleted.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1

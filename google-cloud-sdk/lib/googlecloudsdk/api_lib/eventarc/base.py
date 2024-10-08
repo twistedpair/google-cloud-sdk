@@ -67,8 +67,9 @@ class EventarcClientBase(object):
           poller, operation_ref, message, wait_ceiling_ms=20000
       )
     except apitools_exceptions.HttpForbiddenError as e:
-      desc_cmd = 'gcloud eventarc {}s describe {} --location={}'.format(
-          self._resource_label, resource_name, location_name)
+      desc_cmd = 'gcloud eventarc {} describe {} --location={}'.format(
+          self._resource_label_plural, resource_name, location_name
+      )
       error_message = (
           'Failed to poll status of the operation, but the operation may have '
           'succeeded. {status_message} After fixing the permission issue, '
@@ -76,3 +77,7 @@ class EventarcClientBase(object):
           'command.'
       ) % (self._resource_label, desc_cmd)
       raise exceptions.HttpException(e, error_format=error_message)
+
+  @property
+  def _resource_label_plural(self):
+    return '{}s'.format(self._resource_label)

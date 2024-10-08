@@ -53,11 +53,11 @@ def AddDescriptionFlag(parser):
       help='A human-readable description of the resource.')
 
 
-def AddLogConfigFlag(parser):
+def AddLogConfigFlag(parser, api_version):
   parser.add_argument(
       '--log-config',
       action='append',
-      type=util.LogConfig(),
+      type=util.LogConfig(api_version),
       required=False,
       metavar='LOG_CONFIG',
       help=textwrap.dedent("""\

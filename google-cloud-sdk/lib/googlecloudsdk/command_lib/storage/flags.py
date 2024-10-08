@@ -725,9 +725,109 @@ def add_ip_filter_file_flag(parser):
     parser (parser_arguments.ArgumentInterceptor): Parser passed to surface.
   """
   parser.add_argument(
-      '--ip-filter-file',
-      help=_IP_FILTER_HELP_TEXT,
-      hidden=True
+      '--ip-filter-file', help=_IP_FILTER_HELP_TEXT, hidden=True
+  )
+
+
+def add_management_hub_level_flags(parser):
+  """Adds the GCP resource hierarchy level flag for management-hubs commands."""
+
+  management_hub_level_group = parser.add_group(
+      category='LEVEL', mutex=True, required=True
+  )
+
+  management_hub_level_group.add_argument(
+      '--organization',
+      help='Specifies organization id for the management hub.',
+      metavar='ORGANIZATION',
+      type=str,
+  )
+  management_hub_level_group.add_argument(
+      '--project',
+      help='Specifies project for the management hub.',
+      type=str,
+      metavar='PROJECT',
+  )
+  management_hub_level_group.add_argument(
+      '--sub-folder',
+      help='Specifies sub-folder id for the management hub.',
+      type=str,
+      metavar='SUB_FOLDER',
+  )
+
+
+def add_management_hub_filter_flags(parser):
+  """Adds the management hub filter flags for management-hubs commands."""
+  management_hub_localtion_filter_group = parser.add_group(
+      category='LOCATION', mutex=True
+  )
+
+  management_hub_localtion_filter_group.add_argument(
+      '--exclude-locations',
+      help=(
+          'Comma separated list of [locations]'
+          '(https://cloud.google.com/storage/docs/locations#available-locations)'
+          ' to exclude in Management Hub filter.'
+      ),
+      type=arg_parsers.ArgList(),
+      metavar='EXCLUDE_LOCATIONS',
+  )
+  management_hub_localtion_filter_group.add_argument(
+      '--include-locations',
+      help=(
+          'Comma separated list of locations to include in management hub'
+          ' filter.'
+      ),
+      type=arg_parsers.ArgList(),
+      metavar='INCLUDE_LOCATIONS',
+  )
+
+  management_hub_bucket_filter_group = parser.add_group(
+      category='BUCKET_FILTER', mutex=True
+  )
+
+  management_hub_include_bucket_filter_group = (
+      management_hub_bucket_filter_group.add_group(
+          category='BUCKET_INCLUDE_FILTER'
+      )
+  )
+  management_hub_include_bucket_filter_group.add_argument(
+      '--include-bucket-ids',
+      help=(
+          'Comma separated list of bucket ids to include in management hub'
+          ' filter.'
+      ),
+      type=arg_parsers.ArgList(),
+      metavar='INCLUDE_BUCKET_IDS',
+  )
+  management_hub_include_bucket_filter_group.add_argument(
+      '--include-bucket-id-regexes',
+      help='Provides filter for bucket regexes to include.'
+      'Accepts list of bucket regexes in comma separated format.',
+      type=arg_parsers.ArgList(),
+      metavar='INCLUDE_BUCKET_ID_REGEXES',
+  )
+
+  management_hub_exclude_bucket_filter_group = (
+      management_hub_bucket_filter_group.add_group(
+          category='BUCKET_EXCLUDE_FILTER'
+      )
+  )
+  management_hub_exclude_bucket_filter_group.add_argument(
+      '--exclude-bucket-ids',
+      help=(
+          'Comma separated list of bucket ids to exclude in management hub'
+          ' filter.'
+      ),
+      type=arg_parsers.ArgList(),
+      metavar='EXCLUDE_BUCKET_IDS',
+  )
+  management_hub_exclude_bucket_filter_group.add_argument(
+      '--exclude-bucket-id-regexes',
+      help='Provides filter for bucket regexes to exclude.'
+      'Accepts list of bucket regexes in comma separated format.',
+      type=arg_parsers.ArgList(),
+      metavar='EXCLUDE_BUCKET_ID_REGEXES',
   )
 
 

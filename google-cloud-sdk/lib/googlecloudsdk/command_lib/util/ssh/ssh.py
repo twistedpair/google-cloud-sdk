@@ -521,7 +521,7 @@ class Keys(object):
 
     Args:
       overwrite: bool or None, overwrite key files if they are broken.
-      allow_passphrase: bool, if keygeneration occurs, let the user specfiy a
+      allow_passphrase: bool, if keygeneration occurs, let the user specify a
         passphrase for private key encryption. See `ssh.KeygenCommand` for
         details on when this is possible.
 
@@ -951,7 +951,7 @@ class OsloginState(object):
       account user.
     ssh_security_key_support: bool, True if the SSH client supports security
       keys.
-    environment: str, A hint about the current enviornment. ('ssh' or 'putty')
+    environment: str, A hint about the current environment. ('ssh' or 'putty')
     security_keys: list, A list of 'private' keys associated with the security
       keys configured in the user's account.
     signed_ssh_key: bool, True if a valid signed ssh key exists.
@@ -2124,9 +2124,23 @@ class SSHPoller(object):
         timeout. There is no way to distinguish between a timeout error and a
         misconfigured connection.
     """
+    env = env or Environment.Current()
+    run_args = {
+        'env': env,
+        'putty_force_connect': putty_force_connect,
+    }
+
+    # Ideally we don't want the poller to consume data on stdin that should be
+    # piped to the remote command. With OpenSSH we can pass /dev/null as stdin,
+    # since it reads prompt responses (host key confirmations, passwords, etc.)
+    # directly from /dev/tty.
+    # We can't do the same with PuTTY, as it reads prompt responses from stdin.
+    if env.suite is Suite.OPENSSH:
+      run_args['explicit_input_file'] = subprocess.DEVNULL
+
     self._retryer.RetryOnException(
         self.ssh_command.Run,
-        kwargs={'env': env, 'putty_force_connect': putty_force_connect},
+        kwargs=run_args,
         should_retry_if=lambda exc_type, *args: exc_type is CommandError,
         sleep_ms=self._sleep_ms,
     )

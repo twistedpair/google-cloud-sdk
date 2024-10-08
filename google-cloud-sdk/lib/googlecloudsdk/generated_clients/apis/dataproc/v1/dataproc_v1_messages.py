@@ -2586,20 +2586,6 @@ class DataprocProjectsLocationsSessionsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class DataprocProjectsLocationsSessionsInjectCredentialsRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsSessionsInjectCredentialsRequest object.
-
-  Fields:
-    injectSessionCredentialsRequest: A InjectSessionCredentialsRequest
-      resource to be passed as the request body.
-    session: Required. The name of the session resource to inject credentials
-      to.
-  """
-
-  injectSessionCredentialsRequest = _messages.MessageField('InjectSessionCredentialsRequest', 1)
-  session = _messages.StringField(2, required=True)
-
-
 class DataprocProjectsLocationsSessionsListRequest(_messages.Message):
   r"""A DataprocProjectsLocationsSessionsListRequest object.
 
@@ -5095,8 +5081,8 @@ class FlinkJob(_messages.Message):
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
       configure Flink. Properties that conflict with values set by the
-      Dataproc API might beoverwritten. Can include properties set
-      in/etc/flink/conf/flink-defaults.conf and classes in user code.
+      Dataproc API might be overwritten. Can include properties set in
+      /etc/flink/conf/flink-defaults.conf and classes in user code.
 
   Fields:
     args: Optional. The arguments to pass to the driver. Do not include
@@ -5110,8 +5096,8 @@ class FlinkJob(_messages.Message):
     mainJarFileUri: The HCFS URI of the jar file that contains the main class.
     properties: Optional. A mapping of property names to values, used to
       configure Flink. Properties that conflict with values set by the
-      Dataproc API might beoverwritten. Can include properties set
-      in/etc/flink/conf/flink-defaults.conf and classes in user code.
+      Dataproc API might be overwritten. Can include properties set in
+      /etc/flink/conf/flink-defaults.conf and classes in user code.
     savepointUri: Optional. HCFS URI of the savepoint, which contains the last
       saved progress for starting the current job.
   """
@@ -5120,7 +5106,7 @@ class FlinkJob(_messages.Message):
   class PropertiesValue(_messages.Message):
     r"""Optional. A mapping of property names to values, used to configure
     Flink. Properties that conflict with values set by the Dataproc API might
-    beoverwritten. Can include properties set in/etc/flink/conf/flink-
+    be overwritten. Can include properties set in /etc/flink/conf/flink-
     defaults.conf and classes in user code.
 
     Messages:
@@ -5807,30 +5793,6 @@ class InjectCredentialsRequest(_messages.Message):
   credentialsCiphertext = _messages.StringField(2)
 
 
-class InjectSessionCredentialsRequest(_messages.Message):
-  r"""A request to inject credentials into a session.
-
-  Fields:
-    credentialsCiphertext: Required. The encrypted credentials being injected
-      into the session.The client is responsible for enuring that the
-      encrypted credentials are supported by the session.A wrapped value is
-      used to avoid writing the contents of the encrypted credentials to audit
-      logs.
-    requestId: Optional. A unique ID used to identify the request. If the
-      service receives two TerminateSessionRequest (https://cloud.google.com/d
-      ataproc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.datapro
-      c.v1.TerminateSessionRequest)s with the same ID, the first request is
-      ignored to ensure that the most recent credentials are
-      injected.Recommendation: Set this value to a UUID
-      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The value
-      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
-      and hyphens (-). The maximum length is 40 characters.
-  """
-
-  credentialsCiphertext = _messages.StringField(1)
-  requestId = _messages.StringField(2)
-
-
 class InputMetrics(_messages.Message):
   r"""Metrics about the input data read by the task.
 
@@ -6453,10 +6415,16 @@ class JobScheduling(_messages.Message):
       is not supported in Dataproc workflow templates
       (https://cloud.google.com/dataproc/docs/concepts/workflows/using-
       workflows#adding_jobs_to_a_template).
+    ttl: Optional. The duration after which the workload will be terminated.
+      When the workload passes this ttl, it will be unconditionally killed
+      without waiting for ongoing work to finish. Minimum value is 10 minutes;
+      maximum value is 14 days (see JSON representation of Duration
+      (https://developers.google.com/protocol-buffers/docs/proto3#json)
   """
 
   maxFailuresPerHour = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   maxFailuresTotal = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  ttl = _messages.StringField(3)
 
 
 class JobStatus(_messages.Message):
@@ -7095,13 +7063,16 @@ class MetastoreConfig(_messages.Message):
   r"""Specifies a Metastore configuration.
 
   Fields:
+    bigqueryMetastoreConfig: Optional. The BigQuery Metastore configuration
+      for the workload.
     dataprocMetastoreService: Required. Resource name of an existing Dataproc
       Metastore service.Example:
       projects/[project_id]/locations/[dataproc_region]/services/[service-
       name]
   """
 
-  dataprocMetastoreService = _messages.StringField(1)
+  bigqueryMetastoreConfig = _messages.MessageField('BigqueryMetastoreConfig', 1)
+  dataprocMetastoreService = _messages.StringField(2)
 
 
 class Metric(_messages.Message):
@@ -7200,7 +7171,7 @@ class NodeGroup(_messages.Message):
       (https://www.ietf.org/rfc/rfc1035.txt). Label values can be empty. If
       specified, they must consist of from 1 to 63 characters and conform to
       RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt). The node group must
-      have no more than 32 labelsn.
+      have no more than 32 labels.
 
   Fields:
     labels: Optional. Node group labels. Label keys must consist of from 1 to
@@ -7208,7 +7179,7 @@ class NodeGroup(_messages.Message):
       (https://www.ietf.org/rfc/rfc1035.txt). Label values can be empty. If
       specified, they must consist of from 1 to 63 characters and conform to
       RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt). The node group must
-      have no more than 32 labelsn.
+      have no more than 32 labels.
     name: The Node group resource name (https://aip.dev/122).
     nodeGroupConfig: Optional. The node group instance group configuration.
     roles: Required. Node group roles.
@@ -7236,7 +7207,7 @@ class NodeGroup(_messages.Message):
     characters and conform to RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt).
     Label values can be empty. If specified, they must consist of from 1 to 63
     characters and conform to RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt).
-    The node group must have no more than 32 labelsn.
+    The node group must have no more than 32 labels.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -9592,6 +9563,7 @@ class SoftwareConfig(_messages.Message):
       HIVE_WEBHCAT: The Hive Web HCatalog (the REST service for accessing
         HCatalog).
       HUDI: Hudi.
+      ICEBERG: Iceberg.
       JUPYTER: The Jupyter Notebook.
       KERBEROS: The Kerberos security feature.
       PRESTO: The Presto query engine.
@@ -9611,16 +9583,17 @@ class SoftwareConfig(_messages.Message):
     HBASE = 5
     HIVE_WEBHCAT = 6
     HUDI = 7
-    JUPYTER = 8
-    KERBEROS = 9
-    PRESTO = 10
-    TRINO = 11
-    RANGER = 12
-    SOLR = 13
-    ZEPPELIN = 14
-    ZOOKEEPER = 15
-    DASK = 16
-    GPU_DRIVER = 17
+    ICEBERG = 8
+    JUPYTER = 9
+    KERBEROS = 10
+    PRESTO = 11
+    TRINO = 12
+    RANGER = 13
+    SOLR = 14
+    ZEPPELIN = 15
+    ZOOKEEPER = 16
+    DASK = 17
+    GPU_DRIVER = 18
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):

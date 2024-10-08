@@ -53,6 +53,7 @@ class AppengineV1(base_api.BaseApiClient):
     self.apps = self.AppsService(self)
     self.projects_locations_applications_authorizedDomains = self.ProjectsLocationsApplicationsAuthorizedDomainsService(self)
     self.projects_locations_applications_services_migration = self.ProjectsLocationsApplicationsServicesMigrationService(self)
+    self.projects_locations_applications_services_versions = self.ProjectsLocationsApplicationsServicesVersionsService(self)
     self.projects_locations_applications_services = self.ProjectsLocationsApplicationsServicesService(self)
     self.projects_locations_applications = self.ProjectsLocationsApplicationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -1436,6 +1437,43 @@ class AppengineV1(base_api.BaseApiClient):
         request_field='migrateConfigYamlRequest',
         request_type_name='AppengineProjectsLocationsApplicationsServicesMigrationMigrateConfigYamlRequest',
         response_type_name='MigrateConfigYamlResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsApplicationsServicesVersionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_applications_services_versions resource."""
+
+    _NAME = 'projects_locations_applications_services_versions'
+
+    def __init__(self, client):
+      super(AppengineV1.ProjectsLocationsApplicationsServicesVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing Version resource.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsServicesVersionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/services/{servicesId}/versions/{versionsId}',
+        http_method='DELETE',
+        method_id='appengine.projects.locations.applications.services.versions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AppengineProjectsLocationsApplicationsServicesVersionsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

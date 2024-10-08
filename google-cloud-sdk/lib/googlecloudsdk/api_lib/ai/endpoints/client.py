@@ -200,6 +200,7 @@ class EndpointsClient(object):
       network=None,
       endpoint_id=None,
       encryption_kms_key_name=None,
+      gdce_zone=None,
       request_response_logging_table=None,
       request_response_logging_rate=None,
   ):
@@ -214,6 +215,7 @@ class EndpointsClient(object):
       endpoint_id: str or None, the id of the new endpoint.
       encryption_kms_key_name: str or None, the Cloud KMS resource identifier of
         the customer managed encryption key used to protect a resource.
+      gdce_zone: str or None, the name of the GDCE zone.
       request_response_logging_table: str or None, the BigQuery table uri for
         request-response logging.
       request_response_logging_rate: float or None, the sampling rate for
@@ -230,12 +232,19 @@ class EndpointsClient(object):
           )
       )
 
+    gdce_config = None
+    if gdce_zone:
+      gdce_config = self.messages.GoogleCloudAiplatformV1beta1GdceConfig(
+          zone=gdce_zone
+      )
+
     endpoint = api_util.GetMessage('Endpoint', constants.BETA_VERSION)(
         displayName=display_name,
         description=description,
         labels=labels,
         network=network,
         encryptionSpec=encryption_spec,
+        gdceConfig=gdce_config,
     )
     if request_response_logging_table is not None:
       endpoint.predictRequestResponseLoggingConfig = api_util.GetMessage(

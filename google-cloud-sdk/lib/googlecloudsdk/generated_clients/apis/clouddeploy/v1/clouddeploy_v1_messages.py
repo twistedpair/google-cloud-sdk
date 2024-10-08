@@ -77,11 +77,8 @@ class AdvanceRolloutResponse(_messages.Message):
 
 class AdvanceRolloutRule(_messages.Message):
   r"""The `AdvanceRollout` automation rule will automatically advance a
-  successful Rollout to the next phase.
 
-  Enums:
-    WaitPolicyValueValuesEnum: Optional. WaitForDeployPolicy delays a rollout
-      advancement when a deploy policy violation is encountered.
+  successful Rollout to the next phase.
 
   Fields:
     condition: Output only. Information around the state of the Automation
@@ -95,29 +92,12 @@ class AdvanceRolloutRule(_messages.Message):
       a max length of 63 characters. In other words, it must match the
       following regex: `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
     wait: Optional. How long to wait after a rollout is finished.
-    waitPolicy: Optional. WaitForDeployPolicy delays a rollout advancement
-      when a deploy policy violation is encountered.
   """
-
-  class WaitPolicyValueValuesEnum(_messages.Enum):
-    r"""Optional. WaitForDeployPolicy delays a rollout advancement when a
-    deploy policy violation is encountered.
-
-    Values:
-      WAIT_FOR_DEPLOY_POLICY_UNSPECIFIED: No WaitForDeployPolicy is specified.
-      NEVER: Never waits on DeployPolicy, terminates `AutomationRun` if
-        DeployPolicy check failed.
-      LATEST: When policy passes, execute the latest `AutomationRun` only.
-    """
-    WAIT_FOR_DEPLOY_POLICY_UNSPECIFIED = 0
-    NEVER = 1
-    LATEST = 2
 
   condition = _messages.MessageField('AutomationRuleCondition', 1)
   id = _messages.StringField(2)
   sourcePhases = _messages.StringField(3, repeated=True)
   wait = _messages.StringField(4)
-  waitPolicy = _messages.EnumField('WaitPolicyValueValuesEnum', 5)
 
 
 class AnthosCluster(_messages.Message):
@@ -494,8 +474,9 @@ class AutomationRuleCondition(_messages.Message):
 
 
 class AutomationRun(_messages.Message):
-  r"""An `AutomationRun` resource in the Cloud Deploy API. An `AutomationRun`
-  represents an execution instance of an automation rule.
+  r"""An `AutomationRun` resource in the Cloud Deploy API.
+
+  An `AutomationRun` represents an execution instance of an automation rule.
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the `AutomationRun`.
@@ -518,7 +499,7 @@ class AutomationRun(_messages.Message):
       ct}/locations/{location}/deliveryPipelines/{delivery_pipeline}/automatio
       nRuns/{automation_run}`.
     policyViolation: Output only. Contains information about what policies
-      prevented the `AutomationRun` to proceed.
+      prevented the `AutomationRun` from proceeding.
     promoteReleaseOperation: Output only. Promotes a release to a specified
       'Target'.
     repairRolloutOperation: Output only. Repairs a failed 'Rollout'.
@@ -2962,9 +2943,10 @@ class DeployParameters(_messages.Message):
 
 
 class DeployPolicy(_messages.Message):
-  r"""A `DeployPolicy` resource in the Cloud Deploy API. A `DeployPolicy`
-  inhibits manual or automation driven actions within a Delivery Pipeline or
-  Target.
+  r"""A `DeployPolicy` resource in the Cloud Deploy API.
+
+  A `DeployPolicy` inhibits manual or automation-driven actions within a
+  Delivery Pipeline or Target.
 
   Messages:
     AnnotationsValue: User annotations. These attributes can only be set and
@@ -3117,7 +3099,6 @@ class DeployPolicy(_messages.Message):
 
 class DeployPolicyEvaluationEvent(_messages.Message):
   r"""Payload proto for "clouddeploy.googleapis.com/deploypolicy_evaluation"
-
   Platform Log event that describes the deploy policy evaluation event.
 
   Enums:
@@ -3157,7 +3138,6 @@ class DeployPolicyEvaluationEvent(_messages.Message):
         manually via a gcloud create command.
       DEPLOY_AUTOMATION: Automated action by Cloud Deploy.
     """
-
     INVOKER_UNSPECIFIED = 0
     USER = 1
     DEPLOY_AUTOMATION = 2
@@ -3170,7 +3150,6 @@ class DeployPolicyEvaluationEvent(_messages.Message):
       POLICY_OVERRIDDEN: The policy was overridden.
       POLICY_SUSPENDED: The policy was suspended.
     """
-
     POLICY_VERDICT_OVERRIDE_UNSPECIFIED = 0
     POLICY_OVERRIDDEN = 1
     POLICY_SUSPENDED = 2
@@ -3185,7 +3164,6 @@ class DeployPolicyEvaluationEvent(_messages.Message):
         when a request is denied by policy.
       DENIED_BY_POLICY: Denied by policy.
     """
-
     POLICY_VERDICT_UNSPECIFIED = 0
     ALLOWED_BY_POLICY = 1
     DENIED_BY_POLICY = 2
@@ -4511,11 +4489,8 @@ class PromoteReleaseOperation(_messages.Message):
 
 class PromoteReleaseRule(_messages.Message):
   r"""The `PromoteRelease` rule will automatically promote a release from the
-  current target to a specified target.
 
-  Enums:
-    WaitPolicyValueValuesEnum: Optional. WaitForDeployPolicy delays a release
-      promotion when a deploy policy violation is encountered.
+  current target to a specified target.
 
   Fields:
     condition: Output only. Information around the state of the Automation
@@ -4532,30 +4507,13 @@ class PromoteReleaseRule(_messages.Message):
       `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`.
     wait: Optional. How long the release need to be paused until being
       promoted to the next target.
-    waitPolicy: Optional. WaitForDeployPolicy delays a release promotion when
-      a deploy policy violation is encountered.
   """
-
-  class WaitPolicyValueValuesEnum(_messages.Enum):
-    r"""Optional. WaitForDeployPolicy delays a release promotion when a deploy
-    policy violation is encountered.
-
-    Values:
-      WAIT_FOR_DEPLOY_POLICY_UNSPECIFIED: No WaitForDeployPolicy is specified.
-      NEVER: Never waits on DeployPolicy, terminates `AutomationRun` if
-        DeployPolicy check failed.
-      LATEST: When policy passes, execute the latest `AutomationRun` only.
-    """
-    WAIT_FOR_DEPLOY_POLICY_UNSPECIFIED = 0
-    NEVER = 1
-    LATEST = 2
 
   condition = _messages.MessageField('AutomationRuleCondition', 1)
   destinationPhase = _messages.StringField(2)
   destinationTargetId = _messages.StringField(3)
   id = _messages.StringField(4)
   wait = _messages.StringField(5)
-  waitPolicy = _messages.EnumField('WaitPolicyValueValuesEnum', 6)
 
 
 class Release(_messages.Message):
@@ -5022,11 +4980,8 @@ class RepairRolloutOperation(_messages.Message):
 
 class RepairRolloutRule(_messages.Message):
   r"""The `RepairRolloutRule` automation rule will automatically repair a
-  failed `Rollout`.
 
-  Enums:
-    WaitPolicyValueValuesEnum: Optional. WaitForDeployPolicy delays a
-      `Rollout` repair when a deploy policy violation is encountered.
+  failed `Rollout`.
 
   Fields:
     condition: Output only. Information around the state of the 'Automation'
@@ -5050,30 +5005,13 @@ class RepairRolloutRule(_messages.Message):
       `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
     repairPhases: Required. Defines the types of automatic repair phases for
       failed jobs.
-    waitPolicy: Optional. WaitForDeployPolicy delays a `Rollout` repair when a
-      deploy policy violation is encountered.
   """
-
-  class WaitPolicyValueValuesEnum(_messages.Enum):
-    r"""Optional. WaitForDeployPolicy delays a `Rollout` repair when a deploy
-    policy violation is encountered.
-
-    Values:
-      WAIT_FOR_DEPLOY_POLICY_UNSPECIFIED: No WaitForDeployPolicy is specified.
-      NEVER: Never waits on DeployPolicy, terminates `AutomationRun` if
-        DeployPolicy check failed.
-      LATEST: When policy passes, execute the latest `AutomationRun` only.
-    """
-    WAIT_FOR_DEPLOY_POLICY_UNSPECIFIED = 0
-    NEVER = 1
-    LATEST = 2
 
   condition = _messages.MessageField('AutomationRuleCondition', 1)
   id = _messages.StringField(2)
   jobs = _messages.StringField(3, repeated=True)
   phases = _messages.StringField(4, repeated=True)
   repairPhases = _messages.MessageField('RepairPhaseConfig', 5, repeated=True)
-  waitPolicy = _messages.EnumField('WaitPolicyValueValuesEnum', 6)
 
 
 class Retry(_messages.Message):
@@ -6411,6 +6349,8 @@ class TargetArtifact(_messages.Message):
 class TargetAttribute(_messages.Message):
   r"""Contains criteria for selecting Targets.
 
+  This could be used to select targets for a Deploy Policy or for an Automation.
+
   Messages:
     LabelsValue: Target labels.
 
@@ -6669,6 +6609,9 @@ class TimeOfDay(_messages.Message):
 
 class TimeWindows(_messages.Message):
   r"""Time windows within which actions are restricted.
+
+  See the [documentation](https://cloud.google.com/deploy/docs/deploy-
+  policy#dates_times) for more information on how to configure dates/times.
 
   Fields:
     oneTimeWindows: Optional. One-time windows within which actions are

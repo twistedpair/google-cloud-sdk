@@ -27,11 +27,14 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 class NetworkEndpointGroupsClient(object):
   """Client for network endpoint groups service in the GCE API."""
 
-  def __init__(self, client, messages, resources):
+  def __init__(
+      self, client, messages, resources, support_port_mapping_neg=False
+  ):
     self.client = client
     self.messages = messages
     self.resources = resources
     self._zonal_service = self.client.apitools_client.networkEndpointGroups
+    self.support_port_mapping_neg = support_port_mapping_neg
     if hasattr(self.client.apitools_client, 'globalNetworkEndpointGroups'):
       self._global_service = (
           self.client.apitools_client.globalNetworkEndpointGroups
@@ -494,5 +497,8 @@ class NetworkEndpointGroupsClient(object):
         network_endpoint_type, endpoint_type_enum
     )
 
-    if endpoint_type_enum_value == endpoint_type_enum.GCE_VM_IP_PORTMAP:
+    if (
+        self.support_port_mapping_neg
+        and endpoint_type_enum_value == endpoint_type_enum.GCE_VM_IP_PORTMAP
+    ):
       return True

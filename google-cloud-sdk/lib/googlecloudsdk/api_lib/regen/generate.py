@@ -76,6 +76,7 @@ def GenerateApitoolsApi(
       '--overwrite',
       '--apitools_version=CloudSDK',
       '--user_agent=google-cloud-sdk',
+      '--version-identifier={0}'.format(api_version),
       '--root_package',
       '{0}.{1}.{2}'.format(root_package, api_name, api_version),
       'client',

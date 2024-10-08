@@ -1415,6 +1415,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.tpu = self._Add('tpu', hidden=True)
     # Aliased to `storagetransfer` in `api_lib/apis/apis_util.py`.
     self.transfer = self._Add('transfer', command='gcloud transfer')
+    self.transferappliance = self._Add(
+        'transferappliance', command='gcloud transfer appliances')
     self.vision = self._Add('vision', command='gcloud ml vision')
     self.vmmigration = self._Add('vmmigration', command='gcloud migration vms')
     self.vmwareengine = self._Add('vmwareengine', command='gcloud vmware')
@@ -1422,6 +1424,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.workflowexecutions = self._Add(
         'workflowexecutions', command='gcloud workflows executions')
     self.workflows = self._Add('workflows', command='gcloud workflows')
+    self.workloadcertificate = self._Add('workloadcertificate', hidden=True)
     self.workstations = self._Add('workstations', command='gcloud workstations')
 
   def EndpointValidator(self, value):

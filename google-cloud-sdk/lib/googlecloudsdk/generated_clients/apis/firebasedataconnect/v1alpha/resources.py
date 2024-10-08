@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://firebasedataconnect.googleapis.com/v1alpha/'
-DOCS_URL = 'https://firebase.google.com/docs/dataconnect'
+DOCS_URL = 'https://firebase.google.com/docs/data-connect'
 
 
 class Collections(enum.Enum):

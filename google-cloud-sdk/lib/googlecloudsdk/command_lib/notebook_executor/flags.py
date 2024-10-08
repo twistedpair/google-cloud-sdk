@@ -180,18 +180,35 @@ def AddRuntimeTemplateResourceArg(parser):
   ).AddToParser(parser)
 
 
-def AddCreateExecutionFlags(parser):
+def AddCreateExecutionFlags(parser, is_schedule=False):
   """Adds flags for creating an execution to the parser."""
-  AddRegionResourceArg(parser, 'to create')
   execution_group = parser.add_group(
       help='Configuration of the execution job.',
       required=True,
   )
-  execution_group.add_argument(
-      '--display-name',
-      help='The display name of the execution.',
-      required=True,
-  )
+  if is_schedule:
+    execution_group.add_argument(
+        '--execution-display-name',
+        help='The display name of the execution.',
+        required=True,
+    )
+  else:
+    AddRegionResourceArg(parser, 'to create')
+    execution_group.add_argument(
+        '--display-name',
+        help='The display name of the execution.',
+        required=True,
+    )
+    parser.add_argument(
+        '--execution-job-id',
+        help=(
+            'The id to assign to the execution job. If not specified, a random'
+            ' id will be generated.'
+        ),
+        hidden=True,
+    )
+    base.ASYNC_FLAG.AddToParser(parser)
+
   notebook_source_group = execution_group.add_group(
       help='Source of the notebook to execute.',
       required=True,
@@ -232,13 +249,15 @@ def AddCreateExecutionFlags(parser):
           ' current version of the object will be used.'
       ),
   )
-  notebook_source_group.add_argument(
-      '--direct-content',
-      help=(
-          'The direct notebook content as IPYNB. This can be a local filepath'
-          ' to an .ipynb file or can be set to `-` to read content from stdin.'
-      ),
-  )
+  if not is_schedule:
+    notebook_source_group.add_argument(
+        '--direct-content',
+        help=(
+            'The direct notebook content as IPYNB. This can be a local filepath'
+            ' to an .ipynb file or can be set to `-` to read content from'
+            ' stdin.'
+        ),
+    )
   execution_group.add_argument(
       '--execution-timeout',
       help=(
@@ -275,15 +294,6 @@ def AddCreateExecutionFlags(parser):
       help='The service account to run the execution as.',
       required=False,
   )
-  parser.add_argument(
-      '--execution-job-id',
-      help=(
-          'The id to assign to the execution job. If not specified, a random id'
-          ' will be generated.'
-      ),
-      hidden=True,
-  )
-  base.ASYNC_FLAG.AddToParser(parser)
 
 
 def AddDeleteExecutionFlags(parser):
@@ -339,3 +349,93 @@ def AddListSchedulesFlags(parser):
   """Construct groups and arguments specific to listing schedules."""
   AddRegionResourceArg(parser, 'for which to list all schedules')
   parser.display_info.AddUriFunc(schedules_util.GetScheduleUri)
+
+
+def AddCreateOrUpdateScheduleFlags(parser, is_update):
+  """Adds flags for creating or updating a schedule to the parser.
+
+  Args:
+    parser: argparse parser for the command.
+    is_update: Whether the flags are for updating a schedule.
+  """
+  schedule_group = parser.add_group(
+      help='Configuration of the schedule.',
+      required=True,
+  )
+  if not is_update:
+    AddRegionResourceArg(parser, 'to create')
+    # TODO: b/369896947 - Add support for updating execution once schedules API
+    # supports partial updates to NotebookExecutionJobCreateRequest.
+    AddCreateExecutionFlags(
+        schedule_group, is_schedule=True
+    )
+  else:
+    AddScheduleResourceArg(parser, 'to update')
+  schedule_group.add_argument(
+      '--display-name',
+      help='The display name of the schedule.',
+      required=True if not is_update else False,
+  )
+  schedule_group.add_argument(
+      '--start-time',
+      help=(
+          'The timestamp after which the first run can be scheduled. Defaults'
+          ' to the schedule creation time. Must be in the RFC 3339'
+          ' (https://www.ietf.org/rfc/rfc3339.txt) format. E.g.'
+          ' "2026-01-01T00:00:00Z" or "2026-01-01T00:00:00-05:00"'
+      ),
+      type=arg_parsers.Datetime.ParseUtcTime,
+  )
+  schedule_group.add_argument(
+      '--end-time',
+      help=(
+          'Timestamp after which no new runs can be scheduled. If specified,'
+          ' the schedule will be completed when either end_time is reached or'
+          ' when scheduled_run_count >= max_run_count. If neither end time nor'
+          ' max_run_count is specified, new runs will keep getting scheduled'
+          ' until this Schedule is paused or deleted. Must be in the RFC 3339'
+          ' (https://www.ietf.org/rfc/rfc3339.txt) format. E.g.'
+          ' "2026-01-01T00:00:00Z" or "2026-01-01T00:00:00-05:00"'
+      ),
+      type=arg_parsers.Datetime.ParseUtcTime,
+  )
+  schedule_group.add_argument(
+      '--max-runs',
+      help='The max runs for the schedule.',
+      type=int,
+  )
+  schedule_group.add_argument(
+      '--cron-schedule',
+      help=(
+          'Cron schedule (https://en.wikipedia.org/wiki/Cron) to launch'
+          ' scheduled runs. To explicitly set a timezone to the cron tab, apply'
+          ' a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or'
+          ' "TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid'
+          ' string from IANA time zone database. For example,'
+          ' "CRON_TZ=America/New_York 1 * * * *", or "TZ=America/New_York 1 * *'
+          ' * *".'
+      ),
+      required=True if not is_update else False,
+  )
+  schedule_group.add_argument(
+      '--max-concurrent-runs',
+      help=(
+          'Maximum number of runs that can be started concurrently for this'
+          ' Schedule. This is the limit for starting the scheduled requests and'
+          ' not the execution of the notebook execution jobs created by the'
+          ' requests.'
+      ),
+      type=int,
+      default=1 if not is_update else None,
+  )
+  schedule_group.add_argument(
+      '--enable-queueing',
+      help=(
+          'Enables new scheduled runs to be queued when max_concurrent_runs'
+          ' limit is reached. If set to true, new runs will be'
+          ' queued instead of skipped.'
+      ),
+      action='store_true',
+      dest='enable_queueing',
+      default=False if not is_update else None,
+  )

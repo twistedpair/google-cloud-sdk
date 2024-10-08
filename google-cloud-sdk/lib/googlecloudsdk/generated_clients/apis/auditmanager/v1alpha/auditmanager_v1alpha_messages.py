@@ -80,21 +80,6 @@ class AuditScopeReport(_messages.Message):
   scopeReportContents = _messages.BytesField(2)
 
 
-class AuditmanagerFoldersLocationsAuditReportsControlReportsFindingsGetRequest(_messages.Message):
-  r"""A
-  AuditmanagerFoldersLocationsAuditReportsControlReportsFindingsGetRequest
-  object.
-
-  Fields:
-    name: Required. Format projects/{project-id}/locations/{location}/auditRep
-      orts/{auditReportName}/controlReports/{controlId}/findings/{finding},
-      folders/{folder-id}/locations/{location}/auditReports/{auditReportName}/
-      controlReports/{controlId}/findings/{finding}
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class AuditmanagerFoldersLocationsAuditReportsControlReportsFindingsListRequest(_messages.Message):
   r"""A
   AuditmanagerFoldersLocationsAuditReportsControlReportsFindingsListRequest
@@ -116,36 +101,6 @@ class AuditmanagerFoldersLocationsAuditReportsControlReportsFindingsListRequest(
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
-
-
-class AuditmanagerFoldersLocationsAuditReportsControlReportsGetRequest(_messages.Message):
-  r"""A AuditmanagerFoldersLocationsAuditReportsControlReportsGetRequest
-  object.
-
-  Fields:
-    name: Required. Format projects/{project-id}/locations/{location}/auditRep
-      orts/{auditReportName}/controlReports/{controlId}, folders/{folder-id}/l
-      ocations/{location}/auditReports/{auditReportName}/controlReports/{contr
-      olId}
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class AuditmanagerFoldersLocationsAuditReportsControlReportsListRequest(_messages.Message):
-  r"""A AuditmanagerFoldersLocationsAuditReportsControlReportsListRequest
-  object.
-
-  Fields:
-    pageSize: Optional. The maximum number of resources to return.
-    pageToken: Optional. The next_page_token value returned from a previous
-      List request, if any.
-    parent: Required. The parent scope for which to list the reports.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
 
 
 class AuditmanagerFoldersLocationsAuditReportsGenerateRequest(_messages.Message):
@@ -214,6 +169,7 @@ class AuditmanagerFoldersLocationsEnrollResourceRequest(_messages.Message):
     scope: Required. The resource to be enrolled to the audit manager. Scope
       format should be resource_type/resource_identifier Eg:
       projects/{project-id}/locations/{location}, folders/{folder-
+      id}/locations/{location} organizations/{organization-
       id}/locations/{location}
   """
 
@@ -248,7 +204,9 @@ class AuditmanagerFoldersLocationsResourceEnrollmentStatusesGetRequest(_messages
   Fields:
     name: Required. Format folders/{folder}/locations/{location}/resourceEnrol
       lmentStatuses/{resource_enrollment_status}, projects/{project}/locations
-      /{location}/resourceEnrollmentStatuses/{resource_enrollment_status}
+      /{location}/resourceEnrollmentStatuses/{resource_enrollment_status}, org
+      anizations/{organization}/locations/{location}/resourceEnrollmentStatuse
+      s/{resource_enrollment_status}
   """
 
   name = _messages.StringField(1, required=True)
@@ -303,6 +261,38 @@ class AuditmanagerOrganizationsLocationsAuditReportsListRequest(_messages.Messag
   parent = _messages.StringField(3, required=True)
 
 
+class AuditmanagerOrganizationsLocationsEnrollResourceRequest(_messages.Message):
+  r"""A AuditmanagerOrganizationsLocationsEnrollResourceRequest object.
+
+  Fields:
+    enrollResourceRequest: A EnrollResourceRequest resource to be passed as
+      the request body.
+    scope: Required. The resource to be enrolled to the audit manager. Scope
+      format should be resource_type/resource_identifier Eg:
+      projects/{project-id}/locations/{location}, folders/{folder-
+      id}/locations/{location} organizations/{organization-
+      id}/locations/{location}
+  """
+
+  enrollResourceRequest = _messages.MessageField('EnrollResourceRequest', 1)
+  scope = _messages.StringField(2, required=True)
+
+
+class AuditmanagerOrganizationsLocationsResourceEnrollmentStatusesGetRequest(_messages.Message):
+  r"""A AuditmanagerOrganizationsLocationsResourceEnrollmentStatusesGetRequest
+  object.
+
+  Fields:
+    name: Required. Format folders/{folder}/locations/{location}/resourceEnrol
+      lmentStatuses/{resource_enrollment_status}, projects/{project}/locations
+      /{location}/resourceEnrollmentStatuses/{resource_enrollment_status}, org
+      anizations/{organization}/locations/{location}/resourceEnrollmentStatuse
+      s/{resource_enrollment_status}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class AuditmanagerOrganizationsLocationsResourceEnrollmentStatusesListRequest(_messages.Message):
   r"""A
   AuditmanagerOrganizationsLocationsResourceEnrollmentStatusesListRequest
@@ -338,21 +328,6 @@ class AuditmanagerOrganizationsLocationsStandardsControlsListRequest(_messages.M
   parent = _messages.StringField(3, required=True)
 
 
-class AuditmanagerProjectsLocationsAuditReportsControlReportsFindingsGetRequest(_messages.Message):
-  r"""A
-  AuditmanagerProjectsLocationsAuditReportsControlReportsFindingsGetRequest
-  object.
-
-  Fields:
-    name: Required. Format projects/{project-id}/locations/{location}/auditRep
-      orts/{auditReportName}/controlReports/{controlId}/findings/{finding},
-      folders/{folder-id}/locations/{location}/auditReports/{auditReportName}/
-      controlReports/{controlId}/findings/{finding}
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class AuditmanagerProjectsLocationsAuditReportsControlReportsFindingsListRequest(_messages.Message):
   r"""A
   AuditmanagerProjectsLocationsAuditReportsControlReportsFindingsListRequest
@@ -374,36 +349,6 @@ class AuditmanagerProjectsLocationsAuditReportsControlReportsFindingsListRequest
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
-
-
-class AuditmanagerProjectsLocationsAuditReportsControlReportsGetRequest(_messages.Message):
-  r"""A AuditmanagerProjectsLocationsAuditReportsControlReportsGetRequest
-  object.
-
-  Fields:
-    name: Required. Format projects/{project-id}/locations/{location}/auditRep
-      orts/{auditReportName}/controlReports/{controlId}, folders/{folder-id}/l
-      ocations/{location}/auditReports/{auditReportName}/controlReports/{contr
-      olId}
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class AuditmanagerProjectsLocationsAuditReportsControlReportsListRequest(_messages.Message):
-  r"""A AuditmanagerProjectsLocationsAuditReportsControlReportsListRequest
-  object.
-
-  Fields:
-    pageSize: Optional. The maximum number of resources to return.
-    pageToken: Optional. The next_page_token value returned from a previous
-      List request, if any.
-    parent: Required. The parent scope for which to list the reports.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
 
 
 class AuditmanagerProjectsLocationsAuditReportsGenerateRequest(_messages.Message):
@@ -472,6 +417,7 @@ class AuditmanagerProjectsLocationsEnrollResourceRequest(_messages.Message):
     scope: Required. The resource to be enrolled to the audit manager. Scope
       format should be resource_type/resource_identifier Eg:
       projects/{project-id}/locations/{location}, folders/{folder-
+      id}/locations/{location} organizations/{organization-
       id}/locations/{location}
   """
 
@@ -585,7 +531,9 @@ class AuditmanagerProjectsLocationsResourceEnrollmentStatusesGetRequest(_message
   Fields:
     name: Required. Format folders/{folder}/locations/{location}/resourceEnrol
       lmentStatuses/{resource_enrollment_status}, projects/{project}/locations
-      /{location}/resourceEnrollmentStatuses/{resource_enrollment_status}
+      /{location}/resourceEnrollmentStatuses/{resource_enrollment_status}, org
+      anizations/{organization}/locations/{location}/resourceEnrollmentStatuse
+      s/{resource_enrollment_status}
   """
 
   name = _messages.StringField(1, required=True)
@@ -725,20 +673,6 @@ class ControlDetails(_messages.Message):
   control = _messages.MessageField('Control', 2)
 
 
-class ControlReport(_messages.Message):
-  r"""Represents a control audit report.
-
-  Fields:
-    controlDetails: Output only. Control details for the report including the
-      findings.
-    name: Identifier. The name of this Control Report, in the format of scope
-      given in request.
-  """
-
-  controlDetails = _messages.MessageField('ControlDetails', 1)
-  name = _messages.StringField(2)
-
-
 class DestinationDetails(_messages.Message):
   r"""Represents the locations where the generated reports is saved.
 
@@ -779,10 +713,11 @@ class EnrollResourceRequest(_messages.Message):
   Fields:
     destinations: Required. List of destination among which customer can
       choose to upload their reports during the audit process. While enrolling
-      at a folder level, customer can choose Cloud storage bucket in any
-      project. If the audit is triggered at project level using the service
-      agent at folder level, all the destination options associated with
-      folder level service agent will be available to auditing projects.
+      at a organization/folder level, customer can choose Cloud storage bucket
+      in any project. If the audit is triggered at project level using the
+      service agent at organization/folder level, all the destination options
+      associated with respective organization/folder level service agent will
+      be available to auditing projects.
   """
 
   destinations = _messages.MessageField('EligibleDestination', 1, repeated=True)
@@ -911,19 +846,6 @@ class ListAuditReportsResponse(_messages.Message):
   """
 
   auditReports = _messages.MessageField('AuditReport', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
-class ListControlReportsResponse(_messages.Message):
-  r"""Response message with all the control reports.
-
-  Fields:
-    controlReports: Output only. The control reports.
-    nextPageToken: Output only. The token to retrieve the next page of
-      results.
-  """
-
-  controlReports = _messages.MessageField('ControlReport', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -1298,14 +1220,15 @@ class ReportSummary(_messages.Message):
 
 
 class ResourceEnrollmentStatus(_messages.Message):
-  r"""Represents a resource (project or folder) with its enrollment status.
+  r"""Represents a resource (project or folder or organization) with its
+  enrollment status.
 
   Enums:
     EnrollmentStateValueValuesEnum: Output only. Enrollment state of the
       resource.
 
   Fields:
-    displayName: Output only. Display name of the project/folder.
+    displayName: Output only. Display name of the project/folder/organization.
     enrolled: Output only. Is resource enrolled.
     enrollment: Output only. Enrollment which contains enrolled destination
       details for a resource

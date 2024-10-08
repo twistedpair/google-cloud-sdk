@@ -2242,6 +2242,9 @@ class GoogleCloudRunV2Service(_messages.Message):
     ingress: Optional. Provides the ingress settings for this Service. On
       output, returns the currently observed ingress settings, or
       INGRESS_TRAFFIC_UNSPECIFIED if no revision is active.
+    invokerIamDisabled: Optional. Disables IAM permission check for
+      run.routes.invoke for callers of this service. This setting should not
+      be used with external ingress.
     labels: Optional. Unstructured key value map that can be used to organize
       and categorize objects. User-provided labels are shared with Google's
       billing system, so they can be used to filter, or break down billing
@@ -2469,24 +2472,25 @@ class GoogleCloudRunV2Service(_messages.Message):
   expireTime = _messages.StringField(13)
   generation = _messages.IntegerField(14)
   ingress = _messages.EnumField('IngressValueValuesEnum', 15)
-  labels = _messages.MessageField('LabelsValue', 16)
-  lastModifier = _messages.StringField(17)
-  latestCreatedRevision = _messages.StringField(18)
-  latestReadyRevision = _messages.StringField(19)
-  launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 20)
-  name = _messages.StringField(21)
-  observedGeneration = _messages.IntegerField(22)
-  reconciling = _messages.BooleanField(23)
-  satisfiesPzs = _messages.BooleanField(24)
-  scaling = _messages.MessageField('GoogleCloudRunV2ServiceScaling', 25)
-  template = _messages.MessageField('GoogleCloudRunV2RevisionTemplate', 26)
-  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 27)
-  traffic = _messages.MessageField('GoogleCloudRunV2TrafficTarget', 28, repeated=True)
-  trafficStatuses = _messages.MessageField('GoogleCloudRunV2TrafficTargetStatus', 29, repeated=True)
-  uid = _messages.StringField(30)
-  updateTime = _messages.StringField(31)
-  uri = _messages.StringField(32)
-  urls = _messages.StringField(33, repeated=True)
+  invokerIamDisabled = _messages.BooleanField(16)
+  labels = _messages.MessageField('LabelsValue', 17)
+  lastModifier = _messages.StringField(18)
+  latestCreatedRevision = _messages.StringField(19)
+  latestReadyRevision = _messages.StringField(20)
+  launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 21)
+  name = _messages.StringField(22)
+  observedGeneration = _messages.IntegerField(23)
+  reconciling = _messages.BooleanField(24)
+  satisfiesPzs = _messages.BooleanField(25)
+  scaling = _messages.MessageField('GoogleCloudRunV2ServiceScaling', 26)
+  template = _messages.MessageField('GoogleCloudRunV2RevisionTemplate', 27)
+  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 28)
+  traffic = _messages.MessageField('GoogleCloudRunV2TrafficTarget', 29, repeated=True)
+  trafficStatuses = _messages.MessageField('GoogleCloudRunV2TrafficTargetStatus', 30, repeated=True)
+  uid = _messages.StringField(31)
+  updateTime = _messages.StringField(32)
+  uri = _messages.StringField(33)
+  urls = _messages.StringField(34, repeated=True)
 
 
 class GoogleCloudRunV2ServiceMesh(_messages.Message):
@@ -2512,7 +2516,7 @@ class GoogleCloudRunV2ServiceScaling(_messages.Message):
   Fields:
     minInstanceCount: Optional. total min instances for the service. This
       number of instances is divided among all revisions with specified
-      traffic based on the percent of traffic they are receiving. (BETA)
+      traffic based on the percent of traffic they are receiving.
     scalingMode: Optional. The scaling mode for the service.
   """
 
@@ -3997,9 +4001,12 @@ class GoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message):
         the same region as the build. The builder service account must have
         access to create and write to Cloud Storage buckets in the build
         project.
+      LEGACY_BUCKET: Bucket is located in a Google-owned project and is not
+        regionalized.
     """
     DEFAULT_LOGS_BUCKET_BEHAVIOR_UNSPECIFIED = 0
     REGIONAL_USER_OWNED_BUCKET = 1
+    LEGACY_BUCKET = 2
 
   class LogStreamingOptionValueValuesEnum(_messages.Enum):
     r"""Option to define build log streaming behavior to Cloud Storage.

@@ -1409,6 +1409,8 @@ class PostgreSql(_messages.Message):
     database: Required. Name of the PostgreSQL database.
     schemaValidation: Optional. Configure how much Postgresql schema
       validation to perform. Default to `STRICT` if not specified.
+    unlinked: No Postgres data source is linked. If set, don't allow
+      `database` and `schema_validation` to be configured.
   """
 
   class SchemaValidationValueValuesEnum(_messages.Enum):
@@ -1440,6 +1442,7 @@ class PostgreSql(_messages.Message):
   cloudSql = _messages.MessageField('CloudSqlInstance', 1)
   database = _messages.StringField(2)
   schemaValidation = _messages.EnumField('SchemaValidationValueValuesEnum', 3)
+  unlinked = _messages.BooleanField(4)
 
 
 class Schema(_messages.Message):

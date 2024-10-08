@@ -345,7 +345,6 @@ def AddControlPlaneNodeStorageSchema(parser):
       help="""
       Name for the storage schema of control plane nodes.
       """,
-      hidden=True,
   )
 
 
@@ -487,7 +486,6 @@ def AddNodeStorageSchema(parser):
       help="""
       Name for the storage schema of worker nodes.
       """,
-      hidden=True,
   )
 
 

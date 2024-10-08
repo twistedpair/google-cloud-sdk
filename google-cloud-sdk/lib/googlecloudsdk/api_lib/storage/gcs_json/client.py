@@ -538,6 +538,7 @@ class JsonClient(cloud_api.CloudApi):
   def get_bucket(
       self,
       bucket_name,
+      generation=None,
       fields_scope=cloud_api.FieldsScope.NO_ACL,
       soft_deleted=False,
   ):
@@ -547,6 +548,7 @@ class JsonClient(cloud_api.CloudApi):
     )
     request = self.messages.StorageBucketsGetRequest(
         bucket=bucket_name,
+        generation=generation,
         projection=projection,
         # Avoid needlessly appending "&softDeleted=False" to URL.
         softDeleted=True if soft_deleted else None,

@@ -1882,33 +1882,6 @@ class DataprocV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def InjectCredentials(self, request, global_params=None):
-      r"""Inject Credentials in the interactive session.
-
-      Args:
-        request: (DataprocProjectsLocationsSessionsInjectCredentialsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('InjectCredentials')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    InjectCredentials.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}:injectCredentials',
-        http_method='POST',
-        method_id='dataproc.projects.locations.sessions.injectCredentials',
-        ordered_params=['session'],
-        path_params=['session'],
-        query_params=[],
-        relative_path='v1/{+session}:injectCredentials',
-        request_field='injectSessionCredentialsRequest',
-        request_type_name='DataprocProjectsLocationsSessionsInjectCredentialsRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       r"""Lists interactive sessions.
 

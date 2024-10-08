@@ -1689,9 +1689,9 @@ def AddInvokerIamCheckFlag(parser):
       '--invoker-iam-check',
       action=arg_parsers.StoreTrueFalseAction,
       help=(
-          'Indicates whether an IAM check should occur when invoking the '
-          'container. This is Enabled by default. Disabling this flag is not '
-          'available in all projects.'
+          'Optionally disable invoker IAM checks. This feature is available by'
+          ' invitation only. More info at '
+          'https://cloud.google.com/run/docs/securing/managing-access#invoker_check.'
       ),
   )
 

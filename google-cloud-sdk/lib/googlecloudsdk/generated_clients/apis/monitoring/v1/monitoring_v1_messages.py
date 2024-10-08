@@ -983,6 +983,7 @@ class EventAnnotation(_messages.Message):
       UPTIME_CHECK_FAILURE: Failure of a Cloud Monitoring uptime check.
       CLOUD_ALERTING_ALERT: Alerts from Cloud Alerting
       SERVICE_HEALTH_INCIDENT: Incidents from Service Health
+      SAP_BACKINT: Agent for SAP Backint related events.
     """
     EVENT_TYPE_UNSPECIFIED = 0
     GKE_WORKLOAD_DEPLOYMENT = 1
@@ -1006,6 +1007,7 @@ class EventAnnotation(_messages.Message):
     UPTIME_CHECK_FAILURE = 19
     CLOUD_ALERTING_ALERT = 20
     SERVICE_HEALTH_INCIDENT = 21
+    SAP_BACKINT = 22
 
   displayName = _messages.StringField(1)
   enabled = _messages.BooleanField(2)

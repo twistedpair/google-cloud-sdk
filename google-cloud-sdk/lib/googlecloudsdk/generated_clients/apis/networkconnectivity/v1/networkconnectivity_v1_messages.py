@@ -239,10 +239,13 @@ class ConsumerPscConfig(_messages.Message):
   r"""Allow the producer to specify which consumers can connect to it.
 
   Enums:
+    IpVersionValueValuesEnum: The requested IP version for the PSC connection.
     StateValueValuesEnum: Output only. Overall state of PSC Connections
       management for this consumer psc config.
 
   Messages:
+    ProducerInstanceMetadataValue: Immutable. An immutable map for the
+      producer instance metadata.
     ServiceAttachmentIpAddressMapValue: Output only. A map to store mapping
       between customer vip and target service attachment. Only service
       attachment with producer specified ip addresses are stored here.
@@ -256,12 +259,15 @@ class ConsumerPscConfig(_messages.Message):
       'projects/1234'
     disableGlobalAccess: This is used in PSC consumer ForwardingRule to
       control whether the PSC endpoint can be accessed from another region.
+    ipVersion: The requested IP version for the PSC connection.
     network: The resource path of the consumer network where PSC connections
       are allowed to be created in. Note, this network does not need be in the
       ConsumerPscConfig.project in the case of SharedVPC. Example:
       projects/{projectNumOrId}/global/networks/{networkId}.
-    producerInstanceId: Immutable. An immutable identifier for the producer
-      instance.
+    producerInstanceId: Immutable. Deprecated. Use producer_instance_metadata
+      instead. An immutable identifier for the producer instance.
+    producerInstanceMetadata: Immutable. An immutable map for the producer
+      instance metadata.
     project: The consumer project where PSC connections are allowed to be
       created in.
     serviceAttachmentIpAddressMap: Output only. A map to store mapping between
@@ -270,6 +276,19 @@ class ConsumerPscConfig(_messages.Message):
     state: Output only. Overall state of PSC Connections management for this
       consumer psc config.
   """
+
+  class IpVersionValueValuesEnum(_messages.Enum):
+    r"""The requested IP version for the PSC connection.
+
+    Values:
+      IP_VERSION_UNSPECIFIED: Default value. We will use IPv4 or IPv6
+        depending on the IP version of first available subnetwork.
+      IPV4: Will use IPv4 only.
+      IPV6: Will use IPv6 only.
+    """
+    IP_VERSION_UNSPECIFIED = 0
+    IPV4 = 1
+    IPV6 = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Overall state of PSC Connections management for this
@@ -294,6 +313,32 @@ class ConsumerPscConfig(_messages.Message):
     CONNECTION_POLICY_MISSING = 2
     POLICY_LIMIT_REACHED = 3
     CONSUMER_INSTANCE_PROJECT_NOT_ALLOWLISTED = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ProducerInstanceMetadataValue(_messages.Message):
+    r"""Immutable. An immutable map for the producer instance metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ProducerInstanceMetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ProducerInstanceMetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ProducerInstanceMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ServiceAttachmentIpAddressMapValue(_messages.Message):
@@ -326,11 +371,13 @@ class ConsumerPscConfig(_messages.Message):
 
   consumerInstanceProject = _messages.StringField(1)
   disableGlobalAccess = _messages.BooleanField(2)
-  network = _messages.StringField(3)
-  producerInstanceId = _messages.StringField(4)
-  project = _messages.StringField(5)
-  serviceAttachmentIpAddressMap = _messages.MessageField('ServiceAttachmentIpAddressMapValue', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 3)
+  network = _messages.StringField(4)
+  producerInstanceId = _messages.StringField(5)
+  producerInstanceMetadata = _messages.MessageField('ProducerInstanceMetadataValue', 6)
+  project = _messages.StringField(7)
+  serviceAttachmentIpAddressMap = _messages.MessageField('ServiceAttachmentIpAddressMapValue', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
 
 
 class ConsumerPscConnection(_messages.Message):
@@ -339,7 +386,12 @@ class ConsumerPscConnection(_messages.Message):
   Enums:
     ErrorTypeValueValuesEnum: The error type indicates whether the error is
       consumer facing, producer facing or system internal.
+    IpVersionValueValuesEnum: The requested IP version for the PSC connection.
     StateValueValuesEnum: The state of the PSC connection.
+
+  Messages:
+    ProducerInstanceMetadataValue: Immutable. An immutable map for the
+      producer instance metadata.
 
   Fields:
     error: The most recent error during operating this connection.
@@ -353,11 +405,14 @@ class ConsumerPscConnection(_messages.Message):
     ip: The IP literal allocated on the consumer network for the PSC
       forwarding rule that is created to connect to the producer service
       attachment in this service connection map.
+    ipVersion: The requested IP version for the PSC connection.
     network: The consumer network whose PSC forwarding rule is connected to
       the service attachments in this service connection map. Note that the
       network could be on a different project (shared VPC).
-    producerInstanceId: Immutable. An immutable identifier for the producer
-      instance.
+    producerInstanceId: Immutable. Deprecated. Use producer_instance_metadata
+      instead. An immutable identifier for the producer instance.
+    producerInstanceMetadata: Immutable. An immutable map for the producer
+      instance metadata.
     project: The consumer project whose PSC forwarding rule is connected to
       the service attachments in this service connection map.
     pscConnectionId: The PSC connection id of the PSC forwarding rule
@@ -385,6 +440,19 @@ class ConsumerPscConnection(_messages.Message):
     ERROR_CONSUMER_SIDE = 2
     ERROR_PRODUCER_SIDE = 3
 
+  class IpVersionValueValuesEnum(_messages.Enum):
+    r"""The requested IP version for the PSC connection.
+
+    Values:
+      IP_VERSION_UNSPECIFIED: Default value. We will use IPv4 or IPv6
+        depending on the IP version of first available subnetwork.
+      IPV4: Will use IPv4 only.
+      IPV6: Will use IPv6 only.
+    """
+    IP_VERSION_UNSPECIFIED = 0
+    IPV4 = 1
+    IPV6 = 2
+
   class StateValueValuesEnum(_messages.Enum):
     r"""The state of the PSC connection.
 
@@ -404,19 +472,47 @@ class ConsumerPscConnection(_messages.Message):
     CREATING = 3
     DELETING = 4
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ProducerInstanceMetadataValue(_messages.Message):
+    r"""Immutable. An immutable map for the producer instance metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ProducerInstanceMetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ProducerInstanceMetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ProducerInstanceMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   error = _messages.MessageField('GoogleRpcStatus', 1)
   errorInfo = _messages.MessageField('GoogleRpcErrorInfo', 2)
   errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 3)
   forwardingRule = _messages.StringField(4)
   gceOperation = _messages.StringField(5)
   ip = _messages.StringField(6)
-  network = _messages.StringField(7)
-  producerInstanceId = _messages.StringField(8)
-  project = _messages.StringField(9)
-  pscConnectionId = _messages.StringField(10)
-  selectedSubnetwork = _messages.StringField(11)
-  serviceAttachmentUri = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 7)
+  network = _messages.StringField(8)
+  producerInstanceId = _messages.StringField(9)
+  producerInstanceMetadata = _messages.MessageField('ProducerInstanceMetadataValue', 10)
+  project = _messages.StringField(11)
+  pscConnectionId = _messages.StringField(12)
+  selectedSubnetwork = _messages.StringField(13)
+  serviceAttachmentUri = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
 
 
 class DeactivateSpokeRequest(_messages.Message):
@@ -1146,7 +1242,12 @@ class InternalRange(_messages.Message):
   Fields:
     createTime: Time when the internal range was created.
     description: A description of this resource.
-    ipCidrRange: The IP range that this internal range defines.
+    immutable: Optional. Immutable ranges cannot have their fields modified,
+      except for labels and description.
+    ipCidrRange: The IP range that this internal range defines. NOTE: IPv6
+      ranges are limited to usage=EXTERNAL_TO_VPC and peering=FOR_SELF. NOTE:
+      For IPv6 Ranges this field is compulsory, i.e. the address range must be
+      specified explicitly.
     labels: User-defined labels.
     migration: Optional. Should be present if usage is set to FOR_MIGRATION.
     name: Immutable. The name of an internal range. Format:
@@ -1162,10 +1263,12 @@ class InternalRange(_messages.Message):
       the current internal range.
     peering: The type of peering set for this internal range.
     prefixLength: An alternate to ip_cidr_range. Can be set when trying to
-      create a reservation that automatically finds a free range of the given
-      size. If both ip_cidr_range and prefix_length are set, there is an error
-      if the range sizes do not match. Can also be used during updates to
-      change the range size.
+      create an IPv4 reservation that automatically finds a free range of the
+      given size. If both ip_cidr_range and prefix_length are set, there is an
+      error if the range sizes do not match. Can also be used during updates
+      to change the range size. NOTE: For IPv6 this field only works if
+      ip_cidr_range is set as well, and both fields must match. In other
+      words, with IPv6 this field only works as a redundant parameter.
     targetCidrRange: Optional. Can be set to narrow down or pick a different
       address space while searching for a free range. If not set, defaults to
       the "10.0.0.0/8" address space. This can be used to search in other
@@ -1242,7 +1345,7 @@ class InternalRange(_messages.Message):
         dynamic route announcements via interconnect.
       FOR_MIGRATION: Ranges created FOR_MIGRATION can be used to lock a CIDR
         range between a source and target subnet. If usage is set to
-        FOR_MIGRATION the peering value has to be set to FOR_SELF or default
+        FOR_MIGRATION, the peering value has to be set to FOR_SELF or default
         to FOR_SELF when unset.
     """
     USAGE_UNSPECIFIED = 0
@@ -1276,18 +1379,19 @@ class InternalRange(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  ipCidrRange = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  migration = _messages.MessageField('Migration', 5)
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  overlaps = _messages.EnumField('OverlapsValueListEntryValuesEnum', 8, repeated=True)
-  peering = _messages.EnumField('PeeringValueValuesEnum', 9)
-  prefixLength = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  targetCidrRange = _messages.StringField(11, repeated=True)
-  updateTime = _messages.StringField(12)
-  usage = _messages.EnumField('UsageValueValuesEnum', 13)
-  users = _messages.StringField(14, repeated=True)
+  immutable = _messages.BooleanField(3)
+  ipCidrRange = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  migration = _messages.MessageField('Migration', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  overlaps = _messages.EnumField('OverlapsValueListEntryValuesEnum', 9, repeated=True)
+  peering = _messages.EnumField('PeeringValueValuesEnum', 10)
+  prefixLength = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  targetCidrRange = _messages.StringField(12, repeated=True)
+  updateTime = _messages.StringField(13)
+  usage = _messages.EnumField('UsageValueValuesEnum', 14)
+  users = _messages.StringField(15, repeated=True)
 
 
 class IpRangeReservation(_messages.Message):
@@ -1332,8 +1436,8 @@ class LinkedInterconnectAttachments(_messages.Message):
 
   Fields:
     includeImportRanges: Optional. IP ranges allowed to be included during
-      import from hub.(does not control transit connectivity) The only allowed
-      value for now is "ALL_IPV4_RANGES".
+      import from hub (does not control transit connectivity). The only
+      allowed value for now is "ALL_IPV4_RANGES".
     siteToSiteDataTransfer: A value that controls whether site-to-site data
       transfer is enabled for these resources. Data transfer is available only
       in [supported locations](https://cloud.google.com/network-
@@ -1382,8 +1486,8 @@ class LinkedRouterApplianceInstances(_messages.Message):
 
   Fields:
     includeImportRanges: Optional. IP ranges allowed to be included during
-      import from hub.(does not control transit connectivity) The only allowed
-      value for now is "ALL_IPV4_RANGES".
+      import from hub (does not control transit connectivity). The only
+      allowed value for now is "ALL_IPV4_RANGES".
     instances: The list of router appliance instances.
     siteToSiteDataTransfer: A value that controls whether site-to-site data
       transfer is enabled for these resources. Data transfer is available only
@@ -1427,8 +1531,8 @@ class LinkedVpnTunnels(_messages.Message):
 
   Fields:
     includeImportRanges: Optional. IP ranges allowed to be included during
-      import from hub.(does not control transit connectivity) The only allowed
-      value for now is "ALL_IPV4_RANGES".
+      import from hub (does not control transit connectivity). The only
+      allowed value for now is "ALL_IPV4_RANGES".
     siteToSiteDataTransfer: A value that controls whether site-to-site data
       transfer is enabled for these resources. Data transfer is available only
       in [supported locations](https://cloud.google.com/network-
@@ -3898,7 +4002,12 @@ class PscConnection(_messages.Message):
   Enums:
     ErrorTypeValueValuesEnum: The error type indicates whether the error is
       consumer facing, producer facing or system internal.
+    IpVersionValueValuesEnum: The requested IP version for the PSC connection.
     StateValueValuesEnum: State of the PSC Connection
+
+  Messages:
+    ProducerInstanceMetadataValue: Immutable. An immutable map for the
+      producer instance metadata.
 
   Fields:
     consumerAddress: The resource reference of the consumer address.
@@ -3912,11 +4021,17 @@ class PscConnection(_messages.Message):
     errorType: The error type indicates whether the error is consumer facing,
       producer facing or system internal.
     gceOperation: The last Compute Engine operation to setup PSC connection.
-    producerInstanceId: Immutable. An immutable identifier for the producer
-      instance.
+    ipVersion: The requested IP version for the PSC connection.
+    producerInstanceId: Immutable. Deprecated. Use producer_instance_metadata
+      instead. An immutable identifier for the producer instance.
+    producerInstanceMetadata: Immutable. An immutable map for the producer
+      instance metadata.
     pscConnectionId: The PSC connection id of the PSC forwarding rule.
     selectedSubnetwork: Output only. The URI of the subnetwork selected to
       allocate IP address for this connection.
+    serviceClass: Output only. [Output only] The service class associated with
+      this PSC Connection. The value is derived from the SCPolicy and matches
+      the service class name provided by the customer.
     state: State of the PSC Connection
   """
 
@@ -3935,6 +4050,19 @@ class PscConnection(_messages.Message):
     ERROR_INTERNAL = 1
     ERROR_CONSUMER_SIDE = 2
     ERROR_PRODUCER_SIDE = 3
+
+  class IpVersionValueValuesEnum(_messages.Enum):
+    r"""The requested IP version for the PSC connection.
+
+    Values:
+      IP_VERSION_UNSPECIFIED: Default value. We will use IPv4 or IPv6
+        depending on the IP version of first available subnetwork.
+      IPV4: Will use IPv4 only.
+      IPV6: Will use IPv6 only.
+    """
+    IP_VERSION_UNSPECIFIED = 0
+    IPV4 = 1
+    IPV6 = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""State of the PSC Connection
@@ -3955,6 +4083,32 @@ class PscConnection(_messages.Message):
     CREATING = 3
     DELETING = 4
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ProducerInstanceMetadataValue(_messages.Message):
+    r"""Immutable. An immutable map for the producer instance metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ProducerInstanceMetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ProducerInstanceMetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ProducerInstanceMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   consumerAddress = _messages.StringField(1)
   consumerForwardingRule = _messages.StringField(2)
   consumerTargetProject = _messages.StringField(3)
@@ -3962,10 +4116,13 @@ class PscConnection(_messages.Message):
   errorInfo = _messages.MessageField('GoogleRpcErrorInfo', 5)
   errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 6)
   gceOperation = _messages.StringField(7)
-  producerInstanceId = _messages.StringField(8)
-  pscConnectionId = _messages.StringField(9)
-  selectedSubnetwork = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 8)
+  producerInstanceId = _messages.StringField(9)
+  producerInstanceMetadata = _messages.MessageField('ProducerInstanceMetadataValue', 10)
+  pscConnectionId = _messages.StringField(11)
+  selectedSubnetwork = _messages.StringField(12)
+  serviceClass = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
 
 
 class PscPropagationStatus(_messages.Message):

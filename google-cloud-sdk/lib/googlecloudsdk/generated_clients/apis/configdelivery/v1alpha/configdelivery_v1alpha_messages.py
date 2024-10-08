@@ -43,17 +43,19 @@ class CancelOperationRequest(_messages.Message):
 
 
 class CloudBuildRepository(_messages.Message):
-  r"""CloudBuildRepository represents a cloud build repository.
+  r"""CloudBuildRepository contains information about fetching Kubernetes
+  configuration from a `CloudBuildRepository`.
 
   Fields:
     name: Required. Name of the cloud build repository. Format is
       projects/{p}/locations/{l}/connections/{c}/repositories/{r}.
     path: Optional. path to the directory or file within the repository that
-      contains the KRM configs. If unspecified, path is assumed to the top
-      level root directory of the repo.
-    serviceAccount: Required. service_account to use for running cloud build
-      triggers.
-    tag: Required. tag of the cloud build repository that should be read from.
+      contains the kubernetes configuration. If unspecified, path is assumed
+      to the top level root directory of the repository.
+    serviceAccount: Required. Google service account to use in CloudBuild
+      triggers to fetch and store kubernetes configuration.
+    tag: Required. git tag of the underlying git repository. The git tag must
+      be in the semantic version format `vX.Y.Z`.
     variantsPattern: Optional. variants_pattern is a glob pattern that will be
       used to find variants in the repository. Examples: "variants/*.yaml",
       "us-*"
@@ -98,6 +100,7 @@ class ClusterInfo(_messages.Message):
       ABORTED: Aborted state.
       CANCELLED: Cancelled state.
       ERROR: Error state.
+      UNCHANGED: Unchanged state.
     """
     STATE_UNSPECIFIED = 0
     WAITING = 1
@@ -107,6 +110,7 @@ class ClusterInfo(_messages.Message):
     ABORTED = 5
     CANCELLED = 6
     ERROR = 7
+    UNCHANGED = 8
 
   current = _messages.MessageField('ResourceBundleDeploymentInfo', 1)
   desired = _messages.MessageField('ResourceBundleDeploymentInfo', 2)
@@ -195,7 +199,7 @@ class ConfigdeliveryProjectsLocationsFleetPackagesListRequest(_messages.Message)
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListFleetPackagesRequest
+    parent: Required. Parent value for ListFleetPackagesRequest.
   """
 
   filter = _messages.StringField(1)
@@ -210,9 +214,9 @@ class ConfigdeliveryProjectsLocationsFleetPackagesPatchRequest(_messages.Message
 
   Fields:
     fleetPackage: A FleetPackage resource to be passed as the request body.
-    name: Identifier. Name of the FleetPackage. Format is
-      projects/{project}/locations/
-      {location}/fleetPackages/{fleetPackage}/a-z{0,62}
+    name: Identifier. Name of the `FleetPackage`. Format is
+      `projects/{project}/locations/{location}/fleetPackages/{fleetPackage}`.
+      The `fleetPackage` component must match `a-z{0,62}`
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -448,7 +452,7 @@ class ConfigdeliveryProjectsLocationsResourceBundlesGetRequest(_messages.Message
   r"""A ConfigdeliveryProjectsLocationsResourceBundlesGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the resource.
   """
 
   name = _messages.StringField(1, required=True)
@@ -458,13 +462,13 @@ class ConfigdeliveryProjectsLocationsResourceBundlesListRequest(_messages.Messag
   r"""A ConfigdeliveryProjectsLocationsResourceBundlesListRequest object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListResourceBundlesRequest
+    parent: Required. Parent value for ListResourceBundlesRequest.
   """
 
   filter = _messages.StringField(1)
@@ -478,8 +482,8 @@ class ConfigdeliveryProjectsLocationsResourceBundlesPatchRequest(_messages.Messa
   r"""A ConfigdeliveryProjectsLocationsResourceBundlesPatchRequest object.
 
   Fields:
-    name: Identifier. Name of the ResourceBundle. Format is
-      projects/{project}/locations/ {location}/resourceBundle /a-z{0,62}
+    name: Identifier. Name of the `ResourceBundle`. Format is
+      `projects/{project}/locations/{location}/resourceBundle /a-z{0,62}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -574,13 +578,13 @@ class ConfigdeliveryProjectsLocationsResourceBundlesReleasesListRequest(_message
   object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListReleasesRequest
+    parent: Required. Parent value for ListReleasesRequest.
   """
 
   filter = _messages.StringField(1)
@@ -595,9 +599,8 @@ class ConfigdeliveryProjectsLocationsResourceBundlesReleasesPatchRequest(_messag
   object.
 
   Fields:
-    name: Identifier. Name of the Release. Format is
-      projects/{project}/locations/
-      {location}/resourceBundles/{resource_bundle}/release/a-z{0,62}
+    name: Identifier. Name of the Release. Format is `projects/{project}/locat
+      ions/location}/resourceBundles/{resource_bundle}/release/a-z{0,62}`.
     release: A Release resource to be passed as the request body.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -633,11 +636,11 @@ class Empty(_messages.Message):
 
 
 class Fleet(_messages.Message):
-  r"""The fleet where the resource bundle should be installed.
+  r"""The fleet where the `FleetPackage` should be deployed.
 
   Fields:
-    project: Required. The host project for the fleet. Format is
-      projects/{project}.
+    project: Required. The host project for the GKE fleet. Format is
+      `projects/{project}`.
     selector: Optional. selector allows targeting a subset of fleet members
       using their labels.
   """
@@ -647,40 +650,60 @@ class Fleet(_messages.Message):
 
 
 class FleetPackage(_messages.Message):
-  r"""message describing FleetPackage object
+  r"""A `FleetPackage` resource in the Config Delivery API. A `FleetPackage`
+  defines a package through which kubernetes configuration is deployed to a
+  fleet of kubernetes clusters.
 
   Enums:
-    DeletionPropagationPolicyValueValuesEnum: Optional. Deletion propagation
-      policy for the fleet package.
+    DeletionPropagationPolicyValueValuesEnum: Optional. Information around how
+      to handle kubernetes resources at the target clusters when the
+      `FleetPackage` is deleted.
     StateValueValuesEnum: Optional. The desired state of the fleet package.
 
   Messages:
-    LabelsValue: Optional. Labels as key value pairs
+    LabelsValue: Optional. Labels are attributes that can be set and used by
+      both the user and by Config Delivery. Labels must meet the following
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. Both keys and values are
+      additionally constrained to be <= 128 bytes.
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
-    deletionPropagationPolicy: Optional. Deletion propagation policy for the
-      fleet package.
-    info: Output only. info contains the rollout status of the resource bundle
-      across given target clusters.
-    labels: Optional. Labels as key value pairs
-    name: Identifier. Name of the FleetPackage. Format is
-      projects/{project}/locations/
-      {location}/fleetPackages/{fleetPackage}/a-z{0,62}
-    resourceBundleSelector: Required. resource_bundle_selector determines what
-      resource bundle to deploy.
-    rolloutStrategy: Optional. The strategy for rolling out resource bundles
-      to clusters.
+    createTime: Output only. Time at which the `FleetPackage` was created.
+    deletionPropagationPolicy: Optional. Information around how to handle
+      kubernetes resources at the target clusters when the `FleetPackage` is
+      deleted.
+    info: Output only. Information containing the rollout status of the
+      `FleetPackage` across all the target clusters.
+    labels: Optional. Labels are attributes that can be set and used by both
+      the user and by Config Delivery. Labels must meet the following
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. Both keys and values are
+      additionally constrained to be <= 128 bytes.
+    name: Identifier. Name of the `FleetPackage`. Format is
+      `projects/{project}/locations/{location}/fleetPackages/{fleetPackage}`.
+      The `fleetPackage` component must match `a-z{0,62}`
+    resourceBundleSelector: Required. Information specifying the source of
+      kubernetes configuration to deploy.
+    rolloutStrategy: Optional. The strategy to use to deploy kubetnetes
+      configuration to clusters.
     state: Optional. The desired state of the fleet package.
-    target: Optional. The target into which the resource bundle should be
-      installed.
-    updateTime: Output only. [Output only] Update time stamp
-    variantSelector: Required. variant_selector specifies how to select a
-      resource bundle variant for a target cluster.
+    target: Optional. Configuration to select target clusters to deploy
+      kubernetes configuration to.
+    updateTime: Output only. Most recent time at which the `FleetPackage` was
+      updated.
+    variantSelector: Required. Information specifying how to map a
+      `ResourceBundle` variant to a target cluster.
   """
 
   class DeletionPropagationPolicyValueValuesEnum(_messages.Enum):
-    r"""Optional. Deletion propagation policy for the fleet package.
+    r"""Optional. Information around how to handle kubernetes resources at the
+    target clusters when the `FleetPackage` is deleted.
 
     Values:
       DELETION_PROPAGATION_POLICY_UNSPECIFIED: Unspecified deletion
@@ -699,8 +722,8 @@ class FleetPackage(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: Unspecified state.
-      ACTIVE: Fleet package is intended to be active.
-      SUSPENDED: Fleet package is intended to be suspended.
+      ACTIVE: `FleetPackage` is intended to be active.
+      SUSPENDED: `FleetPackage` is intended to be suspended.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -708,7 +731,14 @@ class FleetPackage(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
+    r"""Optional. Labels are attributes that can be set and used by both the
+    user and by Config Delivery. Labels must meet the following constraints: *
+    Keys and values can contain only lowercase letters, numeric characters,
+    underscores, and dashes. * All characters must use UTF-8 encoding, and
+    international characters are allowed. * Keys must start with a lowercase
+    letter or international character. * Each resource is limited to a maximum
+    of 64 labels. Both keys and values are additionally constrained to be <=
+    128 bytes.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -744,7 +774,7 @@ class FleetPackage(_messages.Message):
 
 
 class FleetPackageError(_messages.Message):
-  r"""A Fleet Package created error representing a problem rolling out
+  r"""Information representing an error encountered during rolling out
   configurations.
 
   Fields:
@@ -755,34 +785,34 @@ class FleetPackageError(_messages.Message):
 
 
 class FleetPackageInfo(_messages.Message):
-  r"""FleetPackageInfo represents the status of resource bundle rollout across
+  r"""FleetPackageInfo represents the status of the `FleetPackage` across all
   the target clusters.
 
   Enums:
-    StateValueValuesEnum: Optional. Output only. The current state of a
-      FleetPackage.
+    StateValueValuesEnum: Optional. Output only. The current state of the
+      `FleetPackage`.
 
   Fields:
     activeRollout: Optional. The active rollout, if any. Format is `projects/{
       project}/locations/{location}/fleetPackages/{fleet_package}/rollouts/{ro
       llout}`.
-    errors: Optional. Output only. A list of errors resulting from problematic
-      configs.
+    errors: Optional. Output only. Errors encountered during configuration
+      deployment (if any).
     lastCompletedRollout: Optional. The last completed rollout, if any. Format
       is `projects/{project}/locations/{location}/fleetPackages/{fleet_package
       }/rollouts/{rollout}`.
-    state: Optional. Output only. The current state of a FleetPackage.
+    state: Optional. Output only. The current state of the `FleetPackage`.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Optional. Output only. The current state of a FleetPackage.
+    r"""Optional. Output only. The current state of the `FleetPackage`.
 
     Values:
       STATE_UNSPECIFIED: Unspecified state.
-      ACTIVE: FleetPackage is active.
-      SUSPENDED: FleetPackage is suspended.
-      FAILED: FleetPackage has failed to reconcile.
-      DELETING: FleetPackage is being deleted.
+      ACTIVE: `FleetPackage` is active.
+      SUSPENDED: `FleetPackage` is suspended.
+      FAILED: `FleetPackage` has failed to reconcile.
+      DELETING: `FleetPackage` is being deleted.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -898,12 +928,12 @@ class ListReleasesResponse(_messages.Message):
 
 
 class ListResourceBundlesResponse(_messages.Message):
-  r"""Message for response to listing ResourceBundles
+  r"""Message for response to listing ResourceBundles.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
       return.
-    resourceBundles: The list of ResourceBundle
+    resourceBundles: The list of ResourceBundle.
     unreachable: Locations that could not be reached.
   """
 
@@ -1143,44 +1173,42 @@ class OperationMetadata(_messages.Message):
 
 
 class Release(_messages.Message):
-  r"""Message describing Release object
+  r"""`Release` represents a versioned release containing kubernetes
+  manifests.
 
   Enums:
-    LifecycleValueValuesEnum: Optional. lifecycle of the release
+    LifecycleValueValuesEnum: Optional. lifecycle of the `Release`.
 
   Messages:
-    LabelsValue: Optional. Labels as key value pairs
-    VariantsValue: Optional. variants represents the variants of the resource
-      bundle in this release. key in the map represents the name of the
-      variant.
+    LabelsValue: Optional. Labels as key value pairs.
+    VariantsValue: Optional. variants represents the variants of the
+      `ResourceBundle` in this release. key in the map represents the name of
+      the variant.
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp\xdf
-    info: Output only. Package Release extra information e.g., artifact
-      registry image path.
-    labels: Optional. Labels as key value pairs
-    lifecycle: Optional. lifecycle of the release
-    name: Identifier. Name of the Release. Format is
-      projects/{project}/locations/
-      {location}/resourceBundles/{resource_bundle}/release/a-z{0,62}
-    publishTime: Output only. publish_time indicates the time when the release
-      was published.
-    updateTime: Output only. [Output only] Update time stamp
-    variants: Optional. variants represents the variants of the resource
-      bundle in this release. key in the map represents the name of the
-      variant.
-    version: Required. version of this release. This will typically be v.. or
-      v[\d]+
+    createTime: Output only. Time `Release` was created.
+    info: Output only. `ResourceBundle` Release extra information e.g.,
+      artifact registry image path.
+    labels: Optional. Labels as key value pairs.
+    lifecycle: Optional. lifecycle of the `Release`.
+    name: Identifier. Name of the Release. Format is `projects/{project}/locat
+      ions/location}/resourceBundles/{resource_bundle}/release/a-z{0,62}`.
+    publishTime: Output only. Time the `Release` was published.
+    updateTime: Output only. Time `Release` was last updated.
+    variants: Optional. variants represents the variants of the
+      `ResourceBundle` in this release. key in the map represents the name of
+      the variant.
+    version: Required. version of the `Release`. This must be v...
   """
 
   class LifecycleValueValuesEnum(_messages.Enum):
-    r"""Optional. lifecycle of the release
+    r"""Optional. lifecycle of the `Release`.
 
     Values:
       LIFECYCLE_UNSPECIFIED: indicates lifecycle has not been specified.
-      DRAFT: indicates that release is being edited.
-      PUBLISHED: indicates that release is now published (or released) and
-        immutable.
+      DRAFT: indicates that the `Release` is being edited.
+      PUBLISHED: indicates that the `Release` is now published (or released)
+        and immutable.
     """
     LIFECYCLE_UNSPECIFIED = 0
     DRAFT = 1
@@ -1188,7 +1216,7 @@ class Release(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
+    r"""Optional. Labels as key value pairs.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1212,7 +1240,7 @@ class Release(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class VariantsValue(_messages.Message):
-    r"""Optional. variants represents the variants of the resource bundle in
+    r"""Optional. variants represents the variants of the `ResourceBundle` in
     this release. key in the map represents the name of the variant.
 
     Messages:
@@ -1247,35 +1275,36 @@ class Release(_messages.Message):
 
 
 class ReleaseInfo(_messages.Message):
-  r"""ReleaseInfo holds extra information about the package release e.g., link
-  to an artifact registry oci image.
+  r"""ReleaseInfo contains extra information about the `ResourceBundle`
+  release e.g., link to an artifact registry OCI image.
 
   Fields:
-    ociImagePath: Output only. path to the oci image the service uploads on
-      package release creation
+    ociImagePath: Output only. path to the oci image the service uploads to on
+      a `Release` creation.
   """
 
   ociImagePath = _messages.StringField(1)
 
 
 class ResourceBundle(_messages.Message):
-  r"""Message describing ResourceBundle object
+  r"""ResourceBundle represent a collection of kubernetes configuration
+  resources.
 
   Messages:
-    LabelsValue: Optional. Labels as key value pairs
+    LabelsValue: Optional. Labels as key value pairs.
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
-    description: Optional. Human readable description of the resource bundle.
-    labels: Optional. Labels as key value pairs
-    name: Identifier. Name of the ResourceBundle. Format is
-      projects/{project}/locations/ {location}/resourceBundle /a-z{0,62}
-    updateTime: Output only. [Output only] Update time stamp
+    createTime: Output only. Time `ResourceBundle` was created.
+    description: Optional. Human readable description of the `ResourceBundle`.
+    labels: Optional. Labels as key value pairs.
+    name: Identifier. Name of the `ResourceBundle`. Format is
+      `projects/{project}/locations/{location}/resourceBundle /a-z{0,62}`.
+    updateTime: Output only. Time `ResourceBundle` was last updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
+    r"""Optional. Labels as key value pairs.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1309,26 +1338,27 @@ class ResourceBundleDeploymentInfo(_messages.Message):
   deployment.
 
   Enums:
-    DeletionPropagationPolicyValueValuesEnum: Output only. Deletion
-      propagation policy.
+    DeletionPropagationPolicyValueValuesEnum: Output only.
+      DeletionPropagationPolicy of the `FleetPackage`.
     SyncStateValueValuesEnum: Output only. Synchronization state of the
-      resource bundle deployment.
+      `ResourceBundle` deployment.
 
   Fields:
-    deletionPropagationPolicy: Output only. Deletion propagation policy.
-    messages: Output only. Messages convey additional information related to
-      the package deployment. For example, in case of an error, indicate the
-      reason for the error. In case of a pending deployment, reason for why
-      the deployment of new release is pending.
-    release: Output only. Refers to a package release.
-    syncState: Output only. Synchronization state of the resource bundle
+    deletionPropagationPolicy: Output only. DeletionPropagationPolicy of the
+      `FleetPackage`.
+    messages: Output only. Messages contains information related to the
+      `ResourceBundle` deployment. For example, in case of an error, indicate
+      the reason for the error. In case of a pending deployment, reason for
+      why the deployment of new release is pending.
+    release: Output only. Refers to a `ResourceBundle` release.
+    syncState: Output only. Synchronization state of the `ResourceBundle`
       deployment.
-    variant: Output only. Refers to a package variant.
-    version: Output only. Refers to a package version.
+    variant: Output only. Refers to a variant in a `ResourceBundle` release.
+    version: Output only. Refers to a version of the `ResourceBundle` release.
   """
 
   class DeletionPropagationPolicyValueValuesEnum(_messages.Enum):
-    r"""Output only. Deletion propagation policy.
+    r"""Output only. DeletionPropagationPolicy of the `FleetPackage`.
 
     Values:
       DELETION_PROPAGATION_POLICY_UNSPECIFIED: Unspecified deletion
@@ -1343,7 +1373,7 @@ class ResourceBundleDeploymentInfo(_messages.Message):
     ORPHAN = 2
 
   class SyncStateValueValuesEnum(_messages.Enum):
-    r"""Output only. Synchronization state of the resource bundle deployment.
+    r"""Output only. Synchronization state of the `ResourceBundle` deployment.
 
     Values:
       SYNC_STATE_UNSPECIFIED: Unspecified state.
@@ -1375,14 +1405,11 @@ class ResourceBundleDeploymentInfo(_messages.Message):
 
 
 class ResourceBundleSelector(_messages.Message):
-  r"""ResourceBundleSelector determines what resource bundle and version to
-  deploy.
+  r"""Information specifying the source of kubernetes configuration to deploy.
 
   Fields:
-    cloudBuildRepository: cloud_build_repository points to a gen 2 cloud build
-      repository to use as the source of truth for KRM configs.
-    resourceBundle: resource_bundle refers to a resource bundle that will
-      contain configuration.
+    cloudBuildRepository: Information specifying `CloudBuildRepository`.
+    resourceBundle: Information specifying `ResourceBundle`.
   """
 
   cloudBuildRepository = _messages.MessageField('CloudBuildRepository', 1)
@@ -1390,16 +1417,14 @@ class ResourceBundleSelector(_messages.Message):
 
 
 class ResourceBundleTag(_messages.Message):
-  r"""ResourceBundleTag refers to a resource bundle resource and a tag that
-  will identify one of the release resources under the ResourceBundle.
+  r"""ResourceBundleTag contains the information to refer to a release for a
+  `ResourceBundle`.
 
   Fields:
-    name: Required. Name of the ResourceBundle. Format is
+    name: Required. Name of the `ResourceBundle`. Format is
       projects/{p}/locations/{l}/resourceBundles/{r}.
-    tag: Required. tag will support both the exact version as well as explicit
-      tag. System will auto-generate tags which are useful such as tracking
-      patch versions to support the concept of release channels. examples:
-      v1.0.1 or v1.1.* or v1-stable
+    tag: Required. Tag refers to a version of the release in a
+      `ResourceBundle`.
   """
 
   name = _messages.StringField(1)
@@ -1440,10 +1465,10 @@ class RollingStrategyInfo(_messages.Message):
 
 
 class Rollout(_messages.Message):
-  r"""Rollout resource represents an instance of package rollout operation
-  across a fleet. This is a system generated resource and will be read only
-  for end-users. It will be primarily used by the service to process the
-  changes in the FleetPackage and other changes in the environment.
+  r"""Rollout resource represents an instance of `FleetPackage` rollout
+  operation across a fleet. This is a system generated resource and will be
+  read only for end-users. It will be primarily used by the service to process
+  the changes in the `FleetPackage` and other changes in the environment.
 
   Enums:
     DeletionPropagationPolicyValueValuesEnum: Deletion propagation policy of
@@ -1453,11 +1478,11 @@ class Rollout(_messages.Message):
     createTime: Output only. The time the rollout was created.
     deletionPropagationPolicy: Deletion propagation policy of the rollout.
     info: Current details of the rollout.
-    name: Identifier. Name of the Rollout. Format is
-      projects/{project}/locations/
-      {location}/fleetPackages/{fleet_package}/rollouts/a-z{0,62}
-    release: Reference to the release instance being rolled out.
-    rolloutStrategy: Rollout strategy for rolling out packages to clusters.
+    name: Identifier. Name of the Rollout. Format is `projects/{project}/locat
+      ions/{location}/fleetPackages/{fleet_package}/rollouts/a-z{0,62}`.
+    release: Reference to the `Release` being rolled out.
+    rolloutStrategy: Rollout strategy for rolling out `FleetPackage` to
+      clusters.
     updateTime: Output only. The time the rollout was most recently updated.
   """
 
@@ -1486,25 +1511,25 @@ class Rollout(_messages.Message):
 
 
 class RolloutInfo(_messages.Message):
-  r"""RolloutInfo represents the state of package deployment at all the
+  r"""RolloutInfo represents the state of the `FleetPackage` at all the
   clusters the rollout is targeting.
 
   Enums:
-    StateValueValuesEnum: Output only. state conveys the overall status of the
-      Rollout.
+    StateValueValuesEnum: Output only. state contains the overall status of
+      the Rollout.
 
   Fields:
-    endTime: Output only. Timestamp when the overall rollout ends.
-    message: Output only. Message convey additional information related to the
-      rollout.
+    endTime: Output only. Time when the rollout completed.
+    message: Output only. Message containing additional information related to
+      the rollout.
     rolloutStrategyInfo: Output only. Rollout strategy info represents the
       status of execution of rollout strategy.
-    startTime: Output only. Timestamp when the overall rollout starts.
-    state: Output only. state conveys the overall status of the Rollout.
+    startTime: Output only. Time when the rollout started.
+    state: Output only. state contains the overall status of the Rollout.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. state conveys the overall status of the Rollout.
+    r"""Output only. state contains the overall status of the Rollout.
 
     Values:
       STATE_UNSPECIFIED: Unspecified state.
@@ -1514,6 +1539,7 @@ class RolloutInfo(_messages.Message):
       IN_PROGRESS: Rollout in progress.
       STALLED: Rollout stalled.
       CANCELLED: Rollout cancelled.
+      ABORTING: Rollout aborting.
     """
     STATE_UNSPECIFIED = 0
     COMPLETED = 1
@@ -1522,6 +1548,7 @@ class RolloutInfo(_messages.Message):
     IN_PROGRESS = 4
     STALLED = 5
     CANCELLED = 6
+    ABORTING = 7
 
   endTime = _messages.StringField(1)
   message = _messages.StringField(2)
@@ -1689,14 +1716,14 @@ class Target(_messages.Message):
   r"""The target defines different ways to target set of kubernetes clusters.
 
   Fields:
-    fleet: The fleet into which the resource bundle should be installed.
+    fleet: The GKE fleet information.
   """
 
   fleet = _messages.MessageField('Fleet', 1)
 
 
 class Variant(_messages.Message):
-  r"""Variant represents the content of a resource bundle variant.
+  r"""Variant represents the content of a `ResourceBundle` variant.
 
   Messages:
     LabelsValue: labels to represent any metadata associated with the variant.
@@ -1736,20 +1763,19 @@ class Variant(_messages.Message):
 
 
 class VariantSelector(_messages.Message):
-  r"""VariantSelector defines different ways to map a given resource bundle to
-  a target cluster.
+  r"""VariantSelector contains information for selecting a variant in
+  `ResourceBundle` to deploy to a target cluster.
 
   Fields:
-    variantNameTemplate: Required. variant_name_template is a template string
-      that can refer to variables containing cluster membership metadata such
-      as location, name, and labels to determine the name of the variant for a
+    variantNameTemplate: Required. variant_name_template is a template that
+      can refer to variables containing cluster membership metadata such as
+      location, name, and labels to generate the name of the variant for a
       target cluster. The variable syntax is similar to the unix shell
-      variables. For example: "echo-${CLUSTER_NAME}-${CLUSTER_LOCATION}" will
-      be expanded to "echo-member1-us-central1", "echo-member2-us-west1" for
-      cluster members member1 and member2 in us-central1 and us-central2
-      location respectively. If one wants to deploy a specific variant, say
-      "default" to all the clusters, one can just use "default" (string
-      without any variables) as the variant_name_template.
+      variables. Available variables are `${membership.name}`,
+      `${membership.location`, `${membership.project}` and
+      `${membership.labels['label_name']}`. If you want to deploy a specific
+      variant, say "default" to all the clusters, you can use "default"
+      (string without any variables) as the variant_name_template.
   """
 
   variantNameTemplate = _messages.StringField(1)

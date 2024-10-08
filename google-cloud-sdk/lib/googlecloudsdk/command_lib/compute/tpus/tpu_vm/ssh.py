@@ -69,7 +69,8 @@ def AddTPUSSHArgs(
           Note that when targeting multiple workers, you should run 'ssh-add'
           with your private key prior to executing the gcloud command. Default:
           'ssh-add ~/.ssh/google_compute_engine'.
-          """)
+          """,
+  )
   if enable_batching:
     parser.add_argument(
         '--batch-size',
@@ -98,7 +99,8 @@ def AddTPUSSHArgs(
             external IP addresses. Use this to connect from a Google Compute
             Engine VM to a TPU VM on the same VPC network, or between two peered
             VPC networks.
-            """)
+            """,
+    )
     routing_group.add_argument(
         '--tunnel-through-iap',
         action='store_true',
@@ -117,7 +119,8 @@ def AddTPUSSHArgs(
 
         To learn more, see the
         [IAP for TCP forwarding documentation](https://cloud.google.com/iap/docs/tcp-forwarding-overview).
-        """)
+        """,
+    )
   else:
     parser.add_argument(
         '--internal-ip',
@@ -127,7 +130,8 @@ def AddTPUSSHArgs(
             external IP addresses. Use this to connect from a Google Compute
             Engine VM to a TPU VM on the same VPC network, or between two peered
             VPC networks.
-            """)
+            """,
+    )
 
 
 def ValidateTPUState(state, state_enum, tpu_name):
@@ -149,8 +153,11 @@ def ValidateTPUState(state, state_enum, tpu_name):
         ' available or reachable.'.format(tpu_name, state)
     )
   elif state in [
-      state_enum.CREATING, state_enum.STARTING, state_enum.REPAIRING,
-      state_enum.HIDING, state_enum.UNHIDING
+      state_enum.CREATING,
+      state_enum.STARTING,
+      state_enum.REPAIRING,
+      state_enum.HIDING,
+      state_enum.UNHIDING,
   ]:
     log.warning(
         'The TPU VM "{}" is in state "{}", therefore the TPU may not be'
@@ -158,15 +165,17 @@ def ValidateTPUState(state, state_enum, tpu_name):
         ' later.'.format(tpu_name, state)
     )
   elif state in [
-      state_enum.STOPPED, state_enum.STOPPING, state_enum.DELETING,
-      state_enum.HIDDEN
+      state_enum.STOPPED,
+      state_enum.STOPPING,
+      state_enum.DELETING,
+      state_enum.HIDDEN,
   ]:
     raise tpu_exceptions.TPUInUnusableState(state)
   elif state in [state_enum.PREEMPTED, state_enum.TERMINATED]:
     raise tpu_exceptions.TPUInUnusableTerminalState(state)
 
 
-class IPAddresses():
+class IPAddresses:
   """Worker is a holder for the worker IP addresses."""
 
   def __init__(self, ip_address, internal_address):
@@ -175,7 +184,8 @@ class IPAddresses():
 
 
 def ParseWorkerFlag(
-    worker_flag, network_endpoints, use_internal_ips, num_nets=1):
+    worker_flag, network_endpoints, use_internal_ips, num_nets=1
+):
   """Parses the --worker flag into a dict of worker indexes to IP addresses."""
   # Get the primary network endpoints to support multi network TPUs.
   max_num_nets = max(1, num_nets)
@@ -198,31 +208,39 @@ def ParseWorkerFlag(
         bounds = r.split('-')
         if len(bounds) != 2 or not bounds[0] or not bounds[1]:
           raise exceptions.InvalidArgumentException(
-              '--worker', 'found malformed range "{}".'.format(r))
+              '--worker', 'found malformed range "{}".'.format(r)
+          )
         start, end = int(bounds[0]), int(bounds[1])
         if start >= end:
           raise exceptions.InvalidArgumentException(
-              '--worker', 'found malformed range "{}".'.format(r))
+              '--worker', 'found malformed range "{}".'.format(r)
+          )
         indexes.update(range(start, end + 1))
       else:
         try:
           indexes.add(int(r))
         except ValueError:
           raise exceptions.InvalidArgumentException(
-              '--worker', 'unable to parse worker ID {}. Please only use'
-              'numbers.'.format(r))
+              '--worker',
+              'unable to parse worker ID {}. Please only use numbers.'.format(
+                  r
+              ),
+          )
 
   if not indexes:
     raise exceptions.InvalidArgumentException(
-        '--worker', 'no worker specified, or none were parsed from the '
-        'argument value.')
+        '--worker',
+        'no worker specified, or none were parsed from the argument value.',
+    )
 
   mx = max(indexes)
   if mx >= n_vms:
     raise exceptions.InvalidArgumentException(
-        '--worker', 'worker index {} is larger than the valid worker indexes '
+        '--worker',
+        'worker index {} is larger than the valid worker indexes '
         'on this TPU VM. Please only use indexes in the range [0, {}], '
-        'inclusive.'.format(mx, n_vms - 1))
+        'inclusive.'.format(mx, n_vms - 1),
+    )
 
   # Get the VMs' IP addresses.
   worker_ips = {}
@@ -231,7 +249,8 @@ def ParseWorkerFlag(
     if (
         not use_internal_ips
         and primary_network_endpoints[worker].accessConfig
-        and primary_network_endpoints[worker].accessConfig.externalIp):
+        and primary_network_endpoints[worker].accessConfig.externalIp
+    ):
       ip_address = primary_network_endpoints[worker].accessConfig.externalIp
     else:
       ip_address = internal_address
@@ -255,10 +274,12 @@ def ParseBatchSize(batch_size_flag, num_ips):
   """
   if six.text_type(batch_size_flag).upper() == 'ALL':
     if num_ips > 100:
-      log.warning('Executing ssh command on too many workers simultaneously is '
-                  'prone to error. Command may fail. Please consider using '
-                  '`--batch-size` flag if the command fails, for example, '
-                  '--batch-size=100.')
+      log.warning(
+          'Executing ssh command on too many workers simultaneously is '
+          'prone to error. Command may fail. Please consider using '
+          '`--batch-size` flag if the command fails, for example, '
+          '--batch-size=100.'
+      )
     return num_ips
   else:
     try:
@@ -272,7 +293,11 @@ def ParseBatchSize(batch_size_flag, num_ips):
               '--batch-size',
               'unable to parse the batch size value {}. Please use a positive '
               'integer not more than the number of TPU workers.'.format(
-                  batch_size_flag)), error)
+                  batch_size_flag
+              ),
+          ),
+          error,
+      )
 
 
 def _ParseHostKeySuffixes(guest_attributes):
@@ -303,26 +328,32 @@ def GetFromGuestAttributes(guest_attributes, worker, key):
   return None
 
 
-def GetHostKeySuffixesFromGuestAttributes(guest_attributes_response,
-                                          single_pod_worker, worker_ips, node):
+def GetHostKeySuffixesFromGuestAttributes(
+    guest_attributes_response, single_pod_worker, worker_ips, node
+):
   """Retrieves the host key suffixes from the GuestAttributes."""
   if single_pod_worker:
     worker_id = list(worker_ips)[0]
-    return _ParseSingleHostKeySuffix(guest_attributes_response.guestAttributes,
-                                     len(node.networkEndpoints), worker_id)
+    return _ParseSingleHostKeySuffix(
+        guest_attributes_response.guestAttributes,
+        len(node.networkEndpoints),
+        worker_id,
+    )
   else:
     return _ParseHostKeySuffixes(guest_attributes_response.guestAttributes)
 
 
-def GetGuestAttributes(tpu_helper, single_pod_worker, worker_ips, tpu_name,
-                       zone):
+def GetGuestAttributes(
+    tpu_helper, single_pod_worker, worker_ips, tpu_name, zone
+):
   """Retrieves the GuestAttributes."""
   if single_pod_worker:
     # Retrieve only that worker's GuestAttributes.
     worker_id = list(worker_ips)[0]
     try:
       guest_attributes_response = tpu_helper.GetGuestAttributes(
-          tpu_name, zone, six.text_type((worker_id)))
+          tpu_name, zone, six.text_type((worker_id))
+      )
     except HttpError:
       return None
   else:
@@ -368,7 +399,8 @@ def AddSSHKeyIfNeeded(project, tpu_helper, node, tpu_name, zone, public_key):
   # 1. Check the project metadata for the key.
   if _MetadataHasSSHKey(project.commonInstanceMetadata, public_key):
     log.status.Print(
-        'SSH key found in project metadata; not updating instance.')
+        'SSH key found in project metadata; not updating instance.'
+    )
     return
   # 2. Check the instance metadata for the key.
   node_dict = encoding_helper.MessageToDict(node)
@@ -382,7 +414,9 @@ def AddSSHKeyIfNeeded(project, tpu_helper, node, tpu_name, zone, public_key):
   ssh_keys += '\n' + public_key
   node_for_update = tpu_helper.messages.Node(
       metadata=tpu_helper.UpdateMetadataKey(
-          metadata=node.metadata, key=SSH_KEYS_METADATA_KEY, value=ssh_keys))
+          metadata=node.metadata, key=SSH_KEYS_METADATA_KEY, value=ssh_keys
+      )
+  )
   try:
     tpu_helper.UpdateNode(
         tpu_name,
@@ -410,15 +444,19 @@ def VerifyKeyInAgent(identity_file):
   keygen_out = io.StringIO()
   err = io.StringIO()
   retcode = execution_utils.Exec(
-      cmd, no_exit=True, out_func=keygen_out.write, err_func=err.write)
+      cmd, no_exit=True, out_func=keygen_out.write, err_func=err.write
+  )
   if retcode != 0:
     log.debug('ssh-keygen exited with error {}'.format(err.getvalue()))
     log.warning('Cannot generate fingerprint of SSH key. Command may stall.')
     return
   fingerprint_entry = keygen_out.getvalue()
   if len(fingerprint_entry.split()) <= 1:
-    log.debug('ssh-keygen returned fingerprint entry in invalid format: "{}"'
-              ''.format(fingerprint_entry))
+    log.debug(
+        'ssh-keygen returned fingerprint entry in invalid format: "{}"'.format(
+            fingerprint_entry
+        )
+    )
     return
   # Only use the actual fingerprint part of the fingerprint entry.
   fingerprint = fingerprint_entry.split()[1]
@@ -427,7 +465,8 @@ def VerifyKeyInAgent(identity_file):
   cmd = ['ssh-add', '-l']
   out = io.StringIO()
   retcode = execution_utils.Exec(
-      cmd, no_exit=True, out_func=out.write, err_func=err.write)
+      cmd, no_exit=True, out_func=out.write, err_func=err.write
+  )
   if retcode != 0:
     log.debug('ssh-add exited with error {}'.format(err.getvalue()))
     log.warning('Cannot retrieve keys in ssh-agent. Command may stall.')
@@ -472,8 +511,16 @@ def WaitForBatchCompletion(ssh_threads, exit_statuses):
       sys.exit(status)
 
 
-def AttemptRunWithRetries(command_name, worker, exit_statuses, cmd, env,
-                          output_file, multiple_workers, run_cmd):
+def AttemptRunWithRetries(
+    command_name,
+    worker,
+    exit_statuses,
+    cmd,
+    env,
+    output_file,
+    multiple_workers,
+    run_cmd,
+):
   """Attempts to connect to a worker using SSH or SCP."""
   max_attempts = 10
   sleep_interval = 5
@@ -484,16 +531,21 @@ def AttemptRunWithRetries(command_name, worker, exit_statuses, cmd, env,
   # we're not looking to throttle.
   for i in range(max_attempts):
     try:
-      log.status.Print('{}: Attempting to connect to worker {}...'.format(
-          command_name, worker))
+      log.status.Print(
+          '{}: Attempting to connect to worker {}...'.format(
+              command_name, worker
+          )
+      )
       exit_status = run_cmd(env, cmd, output_file)
       if exit_status:
         # This is the exit status of the remote command.  Problems with SSH
         # itself will result in ssh.CommandError being raised above.
         if multiple_workers:
-          log.status.Print('##### Command execution on worker {} failed '
-                           'with exit status {}. Continuing.'
-                           ''.format(worker, exit_status))
+          log.status.Print(
+              '##### Command execution on worker {} failed '
+              'with exit status {}. Continuing.'
+              ''.format(worker, exit_status)
+          )
           # Store the exit status in list so that we can check it in the main
           # thread.
           exit_statuses[worker] = exit_status
@@ -954,9 +1006,12 @@ def PrepareNodeForSCP(
         'https://cloud.google.com/tpu/docs/creating-deleting-tpus.',
     )
 
-  prepped_node.worker_ips = ParseWorkerFlag(
-      args.worker, node.networkEndpoints, args.internal_ip
+  n_nets = (
+      1 if not hasattr(node, 'networkConfigs') else len(node.networkConfigs)
   )
+
+  prepped_node.worker_ips = ParseWorkerFlag(
+      args.worker, node.networkEndpoints, args.internal_ip, n_nets)
 
   if len(prepped_node.worker_ips) > 1 and prepped_node.srcs[0].remote:
     raise exceptions.InvalidArgumentException(

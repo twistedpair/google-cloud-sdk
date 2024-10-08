@@ -683,8 +683,9 @@ class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messag
     updateMask: Required. Only the fields specified in this mask are updated.
       Because name and group_key cannot be changed, update_mask is required
       and may only contain the following fields: `access_levels`,
-      `dry_run_access_levels`, `restricted_client_applications`,
-      `reauth_settings`. Example: update_mask { paths: "access_levels" }
+      `dry_run_access_levels`, `reauth_settings`, and
+      `scoped_access_settings`. Example: update_mask { paths: "access_levels"
+      }
   """
 
   appendScopedAccessSettings = _messages.BooleanField(1)

@@ -74,10 +74,13 @@ def AddPurposeArgToParser(parser):
   parser.add_argument(
       "--purpose",
       metavar="PURPOSE",
-      choices=["GCE_FIREWALL"],
-      help=("Purpose specifier of the TagKey that can only be set on creation. "
-            "Specifying this field adds additional validation from the policy "
-            "system that corresponds to the purpose."))
+      choices=["GCE_FIREWALL", "DATA_GOVERNANCE"],
+      help=(
+          "Purpose specifier of the TagKey that can only be set on creation. "
+          "Specifying this field adds additional validation from the policy "
+          "system that corresponds to the purpose."
+      ),
+  )
 
 
 def AddPurposeDataArgToParser(parser):

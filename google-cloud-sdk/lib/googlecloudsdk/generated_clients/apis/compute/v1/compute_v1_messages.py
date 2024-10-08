@@ -2192,15 +2192,13 @@ class AuditConfig(_messages.Message):
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
-    exemptedMembers: This is deprecated and has no effect. Do not use.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
-  exemptedMembers = _messages.StringField(2, repeated=True)
-  service = _messages.StringField(3)
+  service = _messages.StringField(2)
 
 
 class AuditLogConfig(_messages.Message):
@@ -2216,7 +2214,6 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of Binding.members.
-    ignoreChildExemptions: This is deprecated and has no effect. Do not use.
     logType: The log type that this config enables.
   """
 
@@ -2235,8 +2232,7 @@ class AuditLogConfig(_messages.Message):
     LOG_TYPE_UNSPECIFIED = 3
 
   exemptedMembers = _messages.StringField(1, repeated=True)
-  ignoreChildExemptions = _messages.BooleanField(2)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
 class Autoscaler(_messages.Message):
@@ -4286,6 +4282,9 @@ class BackendService(_messages.Message):
       validateForProxyless field set to true. For more details, see: [Session
       Affinity](https://cloud.google.com/load-balancing/docs/backend-
       service#session_affinity).
+    strongSessionAffinityCookie: Describes the HTTP cookie used for stateful
+      session affinity. This field is applicable and required if the
+      sessionAffinity is set to STRONG_COOKIE_AFFINITY.
     subsetting: A Subsetting attribute.
     timeoutSec: The backend service timeout has a different meaning depending
       on the type of load balancer. For more information see, Backend service
@@ -4510,6 +4509,9 @@ class BackendService(_messages.Message):
       HTTP_COOKIE: The hash is based on a user provided cookie.
       NONE: No session affinity. Connections from the same client IP may go to
         any instance in the pool.
+      STRONG_COOKIE_AFFINITY: Strong cookie-based affinity. Connections
+        bearing the same cookie will be served by the same backend VM while
+        that VM remains healthy, as long as the cookie has not expired.
     """
     CLIENT_IP = 0
     CLIENT_IP_NO_DESTINATION = 1
@@ -4519,6 +4521,7 @@ class BackendService(_messages.Message):
     HEADER_FIELD = 5
     HTTP_COOKIE = 6
     NONE = 7
+    STRONG_COOKIE_AFFINITY = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadatasValue(_messages.Message):
@@ -4585,9 +4588,10 @@ class BackendService(_messages.Message):
   serviceBindings = _messages.StringField(38, repeated=True)
   serviceLbPolicy = _messages.StringField(39)
   sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 40)
-  subsetting = _messages.MessageField('Subsetting', 41)
-  timeoutSec = _messages.IntegerField(42, variant=_messages.Variant.INT32)
-  usedBy = _messages.MessageField('BackendServiceUsedBy', 43, repeated=True)
+  strongSessionAffinityCookie = _messages.MessageField('BackendServiceHttpCookie', 41)
+  subsetting = _messages.MessageField('Subsetting', 42)
+  timeoutSec = _messages.IntegerField(43, variant=_messages.Variant.INT32)
+  usedBy = _messages.MessageField('BackendServiceUsedBy', 44, repeated=True)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -5193,6 +5197,20 @@ class BackendServiceGroupHealth(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   healthStatus = _messages.MessageField('HealthStatus', 2, repeated=True)
   kind = _messages.StringField(3, default='compute#backendServiceGroupHealth')
+
+
+class BackendServiceHttpCookie(_messages.Message):
+  r"""The HTTP cookie used for stateful session affinity.
+
+  Fields:
+    name: Name of the cookie.
+    path: Path to set for the cookie.
+    ttl: Lifetime of the cookie.
+  """
+
+  name = _messages.StringField(1)
+  path = _messages.StringField(2)
+  ttl = _messages.MessageField('Duration', 3)
 
 
 class BackendServiceIAP(_messages.Message):
@@ -56590,7 +56608,7 @@ class Operation(_messages.Message):
       incarnation of the target resource.
     targetLink: [Output Only] The URL of the resource that the operation
       modifies. For operations related to creating a snapshot, this points to
-      the persistent disk that the snapshot was created from.
+      the disk that the snapshot was created from.
     user: [Output Only] User who requested the operation, for example:
       `user@example.com` or `alice_smith_identifier
       (global/workforcePools/example-com-us-employees)`.
@@ -76338,6 +76356,9 @@ class TargetPool(_messages.Message):
       HTTP_COOKIE: The hash is based on a user provided cookie.
       NONE: No session affinity. Connections from the same client IP may go to
         any instance in the pool.
+      STRONG_COOKIE_AFFINITY: Strong cookie-based affinity. Connections
+        bearing the same cookie will be served by the same backend VM while
+        that VM remains healthy, as long as the cookie has not expired.
     """
     CLIENT_IP = 0
     CLIENT_IP_NO_DESTINATION = 1
@@ -76347,6 +76368,7 @@ class TargetPool(_messages.Message):
     HEADER_FIELD = 5
     HTTP_COOKIE = 6
     NONE = 7
+    STRONG_COOKIE_AFFINITY = 8
 
   backupPool = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)

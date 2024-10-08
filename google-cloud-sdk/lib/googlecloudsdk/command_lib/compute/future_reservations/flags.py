@@ -256,14 +256,17 @@ def GetReservationNameFlag():
 def GetDeploymentTypeFlag():
   """--deployment-type flag."""
   help_text = """\
-  Indicates if the reservation allocation strategy is static or dynamic. DENSE
-  refers to a fixed size and topology, with deployment expressed in terms of
-  blocks. FLEXIBLE indicates a non-static distribution of capacity that can
-  change over time. Deployment is not expressed in blocks.
+  The deployment type for the reserved capacity.
   """
   return base.Argument(
       '--deployment-type',
-      choices=['DENSE', 'FLEXIBLE'],
+      choices={
+          'DENSE': 'DENSE mode is for densely deployed reservation blocks.',
+          'FLEXIBLE': (
+              'FLEXIBLE mode is for highly flexible, logical reservation'
+              ' blocks.'
+          ),
+      },
       help=help_text,
   )
 
@@ -313,12 +316,20 @@ def GetInstanceTerminationActionFlag():
 def GetSchedulingTypeFlag():
   """--scheduling-type flag."""
   help_text = """\
-  Indicates the maintenance type for this group of VMs. This will be set on the
-  reservation via FR, and will be inherited for reservation blocks.
+  Maintenance for the reserved capacity.
   """
   return base.Argument(
       '--scheduling-type',
-      choices=['GROUPED', 'INDEPENDENT'],
+      choices={
+          'GROUPED': (
+              'In GROUPED mode, maintenance on all reserved instances is'
+              'synchronized.'
+          ),
+          'INDEPENDENT': (
+              'In INDEPENDENT mode, maintenance is not synchronized for this'
+              ' reservation, and each instance has its own maintenance window.'
+          ),
+      },
       help=help_text,
   )
 
@@ -326,8 +337,8 @@ def GetSchedulingTypeFlag():
 def GetEnableOpportunisticMaintenanceFlag():
   """--enable-opportunistic-maintenance flag."""
   help_text = """\
-  Indicates if this group of VMs have opportunistic maintenance enabled.
-  Applicable only to dense coordinated maintenance.
+  Enable or disable opportunistic maintenance. If enabled, maintenance is
+  performed on unused reservations whenever possible.
   """
   return base.Argument(
       '--enable-opportunistic-maintenance',

@@ -735,9 +735,12 @@ class BuildOptions(_messages.Message):
         the same region as the build. The builder service account must have
         access to create and write to Cloud Storage buckets in the build
         project.
+      LEGACY_BUCKET: Bucket is located in a Google-owned project and is not
+        regionalized.
     """
     DEFAULT_LOGS_BUCKET_BEHAVIOR_UNSPECIFIED = 0
     REGIONAL_USER_OWNED_BUCKET = 1
+    LEGACY_BUCKET = 2
 
   class DockerDaemonValueValuesEnum(_messages.Enum):
     r"""Optional. Option to specify how (or if) a Docker daemon is provided

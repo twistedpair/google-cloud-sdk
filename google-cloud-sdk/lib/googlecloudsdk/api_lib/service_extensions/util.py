@@ -23,10 +23,21 @@ from googlecloudsdk.calliope import base
 
 API_VERSION_FOR_TRACK = {
     base.ReleaseTrack.ALPHA: 'v1alpha1',
+    base.ReleaseTrack.BETA: 'v1beta1',
 }
 _API_NAME = 'networkservices'
 
 
-def GetClientInstance(release_track=base.ReleaseTrack.ALPHA):
+def GetClientInstance(release_track):
+  """Returns a client instance for the given release track.
+
+  Args:
+    release_track: The release track to use, for example
+      base.ReleaseTrack.ALPHA
+  """
+  if release_track not in API_VERSION_FOR_TRACK:
+    raise ValueError(
+        'Unsupported release track: {}'.format(release_track)
+    )
   api_version = API_VERSION_FOR_TRACK.get(release_track)
   return apis.GetClientInstance(_API_NAME, api_version)

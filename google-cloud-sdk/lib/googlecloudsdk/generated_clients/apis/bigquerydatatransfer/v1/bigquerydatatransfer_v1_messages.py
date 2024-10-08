@@ -1089,6 +1089,18 @@ class EnrollDataSourcesRequest(_messages.Message):
   dataSourceIds = _messages.StringField(1, repeated=True)
 
 
+class EventDrivenSchedule(_messages.Message):
+  r"""Options customizing EventDriven transfers schedule.
+
+  Fields:
+    pubsubSubscription: Pub/Sub subscription name used to receive events. Only
+      Google Cloud Storage data source support this option. Format:
+      projects/{project}/subscriptions/{subscription}
+  """
+
+  pubsubSubscription = _messages.StringField(1)
+
+
 class ListDataSourcesResponse(_messages.Message):
   r"""Returns list of supported data sources and their metadata.
 
@@ -1242,6 +1254,10 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class ManualSchedule(_messages.Message):
+  r"""Options customizing manual transfers schedule."""
+
+
 class ScheduleOptions(_messages.Message):
   r"""Options customizing the data transfer schedule.
 
@@ -1264,6 +1280,28 @@ class ScheduleOptions(_messages.Message):
   disableAutoScheduling = _messages.BooleanField(1)
   endTime = _messages.StringField(2)
   startTime = _messages.StringField(3)
+
+
+class ScheduleOptionsV2(_messages.Message):
+  r"""V2 options customizing different types of data transfer schedule. This
+  field supports existing time-based and manual transfer schedule. Also
+  supports Event-Driven transfer schedule. ScheduleOptionsV2 cannot be used
+  together with ScheduleOptions/Schedule.
+
+  Fields:
+    eventDrivenSchedule: Event driven transfer schedule options. If set, the
+      transfer will be scheduled upon events arrial.
+    manualSchedule: Manual transfer schedule. If set, the transfer run will
+      not be auto-scheduled by the system, unless the client invokes
+      StartManualTransferRuns. This is equivalent to disable_auto_scheduling =
+      true.
+    timeBasedSchedule: Time based transfer schedule options. This is the
+      default schedule option.
+  """
+
+  eventDrivenSchedule = _messages.MessageField('EventDrivenSchedule', 1)
+  manualSchedule = _messages.MessageField('ManualSchedule', 2)
+  timeBasedSchedule = _messages.MessageField('TimeBasedSchedule', 3)
 
 
 class ScheduleTransferRunsRequest(_messages.Message):
@@ -1432,6 +1470,35 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class TimeBasedSchedule(_messages.Message):
+  r"""Options customizing the time based transfer schedule. Options are
+  migrated from the original ScheduleOptions message.
+
+  Fields:
+    endTime: Defines time to stop scheduling transfer runs. A transfer run
+      cannot be scheduled at or after the end time. The end time can be
+      changed at any moment.
+    schedule: Data transfer schedule. If the data source does not support a
+      custom schedule, this should be empty. If it is empty, the default value
+      for the data source will be used. The specified times are in UTC.
+      Examples of valid format: `1st,3rd monday of month 15:30`, `every
+      wed,fri of jan,jun 13:15`, and `first sunday of quarter 00:00`. See more
+      explanation about the format here:
+      https://cloud.google.com/appengine/docs/flexible/python/scheduling-jobs-
+      with-cron-yaml#the_schedule_format NOTE: The minimum interval time
+      between recurring transfers depends on the data source; refer to the
+      documentation for your data source.
+    startTime: Specifies time to start scheduling transfer runs. The first run
+      will be scheduled at or after the start time according to a recurrence
+      pattern defined in the schedule string. The start time can be changed at
+      any moment.
+  """
+
+  endTime = _messages.StringField(1)
+  schedule = _messages.StringField(2)
+  startTime = _messages.StringField(3)
+
+
 class TimeRange(_messages.Message):
   r"""A specification for a time range, this will request transfer runs with
   run_time between start_time (inclusive) and end_time (exclusive).
@@ -1494,6 +1561,8 @@ class TransferConfig(_messages.Message):
       will return the key name applied in effect. Write methods will apply the
       key if it is present, or otherwise try to apply project default keys if
       it is absent.
+    error: Output only. Error code with detailed information about reason of
+      the latest config failure.
     name: Identifier. The resource name of the transfer config. Transfer
       config names have the form either
       `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`
@@ -1525,6 +1594,9 @@ class TransferConfig(_messages.Message):
       between recurring transfers depends on the data source; refer to the
       documentation for your data source.
     scheduleOptions: Options customizing the data transfer schedule.
+    scheduleOptionsV2: Options customizing different types of data transfer
+      schedule. This field replaces "schedule" and "schedule_options" fields.
+      ScheduleOptionsV2 cannot be used together with ScheduleOptions/Schedule.
     state: Output only. State of the most recently updated transfer run.
     updateTime: Output only. Data transfer modification time. Ignored by
       server on input.
@@ -1586,16 +1658,18 @@ class TransferConfig(_messages.Message):
   displayName = _messages.StringField(6)
   emailPreferences = _messages.MessageField('EmailPreferences', 7)
   encryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 8)
-  name = _messages.StringField(9)
-  nextRunTime = _messages.StringField(10)
-  notificationPubsubTopic = _messages.StringField(11)
-  ownerInfo = _messages.MessageField('UserInfo', 12)
-  params = _messages.MessageField('ParamsValue', 13)
-  schedule = _messages.StringField(14)
-  scheduleOptions = _messages.MessageField('ScheduleOptions', 15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  updateTime = _messages.StringField(17)
-  userId = _messages.IntegerField(18)
+  error = _messages.MessageField('Status', 9)
+  name = _messages.StringField(10)
+  nextRunTime = _messages.StringField(11)
+  notificationPubsubTopic = _messages.StringField(12)
+  ownerInfo = _messages.MessageField('UserInfo', 13)
+  params = _messages.MessageField('ParamsValue', 14)
+  schedule = _messages.StringField(15)
+  scheduleOptions = _messages.MessageField('ScheduleOptions', 16)
+  scheduleOptionsV2 = _messages.MessageField('ScheduleOptionsV2', 17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  updateTime = _messages.StringField(19)
+  userId = _messages.IntegerField(20)
 
 
 class TransferMessage(_messages.Message):

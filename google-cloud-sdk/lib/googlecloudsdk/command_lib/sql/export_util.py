@@ -195,6 +195,8 @@ def RunBakExportCommand(args, client):
       args.striped,
       args.bak_type,
       args.differential_base,
+      args.export_log_start_time,
+      args.export_log_end_time,
   )
   return RunExportCommand(args, client, sql_export_context)
 

@@ -5,6 +5,155 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 496.0.0 (2024-10-08)
+
+### Breaking Changes
+
+*   **(Anthos Multi-Cloud)** Removed `--workload-vulnerability-scanning` flag of `gcloud container attached clusters`.
+
+
+### Artifact Registry
+
+* Added support for download rules that control the downloading behaviors of
+  packages in a repository.
+
+### BigQuery
+
+* Added `--request_reason` flag to support setting the `X-Goog-Request-Reason` HTTP request header.
+* Added `--reservation_id` flag to allow specifying reservation on a job.
+* Fixed the validation on `--nouse_google_auth` when GDU is set as the universe domain.
+* Updated default `--api` value to match newer guidelines.
+* Fixed a bug where special `billing/quota_project` values in `--quota_project_id` flag are not resolved when using legacy auth.
+* Added support for creating and updating row access policies. Support for showing and removing row access policies will be added in a future version.
+* Added validations for schedule options during creating or updating data transfer configurations.
+* Added `--event_driven_schedule` to support event driven transfers in Data Transfer Service.
+* Added messages to alert users when a default connection is created and/or their IAM policy is updated for the default connection.
+* Updates permissions for directories to be `755`.
+
+### Cloud Bigtable
+
+*   Added `--backup-type` flag to `gcloud bigtable backups create` to support hot backups.
+*   Added `--hot-to-standard-time` flag to `gcloud bigtable backups create` and `gcloud bigtable backups update` to support hot backups.
+
+### Cloud Deploy
+
+* Added support for Deploy Policies public preview.
+
+### Cloud Firestore
+
+* Updated `gcloud beta firestore bulk-delete` to require confirmation.
+
+### Cloud Pub/Sub
+
+*   Added flags to `gcloud pubsub topics create` for creating Cloud Pub/Sub Cloud Storage Import Topics.
+  *   Added `--cloud-storage-ingestion-bucket`
+  *   Added `--cloud-storage-ingestion-input-format`
+  *   Added `--cloud-storage-ingestion-text-delimiter`
+  *   Added `--cloud-storage-ingestion-match-glob`
+  *   Added `--cloud-storage-ingestion-minimum-object-create-time`
+*   Added flags to `gcloud pubsub topics update` for updating Cloud Pub/Sub Cloud Storage Import Topics.
+  *   Added `--cloud-storage-ingestion-bucket`
+  *   Added `--cloud-storage-ingestion-input-format`
+  *   Added `--cloud-storage-ingestion-text-delimiter`
+  *   Added `--cloud-storage-ingestion-match-glob`
+  *   Added `--cloud-storage-ingestion-minimum-object-create-time`
+
+### Cloud Resource Manager
+
+*   Added `DATA_GOVERNANCE` choice for `--purpose` argument in
+    `gcloud resource-manager tags keys create` command.
+
+### Cloud Run
+
+* Promoted `gcloud run multi-region-services` to beta.
+* Added `--regions` to `gcloud beta run deploy` to support Multi-Region Services.
+* Deprecated `gcloud run integrations` commands.
+* Added `--[no]invoker-iam-check` flag to optionally disable invoker IAM checks. This feature is available by invitation only; more info at <https://cloud.google.com/run/docs/securing/managing-access#invoker_check>.
+
+### Cloud SQL
+
+*   Add new enum `TLOG` to `--bak-type`, add `--export-log-start-time`  and `--export-log-end-time` flags to `gcloud sql export bak`
+    to enable the transaction log export feature for SQL Server.
+
+### Cloud Workstations
+
+* Added support for the maximum usable workstations for a user in
+  `gcloud workstations config create` and `gcloud workstations config update`
+  commands.
+
+### Compute Engine
+
+*   `gcloud compute ssh` no longer consumes STDIN while polling for instance key propagation.
+* Made scope required for `gcloud compute backend-services list-usable`.
+* Promoted Percentage-based Request Mirroring in UrlMaps compute API to beta.
+* Adds support for `STRONG_COOKIE_AFFINITY` sessionAffinity type in beta.
+* Updated behaviour of `gcloud compute instance-groups managed delete`: it will throw error if instance.delete operation takes more than 70 minutes instead of 30 minutes previously.
+* Adds support for `STRONG_COOKIE_AFFINITY` sessionAffinity type in GA.
+
+### Database Migration
+
+* Added `--sqlserver-promote-when-ready` and `--no-sqlserver-promote-when-ready` flags to `gcloud database-migrate migration-jobs create` and `gcloud database-migrate migration-jobs update`. The flags enable or disable promote of ready databases in Database Migration Service migration jobs for homogeneous SQL Server to Cloud SQL for SQL Server migrations.
+
+### Distributed Cloud Edge
+
+* Added `--control-plane-node-storage-schema` flag to `gcloud edge-cloud container clusters create` commands to allow specifying the local storage configuration schema.
+* Added `--node-storage-schema` flag to `gcloud edge-cloud container node-pools create` commands to allow specifying the local storage configuration schema.
+
+### GKE Hub
+
+* Added `gcloud container fleet scopes add-app-operator-binding` to beta which sets up permissions required for an app operator in a fleet scope.
+* Added `gcloud container fleet scopes remove-app-operator-binding` to beta which unsets permissions of an app operator in a fleet scope.
+* Added `gcloud container fleet scopes list-app-operator-bindings` to beta which lists app operators and their roles in a fleet scope.
+
+### Identity Groups
+
+* Deprecated POSIX groups from `gcloud beta identity groups`.
+
+### Kubernetes Engine
+
+* Fixed a bug `gcloud container node-pools update` command where it was ignoring `--accelerator` command.
+* Updates default kubectl from 1.29.8 to 1.30.5.
+* Additional kubectl versions:
+  * kubectl.1.27 (1.27.16)
+  * kubectl.1.28 (1.28.14)
+  * kubectl.1.29 (1.29.9)
+  * kubectl.1.30 (1.30.5)
+  * kubectl.1.31 (1.31.1)
+* Added a new command `gcloud beta container clusters get-upgrade-info`
+which returns upgrade information of the given cluster.
+* Added a new command `gcloud beta container node-pools get-upgrade-info`
+which returns upgrade information of the given node pool.
+* Added flag option `--enable-ip-access` to
+  `gcloud container clusters create` and `gcloud container clusters create` commands.
+   This flag enables IP address access to the cluster's control plane.
+* Added flag option `--enable-dns-access` to
+  `gcloud container clusters create` and `gcloud container clusters create` commands.
+  This flag enables DNS access to the cluster's control plane.
+* Added flag option `--enable-private-endpoint-enforcement` to
+  `gcloud container clusters create` and `gcloud container clusters create` commands.
+  This flag enforces authorized networks rules over cluster's private endpoint.
+* Added flag option `--dns-endpoint` to
+  `gcloud container clusters get-credentials` command. This flag configures kubectl
+  to point DNS endpoint of the cluster's control plane.
+
+### Network Services
+
+* Promoted the following Service Extensions Plugins command groups to beta:
+  * `gcloud service-extensions wasm-plugins`
+  * `gcloud service-extensions wasm-plugin-versions`
+
+### Notebook Executor
+
+*   Added `gcloud beta notebook-executor schedules surface and commands`.
+
+### Security Command Center
+
+* Modified `gcloud scc sources describe` to call Security Command Center v2 api instead of v1.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 495.0.0 (2024-10-01)
 
 ### Breaking Changes

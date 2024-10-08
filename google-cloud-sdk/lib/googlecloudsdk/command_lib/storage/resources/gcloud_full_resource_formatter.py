@@ -76,6 +76,15 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = base.BucketDisplayTitlesAndDefaults(
     update_time=base.FieldDisplayTitleAndDefault(
         title='Time Updated', default=None
     ),
+    soft_delete_time=base.FieldDisplayTitleAndDefault(
+        title='Soft Delete Time', default=None
+    ),
+    hard_delete_time=base.FieldDisplayTitleAndDefault(
+        title='Hard Delete Time', default=None
+    ),
+    generation=base.FieldDisplayTitleAndDefault(
+        title='Generation', default=None
+    ),
     metageneration=base.FieldDisplayTitleAndDefault(
         title='Metageneration', default=None
     ),

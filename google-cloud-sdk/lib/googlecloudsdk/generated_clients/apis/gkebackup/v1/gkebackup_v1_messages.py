@@ -497,12 +497,12 @@ class BackupPlanAssociation(_messages.Message):
   need to be displayed in the current project.
 
   Fields:
-    backupPlan: Output only. The fully qualified name of the BackupPlan
-      associated with the parent BackupChannel.
+    backupPlan: Output only. Immutable. The fully qualified name of the
+      BackupPlan associated with the parent BackupChannel.
       `projects/*/locations/*/backupPlans/{backup_plan}`
-    cluster: Output only. The fully qualified name of the cluster that is
-      being backed up Valid formats: - `projects/*/locations/*/clusters/*` -
-      `projects/*/zones/*/clusters/*`
+    cluster: Output only. Immutable. The fully qualified name of the cluster
+      that is being backed up Valid formats: -
+      `projects/*/locations/*/clusters/*` - `projects/*/zones/*/clusters/*`
     createTime: Output only. The timestamp when this association was created.
     etag: Output only. `etag` is used for optimistic concurrency control as a
       way to help prevent simultaneous updates of a BackupPlanAssociation from

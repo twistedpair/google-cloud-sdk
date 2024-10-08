@@ -5595,6 +5595,7 @@ class MlStatistics(_messages.Message):
       ONNX: An imported ONNX model.
       TRANSFORM_ONLY: Model to capture the columns and logic in the TRANSFORM
         clause along with statistics useful for ML analytic functions.
+      CONTRIBUTION_ANALYSIS: The contribution analysis model.
     """
     MODEL_TYPE_UNSPECIFIED = 0
     LINEAR_REGRESSION = 1
@@ -5621,6 +5622,7 @@ class MlStatistics(_messages.Message):
     TENSORFLOW_LITE = 22
     ONNX = 23
     TRANSFORM_ONLY = 24
+    CONTRIBUTION_ANALYSIS = 25
 
   class TrainingTypeValueValuesEnum(_messages.Enum):
     r"""Output only. Training type of the job.
@@ -5751,6 +5753,7 @@ class Model(_messages.Message):
       ONNX: An imported ONNX model.
       TRANSFORM_ONLY: Model to capture the columns and logic in the TRANSFORM
         clause along with statistics useful for ML analytic functions.
+      CONTRIBUTION_ANALYSIS: The contribution analysis model.
     """
     MODEL_TYPE_UNSPECIFIED = 0
     LINEAR_REGRESSION = 1
@@ -5777,6 +5780,7 @@ class Model(_messages.Message):
     TENSORFLOW_LITE = 22
     ONNX = 23
     TRANSFORM_ONLY = 24
+    CONTRIBUTION_ANALYSIS = 25
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -8794,6 +8798,10 @@ class TrainingOptions(_messages.Message):
       boosted tree models.
     colsampleBytree: Subsample ratio of columns when constructing each tree
       for boosted tree models.
+    contributionMetric: The contribution metric. Applies to contribution
+      analysis models. Allowed formats supported are for summable and summable
+      ratio contribution metrics. These include expressions such as "SUM(x)"
+      or "SUM(x)/SUM(y)", where x and y are column names from the base table.
     dartNormalizeType: Type of normalization algorithm for boosted tree models
       using dart booster.
     dataFrequency: The data frequency of a time series.
@@ -8813,6 +8821,8 @@ class TrainingOptions(_messages.Message):
       RANDOM.
     decomposeTimeSeries: If true, perform decompose time series and save the
       results.
+    dimensionIdColumns: Optional. Names of the columns to slice on. Applies to
+      contribution analysis models.
     distanceType: Distance type for clustering models.
     dropout: Dropout probability for dnn models.
     earlyStop: Whether to stop early when the loss doesn't improve
@@ -8840,6 +8850,8 @@ class TrainingOptions(_messages.Message):
       data. This column isn't be used as a feature.
     integratedGradientsNumSteps: Number of integral steps for the integrated
       gradients explain method.
+    isTestColumn: Name of the column used to determine the rows corresponding
+      to control and test. Applies to contribution analysis models.
     itemColumn: Item column specified for matrix factorization models.
     kmeansInitializationColumn: The column used to provide the initial
       centroids for kmeans algorithm when kmeans_initialization_method is
@@ -8865,6 +8877,8 @@ class TrainingOptions(_messages.Message):
       Don't use this option with the `timeSeriesLengthFraction` or
       `minTimeSeriesLength` options.
     maxTreeDepth: Maximum depth of a tree for boosted tree models.
+    minAprioriSupport: The apriori support minimum. Applies to contribution
+      analysis models.
     minRelativeProgress: When early_stop is true, stops training when accuracy
       improvement is less than 'min_relative_progress'. Used only for
       iterative training algorithms.
@@ -9552,75 +9566,79 @@ class TrainingOptions(_messages.Message):
   colsampleBylevel = _messages.FloatField(15)
   colsampleBynode = _messages.FloatField(16)
   colsampleBytree = _messages.FloatField(17)
-  dartNormalizeType = _messages.EnumField('DartNormalizeTypeValueValuesEnum', 18)
-  dataFrequency = _messages.EnumField('DataFrequencyValueValuesEnum', 19)
-  dataSplitColumn = _messages.StringField(20)
-  dataSplitEvalFraction = _messages.FloatField(21)
-  dataSplitMethod = _messages.EnumField('DataSplitMethodValueValuesEnum', 22)
-  decomposeTimeSeries = _messages.BooleanField(23)
-  distanceType = _messages.EnumField('DistanceTypeValueValuesEnum', 24)
-  dropout = _messages.FloatField(25)
-  earlyStop = _messages.BooleanField(26)
-  enableGlobalExplain = _messages.BooleanField(27)
-  feedbackType = _messages.EnumField('FeedbackTypeValueValuesEnum', 28)
-  fitIntercept = _messages.BooleanField(29)
-  hiddenUnits = _messages.IntegerField(30, repeated=True)
-  holidayRegion = _messages.EnumField('HolidayRegionValueValuesEnum', 31)
-  holidayRegions = _messages.EnumField('HolidayRegionsValueListEntryValuesEnum', 32, repeated=True)
-  horizon = _messages.IntegerField(33)
-  hparamTuningObjectives = _messages.EnumField('HparamTuningObjectivesValueListEntryValuesEnum', 34, repeated=True)
-  includeDrift = _messages.BooleanField(35)
-  initialLearnRate = _messages.FloatField(36)
-  inputLabelColumns = _messages.StringField(37, repeated=True)
-  instanceWeightColumn = _messages.StringField(38)
-  integratedGradientsNumSteps = _messages.IntegerField(39)
-  itemColumn = _messages.StringField(40)
-  kmeansInitializationColumn = _messages.StringField(41)
-  kmeansInitializationMethod = _messages.EnumField('KmeansInitializationMethodValueValuesEnum', 42)
-  l1RegActivation = _messages.FloatField(43)
-  l1Regularization = _messages.FloatField(44)
-  l2Regularization = _messages.FloatField(45)
-  labelClassWeights = _messages.MessageField('LabelClassWeightsValue', 46)
-  learnRate = _messages.FloatField(47)
-  learnRateStrategy = _messages.EnumField('LearnRateStrategyValueValuesEnum', 48)
-  lossType = _messages.EnumField('LossTypeValueValuesEnum', 49)
-  maxIterations = _messages.IntegerField(50)
-  maxParallelTrials = _messages.IntegerField(51)
-  maxTimeSeriesLength = _messages.IntegerField(52)
-  maxTreeDepth = _messages.IntegerField(53)
-  minRelativeProgress = _messages.FloatField(54)
-  minSplitLoss = _messages.FloatField(55)
-  minTimeSeriesLength = _messages.IntegerField(56)
-  minTreeChildWeight = _messages.IntegerField(57)
-  modelRegistry = _messages.EnumField('ModelRegistryValueValuesEnum', 58)
-  modelUri = _messages.StringField(59)
-  nonSeasonalOrder = _messages.MessageField('ArimaOrder', 60)
-  numClusters = _messages.IntegerField(61)
-  numFactors = _messages.IntegerField(62)
-  numParallelTree = _messages.IntegerField(63)
-  numPrincipalComponents = _messages.IntegerField(64)
-  numTrials = _messages.IntegerField(65)
-  optimizationStrategy = _messages.EnumField('OptimizationStrategyValueValuesEnum', 66)
-  optimizer = _messages.StringField(67)
-  pcaExplainedVarianceRatio = _messages.FloatField(68)
-  pcaSolver = _messages.EnumField('PcaSolverValueValuesEnum', 69)
-  sampledShapleyNumPaths = _messages.IntegerField(70)
-  scaleFeatures = _messages.BooleanField(71)
-  standardizeFeatures = _messages.BooleanField(72)
-  subsample = _messages.FloatField(73)
-  tfVersion = _messages.StringField(74)
-  timeSeriesDataColumn = _messages.StringField(75)
-  timeSeriesIdColumn = _messages.StringField(76)
-  timeSeriesIdColumns = _messages.StringField(77, repeated=True)
-  timeSeriesLengthFraction = _messages.FloatField(78)
-  timeSeriesTimestampColumn = _messages.StringField(79)
-  treeMethod = _messages.EnumField('TreeMethodValueValuesEnum', 80)
-  trendSmoothingWindowSize = _messages.IntegerField(81)
-  userColumn = _messages.StringField(82)
-  vertexAiModelVersionAliases = _messages.StringField(83, repeated=True)
-  walsAlpha = _messages.FloatField(84)
-  warmStart = _messages.BooleanField(85)
-  xgboostVersion = _messages.StringField(86)
+  contributionMetric = _messages.StringField(18)
+  dartNormalizeType = _messages.EnumField('DartNormalizeTypeValueValuesEnum', 19)
+  dataFrequency = _messages.EnumField('DataFrequencyValueValuesEnum', 20)
+  dataSplitColumn = _messages.StringField(21)
+  dataSplitEvalFraction = _messages.FloatField(22)
+  dataSplitMethod = _messages.EnumField('DataSplitMethodValueValuesEnum', 23)
+  decomposeTimeSeries = _messages.BooleanField(24)
+  dimensionIdColumns = _messages.StringField(25, repeated=True)
+  distanceType = _messages.EnumField('DistanceTypeValueValuesEnum', 26)
+  dropout = _messages.FloatField(27)
+  earlyStop = _messages.BooleanField(28)
+  enableGlobalExplain = _messages.BooleanField(29)
+  feedbackType = _messages.EnumField('FeedbackTypeValueValuesEnum', 30)
+  fitIntercept = _messages.BooleanField(31)
+  hiddenUnits = _messages.IntegerField(32, repeated=True)
+  holidayRegion = _messages.EnumField('HolidayRegionValueValuesEnum', 33)
+  holidayRegions = _messages.EnumField('HolidayRegionsValueListEntryValuesEnum', 34, repeated=True)
+  horizon = _messages.IntegerField(35)
+  hparamTuningObjectives = _messages.EnumField('HparamTuningObjectivesValueListEntryValuesEnum', 36, repeated=True)
+  includeDrift = _messages.BooleanField(37)
+  initialLearnRate = _messages.FloatField(38)
+  inputLabelColumns = _messages.StringField(39, repeated=True)
+  instanceWeightColumn = _messages.StringField(40)
+  integratedGradientsNumSteps = _messages.IntegerField(41)
+  isTestColumn = _messages.StringField(42)
+  itemColumn = _messages.StringField(43)
+  kmeansInitializationColumn = _messages.StringField(44)
+  kmeansInitializationMethod = _messages.EnumField('KmeansInitializationMethodValueValuesEnum', 45)
+  l1RegActivation = _messages.FloatField(46)
+  l1Regularization = _messages.FloatField(47)
+  l2Regularization = _messages.FloatField(48)
+  labelClassWeights = _messages.MessageField('LabelClassWeightsValue', 49)
+  learnRate = _messages.FloatField(50)
+  learnRateStrategy = _messages.EnumField('LearnRateStrategyValueValuesEnum', 51)
+  lossType = _messages.EnumField('LossTypeValueValuesEnum', 52)
+  maxIterations = _messages.IntegerField(53)
+  maxParallelTrials = _messages.IntegerField(54)
+  maxTimeSeriesLength = _messages.IntegerField(55)
+  maxTreeDepth = _messages.IntegerField(56)
+  minAprioriSupport = _messages.FloatField(57)
+  minRelativeProgress = _messages.FloatField(58)
+  minSplitLoss = _messages.FloatField(59)
+  minTimeSeriesLength = _messages.IntegerField(60)
+  minTreeChildWeight = _messages.IntegerField(61)
+  modelRegistry = _messages.EnumField('ModelRegistryValueValuesEnum', 62)
+  modelUri = _messages.StringField(63)
+  nonSeasonalOrder = _messages.MessageField('ArimaOrder', 64)
+  numClusters = _messages.IntegerField(65)
+  numFactors = _messages.IntegerField(66)
+  numParallelTree = _messages.IntegerField(67)
+  numPrincipalComponents = _messages.IntegerField(68)
+  numTrials = _messages.IntegerField(69)
+  optimizationStrategy = _messages.EnumField('OptimizationStrategyValueValuesEnum', 70)
+  optimizer = _messages.StringField(71)
+  pcaExplainedVarianceRatio = _messages.FloatField(72)
+  pcaSolver = _messages.EnumField('PcaSolverValueValuesEnum', 73)
+  sampledShapleyNumPaths = _messages.IntegerField(74)
+  scaleFeatures = _messages.BooleanField(75)
+  standardizeFeatures = _messages.BooleanField(76)
+  subsample = _messages.FloatField(77)
+  tfVersion = _messages.StringField(78)
+  timeSeriesDataColumn = _messages.StringField(79)
+  timeSeriesIdColumn = _messages.StringField(80)
+  timeSeriesIdColumns = _messages.StringField(81, repeated=True)
+  timeSeriesLengthFraction = _messages.FloatField(82)
+  timeSeriesTimestampColumn = _messages.StringField(83)
+  treeMethod = _messages.EnumField('TreeMethodValueValuesEnum', 84)
+  trendSmoothingWindowSize = _messages.IntegerField(85)
+  userColumn = _messages.StringField(86)
+  vertexAiModelVersionAliases = _messages.StringField(87, repeated=True)
+  walsAlpha = _messages.FloatField(88)
+  warmStart = _messages.BooleanField(89)
+  xgboostVersion = _messages.StringField(90)
 
 
 class TrainingRun(_messages.Message):

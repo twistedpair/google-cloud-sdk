@@ -382,6 +382,7 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
         Controls
       HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT: Healthcare and Life
         Science Controls with US Support
+      IRS_1075: Internal Revenue Service 1075 controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -406,6 +407,7 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
     REGIONAL_CONTROLS = 20
     HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS = 21
     HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT = 22
+    IRS_1075 = 23
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -875,6 +877,7 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
         Controls
       HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT: Healthcare and Life
         Science Controls with US Support
+      IRS_1075: Internal Revenue Service 1075 controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -899,6 +902,7 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
     REGIONAL_CONTROLS = 20
     HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS = 21
     HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT = 22
+    IRS_1075 = 23
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given

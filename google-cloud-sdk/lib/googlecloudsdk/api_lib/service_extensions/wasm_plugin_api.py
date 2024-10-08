@@ -41,7 +41,14 @@ class Client:
     )
 
   def CreateWasmPlugin(
-      self, name, parent, description=None, labels=None, log_config=None
+      self,
+      name,
+      parent,
+      description=None,
+      labels=None,
+      log_config=None,
+      main_version=None,
+      versions=None,
   ):
     """Calls the CreateWasmPlugin API."""
     request = (
@@ -52,6 +59,8 @@ class Client:
                 description=description,
                 labels=labels,
                 logConfig=log_config,
+                mainVersionId=main_version,
+                versions=versions,
             ),
         )
     )
@@ -80,6 +89,24 @@ class Client:
         )
     )
     return self._wasm_plugin_client.Patch(request)
+
+  def PrepareVersionDetailsForSingleVersion(
+      self, version_id, image, plugin_config_data, plugin_config_uri
+  ):
+    if version_id is None:
+      return None
+    return self.messages.WasmPlugin.VersionsValue(
+        additionalProperties=[
+            self.messages.WasmPlugin.VersionsValue.AdditionalProperty(
+                key=version_id,
+                value=self.messages.WasmPluginVersionDetails(
+                    imageUri=image,
+                    pluginConfigData=plugin_config_data,
+                    pluginConfigUri=plugin_config_uri,
+                ),
+            )
+        ]
+    )
 
   def WaitForOperation(
       self,

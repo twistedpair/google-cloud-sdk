@@ -550,13 +550,13 @@ def AddLocalSsdArgsWithSize(parser):
       '--local-ssd',
       type=arg_parsers.ArgDict(
           spec={
-              'device-name':
-                  str,
-              'interface': (lambda x: x.upper()),
-              'size':
-                  arg_parsers.BinarySize(
-                      lower_bound='375GB', upper_bound='3000GB'),
-          }),
+              'device-name': str,
+              'interface': lambda x: x.upper(),
+              'size': arg_parsers.BinarySize(
+                  lower_bound='375GB', upper_bound='6000GB'
+              ),
+          }
+      ),
       action='append',
       help="""\
       Attaches a local SSD to the instances.
@@ -575,7 +575,8 @@ def AddLocalSsdArgsWithSize(parser):
       ``--local-ssd'' flag multiple times if you need multiple ``375GB'' local
       SSD partitions. You can specify a maximum of 24 local SSDs for a maximum
       of ``9TB'' attached to an instance.
-      """)
+      """,
+  )
 
 
 def GetDiskDeviceNameHelp(container_mount_enabled=False):
@@ -2848,15 +2849,24 @@ def ValidateLocalSsdFlags(args):
     # still accepted as a value for select customers. Updates to any public
     # documentation will occur once Large Local SSD is more widely available.
     if size is not None:
-      if size != (constants.SSD_SMALL_PARTITION_GB * constants.BYTES_IN_ONE_GB
-                 ) and size != (constants.SSD_LARGE_PARTITION_GB *
-                                constants.BYTES_IN_ONE_GB):
+      if (
+          size != (constants.SSD_SMALL_PARTITION_GB * constants.BYTES_IN_ONE_GB)
+          and size
+          != (constants.SSD_LARGE_PARTITION_GB * constants.BYTES_IN_ONE_GB)
+          and size
+          != (constants.SSD_Z3_METAL_PARTITION_GB * constants.BYTES_IN_ONE_GB)
+      ):
         raise exceptions.InvalidArgumentException(
-            '--local-ssd:size', 'Unexpected local SSD size: [{given}] bytes. '
-            'Legal values are {small}GB and {large}GB only.'.format(
+            '--local-ssd:size',
+            'Unexpected local SSD size: [{given}] bytes. '
+            'Legal values are {small}GB, {large}GB, and {z3_metal}GB only.'
+            .format(
                 given=size,
                 small=constants.SSD_SMALL_PARTITION_GB,
-                large=constants.SSD_LARGE_PARTITION_GB))
+                large=constants.SSD_LARGE_PARTITION_GB,
+                z3_metal=constants.SSD_Z3_METAL_PARTITION_GB,
+            ),
+        )
 
 
 def ValidateNicFlags(args):

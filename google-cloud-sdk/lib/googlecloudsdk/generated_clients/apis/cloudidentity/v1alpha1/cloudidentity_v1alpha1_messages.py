@@ -104,7 +104,6 @@ class BrowserAttributes(_messages.Message):
 class BrowserInfo(_messages.Message):
   r"""Browser specific fields reported by Endpoint verification Extension. See
   go/additionalattributesdesign and go/caa-webprotect-attributes-extension
-  LINT.IfChange
 
   Enums:
     BrowserManagementStateValueValuesEnum: Output only. Browser's management
@@ -116,8 +115,8 @@ class BrowserInfo(_messages.Message):
 
   Fields:
     browserManagementState: Output only. Browser's management state.
-    browserVersion: Version of the request initiating browser. Eg.
-      "91.0.4442.4".
+    browserVersion: Version of the request initiating browser. E.g.
+      `91.0.4442.4`.
     isBuiltInDnsClientEnabled: Current state of built in dns client.
     isBulkDataEntryAnalysisEnabled: Current state of bulk data analysis. Set
       to true if provider list from chrome is non-empty.
@@ -1480,8 +1479,8 @@ class GoogleAppsCloudidentityDevicesV1BrowserAttributes(_messages.Message):
       verification/callobklhcbilhphinckomhgkigmfocg?pli=1).
     chromeProfileId: Chrome profile ID that is exposed by the Chrome API. It
       is unique for each device.
-    lastProfileSyncTime: Timestamp in milliseconds since Epoch when the
-      profile/gcm id was last synced.
+    lastProfileSyncTime: Timestamp in milliseconds since the Unix epoch when
+      the profile/gcm id was last synced.
   """
 
   chromeBrowserInfo = _messages.MessageField('GoogleAppsCloudidentityDevicesV1BrowserInfo', 1)
@@ -1492,7 +1491,7 @@ class GoogleAppsCloudidentityDevicesV1BrowserAttributes(_messages.Message):
 class GoogleAppsCloudidentityDevicesV1BrowserInfo(_messages.Message):
   r"""Browser-specific fields reported by the [Endpoint Verification
   extension](https://chromewebstore.google.com/detail/endpoint-
-  verification/callobklhcbilhphinckomhgkigmfocg?pli=1). LINT.IfChange
+  verification/callobklhcbilhphinckomhgkigmfocg?pli=1).
 
   Enums:
     BrowserManagementStateValueValuesEnum: Output only. Browser's management
@@ -1506,7 +1505,8 @@ class GoogleAppsCloudidentityDevicesV1BrowserInfo(_messages.Message):
 
   Fields:
     browserManagementState: Output only. Browser's management state.
-    browserVersion: Version of the request initiating browser.
+    browserVersion: Version of the request initiating browser. E.g.
+      `91.0.4442.4`.
     isBuiltInDnsClientEnabled: Current state of [built-in DNS client](https://
       chromeenterprise.google/policies/#BuiltInDnsClientEnabled).
     isBulkDataEntryAnalysisEnabled: Current state of [bulk data analysis](http
@@ -2165,19 +2165,22 @@ class GoogleAppsCloudidentityDevicesV1EndpointVerificationSpecificAttributes(_me
   information) of a device.
 
   Messages:
-    AdditionalSignalsValue: Additional signals reported by Endpoint
-      Verification. It includes the following attributes: 1. Non-configurable
-      attributes: hotfixes, av_installed, av_enabled, windows_domain_name,
-      is_os_native_firewall_enabled, and is_secure_boot_enabled. 2.
+    AdditionalSignalsValue: [Additional
+      signals](https://cloud.google.com/endpoint-verification/docs/device-
+      information) reported by Endpoint Verification. It includes the
+      following attributes: * Non-configurable attributes: hotfixes,
+      av_installed, av_enabled, windows_domain_name,
+      is_os_native_firewall_enabled, and is_secure_boot_enabled. *
       [Configurable attributes](https://cloud.google.com/endpoint-
       verification/docs/collect-config-attributes): file, folder, and binary
       attributes; registry entries; and properties in a plist.
 
   Fields:
-    additionalSignals: Additional signals reported by Endpoint Verification.
-      It includes the following attributes: 1. Non-configurable attributes:
+    additionalSignals: [Additional signals](https://cloud.google.com/endpoint-
+      verification/docs/device-information) reported by Endpoint Verification.
+      It includes the following attributes: * Non-configurable attributes:
       hotfixes, av_installed, av_enabled, windows_domain_name,
-      is_os_native_firewall_enabled, and is_secure_boot_enabled. 2.
+      is_os_native_firewall_enabled, and is_secure_boot_enabled. *
       [Configurable attributes](https://cloud.google.com/endpoint-
       verification/docs/collect-config-attributes): file, folder, and binary
       attributes; registry entries; and properties in a plist.
@@ -2188,13 +2191,14 @@ class GoogleAppsCloudidentityDevicesV1EndpointVerificationSpecificAttributes(_me
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalSignalsValue(_messages.Message):
-    r"""Additional signals reported by Endpoint Verification. It includes the
-    following attributes: 1. Non-configurable attributes: hotfixes,
-    av_installed, av_enabled, windows_domain_name,
-    is_os_native_firewall_enabled, and is_secure_boot_enabled. 2.
-    [Configurable attributes](https://cloud.google.com/endpoint-
-    verification/docs/collect-config-attributes): file, folder, and binary
-    attributes; registry entries; and properties in a plist.
+    r"""[Additional signals](https://cloud.google.com/endpoint-
+    verification/docs/device-information) reported by Endpoint Verification.
+    It includes the following attributes: * Non-configurable attributes:
+    hotfixes, av_installed, av_enabled, windows_domain_name,
+    is_os_native_firewall_enabled, and is_secure_boot_enabled. * [Configurable
+    attributes](https://cloud.google.com/endpoint-verification/docs/collect-
+    config-attributes): file, folder, and binary attributes; registry entries;
+    and properties in a plist.
 
     Messages:
       AdditionalProperty: An additional property for a AdditionalSignalsValue

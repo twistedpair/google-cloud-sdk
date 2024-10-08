@@ -369,7 +369,7 @@ class BackupdrV1(base_api.BaseApiClient):
         method_id='backupdr.projects.locations.backupVaults.dataSources.backups.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['view'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsGetRequest',
@@ -396,7 +396,7 @@ class BackupdrV1(base_api.BaseApiClient):
         method_id='backupdr.projects.locations.backupVaults.dataSources.backups.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'view'],
         relative_path='v1/{+parent}/backups',
         request_field='',
         request_type_name='BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsListRequest',
@@ -722,7 +722,7 @@ class BackupdrV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create method for the projects_locations_backupVaults service.
+      r"""Creates a new BackupVault in a given project and location.
 
       Args:
         request: (BackupdrProjectsLocationsBackupVaultsCreateRequest) input message
@@ -821,7 +821,7 @@ class BackupdrV1(base_api.BaseApiClient):
         method_id='backupdr.projects.locations.backupVaults.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['view'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='BackupdrProjectsLocationsBackupVaultsGetRequest',
@@ -848,7 +848,7 @@ class BackupdrV1(base_api.BaseApiClient):
         method_id='backupdr.projects.locations.backupVaults.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'view'],
         relative_path='v1/{+parent}/backupVaults',
         request_field='',
         request_type_name='BackupdrProjectsLocationsBackupVaultsListRequest',

@@ -1085,11 +1085,11 @@ class CloudExadataInfrastructureProperties(_messages.Message):
       allocated to the Exadata Infrastructure resource, in gigabytes (GB).
     computeCount: Optional. The number of compute servers for the Exadata
       Infrastructure.
-    cpuCount: Optional. The number of enabled CPU cores.
+    cpuCount: Output only. The number of enabled CPU cores.
     customerContacts: Optional. The list of customer contacts.
     dataStorageSizeTb: Output only. Size, in terabytes, of the DATA disk
       group.
-    dbNodeStorageSizeGb: Optional. The local node storage allocated in GBs.
+    dbNodeStorageSizeGb: Output only. The local node storage allocated in GBs.
     dbServerVersion: Output only. The software version of the database servers
       (dom0) in the Exadata Infrastructure.
     maintenanceWindow: Optional. Maintenance window for repair.
@@ -1098,7 +1098,7 @@ class CloudExadataInfrastructureProperties(_messages.Message):
     maxDbNodeStorageSizeGb: Output only. The total local node storage
       available in GBs.
     maxMemoryGb: Output only. The total memory available in GBs.
-    memorySizeGb: Optional. The memory allocated in GBs.
+    memorySizeGb: Output only. The memory allocated in GBs.
     monthlyDbServerVersion: Output only. The monthly software version of the
       database servers (dom0) in the Exadata Infrastructure. Example: 20.1.15
     monthlyStorageServerVersion: Output only. The monthly software version of
@@ -3198,13 +3198,16 @@ class TimeOfDay(_messages.Message):
   seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
 
   Fields:
-    hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
-      choose to allow the value "24:00:00" for scenarios like business closing
-      time.
-    minutes: Minutes of hour of day. Must be from 0 to 59.
-    nanos: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
-    seconds: Seconds of minutes of the time. Must normally be from 0 to 59. An
-      API may allow the value 60 if it allows leap-seconds.
+    hours: Hours of a day in 24 hour format. Must be greater than or equal to
+      0 and typically must be less than or equal to 23. An API may choose to
+      allow the value "24:00:00" for scenarios like business closing time.
+    minutes: Minutes of an hour. Must be greater than or equal to 0 and less
+      than or equal to 59.
+    nanos: Fractions of seconds, in nanoseconds. Must be greater than or equal
+      to 0 and less than or equal to 999,999,999.
+    seconds: Seconds of a minute. Must be greater than or equal to 0 and
+      typically must be less than or equal to 59. An API may allow the value
+      60 if it allows leap-seconds.
   """
 
   hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)

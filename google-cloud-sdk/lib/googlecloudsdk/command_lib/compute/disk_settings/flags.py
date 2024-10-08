@@ -18,7 +18,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
-
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 
 
@@ -37,4 +37,19 @@ def AddDiskSettingArg(parser):
       '--region',
       help='region for disk settings',
       completer=compute_completers.RegionsCompleter,
+  )
+
+
+def AddUpdateDiskSettingsFlags(parser):
+  parser.add_argument(
+      '--add-access-locations',
+      help='Access locations to add to disk settings',
+      metavar='ADD_ACCESS_LOCATIONS',
+      type=arg_parsers.ArgList(),
+  )
+  parser.add_argument(
+      '--remove-access-locations',
+      help='Access locations to remove from disk settings',
+      metavar='REMOVE_ACCESS_LOCATIONS',
+      type=arg_parsers.ArgList(),
   )

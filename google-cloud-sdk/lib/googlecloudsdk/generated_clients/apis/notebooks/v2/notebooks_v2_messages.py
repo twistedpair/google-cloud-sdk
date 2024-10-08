@@ -560,9 +560,9 @@ class GceSetup(_messages.Message):
       supported Shielded VM
       features](https://cloud.google.com/compute/docs/instances/modifying-
       shielded-vm).
-    tags: Optional. The Compute Engine tags to add to runtime (see [Tagging
-      instances](https://cloud.google.com/compute/docs/label-or-tag-
-      resources#tags)).
+    tags: Optional. The Compute Engine network tags to add to runtime (see
+      [Add network tags](https://cloud.google.com/vpc/docs/add-remove-network-
+      tags)).
     vmImage: Optional. Use a Compute Engine VM image to start the notebook
       instance.
   """

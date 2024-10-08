@@ -628,21 +628,14 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesCreateRequest(_messa
   Fields:
     codeRepositoryIndex: A CodeRepositoryIndex resource to be passed as the
       request body.
-    codeRepositoryIndexId: Required. Id of the requesting object If auto-
-      generating Id server-side, remove this field and
-      code_repository_index_id from the method_signature of Create RPC
+    codeRepositoryIndexId: Required. Id of the requesting object
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      request. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
   """
 
   codeRepositoryIndex = _messages.MessageField('CodeRepositoryIndex', 1)
@@ -664,13 +657,8 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesDeleteRequest(_messa
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      request. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
   """
 
   force = _messages.BooleanField(1)
@@ -694,8 +682,6 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesListRequest(_message
   object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
@@ -703,11 +689,9 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesListRequest(_message
     parent: Required. Parent value for ListCodeRepositoryIndexesRequest
   """
 
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class CloudaicompanionProjectsLocationsCodeRepositoryIndexesPatchRequest(_messages.Message):
@@ -722,13 +706,8 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesPatchRequest(_messag
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      request. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the CodeRepositoryIndex resource by the update. The
       fields specified in the update_mask are relative to the resource, not
@@ -750,20 +729,13 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesRepositoryGroupsCrea
     parent: Required. Value for parent.
     repositoryGroup: A RepositoryGroup resource to be passed as the request
       body.
-    repositoryGroupId: Required. Id of the requesting object If auto-
-      generating Id server-side, remove this field and repository_group_id
-      from the method_signature of Create RPC
+    repositoryGroupId: Required. Id of the requesting object
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      request. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -782,13 +754,8 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesRepositoryGroupsDele
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      request. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
   """
 
   name = _messages.StringField(1, required=True)
@@ -866,13 +833,8 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesRepositoryGroupsPatc
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      request. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the RepositoryGroup resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -1132,6 +1094,56 @@ class CloudaicompanionProjectsLocationsInstancesCompleteTaskRequest(_messages.Me
   taskCompletionRequest = _messages.MessageField('TaskCompletionRequest', 2)
 
 
+class CloudaicompanionProjectsLocationsInstancesCreateRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsInstancesCreateRequest object.
+
+  Fields:
+    instance: A Instance resource to be passed as the request body.
+    instanceId: Required. Id of the requesting object If auto-generating Id
+      server-side, remove this field and instance_id from the method_signature
+      of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  instance = _messages.MessageField('Instance', 1)
+  instanceId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class CloudaicompanionProjectsLocationsInstancesDeleteRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsInstancesDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
 class CloudaicompanionProjectsLocationsInstancesGenerateCodeRequest(_messages.Message):
   r"""A CloudaicompanionProjectsLocationsInstancesGenerateCodeRequest object.
 
@@ -1225,6 +1237,67 @@ class CloudaicompanionProjectsLocationsInstancesGenerateVisualRequest(_messages.
   visualGenRequest = _messages.MessageField('VisualGenRequest', 2)
 
 
+class CloudaicompanionProjectsLocationsInstancesGetRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsInstancesGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudaicompanionProjectsLocationsInstancesListRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsInstancesListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListInstancesRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class CloudaicompanionProjectsLocationsInstancesPatchRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsInstancesPatchRequest object.
+
+  Fields:
+    instance: A Instance resource to be passed as the request body.
+    name: Identifier. name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Instance resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields present in the request will be
+      overwritten.
+  """
+
+  instance = _messages.MessageField('Instance', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class CloudaicompanionProjectsLocationsInstancesSummarizeDataRequest(_messages.Message):
   r"""A CloudaicompanionProjectsLocationsInstancesSummarizeDataRequest object.
 
@@ -1308,6 +1381,117 @@ class CloudaicompanionProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class CloudaicompanionProjectsLocationsSettingsCreateRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsSettingsCreateRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    setting: A Setting resource to be passed as the request body.
+    settingId: Required. Id of the requesting object If auto-generating Id
+      server-side, remove this field and setting_id from the method_signature
+      of Create RPC
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  setting = _messages.MessageField('Setting', 3)
+  settingId = _messages.StringField(4)
+
+
+class CloudaicompanionProjectsLocationsSettingsDeleteRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsSettingsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class CloudaicompanionProjectsLocationsSettingsGetRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsSettingsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudaicompanionProjectsLocationsSettingsListRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsSettingsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListSettingsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class CloudaicompanionProjectsLocationsSettingsPatchRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsSettingsPatchRequest object.
+
+  Fields:
+    name: Identifier. name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    setting: A Setting resource to be passed as the request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Setting resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields present in the request will be
+      overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  setting = _messages.MessageField('Setting', 3)
+  updateMask = _messages.StringField(4)
+
+
 class CloudaicompanionProjectsLocationsTranslateSqlRequest(_messages.Message):
   r"""A CloudaicompanionProjectsLocationsTranslateSqlRequest object.
 
@@ -1357,7 +1541,7 @@ class CodeCompletionRequest(_messages.Message):
     input: Represents the raw input for inference. It will be modified as part
       of prompt engineering and other transforms before it is consumed by the
       LLM.
-    inputDataContext: Additional user content not captured in the `instances`
+    inputDataContext: Additional user content not captured in the `input`
       field above
   """
 
@@ -1416,7 +1600,7 @@ class CodeGenerationRequest(_messages.Message):
     input: Represents the raw input for inference. It will be modified as part
       of prompt engineering and other transforms before it is consumed by the
       LLM.
-    inputDataContext: Additional user content not captured in the `instances`
+    inputDataContext: Additional user content not captured in the `input`
       field above
   """
 
@@ -1534,32 +1718,26 @@ class CodeRepositoryIndex(_messages.Message):
   r"""Message describing CodeRepositoryIndex object
 
   Enums:
-    StateValueValuesEnum: Output only. [Output only] Code Repository Index
-      instance State
+    StateValueValuesEnum: Output only. Code Repository Index instance State
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
-    ipRanges: Output only. Ranges of possible IP addresses from which the RAG
-      index service will attempt to access linked Git repositories.
+    createTime: Output only. Create time stamp
     kmsKey: Optional. Immutable. Customer-managed encryption key name, in the
       format projects/*/locations/*/keyRings/*/cryptoKeys/*.
     labels: Optional. Labels as key value pairs
     name: Immutable. Identifier. name of resource
-    requestIpRanges: Optional. Whether to request reservation of IP addresses
-      from which the RAG index service will attempt to access linked Git
-      repositories
-    state: Output only. [Output only] Code Repository Index instance State
-    updateTime: Output only. [Output only] Update time stamp
+    state: Output only. Code Repository Index instance State
+    updateTime: Output only. Update time stamp
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. [Output only] Code Repository Index instance State
+    r"""Output only. Code Repository Index instance State
 
     Values:
-      STATE_UNSPECIFIED: Not Set, it should never be used.
+      STATE_UNSPECIFIED: Not set.
       CREATING: Instance is being created.
       ACTIVE: Instance is active.
       DELETING: Instance is being deleted.
@@ -1596,13 +1774,11 @@ class CodeRepositoryIndex(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  ipRanges = _messages.StringField(2, repeated=True)
-  kmsKey = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  requestIpRanges = _messages.BooleanField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  kmsKey = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  updateTime = _messages.StringField(6)
 
 
 class Column(_messages.Message):
@@ -1681,8 +1857,14 @@ class ColumnSchema(_messages.Message):
     column: Optional. The column name.
     description: Optional. Textual description of the column.
     kind: Optional. The kind of the column.
+    label: An *additional* alternative to `column` e.g.
+      cloud.bi.alchemist.Field.semantic_type (shortn/_2dItDrUOCx)
     mode: Optional. The field's mode, e.g., NULLABLE, REQUIRED, REPEATED.
+    repeatedSamples: Column level data samples for REPEATED columns.
+    scalarSamples: Column level data samples for non-REPEATED columns.
     sqlCalculation: Optional. SQL string contain the metric's definition.
+    studiosqlSemanticType: cloud.bi.alchemist.Field.semantic_type
+      (shortn/_2dItDrUOCx)
     subcolumns: Optional. Schema of sub-columns. A column can have zero or
       more sub-columns.
     type: Optional. The data type of the column's values.
@@ -1785,10 +1967,14 @@ class ColumnSchema(_messages.Message):
   column = _messages.StringField(1)
   description = _messages.StringField(2)
   kind = _messages.EnumField('KindValueValuesEnum', 3)
-  mode = _messages.EnumField('ModeValueValuesEnum', 4)
-  sqlCalculation = _messages.StringField(5)
-  subcolumns = _messages.MessageField('ColumnSchema', 6, repeated=True)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  label = _messages.StringField(4)
+  mode = _messages.EnumField('ModeValueValuesEnum', 5)
+  repeatedSamples = _messages.MessageField('RepeatedSamples', 6)
+  scalarSamples = _messages.MessageField('Samples', 7)
+  sqlCalculation = _messages.StringField(8)
+  studiosqlSemanticType = _messages.StringField(9)
+  subcolumns = _messages.MessageField('ColumnSchema', 10, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
 
 
 class ContextRetrievalError(_messages.Message):
@@ -1829,7 +2015,7 @@ class DataModel(_messages.Message):
 
 
 class Database(_messages.Message):
-  r"""Captures a database name and it's tables with their associated schemas.
+  r"""Captures a database name and its tables with their associated schemas.
 
   Fields:
     database: Optional. The database name.
@@ -1841,12 +2027,15 @@ class Database(_messages.Message):
 
 
 class Dataset(_messages.Message):
-  r"""A dataset could be an inline description of a database's table schemas
-  or a reference to a BigQuery dataset.
+  r"""A dataset is a collection of tables. Typically the boundary is defined
+  by what a given query language dialect can join given a particular storage
+  engine. Note: the symbols Dataset and dataset here refer to general
+  concepts, not the BigQuery specific object (see below).
 
   Fields:
-    bigqueryDatasetReference: A reference to the bigquery dataset.
-    database: A database.
+    bigqueryDatasetReference: A reference to a BigQuery Dataset
+      (https://cloud.google.com/bigquery/docs/datasets-intro).
+    database: A inline enumeration of the schema.
   """
 
   bigqueryDatasetReference = _messages.MessageField('BigQueryDatasetReference', 1)
@@ -2456,6 +2645,49 @@ class InputDataContext(_messages.Message):
   additionalContext = _messages.MessageField('AdditionalContextValue', 1)
 
 
+class Instance(_messages.Message):
+  r"""Message describing Instance object
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Optional. Labels as key value pairs
+    name: Identifier. name of resource
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+
+
 class IntParameterArray(_messages.Message):
   r"""This message only contains a field of integer array.
 
@@ -2678,12 +2910,10 @@ class ListCodeRepositoryIndexesResponse(_messages.Message):
     codeRepositoryIndexes: The list of CodeRepositoryIndex
     nextPageToken: A token identifying a page of results the server should
       return.
-    unreachable: Locations that could not be reached.
   """
 
   codeRepositoryIndexes = _messages.MessageField('CodeRepositoryIndex', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListEnablementsResponse(_messages.Message):
@@ -2697,6 +2927,21 @@ class ListEnablementsResponse(_messages.Message):
 
   enablements = _messages.MessageField('Enablement', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListInstancesResponse(_messages.Message):
+  r"""Message for response to listing Instances
+
+  Fields:
+    instances: The list of Instance
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Unordered list. Locations that could not be reached.
+  """
+
+  instances = _messages.MessageField('Instance', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -2732,11 +2977,24 @@ class ListRepositoryGroupsResponse(_messages.Message):
     nextPageToken: A token identifying a page of results the server should
       return.
     repositoryGroups: The list of RepositoryGroup
-    unreachable: Locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
   repositoryGroups = _messages.MessageField('RepositoryGroup', 2, repeated=True)
+
+
+class ListSettingsResponse(_messages.Message):
+  r"""Message for response to listing Settings
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    settings: The list of Setting
+    unreachable: Unordered list. Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  settings = _messages.MessageField('Setting', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -3228,6 +3486,7 @@ class QueryGrammar(_messages.Message):
       ALCHEMIST: go/keep-sorted start Alchemist.
       ALCHEMIST_LOOKER: Looker backed datasource for Alchemist.
       ALLOYDB: AlloyDB.
+      BIGQUERY_CHAT: BigQuery Gemini chat.
       BIGQUERY_DATA_CANVAS: BigQuery data canvas.
       BIGQUERY_SQL_EDITOR_C2C: BigQuery SQL Editor Comment to code.
       BIGQUERY_SQL_EDITOR_WIDGET: BigQuery SQL Editor Widget.
@@ -3241,14 +3500,15 @@ class QueryGrammar(_messages.Message):
     ALCHEMIST = 1
     ALCHEMIST_LOOKER = 2
     ALLOYDB = 3
-    BIGQUERY_DATA_CANVAS = 4
-    BIGQUERY_SQL_EDITOR_C2C = 5
-    BIGQUERY_SQL_EDITOR_WIDGET = 6
-    MYSQL = 7
-    OBSERVABILITY_ANALYTICS = 8
-    POSTGRESQL = 9
-    SPANNER = 10
-    SQL_SERVER = 11
+    BIGQUERY_CHAT = 4
+    BIGQUERY_DATA_CANVAS = 5
+    BIGQUERY_SQL_EDITOR_C2C = 6
+    BIGQUERY_SQL_EDITOR_WIDGET = 7
+    MYSQL = 8
+    OBSERVABILITY_ANALYTICS = 9
+    POSTGRESQL = 10
+    SPANNER = 11
+    SQL_SERVER = 12
 
   class QueryDialectValueValuesEnum(_messages.Enum):
     r"""Query dialect.
@@ -3295,6 +3555,16 @@ class RawData(_messages.Message):
 
   columnInfo = _messages.MessageField('ColumnInfo', 1, repeated=True)
   rowSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class RepeatedSamples(_messages.Message):
+  r"""Column level data samples for REPEATED columns.
+
+  Fields:
+    samples: Arrays of values in column in string format.
+  """
+
+  samples = _messages.MessageField('Samples', 1, repeated=True)
 
 
 class ReplaceTaskRequest(_messages.Message):
@@ -3344,14 +3614,12 @@ class Repository(_messages.Message):
   Fields:
     branchPattern: Required. The Git branch pattern used for indexing in RE2
       syntax. See https://github.com/google/re2/wiki/syntax for syntax.
-    remoteUri: Output only. Git Clone HTTPS URI.
-    resource: Required. The link to the CloudBuild/DeveloperConnect repository
-      resource name or URL to be indexed.
+    resource: Required. The DeveloperConnect repository full resource name,
+      relative resource name or resource URL to be indexed.
   """
 
   branchPattern = _messages.StringField(1)
-  remoteUri = _messages.StringField(2)
-  resource = _messages.StringField(3)
+  resource = _messages.StringField(2)
 
 
 class RepositoryGroup(_messages.Message):
@@ -3361,11 +3629,11 @@ class RepositoryGroup(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
+    createTime: Output only. Create time stamp
     labels: Optional. Labels as key value pairs
     name: Immutable. Identifier. name of resource
     repositories: Required. List of repositories to group
-    updateTime: Output only. [Output only] Update time stamp
+    updateTime: Output only. Update time stamp
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -3430,6 +3698,16 @@ class ResponseItem(_messages.Message):
   summary = _messages.StringField(1)
 
 
+class Samples(_messages.Message):
+  r"""Column level data samples for non-REPEATED columns.
+
+  Fields:
+    samples: Values in column in string format.
+  """
+
+  samples = _messages.StringField(1, repeated=True)
+
+
 class SchemaDetails(_messages.Message):
   r"""Schema details; for now all the tables and views in the catalog. Might
   be extended later for different object types.
@@ -3458,6 +3736,49 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
+
+
+class Setting(_messages.Message):
+  r"""Message describing Setting object
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Optional. Labels as key value pairs
+    name: Identifier. name of resource
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
 
 
 class SqlGenCitation(_messages.Message):
@@ -3502,7 +3823,9 @@ class SqlGenContextProvider(_messages.Message):
   Fields:
     dataModel: The data model available in the client's context.
     promptContext: Information about various tables and views in the schema
-      that may relate to the user question.
+      that may relate to the user question. DEPRECATED 2024-09-05: -
+      PromptContext.{evidence_statement,instructions} no longer supported. -
+      PromptContext.schema_details migrating to SqlGenDataModel.
     schemaSearch: Specifies a search of accessible tables for tables relevant
       to the query
     tableReference: Specifies a particular table that may be relevant to the
@@ -3529,47 +3852,19 @@ class SqlGenRequest(_messages.Message):
   r"""API for generating SQL from natural language queries This API is under
   development and subject to change
 
-  Enums:
-    ClientValueValuesEnum: Optional. Client for SqlGen. The service will
-      choose the atlas_experience_name based on the client. DEPRECATED
-      2024-07-08: use `context.query_grammar.{query_grammar,product}` instead.
-
   Fields:
-    client: Optional. Client for SqlGen. The service will choose the
-      atlas_experience_name based on the client. DEPRECATED 2024-07-08: use
-      `context.query_grammar.{query_grammar,product}` instead.
     context: Optional. Client-provided contextual information. The service
       will process and extend this to generate context for the SQL generation
     overrideProjectNumber: Optional. Override project number. Used by products
       that send their producer project in the `instance` field but need to
       pass on the originating customer's project number as an identifier in
       calls to dependent systems such as inference and context retrieval.
-    parent: Optional. Active project and location in format
-      projects/*/locations/* DEPRECATED 2024-02-16: use `instance` instead.
     query: Required. User query for sql generation
   """
 
-  class ClientValueValuesEnum(_messages.Enum):
-    r"""Optional. Client for SqlGen. The service will choose the
-    atlas_experience_name based on the client. DEPRECATED 2024-07-08: use
-    `context.query_grammar.{query_grammar,product}` instead.
-
-    Values:
-      SQL_GEN_CLIENT_UNSPECIFIED: Unspecified client.
-      BIGQUERY_QUERY_EDITOR: BigQuery query editor client.
-      BIGQUERY_DATA_CANVAS: BigQuery data canvas client.
-      ALCHEMIST: Alchemist client.
-    """
-    SQL_GEN_CLIENT_UNSPECIFIED = 0
-    BIGQUERY_QUERY_EDITOR = 1
-    BIGQUERY_DATA_CANVAS = 2
-    ALCHEMIST = 3
-
-  client = _messages.EnumField('ClientValueValuesEnum', 1)
-  context = _messages.MessageField('SqlGenContext', 2)
-  overrideProjectNumber = _messages.StringField(3)
-  parent = _messages.StringField(4)
-  query = _messages.StringField(5)
+  context = _messages.MessageField('SqlGenContext', 1)
+  overrideProjectNumber = _messages.StringField(2)
+  query = _messages.StringField(3)
 
 
 class SqlGenResponse(_messages.Message):
@@ -3864,16 +4159,32 @@ class Table(_messages.Message):
   r"""LINT.IfChange Captures a table's name and schema.
 
   Fields:
+    byteCount: Optional. The number of logical bytes in the table.
     description: Optional. A user-friendly description of this table.
+    lastModifiedTimeMs: Optional. The time when this table was last modified,
+      in milliseconds since the epoch. Matches the type of the source field in
+      BigQuery.
     schema: Optional. The table schema, i.e., column definitions.
     table: The unique identifier for the table reference. Names are case-
       sensitive. Example for BigQuery Table:
       `projects/{project}/datasets/{dataset}/tables/{table}`.
+    type: Optional. Describes the table type. The following values are
+      supported: * `TABLE`: A normal BigQuery table. * `VIEW`: A virtual table
+      defined by a SQL query. * `EXTERNAL`: A table that references data
+      stored in an external storage system, such as Google Cloud Storage. *
+      `MATERIALIZED_VIEW`: A precomputed view defined by a SQL query. *
+      `SNAPSHOT`: An immutable BigQuery table that preserves the contents of a
+      base table at a particular time. See additional information on [table
+      snapshots](https://cloud.google.com/bigquery/docs/table-snapshots-
+      intro). The default value is `TABLE`.
   """
 
-  description = _messages.StringField(1)
-  schema = _messages.MessageField('TableSchema', 2)
-  table = _messages.StringField(3)
+  byteCount = _messages.IntegerField(1)
+  description = _messages.StringField(2)
+  lastModifiedTimeMs = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  schema = _messages.MessageField('TableSchema', 4)
+  table = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class TableInfo(_messages.Message):
@@ -3959,7 +4270,7 @@ class TaskCompletionRequest(_messages.Message):
     input: Represents the raw input for inference. It will be modified as part
       of prompt engineering and other transforms before it is consumed by the
       LLM.
-    inputDataContext: Additional user content not captured in the `instances`
+    inputDataContext: Additional user content not captured in the `input`
       field above
   """
 
@@ -4149,7 +4460,7 @@ class TextGenerationRequest(_messages.Message):
     input: Represents the raw input for inference. It will be modified as part
       of prompt engineering and other transforms before it is consumed by the
       LLM.
-    inputDataContext: Additional user content not captured in the `instances`
+    inputDataContext: Additional user content not captured in the `input`
       field above
   """
 

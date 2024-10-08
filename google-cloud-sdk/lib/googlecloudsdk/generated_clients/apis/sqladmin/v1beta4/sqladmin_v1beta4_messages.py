@@ -115,46 +115,50 @@ class AvailableDatabaseVersion(_messages.Message):
 
 
 class Backup(_messages.Message):
-  r"""A Backup resource.
+  r"""A backup resource.
 
   Enums:
     BackupKindValueValuesEnum: Output only. Specifies the kind of backup,
       PHYSICAL or DEFAULT_SNAPSHOT.
     StateValueValuesEnum: Output only. The state of this backup.
-    TypeValueValuesEnum: Output only. The type of this run; can be either
-      "AUTOMATED" or "ON_DEMAND" or "FINAL".
+    TypeValueValuesEnum: Output only. The type of this backup. The type can be
+      "AUTOMATED", "ON_DEMAND", or "FINAL".
 
   Fields:
-    backupInterval: Output only. start_time: All writes up to this time is
-      available end_time: Writes after this point are not available.
+    backupInterval: Output only. This output contains the following values:
+      start_time: All database writes up to this time are available. end_time:
+      Any database writes after this time aren't available.
     backupKind: Output only. Specifies the kind of backup, PHYSICAL or
       DEFAULT_SNAPSHOT.
     description: The description of this backup.
-    error: Output only. Information about why the backup operation failed i.e.
-      when SqlBackupState is FAILED.
-    expiryTime: Backup expiration time. Timestamp in UTC of when this resource
-      is considered expired.
-    instance: Name of the database instance.
+    error: Output only. Information about why the backup operation fails (for
+      example, when the backup state fails).
+    expiryTime: Backup expiration time. A UTC timestamp of when this resource
+      expired.
+    instance: The name of the database instance.
     instanceDeletionTime: Optional. Output only. Timestamp in UTC of when the
       instance associated with this backup is deleted.
     kind: Output only. This is always `sql#backup`.
-    kmsKey: Output only. Encryption configuration specific to a backup.
-      Resource name of KMS key for disk encryption
-    kmsKeyVersion: Output only. Encryption status specific to a backup. KMS
-      key version used to encrypt the Cloud SQL instance resource
-    location: Storage Location of the backups. Can be a multi region.
+    kmsKey: Output only. This output contains the encryption configuration for
+      a backup and the resource name of the KMS key for disk encryption.
+    kmsKeyVersion: Output only. This output contains the encryption status for
+      a backup and the version of the KMS key that's used to encrypt the Cloud
+      SQL instance.
+    location: The storage location of the backups. The location can be multi-
+      regional.
     maxChargeableBytes: Output only. The maximum chargeable bytes for the
       backup.
     name: Output only. The resource name of the backup. Format:
       projects/{project}/backups/{backup}
     selfLink: Output only. The URI of this resource.
     state: Output only. The state of this backup.
-    timeZone: Output only. Backup time zone to prevent restores to an instance
-      with a different time zone. Now relevant only for SQL Server.
-    ttlDays: Input only. The TTL of this resource. The input is of granularity
-      of days. ttl_days:7 means 7 days.
-    type: Output only. The type of this run; can be either "AUTOMATED" or
-      "ON_DEMAND" or "FINAL".
+    timeZone: Output only. This output contains a backup time zone. If a Cloud
+      SQL for SQL Server instance has a different time zone from the backup's
+      time zone, then restores to the instance won't happen.
+    ttlDays: Input only. The time-to-live (TTL) interval for this resource (in
+      days). For example: ttlDays:7 means 7 days.
+    type: Output only. The type of this backup. The type can be "AUTOMATED",
+      "ON_DEMAND", or "FINAL".
   """
 
   class BackupKindValueValuesEnum(_messages.Enum):
@@ -163,8 +167,8 @@ class Backup(_messages.Message):
 
     Values:
       SQL_BACKUP_KIND_UNSPECIFIED: This is an unknown BackupKind.
-      SNAPSHOT: The snapshot based backups
-      PHYSICAL: Physical backups
+      SNAPSHOT: Snapshot-based backups.
+      PHYSICAL: Physical backups.
     """
     SQL_BACKUP_KIND_UNSPECIFIED = 0
     SNAPSHOT = 1
@@ -175,12 +179,12 @@ class Backup(_messages.Message):
 
     Values:
       SQL_BACKUP_STATE_UNSPECIFIED: The state of the backup is unknown.
-      ENQUEUED: The backup operation was enqueued.
+      ENQUEUED: The backup that's added to a queue.
       RUNNING: The backup is in progress.
       FAILED: The backup failed.
-      SUCCESSFUL: The backup was successful.
+      SUCCESSFUL: The backup is successful.
       DELETING: The backup is being deleted.
-      DELETION_FAILED: The backup deletion failed.
+      DELETION_FAILED: Deletion of the backup failed.
     """
     SQL_BACKUP_STATE_UNSPECIFIED = 0
     ENQUEUED = 1
@@ -191,14 +195,14 @@ class Backup(_messages.Message):
     DELETION_FAILED = 6
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Output only. The type of this run; can be either "AUTOMATED" or
-    "ON_DEMAND" or "FINAL".
+    r"""Output only. The type of this backup. The type can be "AUTOMATED",
+    "ON_DEMAND", or "FINAL".
 
     Values:
-      SQL_BACKUP_TYPE_UNSPECIFIED: This is an unknown Backup type.
-      AUTOMATED: The backup schedule automatically triggers a backup.
-      ON_DEMAND: The user manually triggers a backup.
-      FINAL: The backup created when instance is deleted.
+      SQL_BACKUP_TYPE_UNSPECIFIED: This is an unknown backup type.
+      AUTOMATED: The backup schedule triggers a backup automatically.
+      ON_DEMAND: The user triggers a backup manually.
+      FINAL: The backup that's created when the instance is deleted.
     """
     SQL_BACKUP_TYPE_UNSPECIFIED = 0
     AUTOMATED = 1
@@ -414,8 +418,8 @@ class BackupRun(_messages.Message):
 
     Values:
       SQL_BACKUP_KIND_UNSPECIFIED: This is an unknown BackupKind.
-      SNAPSHOT: The snapshot based backups
-      PHYSICAL: Physical backups
+      SNAPSHOT: Snapshot-based backups.
+      PHYSICAL: Physical backups.
     """
     SQL_BACKUP_KIND_UNSPECIFIED = 0
     SNAPSHOT = 1
@@ -2387,15 +2391,16 @@ class InstancesRestoreBackupRequest(_messages.Message):
   r"""Database instance restore backup request.
 
   Fields:
-    backup: The name of the backup to restore from in following format:
-      projects/{project-id}/backups/{backup-uid} Only one of
-      restore_backup_context or backup can be passed to the input.
+    backup: The name of the backup that's used to restore a Cloud SQL
+      instance: Format: projects/{project-id}/backups/{backup-uid}. Only one
+      of restore_backup_context or backup can be passed to the input.
     restoreBackupContext: Parameters required to perform the restore backup
       operation.
-    restoreInstanceSettings: Restore instance settings overrides the instance
-      settings stored as part of the backup. Instance's major database version
-      cannot be changed and the disk size can only be increased. This feature
-      is only available for restores to new instances using the backup name.
+    restoreInstanceSettings: Optional. By using this parameter, Cloud SQL
+      overrides any instance settings that it stored with the instance
+      settings that you want to restore. You can't change the Instance's major
+      database version and you can only increase the disk size. You can use
+      this field to restore new instances only.
   """
 
   backup = _messages.StringField(1)
@@ -2651,9 +2656,9 @@ class ListBackupsResponse(_messages.Message):
   Fields:
     backups: A list of backups.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    warnings: A warning returned to the user if a region is down or if an
-      unknown error happens.
+      next page. If this field is omitted, then there aren't subsequent pages.
+    warnings: If a region isn't unavailable or if an unknown error occurs,
+      then a warning message is returned.
   """
 
   backups = _messages.MessageField('Backup', 1, repeated=True)
@@ -2873,20 +2878,26 @@ class Operation(_messages.Message):
 
     Values:
       SQL_MAINTENANCE_TYPE_UNSPECIFIED: Maintenance type is unspecified.
-      INSTANCE_MAINTENANCE: Maintenance type is standalone instance
-        maintenance.
-      CLUSTER_BASED_MAINTENANCE: Maintenance type is cluster-based
-        maintenance.
-      INSTANCE_SELF_SERVICE_MAINTENANCE: Maintenance type is standalone
-        instance self-service maintenance.
-      CLUSTER_BASED_SELF_SERVICE_MAINTENANCE: Maintenance type is cluster-
-        based self-service maintenance.
+      INSTANCE_MAINTENANCE: Indicates that a standalone instance is undergoing
+        maintenance. The instance can be either a primary instance or a
+        replica.
+      REPLICA_INCLUDED_MAINTENANCE: Indicates that the primary instance and
+        all of its replicas, including cascading replicas, are undergoing
+        maintenance. Maintenance is performed on groups of replicas first,
+        followed by the primary instance.
+      INSTANCE_SELF_SERVICE_MAINTENANCE: Indicates that the standalone
+        instance is undergoing maintenance, initiated by self-service. The
+        instance can be either a primary instance or a replica.
+      REPLICA_INCLUDED_SELF_SERVICE_MAINTENANCE: Indicates that the primary
+        instance and all of its replicas are undergoing maintenance, initiated
+        by self-service. Maintenance is performed on groups of replicas first,
+        followed by the primary instance.
     """
     SQL_MAINTENANCE_TYPE_UNSPECIFIED = 0
     INSTANCE_MAINTENANCE = 1
-    CLUSTER_BASED_MAINTENANCE = 2
+    REPLICA_INCLUDED_MAINTENANCE = 2
     INSTANCE_SELF_SERVICE_MAINTENANCE = 3
-    CLUSTER_BASED_SELF_SERVICE_MAINTENANCE = 4
+    REPLICA_INCLUDED_SELF_SERVICE_MAINTENANCE = 4
 
   class OperationTypeValueValuesEnum(_messages.Enum):
     r"""The type of the operation. Valid values are: * `CREATE` * `DELETE` *
@@ -3775,7 +3786,7 @@ class SqlBackupsCreateBackupRequest(_messages.Message):
 
   Fields:
     backup: A Backup resource to be passed as the request body.
-    parent: Required. The parent resource where this backup will be created.
+    parent: Required. The parent resource where this backup is created.
       Format: projects/{project}
   """
 
@@ -3809,19 +3820,20 @@ class SqlBackupsListBackupsRequest(_messages.Message):
   r"""A SqlBackupsListBackupsRequest object.
 
   Fields:
-    filter: Multiple filter queries are space-separated. For example,
-      'instance:abc type:FINAL. We allow filters on type, instance name,
-      creation time and location.
+    filter: Multiple filter queries are separated by spaces. For example,
+      'instance:abc type:FINAL. You can filter by type, instance name,
+      creation time, or location.
     pageSize: The maximum number of backups to return per response. The
-      service may return fewer than this value. If unspecified, at most 500
-      backups are returned. The maximum value is 2000; values above 2000 are
-      coerced to 2000.
+      service might return fewer backups than this value. If a value for this
+      parameter isn't specified, then, at most, 500 backups are returned. The
+      maximum value is 2,000. Any values that you set, which are greater than
+      2,000, are changed to 2,000.
     pageToken: A page token, received from a previous `ListBackups` call.
       Provide this to retrieve the subsequent page. When paginating, all other
       parameters provided to `ListBackups` must match the call that provided
       the page token.
-    parent: Required. The parent, which owns this collection of backups.
-      Format: projects/{project}
+    parent: Required. The parent that owns this collection of backups. Format:
+      projects/{project}
   """
 
   filter = _messages.StringField(1)
@@ -3837,8 +3849,8 @@ class SqlBackupsUpdateBackupRequest(_messages.Message):
     backup: A Backup resource to be passed as the request body.
     name: Output only. The resource name of the backup. Format:
       projects/{project}/backups/{backup}
-    updateMask: The list of fields to update. Only final backup retention
-      period and description can be updated.
+    updateMask: The list of fields that you can update. You can update only
+      the description and retention period of the final backup.
   """
 
   backup = _messages.MessageField('Backup', 1)
@@ -4226,10 +4238,12 @@ class SqlInstancesDeleteRequest(_messages.Message):
   Fields:
     enableFinalBackup: Flag to opt-in for final backup. By default, it is
       turned off.
-    finalBackupDescription: The description of the final backup.
-    finalBackupExpiryTime: Optional. Final Backup expiration time. Timestamp
-      in UTC of when this resource is considered expired.
-    finalBackupTtlDays: Optional. Retention period of the final backup.
+    finalBackupDescription: Optional. The description of the final backup.
+    finalBackupExpiryTime: Optional. A timestamp (in UTC) of when the backup
+      is set to expire. This value can't exceed 1 year.
+    finalBackupTtlDays: Optional. The number of days to retain the final
+      backup. This is known as time to live (TTL). The allowed retention
+      period varies from 1 day to 1 year.
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance to be
       deleted.
@@ -5172,20 +5186,26 @@ class SqlSubOperationType(_messages.Message):
 
     Values:
       SQL_MAINTENANCE_TYPE_UNSPECIFIED: Maintenance type is unspecified.
-      INSTANCE_MAINTENANCE: Maintenance type is standalone instance
-        maintenance.
-      CLUSTER_BASED_MAINTENANCE: Maintenance type is cluster-based
-        maintenance.
-      INSTANCE_SELF_SERVICE_MAINTENANCE: Maintenance type is standalone
-        instance self-service maintenance.
-      CLUSTER_BASED_SELF_SERVICE_MAINTENANCE: Maintenance type is cluster-
-        based self-service maintenance.
+      INSTANCE_MAINTENANCE: Indicates that a standalone instance is undergoing
+        maintenance. The instance can be either a primary instance or a
+        replica.
+      REPLICA_INCLUDED_MAINTENANCE: Indicates that the primary instance and
+        all of its replicas, including cascading replicas, are undergoing
+        maintenance. Maintenance is performed on groups of replicas first,
+        followed by the primary instance.
+      INSTANCE_SELF_SERVICE_MAINTENANCE: Indicates that the standalone
+        instance is undergoing maintenance, initiated by self-service. The
+        instance can be either a primary instance or a replica.
+      REPLICA_INCLUDED_SELF_SERVICE_MAINTENANCE: Indicates that the primary
+        instance and all of its replicas are undergoing maintenance, initiated
+        by self-service. Maintenance is performed on groups of replicas first,
+        followed by the primary instance.
     """
     SQL_MAINTENANCE_TYPE_UNSPECIFIED = 0
     INSTANCE_MAINTENANCE = 1
-    CLUSTER_BASED_MAINTENANCE = 2
+    REPLICA_INCLUDED_MAINTENANCE = 2
     INSTANCE_SELF_SERVICE_MAINTENANCE = 3
-    CLUSTER_BASED_SELF_SERVICE_MAINTENANCE = 4
+    REPLICA_INCLUDED_SELF_SERVICE_MAINTENANCE = 4
 
   maintenanceType = _messages.EnumField('MaintenanceTypeValueValuesEnum', 1)
 

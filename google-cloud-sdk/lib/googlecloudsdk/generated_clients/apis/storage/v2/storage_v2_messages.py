@@ -82,7 +82,8 @@ class Bucket(_messages.Message):
     cors: The bucket's https://www.w3.org/TR/cors/ (CORS) config.
     createTime: Output only. The creation time of the bucket.
     customPlacementConfig: Configuration that, if present, specifies the data
-      placement for a https://cloud.google.com/storage/docs/use-dual-regions.
+      placement for a
+      https://cloud.google.com/storage/docs/locations#location-dr.
     defaultEventBasedHold: The default value for event-based hold on newly
       created objects in this bucket. Event-based hold is a way to retain
       objects indefinitely until an event occurs, signified by the hold's
@@ -271,16 +272,17 @@ class BucketAccessControl(_messages.Message):
 
 
 class CloudStorageBucket(_messages.Message):
-  r"""Defines the bucket by its name or a regex pattern to match buckets.
+  r"""Defines the bucket by its name or a regex pattern to match the buckets.
 
   Fields:
-    bucketId: Cloud Storage bucket id. For e.g. "sample_bucket" is the id for
-      bucket gs://sample_bucket.
-    bucketIdRegex: A regex pattern for bucket ids matching the regex. Regex
-      should follow the syntax specified in google/re2 on GitHub. For e.g.
-      "^sample_.*" matches all buckets of the form gs://sample_bucket-1,
-      gs://sample_bucket-2, gs://sample_bucket-n but not
-      gs://test_sample_bucket.
+    bucketId: Cloud Storage bucket name. For example, `sample_bucket` is the
+      name for bucket `gs://sample_bucket`.
+    bucketIdRegex: A regex pattern for matching bucket names. Regex should
+      follow the syntax specified in
+      [google/re2](https://github.com/google/re2). For example, `^sample_.*`
+      matches all buckets of the form `gs://sample_bucket-1`,
+      `gs://sample_bucket-2`, `gs://sample_bucket-n` but not
+      `gs://test_sample_bucket`.
   """
 
   bucketId = _messages.StringField(1)
@@ -288,23 +290,22 @@ class CloudStorageBucket(_messages.Message):
 
 
 class CloudStorageBuckets(_messages.Message):
-  r"""Collection of Cloud Storage buckets.
+  r"""Collection of buckets.
 
   Fields:
-    cloudStorageBuckets: Optional. Cloud Storage buckets to include or
-      exclude.
+    cloudStorageBuckets: Optional. Buckets to include or exclude.
   """
 
   cloudStorageBuckets = _messages.MessageField('CloudStorageBucket', 1, repeated=True)
 
 
 class CloudStorageLocations(_messages.Message):
-  r"""Collection of Cloud Storage locations.
+  r"""Collection of bucket locations.
 
   Fields:
-    locations: Optional. Cloud Storage locations. Location can be any of the
-      cloud storage regions specified in lower case format. E.g. "us-east1",
-      "us-west1".
+    locations: Optional. Bucket locations. Location can be any of the Cloud
+      Storage regions specified in lower case format. For example, `us-east1`,
+      `us-west1`.
   """
 
   locations = _messages.StringField(1, repeated=True)
@@ -458,29 +459,29 @@ class Date(_messages.Message):
 
 
 class EffectiveManagementHubEdition(_messages.Message):
-  r"""Effective management hub denotes the resolved management hub that is
-  effective for the resource.
+  r"""The `ManagementHub` edition that is effective for the resource.
 
   Enums:
-    ManagementHubEditionValueValuesEnum: Output only. Management hub edition
-      that is applicable for the resource.
+    ManagementHubEditionValueValuesEnum: Output only. The `ManagementHub`
+      edition that is applicable for the resource.
 
   Fields:
-    managementHub: Output only. This field denotes the Management Hub that is
-      applied for the target resource. Format:
-      {organizations|folders|projects}/{id}/locations/{location}/managementHub
-    managementHubEdition: Output only. Management hub edition that is
+    managementHub: Output only. The `ManagementHub` resource that is applied
+      for the target resource. Format: `{organizations|folders|projects}/{id}/
+      locations/{location}/managementHub`
+    managementHubEdition: Output only. The `ManagementHub` edition that is
       applicable for the resource.
   """
 
   class ManagementHubEditionValueValuesEnum(_messages.Enum):
-    r"""Output only. Management hub edition that is applicable for the
+    r"""Output only. The `ManagementHub` edition that is applicable for the
     resource.
 
     Values:
-      MANAGEMENT_HUB_EDITION_UNSPECIFIED: Unspecified edition.
+      MANAGEMENT_HUB_EDITION_UNSPECIFIED: This is an unknown edition of the
+        resource.
       NONE: No edition.
-      STANDARD: Standard.
+      STANDARD: The `ManagementHub` resource is of standard edition.
     """
     MANAGEMENT_HUB_EDITION_UNSPECIFIED = 0
     NONE = 1
@@ -511,17 +512,15 @@ class Encryption(_messages.Message):
 
 
 class Filter(_messages.Message):
-  r"""Filter over location and bucket using include or exclude semantics. When
-  the included filter matches, then resource will be part of the management
-  hub and everything else will be excluded. Similarly, when the excluded
-  filter matches, then the resource will be excluded from the management hub
-  and everything else will be included.
+  r"""Filter over location and bucket using include or exclude semantics.
+  Resources that match the include or exclude filter are exclusively included
+  or excluded from the Management Hub plan.
 
   Fields:
-    excludedCloudStorageBuckets: Cloud Storage buckets to exclude.
-    excludedCloudStorageLocations: Cloud Storage locations to exclude.
-    includedCloudStorageBuckets: Cloud Storage buckets to include.
-    includedCloudStorageLocations: Cloud Storage locations to include.
+    excludedCloudStorageBuckets: Buckets to include or exclude.
+    excludedCloudStorageLocations: Bucket locations to exclude.
+    includedCloudStorageBuckets: Buckets to include or exclude.
+    includedCloudStorageLocations: Bucket locations to include.
   """
 
   excludedCloudStorageBuckets = _messages.MessageField('CloudStorageBuckets', 1)
@@ -641,36 +640,40 @@ class Logging(_messages.Message):
 
 
 class ManagementHub(_messages.Message):
-  r"""The management hub resource defines the following key aspects: Scope of
-  the management hub - at the granularity of organization, folder(s) or
-  project(s) Filters to include or exclude locations and buckets. Management
-  Hub SKU (Type) Next Id: 6
+  r"""The `ManagementHub` resource associated with your organization, folder,
+  or project.
 
   Enums:
-    EditionConfigValueValuesEnum: Optional. Edition configuration of the
-      management hub.
+    EditionConfigValueValuesEnum: Optional. The edition configuration of the
+      `ManagementHub` resource.
 
   Fields:
-    editionConfig: Optional. Edition configuration of the management hub.
-    effectiveManagementHubEdition: Output only. Effective management hub
-      edition that is applicable for the resource.
+    editionConfig: Optional. The edition configuration of the `ManagementHub`
+      resource.
+    effectiveManagementHubEdition: Output only. The effective `ManagementHub`
+      resource edition that is applicable for the resource.
     filter: Optional. Filter over location and bucket.
-    name: Identifier. The resource name of the management hub. Format:
-      `projects/{project_number}/locations/global/managementHub`
-    updateTime: Output only. Update time. Update time is set when the
-      management hub is updated.
+    name: Identifier. The name of the `ManagementHub` resource associated with
+      your organization, folder, or project. The name format varies based on
+      the scope as follows: * For project:
+      `projects/{project_number}/locations/global/managementHub` * For
+      organization: `organizations/{org_id}/locations/global/managementHub` *
+      For folder: `folders/{folder_id}/locations/global/managementHub`
+    updateTime: Output only. The time at which the `ManagementHub` resource is
+      last updated.
   """
 
   class EditionConfigValueValuesEnum(_messages.Enum):
-    r"""Optional. Edition configuration of the management hub.
+    r"""Optional. The edition configuration of the `ManagementHub` resource.
 
     Values:
-      EDITION_CONFIG_UNSPECIFIED: Unspecified edition.
-      INHERIT: Inherit the edition from the parent and filters. Default value
-        when there is no ManagementHub setup for a GCP resource.
-      DISABLED: No editions will apply to this resource and its children.
-        Filters are not applicable.
-      STANDARD: Standard edition.
+      EDITION_CONFIG_UNSPECIFIED: This is an unknown edition of the resource.
+      INHERIT: The inherited edition from the parent and filters. This is the
+        default edition when there is no `ManagementHub` setup for a GCP
+        resource.
+      DISABLED: The edition configuration is disabled for the `ManagementHub`
+        resource and its children. Filters are not applicable.
+      STANDARD: The `ManagementHub` resource is of standard edition.
     """
     EDITION_CONFIG_UNSPECIFIED = 0
     INHERIT = 1
@@ -1081,8 +1084,8 @@ class StorageFoldersLocationsGetManagementHubRequest(_messages.Message):
   r"""A StorageFoldersLocationsGetManagementHubRequest object.
 
   Fields:
-    name: Required. Name is of the format:
-      folders/{id}/locations/{location}/managementHub
+    name: Required. The name of the `ManagementHub` resource associated with
+      your folder. Format: `folders/{id}/locations/global/managementHub`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1093,14 +1096,17 @@ class StorageFoldersLocationsUpdateManagementHubRequest(_messages.Message):
 
   Fields:
     managementHub: A ManagementHub resource to be passed as the request body.
-    name: Identifier. The resource name of the management hub. Format:
-      `projects/{project_number}/locations/global/managementHub`
-    requestId: Optional. Request ID is used to identify the request. This is
-      used to deduplicate requests.
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the ManagementHub resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask.
+    name: Identifier. The name of the `ManagementHub` resource associated with
+      your organization, folder, or project. The name format varies based on
+      the scope as follows: * For project:
+      `projects/{project_number}/locations/global/managementHub` * For
+      organization: `organizations/{org_id}/locations/global/managementHub` *
+      For folder: `folders/{folder_id}/locations/global/managementHub`
+    requestId: Optional. The ID that uniquely identifies the request,
+      preventing duplicate processing.
+    updateMask: Required. The `update_mask` that specifies the fields within
+      the `ManagementHub` resource that should be modified by this update.
+      Only the listed fields are updated.
   """
 
   managementHub = _messages.MessageField('ManagementHub', 1)
@@ -1137,8 +1143,9 @@ class StorageOrganizationsLocationsGetManagementHubRequest(_messages.Message):
   r"""A StorageOrganizationsLocationsGetManagementHubRequest object.
 
   Fields:
-    name: Required. Name is of the format:
-      organizations/{org_id}/locations/{location}/managementHub
+    name: Required. The name of the `ManagementHub` resource associated with
+      your organization. Format:
+      `organizations/{org_id}/locations/global/managementHub`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1149,14 +1156,17 @@ class StorageOrganizationsLocationsUpdateManagementHubRequest(_messages.Message)
 
   Fields:
     managementHub: A ManagementHub resource to be passed as the request body.
-    name: Identifier. The resource name of the management hub. Format:
-      `projects/{project_number}/locations/global/managementHub`
-    requestId: Optional. Request ID is used to identify the request. This is
-      used to deduplicate requests.
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the ManagementHub resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask.
+    name: Identifier. The name of the `ManagementHub` resource associated with
+      your organization, folder, or project. The name format varies based on
+      the scope as follows: * For project:
+      `projects/{project_number}/locations/global/managementHub` * For
+      organization: `organizations/{org_id}/locations/global/managementHub` *
+      For folder: `folders/{folder_id}/locations/global/managementHub`
+    requestId: Optional. The ID that uniquely identifies the request,
+      preventing duplicate processing.
+    updateMask: Required. The `update_mask` that specifies the fields within
+      the `ManagementHub` resource that should be modified by this update.
+      Only the listed fields are updated.
   """
 
   managementHub = _messages.MessageField('ManagementHub', 1)
@@ -1309,8 +1319,8 @@ class StorageProjectsLocationsGetManagementHubRequest(_messages.Message):
   r"""A StorageProjectsLocationsGetManagementHubRequest object.
 
   Fields:
-    name: Required. Name is of the
-      format:projects/{id}/locations/{location}/managementHub
+    name: Required. The name of the `ManagementHub` resource associated with
+      your project. Format: `projects/{id}/locations/global/managementHub`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1321,14 +1331,17 @@ class StorageProjectsLocationsUpdateManagementHubRequest(_messages.Message):
 
   Fields:
     managementHub: A ManagementHub resource to be passed as the request body.
-    name: Identifier. The resource name of the management hub. Format:
-      `projects/{project_number}/locations/global/managementHub`
-    requestId: Optional. Request ID is used to identify the request. This is
-      used to deduplicate requests.
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the ManagementHub resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask.
+    name: Identifier. The name of the `ManagementHub` resource associated with
+      your organization, folder, or project. The name format varies based on
+      the scope as follows: * For project:
+      `projects/{project_number}/locations/global/managementHub` * For
+      organization: `organizations/{org_id}/locations/global/managementHub` *
+      For folder: `folders/{folder_id}/locations/global/managementHub`
+    requestId: Optional. The ID that uniquely identifies the request,
+      preventing duplicate processing.
+    updateMask: Required. The `update_mask` that specifies the fields within
+      the `ManagementHub` resource that should be modified by this update.
+      Only the listed fields are updated.
   """
 
   managementHub = _messages.MessageField('ManagementHub', 1)

@@ -315,12 +315,33 @@ class Workstations:
     )
 
     def Run():
-      server.run_forever(
-          sslopt={
-              'cert_reqs': cert_reqs,
-              'ca_certs': ca_certs,
-          }
-      )
+      proxy_type = properties.VALUES.proxy.proxy_type.Get()
+      if proxy_type == 'http' or proxy_type == 'http_no_tunnel':
+        http_proxy_host = properties.VALUES.proxy.address.Get()
+        http_proxy_port = properties.VALUES.proxy.port.Get()
+        http_proxy_auth = (
+            properties.VALUES.proxy.username.Get(),
+            properties.VALUES.proxy.password.Get(),
+        )
+
+        server.run_forever(
+            sslopt={
+                'cert_reqs': cert_reqs,
+                'ca_certs': ca_certs,
+            },
+            proxy_type='http',
+            http_proxy_host=http_proxy_host,
+            http_proxy_port=http_proxy_port,
+            http_proxy_auth=http_proxy_auth,
+        )
+      else:
+        server.run_forever(
+            sslopt={
+                'cert_reqs': cert_reqs,
+                'ca_certs': ca_certs,
+            },
+            proxy_type=proxy_type,
+        )
 
     t = threading.Thread(target=Run)
     t.daemon = True

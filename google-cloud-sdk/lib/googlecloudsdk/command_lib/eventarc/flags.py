@@ -30,14 +30,20 @@ from googlecloudsdk.core import properties
 _IAM_API_VERSION = 'v1'
 
 
-def LocationAttributeConfig(allow_aggregation=False):
+def LocationAttributeConfig(allow_aggregation=False, allow_global=True):
   """Builds an AttributeConfig for the location resource."""
   fallthroughs_list = [
       deps.PropertyFallthrough(properties.FromString('eventarc/location'))
   ]
-  help_text = ('The location for the Eventarc {resource}, which should be '
-               "either ``global'' or one of the supported regions. "
-               'Alternatively, set the [eventarc/location] property.')
+
+  help_text = 'The location for the Eventarc {resource}, which should be '
+  if allow_global:
+    help_text += "either ``global'' or "
+  help_text += (
+      'one of the supported regions. Alternatively, set the [eventarc/location]'
+      ' property.'
+  )
+
   if allow_aggregation:
     fallthroughs_list.append(
         deps.Fallthrough(
@@ -77,6 +83,16 @@ def TransportTopicAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(name='transport-topic')
 
 
+def MessageBusAttributeConfig():
+  """Builds an AttributeConfig for the message bus resource."""
+  return concepts.ResourceParameterAttributeConfig(name='message-bus')
+
+
+def GoogleApiSourceAttributeConfig():
+  """Builds an AttributeConfig for the Google API source resource."""
+  return concepts.ResourceParameterAttributeConfig(name='google-api-source')
+
+
 def TriggerResourceSpec():
   """Builds a ResourceSpec for trigger resource."""
   return concepts.ResourceSpec(
@@ -114,7 +130,30 @@ def ProviderResourceSpec():
       resource_name='provider',
       providersId=ProviderAttributeConfig(),
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
+
+
+def MessageBusResourceSpec():
+  """Builds a ResourceSpec for message bus."""
+  return concepts.ResourceSpec(
+      'eventarc.projects.locations.messageBuses',
+      resource_name='message bus',
+      messageBusesId=MessageBusAttributeConfig(),
+      locationsId=LocationAttributeConfig(allow_global=False),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
+
+
+def GoogleApiSourceResourceSpec():
+  """Builds a ResourceSpec for Google API source."""
+  return concepts.ResourceSpec(
+      'eventarc.projects.locations.googleApiSources',
+      resource_name='Google API source',
+      googleApiSourcesId=GoogleApiSourceAttributeConfig(),
+      locationsId=LocationAttributeConfig(allow_global=False),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def AddTransportTopicResourceArg(parser, required=False):
@@ -216,8 +255,55 @@ def AddChannelConnectionResourceArg(parser, group_help_text):
 def AddProviderResourceArg(parser, group_help_text, required=False):
   """Adds a resource argument for an Eventarc provider."""
   concept_parsers.ConceptParser.ForResource(
-      'provider', ProviderResourceSpec(), group_help_text,
-      required=required).AddToParser(parser)
+      'provider', ProviderResourceSpec(), group_help_text, required=required
+  ).AddToParser(parser)
+
+
+def AddMessageBusResourceArg(parser, group_help_text, required=False):
+  """Adds a resource argument for an Eventarc MessageBus."""
+  concept_parsers.ConceptParser.ForResource(
+      'message_bus',
+      MessageBusResourceSpec(),
+      group_help_text,
+      required=required,
+  ).AddToParser(parser)
+
+
+def AddCreateGoogleApiSourceResourceArgs(parser):
+  """Adds resource arguments for creating an Eventarc GoogleApiSource."""
+  _AddGoogleApiSourceResourceArgs(
+      parser,
+      google_api_source_help_text='The Google API source to create.',
+      destination_required=True,
+  )
+
+
+def _AddGoogleApiSourceResourceArgs(
+    parser, google_api_source_help_text, destination_required=False
+):
+  concept_parsers.ConceptParser(
+      [
+          presentation_specs.ResourcePresentationSpec(
+              'google_api_source',
+              GoogleApiSourceResourceSpec(),
+              google_api_source_help_text,
+              required=True,
+          ),
+          presentation_specs.ResourcePresentationSpec(
+              '--destination-message-bus',
+              MessageBusResourceSpec(),
+              'The destination message bus of the Google API source.',
+              required=destination_required,
+              flag_name_overrides={
+                  'location': '',
+                  'project': '--destination-message-bus-project',
+              },
+          ),
+      ],
+      command_level_fallthroughs={
+          '--destination-message-bus.location': ['google_api_source.location']
+      },
+  ).AddToParser(parser)
 
 
 def AddProviderNameArg(parser):
@@ -750,4 +836,24 @@ def AddClearCryptoNameArg(parser, required=False, hidden=False):
           'Remove the previously configured crypto key. The channel will'
           ' continue to be encrypted using Google-managed keys.'
       ),
+  )
+
+
+def AddLoggingConfigArg(parser, help_text):
+  """Adds an argument for the logging config of the resource."""
+  parser.add_argument(
+      '--logging-config',
+      choices=[
+          'NONE',
+          'DEBUG',
+          'INFO',
+          'NOTICE',
+          'WARNING',
+          'ERROR',
+          'CRITICAL',
+          'ALERT',
+          'EMERGENCY',
+      ],
+      required=False,
+      help=help_text,
   )

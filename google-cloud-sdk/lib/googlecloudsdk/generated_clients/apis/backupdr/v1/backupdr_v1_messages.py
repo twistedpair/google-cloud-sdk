@@ -428,6 +428,8 @@ class Backup(_messages.Message):
       accessor Backup Appliance.
     backupType: Output only. Type of the backup, unspecified, scheduled or
       ondemand.
+    cloudSqlInstanceBackupProperties: Output only. Cloud SQL specific backup
+      properties.
     computeInstanceBackupProperties: Output only. Compute Engine specific
       backup properties.
     consistencyTime: Output only. The point in time when this backup was
@@ -443,7 +445,11 @@ class Backup(_messages.Message):
     gcpBackupPlanInfo: Output only. Configuration for a Google Cloud resource.
     labels: Optional. Resource labels to represent user provided metadata. No
       labels currently defined.
-    name: Output only. Identifier. Name of the resource.
+    name: Output only. Identifier. Name of the backup to create. It must have
+      the format`"projects//locations//backupVaults//dataSources/{datasource}/
+      backups/{backup}"`. `{backup}` cannot be changed after creation. It must
+      be between 3-63 characters long and must be unique within the
+      datasource.
     resourceSizeBytes: Output only. source resource size in bytes at the time
       of the backup.
     serviceLocks: Output only. The list of BackupLocks taken by the service to
@@ -508,20 +514,21 @@ class Backup(_messages.Message):
   backupApplianceBackupProperties = _messages.MessageField('BackupApplianceBackupProperties', 1)
   backupApplianceLocks = _messages.MessageField('BackupLock', 2, repeated=True)
   backupType = _messages.EnumField('BackupTypeValueValuesEnum', 3)
-  computeInstanceBackupProperties = _messages.MessageField('ComputeInstanceBackupProperties', 4)
-  consistencyTime = _messages.StringField(5)
-  createTime = _messages.StringField(6)
-  description = _messages.StringField(7)
-  enforcedRetentionEndTime = _messages.StringField(8)
-  etag = _messages.StringField(9)
-  expireTime = _messages.StringField(10)
-  gcpBackupPlanInfo = _messages.MessageField('GCPBackupPlanInfo', 11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  name = _messages.StringField(13)
-  resourceSizeBytes = _messages.IntegerField(14)
-  serviceLocks = _messages.MessageField('BackupLock', 15, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  updateTime = _messages.StringField(17)
+  cloudSqlInstanceBackupProperties = _messages.MessageField('CloudSQLInstanceBackupProperties', 4)
+  computeInstanceBackupProperties = _messages.MessageField('ComputeInstanceBackupProperties', 5)
+  consistencyTime = _messages.StringField(6)
+  createTime = _messages.StringField(7)
+  description = _messages.StringField(8)
+  enforcedRetentionEndTime = _messages.StringField(9)
+  etag = _messages.StringField(10)
+  expireTime = _messages.StringField(11)
+  gcpBackupPlanInfo = _messages.MessageField('GCPBackupPlanInfo', 12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  name = _messages.StringField(14)
+  resourceSizeBytes = _messages.IntegerField(15)
+  serviceLocks = _messages.MessageField('BackupLock', 16, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  updateTime = _messages.StringField(18)
 
 
 class BackupApplianceBackupConfig(_messages.Message):
@@ -775,8 +782,8 @@ class BackupPlanAssociation(_messages.Message):
       lanAssociations/{backupPlanAssociationId}
     resource: Required. Immutable. Resource name of workload on which
       backupplan is applied
-    resourceType: Output only. Output Only. Resource type of workload on which
-      backupplan is applied
+    resourceType: Optional. Resource type of workload on which backupplan is
+      applied
     rulesConfigInfo: Output only. The config info related to backup rules.
     state: Output only. The BackupPlanAssociation resource state.
     updateTime: Output only. The time when the instance was updated.
@@ -833,6 +840,10 @@ class BackupVault(_messages.Message):
   r"""Message describing a BackupVault object.
 
   Enums:
+    AccessRestrictionValueValuesEnum: Optional. Note: This field is added for
+      future use case and will not be supported in the current release.
+      Optional. Access restriction for the backup vault. Default value is
+      WITHIN_ORGANIZATION if not provided during creation.
     StateValueValuesEnum: Output only. The BackupVault resource instance
       state.
 
@@ -844,6 +855,10 @@ class BackupVault(_messages.Message):
       metadata. No labels currently defined:
 
   Fields:
+    accessRestriction: Optional. Note: This field is added for future use case
+      and will not be supported in the current release. Optional. Access
+      restriction for the backup vault. Default value is WITHIN_ORGANIZATION
+      if not provided during creation.
     annotations: Optional. User annotations. See
       https://google.aip.dev/128#annotations Stores small amounts of arbitrary
       data.
@@ -862,7 +877,11 @@ class BackupVault(_messages.Message):
       prevent simultaneous updates from overwiting each other.
     labels: Optional. Resource labels to represent user provided metadata. No
       labels currently defined:
-    name: Output only. Identifier. The resource name.
+    name: Output only. Identifier. Name of the backup vault to create. It must
+      have the format`"projects/{project}/locations/{location}/backupVaults/{b
+      ackupvault}"`. `{backupvault}` cannot be changed after creation. It must
+      be between 3-63 characters long and must be unique within the project
+      and location.
     serviceAccount: Output only. Service account used by the BackupVault
       Service for this BackupVault. The user should grant this account
       permissions in their workload project to enable the service to run
@@ -874,6 +893,25 @@ class BackupVault(_messages.Message):
       resource deletion.
     updateTime: Output only. The time when the instance was updated.
   """
+
+  class AccessRestrictionValueValuesEnum(_messages.Enum):
+    r"""Optional. Note: This field is added for future use case and will not
+    be supported in the current release. Optional. Access restriction for the
+    backup vault. Default value is WITHIN_ORGANIZATION if not provided during
+    creation.
+
+    Values:
+      ACCESS_RESTRICTION_UNSPECIFIED: Access restriction not set.
+      WITHIN_PROJECT: Access to or from resources outside your current project
+        will be denied.
+      WITHIN_ORGANIZATION: Access to or from resources outside your current
+        organization will be denied.
+      UNRESTRICTED: No access restriction.
+    """
+    ACCESS_RESTRICTION_UNSPECIFIED = 0
+    WITHIN_PROJECT = 1
+    WITHIN_ORGANIZATION = 2
+    UNRESTRICTED = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The BackupVault resource instance state.
@@ -942,21 +980,22 @@ class BackupVault(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  backupCount = _messages.IntegerField(2)
-  backupMinimumEnforcedRetentionDuration = _messages.StringField(3)
-  createTime = _messages.StringField(4)
-  deletable = _messages.BooleanField(5)
-  description = _messages.StringField(6)
-  effectiveTime = _messages.StringField(7)
-  etag = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  serviceAccount = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  totalStoredBytes = _messages.IntegerField(13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  accessRestriction = _messages.EnumField('AccessRestrictionValueValuesEnum', 1)
+  annotations = _messages.MessageField('AnnotationsValue', 2)
+  backupCount = _messages.IntegerField(3)
+  backupMinimumEnforcedRetentionDuration = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  deletable = _messages.BooleanField(6)
+  description = _messages.StringField(7)
+  effectiveTime = _messages.StringField(8)
+  etag = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  serviceAccount = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  totalStoredBytes = _messages.IntegerField(14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
 
 
 class BackupWindow(_messages.Message):
@@ -1253,18 +1292,45 @@ class BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsGetRequest(_message
   r"""A BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsGetRequest
   object.
 
+  Enums:
+    ViewValueValuesEnum: Optional. Reserved for future use to provide a BASIC
+      & FULL view of Backup resource.
+
   Fields:
     name: Required. Name of the data source resource name, in the format 'proj
       ects/{project_id}/locations/{location}/backupVaults/{backupVault}/dataSo
       urces/{datasource}/backups/{backup}'
+    view: Optional. Reserved for future use to provide a BASIC & FULL view of
+      Backup resource.
   """
 
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Reserved for future use to provide a BASIC & FULL view of
+    Backup resource.
+
+    Values:
+      BACKUP_VIEW_UNSPECIFIED: If the value is not set, the default 'FULL'
+        view is used.
+      BACKUP_VIEW_BASIC: Includes basic data about the Backup, but not the
+        full contents.
+      BACKUP_VIEW_FULL: Includes all data about the Backup. This is the
+        default value (for both ListBackups and GetBackup).
+    """
+    BACKUP_VIEW_UNSPECIFIED = 0
+    BACKUP_VIEW_BASIC = 1
+    BACKUP_VIEW_FULL = 2
+
   name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
 class BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsListRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsListRequest
   object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. Reserved for future use to provide a BASIC
+      & FULL view of Backup resource.
 
   Fields:
     filter: Optional. Filtering results.
@@ -1278,13 +1344,32 @@ class BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsListRequest(_messag
       In Cloud Backup and DR, locations map to Google Cloud regions, for
       example **us-central1**. To retrieve data sources for all locations, use
       "-" for the '{location}' value.
+    view: Optional. Reserved for future use to provide a BASIC & FULL view of
+      Backup resource.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Reserved for future use to provide a BASIC & FULL view of
+    Backup resource.
+
+    Values:
+      BACKUP_VIEW_UNSPECIFIED: If the value is not set, the default 'FULL'
+        view is used.
+      BACKUP_VIEW_BASIC: Includes basic data about the Backup, but not the
+        full contents.
+      BACKUP_VIEW_FULL: Includes all data about the Backup. This is the
+        default value (for both ListBackups and GetBackup).
+    """
+    BACKUP_VIEW_UNSPECIFIED = 0
+    BACKUP_VIEW_BASIC = 1
+    BACKUP_VIEW_FULL = 2
 
   filter = _messages.StringField(1)
   orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 6)
 
 
 class BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsPatchRequest(_messages.Message):
@@ -1293,7 +1378,11 @@ class BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsPatchRequest(_messa
 
   Fields:
     backup: A Backup resource to be passed as the request body.
-    name: Output only. Identifier. Name of the resource.
+    name: Output only. Identifier. Name of the backup to create. It must have
+      the format`"projects//locations//backupVaults//dataSources/{datasource}/
+      backups/{backup}"`. `{backup}` cannot be changed after creation. It must
+      be between 3-63 characters long and must be unique within the
+      datasource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -1423,7 +1512,11 @@ class BackupdrProjectsLocationsBackupVaultsDataSourcesPatchRequest(_messages.Mes
   Fields:
     allowMissing: Optional. Enable upsert.
     dataSource: A DataSource resource to be passed as the request body.
-    name: Output only. Identifier. The resource name.
+    name: Output only. Identifier. Name of the datasource to create. It must
+      have the format`"projects/{project}/locations/{location}/backupVaults/{b
+      ackupvault}/dataSources/{datasource}"`. `{datasource}` cannot be changed
+      after creation. It must be between 3-63 characters long and must be
+      unique within the backup vault.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -1541,17 +1634,44 @@ class BackupdrProjectsLocationsBackupVaultsFetchUsableRequest(_messages.Message)
 class BackupdrProjectsLocationsBackupVaultsGetRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsBackupVaultsGetRequest object.
 
+  Enums:
+    ViewValueValuesEnum: Optional. Reserved for future use to provide a BASIC
+      & FULL view of Backup Vault
+
   Fields:
     name: Required. Name of the backupvault store resource name, in the format
       'projects/{project_id}/locations/{location}/backupVaults/{resource_name}
       '
+    view: Optional. Reserved for future use to provide a BASIC & FULL view of
+      Backup Vault
   """
 
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Reserved for future use to provide a BASIC & FULL view of
+    Backup Vault
+
+    Values:
+      BACKUP_VAULT_VIEW_UNSPECIFIED: If the value is not set, the default
+        'FULL' view is used.
+      BACKUP_VAULT_VIEW_BASIC: Includes basic data about the Backup Vault, but
+        not the full contents.
+      BACKUP_VAULT_VIEW_FULL: Includes all data about the Backup Vault. This
+        is the default value (for both ListBackupVaults and GetBackupVault).
+    """
+    BACKUP_VAULT_VIEW_UNSPECIFIED = 0
+    BACKUP_VAULT_VIEW_BASIC = 1
+    BACKUP_VAULT_VIEW_FULL = 2
+
   name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
 class BackupdrProjectsLocationsBackupVaultsListRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsBackupVaultsListRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. Reserved for future use to provide a BASIC
+      & FULL view of Backup Vault.
 
   Fields:
     filter: Optional. Filtering results.
@@ -1566,13 +1686,32 @@ class BackupdrProjectsLocationsBackupVaultsListRequest(_messages.Message):
       locations map to Google Cloud regions, for example **us-central1**. To
       retrieve backupvault stores for all locations, use "-" for the
       '{location}' value.
+    view: Optional. Reserved for future use to provide a BASIC & FULL view of
+      Backup Vault.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Reserved for future use to provide a BASIC & FULL view of
+    Backup Vault.
+
+    Values:
+      BACKUP_VAULT_VIEW_UNSPECIFIED: If the value is not set, the default
+        'FULL' view is used.
+      BACKUP_VAULT_VIEW_BASIC: Includes basic data about the Backup Vault, but
+        not the full contents.
+      BACKUP_VAULT_VIEW_FULL: Includes all data about the Backup Vault. This
+        is the default value (for both ListBackupVaults and GetBackupVault).
+    """
+    BACKUP_VAULT_VIEW_UNSPECIFIED = 0
+    BACKUP_VAULT_VIEW_BASIC = 1
+    BACKUP_VAULT_VIEW_FULL = 2
 
   filter = _messages.StringField(1)
   orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 6)
 
 
 class BackupdrProjectsLocationsBackupVaultsPatchRequest(_messages.Message):
@@ -1582,7 +1721,11 @@ class BackupdrProjectsLocationsBackupVaultsPatchRequest(_messages.Message):
     backupVault: A BackupVault resource to be passed as the request body.
     force: Optional. If set to true, will not check plan duration against
       backup vault enforcement duration.
-    name: Output only. Identifier. The resource name.
+    name: Output only. Identifier. Name of the backup vault to create. It must
+      have the format`"projects/{project}/locations/{location}/backupVaults/{b
+      ackupvault}"`. `{backupvault}` cannot be changed after creation. It must
+      be between 3-63 characters long and must be unique within the project
+      and location.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -1993,6 +2136,41 @@ class CloudAssetComposition(_messages.Message):
   childAsset = _messages.MessageField('CloudAsset', 1, repeated=True)
 
 
+class CloudSQLInstanceBackupProperties(_messages.Message):
+  r"""CloudSQLInstanceBackupProperties represents Cloud SQL Instance Backup
+  properties. .
+
+  Fields:
+    databaseInstalledVersion: The installed database version of the Cloud SQL
+      instance when the backup was taken.
+    description: An optional text description for the backup.
+    finalBackup: Whether the backup is a final backup.
+  """
+
+  databaseInstalledVersion = _messages.StringField(1)
+  description = _messages.StringField(2)
+  finalBackup = _messages.BooleanField(3)
+
+
+class CloudSQLInstanceDataSourceProperties(_messages.Message):
+  r"""CloudSQLInstanceDataSourceProperties represents the properties of a
+  Cloud SQL resource that are stored in the DataSource. .
+
+  Fields:
+    databaseInstalledVersion: The installed database version of the Cloud SQL
+      instance.
+    instanceCreateTime: The instance creation timestamp.
+    name: Name of the Cloud SQL instance backed up by the datasource.
+    pitrWindows: Point in time recovery windows. This is not intended to be
+      exposed to the customers yet.
+  """
+
+  databaseInstalledVersion = _messages.StringField(1)
+  instanceCreateTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  pitrWindows = _messages.MessageField('PiTRWindow', 4, repeated=True)
+
+
 class ComputeInstanceBackupProperties(_messages.Message):
   r"""ComputeInstanceBackupProperties represents Compute Engine instance
   backup properties.
@@ -2358,7 +2536,11 @@ class DataSource(_messages.Message):
       simultaneous updates from overwiting each other.
     labels: Optional. Resource labels to represent user provided metadata. No
       labels currently defined:
-    name: Output only. Identifier. The resource name.
+    name: Output only. Identifier. Name of the datasource to create. It must
+      have the format`"projects/{project}/locations/{location}/backupVaults/{b
+      ackupvault}/dataSources/{datasource}"`. `{datasource}` cannot be changed
+      after creation. It must be between 3-63 characters long and must be
+      unique within the backup vault.
     state: Output only. The DataSource resource instance state.
     totalStoredBytes: The number of bytes (metadata and data) stored in this
       datasource.
@@ -2466,6 +2648,9 @@ class DataSourceGcpResource(_messages.Message):
   GcpResourceDataSource or GcpDataSourceResource
 
   Fields:
+    cloudSqlInstanceDatasourceProperties: CloudSQLInstanceDataSourceProperties
+      has a subset of Cloud SQL Instance properties that are useful at the
+      Datasource level.
     computeInstanceDatasourceProperties: ComputeInstanceDataSourceProperties
       has a subset of Compute Instance properties that are useful at the
       Datasource level.
@@ -2476,10 +2661,11 @@ class DataSourceGcpResource(_messages.Message):
       Type, eg. compute.googleapis.com/Instance.
   """
 
-  computeInstanceDatasourceProperties = _messages.MessageField('ComputeInstanceDataSourceProperties', 1)
-  gcpResourcename = _messages.StringField(2)
-  location = _messages.StringField(3)
-  type = _messages.StringField(4)
+  cloudSqlInstanceDatasourceProperties = _messages.MessageField('CloudSQLInstanceDataSourceProperties', 1)
+  computeInstanceDatasourceProperties = _messages.MessageField('ComputeInstanceDataSourceProperties', 2)
+  gcpResourcename = _messages.StringField(3)
+  location = _messages.StringField(4)
+  type = _messages.StringField(5)
 
 
 class DirectLocationAssignment(_messages.Message):
@@ -2694,6 +2880,21 @@ class GcpBackupConfig(_messages.Message):
   backupPlanAssociation = _messages.StringField(2)
   backupPlanDescription = _messages.StringField(3)
   backupPlanRules = _messages.StringField(4, repeated=True)
+
+
+class GcpResource(_messages.Message):
+  r"""Minimum details to identify a Google Cloud resource
+
+  Fields:
+    gcpResourcename: Name of the Google Cloud resource.
+    location: Location of the resource: //"global"/"unspecified".
+    type: Type of the resource. Use the Unified Resource Type, eg.
+      compute.googleapis.com/Instance.
+  """
+
+  gcpResourcename = _messages.StringField(1)
+  location = _messages.StringField(2)
+  type = _messages.StringField(3)
 
 
 class GuestOsFeature(_messages.Message):
@@ -3814,6 +4015,20 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(8)
 
 
+class PiTRWindow(_messages.Message):
+  r"""Point in time recovery window for a Cloud SQL instance.
+
+  Fields:
+    endTime: The end time of the PITR window.
+    logRetentionDays: Log retention days for the PITR window.
+    startTime: The start time of the PITR window.
+  """
+
+  endTime = _messages.StringField(1)
+  logRetentionDays = _messages.IntegerField(2)
+  startTime = _messages.StringField(3)
+
+
 class PlacerLocation(_messages.Message):
   r"""Message describing that the location of the customer resource is tied to
   placer allocations
@@ -4008,6 +4223,17 @@ class RestoreBackupRequest(_messages.Message):
   computeInstanceRestoreProperties = _messages.MessageField('ComputeInstanceRestoreProperties', 1)
   computeInstanceTargetEnvironment = _messages.MessageField('ComputeInstanceTargetEnvironment', 2)
   requestId = _messages.StringField(3)
+
+
+class RestoreBackupResponse(_messages.Message):
+  r"""Response message for restoring from a Backup.
+
+  Fields:
+    targetResource: Details of the target resource created/modified as part of
+      restore.
+  """
+
+  targetResource = _messages.MessageField('TargetResource', 1)
 
 
 class RuleConfigInfo(_messages.Message):
@@ -4232,6 +4458,10 @@ class SetInternalStatusRequest(_messages.Message):
   backupConfigState = _messages.EnumField('BackupConfigStateValueValuesEnum', 1)
   requestId = _messages.StringField(2)
   value = _messages.BytesField(3)
+
+
+class SetInternalStatusResponse(_messages.Message):
+  r"""Response message from SetStatusInternal method."""
 
 
 class SpannerLocation(_messages.Message):
@@ -4506,6 +4736,17 @@ class Tags(_messages.Message):
   """
 
   items = _messages.StringField(1, repeated=True)
+
+
+class TargetResource(_messages.Message):
+  r"""Details of the target resource created/modified as part of restore.
+
+  Fields:
+    gcpResource: Details of the native Google Cloud resource created as part
+      of restore.
+  """
+
+  gcpResource = _messages.MessageField('GcpResource', 1)
 
 
 class TenantProjectProxy(_messages.Message):

@@ -167,6 +167,7 @@ class GcsBucketResource(resource_reference.BucketResource):
       location_type=None,
       logging_config=None,
       metadata=None,
+      generation=None,
       metageneration=None,
       per_object_retention=None,
       project_number=None,
@@ -178,6 +179,8 @@ class GcsBucketResource(resource_reference.BucketResource):
       soft_delete_policy=None,
       uniform_bucket_level_access=None,
       update_time=None,
+      soft_delete_time=None,
+      hard_delete_time=None,
       versioning_enabled=None,
       website_config=None,
   ):
@@ -216,6 +219,9 @@ class GcsBucketResource(resource_reference.BucketResource):
     self.satisfies_pzs = satisfies_pzs
     self.soft_delete_policy = soft_delete_policy
     self.uniform_bucket_level_access = uniform_bucket_level_access
+    self.generation = generation
+    self.soft_delete_time = soft_delete_time
+    self.hard_delete_time = hard_delete_time
 
   @property
   def data_locations(self):

@@ -456,8 +456,14 @@ def _SetOneTimeWindow(messages, one_time_window, time_windows_message):
   one_time_window_message = messages.OneTimeWindow()
   for field in one_time_window:
     if field not in ['start', 'end']:
-      setattr(one_time_window_message, field, one_time_window.get(field))
-  # Parse the ISO 8601 string from YAML into the date and time fields.
+      raise c_exceptions.InvalidArgumentException(
+          field,
+          'invalid input in a one-time window: {}. Use "start" and "end" to'
+          ' specify the date/times. For example: "start: 2024-12-24 17:00"'
+          .format(one_time_window.get(field)),
+      )
+  # Parse the ISO 8601 string from YAML into the date and time fields in the
+  # API.
   if one_time_window.get('start'):
     _SetDateTimeFields(
         one_time_window, one_time_window_message, messages, 'start'
@@ -545,11 +551,23 @@ def _SetWeeklyWindow(messages, weekly_window, time_windows_message):
       googlecloudsdk.generated_clients.apis.clouddeploy.TimeWindows message.
 
   Raises:
-    arg_parsers.ArgumentTypeError: if usage is not a valid enum.
+    arg_parsers.ArgumentTypeError: if day of week is not a valid enum.
+    c_exceptions.InvalidArgumentException: if the startTime or endTime field is
+    not a
+    valid ISO 8601 string.
   """
   weekly_window_message = messages.WeeklyWindow()
   for field in weekly_window:
+
     if field == 'startTime' or field == 'endTime':
+      # The startTime and endTime fields need to be set with a string.
+      if not isinstance(weekly_window.get(field), str):
+        raise c_exceptions.InvalidArgumentException(
+            field,
+            'invalid input in a weekly window: {}. Use "startTime" and'
+            ' "endTime" to specify the times. For example: "startTime: 17:00"'
+            .format(weekly_window.get(field)),
+        )
       _SetTime(messages, weekly_window_message, weekly_window.get(field), field)
   days_of_week = weekly_window.get('daysOfWeek') or []
   for d in days_of_week:
@@ -1081,8 +1099,8 @@ def ExportAutomationRules(manifest, rules):
     if getattr(rule, PROMOTE_RELEASE_RULE_FIELD):
       message = getattr(rule, PROMOTE_RELEASE_RULE_FIELD)
       promote = {}
-      resource[PROMOTE_RELEASE_FIELD] = promote
-      promote[NAME_FIELD] = getattr(message, ID_FIELD)
+      resource[PROMOTE_RELEASE_RULE_FIELD] = promote
+      promote[ID_FIELD] = getattr(message, ID_FIELD)
       if getattr(message, DESTINATION_TARGET_ID_FIELD):
         promote[DESTINATION_TARGET_ID_FIELD] = getattr(
             message, DESTINATION_TARGET_ID_FIELD
@@ -1095,18 +1113,18 @@ def ExportAutomationRules(manifest, rules):
         promote[WAIT_FIELD] = _WaitSecToMin(getattr(message, WAIT_FIELD))
     if getattr(rule, ADVANCE_ROLLOUT_RULE_FIELD):
       advance = {}
-      resource[ADVANCE_ROLLOUT_FIELD] = advance
+      resource[ADVANCE_ROLLOUT_RULE_FIELD] = advance
       message = getattr(rule, ADVANCE_ROLLOUT_RULE_FIELD)
-      advance[NAME_FIELD] = getattr(message, ID_FIELD)
+      advance[ID_FIELD] = getattr(message, ID_FIELD)
       if getattr(message, SOURCE_PHASES_FIELD):
         advance[SOURCE_PHASES_FIELD] = getattr(message, SOURCE_PHASES_FIELD)
       if getattr(message, WAIT_FIELD):
         advance[WAIT_FIELD] = _WaitSecToMin(getattr(message, WAIT_FIELD))
     if getattr(rule, REPAIR_ROLLOUT_RULE_FIELD):
       repair = {}
-      resource[REPAIR_ROLLOUT_FIELD] = repair
+      resource[REPAIR_ROLLOUT_RULE_FIELD] = repair
       message = getattr(rule, REPAIR_ROLLOUT_RULE_FIELD)
-      repair[NAME_FIELD] = getattr(message, ID_FIELD)
+      repair[ID_FIELD] = getattr(message, ID_FIELD)
       if getattr(message, PHASES_FIELD):
         repair[PHASES_FIELD] = getattr(message, PHASES_FIELD)
       if getattr(message, JOBS_FIELD):
@@ -1119,7 +1137,7 @@ def ExportAutomationRules(manifest, rules):
       message = getattr(rule, TIMED_PROMOTE_RELEASE_RULE_FIELD)
       timed_promote = {}
       resource[TIMED_PROMOTE_RELEASE_RULE_FIELD] = timed_promote
-      timed_promote[NAME_FIELD] = getattr(message, ID_FIELD)
+      timed_promote[ID_FIELD] = getattr(message, ID_FIELD)
       if getattr(message, SCHEDULE_FIELD):
         timed_promote[SCHEDULE_FIELD] = getattr(message, SCHEDULE_FIELD)
       if getattr(message, TIME_ZONE_FIELD):

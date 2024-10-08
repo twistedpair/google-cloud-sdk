@@ -790,9 +790,7 @@ def AddSubscriptionSettingsFlags(
            service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
            must have permission to Publish() to this topic and Acknowledge()
            messages on this subscription."""
-          + MustSpecifyAllHelpText(
-              'DeadLetterPolicy', is_update
-          ),
+          + MustSpecifyAllHelpText('DeadLetterPolicy', is_update),
           universe_help=DEAD_LETTER_TOPICS_NOT_SUPPORTED_IN_TPC,
       )
   )
@@ -950,7 +948,8 @@ def AddSchemaSettingsFlags(parser, is_update=False):
           default=(
               'Schema settings. The schema that messages published to this '
               'topic must conform to and the expected message encoding.'
-          ) + MustSpecifyAllHelpText('SchemaSettings', is_update),
+          )
+          + MustSpecifyAllHelpText('SchemaSettings', is_update),
           universe_help=SCHEMA_NOT_SUPPORTED_IN_TPC,
       ),
   )
@@ -989,7 +988,7 @@ def AddSchemaSettingsFlags(parser, is_update=False):
 def AddIngestionDatasourceFlags(
     parser,
     is_update=False,
-    include_ingestion_from_cloud_storage_flags_and_log_severity=False,
+    include_ingestion_from_azure_event_hubs_flags=False,
 ):
   """Adds the flags for Datasource Ingestion.
 
@@ -997,8 +996,8 @@ def AddIngestionDatasourceFlags(
     parser: The argparse parser
     is_update: (bool) If true, add a wrapper group with
       clear-ingestion-data-source-settings as a mutually exclusive argument.
-    include_ingestion_from_cloud_storage_flags_and_log_severity: whether to
-      include ingestion from Cloud Storage flags and log severity.
+    include_ingestion_from_azure_event_hubs_flags: whether to include ingestion
+      from Azure Event Hubs flags and log severity.
   """
   current_group = parser
 
@@ -1021,31 +1020,42 @@ def AddIngestionDatasourceFlags(
     )
     current_group = clear_settings_group
 
-  ingestion_source_settings_group = current_group.add_argument_group()
-
-  aws_kinesis_group = ingestion_source_settings_group.add_argument_group(
+  ingestion_source_settings_group = current_group.add_argument_group(
       help=arg_parsers.UniverseHelpText(
           default=(
-              'The following flags are for specifying ingestion settings for an'
-              ' import topic from Amazon Web Services (AWS) Kinesis Data'
-              ' Streams'
-          ) + MustSpecifyAllHelpText('AWSKinesis Source', is_update),
+              'Following flags are for specifying the data source settings'
+              ' for an import topic'
+          )
+          + MustSpecifyAllHelpText('IngestionDataSourceSettings', is_update),
+          universe_help=INGESTION_NOT_SUPPORTED_IN_TPC,
+      ),
+  )
+
+  ingestion_data_source_group = (
+      ingestion_source_settings_group.add_mutually_exclusive_group()
+  )
+
+  aws_kinesis_group = ingestion_data_source_group.add_argument_group(
+      help=arg_parsers.UniverseHelpText(
+          default=(
+              'Flags that specify settings for an import topic from Amazon Web'
+              ' Services (AWS) Kinesis Data Streams'
+          )
+          + MustSpecifyAllHelpText('AWSKinesis Source', is_update),
           universe_help=INGESTION_NOT_SUPPORTED_IN_TPC,
       )
   )
   aws_kinesis_group.add_argument(
       '--kinesis-ingestion-stream-arn',
       default=None,
-      help=(
-          'The Kinesis data stream ARN from which to ingest data.'
-      ),
+      help='Kinesis data stream ARN from which to ingest data.',
       required=True,
   )
   aws_kinesis_group.add_argument(
       '--kinesis-ingestion-consumer-arn',
       default=None,
       help=(
-          'The Kinesis data streams consumer Amazon Resource Name (ARN) to use'
+          'Kinesis data streams consumer Amazon Resource Name (ARN) to use'
           ' for ingestion.'
       ),
       required=True,
@@ -1063,76 +1073,117 @@ def AddIngestionDatasourceFlags(
       '--kinesis-ingestion-service-account',
       default=None,
       help=(
-          'The service account to be used for Federated Identity authentication'
+          'Service account to be used for Federated Identity authentication'
           ' with Kinesis.'
       ),
       required=True,
   )
 
-  if include_ingestion_from_cloud_storage_flags_and_log_severity:
-    cloud_storage_group = ingestion_source_settings_group.add_argument_group(
+  cloud_storage_group = ingestion_data_source_group.add_argument_group(
+      help=arg_parsers.UniverseHelpText(
+          default=(
+              'Flags that specify settings for an import topic from Cloud'
+              ' Storage'
+          )
+          + MustSpecifyAllHelpText('CloudStorage Source', is_update),
+          universe_help=INGESTION_NOT_SUPPORTED_IN_TPC,
+      ),
+      sort_args=False,
+  )
+  cloud_storage_group.add_argument(
+      '--cloud-storage-ingestion-bucket',
+      default=None,
+      help='Cloud Storage bucket from which to ingest data.',
+      required=True,
+  )
+  cloud_storage_group.add_argument(
+      '--cloud-storage-ingestion-input-format',
+      type=arg_parsers.ArgList(
+          element_type=lambda x: str(x).lower(),
+          min_length=1,
+          max_length=1,
+          choices=['text', 'avro', 'pubsub_avro'],
+      ),
+      default=None,
+      metavar='INPUT_FORMAT',
+      help='Format of the data in the Cloud Storage bucket.',
+      required=True,
+  )
+  cloud_storage_group.add_argument(
+      '--cloud-storage-ingestion-text-delimiter',
+      default=None,
+      help='Delimiter to use with text format when partitioning the object.',
+      required=False,
+  )
+  cloud_storage_group.add_argument(
+      '--cloud-storage-ingestion-minimum-object-create-time',
+      default=None,
+      help=(
+          'Only Cloud Storage objects with a larger or equal creation'
+          ' timestamp will be ingested.'
+      ),
+      required=False,
+  )
+  cloud_storage_group.add_argument(
+      '--cloud-storage-ingestion-match-glob',
+      default=None,
+      help=(
+          'Glob pattern used to match Cloud Storage objects that will be'
+          ' ingested. If unset, all objects will be ingested.'
+      ),
+      required=False,
+  )
+
+  ingestion_source_settings_group.add_argument(
+      '--ingestion-log-severity',
+      default=None,
+      help='Log severity to use for ingestion.',
+      required=False,
+  )
+
+  if include_ingestion_from_azure_event_hubs_flags:
+    azure_event_hubs_group = ingestion_data_source_group.add_argument_group(
         help=arg_parsers.UniverseHelpText(
             default=(
-                'The following flags are for specifying ingestion settings for'
-                ' an import topic from Cloud Storage'
+                'Flags that specify settings for an import topic from Azure'
+                ' Event Hubs'
             )
-            + MustSpecifyAllHelpText('CloudStorage Source', is_update),
+            + MustSpecifyAllHelpText('AzureEventHubs Source', is_update),
             universe_help=INGESTION_NOT_SUPPORTED_IN_TPC,
         ),
         hidden=True,
     )
-    cloud_storage_group.add_argument(
-        '--cloud-storage-ingestion-bucket',
+    azure_event_hubs_group.add_argument(
+        '--azure-event-hubs-ingestion-namespace',
         default=None,
-        help='The Cloud Storage bucket from which to ingest data.',
+        help='Azure event hub namespace from which to ingest data.',
         required=True,
     )
-    cloud_storage_group.add_argument(
-        '--cloud-storage-ingestion-input-format',
-        type=arg_parsers.ArgList(
-            element_type=lambda x: str(x).lower(),
-            min_length=1,
-            max_length=1,
-            choices=['text', 'avro', 'pubsub_avro'],
-        ),
+    azure_event_hubs_group.add_argument(
+        '--azure-event-hubs-ingestion-event-hub',
         default=None,
-        metavar='INPUT_FORMAT',
-        help=(
-            "The format of the data in the Cloud Storage bucket ('text',"
-            " 'avro', 'pubsub_avro')."
-        ),
+        help='Azure event hub from which to ingest data.',
         required=True,
     )
-    cloud_storage_group.add_argument(
-        '--cloud-storage-ingestion-text-delimiter',
+    azure_event_hubs_group.add_argument(
+        '--azure-event-hubs-ingestion-client-id',
         default=None,
-        help='Delimiter to use with text format when partitioning the object.',
-        required=False,
+        help='Azure event hub client ID to use for ingestion.',
+        required=True,
     )
-    cloud_storage_group.add_argument(
-        '--cloud-storage-ingestion-minimum-object-create-time',
+    azure_event_hubs_group.add_argument(
+        '--azure-event-hubs-ingestion-tenant-id',
+        default=None,
+        help='Azure event hub tenant ID to use for ingestion.',
+        required=True,
+    )
+    azure_event_hubs_group.add_argument(
+        '--azure-event-hubs-ingestion-service-account',
         default=None,
         help=(
-            'Only Cloud Storage objects with a larger or equal creation'
-            ' timestamp will be ingested.'
+            'Azure event hub Google Cloud service account to use for ingestion.'
         ),
-        required=False,
-    )
-    cloud_storage_group.add_argument(
-        '--cloud-storage-ingestion-match-glob',
-        default=None,
-        help=(
-            'Glob pattern used to match Cloud Storage objects that will be'
-            ' ingested. If unset, all objects will be ingested.'
-        ),
-        required=False,
-    )
-    ingestion_source_settings_group.add_argument(
-        '--ingestion-log-severity',
-        default=None,
-        help='The log severity to use for ingestion.',
-        required=False,
-        hidden=True,
+        required=True,
     )
 
 
@@ -1336,6 +1387,5 @@ def ValidateIsDefaultUniverse(command):
   universe_domain = properties.GetUniverseDomain()
   raise exceptions.InvalidArgumentException(
       str.upper(command),
-      command + ' is not available in universe_domain ' +
-      universe_domain
+      command + ' is not available in universe_domain ' + universe_domain,
   )

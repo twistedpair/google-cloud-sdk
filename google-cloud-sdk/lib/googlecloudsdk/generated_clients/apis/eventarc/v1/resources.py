@@ -63,6 +63,39 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ENROLLMENTS = (
+      'projects.locations.enrollments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/enrollments/'
+              '{enrollmentsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_GOOGLEAPISOURCES = (
+      'projects.locations.googleApiSources',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'googleApiSources/{googleApiSourcesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MESSAGEBUSES = (
+      'projects.locations.messageBuses',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/messageBuses/'
+              '{messageBusesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -70,6 +103,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_PIPELINES = (
+      'projects.locations.pipelines',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/pipelines/'
+              '{pipelinesId}',
       },
       ['name'],
       True

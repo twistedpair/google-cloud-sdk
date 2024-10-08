@@ -1263,12 +1263,15 @@ class ListAvailableVersionsResponse(_messages.Message):
 
   Fields:
     availableVersions: Represents a list of versions that are supported.
+      Deprecated: Use versions field instead.
     nextPageToken: Token to retrieve the next page of results or empty if
       there are no more results in the list.
+    versions: Represents a list of all versions.
   """
 
   availableVersions = _messages.MessageField('Version', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  versions = _messages.MessageField('Version', 3, repeated=True)
 
 
 class ListDnsPeeringsResponse(_messages.Message):
@@ -2186,12 +2189,13 @@ class Version(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: Version does not have availability yet
       TYPE_PREVIEW: Version is under development and not considered stable
-      TYPE_GENERAL_AVAILABILITY: Version is available for public use Version
-        is under development and not considered stable
+      TYPE_GENERAL_AVAILABILITY: Version is available for public use
+      TYPE_DEPRECATED: Version is no longer supported.
     """
     TYPE_UNSPECIFIED = 0
     TYPE_PREVIEW = 1
     TYPE_GENERAL_AVAILABILITY = 2
+    TYPE_DEPRECATED = 3
 
   availableFeatures = _messages.StringField(1, repeated=True)
   defaultVersion = _messages.BooleanField(2)

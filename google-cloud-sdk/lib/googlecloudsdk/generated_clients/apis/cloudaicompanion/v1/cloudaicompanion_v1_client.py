@@ -383,7 +383,7 @@ class CloudaicompanionV1(base_api.BaseApiClient):
         method_id='cloudaicompanion.projects.locations.codeRepositoryIndexes.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        query_params=['pageSize', 'pageToken'],
         relative_path='v1/{+parent}/codeRepositoryIndexes',
         request_field='',
         request_type_name='CloudaicompanionProjectsLocationsCodeRepositoryIndexesListRequest',

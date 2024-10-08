@@ -449,4 +449,15 @@ def ParseUpdateOptionsBase(args, locations):
           'PersistentVolumes will also fail to start.',
           cancel_on_no=True)
 
+  if (args.disable_addons and
+      api_adapter.HIGHSCALECHECKPOINTING in args.disable_addons):
+    highscalecheckpointing_disabled = args.disable_addons[
+        api_adapter.HIGHSCALECHECKPOINTING]
+    if highscalecheckpointing_disabled:
+      console_io.PromptContinue(
+          message='If the High Scale Checkpointing is disabled, then any '
+          'pods currently using Volumes owned by the driver '
+          'will fail to terminate. Any new pods that try to use those '
+          'Volumes will also fail to start.',
+          cancel_on_no=True)
   return opts

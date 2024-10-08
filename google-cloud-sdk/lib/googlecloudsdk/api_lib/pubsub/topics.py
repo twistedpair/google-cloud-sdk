@@ -68,8 +68,9 @@ def ParseMessageEncoding(messages, message_encoding):
   elif enc == 'binary':
     return messages.SchemaSettings.EncodingValueValuesEnum.BINARY
   else:
-    raise InvalidSchemaSettingsException('Unknown message encoding. '
-                                         'Options are JSON or BINARY.')
+    raise InvalidSchemaSettingsException(
+        'Unknown message encoding. Options are JSON or BINARY.'
+    )
 
 
 class TopicsClient(object):
@@ -101,10 +102,14 @@ class TopicsClient(object):
       cloud_storage_ingestion_text_delimiter=None,
       cloud_storage_ingestion_minimum_object_create_time=None,
       cloud_storage_ingestion_match_glob=None,
+      azure_event_hubs_ingestion_namespace=None,
+      azure_event_hubs_ingestion_event_hub=None,
+      azure_event_hubs_ingestion_client_id=None,
+      azure_event_hubs_ingestion_tenant_id=None,
+      azure_event_hubs_ingestion_service_account=None,
       ingestion_log_severity=None,
   ):
-    """Returns an IngestionDataSourceSettings message from the provided args.
-    """
+    """Returns an IngestionDataSourceSettings message from the provided args."""
 
     # For each datasource type, check if all required flags are passed, and
     # conditionally construct the source and return the first datasource type
@@ -122,13 +127,13 @@ class TopicsClient(object):
         cloud_storage_ingestion_input_format is not None
     )
 
-    if is_cloud_storage and is_kinesis:
-      # We can't force these settings to be exclusive between them but not
-      # exclusive with the log severity via the yaml definition. Thus we enforce
-      # this exclusivity here.
-      raise ConflictingIngestionSettingsException(
-          'Cannot set both Kinesis and Cloud Storage ingestion settings.'
-      )
+    is_azure_event_hubs = (
+        (azure_event_hubs_ingestion_namespace is not None)
+        and (azure_event_hubs_ingestion_event_hub is not None)
+        and (azure_event_hubs_ingestion_client_id is not None)
+        and (azure_event_hubs_ingestion_tenant_id is not None)
+        and (azure_event_hubs_ingestion_service_account is not None)
+    )
 
     if is_kinesis:
       kinesis_source = self.messages.AwsKinesis(
@@ -137,18 +142,12 @@ class TopicsClient(object):
           awsRoleArn=kinesis_ingestion_role_arn,
           gcpServiceAccount=kinesis_ingestion_service_account,
       )
-      ingestion_data_source_settings = (
-          self.messages.IngestionDataSourceSettings(
-              awsKinesis=kinesis_source,
-          )
+      return self.messages.IngestionDataSourceSettings(
+          awsKinesis=kinesis_source,
+          platformLogsSettings=self._ParseIngestionPlatformLogsSettings(
+              ingestion_log_severity
+          ),
       )
-      # TODO(b/289117408) clean this up and make this code the same as the Cloud
-      # Storage code below.
-      if ingestion_log_severity:
-        ingestion_data_source_settings.platformLogsSettings = (
-            self._ParseIngestionPlatformLogsSettings(ingestion_log_severity)
-        )
-      return ingestion_data_source_settings
     elif is_cloud_storage:
       cloud_storage_source = self.messages.CloudStorage(
           bucket=cloud_storage_ingestion_bucket,
@@ -166,6 +165,21 @@ class TopicsClient(object):
 
       return self.messages.IngestionDataSourceSettings(
           cloudStorage=cloud_storage_source,
+          platformLogsSettings=self._ParseIngestionPlatformLogsSettings(
+              ingestion_log_severity
+          ),
+      )
+    elif is_azure_event_hubs:
+      azure_event_hubs_source = self.messages.AzureEventHubs(
+          namespace=azure_event_hubs_ingestion_namespace,
+          eventHub=azure_event_hubs_ingestion_event_hub,
+          clientId=azure_event_hubs_ingestion_client_id,
+          tenantId=azure_event_hubs_ingestion_tenant_id,
+          gcpServiceAccount=azure_event_hubs_ingestion_service_account,
+      )
+
+      return self.messages.IngestionDataSourceSettings(
+          azureEventHubs=azure_event_hubs_source,
           platformLogsSettings=self._ParseIngestionPlatformLogsSettings(
               ingestion_log_severity
           ),
@@ -198,6 +212,11 @@ class TopicsClient(object):
       cloud_storage_ingestion_text_delimiter=None,
       cloud_storage_ingestion_minimum_object_create_time=None,
       cloud_storage_ingestion_match_glob=None,
+      azure_event_hubs_ingestion_namespace=None,
+      azure_event_hubs_ingestion_event_hub=None,
+      azure_event_hubs_ingestion_client_id=None,
+      azure_event_hubs_ingestion_tenant_id=None,
+      azure_event_hubs_ingestion_service_account=None,
       ingestion_log_severity=None,
   ):
     """Creates a Topic.
@@ -240,6 +259,16 @@ class TopicsClient(object):
       cloud_storage_ingestion_match_glob (optional[str]): glob pattern used to
         match Cloud Storage objects that will be ingested. If unset, all objects
         will be ingested.
+      azure_event_hubs_ingestion_namespace (str): The name of the Azure Event
+        Hubs namespace.
+      azure_event_hubs_ingestion_event_hub (str): The name of the Azure event
+        hub.
+      azure_event_hubs_ingestion_client_id (str): The client id of the Azure
+        Event Hubs application used to authenticate Pub/Sub.
+      azure_event_hubs_ingestion_tenant_id (str): The tenant id of the Azure
+        Event Hubs application used to authenticate Pub/Sub.
+      azure_event_hubs_ingestion_service_account (str): The GCP service account
+        to be used for Federated Identity authentication with Azure Event Hubs.
       ingestion_log_severity (optional[str]): The log severity to use for
         ingestion.
 
@@ -255,7 +284,8 @@ class TopicsClient(object):
     topic = self.messages.Topic(
         name=topic_ref.RelativeName(),
         labels=labels,
-        messageRetentionDuration=message_retention_duration)
+        messageRetentionDuration=message_retention_duration,
+    )
     if kms_key:
       topic.kmsKeyName = kms_key
     if message_storage_policy_allowed_regions:
@@ -285,6 +315,11 @@ class TopicsClient(object):
         cloud_storage_ingestion_text_delimiter=cloud_storage_ingestion_text_delimiter,
         cloud_storage_ingestion_minimum_object_create_time=cloud_storage_ingestion_minimum_object_create_time,
         cloud_storage_ingestion_match_glob=cloud_storage_ingestion_match_glob,
+        azure_event_hubs_ingestion_namespace=azure_event_hubs_ingestion_namespace,
+        azure_event_hubs_ingestion_event_hub=azure_event_hubs_ingestion_event_hub,
+        azure_event_hubs_ingestion_client_id=azure_event_hubs_ingestion_client_id,
+        azure_event_hubs_ingestion_tenant_id=azure_event_hubs_ingestion_tenant_id,
+        azure_event_hubs_ingestion_service_account=azure_event_hubs_ingestion_service_account,
         ingestion_log_severity=ingestion_log_severity,
     )
     return self._service.Create(topic)
@@ -299,7 +334,8 @@ class TopicsClient(object):
       Topic: The topic.
     """
     get_req = self.messages.PubsubProjectsTopicsGetRequest(
-        topic=topic_ref.RelativeName())
+        topic=topic_ref.RelativeName()
+    )
     return self._service.Get(get_req)
 
   def Delete(self, topic_ref):
@@ -312,7 +348,8 @@ class TopicsClient(object):
       Empty: An empty response message.
     """
     delete_req = self.messages.PubsubProjectsTopicsDeleteRequest(
-        topic=topic_ref.RelativeName())
+        topic=topic_ref.RelativeName()
+    )
     return self._service.Delete(delete_req)
 
   def DetachSubscription(self, subscription_ref):
@@ -326,7 +363,8 @@ class TopicsClient(object):
       Empty: An empty response message.
     """
     detach_req = self.messages.PubsubProjectsSubscriptionsDetachRequest(
-        subscription=subscription_ref.RelativeName())
+        subscription=subscription_ref.RelativeName()
+    )
     return self._subscriptions_service.Detach(detach_req)
 
   def List(self, project_ref, page_size=100):
@@ -341,13 +379,15 @@ class TopicsClient(object):
       A generator of Topics in the Project.
     """
     list_req = self.messages.PubsubProjectsTopicsListRequest(
-        project=project_ref.RelativeName(), pageSize=page_size)
+        project=project_ref.RelativeName(), pageSize=page_size
+    )
     return list_pager.YieldFromList(
         self._service,
         list_req,
         batch_size=page_size,
         field='topics',
-        batch_size_attribute='pageSize')
+        batch_size_attribute='pageSize',
+    )
 
   def ListSnapshots(self, topic_ref, page_size=100):
     """Lists Snapshots for a given topic.
@@ -361,14 +401,16 @@ class TopicsClient(object):
       A generator of Snapshots for the Topic.
     """
     list_req = self.messages.PubsubProjectsTopicsSnapshotsListRequest(
-        topic=topic_ref.RelativeName(), pageSize=page_size)
+        topic=topic_ref.RelativeName(), pageSize=page_size
+    )
     list_snaps_service = self.client.projects_topics_snapshots
     return list_pager.YieldFromList(
         list_snaps_service,
         list_req,
         batch_size=page_size,
         field='snapshots',
-        batch_size_attribute='pageSize')
+        batch_size_attribute='pageSize',
+    )
 
   def ListSubscriptions(self, topic_ref, page_size=100):
     """Lists Subscriptions for a given topic.
@@ -383,20 +425,20 @@ class TopicsClient(object):
       A generator of Subscriptions for the Topic..
     """
     list_req = self.messages.PubsubProjectsTopicsSubscriptionsListRequest(
-        topic=topic_ref.RelativeName(), pageSize=page_size)
+        topic=topic_ref.RelativeName(), pageSize=page_size
+    )
     list_subs_service = self.client.projects_topics_subscriptions
     return list_pager.YieldFromList(
         list_subs_service,
         list_req,
         batch_size=page_size,
         field='subscriptions',
-        batch_size_attribute='pageSize')
+        batch_size_attribute='pageSize',
+    )
 
-  def Publish(self,
-              topic_ref,
-              message_body=None,
-              attributes=None,
-              ordering_key=None):
+  def Publish(
+      self, topic_ref, message_body=None, attributes=None, ordering_key=None
+  ):
     """Publishes a message to the given topic.
 
     Args:
@@ -417,20 +459,25 @@ class TopicsClient(object):
     if not message_body and not attributes:
       raise EmptyMessageException(
           'You cannot send an empty message. You must specify either a '
-          'MESSAGE, one or more ATTRIBUTE, or both.')
+          'MESSAGE, one or more ATTRIBUTE, or both.'
+      )
     message = self.messages.PubsubMessage(
         data=message_body,
         attributes=self.messages.PubsubMessage.AttributesValue(
-            additionalProperties=attributes),
-        orderingKey=ordering_key)
+            additionalProperties=attributes
+        ),
+        orderingKey=ordering_key,
+    )
     publish_req = self.messages.PubsubProjectsTopicsPublishRequest(
         publishRequest=self.messages.PublishRequest(messages=[message]),
-        topic=topic_ref.RelativeName())
+        topic=topic_ref.RelativeName(),
+    )
     result = self._service.Publish(publish_req)
     if not result.messageIds:
       # If we got a result with empty messageIds, then we've got a problem.
       raise PublishOperationException(
-          'Publish operation failed with Unknown error.')
+          'Publish operation failed with Unknown error.'
+      )
     return result
 
   def SetIamPolicy(self, topic_ref, policy):
@@ -445,7 +492,8 @@ class TopicsClient(object):
     """
     request = self.messages.PubsubProjectsTopicsSetIamPolicyRequest(
         resource=topic_ref.RelativeName(),
-        setIamPolicyRequest=self.messages.SetIamPolicyRequest(policy=policy))
+        setIamPolicyRequest=self.messages.SetIamPolicyRequest(policy=policy),
+    )
     return self._service.SetIamPolicy(request)
 
   def GetIamPolicy(self, topic_ref):
@@ -459,7 +507,8 @@ class TopicsClient(object):
       Policy: the policy for the Topic.
     """
     request = self.messages.PubsubProjectsTopicsGetIamPolicyRequest(
-        resource=topic_ref.RelativeName())
+        resource=topic_ref.RelativeName()
+    )
     return self._service.GetIamPolicy(request)
 
   def AddIamPolicyBinding(self, topic_ref, member, role):
@@ -523,6 +572,11 @@ class TopicsClient(object):
       cloud_storage_ingestion_text_delimiter=None,
       cloud_storage_ingestion_minimum_object_create_time=None,
       cloud_storage_ingestion_match_glob=None,
+      azure_event_hubs_ingestion_namespace=None,
+      azure_event_hubs_ingestion_event_hub=None,
+      azure_event_hubs_ingestion_client_id=None,
+      azure_event_hubs_ingestion_tenant_id=None,
+      azure_event_hubs_ingestion_service_account=None,
       ingestion_log_severity=None,
   ):
     """Updates a Topic.
@@ -573,6 +627,16 @@ class TopicsClient(object):
       cloud_storage_ingestion_match_glob (optional[str]): glob pattern used to
         match Cloud Storage objects that will be ingested. If unset, all objects
         will be ingested.
+      azure_event_hubs_ingestion_namespace (str): The name of the Azure Event
+        Hubs namespace.
+      azure_event_hubs_ingestion_event_hub (str): The name of the Azure event
+        hub.
+      azure_event_hubs_ingestion_client_id (str): The client id of the Azure
+        Event Hubs application used to authenticate Pub/Sub.
+      azure_event_hubs_ingestion_tenant_id (str): The tenant id of the Azure
+        Event Hubs application used to authenticate Pub/Sub.
+      azure_event_hubs_ingestion_service_account (str): The GCP service account
+        to be used for Federated Identity authentication with Azure Event Hubs.
       ingestion_log_severity (optional[str]): The log severity to use for
         ingestion.
 
@@ -595,11 +659,14 @@ class TopicsClient(object):
 
     if message_retention_duration:
       update_settings.append(
-          _TopicUpdateSetting('messageRetentionDuration',
-                              message_retention_duration))
+          _TopicUpdateSetting(
+              'messageRetentionDuration', message_retention_duration
+          )
+      )
     if clear_message_retention_duration:
       update_settings.append(
-          _TopicUpdateSetting('messageRetentionDuration', None))
+          _TopicUpdateSetting('messageRetentionDuration', None)
+      )
 
     if recompute_message_storage_policy:
       update_settings.append(_TopicUpdateSetting('messageStoragePolicy', None))
@@ -646,6 +713,11 @@ class TopicsClient(object):
           cloud_storage_ingestion_text_delimiter=cloud_storage_ingestion_text_delimiter,
           cloud_storage_ingestion_minimum_object_create_time=cloud_storage_ingestion_minimum_object_create_time,
           cloud_storage_ingestion_match_glob=cloud_storage_ingestion_match_glob,
+          azure_event_hubs_ingestion_namespace=azure_event_hubs_ingestion_namespace,
+          azure_event_hubs_ingestion_event_hub=azure_event_hubs_ingestion_event_hub,
+          azure_event_hubs_ingestion_client_id=azure_event_hubs_ingestion_client_id,
+          azure_event_hubs_ingestion_tenant_id=azure_event_hubs_ingestion_tenant_id,
+          azure_event_hubs_ingestion_service_account=azure_event_hubs_ingestion_service_account,
           ingestion_log_severity=ingestion_log_severity,
       )
       if new_settings is not None:
@@ -664,7 +736,9 @@ class TopicsClient(object):
 
     patch_req = self.messages.PubsubProjectsTopicsPatchRequest(
         updateTopicRequest=self.messages.UpdateTopicRequest(
-            topic=topic, updateMask=','.join(update_mask)),
-        name=topic_ref.RelativeName())
+            topic=topic, updateMask=','.join(update_mask)
+        ),
+        name=topic_ref.RelativeName(),
+    )
 
     return self._service.Patch(patch_req)

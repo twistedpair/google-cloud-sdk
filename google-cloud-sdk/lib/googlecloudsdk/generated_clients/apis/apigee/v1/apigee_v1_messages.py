@@ -1000,7 +1000,7 @@ class ApigeeOrganizationsDeleteRequest(_messages.Message):
       Organization may be restored to its last known state. After this period,
       the Organization will no longer be able to be restored. **Note: During
       the data retention period specified using this field, the Apigee
-      organization cannot be recreated in the same GCP project.**
+      organization cannot be recreated in the same Google Cloud project.**
 
   Fields:
     hardDelete: Optional. Access to Apigee for internal purposes only. This
@@ -1015,7 +1015,7 @@ class ApigeeOrganizationsDeleteRequest(_messages.Message):
       restored to its last known state. After this period, the Organization
       will no longer be able to be restored. **Note: During the data retention
       period specified using this field, the Apigee organization cannot be
-      recreated in the same GCP project.**
+      recreated in the same Google Cloud project.**
   """
 
   class RetentionValueValuesEnum(_messages.Enum):
@@ -1026,7 +1026,7 @@ class ApigeeOrganizationsDeleteRequest(_messages.Message):
     last known state. After this period, the Organization will no longer be
     able to be restored. **Note: During the data retention period specified
     using this field, the Apigee organization cannot be recreated in the same
-    GCP project.**
+    Google Cloud project.**
 
     Values:
       DELETION_RETENTION_UNSPECIFIED: Default data retention setting of seven
@@ -7221,7 +7221,7 @@ class GoogleCloudApigeeV1DatastoreConfig(_messages.Message):
       target_type.
     datasetName: BigQuery dataset name Required for `bigquery` target_type.
     path: Path of Cloud Storage bucket Required for `gcs` target_type.
-    projectId: Required. GCP project in which the datastore exists
+    projectId: Required. Google Cloud project in which the datastore exists
     tablePrefix: Prefix of BigQuery table Required for `bigquery` target_type.
   """
 

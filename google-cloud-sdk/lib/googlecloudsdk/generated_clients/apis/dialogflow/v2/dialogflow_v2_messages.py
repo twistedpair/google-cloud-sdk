@@ -5568,6 +5568,8 @@ class GoogleCloudDialogflowCxV3InputAudioConfig(_messages.Message):
         as specified in RFC 5574. In other words, each RTP header is replaced
         with a single byte containing the block length. Only Speex wideband is
         supported. `sample_rate_hertz` must be 16000.
+      AUDIO_ENCODING_ALAW: 8-bit samples that compand 13-bit audio samples
+        using G.711 PCMU/a-law.
     """
     AUDIO_ENCODING_UNSPECIFIED = 0
     AUDIO_ENCODING_LINEAR_16 = 1
@@ -5577,6 +5579,7 @@ class GoogleCloudDialogflowCxV3InputAudioConfig(_messages.Message):
     AUDIO_ENCODING_AMR_WB = 5
     AUDIO_ENCODING_OGG_OPUS = 6
     AUDIO_ENCODING_SPEEX_WITH_HEADER_BYTE = 7
+    AUDIO_ENCODING_ALAW = 8
 
   class ModelVariantValueValuesEnum(_messages.Enum):
     r"""Optional. Which variant of the Speech model to use.
@@ -8262,6 +8265,8 @@ class GoogleCloudDialogflowCxV3beta1InputAudioConfig(_messages.Message):
         as specified in RFC 5574. In other words, each RTP header is replaced
         with a single byte containing the block length. Only Speex wideband is
         supported. `sample_rate_hertz` must be 16000.
+      AUDIO_ENCODING_ALAW: 8-bit samples that compand 13-bit audio samples
+        using G.711 PCMU/a-law.
     """
     AUDIO_ENCODING_UNSPECIFIED = 0
     AUDIO_ENCODING_LINEAR_16 = 1
@@ -8271,6 +8276,7 @@ class GoogleCloudDialogflowCxV3beta1InputAudioConfig(_messages.Message):
     AUDIO_ENCODING_AMR_WB = 5
     AUDIO_ENCODING_OGG_OPUS = 6
     AUDIO_ENCODING_SPEEX_WITH_HEADER_BYTE = 7
+    AUDIO_ENCODING_ALAW = 8
 
   class ModelVariantValueValuesEnum(_messages.Enum):
     r"""Optional. Which variant of the Speech model to use.
@@ -11161,6 +11167,10 @@ class GoogleCloudDialogflowV2ConversationDataset(_messages.Message):
       data import.
     name: Output only. ConversationDataset resource name. Format:
       `projects//locations//conversationDatasets/`
+    satisfiesPzi: Output only. A read only boolean field reflecting Zone
+      Isolation status of the dataset.
+    satisfiesPzs: Output only. A read only boolean field reflecting Zone
+      Separation status of the dataset.
   """
 
   conversationCount = _messages.IntegerField(1)
@@ -11170,6 +11180,8 @@ class GoogleCloudDialogflowV2ConversationDataset(_messages.Message):
   displayName = _messages.StringField(5)
   inputConfig = _messages.MessageField('GoogleCloudDialogflowV2InputConfig', 6)
   name = _messages.StringField(7)
+  satisfiesPzi = _messages.BooleanField(8)
+  satisfiesPzs = _messages.BooleanField(9)
 
 
 class GoogleCloudDialogflowV2ConversationEvent(_messages.Message):
@@ -11256,6 +11268,10 @@ class GoogleCloudDialogflowV2ConversationModel(_messages.Message):
       editor.org/rfc/bcp/bcp47.txt) language tag. Example: "en-US".
     name: ConversationModel resource name. Format:
       `projects//conversationModels/`
+    satisfiesPzi: Output only. A read only boolean field reflecting Zone
+      Isolation status of the model.
+    satisfiesPzs: Output only. A read only boolean field reflecting Zone
+      Separation status of the model.
     smartReplyModelMetadata: Metadata for smart reply models.
     state: Output only. State of the model. A model can only serve prediction
       requests after it gets deployed.
@@ -11295,8 +11311,10 @@ class GoogleCloudDialogflowV2ConversationModel(_messages.Message):
   displayName = _messages.StringField(4)
   languageCode = _messages.StringField(5)
   name = _messages.StringField(6)
-  smartReplyModelMetadata = _messages.MessageField('GoogleCloudDialogflowV2SmartReplyModelMetadata', 7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
+  satisfiesPzi = _messages.BooleanField(7)
+  satisfiesPzs = _messages.BooleanField(8)
+  smartReplyModelMetadata = _messages.MessageField('GoogleCloudDialogflowV2SmartReplyModelMetadata', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
 class GoogleCloudDialogflowV2ConversationModelEvaluation(_messages.Message):
@@ -13331,6 +13349,8 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
         as specified in RFC 5574. In other words, each RTP header is replaced
         with a single byte containing the block length. Only Speex wideband is
         supported. `sample_rate_hertz` must be 16000.
+      AUDIO_ENCODING_ALAW: 8-bit samples that compand 13-bit audio samples
+        using G.711 PCMU/a-law.
     """
     AUDIO_ENCODING_UNSPECIFIED = 0
     AUDIO_ENCODING_LINEAR_16 = 1
@@ -13340,6 +13360,7 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
     AUDIO_ENCODING_AMR_WB = 5
     AUDIO_ENCODING_OGG_OPUS = 6
     AUDIO_ENCODING_SPEEX_WITH_HEADER_BYTE = 7
+    AUDIO_ENCODING_ALAW = 8
 
   class ModelVariantValueValuesEnum(_messages.Enum):
     r"""Which variant of the Speech model to use.
@@ -14897,6 +14918,8 @@ class GoogleCloudDialogflowV2OutputAudioConfig(_messages.Message):
         the same bitrate.
       OUTPUT_AUDIO_ENCODING_MULAW: 8-bit samples that compand 14-bit audio
         samples using G.711 PCMU/mu-law.
+      OUTPUT_AUDIO_ENCODING_ALAW: 8-bit samples that compand 13-bit audio
+        samples using G.711 PCMU/a-law.
     """
     OUTPUT_AUDIO_ENCODING_UNSPECIFIED = 0
     OUTPUT_AUDIO_ENCODING_LINEAR_16 = 1
@@ -14904,6 +14927,7 @@ class GoogleCloudDialogflowV2OutputAudioConfig(_messages.Message):
     OUTPUT_AUDIO_ENCODING_MP3_64_KBPS = 3
     OUTPUT_AUDIO_ENCODING_OGG_OPUS = 4
     OUTPUT_AUDIO_ENCODING_MULAW = 5
+    OUTPUT_AUDIO_ENCODING_ALAW = 6
 
   audioEncoding = _messages.EnumField('AudioEncodingValueValuesEnum', 1)
   sampleRateHertz = _messages.IntegerField(2, variant=_messages.Variant.INT32)
@@ -15900,6 +15924,8 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
         as specified in RFC 5574. In other words, each RTP header is replaced
         with a single byte containing the block length. Only Speex wideband is
         supported. `sample_rate_hertz` must be 16000.
+      AUDIO_ENCODING_ALAW: 8-bit samples that compand 13-bit audio samples
+        using G.711 PCMU/a-law.
     """
     AUDIO_ENCODING_UNSPECIFIED = 0
     AUDIO_ENCODING_LINEAR_16 = 1
@@ -15909,6 +15935,7 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
     AUDIO_ENCODING_AMR_WB = 5
     AUDIO_ENCODING_OGG_OPUS = 6
     AUDIO_ENCODING_SPEEX_WITH_HEADER_BYTE = 7
+    AUDIO_ENCODING_ALAW = 8
 
   class SpeechModelVariantValueValuesEnum(_messages.Enum):
     r"""The speech model used in speech to text.
@@ -16471,6 +16498,8 @@ class GoogleCloudDialogflowV2TextToSpeechSettings(_messages.Message):
         the same bitrate.
       OUTPUT_AUDIO_ENCODING_MULAW: 8-bit samples that compand 14-bit audio
         samples using G.711 PCMU/mu-law.
+      OUTPUT_AUDIO_ENCODING_ALAW: 8-bit samples that compand 13-bit audio
+        samples using G.711 PCMU/a-law.
     """
     OUTPUT_AUDIO_ENCODING_UNSPECIFIED = 0
     OUTPUT_AUDIO_ENCODING_LINEAR_16 = 1
@@ -16478,6 +16507,7 @@ class GoogleCloudDialogflowV2TextToSpeechSettings(_messages.Message):
     OUTPUT_AUDIO_ENCODING_MP3_64_KBPS = 3
     OUTPUT_AUDIO_ENCODING_OGG_OPUS = 4
     OUTPUT_AUDIO_ENCODING_MULAW = 5
+    OUTPUT_AUDIO_ENCODING_ALAW = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SynthesizeSpeechConfigsValue(_messages.Message):

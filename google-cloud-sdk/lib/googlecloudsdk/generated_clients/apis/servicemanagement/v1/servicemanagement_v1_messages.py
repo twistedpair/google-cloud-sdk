@@ -644,6 +644,8 @@ class CommonLanguageSettings(_messages.Message):
       be published.
     referenceDocsUri: Link to automatically generated reference documentation.
       Example: https://cloud.google.com/nodejs/docs/reference/asset/latest
+    selectiveGapicGeneration: Configuration for which RPCs should be generated
+      in the GAPIC client.
   """
 
   class DestinationsValueListEntryValuesEnum(_messages.Enum):
@@ -663,6 +665,7 @@ class CommonLanguageSettings(_messages.Message):
 
   destinations = _messages.EnumField('DestinationsValueListEntryValuesEnum', 1, repeated=True)
   referenceDocsUri = _messages.StringField(2)
+  selectiveGapicGeneration = _messages.MessageField('SelectiveGapicGeneration', 3)
 
 
 class CompositeOperationMetadata(_messages.Message):
@@ -2741,7 +2744,7 @@ class Mixin(_messages.Message):
   mixin construct implies that all methods in `AccessControl` are also
   declared with same name and request/response types in `Storage`. A
   documentation generator or annotation processor will see the effective
-  `Storage.GetAcl` method after inherting documentation and annotations as
+  `Storage.GetAcl` method after inheriting documentation and annotations as
   follows: service Storage { // Get the underlying ACL object. rpc
   GetAcl(GetAclRequest) returns (Acl) { option (google.api.http).get =
   "/v2/{resource=**}:getAcl"; } ... } Note how the version in the path pattern
@@ -4029,6 +4032,18 @@ class RubySettings(_messages.Message):
   """
 
   common = _messages.MessageField('CommonLanguageSettings', 1)
+
+
+class SelectiveGapicGeneration(_messages.Message):
+  r"""This message is used to configure the generation of a subset of the RPCs
+  in a service for client libraries.
+
+  Fields:
+    methods: An allowlist of the fully qualified names of RPCs that should be
+      included on public client surfaces.
+  """
+
+  methods = _messages.StringField(1, repeated=True)
 
 
 class Service(_messages.Message):

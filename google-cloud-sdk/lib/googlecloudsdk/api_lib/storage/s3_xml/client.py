@@ -188,6 +188,7 @@ class S3XmlClient(cloud_api.CloudApi):
   def get_bucket(
       self,
       bucket_name,
+      generation=None,
       fields_scope=cloud_api.FieldsScope.NO_ACL,
       soft_deleted=False,
   ):

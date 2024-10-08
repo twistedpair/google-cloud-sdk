@@ -903,6 +903,18 @@ class AppengineProjectsLocationsApplicationsServicesMigrationMigrateConfigYamlRe
   name = _messages.StringField(2, required=True)
 
 
+class AppengineProjectsLocationsApplicationsServicesVersionsDeleteRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsApplicationsServicesVersionsDeleteRequest
+  object.
+
+  Fields:
+    name: Name of the resource requested. Example:
+      apps/myapp/services/default/versions/v1.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class AppengineProjectsLocationsGetRequest(_messages.Message):
   r"""A AppengineProjectsLocationsGetRequest object.
 

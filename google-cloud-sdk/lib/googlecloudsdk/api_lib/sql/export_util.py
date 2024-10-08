@@ -143,6 +143,8 @@ def BakExportContext(
     striped,
     bak_type,
     differential_base,
+    export_log_start_time,
+    export_log_end_time,
 ):
   """Generates the ExportContext for the given args, for exporting to BAK.
 
@@ -156,6 +158,8 @@ def BakExportContext(
     bak_type: Type of bak file that will be exported. SQL Server only.
     differential_base: Whether the bak file export can be used as differential
       base for future differential backup. SQL Server only.
+    export_log_start_time: start time of the log export. SQL Server only.
+    export_log_end_time: end time of the log export. SQL Server only.
 
   Returns:
     ExportContext, for use in InstancesExportRequest.exportContext.
@@ -168,6 +172,16 @@ def BakExportContext(
 
   bak_export_options.differentialBase = differential_base
   bak_export_options.bakType = ParseBakType(sql_messages, bak_type)
+
+  if export_log_start_time is not None:
+    bak_export_options.exportLogStartTime = export_log_start_time.strftime(
+        '%Y-%m-%dT%H:%M:%S.%fZ'
+    )
+
+  if export_log_end_time is not None:
+    bak_export_options.exportLogEndTime = export_log_end_time.strftime(
+        '%Y-%m-%dT%H:%M:%S.%fZ'
+    )
 
   return sql_messages.ExportContext(
       kind='sql#exportContext',

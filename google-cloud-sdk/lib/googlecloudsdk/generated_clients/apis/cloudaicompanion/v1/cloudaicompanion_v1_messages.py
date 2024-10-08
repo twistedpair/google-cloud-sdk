@@ -407,21 +407,14 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesCreateRequest(_messa
   Fields:
     codeRepositoryIndex: A CodeRepositoryIndex resource to be passed as the
       request body.
-    codeRepositoryIndexId: Required. Id of the requesting object If auto-
-      generating Id server-side, remove this field and
-      code_repository_index_id from the method_signature of Create RPC
+    codeRepositoryIndexId: Required. Id of the requesting object
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      request. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
   """
 
   codeRepositoryIndex = _messages.MessageField('CodeRepositoryIndex', 1)
@@ -443,13 +436,8 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesDeleteRequest(_messa
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      request. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
   """
 
   force = _messages.BooleanField(1)
@@ -473,8 +461,6 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesListRequest(_message
   object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
@@ -482,11 +468,9 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesListRequest(_message
     parent: Required. Parent value for ListCodeRepositoryIndexesRequest
   """
 
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class CloudaicompanionProjectsLocationsCodeRepositoryIndexesPatchRequest(_messages.Message):
@@ -501,13 +485,8 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesPatchRequest(_messag
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      request. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the CodeRepositoryIndex resource by the update. The
       fields specified in the update_mask are relative to the resource, not
@@ -529,20 +508,13 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesRepositoryGroupsCrea
     parent: Required. Value for parent.
     repositoryGroup: A RepositoryGroup resource to be passed as the request
       body.
-    repositoryGroupId: Required. Id of the requesting object If auto-
-      generating Id server-side, remove this field and repository_group_id
-      from the method_signature of Create RPC
+    repositoryGroupId: Required. Id of the requesting object
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      request. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -561,13 +533,8 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesRepositoryGroupsDele
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      request. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
   """
 
   name = _messages.StringField(1, required=True)
@@ -645,13 +612,8 @@ class CloudaicompanionProjectsLocationsCodeRepositoryIndexesRepositoryGroupsPatc
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      request. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the RepositoryGroup resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -891,7 +853,7 @@ class CodeCompletionRequest(_messages.Message):
     input: Represents the raw input for inference. It will be modified as part
       of prompt engineering and other transforms before it is consumed by the
       LLM.
-    inputDataContext: Additional user content not captured in the `instances`
+    inputDataContext: Additional user content not captured in the `input`
       field above
   """
 
@@ -950,7 +912,7 @@ class CodeGenerationRequest(_messages.Message):
     input: Represents the raw input for inference. It will be modified as part
       of prompt engineering and other transforms before it is consumed by the
       LLM.
-    inputDataContext: Additional user content not captured in the `instances`
+    inputDataContext: Additional user content not captured in the `input`
       field above
   """
 
@@ -981,32 +943,26 @@ class CodeRepositoryIndex(_messages.Message):
   r"""Message describing CodeRepositoryIndex object
 
   Enums:
-    StateValueValuesEnum: Output only. [Output only] Code Repository Index
-      instance State
+    StateValueValuesEnum: Output only. Code Repository Index instance State
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
-    ipRanges: Output only. Ranges of possible IP addresses from which the RAG
-      index service will attempt to access linked Git repositories.
+    createTime: Output only. Create time stamp
     kmsKey: Optional. Immutable. Customer-managed encryption key name, in the
       format projects/*/locations/*/keyRings/*/cryptoKeys/*.
     labels: Optional. Labels as key value pairs
     name: Immutable. Identifier. name of resource
-    requestIpRanges: Optional. Whether to request reservation of IP addresses
-      from which the RAG index service will attempt to access linked Git
-      repositories
-    state: Output only. [Output only] Code Repository Index instance State
-    updateTime: Output only. [Output only] Update time stamp
+    state: Output only. Code Repository Index instance State
+    updateTime: Output only. Update time stamp
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. [Output only] Code Repository Index instance State
+    r"""Output only. Code Repository Index instance State
 
     Values:
-      STATE_UNSPECIFIED: Not Set, it should never be used.
+      STATE_UNSPECIFIED: Not set.
       CREATING: Instance is being created.
       ACTIVE: Instance is active.
       DELETING: Instance is being deleted.
@@ -1043,13 +999,11 @@ class CodeRepositoryIndex(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  ipRanges = _messages.StringField(2, repeated=True)
-  kmsKey = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  requestIpRanges = _messages.BooleanField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  kmsKey = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  updateTime = _messages.StringField(6)
 
 
 class DisplayContext(_messages.Message):
@@ -1464,12 +1418,10 @@ class ListCodeRepositoryIndexesResponse(_messages.Message):
     codeRepositoryIndexes: The list of CodeRepositoryIndex
     nextPageToken: A token identifying a page of results the server should
       return.
-    unreachable: Locations that could not be reached.
   """
 
   codeRepositoryIndexes = _messages.MessageField('CodeRepositoryIndex', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -1505,12 +1457,10 @@ class ListRepositoryGroupsResponse(_messages.Message):
     nextPageToken: A token identifying a page of results the server should
       return.
     repositoryGroups: The list of RepositoryGroup
-    unreachable: Locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
   repositoryGroups = _messages.MessageField('RepositoryGroup', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -1889,14 +1839,12 @@ class Repository(_messages.Message):
   Fields:
     branchPattern: Required. The Git branch pattern used for indexing in RE2
       syntax. See https://github.com/google/re2/wiki/syntax for syntax.
-    remoteUri: Output only. Git Clone HTTPS URI.
-    resource: Required. The link to the CloudBuild/DeveloperConnect repository
-      resource name or URL to be indexed.
+    resource: Required. The DeveloperConnect repository full resource name,
+      relative resource name or resource URL to be indexed.
   """
 
   branchPattern = _messages.StringField(1)
-  remoteUri = _messages.StringField(2)
-  resource = _messages.StringField(3)
+  resource = _messages.StringField(2)
 
 
 class RepositoryGroup(_messages.Message):
@@ -1906,11 +1854,11 @@ class RepositoryGroup(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
+    createTime: Output only. Create time stamp
     labels: Optional. Labels as key value pairs
     name: Immutable. Identifier. name of resource
     repositories: Required. List of repositories to group
-    updateTime: Output only. [Output only] Update time stamp
+    updateTime: Output only. Update time stamp
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2151,7 +2099,7 @@ class TaskCompletionRequest(_messages.Message):
     input: Represents the raw input for inference. It will be modified as part
       of prompt engineering and other transforms before it is consumed by the
       LLM.
-    inputDataContext: Additional user content not captured in the `instances`
+    inputDataContext: Additional user content not captured in the `input`
       field above
   """
 
@@ -2341,7 +2289,7 @@ class TextGenerationRequest(_messages.Message):
     input: Represents the raw input for inference. It will be modified as part
       of prompt engineering and other transforms before it is consumed by the
       LLM.
-    inputDataContext: Additional user content not captured in the `instances`
+    inputDataContext: Additional user content not captured in the `input`
       field above
   """
 

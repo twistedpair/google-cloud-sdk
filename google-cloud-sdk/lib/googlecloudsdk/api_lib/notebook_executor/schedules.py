@@ -17,6 +17,7 @@
 from googlecloudsdk.api_lib.notebook_executor import executions as executions_util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.util import times
 
 
 def GetScheduleResourceName(args):
@@ -62,6 +63,44 @@ def GetScheduleUri(resource):
       relative_name=resource.name,
       collection='aiplatform.projects.locations.schedules',
   ).SelfLink()
+
+
+def GetStartTime(args):
+  """Get the start time for the schedule."""
+  return times.FormatDateTime(args.start_time) if args.start_time else None
+
+
+def GetEndTime(args):
+  """Get the end time for the schedule."""
+  return times.FormatDateTime(args.end_time) if args.end_time else None
+
+
+def CreateSchedule(args, messages, for_update=False):
+  """Builds a Schedule message.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the specified API.
+    for_update: Whether the schedule is to be used in an update request.
+
+  Returns:
+    Instance of the Schedule message.
+  """
+  execution_create_request = None
+  if not for_update:
+    execution_create_request = (
+        executions_util.CreateExecutionCreateRequestForSchedule(args, messages)
+    )
+  return messages.GoogleCloudAiplatformV1beta1Schedule(
+      displayName=args.display_name,
+      startTime=GetStartTime(args),
+      endTime=GetEndTime(args),
+      maxRunCount=args.max_runs,
+      cron=args.cron_schedule,
+      maxConcurrentRunCount=args.max_concurrent_runs,
+      allowQueueing=args.enable_queueing,
+      createNotebookExecutionJobRequest=execution_create_request,
+  )
 
 
 def ValidateScheduleIsOfNotebookExecutionType(args, messages, service):
@@ -180,4 +219,66 @@ def CreateScheduleListRequest(args, messages):
           parent=executions_util.GetParentForExecutionOrSchedule(args),
           filter='create_notebook_execution_job_request:*'
       )
+  )
+
+
+def CreateScheduleCreateRequest(args, messages):
+  """Builds a SchedulesCreateRequest message.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the specified API.
+
+  Returns:
+    Instance of the SchedulesCreateRequest message.
+  """
+  return (
+      messages.AiplatformProjectsLocationsSchedulesCreateRequest(
+          parent=executions_util.GetParentForExecutionOrSchedule(args),
+          googleCloudAiplatformV1beta1Schedule=CreateSchedule(args, messages),
+      )
+  )
+
+
+def CreateScheduleUpdateMask(args):
+  """Builds a field mask for the schedule update request.
+
+  Args:
+    args: Argparse object from Command.Run
+
+  Returns:
+    Field mask for the schedule update request.
+  """
+  mask_fields = []
+  args_to_field_map = {
+      'display_name': 'display_name',
+      'start_time': 'start_time',
+      'end_time': 'end_time',
+      'max_runs': 'max_run_count',
+      'cron_schedule': 'cron',
+      'max_concurrent_runs': 'max_concurrent_run_count',
+      'enable_queueing': 'allow_queueing',
+  }
+  for key, value in args_to_field_map.items():
+    if args.IsSpecified(key):
+      mask_fields.append(value)
+  return ','.join(map(str, mask_fields))
+
+
+def CreateSchedulePatchRequest(args, messages):
+  """Builds a SchedulesPatchRequest message.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the specified API.
+
+  Returns:
+    Instance of the SchedulesPatchRequest message.
+  """
+  return messages.AiplatformProjectsLocationsSchedulesPatchRequest(
+      name=GetScheduleResourceName(args),
+      googleCloudAiplatformV1beta1Schedule=CreateSchedule(
+          args, messages, for_update=True
+      ),
+      updateMask=CreateScheduleUpdateMask(args),
   )

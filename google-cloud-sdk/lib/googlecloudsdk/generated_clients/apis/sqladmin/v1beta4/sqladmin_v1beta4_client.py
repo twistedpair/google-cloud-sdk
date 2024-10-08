@@ -177,7 +177,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
           }
 
     def CreateBackup(self, request, global_params=None):
-      r"""Creates a backup for a cloud sql instance. This API can only be used to create OnDemand backups.
+      r"""Creates a backup for a Cloud SQL instance. This API can be used only to create on-demand backups.
 
       Args:
         request: (SqlBackupsCreateBackupRequest) input message
@@ -285,7 +285,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def UpdateBackup(self, request, global_params=None):
-      r"""Updates the retention period and the description of the backup, currently restricted to final backups.
+      r"""Updates the retention period and the description of the backup. You can use this API to update final backups only.
 
       Args:
         request: (SqlBackupsUpdateBackupRequest) input message

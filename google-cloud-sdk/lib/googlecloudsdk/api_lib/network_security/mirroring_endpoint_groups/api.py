@@ -29,9 +29,7 @@ from googlecloudsdk.core import resources
 
 _API_VERSION_FOR_TRACK = {
     base.ReleaseTrack.ALPHA: 'v1alpha1',
-    # TODO(b/357901430): Update to v1beta1 after the removal of the visibility
-    # label.
-    base.ReleaseTrack.BETA: 'v1alpha1',
+    base.ReleaseTrack.BETA: 'v1beta1',
 }
 _API_NAME = 'networksecurity'
 

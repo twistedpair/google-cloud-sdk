@@ -892,9 +892,9 @@ class Instance(_messages.Message):
     state: Output only. The state of this instance.
     subnet: The name of the subnet that this instance is in. Format:
       `projects/{project_id}/regions/{region}/subnetworks/{subnetwork_id}`
-    tags: Optional. The Compute Engine tags to add to runtime (see [Tagging
-      instances](https://cloud.google.com/compute/docs/label-or-tag-
-      resources#tags)).
+    tags: Optional. The Compute Engine network tags to add to runtime (see
+      [Add network tags](https://cloud.google.com/vpc/docs/add-remove-network-
+      tags)).
     updateTime: Output only. Instance update time.
     upgradeHistory: The upgrade history of this instance.
     vmImage: Use a Compute Engine VM image to start the notebook instance.
@@ -4176,9 +4176,9 @@ class VirtualMachineConfig(_messages.Message):
       `https://www.googleapis.com/compute/v1/projects/[project_id]/regions/us-
       east1/subnetworks/sub0` * `projects/[project_id]/regions/us-
       east1/subnetworks/sub0`
-    tags: Optional. The Compute Engine tags to add to runtime (see [Tagging
-      instances](https://cloud.google.com/compute/docs/label-or-tag-
-      resources#tags)).
+    tags: Optional. The Compute Engine network tags to add to runtime (see
+      [Add network tags](https://cloud.google.com/vpc/docs/add-remove-network-
+      tags)).
     zone: Output only. The zone where the virtual machine is located. If using
       regional request, the notebooks service will pick a location in the
       corresponding runtime region. On a get request, zone will always be

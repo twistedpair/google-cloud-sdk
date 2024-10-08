@@ -402,7 +402,6 @@ class CompilationResultAction(_messages.Message):
     assertion: The assertion executed by this action.
     canonicalTarget: The action's identifier if the project had been compiled
       without any overrides configured. Unique within the compilation result.
-    dataPreparation: The data preparation executed by this action.
     declaration: The declaration declared by this action.
     filePath: The full path including filename in which this action is
       located, relative to the workspace root.
@@ -414,13 +413,12 @@ class CompilationResultAction(_messages.Message):
 
   assertion = _messages.MessageField('Assertion', 1)
   canonicalTarget = _messages.MessageField('Target', 2)
-  dataPreparation = _messages.MessageField('DataPreparation', 3)
-  declaration = _messages.MessageField('Declaration', 4)
-  filePath = _messages.StringField(5)
-  notebook = _messages.MessageField('Notebook', 6)
-  operations = _messages.MessageField('Operations', 7)
-  relation = _messages.MessageField('Relation', 8)
-  target = _messages.MessageField('Target', 9)
+  declaration = _messages.MessageField('Declaration', 3)
+  filePath = _messages.StringField(4)
+  notebook = _messages.MessageField('Notebook', 5)
+  operations = _messages.MessageField('Operations', 6)
+  relation = _messages.MessageField('Relation', 7)
+  target = _messages.MessageField('Target', 8)
 
 
 class ComputeRepositoryAccessTokenStatusResponse(_messages.Message):
@@ -475,44 +473,6 @@ class DataEncryptionState(_messages.Message):
   """
 
   kmsKeyVersionName = _messages.StringField(1)
-
-
-class DataPreparation(_messages.Message):
-  r"""Defines a compiled Data Preparation entity
-
-  Fields:
-    contents: The data preparation definition, stored as a binary encoded
-      proto.
-    dependencyTargets: A list of actions that this action depends on.
-    disabled: Whether this action is disabled (i.e. should not be run).
-    tags: Arbitrary, user-defined tags on this action.
-  """
-
-  contents = _messages.BytesField(1)
-  dependencyTargets = _messages.MessageField('Target', 2, repeated=True)
-  disabled = _messages.BooleanField(3)
-  tags = _messages.StringField(4, repeated=True)
-
-
-class DataPreparationAction(_messages.Message):
-  r"""Represents a workflow action that will run a Data Preparation.
-
-  Fields:
-    contents: Output only. Binary encoded proto of the data preparation
-      definition.
-    contentsYaml: Output only. YAML representing the contents of the data
-      preparation. Can be used to show the customer what the input was to
-      their workflow.
-    generatedSql: Output only. The generated BigQuery SQL script that will be
-      executed. For reference only.
-    jobId: Output only. The ID of the BigQuery job that executed the SQL in
-      sql_script. Only set once the job has started to run.
-  """
-
-  contents = _messages.BytesField(1)
-  contentsYaml = _messages.StringField(2)
-  generatedSql = _messages.StringField(3)
-  jobId = _messages.StringField(4)
 
 
 class DataformProjectsLocationsCollectionsGetIamPolicyRequest(_messages.Message):
@@ -3135,8 +3095,6 @@ class WorkflowInvocationAction(_messages.Message):
     canonicalTarget: Output only. The action's identifier if the project had
       been compiled without any overrides configured. Unique within the
       compilation result.
-    dataPreparationAction: Output only. The workflow action's data preparation
-      action details.
     failureReason: Output only. If and only if action's state is FAILED a
       failure reason is set.
     invocationTiming: Output only. This action's timing details. `start_time`
@@ -3174,25 +3132,26 @@ class WorkflowInvocationAction(_messages.Message):
 
   bigqueryAction = _messages.MessageField('BigQueryAction', 1)
   canonicalTarget = _messages.MessageField('Target', 2)
-  dataPreparationAction = _messages.MessageField('DataPreparationAction', 3)
-  failureReason = _messages.StringField(4)
-  invocationTiming = _messages.MessageField('Interval', 5)
-  notebookAction = _messages.MessageField('NotebookAction', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  target = _messages.MessageField('Target', 8)
+  failureReason = _messages.StringField(3)
+  invocationTiming = _messages.MessageField('Interval', 4)
+  notebookAction = _messages.MessageField('NotebookAction', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  target = _messages.MessageField('Target', 7)
 
 
 class Workspace(_messages.Message):
   r"""Represents a Dataform Git workspace.
 
   Fields:
+    createTime: Output only. The timestamp of when the workspace was created.
     dataEncryptionState: Output only. A data encryption state of a Git
       repository if this Workspace is protected by a KMS key.
     name: Identifier. The workspace's name.
   """
 
-  dataEncryptionState = _messages.MessageField('DataEncryptionState', 1)
-  name = _messages.StringField(2)
+  createTime = _messages.StringField(1)
+  dataEncryptionState = _messages.MessageField('DataEncryptionState', 2)
+  name = _messages.StringField(3)
 
 
 class WorkspaceCompilationOverrides(_messages.Message):

@@ -173,6 +173,7 @@ def Create(
     expire_behavior=None,
     ssd_cache=None,
     edition=None,
+    default_backup_schedule_type=None,
 ):
   """Create a new instance.
 
@@ -196,6 +197,7 @@ def Create(
     expire_behavior: The expire behavior to use.
     ssd_cache: The ssd cache to use.
     edition: The edition to use.
+    default_backup_schedule_type: The type of default backup schedule to use.
 
   Returns:
     The created instance.
@@ -250,6 +252,12 @@ def Create(
     )
   if edition is not None:
     instance_obj.edition = msgs.Instance.EditionValueValuesEnum(edition)
+  if default_backup_schedule_type is not None:
+    instance_obj.defaultBackupScheduleType = (
+        msgs.Instance.DefaultBackupScheduleTypeValueValuesEnum(
+            default_backup_schedule_type
+        )
+    )
   # Add asymmetric autoscaling options, if present.
   if asymmetric_autoscaling_options is not None:
     for asym_option in asymmetric_autoscaling_options:
@@ -356,6 +364,7 @@ def Patch(
     expire_behavior=None,
     ssd_cache_id=None,
     edition=None,
+    default_backup_schedule_type=None,
 ):
   """Update an instance."""
   fields = []
@@ -473,6 +482,13 @@ def Patch(
   if edition is not None:
     fields.append('edition')
     instance_obj.edition = msgs.Instance.EditionValueValuesEnum(edition)
+  if default_backup_schedule_type is not None:
+    fields.append('defaultBackupScheduleType')
+    instance_obj.defaultBackupScheduleType = (
+        msgs.Instance.DefaultBackupScheduleTypeValueValuesEnum(
+            default_backup_schedule_type
+        )
+    )
 
   ref = resources.REGISTRY.Parse(
       instance,

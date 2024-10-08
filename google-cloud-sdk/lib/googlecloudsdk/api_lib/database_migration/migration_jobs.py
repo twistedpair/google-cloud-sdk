@@ -318,6 +318,10 @@ class MigrationJobsClient(object):
       sqlserver_homogeneous_migration_job_config_obj.useDiffBackup = (
           args.sqlserver_diff_backup
       )
+    if args.IsKnownAndSpecified('sqlserver_promote_when_ready'):
+      sqlserver_homogeneous_migration_job_config_obj.promoteWhenReady = (
+          args.sqlserver_promote_when_ready
+      )
     if args.IsKnownAndSpecified('sqlserver_databases'):
       sqlserver_homogeneous_migration_job_config_obj.databaseBackups = (
           self._GetSqlServerDatabaseBackups(
@@ -466,6 +470,10 @@ class MigrationJobsClient(object):
       sqlserver_homogeneous_migration_job_config_obj.useDiffBackup = (
           args.sqlserver_diff_backup
       )
+    if args.IsKnownAndSpecified('sqlserver_promote_when_ready'):
+      sqlserver_homogeneous_migration_job_config_obj.promoteWhenReady = (
+          args.sqlserver_promote_when_ready
+      )
     if args.IsKnownAndSpecified('sqlserver_databases'):
       sqlserver_homogeneous_migration_job_config_obj.databaseBackups = (
           self._GetSqlServerDatabaseBackups(
@@ -515,6 +523,10 @@ class MigrationJobsClient(object):
     if args.IsKnownAndSpecified('sqlserver_diff_backup'):
       update_fields.append(
           'sqlserverHomogeneousMigrationJobConfig.useDiffBackup'
+      )
+    if args.IsKnownAndSpecified('sqlserver_promote_when_ready'):
+      update_fields.append(
+          'sqlserverHomogeneousMigrationJobConfig.promoteWhenReady'
       )
     if args.IsKnownAndSpecified(
         'sqlserver_databases'
@@ -570,6 +582,7 @@ class MigrationJobsClient(object):
     if (
         args.IsKnownAndSpecified('sqlserver_backup_file_pattern')
         or args.IsKnownAndSpecified('sqlserver_diff_backup')
+        or args.IsKnownAndSpecified('sqlserver_promote_when_ready')
         or args.IsKnownAndSpecified('sqlserver_databases')
         or args.IsKnownAndSpecified('sqlserver_encrypted_databases')
     ):

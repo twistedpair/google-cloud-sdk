@@ -165,12 +165,19 @@ def GlobPatternFromSourceAndVariantsPattern(source, variants_pattern=None):
     return expanded_source
 
 
+def _FileNotFoundMessage(path):
+  return f'Source file or dir not found: {path}.'
+
+
+def _FileWrongTypeMessage(path):
+  return f'Source is not of type directory or file: {path}.'
+
+
 def ValidateSource(source):
   expanded_source = _ExpandPathForUserAndVars(source)
   if not os.path.isdir(expanded_source) and not os.path.isfile(expanded_source):
-    raise ValueError(
-        f'Source must be a directory or file, got {expanded_source}.'
-    )
+    if not os.path.exists(expanded_source):
+      raise FileNotFoundError(_FileNotFoundMessage(expanded_source))
 
 
 def VariantsFromGlobPattern(glob_pattern):
@@ -347,3 +354,36 @@ def UpsertFleetPackageName(fleet_package, fully_qualified_name):
   if not fleet_package.name:
     fleet_package.name = fully_qualified_name
   return fleet_package
+
+
+def FixFleetPackagePathForCloudBuild(fleet_package):
+  """Removes leading slash from fleet package path if it uses Cloud Build.
+
+  If we don't remove the leading slash, parsing the path will fail for cloud
+  build. See b/352756986#comment13
+
+  Args:
+    fleet_package: A user-inputted FleetPackage which may need its path fixed.
+
+  Returns:
+    A FleetPackage with a fixed path if it uses Cloud Build, unchanged if it
+    doesn't use Cloud Build.
+  """
+  if _FleetPackageUsesCloudBuild(fleet_package):
+    path = fleet_package.resourceBundleSelector.cloudBuildRepository.path
+    if path is not None and path.startswith('/'):
+      if path == '/':
+        fleet_package.resourceBundleSelector.cloudBuildRepository.path = './'
+      else:
+        fleet_package.resourceBundleSelector.cloudBuildRepository.path = (
+            fleet_package.resourceBundleSelector.cloudBuildRepository.path[1:]
+        )
+  return fleet_package
+
+
+def _FleetPackageUsesCloudBuild(fleet_package):
+  return (
+      fleet_package
+      and fleet_package.resourceBundleSelector
+      and fleet_package.resourceBundleSelector.cloudBuildRepository is not None
+  )

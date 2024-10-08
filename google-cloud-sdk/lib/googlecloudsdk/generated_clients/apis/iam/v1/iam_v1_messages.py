@@ -99,7 +99,7 @@ class AttestationRule(_messages.Message):
 
   Fields:
     googleCloudResource: Optional. A single workload operating on Google
-      Cloud. For example: `//compute.googelapis.com/projects/123/uid/zones/us-
+      Cloud. For example: `//compute.googleapis.com/projects/123/uid/zones/us-
       central1-a/instances/12345`.
   """
 
@@ -692,24 +692,24 @@ class GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client(_messages
 
     Values:
       ATTRIBUTES_TYPE_UNSPECIFIED: No AttributesType specified.
-      AZURE_AD_GROUPS_MAIL: Used to get the user's group claims from the Azure
-        AD identity provider using configuration provided in
+      AZURE_AD_GROUPS_MAIL: Used to get the user's group claims from the
+        Microsoft Entra ID identity provider using configuration provided in
         ExtraAttributesOAuth2Client and `mail` property of the
         `microsoft.graph.group` object is used for claim mapping. See
         https://learn.microsoft.com/en-
         us/graph/api/resources/group?view=graph-rest-1.0#properties for more
         details on `microsoft.graph.group` properties. The attributes obtained
         from idntity provider are mapped to `assertion.groups`.
-      AZURE_AD_GROUPS_ID: Used to get the user's group claims from the Azure
-        AD identity provider using configuration provided in
+      AZURE_AD_GROUPS_ID: Used to get the user's group claims from the
+        Microsoft Entra ID identity provider using configuration provided in
         ExtraAttributesOAuth2Client and `id` property of the
         `microsoft.graph.group` object is used for claim mapping. See
         https://learn.microsoft.com/en-
         us/graph/api/resources/group?view=graph-rest-1.0#properties for more
         details on `microsoft.graph.group` properties. The group IDs obtained
-        from Azure AD are present in `assertion.groups` for OIDC providers and
-        `assertion.attributes.groups` for SAML providers for attribute
-        mapping.
+        from Microsoft Entra ID are present in `assertion. groups` for OIDC
+        providers and `assertion.attributes.groups` for SAML providers for
+        attribute mapping.
     """
     ATTRIBUTES_TYPE_UNSPECIFIED = 0
     AZURE_AD_GROUPS_MAIL = 1

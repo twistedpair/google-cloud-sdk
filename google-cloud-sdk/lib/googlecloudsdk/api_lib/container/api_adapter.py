@@ -323,6 +323,7 @@ GCPFILESTORECSIDRIVER = 'GcpFilestoreCsiDriver'
 GCSFUSECSIDRIVER = 'GcsFuseCsiDriver'
 STATEFULHA = 'StatefulHA'
 PARALLELSTORECSIDRIVER = 'ParallelstoreCsiDriver'
+HIGHSCALECHECKPOINTING = 'HighScaleCheckpointing'
 RAYOPERATOR = 'RayOperator'
 ISTIO = 'Istio'
 NETWORK_POLICY = 'NetworkPolicy'
@@ -360,6 +361,7 @@ ADDONS_OPTIONS = DEFAULT_ADDONS + [
     GCSFUSECSIDRIVER,
     STATEFULHA,
     PARALLELSTORECSIDRIVER,
+    HIGHSCALECHECKPOINTING,
     RAYOPERATOR,
 ]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [
@@ -785,6 +787,8 @@ class CreateClusterOptions(object):
       gkeops_etcd_backup_encryption_key=None,
       disable_l4_lb_firewall_reconciliation=None,
       tier=None,
+      enable_ip_access=None,
+      enable_authorized_networks_on_private_endpoint=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -1039,6 +1043,10 @@ class CreateClusterOptions(object):
         disable_l4_lb_firewall_reconciliation
     )
     self.tier = tier
+    self.enable_ip_access = enable_ip_access
+    self.enable_authorized_networks_on_private_endpoint = (
+        enable_authorized_networks_on_private_endpoint
+    )
 
 
 class UpdateClusterOptions(object):
@@ -1202,6 +1210,8 @@ class UpdateClusterOptions(object):
       enable_l4_lb_firewall_reconciliation=None,
       tier=None,
       autoprovisioning_cgroup_mode=None,
+      enable_ip_access=None,
+      enable_authorized_networks_on_private_endpoint=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1386,6 +1396,10 @@ class UpdateClusterOptions(object):
     )
     self.tier = tier
     self.autoprovisioning_cgroup_mode = autoprovisioning_cgroup_mode
+    self.enable_ip_access = enable_ip_access
+    self.enable_authorized_networks_on_private_endpoint = (
+        enable_authorized_networks_on_private_endpoint
+    )
 
 
 class SetMasterAuthOptions(object):
@@ -2061,6 +2075,9 @@ class APIAdapter(object):
           enable_parallelstore_csi_driver=(
               PARALLELSTORECSIDRIVER in options.addons
           ),
+          enable_high_scale_checkpointing=(
+              HIGHSCALECHECKPOINTING in options.addons
+          ),
           enable_ray_operator=(RAYOPERATOR in options.addons),
       )
       # CONFIGCONNECTOR is disabled by default.
@@ -2088,7 +2105,6 @@ class APIAdapter(object):
             )
         )
       cluster.addonsConfig = addons
-    self.ParseMasterAuthorizedNetworkOptions(options, cluster)
 
     if options.enable_kubernetes_alpha:
       cluster.enableKubernetesAlpha = options.enable_kubernetes_alpha
@@ -2482,11 +2498,6 @@ class APIAdapter(object):
           directMetricsOptIn=True)
       cluster.podAutoscaling = pod_autoscaling_config
 
-    if options.private_endpoint_subnetwork is not None:
-      if cluster.privateClusterConfig is None:
-        cluster.privateClusterConfig = self.messages.PrivateClusterConfig()
-      cluster.privateClusterConfig.privateEndpointSubnetwork = options.private_endpoint_subnetwork
-
     if options.managed_config is not None:
       if options.managed_config.lower() == 'autofleet':
         cluster.managedConfig = self.messages.ManagedConfig(
@@ -2702,17 +2713,6 @@ class APIAdapter(object):
           options.enable_insecure_binding_system_unauthenticated
       )
 
-    if options.enable_dns_access is not None:
-      if cluster.controlPlaneEndpointsConfig is None:
-        cluster.controlPlaneEndpointsConfig = (
-            self.messages.ControlPlaneEndpointsConfig()
-        )
-      dns_endpoint_config = self.messages.DNSEndpointConfig(
-          allowExternalTraffic=options.enable_dns_access)
-      cluster.controlPlaneEndpointsConfig.dnsEndpointConfig = (
-          dns_endpoint_config
-      )
-
     if options.cluster_ca is not None:
       if cluster.userManagedKeysConfig is None:
         cluster.userManagedKeysConfig = self.messages.UserManagedKeysConfig()
@@ -2762,6 +2762,13 @@ class APIAdapter(object):
 
     if options.tier is not None:
       cluster.enterpriseConfig = _GetEnterpriseConfig(options, self.messages)
+
+    self._ParseControlPlaneEndpointsConfig(options, cluster)
+
+    if options.enable_private_nodes is not None:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig()
+      cluster.networkConfig.defaultEnablePrivateNodes = options.enable_private_nodes
 
     return cluster
 
@@ -3139,7 +3146,7 @@ class APIAdapter(object):
       cluster.ipAllocationPolicy.allowRouteOverlap = True
 
   def ParsePrivateClusterOptions(self, options, cluster):
-    """Parses the options for Private Clusters."""
+    """Parses the options for Private Clusters (for backward compatibility)."""
     if (options.enable_private_nodes is not None and
         options.private_cluster is not None):
       raise util.Error(ENABLE_PRIVATE_NODES_WITH_PRIVATE_CLUSTER_ERROR_MSG)
@@ -3163,7 +3170,7 @@ class APIAdapter(object):
           PREREQUISITE_OPTION_ERROR_MSG.format(
               prerequisite='enable-private-nodes', opt='master-ipv4-cidr'))
 
-    if options.enable_private_nodes:
+    if options.master_ipv4_cidr:
       config = self.messages.PrivateClusterConfig(
           enablePrivateNodes=options.enable_private_nodes,
           enablePrivateEndpoint=options.enable_private_endpoint,
@@ -3209,11 +3216,16 @@ class APIAdapter(object):
       # --enable-master-authorized-networks.
       raise util.Error(MISMATCH_AUTHORIZED_NETWORKS_ERROR_MSG)
     elif options.enable_master_authorized_networks is None:
-      cluster.masterAuthorizedNetworksConfig = None
+      if (cluster.controlPlaneEndpointsConfig is not None and
+          cluster.controlPlaneEndpointsConfig.ipEndpointsConfig is not None):
+        (cluster.controlPlaneEndpointsConfig.ipEndpointsConfig
+         .authorizedNetworksConfig) = None
     elif not options.enable_master_authorized_networks:
       authorized_networks = self.messages.MasterAuthorizedNetworksConfig(
           enabled=False)
-      cluster.masterAuthorizedNetworksConfig = authorized_networks
+      self._InitIPEndpointsConfigIfRequired(cluster)
+      (cluster.controlPlaneEndpointsConfig.ipEndpointsConfig
+       .authorizedNetworksConfig) = authorized_networks
     else:
       authorized_networks = self.messages.MasterAuthorizedNetworksConfig(
           enabled=options.enable_master_authorized_networks)
@@ -3221,15 +3233,31 @@ class APIAdapter(object):
         for network in options.master_authorized_networks:
           authorized_networks.cidrBlocks.append(
               self.messages.CidrBlock(cidrBlock=network))
-      cluster.masterAuthorizedNetworksConfig = authorized_networks
+      self._InitIPEndpointsConfigIfRequired(cluster)
+      (cluster.controlPlaneEndpointsConfig.ipEndpointsConfig
+       .authorizedNetworksConfig) = authorized_networks
 
     if options.enable_google_cloud_access is not None:
-      if cluster.masterAuthorizedNetworksConfig is None:
-        cluster.masterAuthorizedNetworksConfig = (
-            self.messages.MasterAuthorizedNetworksConfig(enabled=False))
+      self._InitIPEndpointsConfigIfRequired(cluster)
+      if (cluster.controlPlaneEndpointsConfig.ipEndpointsConfig
+          .authorizedNetworksConfig) is None:
+        (cluster.controlPlaneEndpointsConfig.ipEndpointsConfig.
+         authorizedNetworksConfig) = (
+             self.messages.MasterAuthorizedNetworksConfig(enabled=False))
+      (cluster.controlPlaneEndpointsConfig.ipEndpointsConfig
+       .authorizedNetworksConfig.gcpPublicCidrsAccessEnabled) = (
+           options.enable_google_cloud_access)
 
-      cluster.masterAuthorizedNetworksConfig.gcpPublicCidrsAccessEnabled = (
-          options.enable_google_cloud_access)
+    if options.enable_authorized_networks_on_private_endpoint is not None:
+      self._InitIPEndpointsConfigIfRequired(cluster)
+      if (cluster.controlPlaneEndpointsConfig.ipEndpointsConfig
+          .authorizedNetworksConfig) is None:
+        (cluster.controlPlaneEndpointsConfig.ipEndpointsConfig
+         .authorizedNetworksConfig) = (
+             self.messages.MasterAuthorizedNetworksConfig(enabled=False))
+      (cluster.controlPlaneEndpointsConfig.ipEndpointsConfig
+       .authorizedNetworksConfig.privateEndpointEnforcementEnabled) = (
+           options.enable_authorized_networks_on_private_endpoint)
 
   def ParseClusterDNSOptions(self, options, is_update=False, cluster_ref=None):
     """Parses the options for ClusterDNS."""
@@ -3348,13 +3376,6 @@ class APIAdapter(object):
             options, self.messages)
         cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
             disabled=False, loadBalancerType=load_balancer_type)
-
-    if options.enable_master_global_access is not None:
-      if cluster.privateClusterConfig is None:
-        cluster.privateClusterConfig = self.messages.PrivateClusterConfig()
-      cluster.privateClusterConfig.masterGlobalAccessConfig = \
-          self.messages.PrivateClusterMasterGlobalAccessConfig(
-              enabled=options.enable_master_global_access)
 
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
@@ -3818,6 +3839,12 @@ class APIAdapter(object):
                 enabled=not options.disable_addons.get(PARALLELSTORECSIDRIVER)
             )
         )
+      if options.disable_addons.get(HIGHSCALECHECKPOINTING) is not None:
+        addons.highScaleCheckpointingConfig = (
+            self.messages.HighScaleCheckpointingConfig(
+                enabled=not options.disable_addons.get(HIGHSCALECHECKPOINTING)
+            )
+        )
       if options.disable_addons.get(BACKUPRESTORE) is not None:
         addons.gkeBackupAgentConfig = (
             self.messages.GkeBackupAgentConfig(
@@ -3866,16 +3893,6 @@ class APIAdapter(object):
           desiredNodePoolAutoscaling=autoscaling)
     elif options.locations:
       update = self.messages.ClusterUpdate(desiredLocations=options.locations)
-    elif options.enable_master_authorized_networks is not None:
-      # For update, we can either enable or disable.
-      authorized_networks = self.messages.MasterAuthorizedNetworksConfig(
-          enabled=options.enable_master_authorized_networks)
-      if options.master_authorized_networks:
-        for network in options.master_authorized_networks:
-          authorized_networks.cidrBlocks.append(
-              self.messages.CidrBlock(cidrBlock=network))
-      update = self.messages.ClusterUpdate(
-          desiredMasterAuthorizedNetworksConfig=authorized_networks)
     elif options.enable_autoprovisioning is not None or \
          options.autoscaling_profile is not None:
       autoscaling = self.CreateClusterAutoscalingCommon(cluster_ref, options,
@@ -3922,14 +3939,6 @@ class APIAdapter(object):
           enabled=options.enable_intra_node_visibility)
       update = self.messages.ClusterUpdate(
           desiredIntraNodeVisibilityConfig=intra_node_visibility_config)
-    elif options.enable_master_global_access is not None:
-      # For update, we can either enable or disable.
-      master_global_access_config = self.messages.PrivateClusterMasterGlobalAccessConfig(
-          enabled=options.enable_master_global_access)
-      private_cluster_config = self.messages.PrivateClusterConfig(
-          masterGlobalAccessConfig=master_global_access_config)
-      update = self.messages.ClusterUpdate(
-          desiredPrivateClusterConfig=private_cluster_config)
 
     if (options.security_profile is not None and
         options.security_profile_runtime_rules is not None):
@@ -4089,10 +4098,6 @@ class APIAdapter(object):
             directMetricsOptIn=False)
         update = self.messages.ClusterUpdate(
             desiredPodAutoscaling=pod_autoscaling_config)
-
-    if options.enable_private_endpoint is not None:
-      update = self.messages.ClusterUpdate(
-          desiredEnablePrivateEndpoint=options.enable_private_endpoint)
 
     if options.logging_variant is not None:
       logging_config = self.messages.NodePoolLoggingConfig()
@@ -4365,14 +4370,20 @@ class APIAdapter(object):
           desiredDefaultEnablePrivateNodes=options.enable_private_nodes
       )
 
-    if options.enable_dns_access is not None:
-      config = self.messages.ControlPlaneEndpointsConfig(
-          dnsEndpointConfig=self.messages.DNSEndpointConfig(
-              allowExternalTraffic=options.enable_dns_access
-          ),
+    if (
+        options.enable_dns_access is not None
+        or options.enable_ip_access is not None
+        or options.enable_master_global_access is not None
+        or options.enable_private_endpoint is not None
+        or options.enable_master_authorized_networks is not None
+        or options.enable_google_cloud_access is not None
+        or options.enable_authorized_networks_on_private_endpoint is not None
+    ):
+      cp_endpoints_config = self._GetDesiredControlPlaneEndpointsConfig(
+          cluster_ref, options
       )
       update = self.messages.ClusterUpdate(
-          desiredControlPlaneEndpointsConfig=config
+          desiredControlPlaneEndpointsConfig=cp_endpoints_config
       )
 
     if (
@@ -4531,6 +4542,7 @@ class APIAdapter(object):
                     enable_gcsfuse_csi_driver=None,
                     enable_stateful_ha=None,
                     enable_parallelstore_csi_driver=None,
+                    enable_high_scale_checkpointing=None,
                     enable_ray_operator=None):
     """Generates an AddonsConfig object given specific parameters.
 
@@ -4548,6 +4560,7 @@ class APIAdapter(object):
       enable_gcsfuse_csi_driver: whether to enable GcsFuseCsiDriver.
       enable_stateful_ha: whether to enable StatefulHA addon.
       enable_parallelstore_csi_driver: whether to enable ParallelstoreCsiDriver.
+      enable_high_scale_checkpointing: whether to enable HighScaleCheckpointing.
       enable_ray_operator: whether to enable RayOperator.
 
     Returns:
@@ -4592,6 +4605,10 @@ class APIAdapter(object):
     if enable_parallelstore_csi_driver:
       addons.parallelstoreCsiDriverConfig = (
           self.messages.ParallelstoreCsiDriverConfig(enabled=True)
+      )
+    if enable_high_scale_checkpointing:
+      addons.highScaleCheckpointingConfig = (
+          self.messages.HighScaleCheckpointingConfig(enabled=True)
       )
     if enable_ray_operator:
       addons.rayOperatorConfig = self.messages.RayOperatorConfig(enabled=True)
@@ -6198,6 +6215,130 @@ class APIAdapter(object):
     )
     return self.ParseOperation(op.name, cluster_ref.zone)
 
+  def _GetDesiredControlPlaneEndpointsConfig(self, cluster_ref, options):
+    """Gets the DesiredControlPlaneEndpointsConfig from options."""
+    cp_endpoints_config = self.messages.ControlPlaneEndpointsConfig()
+    # update dnsEndpointConfig sub-section
+    if options.enable_dns_access is not None:
+      cp_endpoints_config.dnsEndpointConfig = self.messages.DNSEndpointConfig(
+          allowExternalTraffic=options.enable_dns_access
+      )
+    # update ipEndpointConfig sub-section
+    if (
+        options.enable_ip_access is not None
+        or options.enable_master_global_access is not None
+        or options.enable_private_endpoint is not None
+        or options.enable_master_authorized_networks is not None
+        or options.enable_google_cloud_access is not None
+        or options.enable_authorized_networks_on_private_endpoint is not None
+    ):
+      ip_endpoints_config = self.messages.IPEndpointsConfig()
+
+      if options.enable_ip_access is not None:
+        ip_endpoints_config.enabled = options.enable_ip_access
+      if options.enable_master_global_access is not None:
+        ip_endpoints_config.globalAccess = options.enable_master_global_access
+      if options.enable_private_endpoint is not None:
+        ip_endpoints_config.enablePublicEndpoint = (
+            not options.enable_private_endpoint
+        )
+
+      if (
+          options.enable_master_authorized_networks is not None
+          or options.master_authorized_networks is not None
+      ):
+        if options.enable_master_authorized_networks is None:
+          raise util.Error(MISMATCH_AUTHORIZED_NETWORKS_ERROR_MSG)
+        authorized_networks = self.messages.MasterAuthorizedNetworksConfig(
+            enabled=options.enable_master_authorized_networks)
+        if options.master_authorized_networks:
+          for network in options.master_authorized_networks:
+            authorized_networks.cidrBlocks.append(
+                self.messages.CidrBlock(cidrBlock=network))
+        ip_endpoints_config.authorizedNetworksConfig = authorized_networks
+
+      if options.enable_google_cloud_access is not None:
+        if ip_endpoints_config.authorizedNetworksConfig is None:
+          # preserver current state of MAN (enabled/disabled + cirds)
+          # if not provided in the request
+          cluster = self.GetCluster(cluster_ref)
+          authorized_networks = self.messages.MasterAuthorizedNetworksConfig(
+              enabled=cluster.controlPlaneEndpointsConfig.ipEndpointsConfig.authorizedNetworksConfig.enabled,
+              cidrBlocks=cluster.controlPlaneEndpointsConfig.ipEndpointsConfig.authorizedNetworksConfig.cidrBlocks
+          )
+          ip_endpoints_config.authorizedNetworksConfig = authorized_networks
+        (ip_endpoints_config.authorizedNetworksConfig.gcpPublicCidrsAccessEnabled
+        ) = options.enable_google_cloud_access
+
+      if options.enable_authorized_networks_on_private_endpoint is not None:
+        if ip_endpoints_config.authorizedNetworksConfig is None:
+          # preserver current state of MAN (enabled/disabled + cirds)
+          # if not provided in the request
+          cluster = self.GetCluster(cluster_ref)
+          authorized_networks = self.messages.MasterAuthorizedNetworksConfig(
+              enabled=cluster.controlPlaneEndpointsConfig.ipEndpointsConfig.authorizedNetworksConfig.enabled,
+              cidrBlocks=cluster.controlPlaneEndpointsConfig.ipEndpointsConfig.authorizedNetworksConfig.cidrBlocks
+          )
+          ip_endpoints_config.authorizedNetworksConfig = authorized_networks
+        (ip_endpoints_config.authorizedNetworksConfig.privateEndpointEnforcementEnabled
+        ) = options.enable_authorized_networks_on_private_endpoint
+
+      cp_endpoints_config.ipEndpointsConfig = ip_endpoints_config
+    return cp_endpoints_config
+
+  def _ParseControlPlaneEndpointsConfig(self, options, cluster):
+    """Parses the options for control plane endpoints config (creation flow)."""
+    if options.enable_dns_access is not None:
+      self._InitDNSEndpointConfigIfRequired(cluster)
+      cluster.controlPlaneEndpointsConfig.dnsEndpointConfig.allowExternalTraffic = (
+          options.enable_dns_access
+      )
+    if options.enable_ip_access is not None:
+      self._InitIPEndpointsConfigIfRequired(cluster)
+      cluster.controlPlaneEndpointsConfig.ipEndpointsConfig.enabled = (
+          options.enable_ip_access
+      )
+    if options.enable_master_global_access is not None:
+      self._InitIPEndpointsConfigIfRequired(cluster)
+      cluster.controlPlaneEndpointsConfig.ipEndpointsConfig.globalAccess = (
+          options.enable_master_global_access
+      )
+    if options.enable_private_endpoint is not None:
+      self._InitIPEndpointsConfigIfRequired(cluster)
+      cluster.controlPlaneEndpointsConfig.ipEndpointsConfig.enablePublicEndpoint = (
+          not options.enable_private_endpoint
+      )
+
+    if options.private_endpoint_subnetwork is not None:
+      self._InitIPEndpointsConfigIfRequired(cluster)
+      cluster.controlPlaneEndpointsConfig.ipEndpointsConfig.privateEndpointSubnetwork = (
+          options.private_endpoint_subnetwork
+      )
+
+    self.ParseMasterAuthorizedNetworkOptions(options, cluster)
+
+  def _InitDNSEndpointConfigIfRequired(self, cluster):
+    """Initializes the DNSEndpointConfig on the cluster object if it is none."""
+    if cluster.controlPlaneEndpointsConfig is None:
+      cluster.controlPlaneEndpointsConfig = (
+          self.messages.ControlPlaneEndpointsConfig()
+      )
+    if cluster.controlPlaneEndpointsConfig.dnsEndpointConfig is None:
+      cluster.controlPlaneEndpointsConfig.dnsEndpointConfig = (
+          self.messages.DNSEndpointConfig()
+      )
+
+  def _InitIPEndpointsConfigIfRequired(self, cluster):
+    """Initializes the IPEndpointsConfig on the cluster object if it is none."""
+    if cluster.controlPlaneEndpointsConfig is None:
+      cluster.controlPlaneEndpointsConfig = (
+          self.messages.ControlPlaneEndpointsConfig()
+      )
+    if cluster.controlPlaneEndpointsConfig.ipEndpointsConfig is None:
+      cluster.controlPlaneEndpointsConfig.ipEndpointsConfig = (
+          self.messages.IPEndpointsConfig()
+      )
+
 
 class V1Adapter(APIAdapter):
   """APIAdapter for v1."""
@@ -6274,12 +6415,6 @@ class V1Beta1Adapter(V1Adapter):
     if options.enable_identity_service:
       cluster.identityServiceConfig = self.messages.IdentityServiceConfig(
           enabled=options.enable_identity_service)
-    if options.enable_master_global_access is not None:
-      if cluster.privateClusterConfig is None:
-        cluster.privateClusterConfig = self.messages.PrivateClusterConfig()
-      cluster.privateClusterConfig.masterGlobalAccessConfig = \
-          self.messages.PrivateClusterMasterGlobalAccessConfig(
-              enabled=options.enable_master_global_access)
     if options.security_group is not None:
       # The presence of the --security_group="foo" flag implies enabled=True.
       cluster.authenticatorGroupsConfig = (
@@ -6853,12 +6988,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         cluster.networkConfig = self.messages.NetworkConfig()
       cluster.networkConfig.serviceExternalIpsConfig = self.messages.ServiceExternalIPsConfig(
           enabled=options.enable_service_externalips)
-    if options.enable_master_global_access is not None:
-      if cluster.privateClusterConfig is None:
-        cluster.privateClusterConfig = self.messages.PrivateClusterConfig()
-      cluster.privateClusterConfig.masterGlobalAccessConfig = \
-          self.messages.PrivateClusterMasterGlobalAccessConfig(
-              enabled=options.enable_master_global_access)
     if options.security_group is not None:
       # The presence of the --security_group="foo" flag implies enabled=True.
       cluster.authenticatorGroupsConfig = (
@@ -7949,6 +8078,8 @@ def _AddPSCPrivateClustersOptionsToClusterForCreateCluster(
   """Adds all PSC private cluster options to cluster during create cluster."""
   if options.cross_connect_subnetworks is not None:
     items = []
+    cluster.privateClusterConfig = messages.PrivateClusterConfig(
+        enablePrivateNodes=options.enable_private_nodes)
     for subnetwork in sorted(options.cross_connect_subnetworks):
       items.append(messages.CrossConnectItem(subnetwork=subnetwork))
     cluster.privateClusterConfig.crossConnectConfig = messages.CrossConnectConfig(

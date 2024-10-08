@@ -1936,29 +1936,29 @@ class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryPublicR
 
 
 class GoogleDevtoolsArtifactregistryV1Rule(_messages.Message):
-  r"""Rules point to a version and represent an alternative name that can be
-  used to access the version.
+  r"""A Rule applies to repository or package level. It defines the deny or
+  allow action of the operation when the conditions in the rule are met.
 
   Enums:
-    ActionValueValuesEnum: What action this rule would make.
+    ActionValueValuesEnum: The action this rule makes.
     OperationValueValuesEnum:
 
   Fields:
-    action: What action this rule would make.
-    condition: Optional. CEL expression. If not provided, the rule matches all
-      the objects.
+    action: The action this rule makes.
+    condition: Optional. The condition of the rule in CEL expression. If not
+      provided, the rule matches all the objects.
     name: The name of the rule, for example: "projects/p1/locations/us-
       central1/repositories/repo1/rules/rule1".
     operation: A OperationValueValuesEnum attribute.
-    packageId: If empty, this rule is targeting all the packages inside the
-      repository. If provided, the rule will only be applied to the package.
+    packageId: The package ID the rule applies to. If empty, this rule applies
+      to all the packages inside the repository.
   """
 
   class ActionValueValuesEnum(_messages.Enum):
-    r"""What action this rule would make.
+    r"""The action this rule makes.
 
     Values:
-      ACTION_UNSPECIFIED: Action not specified, treated as allow.
+      ACTION_UNSPECIFIED: Action not specified.
       ALLOW: Allow the operation.
       DENY: Deny the operation.
     """

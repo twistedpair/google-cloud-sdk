@@ -201,6 +201,7 @@ def AddSqlServerHomogeneousMigrationConfigFlag(parser, is_update=False):
     )
     AddSqlServerEncryptedDatabasesFlag(sqlserver_homogeneous_migration_config)
     AddSqlServerUseDiffBackupFlag(sqlserver_homogeneous_migration_config)
+    AddSqlServerPromoteWhenReadyFlag(sqlserver_homogeneous_migration_config)
   else:
     AddSqlServerBackupFilePattern(
         sqlserver_homogeneous_migration_config,
@@ -211,6 +212,7 @@ def AddSqlServerHomogeneousMigrationConfigFlag(parser, is_update=False):
     )
     AddSqlServerEncryptedDatabasesFlag(sqlserver_homogeneous_migration_config)
     AddSqlServerUseDiffBackupFlag(sqlserver_homogeneous_migration_config)
+    AddSqlServerPromoteWhenReadyFlag(sqlserver_homogeneous_migration_config)
 
 
 def AddSqlServerBackupFilePattern(parser, default_value=None):
@@ -328,5 +330,20 @@ def AddDatabasesFilterFlag(parser):
       '--databases-filter',
       metavar='databaseName',
       type=arg_parsers.ArgList(min_length=1),
+      help=help_text,
+  )
+
+
+def AddSqlServerPromoteWhenReadyFlag(parser):
+  """Adds a --sqlserver-promote-when-ready flag to the given parser."""
+  help_text = """\
+      Promote the database when it is ready. Use --sqlserver-promote-when-ready
+      to enable and --no-sqlserver-promote-when-ready to disable. This flag is
+      used only for homogeneous SQL Server to Cloud SQL for SQL Server
+      migrations.
+    """
+  parser.add_argument(
+      '--sqlserver-promote-when-ready',
+      action='store_true',
       help=help_text,
   )

@@ -2372,7 +2372,7 @@ see https://cloud.google.com/firewall/docs/use-tags-for-firewalls.
   AddAutoprovisioningResourceManagerTagsFlag(parser, help_text)
 
 
-def AddMasterAuthorizedNetworksFlags(parser, enable_group_for_update=None):
+def AddMasterAuthorizedNetworksFlags(parser):
   """Adds Master Authorized Networks related flags to parser.
 
   Master Authorized Networks related flags are:
@@ -2380,19 +2380,10 @@ def AddMasterAuthorizedNetworksFlags(parser, enable_group_for_update=None):
 
   Args:
     parser: A given parser.
-    enable_group_for_update: An optional group of mutually exclusive flag
-      options to which an --enable-master-authorized-networks flag is added in
-      an update command.
   """
-  if enable_group_for_update is None:
-    # Flags are being added to the same group.
-    master_flag_group = parser.add_argument_group('Master Authorized Networks')
-    enable_flag_group = master_flag_group
-  else:
-    # Flags are being added to different groups, so the new one should have no
-    # help text (has only one arg).
-    master_flag_group = parser.add_argument_group('')
-    enable_flag_group = enable_group_for_update
+  # Flags are being added to the same group.
+  master_flag_group = parser.add_argument_group('Master Authorized Networks')
+  enable_flag_group = master_flag_group
 
   enable_flag_group.add_argument(
       '--enable-master-authorized-networks',
@@ -3596,6 +3587,7 @@ def AddAddonsFlagsWithOptions(parser, addon_options):
           api_adapter.STATEFULHA,
           # TODO(b/314808639): Remove at AGA time
           api_adapter.PARALLELSTORECSIDRIVER,
+          api_adapter.HIGHSCALECHECKPOINTING,
       ]
   ]
   visible_addon_options += api_adapter.VISIBLE_CLOUDRUN_ADDONS
@@ -5742,11 +5734,14 @@ def AddGetCredentialsArgs(parser):
   )
 
 
-def AddDnsEndpointFlag(parser, hidden=True):
+def AddDnsEndpointFlag(parser):
+  """Adds the --dns-endpoint flag to parser."""
+  help_text = """\
+    Whether to use the DNS-based endpoint for the cluster address.
+  """
   parser.add_argument(
       '--dns-endpoint',
-      hidden=hidden,
-      help='Whether to use the DNS endpoint for the cluster address.',
+      help=help_text,
       action='store_true',
   )
 
@@ -6277,11 +6272,14 @@ def AddAdditionalPodNetworkFlag(parser):
 
 def AddEnableDNSAccessFlag(parser):
   """Adds the --enable-dns-access flag to parser."""
-  help_text = ' '
+  help_text = """\
+    Enable access to the cluster's control plane over DNS-based endpoint.
+
+    DNS-based control plane access is recommended.
+  """
   parser.add_argument(
       '--enable-dns-access',
       default=None,
-      hidden=True,
       action='store_true',
       help=help_text,
   )
@@ -6892,15 +6890,29 @@ Remove additional subnetwork named "my-subnet", including all the pod ipv4 range
   )
 
 
-def AddClusterEnablePrivateNodesFlag(parser, hidden=True):
+def AddClusterEnablePrivateNodesFlag(parser):
   """Adds a --enable-private-nodes to the given cluster parser."""
-  help_text = ' '
+  help_text = """\
+Standard cluster:
+  Enable private nodes as a default behavior for all newly created node pools,
+  if `--enable-private-nodes` is not provided at node pool creation time.
+
+  Modifications to this flag do not affect `--enable-private-nodes` state of the
+  existing node pools.
+
+Autopilot cluster:
+  Force new and existing workloads, without explicit
+  `cloud.google.com/private-node=true` node selector, to run on nodes with no
+  public IP address.
+
+  Modifications to this flag trigger a re-schedule operation on all existng
+  workloads to run on different node VMs.
+"""
   parser.add_argument(
       '--enable-private-nodes',
       default=None,
       action='store_true',
       help=help_text,
-      hidden=hidden,
   )
 
 
@@ -6941,4 +6953,33 @@ def AddAutoprovisioningCgroupModeFlag(parser, hidden=True):
       choices=['default', 'v1', 'v2'],
       help=help_text,
       hidden=hidden,
+  )
+
+
+def AddEnableIPAccessFlag(parser):
+  """Adds the --enable-ip-access flag to parser."""
+  help_text = """\
+Enable access to the cluster's control plane over private IP and
+public IP if --enable-private-endpoint is not enabled.
+"""
+
+  parser.add_argument(
+      '--enable-ip-access',
+      default=None,
+      action='store_true',
+      help=help_text,
+  )
+
+
+def AddAauthorizedNetworksOnPrivateEndpointFlag(parser):
+  """Adds the --enable-authorized-networks-on-private-endpoint flag to parser."""
+  help_text = """\
+Enable enforcement of --master-authorized-networks CIDR ranges for
+traffic reaching cluster's control plane via private IP.
+"""
+  parser.add_argument(
+      '--enable-authorized-networks-on-private-endpoint',
+      default=None,
+      action='store_true',
+      help=help_text,
   )

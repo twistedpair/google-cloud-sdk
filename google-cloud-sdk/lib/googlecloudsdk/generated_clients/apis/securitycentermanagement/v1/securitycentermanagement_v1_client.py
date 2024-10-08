@@ -72,7 +72,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets an effective ETD custom module. Retrieves the effective module at the given level. The difference between an EffectiveCustomModule and a CustomModule is that the fields for an EffectiveCustomModule are computed from ancestors if needed. For example, the enablement_state for a CustomModule can be either ENABLED, DISABLED, or INHERITED. Where as the enablement_state for an EffectiveCustomModule is always computed to ENABLED or DISABLED (the effective enablement_state).
+      r"""Gets the effective Event Threat Detection custom module at the given level. The difference between an EffectiveEventThreatDetectionCustomModule and an EventThreatDetectionCustomModule is that the fields for an `EffectiveEventThreatDetectionCustomModule` are computed from ancestors if needed. For example, the enablement state for an `EventThreatDetectionCustomModule` can be `ENABLED`, `DISABLED`, or `INHERITED`. In contrast, the enablement state for an `EffectiveEventThreatDetectionCustomModule` is always computed as `ENABLED` or `DISABLED`.
 
       Args:
         request: (SecuritycentermanagementFoldersLocationsEffectiveEventThreatDetectionCustomModulesGetRequest) input message
@@ -163,7 +163,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns a list of all EffectiveSecurityHealthAnalyticsCustomModules for the given parent. This includes resident modules defined at the scope of the parent, and inherited modules, inherited from CRM ancestors (no descendants).
+      r"""Returns a list of all EffectiveSecurityHealthAnalyticsCustomModule resources for the given parent. This includes resident modules defined at the scope of the parent, and inherited modules, inherited from ancestor organizations, folders, and projects (no descendants).
 
       Args:
         request: (SecuritycentermanagementFoldersLocationsEffectiveSecurityHealthAnalyticsCustomModulesListRequest) input message
@@ -200,7 +200,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a resident Event Threat Detection custom module at the scope of the given Resource Manager parent, and also creates inherited custom modules for all descendants of the given parent. These modules are enabled by default.
+      r"""Creates a resident Event Threat Detection custom module at the scope of the given organization, folder, or project, and creates inherited custom modules for all descendants of the given parent. These modules are enabled by default.
 
       Args:
         request: (SecuritycentermanagementFoldersLocationsEventThreatDetectionCustomModulesCreateRequest) input message
@@ -227,7 +227,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Event Threat Detection custom module and all of its descendants in the Resource Manager hierarchy. This method is only supported for resident custom modules.
+      r"""Deletes the specified Event Threat Detection custom module and all of its descendants in the resource hierarchy. This method is only supported for resident custom modules.
 
       Args:
         request: (SecuritycentermanagementFoldersLocationsEventThreatDetectionCustomModulesDeleteRequest) input message
@@ -281,7 +281,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all Event Threat Detection custom modules for the given Resource Manager parent. This includes resident modules defined at the scope of the parent along with modules inherited from ancestors.
+      r"""Lists all Event Threat Detection custom modules for the given organization, folder, or project. This includes resident modules defined at the scope of the parent along with modules inherited from ancestors.
 
       Args:
         request: (SecuritycentermanagementFoldersLocationsEventThreatDetectionCustomModulesListRequest) input message
@@ -308,7 +308,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def ListDescendant(self, request, global_params=None):
-      r"""Lists all resident Event Threat Detection custom modules under the given Resource Manager parent and its descendants.
+      r"""Lists all resident Event Threat Detection custom modules for the given organization, folder, or project and its descendants.
 
       Args:
         request: (SecuritycentermanagementFoldersLocationsEventThreatDetectionCustomModulesListDescendantRequest) input message
@@ -490,7 +490,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a resident SecurityHealthAnalyticsCustomModule at the scope of the given CRM parent, and also creates inherited SecurityHealthAnalyticsCustomModules for all CRM descendants of the given parent. These modules are enabled by default.
+      r"""Creates a resident SecurityHealthAnalyticsCustomModule at the scope of the given organization, folder, or project, and also creates inherited `SecurityHealthAnalyticsCustomModule` resources for all folders and projects that are descendants of the given parent. These modules are enabled by default.
 
       Args:
         request: (SecuritycentermanagementFoldersLocationsSecurityHealthAnalyticsCustomModulesCreateRequest) input message
@@ -517,7 +517,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified SecurityHealthAnalyticsCustomModule and all of its descendants in the CRM hierarchy. This method is only supported for resident custom modules.
+      r"""Deletes the specified SecurityHealthAnalyticsCustomModule and all of its descendants in the resource hierarchy. This method is only supported for resident custom modules.
 
       Args:
         request: (SecuritycentermanagementFoldersLocationsSecurityHealthAnalyticsCustomModulesDeleteRequest) input message
@@ -571,7 +571,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns a list of all SecurityHealthAnalyticsCustomModules for the given parent. This includes resident modules defined at the scope of the parent, and inherited modules, inherited from CRM ancestors (no descendants).
+      r"""Returns a list of all SecurityHealthAnalyticsCustomModule resources for the given parent. This includes resident modules defined at the scope of the parent, and inherited modules, inherited from ancestor organizations, folders, and projects (no descendants).
 
       Args:
         request: (SecuritycentermanagementFoldersLocationsSecurityHealthAnalyticsCustomModulesListRequest) input message
@@ -598,7 +598,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def ListDescendant(self, request, global_params=None):
-      r"""Returns a list of all resident SecurityHealthAnalyticsCustomModules under the given CRM parent and all of the parent's CRM descendants.
+      r"""Returns a list of all resident SecurityHealthAnalyticsCustomModule resources under the given organization, folder, or project and all of its descendants.
 
       Args:
         request: (SecuritycentermanagementFoldersLocationsSecurityHealthAnalyticsCustomModulesListDescendantRequest) input message
@@ -625,7 +625,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the SecurityHealthAnalyticsCustomModule under the given name based on the given update mask. Updating the enablement state is supported on both resident and inherited modules (though resident modules cannot have an enablement state of "inherited"). Updating the display name and custom config of a module is supported on resident modules only.
+      r"""Updates the SecurityHealthAnalyticsCustomModule under the given name based on the given update mask. Updating the enablement state is supported on both resident and inherited modules (though resident modules cannot have an enablement state of "inherited"). Updating the display name and custom configuration of a module is supported on resident modules only.
 
       Args:
         request: (SecuritycentermanagementFoldersLocationsSecurityHealthAnalyticsCustomModulesPatchRequest) input message
@@ -652,7 +652,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def Simulate(self, request, global_params=None):
-      r"""Simulates a given SecurityHealthAnalyticsCustomModule and Resource.
+      r"""Simulates the result of using a SecurityHealthAnalyticsCustomModule to check a resource.
 
       Args:
         request: (SecuritycentermanagementFoldersLocationsSecurityHealthAnalyticsCustomModulesSimulateRequest) input message
@@ -709,7 +709,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets an effective ETD custom module. Retrieves the effective module at the given level. The difference between an EffectiveCustomModule and a CustomModule is that the fields for an EffectiveCustomModule are computed from ancestors if needed. For example, the enablement_state for a CustomModule can be either ENABLED, DISABLED, or INHERITED. Where as the enablement_state for an EffectiveCustomModule is always computed to ENABLED or DISABLED (the effective enablement_state).
+      r"""Gets the effective Event Threat Detection custom module at the given level. The difference between an EffectiveEventThreatDetectionCustomModule and an EventThreatDetectionCustomModule is that the fields for an `EffectiveEventThreatDetectionCustomModule` are computed from ancestors if needed. For example, the enablement state for an `EventThreatDetectionCustomModule` can be `ENABLED`, `DISABLED`, or `INHERITED`. In contrast, the enablement state for an `EffectiveEventThreatDetectionCustomModule` is always computed as `ENABLED` or `DISABLED`.
 
       Args:
         request: (SecuritycentermanagementOrganizationsLocationsEffectiveEventThreatDetectionCustomModulesGetRequest) input message
@@ -800,7 +800,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns a list of all EffectiveSecurityHealthAnalyticsCustomModules for the given parent. This includes resident modules defined at the scope of the parent, and inherited modules, inherited from CRM ancestors (no descendants).
+      r"""Returns a list of all EffectiveSecurityHealthAnalyticsCustomModule resources for the given parent. This includes resident modules defined at the scope of the parent, and inherited modules, inherited from ancestor organizations, folders, and projects (no descendants).
 
       Args:
         request: (SecuritycentermanagementOrganizationsLocationsEffectiveSecurityHealthAnalyticsCustomModulesListRequest) input message
@@ -837,7 +837,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a resident Event Threat Detection custom module at the scope of the given Resource Manager parent, and also creates inherited custom modules for all descendants of the given parent. These modules are enabled by default.
+      r"""Creates a resident Event Threat Detection custom module at the scope of the given organization, folder, or project, and creates inherited custom modules for all descendants of the given parent. These modules are enabled by default.
 
       Args:
         request: (SecuritycentermanagementOrganizationsLocationsEventThreatDetectionCustomModulesCreateRequest) input message
@@ -864,7 +864,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Event Threat Detection custom module and all of its descendants in the Resource Manager hierarchy. This method is only supported for resident custom modules.
+      r"""Deletes the specified Event Threat Detection custom module and all of its descendants in the resource hierarchy. This method is only supported for resident custom modules.
 
       Args:
         request: (SecuritycentermanagementOrganizationsLocationsEventThreatDetectionCustomModulesDeleteRequest) input message
@@ -918,7 +918,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all Event Threat Detection custom modules for the given Resource Manager parent. This includes resident modules defined at the scope of the parent along with modules inherited from ancestors.
+      r"""Lists all Event Threat Detection custom modules for the given organization, folder, or project. This includes resident modules defined at the scope of the parent along with modules inherited from ancestors.
 
       Args:
         request: (SecuritycentermanagementOrganizationsLocationsEventThreatDetectionCustomModulesListRequest) input message
@@ -945,7 +945,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def ListDescendant(self, request, global_params=None):
-      r"""Lists all resident Event Threat Detection custom modules under the given Resource Manager parent and its descendants.
+      r"""Lists all resident Event Threat Detection custom modules for the given organization, folder, or project and its descendants.
 
       Args:
         request: (SecuritycentermanagementOrganizationsLocationsEventThreatDetectionCustomModulesListDescendantRequest) input message
@@ -1127,7 +1127,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a resident SecurityHealthAnalyticsCustomModule at the scope of the given CRM parent, and also creates inherited SecurityHealthAnalyticsCustomModules for all CRM descendants of the given parent. These modules are enabled by default.
+      r"""Creates a resident SecurityHealthAnalyticsCustomModule at the scope of the given organization, folder, or project, and also creates inherited `SecurityHealthAnalyticsCustomModule` resources for all folders and projects that are descendants of the given parent. These modules are enabled by default.
 
       Args:
         request: (SecuritycentermanagementOrganizationsLocationsSecurityHealthAnalyticsCustomModulesCreateRequest) input message
@@ -1154,7 +1154,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified SecurityHealthAnalyticsCustomModule and all of its descendants in the CRM hierarchy. This method is only supported for resident custom modules.
+      r"""Deletes the specified SecurityHealthAnalyticsCustomModule and all of its descendants in the resource hierarchy. This method is only supported for resident custom modules.
 
       Args:
         request: (SecuritycentermanagementOrganizationsLocationsSecurityHealthAnalyticsCustomModulesDeleteRequest) input message
@@ -1208,7 +1208,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns a list of all SecurityHealthAnalyticsCustomModules for the given parent. This includes resident modules defined at the scope of the parent, and inherited modules, inherited from CRM ancestors (no descendants).
+      r"""Returns a list of all SecurityHealthAnalyticsCustomModule resources for the given parent. This includes resident modules defined at the scope of the parent, and inherited modules, inherited from ancestor organizations, folders, and projects (no descendants).
 
       Args:
         request: (SecuritycentermanagementOrganizationsLocationsSecurityHealthAnalyticsCustomModulesListRequest) input message
@@ -1235,7 +1235,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def ListDescendant(self, request, global_params=None):
-      r"""Returns a list of all resident SecurityHealthAnalyticsCustomModules under the given CRM parent and all of the parent's CRM descendants.
+      r"""Returns a list of all resident SecurityHealthAnalyticsCustomModule resources under the given organization, folder, or project and all of its descendants.
 
       Args:
         request: (SecuritycentermanagementOrganizationsLocationsSecurityHealthAnalyticsCustomModulesListDescendantRequest) input message
@@ -1262,7 +1262,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the SecurityHealthAnalyticsCustomModule under the given name based on the given update mask. Updating the enablement state is supported on both resident and inherited modules (though resident modules cannot have an enablement state of "inherited"). Updating the display name and custom config of a module is supported on resident modules only.
+      r"""Updates the SecurityHealthAnalyticsCustomModule under the given name based on the given update mask. Updating the enablement state is supported on both resident and inherited modules (though resident modules cannot have an enablement state of "inherited"). Updating the display name and custom configuration of a module is supported on resident modules only.
 
       Args:
         request: (SecuritycentermanagementOrganizationsLocationsSecurityHealthAnalyticsCustomModulesPatchRequest) input message
@@ -1289,7 +1289,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def Simulate(self, request, global_params=None):
-      r"""Simulates a given SecurityHealthAnalyticsCustomModule and Resource.
+      r"""Simulates the result of using a SecurityHealthAnalyticsCustomModule to check a resource.
 
       Args:
         request: (SecuritycentermanagementOrganizationsLocationsSecurityHealthAnalyticsCustomModulesSimulateRequest) input message
@@ -1346,7 +1346,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets an effective ETD custom module. Retrieves the effective module at the given level. The difference between an EffectiveCustomModule and a CustomModule is that the fields for an EffectiveCustomModule are computed from ancestors if needed. For example, the enablement_state for a CustomModule can be either ENABLED, DISABLED, or INHERITED. Where as the enablement_state for an EffectiveCustomModule is always computed to ENABLED or DISABLED (the effective enablement_state).
+      r"""Gets the effective Event Threat Detection custom module at the given level. The difference between an EffectiveEventThreatDetectionCustomModule and an EventThreatDetectionCustomModule is that the fields for an `EffectiveEventThreatDetectionCustomModule` are computed from ancestors if needed. For example, the enablement state for an `EventThreatDetectionCustomModule` can be `ENABLED`, `DISABLED`, or `INHERITED`. In contrast, the enablement state for an `EffectiveEventThreatDetectionCustomModule` is always computed as `ENABLED` or `DISABLED`.
 
       Args:
         request: (SecuritycentermanagementProjectsLocationsEffectiveEventThreatDetectionCustomModulesGetRequest) input message
@@ -1437,7 +1437,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns a list of all EffectiveSecurityHealthAnalyticsCustomModules for the given parent. This includes resident modules defined at the scope of the parent, and inherited modules, inherited from CRM ancestors (no descendants).
+      r"""Returns a list of all EffectiveSecurityHealthAnalyticsCustomModule resources for the given parent. This includes resident modules defined at the scope of the parent, and inherited modules, inherited from ancestor organizations, folders, and projects (no descendants).
 
       Args:
         request: (SecuritycentermanagementProjectsLocationsEffectiveSecurityHealthAnalyticsCustomModulesListRequest) input message
@@ -1474,7 +1474,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a resident Event Threat Detection custom module at the scope of the given Resource Manager parent, and also creates inherited custom modules for all descendants of the given parent. These modules are enabled by default.
+      r"""Creates a resident Event Threat Detection custom module at the scope of the given organization, folder, or project, and creates inherited custom modules for all descendants of the given parent. These modules are enabled by default.
 
       Args:
         request: (SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModulesCreateRequest) input message
@@ -1501,7 +1501,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Event Threat Detection custom module and all of its descendants in the Resource Manager hierarchy. This method is only supported for resident custom modules.
+      r"""Deletes the specified Event Threat Detection custom module and all of its descendants in the resource hierarchy. This method is only supported for resident custom modules.
 
       Args:
         request: (SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModulesDeleteRequest) input message
@@ -1555,7 +1555,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all Event Threat Detection custom modules for the given Resource Manager parent. This includes resident modules defined at the scope of the parent along with modules inherited from ancestors.
+      r"""Lists all Event Threat Detection custom modules for the given organization, folder, or project. This includes resident modules defined at the scope of the parent along with modules inherited from ancestors.
 
       Args:
         request: (SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModulesListRequest) input message
@@ -1582,7 +1582,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def ListDescendant(self, request, global_params=None):
-      r"""Lists all resident Event Threat Detection custom modules under the given Resource Manager parent and its descendants.
+      r"""Lists all resident Event Threat Detection custom modules for the given organization, folder, or project and its descendants.
 
       Args:
         request: (SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModulesListDescendantRequest) input message
@@ -1764,7 +1764,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a resident SecurityHealthAnalyticsCustomModule at the scope of the given CRM parent, and also creates inherited SecurityHealthAnalyticsCustomModules for all CRM descendants of the given parent. These modules are enabled by default.
+      r"""Creates a resident SecurityHealthAnalyticsCustomModule at the scope of the given organization, folder, or project, and also creates inherited `SecurityHealthAnalyticsCustomModule` resources for all folders and projects that are descendants of the given parent. These modules are enabled by default.
 
       Args:
         request: (SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModulesCreateRequest) input message
@@ -1791,7 +1791,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified SecurityHealthAnalyticsCustomModule and all of its descendants in the CRM hierarchy. This method is only supported for resident custom modules.
+      r"""Deletes the specified SecurityHealthAnalyticsCustomModule and all of its descendants in the resource hierarchy. This method is only supported for resident custom modules.
 
       Args:
         request: (SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModulesDeleteRequest) input message
@@ -1845,7 +1845,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns a list of all SecurityHealthAnalyticsCustomModules for the given parent. This includes resident modules defined at the scope of the parent, and inherited modules, inherited from CRM ancestors (no descendants).
+      r"""Returns a list of all SecurityHealthAnalyticsCustomModule resources for the given parent. This includes resident modules defined at the scope of the parent, and inherited modules, inherited from ancestor organizations, folders, and projects (no descendants).
 
       Args:
         request: (SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModulesListRequest) input message
@@ -1872,7 +1872,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def ListDescendant(self, request, global_params=None):
-      r"""Returns a list of all resident SecurityHealthAnalyticsCustomModules under the given CRM parent and all of the parent's CRM descendants.
+      r"""Returns a list of all resident SecurityHealthAnalyticsCustomModule resources under the given organization, folder, or project and all of its descendants.
 
       Args:
         request: (SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModulesListDescendantRequest) input message
@@ -1899,7 +1899,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the SecurityHealthAnalyticsCustomModule under the given name based on the given update mask. Updating the enablement state is supported on both resident and inherited modules (though resident modules cannot have an enablement state of "inherited"). Updating the display name and custom config of a module is supported on resident modules only.
+      r"""Updates the SecurityHealthAnalyticsCustomModule under the given name based on the given update mask. Updating the enablement state is supported on both resident and inherited modules (though resident modules cannot have an enablement state of "inherited"). Updating the display name and custom configuration of a module is supported on resident modules only.
 
       Args:
         request: (SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModulesPatchRequest) input message
@@ -1926,7 +1926,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def Simulate(self, request, global_params=None):
-      r"""Simulates a given SecurityHealthAnalyticsCustomModule and Resource.
+      r"""Simulates the result of using a SecurityHealthAnalyticsCustomModule to check a resource.
 
       Args:
         request: (SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModulesSimulateRequest) input message

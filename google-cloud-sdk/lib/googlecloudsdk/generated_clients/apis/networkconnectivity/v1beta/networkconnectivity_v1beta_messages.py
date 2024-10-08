@@ -178,7 +178,7 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareInstance(_messages.Messa
     name: Identifier. The name of a CustomHardwareInstance. Format: `projects/
       {project}/locations/{location}/customHardwareInstances/{custom_hardware_
       instance}`.
-    region: Required. The region associated with the custom hardware instance.
+    region: Required. The region associated with the CustomHardwareInstance.
       Example: us-central1
     updateTime: Output only. Time when the CustomHardwareInstance was updated.
   """
@@ -241,14 +241,15 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment(_messages
     name: Identifier. The name of a CustomHardwareLinkAttachment. Format: `pro
       jects/{project}/locations/{location}/customHardwareLinkAttachments/{cust
       om_hardware_link_attachment}`.
-    network: The name of the VPC network for this custom hardware link
-      attachment. Format: `projects/{project}/global/networks/{network}`
+    network: The name of the VPC network for this
+      CustomHardwareLinkAttachment. Format:
+      `projects/{project}/global/networks/{network}`
     peerAsn: Required. ASN for network on the Google side of the
       CustomHardwareLinkAttachment. CustomHardware BGP supports 16-bit and
       32-bit ASN.
     peerBgpIp: Required. BGP speaker IP address used by the Google owned BGP
       speaker.
-    project: The consumer project where custom hardware instance are created.
+    project: The consumer project where CustomHardwareInstance are created.
       Format: `projects/{project}`
     updateTime: Output only. Time when the CustomHardwareLinkAttachment was
       updated.
@@ -722,8 +723,8 @@ class GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments(_message
 
   Fields:
     includeImportRanges: Optional. IP ranges allowed to be included during
-      import from hub.(does not control transit connectivity) The only allowed
-      value for now is "ALL_IPV4_RANGES".
+      import from hub (does not control transit connectivity). The only
+      allowed value for now is "ALL_IPV4_RANGES".
     siteToSiteDataTransfer: A value that controls whether site-to-site data
       transfer is enabled for these resources. Data transfer is available only
       in [supported locations](https://cloud.google.com/network-
@@ -739,6 +740,28 @@ class GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments(_message
   vpcNetwork = _messages.StringField(4)
 
 
+class GoogleCloudNetworkconnectivityV1betaLinkedProducerVpcNetwork(_messages.Message):
+  r"""Next ID: 7
+
+  Fields:
+    excludeExportRanges: Optional. IP ranges encompassing the subnets to be
+      excluded from peering.
+    network: Immutable. The URI of the Service Consumer VPC that the Producer
+      VPC is peered with.
+    peering: Immutable. The name of the VPC peering between the Service
+      Consumer VPC and the Producer VPC (defined in the Tenant project) which
+      is added to the NCC hub. This peering must be in ACTIVE state.
+    producerNetwork: Output only. The URI of the Producer VPC.
+    serviceConsumerVpcSpoke: Output only. The Service Consumer Network spoke.
+  """
+
+  excludeExportRanges = _messages.StringField(1, repeated=True)
+  network = _messages.StringField(2)
+  peering = _messages.StringField(3)
+  producerNetwork = _messages.StringField(4)
+  serviceConsumerVpcSpoke = _messages.StringField(5)
+
+
 class GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances(_messages.Message):
   r"""A collection of router appliance instances. If you configure multiple
   router appliance instances to receive data from the same set of sites
@@ -747,8 +770,8 @@ class GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances(_messag
 
   Fields:
     includeImportRanges: Optional. IP ranges allowed to be included during
-      import from hub.(does not control transit connectivity) The only allowed
-      value for now is "ALL_IPV4_RANGES".
+      import from hub (does not control transit connectivity). The only
+      allowed value for now is "ALL_IPV4_RANGES".
     instances: The list of router appliance instances.
     siteToSiteDataTransfer: A value that controls whether site-to-site data
       transfer is enabled for these resources. Data transfer is available only
@@ -792,8 +815,8 @@ class GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels(_messages.Message):
 
   Fields:
     includeImportRanges: Optional. IP ranges allowed to be included during
-      import from hub.(does not control transit connectivity) The only allowed
-      value for now is "ALL_IPV4_RANGES".
+      import from hub (does not control transit connectivity). The only
+      allowed value for now is "ALL_IPV4_RANGES".
     siteToSiteDataTransfer: A value that controls whether site-to-site data
       transfer is enabled for these resources. Data transfer is available only
       in [supported locations](https://cloud.google.com/network-
@@ -1633,6 +1656,8 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
       managing-labels#requirements).
     linkedInterconnectAttachments: VLAN attachments that are associated with
       the spoke.
+    linkedProducerVpcNetwork: Optional. The linked producer VPC that is
+      associated with the spoke.
     linkedRouterApplianceInstances: Router appliance instances that are
       associated with the spoke.
     linkedVpcNetwork: Optional. VPC network that is associated with the spoke.
@@ -1660,12 +1685,14 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
       INTERCONNECT_ATTACHMENT: Spokes associated with VLAN attachments.
       ROUTER_APPLIANCE: Spokes associated with router appliance instances.
       VPC_NETWORK: Spokes associated with VPC networks.
+      PRODUCER_VPC_NETWORK: Spokes that are backed by a producer VPC network.
     """
     SPOKE_TYPE_UNSPECIFIED = 0
     VPN_TUNNEL = 1
     INTERCONNECT_ATTACHMENT = 2
     ROUTER_APPLIANCE = 3
     VPC_NETWORK = 4
+    PRODUCER_VPC_NETWORK = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current lifecycle state of this spoke.
@@ -1724,15 +1751,16 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
   hub = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   linkedInterconnectAttachments = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments', 6)
-  linkedRouterApplianceInstances = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances', 7)
-  linkedVpcNetwork = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork', 8)
-  linkedVpnTunnels = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels', 9)
-  name = _messages.StringField(10)
-  reasons = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaStateReason', 11, repeated=True)
-  spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  uniqueId = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  linkedProducerVpcNetwork = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedProducerVpcNetwork', 7)
+  linkedRouterApplianceInstances = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances', 8)
+  linkedVpcNetwork = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork', 9)
+  linkedVpnTunnels = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels', 10)
+  name = _messages.StringField(11)
+  reasons = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaStateReason', 12, repeated=True)
+  spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  uniqueId = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
 
 
 class GoogleCloudNetworkconnectivityV1betaSpokeStateCount(_messages.Message):
@@ -1853,12 +1881,14 @@ class GoogleCloudNetworkconnectivityV1betaSpokeTypeCount(_messages.Message):
       INTERCONNECT_ATTACHMENT: Spokes associated with VLAN attachments.
       ROUTER_APPLIANCE: Spokes associated with router appliance instances.
       VPC_NETWORK: Spokes associated with VPC networks.
+      PRODUCER_VPC_NETWORK: Spokes that are backed by a producer VPC network.
     """
     SPOKE_TYPE_UNSPECIFIED = 0
     VPN_TUNNEL = 1
     INTERCONNECT_ATTACHMENT = 2
     ROUTER_APPLIANCE = 3
     VPC_NETWORK = 4
+    PRODUCER_VPC_NETWORK = 5
 
   count = _messages.IntegerField(1)
   spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 2)

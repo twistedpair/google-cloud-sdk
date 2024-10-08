@@ -481,10 +481,12 @@ class AzureResourceGroup(_messages.Message):
   r"""Represents an Azure resource group.
 
   Fields:
+    id: The ID of the Azure resource group.
     name: The name of the Azure resource group. This is not a UUID.
   """
 
-  name = _messages.StringField(1)
+  id = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 class AzureSubscription(_messages.Message):
@@ -504,11 +506,13 @@ class AzureTenant(_messages.Message):
   r"""Represents a Microsoft Entra tenant.
 
   Fields:
+    displayName: The display name of the Azure tenant.
     id: The ID of the Microsoft Entra tenant, for example,
       "a11aaa11-aa11-1aa1-11aa-1aaa11a".
   """
 
-  id = _messages.StringField(1)
+  displayName = _messages.StringField(1)
+  id = _messages.StringField(2)
 
 
 class BackupDisasterRecovery(_messages.Message):
@@ -724,6 +728,32 @@ class BulkMuteFindingsRequest(_messages.Message):
 
   filter = _messages.StringField(1)
   muteState = _messages.EnumField('MuteStateValueValuesEnum', 2)
+
+
+class CelPolicySpec(_messages.Message):
+  r"""YAML-based rule that uses CEL, which supports the declaration of
+  variables and a filtering predicate. A vulnerable resource is emitted if the
+  evaluation is false. Given: 1) the resource types as: - resource_types:
+  "compute.googleapis.com/Instance" - resource_types:
+  "compute.googleapis.com/Firewall" 2) the CEL policy spec as: name:
+  bad_instance resource_filters: - name: instance resource_type:
+  compute.googleapis.com/Instance filter: > instance.status == 'RUNNING' &&
+  'public' in instance.tags.items - name: firewall resource_type:
+  compute.googleapis.com/Firewall filter: > firewall.direction == 'INGRESS' &&
+  !firewall.disabled && firewall.allowed.exists(rule,
+  rule.IPProtocol.upperAscii() in ['TCP', 'ALL'] && rule.ports.exists(port,
+  network.portsInRange(port, '11-256'))) rule: match: - predicate: >
+  instance.networkInterfaces.exists(net, firewall.network == net.network)
+  output: > {'message': 'Compute instance with publicly accessible ports',
+  'instance': instance.name} Users are able to join resource types together
+  using the exact format as Kubernetes Validating Admission policies.
+
+  Fields:
+    spec: The CEL policy to evaluate to produce findings. A finding is
+      generated when the policy validation evaluates to false.
+  """
+
+  spec = _messages.StringField(1)
 
 
 class CloudArmor(_messages.Message):
@@ -2142,6 +2172,7 @@ class GoogleCloudSecuritycenterV1CustomConfig(_messages.Message):
       the module.
 
   Fields:
+    celPolicy: The CEL policy spec attached to the custom module.
     customOutput: Custom output properties.
     description: Text that describes the vulnerability or misconfiguration
       that the custom module detects. This explanation is returned with each
@@ -2174,12 +2205,13 @@ class GoogleCloudSecuritycenterV1CustomConfig(_messages.Message):
     MEDIUM = 3
     LOW = 4
 
-  customOutput = _messages.MessageField('GoogleCloudSecuritycenterV1CustomOutputSpec', 1)
-  description = _messages.StringField(2)
-  predicate = _messages.MessageField('Expr', 3)
-  recommendation = _messages.StringField(4)
-  resourceSelector = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceSelector', 5)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 6)
+  celPolicy = _messages.MessageField('CelPolicySpec', 1)
+  customOutput = _messages.MessageField('GoogleCloudSecuritycenterV1CustomOutputSpec', 2)
+  description = _messages.StringField(3)
+  predicate = _messages.MessageField('Expr', 4)
+  recommendation = _messages.StringField(5)
+  resourceSelector = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceSelector', 6)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 7)
 
 
 class GoogleCloudSecuritycenterV1CustomOutputSpec(_messages.Message):
@@ -3361,10 +3393,12 @@ class GoogleCloudSecuritycenterV2AzureResourceGroup(_messages.Message):
   r"""Represents an Azure resource group.
 
   Fields:
+    id: The ID of the Azure resource group.
     name: The name of the Azure resource group. This is not a UUID.
   """
 
-  name = _messages.StringField(1)
+  id = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 class GoogleCloudSecuritycenterV2AzureSubscription(_messages.Message):
@@ -3384,11 +3418,13 @@ class GoogleCloudSecuritycenterV2AzureTenant(_messages.Message):
   r"""Represents a Microsoft Entra tenant.
 
   Fields:
+    displayName: The display name of the Azure tenant.
     id: The ID of the Microsoft Entra tenant, for example,
       "a11aaa11-aa11-1aa1-11aa-1aaa11a".
   """
 
-  id = _messages.StringField(1)
+  displayName = _messages.StringField(1)
+  id = _messages.StringField(2)
 
 
 class GoogleCloudSecuritycenterV2BackupDisasterRecovery(_messages.Message):

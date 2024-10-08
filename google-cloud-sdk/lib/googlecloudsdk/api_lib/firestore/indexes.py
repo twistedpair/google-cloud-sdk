@@ -18,23 +18,31 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-
 from googlecloudsdk.api_lib.firestore import api_utils
+from googlecloudsdk.generated_clients.apis.firestore.v1 import firestore_v1_client
+from googlecloudsdk.generated_clients.apis.firestore.v1 import firestore_v1_messages
 
 
-def _GetIndexService():
+def _GetIndexService() -> (
+    firestore_v1_client.FirestoreV1.ProjectsDatabasesCollectionGroupsIndexesService
+):
   """Returns the Firestore Index service for interacting with the Firestore Admin service."""
   return api_utils.GetClient().projects_databases_collectionGroups_indexes
 
 
-def CreateIndex(project, database, collection_id, index):
+def CreateIndex(
+    project: str,
+    database: str,
+    collection_id: str,
+    index: firestore_v1_messages.GoogleFirestoreAdminV1Index,
+) -> firestore_v1_messages.GoogleLongrunningOperation:
   """Performs a Firestore Admin v1 Index Creation.
 
   Args:
     project: the project of the database of the index, a string.
     database: the database id of the index, a string.
     collection_id: the current group of the index, a string.
-    index: the index to create, a googleFirestoreAdminV1Index message.
+    index: the index to create, a GoogleFirestoreAdminV1Index message.
 
   Returns:
     an Operation.
@@ -45,12 +53,14 @@ def CreateIndex(project, database, collection_id, index):
           parent='projects/{}/databases/{}/collectionGroups/{}'.format(
               project, database, collection_id
           ),
-          googleFirestoreAdminV1Index=index
+          googleFirestoreAdminV1Index=index,
       )
   )
 
 
-def ListIndexes(project, database):
+def ListIndexes(
+    project: str, database: str
+) -> firestore_v1_messages.GoogleFirestoreAdminV1ListIndexesResponse:
   """Performs a Firestore Admin v1 Index list.
 
   Args:
@@ -65,6 +75,33 @@ def ListIndexes(project, database):
       messages.FirestoreProjectsDatabasesCollectionGroupsIndexesListRequest(
           parent='projects/{}/databases/{}/collectionGroups/-'.format(
               project, database
+          ),
+      )
+  )
+
+
+def DeleteIndex(
+    project: str, database: str, index_id: str
+) -> firestore_v1_messages.GoogleLongrunningOperation:
+  """Performs a Firestore Admin v1 Index Deletion.
+
+  Args:
+    project: the project of the database of the index, a string.
+    database: the database id of the index, a string.
+    index_id: the index id of the index, a string
+
+  Returns:
+    an Operation.
+  """
+  messages = api_utils.GetMessages()
+  return _GetIndexService().Delete(
+      messages.FirestoreProjectsDatabasesCollectionGroupsIndexesDeleteRequest(
+          name=(
+              'projects/{}/databases/{}/collectionGroups/-/indexes/{}'.format(
+                  project,
+                  database,
+                  index_id,
+              )
           ),
       )
   )

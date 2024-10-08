@@ -676,7 +676,8 @@ class StepEntryMetadata(_messages.Message):
       iterations in the step's progress.
     progressNumber: Progress number represents the current state of the
       current progress. eg: A step entry represents the 4th iteration in a
-      progress of PROGRESS_TYPE_FOR.
+      progress of PROGRESS_TYPE_FOR. Note: This field is only populated when
+      an iteration exists and the starting value is 1.
     progressType: Progress type of this step entry.
     threadId: Child thread id that this step entry belongs to.
   """

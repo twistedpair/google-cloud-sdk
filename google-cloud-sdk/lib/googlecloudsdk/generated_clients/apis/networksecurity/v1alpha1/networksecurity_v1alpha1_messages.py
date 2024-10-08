@@ -1121,7 +1121,7 @@ class FirewallEndpointAssociation(_messages.Message):
       ACTIVE: Active and ready for traffic.
       DELETING: Being deleted.
       INACTIVE: Down or in an error state.
-      ORPHAN: The GCP project that housed the association has been deleted.
+      ORPHAN: The project that housed the association has been deleted.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -1748,7 +1748,7 @@ class InterceptDeploymentGroupConnectedEndpointGroup(_messages.Message):
 
 
 class InterceptEndpointGroup(_messages.Message):
-  r"""Message describing InterceptEndpointGroup object
+  r"""Message describing InterceptEndpointGroup object. Next ID: 10
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the endpoint group.
@@ -1757,6 +1757,8 @@ class InterceptEndpointGroup(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
+    associations: Output only. List of Intercept Endpoint Group Associations
+      that are associated to this endpoint group.
     createTime: Output only. [Output only] Create time stamp
     interceptDeploymentGroup: Required. Immutable. The Intercept Deployment
       Group that this resource is connected to. Format is: `projects/{project}
@@ -1817,13 +1819,14 @@ class InterceptEndpointGroup(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  interceptDeploymentGroup = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  reconciling = _messages.BooleanField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  associations = _messages.MessageField('InterceptEndpointGroupAssociationDetails', 1, repeated=True)
+  createTime = _messages.StringField(2)
+  interceptDeploymentGroup = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  reconciling = _messages.BooleanField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class InterceptEndpointGroupAssociation(_messages.Message):
@@ -1913,6 +1916,54 @@ class InterceptEndpointGroupAssociation(_messages.Message):
   reconciling = _messages.BooleanField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
   updateTime = _messages.StringField(9)
+
+
+class InterceptEndpointGroupAssociationDetails(_messages.Message):
+  r"""This is a subset of the InterceptEndpointGroupAssociation message,
+  containing fields to be used by the consumer.
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the association.
+
+  Fields:
+    name: Output only. The resource name of the
+      InterceptEndpointGroupAssociation. Format: projects/{project}/locations/
+      {location}/interceptEndpointGroupAssociations/{interceptEndpointGroupAss
+      ociation}
+    network: Output only. The VPC network associated. Format:
+      projects/{project}/global/networks/{name}.
+    state: Output only. Current state of the association.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the association.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: Ready.
+      CREATING: Being created.
+      DELETING: Being deleted.
+      CLOSED: Intercept is disabled due to an operation on another resource.
+      OUT_OF_SYNC: The underlying data plane is out of sync with the
+        association. The association is not expected to be usable. This state
+        can result in undefined behavior. See the `locations_details` field
+        for more details.
+      DELETE_FAILED: An attempt to delete the association has failed. This is
+        a terminal state and the association is not expected to be usable as
+        some of its resources have been deleted. The only permitted operation
+        is to retry deleting the association.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+    CLOSED = 4
+    OUT_OF_SYNC = 5
+    DELETE_FAILED = 6
+
+  name = _messages.StringField(1)
+  network = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class InterceptEndpointGroupAssociationLocationDetails(_messages.Message):
@@ -2898,7 +2949,7 @@ class MirroringDeploymentGroupConnectedEndpointGroup(_messages.Message):
 
 
 class MirroringEndpointGroup(_messages.Message):
-  r"""Message describing MirroringEndpointGroup object
+  r"""Message describing MirroringEndpointGroup object. Next ID: 10
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the endpoint group.
@@ -7428,6 +7479,9 @@ class PartnerSSEEnvironmentSymantecEnvironmentOptions(_messages.Message):
 class PartnerSSEGateway(_messages.Message):
   r"""Message describing PartnerSSEGateway object
 
+  Enums:
+    StateValueValuesEnum: Output only. [Output only] State of the gateway.
+
   Messages:
     LabelsValue: Optional. Labels as key value pairs
 
@@ -7476,6 +7530,7 @@ class PartnerSSEGateway(_messages.Message):
     sseVpcTargetIp: Output only. [Output Only] This is the IP where the
       partner traffic should be routed to. This field is deprecated. Use
       sse_target_ip instead.
+    state: Output only. [Output only] State of the gateway.
     symantecOptions: Optional. Required iff Partner is Symantec.
     timezone: Output only. tzinfo identifier used for localization. Filled
       from the customer SSEGateway, and only for PartnerSSEGateways associated
@@ -7484,6 +7539,20 @@ class PartnerSSEGateway(_messages.Message):
     vni: Optional. Virtual Network Identifier to use in NCG. Today the only
       partner that depends on it is Symantec.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. [Output only] State of the gateway.
+
+    Values:
+      STATE_UNSPECIFIED: No state specified. This should not be used.
+      CUSTOMER_ATTACHED: Attached to a customer. This is the default state
+        when a gateway is successfully created.
+      CUSTOMER_DETACHED: No longer attached to a customer. This state arises
+        when the customer attachment is deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CUSTOMER_ATTACHED = 1
+    CUSTOMER_DETACHED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -7528,10 +7597,11 @@ class PartnerSSEGateway(_messages.Message):
   sseTargetIp = _messages.StringField(17)
   sseVpcSubnetRange = _messages.StringField(18)
   sseVpcTargetIp = _messages.StringField(19)
-  symantecOptions = _messages.MessageField('PartnerSSEGatewayPartnerSSEGatewaySymantecOptions', 20)
-  timezone = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
-  vni = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  symantecOptions = _messages.MessageField('PartnerSSEGatewayPartnerSSEGatewaySymantecOptions', 21)
+  timezone = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
+  vni = _messages.IntegerField(24, variant=_messages.Variant.INT32)
 
 
 class PartnerSSEGatewayPartnerSSEGatewaySymantecOptions(_messages.Message):
@@ -7557,7 +7627,7 @@ class PartnerSSERealm(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. [Output Only] State of the realm. It
-      can be either ATTACHED or UNATTACHED
+      can be either CUSTOMER_ATTACHED or CUSTOMER_DETACHED.
 
   Messages:
     LabelsValue: Labels as key value pairs
@@ -7585,25 +7655,26 @@ class PartnerSSERealm(_messages.Message):
     sseVpc: Output only. [Output only] CDEN owned VPC to be peered with
       partner_vpc This field is deprecated. Use sse_network instead.
     state: Output only. [Output Only] State of the realm. It can be either
-      ATTACHED or UNATTACHED
+      CUSTOMER_ATTACHED or CUSTOMER_DETACHED.
     updateTime: Output only. [Output only] Update time stamp
   """
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. [Output Only] State of the realm. It can be either
-    ATTACHED or UNATTACHED
+    CUSTOMER_ATTACHED or CUSTOMER_DETACHED.
 
     Values:
       STATE_UNSPECIFIED: The default value. This value is used if the state is
         omitted.
-      ATTACHED: This PartnerSSERealm is attached to a SSERealm. This is the
-        default state when a PartnerSSERealm is successfully created.
-      UNATTACHED: This PartnerSSERealm is not attached to a SSERealm. This is
-        the state when the paired SSERealm is deleted.
+      CUSTOMER_ATTACHED: This PartnerSSERealm is attached to a customer realm.
+        This is the default state when a PartnerSSERealm is successfully
+        created.
+      CUSTOMER_DETACHED: This PartnerSSERealm is no longer attached to a
+        customer realm. This is the state when the customer realm is deleted.
     """
     STATE_UNSPECIFIED = 0
-    ATTACHED = 1
-    UNATTACHED = 2
+    CUSTOMER_ATTACHED = 1
+    CUSTOMER_DETACHED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -7714,6 +7785,9 @@ class Rule(_messages.Message):
 class SACAttachment(_messages.Message):
   r"""Configuration for an attachment within a SAC realm.
 
+  Enums:
+    StateValueValuesEnum: Output only. [Output only] State of the attachment.
+
   Messages:
     LabelsValue: Optional. Optional list of labels applied to the resource.
 
@@ -7732,6 +7806,7 @@ class SACAttachment(_messages.Message):
     nccGateway: Required. ID of the NCC Gateway which connects to the
       attachment.
     sacRealm: Required. ID of the SAC Realm which owns the attachment.
+    state: Output only. [Output only] State of the attachment.
     symantecOptions: Optional. Required iff the associated realm is of type
       SYMANTEC_CLOUD_SWG.
     timeZone: Optional. tzinfo identifier used for localization. Only used for
@@ -7741,6 +7816,20 @@ class SACAttachment(_messages.Message):
     updateTime: Output only. [Output only] Timestamp when the attachment was
       last updated.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. [Output only] State of the attachment.
+
+    Values:
+      STATE_UNSPECIFIED: No state specified. This should not be used.
+      PENDING_PARTNER_ATTACHMENT: Has never been attached to a partner.
+      PARTNER_ATTACHED: Currently attached to a partner.
+      PARTNER_DETACHED: Was once attached to a partner but has been detached.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING_PARTNER_ATTACHMENT = 1
+    PARTNER_ATTACHED = 2
+    PARTNER_DETACHED = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -7772,9 +7861,10 @@ class SACAttachment(_messages.Message):
   name = _messages.StringField(4)
   nccGateway = _messages.StringField(5)
   sacRealm = _messages.StringField(6)
-  symantecOptions = _messages.MessageField('SACAttachmentSACAttachmentSymantecOptions', 7)
-  timeZone = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  symantecOptions = _messages.MessageField('SACAttachmentSACAttachmentSymantecOptions', 8)
+  timeZone = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class SACAttachmentSACAttachmentSymantecOptions(_messages.Message):
@@ -7839,10 +7929,12 @@ class SACRealm(_messages.Message):
     Values:
       STATE_UNSPECIFIED: The default value. This value is used if the state is
         omitted.
-      ATTACHED: This realm is attached to a partner realm. Used only for
-        Prisma Access.
-      UNATTACHED: This realm is not attached to a partner realm. Used only for
-        Prisma Access.
+      PENDING_PARTNER_ATTACHMENT: This realm has never been attached to a
+        partner realm. Used only for Prisma Access.
+      PARTNER_ATTACHED: This realm is currently attached to a partner realm.
+        Used only for Prisma Access.
+      PARTNER_DETACHED: This realm was once attached to a partner realm but
+        has been detached. Used only for Prisma Access.
       KEY_EXPIRED: This realm is not attached to a partner realm, and its
         pairing key has expired and needs key regeneration. Used only for
         Prisma Access.
@@ -7853,12 +7945,13 @@ class SACRealm(_messages.Message):
         API key.
     """
     STATE_UNSPECIFIED = 0
-    ATTACHED = 1
-    UNATTACHED = 2
-    KEY_EXPIRED = 3
-    KEY_VALIDATION_PENDING = 4
-    KEY_VALIDATED = 5
-    KEY_INVALID = 6
+    PENDING_PARTNER_ATTACHMENT = 1
+    PARTNER_ATTACHED = 2
+    PARTNER_DETACHED = 3
+    KEY_EXPIRED = 4
+    KEY_VALIDATION_PENDING = 5
+    KEY_VALIDATED = 6
+    KEY_INVALID = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

@@ -26394,11 +26394,11 @@ class GoogleCloudAiplatformV1beta1PipelineJob(_messages.Message):
       will apply the network configuration to the Google Cloud resources being
       launched, if applied, such as Vertex AI Training or Dataflow job. If
       left unspecified, the workload is not peered with any network.
-    originalPipelineJobId: Output only. The original pipeline job id if this
+    originalPipelineJobId: Optional. The original pipeline job id if this
       pipeline job is a rerun of a previous pipeline job.
     pipelineSpec: The spec of the pipeline.
-    pipelineTaskRerunConfigs: Output only. The rerun configs for each task in
-      the pipeline job. By default, the rerun will: 1. Use the same input
+    pipelineTaskRerunConfigs: Optional. The rerun configs for each task in the
+      pipeline job. By default, the rerun will: 1. Use the same input
       artifacts as the original run. 2. Use the same input parameters as the
       original run. 3. Skip all the tasks that are already succeeded in the
       original run. 4. Rerun all the tasks that are not succeeded in the
@@ -26981,13 +26981,13 @@ class GoogleCloudAiplatformV1beta1PipelineTaskRerunConfig(_messages.Message):
   1. Which task to rerun 2. User override input parameters and artifacts.
 
   Fields:
-    inputs: Output only. The runtime input of the task overridden by the user.
-    skipDownstreamTasks: Output only. Whether to skip downstream tasks.
-      Default value is False.
-    skipTask: Output only. Whether to skip this task. Default value is False.
-    taskId: Output only. The system generated ID of the task. Retrieved from
+    inputs: Optional. The runtime input of the task overridden by the user.
+    skipDownstreamTasks: Optional. Whether to skip downstream tasks. Default
+      value is False.
+    skipTask: Optional. Whether to skip this task. Default value is False.
+    taskId: Optional. The system generated ID of the task. Retrieved from
       original run.
-    taskName: Output only. The name of the task.
+    taskName: Optional. The name of the task.
   """
 
   inputs = _messages.MessageField('GoogleCloudAiplatformV1beta1PipelineTaskRerunConfigInputs', 1)
@@ -27001,7 +27001,7 @@ class GoogleCloudAiplatformV1beta1PipelineTaskRerunConfigArtifactList(_messages.
   r"""A list of artifact metadata.
 
   Fields:
-    artifacts: Output only. A list of artifact metadata.
+    artifacts: Optional. A list of artifact metadata.
   """
 
   artifacts = _messages.MessageField('GoogleCloudAiplatformV1beta1RuntimeArtifact', 1, repeated=True)
@@ -27011,17 +27011,17 @@ class GoogleCloudAiplatformV1beta1PipelineTaskRerunConfigInputs(_messages.Messag
   r"""Runtime inputs data of the task.
 
   Messages:
-    ArtifactsValue: Output only. Input artifacts.
-    ParameterValuesValue: Output only. Input parameters.
+    ArtifactsValue: Optional. Input artifacts.
+    ParameterValuesValue: Optional. Input parameters.
 
   Fields:
-    artifacts: Output only. Input artifacts.
-    parameterValues: Output only. Input parameters.
+    artifacts: Optional. Input artifacts.
+    parameterValues: Optional. Input parameters.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ArtifactsValue(_messages.Message):
-    r"""Output only. Input artifacts.
+    r"""Optional. Input artifacts.
 
     Messages:
       AdditionalProperty: An additional property for a ArtifactsValue object.
@@ -27047,7 +27047,7 @@ class GoogleCloudAiplatformV1beta1PipelineTaskRerunConfigInputs(_messages.Messag
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParameterValuesValue(_messages.Message):
-    r"""Output only. Input parameters.
+    r"""Optional. Input parameters.
 
     Messages:
       AdditionalProperty: An additional property for a ParameterValuesValue
@@ -29501,11 +29501,11 @@ class GoogleCloudAiplatformV1beta1RetrievalMetadata(_messages.Message):
 
   Fields:
     googleSearchDynamicRetrievalScore: Optional. Score indicating how likely
-      information from google search could help answer the prompt. The score
-      is in the range [0, 1], where 0 is the least likely and 1 is the most
-      likely. This score is only populated when google search grounding and
+      information from Google Search could help answer the prompt. The score
+      is in the range `[0, 1]`, where 0 is the least likely and 1 is the most
+      likely. This score is only populated when Google Search grounding and
       dynamic retrieval is enabled. It will be compared to the threshold to
-      determine whether to trigger google search.
+      determine whether to trigger Google Search.
   """
 
   googleSearchDynamicRetrievalScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)

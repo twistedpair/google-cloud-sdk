@@ -428,15 +428,12 @@ class ClusterMaintenanceSchedule(_messages.Message):
   Fields:
     endTime: Output only. The end time of any upcoming scheduled maintenance
       for this instance.
-    scheduleDeadlineTime: Output only. The deadline that the maintenance
-      schedule start time can not go beyond, including reschedule.
     startTime: Output only. The start time of any upcoming scheduled
       maintenance for this instance.
   """
 
   endTime = _messages.StringField(1)
-  scheduleDeadlineTime = _messages.StringField(2)
-  startTime = _messages.StringField(3)
+  startTime = _messages.StringField(2)
 
 
 class ClusterPersistenceConfig(_messages.Message):
@@ -481,7 +478,6 @@ class ClusterWeeklyMaintenanceWindow(_messages.Message):
 
   Fields:
     day: Allows to define schedule that runs specified day of the week.
-    duration: Duration of the time window.
     startTime: Start time of the window in UTC.
   """
 
@@ -508,8 +504,7 @@ class ClusterWeeklyMaintenanceWindow(_messages.Message):
     SUNDAY = 7
 
   day = _messages.EnumField('DayValueValuesEnum', 1)
-  duration = _messages.StringField(2)
-  startTime = _messages.MessageField('TimeOfDay', 3)
+  startTime = _messages.MessageField('TimeOfDay', 2)
 
 
 class Compliance(_messages.Message):
@@ -1142,10 +1137,13 @@ class DatabaseResourceId(_messages.Message):
 
 
 class DatabaseResourceMetadata(_messages.Message):
-  r"""Common model for database resource instance metadata. Next ID: 21
+  r"""Common model for database resource instance metadata. Next ID: 23
 
   Enums:
     CurrentStateValueValuesEnum: Current state of the instance.
+    EditionValueValuesEnum: Optional. Edition represents whether the instance
+      is ENTERPRISE or ENTERPRISE_PLUS. This information is core to Cloud SQL
+      only and is used to identify the edition of the instance.
     ExpectedStateValueValuesEnum: The state that the instance is expected to
       be in. For example, an instance state can transition to UNHEALTHY due to
       wrong patch update, while the expected state will remain at the HEALTHY.
@@ -1160,6 +1158,9 @@ class DatabaseResourceMetadata(_messages.Message):
       resource is created and recorded in partner service.
     currentState: Current state of the instance.
     customMetadata: Any custom metadata associated with the resource
+    edition: Optional. Edition represents whether the instance is ENTERPRISE
+      or ENTERPRISE_PLUS. This information is core to Cloud SQL only and is
+      used to identify the edition of the instance.
     entitlements: Entitlements associated with the resource
     expectedState: The state that the instance is expected to be in. For
       example, an instance state can transition to UNHEALTHY due to wrong
@@ -1173,6 +1174,9 @@ class DatabaseResourceMetadata(_messages.Message):
       Database resource. Else it would be NULL. REQUIRED if the immediate
       parent exists when first time resource is getting ingested, otherwise
       optional.
+    primaryResourceLocation: Primary resource location. REQUIRED if the
+      immediate parent exists when first time resource is getting ingested,
+      otherwise optional.
     product: The product this resource represents.
     resourceContainer: Closest parent Cloud Resource Manager container of this
       resource. It must be resource name of a Cloud Resource Manager project
@@ -1206,6 +1210,21 @@ class DatabaseResourceMetadata(_messages.Message):
     SUSPENDED = 3
     DELETED = 4
     STATE_OTHER = 5
+
+  class EditionValueValuesEnum(_messages.Enum):
+    r"""Optional. Edition represents whether the instance is ENTERPRISE or
+    ENTERPRISE_PLUS. This information is core to Cloud SQL only and is used to
+    identify the edition of the instance.
+
+    Values:
+      EDITION_UNSPECIFIED: Default, to make it consistent with instance
+        edition enum.
+      EDITION_ENTERPRISE: Represents the enterprise edition.
+      EDITION_ENTERPRISE_PLUS: Represents the enterprise plus edition.
+    """
+    EDITION_UNSPECIFIED = 0
+    EDITION_ENTERPRISE = 1
+    EDITION_ENTERPRISE_PLUS = 2
 
   class ExpectedStateValueValuesEnum(_messages.Enum):
     r"""The state that the instance is expected to be in. For example, an
@@ -1260,19 +1279,21 @@ class DatabaseResourceMetadata(_messages.Message):
   creationTime = _messages.StringField(4)
   currentState = _messages.EnumField('CurrentStateValueValuesEnum', 5)
   customMetadata = _messages.MessageField('CustomMetadataData', 6)
-  entitlements = _messages.MessageField('Entitlement', 7, repeated=True)
-  expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 8)
-  id = _messages.MessageField('DatabaseResourceId', 9)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 10)
-  location = _messages.StringField(11)
-  machineConfiguration = _messages.MessageField('MachineConfiguration', 12)
-  primaryResourceId = _messages.MessageField('DatabaseResourceId', 13)
-  product = _messages.MessageField('Product', 14)
-  resourceContainer = _messages.StringField(15)
-  resourceName = _messages.StringField(16)
-  tagsSet = _messages.MessageField('Tags', 17)
-  updationTime = _messages.StringField(18)
-  userLabelSet = _messages.MessageField('UserLabels', 19)
+  edition = _messages.EnumField('EditionValueValuesEnum', 7)
+  entitlements = _messages.MessageField('Entitlement', 8, repeated=True)
+  expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 9)
+  id = _messages.MessageField('DatabaseResourceId', 10)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 11)
+  location = _messages.StringField(12)
+  machineConfiguration = _messages.MessageField('MachineConfiguration', 13)
+  primaryResourceId = _messages.MessageField('DatabaseResourceId', 14)
+  primaryResourceLocation = _messages.StringField(15)
+  product = _messages.MessageField('Product', 16)
+  resourceContainer = _messages.StringField(17)
+  resourceName = _messages.StringField(18)
+  tagsSet = _messages.MessageField('Tags', 19)
+  updationTime = _messages.StringField(20)
+  userLabelSet = _messages.MessageField('UserLabels', 21)
 
 
 class DatabaseResourceRecommendationSignalData(_messages.Message):
@@ -3223,7 +3244,7 @@ class PscConnection(_messages.Message):
       the form of projects/{project_id}/global/networks/{network_id}.
     projectId: Optional. Project ID of the consumer project where the
       forwarding rule is created in.
-    pscConnectionId: Optional. The PSC connection id of the forwarding rule
+    pscConnectionId: Required. The PSC connection id of the forwarding rule
       connected to the service attachment.
     serviceAttachment: Required. The service attachment which is the target of
       the PSC connection, in the form of projects/{project-
@@ -3823,6 +3844,8 @@ class RetentionSettings(_messages.Message):
     RetentionUnitValueValuesEnum: The unit that 'retained_backups' represents.
 
   Fields:
+    durationBasedRetention: Duration based retention period i.e. 172800
+      seconds (2 days)
     quantityBasedRetention: A integer attribute.
     retentionUnit: The unit that 'retained_backups' represents.
     timeBasedRetention: A string attribute.
@@ -3836,17 +3859,22 @@ class RetentionSettings(_messages.Message):
         be treated as COUNT.
       COUNT: Retention will be by count, eg. "retain the most recent 7
         backups".
-      TIME: Retention will be by Time, eg. "retain the last 7 days backups".
+      TIME: Retention will be by Time, eg. "retain backups till a specific
+        time" i.e. till 2024-05-01T00:00:00Z.
+      DURATION: Retention will be by duration, eg. "retain the backups for
+        172800 seconds (2 days)".
       RETENTION_UNIT_OTHER: For rest of the other category
     """
     RETENTION_UNIT_UNSPECIFIED = 0
     COUNT = 1
     TIME = 2
-    RETENTION_UNIT_OTHER = 3
+    DURATION = 3
+    RETENTION_UNIT_OTHER = 4
 
-  quantityBasedRetention = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  retentionUnit = _messages.EnumField('RetentionUnitValueValuesEnum', 2)
-  timeBasedRetention = _messages.StringField(3)
+  durationBasedRetention = _messages.StringField(1)
+  quantityBasedRetention = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  retentionUnit = _messages.EnumField('RetentionUnitValueValuesEnum', 3)
+  timeBasedRetention = _messages.StringField(4)
 
 
 class SpannerLocation(_messages.Message):

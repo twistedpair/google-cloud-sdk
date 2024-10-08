@@ -187,6 +187,7 @@ class AndroidModel(_messages.Message):
     formFactor: Whether this device is a phone, tablet, wearable, etc.
     id: The unique opaque id for this model. Use this for invoking the
       TestExecutionService.
+    labInfo: Output only. Lab info of this device.
     lowFpsVideoRecording: True if and only if tests with this model are
       recorded by stitching together screenshots. See
       use_low_spec_video_recording in device config.
@@ -245,17 +246,18 @@ class AndroidModel(_messages.Message):
   form = _messages.EnumField('FormValueValuesEnum', 3)
   formFactor = _messages.EnumField('FormFactorValueValuesEnum', 4)
   id = _messages.StringField(5)
-  lowFpsVideoRecording = _messages.BooleanField(6)
-  manufacturer = _messages.StringField(7)
-  name = _messages.StringField(8)
-  perVersionInfo = _messages.MessageField('PerAndroidVersionInfo', 9, repeated=True)
-  screenDensity = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  screenX = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  screenY = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  supportedAbis = _messages.StringField(13, repeated=True)
-  supportedVersionIds = _messages.StringField(14, repeated=True)
-  tags = _messages.StringField(15, repeated=True)
-  thumbnailUrl = _messages.StringField(16)
+  labInfo = _messages.MessageField('LabInfo', 6)
+  lowFpsVideoRecording = _messages.BooleanField(7)
+  manufacturer = _messages.StringField(8)
+  name = _messages.StringField(9)
+  perVersionInfo = _messages.MessageField('PerAndroidVersionInfo', 10, repeated=True)
+  screenDensity = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  screenX = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  screenY = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  supportedAbis = _messages.StringField(14, repeated=True)
+  supportedVersionIds = _messages.StringField(15, repeated=True)
+  tags = _messages.StringField(16, repeated=True)
+  thumbnailUrl = _messages.StringField(17)
 
 
 class AndroidRoboTest(_messages.Message):
@@ -1082,6 +1084,17 @@ class IosXcTest(_messages.Message):
   testsZip = _messages.MessageField('FileReference', 3)
   xcodeVersion = _messages.StringField(4)
   xctestrun = _messages.MessageField('FileReference', 5)
+
+
+class LabInfo(_messages.Message):
+  r"""Lab specific information for a device.
+
+  Fields:
+    name: Lab name where the device is hosted. If empty, the device is hosted
+      in a Google owned lab.
+  """
+
+  name = _messages.StringField(1)
 
 
 class LauncherActivityIntent(_messages.Message):

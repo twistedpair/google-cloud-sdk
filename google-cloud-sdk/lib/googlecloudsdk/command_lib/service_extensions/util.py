@@ -23,12 +23,6 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 
 
-messages = apis.GetMessagesModule('networkservices', 'v1alpha1')
-LOG_LEVEL_VALUES = (
-    messages.WasmPluginLogConfig.MinLogLevelValueValuesEnum.to_dict().keys()
-)
-
-
 def SetLocationAsGlobal():
   """Set default location to global."""
   return 'global'
@@ -36,28 +30,34 @@ def SetLocationAsGlobal():
 
 class LogConfig(arg_parsers.ArgDict):
 
-  def __init__(self):
+  def __init__(self, api_version):
     super(LogConfig, self).__init__(
         spec={
             'enable': arg_parsers.ArgBoolean(),
             'sample-rate': arg_parsers.BoundedFloat(0.0, 1.0),
-            'min-log-level': _GetLogLevelValidator(),
+            'min-log-level': _GetLogLevelValidator(api_version),
         },
         required_keys=['enable'],
     )
 
 
-def _GetLogLevelValidator():
+def _GetLogLevelValidator(api_version):
+  messages = apis.GetMessagesModule('networkservices', api_version)
+  # Mapping the values of 'min_log_level' to the corresponding enum values.
+  log_level_values = (
+      messages.WasmPluginLogConfig.MinLogLevelValueValuesEnum.to_dict().keys()
+  )
   return arg_parsers.CustomFunctionValidator(
-      lambda k: k in LOG_LEVEL_VALUES,
+      lambda k: k in log_level_values,
       'Only the following keys are valid for log level: [{}].'.format(
-          ', '.join(LOG_LEVEL_VALUES)
+          ', '.join(log_level_values)
       ),
       lambda x: x.upper(),
   )
 
 
-def GetLogConfig(parsed_dict):
+def GetLogConfig(parsed_dict, api_version):
+  messages = apis.GetMessagesModule('networkservices', api_version)
   log_config_dict = {
       _ConvertToCamelCase(key): parsed_dict[key]
       for key, value in parsed_dict.items()

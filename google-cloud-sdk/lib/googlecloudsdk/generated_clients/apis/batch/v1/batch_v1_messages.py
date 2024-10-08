@@ -54,22 +54,30 @@ class AllocationPolicy(_messages.Message):
   compute resources should be allocated for the Job.
 
   Messages:
-    LabelsValue: Labels applied to all VM instances and other resources
-      created by AllocationPolicy. Labels could be user provided or system
-      generated. You can assign up to 64 labels. [Google Compute Engine label
-      restrictions](https://cloud.google.com/compute/docs/labeling-
-      resources#restrictions) apply. Label names that start with "goog-" or
-      "google-" are reserved.
+    LabelsValue: Custom labels to apply to the job and all the Compute Engine
+      resources that both are created by this allocation policy and support
+      labels. Use labels to group and describe the resources they are applied
+      to. Batch automatically applies predefined labels and supports multiple
+      `labels` fields for each job, which each let you apply custom labels to
+      various resources. Label names that start with "goog-" or "google-" are
+      reserved for predefined labels. For more information about labels with
+      Batch, see [Organize resources using
+      labels](https://cloud.google.com/batch/docs/organize-resources-using-
+      labels).
 
   Fields:
     instances: Describe instances that can be created by this
       AllocationPolicy. Only instances[0] is supported now.
-    labels: Labels applied to all VM instances and other resources created by
-      AllocationPolicy. Labels could be user provided or system generated. You
-      can assign up to 64 labels. [Google Compute Engine label
-      restrictions](https://cloud.google.com/compute/docs/labeling-
-      resources#restrictions) apply. Label names that start with "goog-" or
-      "google-" are reserved.
+    labels: Custom labels to apply to the job and all the Compute Engine
+      resources that both are created by this allocation policy and support
+      labels. Use labels to group and describe the resources they are applied
+      to. Batch automatically applies predefined labels and supports multiple
+      `labels` fields for each job, which each let you apply custom labels to
+      various resources. Label names that start with "goog-" or "google-" are
+      reserved for predefined labels. For more information about labels with
+      Batch, see [Organize resources using
+      labels](https://cloud.google.com/batch/docs/organize-resources-using-
+      labels).
     location: Location where compute resources should be allocated for the
       Job.
     network: The network policy. If you define an instance template in the
@@ -93,12 +101,16 @@ class AllocationPolicy(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels applied to all VM instances and other resources created by
-    AllocationPolicy. Labels could be user provided or system generated. You
-    can assign up to 64 labels. [Google Compute Engine label
-    restrictions](https://cloud.google.com/compute/docs/labeling-
-    resources#restrictions) apply. Label names that start with "goog-" or
-    "google-" are reserved.
+    r"""Custom labels to apply to the job and all the Compute Engine resources
+    that both are created by this allocation policy and support labels. Use
+    labels to group and describe the resources they are applied to. Batch
+    automatically applies predefined labels and supports multiple `labels`
+    fields for each job, which each let you apply custom labels to various
+    resources. Label names that start with "goog-" or "google-" are reserved
+    for predefined labels. For more information about labels with Batch, see
+    [Organize resources using
+    labels](https://cloud.google.com/batch/docs/organize-resources-using-
+    labels).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -665,7 +677,8 @@ class InstancePolicy(_messages.Message):
     provisioningModel: The provisioning model.
     reservation: Optional. If specified, VMs will consume only the specified
       reservation. If not specified (default), VMs will consume any applicable
-      reservation.
+      reservation. Additionally, VMs will not consume any reservation if
+      "NO_RESERVATION" is specified.
   """
 
   class ProvisioningModelValueValuesEnum(_messages.Enum):
@@ -781,25 +794,31 @@ class Job(_messages.Message):
   r"""The Cloud Batch Job description.
 
   Messages:
-    LabelsValue: Labels for the Job. Labels could be user provided or system
-      generated. For example, "labels": { "department": "finance",
-      "environment": "test" } You can assign up to 64 labels. [Google Compute
-      Engine label
-      restrictions](https://cloud.google.com/compute/docs/labeling-
-      resources#restrictions) apply. Label names that start with "goog-" or
-      "google-" are reserved.
+    LabelsValue: Custom labels to apply to the job and any Cloud Logging [LogE
+      ntry](https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntr
+      y) that it generates. Use labels to group and describe the resources
+      they are applied to. Batch automatically applies predefined labels and
+      supports multiple `labels` fields for each job, which each let you apply
+      custom labels to various resources. Label names that start with "goog-"
+      or "google-" are reserved for predefined labels. For more information
+      about labels with Batch, see [Organize resources using
+      labels](https://cloud.google.com/batch/docs/organize-resources-using-
+      labels).
 
   Fields:
     allocationPolicy: Compute resource allocation for all TaskGroups in the
       Job.
     createTime: Output only. When the Job was created.
-    labels: Labels for the Job. Labels could be user provided or system
-      generated. For example, "labels": { "department": "finance",
-      "environment": "test" } You can assign up to 64 labels. [Google Compute
-      Engine label
-      restrictions](https://cloud.google.com/compute/docs/labeling-
-      resources#restrictions) apply. Label names that start with "goog-" or
-      "google-" are reserved.
+    labels: Custom labels to apply to the job and any Cloud Logging [LogEntry]
+      (https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry)
+      that it generates. Use labels to group and describe the resources they
+      are applied to. Batch automatically applies predefined labels and
+      supports multiple `labels` fields for each job, which each let you apply
+      custom labels to various resources. Label names that start with "goog-"
+      or "google-" are reserved for predefined labels. For more information
+      about labels with Batch, see [Organize resources using
+      labels](https://cloud.google.com/batch/docs/organize-resources-using-
+      labels).
     logsPolicy: Log preservation policy for the Job.
     name: Output only. Job name. For example: "projects/123456/locations/us-
       central1/jobs/job01".
@@ -817,12 +836,16 @@ class Job(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels for the Job. Labels could be user provided or system generated.
-    For example, "labels": { "department": "finance", "environment": "test" }
-    You can assign up to 64 labels. [Google Compute Engine label
-    restrictions](https://cloud.google.com/compute/docs/labeling-
-    resources#restrictions) apply. Label names that start with "goog-" or
-    "google-" are reserved.
+    r"""Custom labels to apply to the job and any Cloud Logging [LogEntry](htt
+    ps://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry) that it
+    generates. Use labels to group and describe the resources they are applied
+    to. Batch automatically applies predefined labels and supports multiple
+    `labels` fields for each job, which each let you apply custom labels to
+    various resources. Label names that start with "goog-" or "google-" are
+    reserved for predefined labels. For more information about labels with
+    Batch, see [Organize resources using
+    labels](https://cloud.google.com/batch/docs/organize-resources-using-
+    labels).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

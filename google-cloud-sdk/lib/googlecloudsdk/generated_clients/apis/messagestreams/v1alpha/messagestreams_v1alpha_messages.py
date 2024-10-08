@@ -227,6 +227,18 @@ class KafkaSource(_messages.Message):
   topics = _messages.StringField(5, repeated=True)
 
 
+class KeyValue(_messages.Message):
+  r"""KeyValue is used for storing a key-value pair.
+
+  Fields:
+    key: Required. The key.
+    value: Required. The value.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.MessageField('Value', 2)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -390,10 +402,20 @@ class LoggingConfig(_messages.Message):
       will be sent to Stackdriver/Platform Telemetry. Logs at severitiy
       \\u2265 this value will be sent, unless it is NONE.
 
+  Messages:
+    LabelsValue: Optional. Labels store a set of opaque key-value pairs that
+      are supplied by the client and optionally processed in the downstream
+      systems, e.g., Cloud Logging.
+
   Fields:
+    labels: Optional. Labels store a set of opaque key-value pairs that are
+      supplied by the client and optionally processed in the downstream
+      systems, e.g., Cloud Logging.
     logSeverity: Optional. The minimum severity of logs that will be sent to
       Stackdriver/Platform Telemetry. Logs at severitiy \u2265 this value will
       be sent, unless it is NONE.
+    loggingInstrumentation: Optional. LoggingInstrumentation information for
+      this Stream.
   """
 
   class LogSeverityValueValuesEnum(_messages.Enum):
@@ -428,7 +450,46 @@ class LoggingConfig(_messages.Message):
     ALERT = 8
     EMERGENCY = 9
 
-  logSeverity = _messages.EnumField('LogSeverityValueValuesEnum', 1)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels store a set of opaque key-value pairs that are
+    supplied by the client and optionally processed in the downstream systems,
+    e.g., Cloud Logging.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  logSeverity = _messages.EnumField('LogSeverityValueValuesEnum', 2)
+  loggingInstrumentation = _messages.MessageField('LoggingInstrumentation', 3)
+
+
+class LoggingInstrumentation(_messages.Message):
+  r"""A LoggingInstrumentation object.
+
+  Fields:
+    entries: Optional. Cloud Logging related opaque key-value pairs that are
+      configured for this Stream.
+  """
+
+  entries = _messages.MessageField('KeyValue', 1, repeated=True)
 
 
 class Mediation(_messages.Message):
@@ -953,6 +1014,17 @@ class Reference(_messages.Message):
   type = _messages.StringField(6)
 
 
+class RetryPolicy(_messages.Message):
+  r"""The retry policy.
+
+  Fields:
+    truncatedExpBackoffRetryPolicy: Optional. Configuration for a
+      TruncatedExponentialBackoff retry policy.
+  """
+
+  truncatedExpBackoffRetryPolicy = _messages.MessageField('TruncatedExponentialBackoff', 1)
+
+
 class SaslAuthConfig(_messages.Message):
   r"""SASL/Plain or SASL/SCRAM mechanism configuration.
 
@@ -1155,6 +1227,7 @@ class Stream(_messages.Message):
       to. If this field is empty, then no replies will be generated. For
       example,
       `projects/{project}/locations/{location}/messageBuses/{messageBus}`.
+    retryPolicy: Optional. Configuration for a SimpleRetryPolicy.
     source: Optional. Source specifies where the stream reads data from.
     streamAction: Required. The specifications for routing messaging traffic
       and applying associated policies.
@@ -1263,12 +1336,13 @@ class Stream(_messages.Message):
   mediations = _messages.MessageField('Mediation', 9, repeated=True)
   name = _messages.StringField(10)
   replyBus = _messages.StringField(11)
-  source = _messages.MessageField('Source', 12)
-  streamAction = _messages.MessageField('StreamAction', 13)
-  streamIdentityOverride = _messages.StringField(14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
-  useSharedPool = _messages.BooleanField(17)
+  retryPolicy = _messages.MessageField('RetryPolicy', 12)
+  source = _messages.MessageField('Source', 13)
+  streamAction = _messages.MessageField('StreamAction', 14)
+  streamIdentityOverride = _messages.StringField(15)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
+  useSharedPool = _messages.BooleanField(18)
 
 
 class StreamAction(_messages.Message):
@@ -1292,6 +1366,41 @@ class Transformation(_messages.Message):
   """
 
   transformationTemplate = _messages.StringField(1)
+
+
+class TruncatedExponentialBackoff(_messages.Message):
+  r"""Configuration for a TruncatedExponentialBackoff retry policy.
+
+  Fields:
+    maxBackoffDuration: Optional. The maximum amount of time to wait before
+      retrying a job after it fails.
+    maxDoublings: Optional. The maximum number of times the retry duration
+      will double as part of the exponential backoff procedure. Valid range:
+      [0, 60]
+    maxRetryCount: Optional. The maximum number of retries to attempt. Not
+      negative.
+    maxRetryDuration: Optional. The time limit for retrying a failed job,
+      measured from time when an execution was first attempted. If
+      absl::ZeroDuration(), it means unlimited retry duration.
+    minBackoffDuration: Optional. The minimum amount of time to wait before
+      retrying a job after it fails. Greater than 0.
+  """
+
+  maxBackoffDuration = _messages.StringField(1)
+  maxDoublings = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxRetryCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maxRetryDuration = _messages.StringField(4)
+  minBackoffDuration = _messages.StringField(5)
+
+
+class Value(_messages.Message):
+  r"""Value represents a value to be stored with a key.
+
+  Fields:
+    stringValue: Optional. Value of type string.
+  """
+
+  stringValue = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

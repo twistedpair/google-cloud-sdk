@@ -346,7 +346,7 @@ class GoogleCloudOrgpolicyV2PolicySpecPolicyRule(_messages.Message):
       definition. For example: { "allowedLocations" : ["us-east1", "us-
       west1"], "allowAll" : true }
     resourceTypes: Optional. The resource types policy can support, only used
-      for Google managed constraint and method type is GOVERN_TAGS.
+      for Managed Constraints and method type is GOVERN_TAGS.
     values: List of values to be used for this policy rule. This field can be
       set only in policies for list constraints.
   """
@@ -391,9 +391,9 @@ class GoogleCloudOrgpolicyV2PolicySpecPolicyRuleResourceTypes(_messages.Message)
   r"""Set multiple resource types for one policy, eg: resourceTypes: included:
   - compute.googleapis.com/Instance - compute.googleapis.com/Disk Constraint
   definition contains an empty resource type in order to support multiple
-  resource types in the policy. Only support Google managed constriaint and
-  method type is GOVERN_TAGS Refer go/multi-resource-support-force-tags-gmc to
-  get more details.
+  resource types in the policy. Only support Managed Constriaints and method
+  type is GOVERN_TAGS Refer go/multi-resource-support-force-tags-gmc to get
+  more details.
 
   Fields:
     included: Optional. The resource type we currently support.

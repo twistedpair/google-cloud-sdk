@@ -59,7 +59,7 @@ class StorageV2(base_api.BaseApiClient):
           }
 
     def GetManagementHub(self, request, global_params=None):
-      r"""Returns the Folder scoped singleton ManagementHub resource.
+      r"""Gets the `ManagementHub` resource associated with your folder. **IAM Permissions**: Requires `storage.managementHubs.get` [IAM](https://cloud.google.com/iam/docs/overview#permissions) permission on the folder.
 
       Args:
         request: (StorageFoldersLocationsGetManagementHubRequest) input message
@@ -86,7 +86,7 @@ class StorageV2(base_api.BaseApiClient):
     )
 
     def UpdateManagementHub(self, request, global_params=None):
-      r"""Updates the Folder scoped singleton ManagementHub resource.
+      r"""Updates the `ManagementHub` resource associated with your folder. **IAM Permissions**: Requires `storage.managementHubs.update` [IAM](https://cloud.google.com/iam/docs/overview#permissions) permission on the folder.
 
       Args:
         request: (StorageFoldersLocationsUpdateManagementHubRequest) input message
@@ -133,7 +133,7 @@ class StorageV2(base_api.BaseApiClient):
           }
 
     def GetManagementHub(self, request, global_params=None):
-      r"""Returns the Organization scoped singleton ManagementHub resource.
+      r"""Gets the `ManagementHub` resource associated with your organization. **IAM Permissions**: Requires `storage.managementHubs.get` [IAM](https://cloud.google.com/iam/docs/overview#permissions) permission on the folder.
 
       Args:
         request: (StorageOrganizationsLocationsGetManagementHubRequest) input message
@@ -160,7 +160,7 @@ class StorageV2(base_api.BaseApiClient):
     )
 
     def UpdateManagementHub(self, request, global_params=None):
-      r"""Updates the Organization scoped singleton ManagementHub resource.
+      r"""Updates the `ManagementHub` resource associated with your organization. **IAM Permissions** Requires `storage.managementHubs.update` [IAM](https://cloud.google.com/iam/docs/overview#permissions) permission on the organization.
 
       Args:
         request: (StorageOrganizationsLocationsUpdateManagementHubRequest) input message
@@ -389,7 +389,7 @@ class StorageV2(base_api.BaseApiClient):
           }
 
     def GetManagementHub(self, request, global_params=None):
-      r"""Returns the Project scoped singleton ManagementHub resource.
+      r"""Gets the `ManagementHub` resource associated with your project. **IAM Permissions**: Requires `storage.managementHubs.get` [IAM](https://cloud.google.com/iam/docs/overview#permissions) permission on the project.
 
       Args:
         request: (StorageProjectsLocationsGetManagementHubRequest) input message
@@ -416,7 +416,7 @@ class StorageV2(base_api.BaseApiClient):
     )
 
     def UpdateManagementHub(self, request, global_params=None):
-      r"""Updates the Project scoped singleton ManagementHub resource.
+      r"""Updates the `ManagementHub` resource associated with your project. **IAM Permissions**: Requires `storage.managementHubs.update` [IAM](https://cloud.google.com/iam/docs/overview#permissions) permission on the project.
 
       Args:
         request: (StorageProjectsLocationsUpdateManagementHubRequest) input message

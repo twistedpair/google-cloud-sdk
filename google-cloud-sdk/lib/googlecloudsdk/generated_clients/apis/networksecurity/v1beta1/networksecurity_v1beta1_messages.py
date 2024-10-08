@@ -212,19 +212,19 @@ class AuthzPolicy(_messages.Message):
   backend designed to scan the traffic for security purposes.
 
   Enums:
-    ActionValueValuesEnum: Required. Can be one of ALLOW, DENY, CUSTOM. When
-      the action is CUSTOM, customProvider must be specified. When the action
-      is ALLOW, only requests matching the policy will be allowed. When the
-      action is DENY, only requests matching the policy will be denied. When a
-      request arrives, the policies are evaluated in the following order: 1.
-      If there is a CUSTOM policy that matches the request, the CUSTOM policy
-      is evaluated using the custom authorization providers and the request is
-      denied if the provider rejects the request. 2. If there are any DENY
-      policies that match the request, the request is denied. 3. If there are
-      no ALLOW policies for the resource or if any of the ALLOW policies match
-      the request, the request is allowed. 4. Else the request is denied by
-      default if none of the configured AuthzPolicies with ALLOW action match
-      the request.
+    ActionValueValuesEnum: Required. Can be one of `ALLOW`, `DENY`, `CUSTOM`.
+      When the action is `CUSTOM`, `customProvider` must be specified. When
+      the action is `ALLOW`, only requests matching the policy will be
+      allowed. When the action is `DENY`, only requests matching the policy
+      will be denied. When a request arrives, the policies are evaluated in
+      the following order: 1. If there is a `CUSTOM` policy that matches the
+      request, the `CUSTOM` policy is evaluated using the custom authorization
+      providers and the request is denied if the provider rejects the request.
+      2. If there are any `DENY` policies that match the request, the request
+      is denied. 3. If there are no `ALLOW` policies for the resource or if
+      any of the `ALLOW` policies match the request, the request is allowed.
+      4. Else the request is denied by default if none of the configured
+      AuthzPolicies with `ALLOW` action match the request.
 
   Messages:
     LabelsValue: Optional. Set of labels associated with the `AuthzPolicy`
@@ -232,23 +232,23 @@ class AuthzPolicy(_messages.Message):
       requirements](/compute/docs/labeling-resources#requirements).
 
   Fields:
-    action: Required. Can be one of ALLOW, DENY, CUSTOM. When the action is
-      CUSTOM, customProvider must be specified. When the action is ALLOW, only
-      requests matching the policy will be allowed. When the action is DENY,
-      only requests matching the policy will be denied. When a request
-      arrives, the policies are evaluated in the following order: 1. If there
-      is a CUSTOM policy that matches the request, the CUSTOM policy is
-      evaluated using the custom authorization providers and the request is
-      denied if the provider rejects the request. 2. If there are any DENY
-      policies that match the request, the request is denied. 3. If there are
-      no ALLOW policies for the resource or if any of the ALLOW policies match
-      the request, the request is allowed. 4. Else the request is denied by
-      default if none of the configured AuthzPolicies with ALLOW action match
-      the request.
+    action: Required. Can be one of `ALLOW`, `DENY`, `CUSTOM`. When the action
+      is `CUSTOM`, `customProvider` must be specified. When the action is
+      `ALLOW`, only requests matching the policy will be allowed. When the
+      action is `DENY`, only requests matching the policy will be denied. When
+      a request arrives, the policies are evaluated in the following order: 1.
+      If there is a `CUSTOM` policy that matches the request, the `CUSTOM`
+      policy is evaluated using the custom authorization providers and the
+      request is denied if the provider rejects the request. 2. If there are
+      any `DENY` policies that match the request, the request is denied. 3. If
+      there are no `ALLOW` policies for the resource or if any of the `ALLOW`
+      policies match the request, the request is allowed. 4. Else the request
+      is denied by default if none of the configured AuthzPolicies with
+      `ALLOW` action match the request.
     createTime: Output only. The timestamp when the resource was created.
-    customProvider: Optional. Required if the action is CUSTOM. Allows
+    customProvider: Optional. Required if the action is `CUSTOM`. Allows
       delegating authorization decisions to Cloud IAP or to Service
-      Extensions. One of cloudIap or authzExtension must be specified.
+      Extensions. One of `cloudIap` or `authzExtension` must be specified.
     description: Optional. A human-readable description of the resource.
     httpRules: Optional. A list of authorization HTTP rules to match against
       the incoming request. A policy match occurs when at least one HTTP rule
@@ -267,18 +267,19 @@ class AuthzPolicy(_messages.Message):
   """
 
   class ActionValueValuesEnum(_messages.Enum):
-    r"""Required. Can be one of ALLOW, DENY, CUSTOM. When the action is
-    CUSTOM, customProvider must be specified. When the action is ALLOW, only
-    requests matching the policy will be allowed. When the action is DENY,
-    only requests matching the policy will be denied. When a request arrives,
-    the policies are evaluated in the following order: 1. If there is a CUSTOM
-    policy that matches the request, the CUSTOM policy is evaluated using the
-    custom authorization providers and the request is denied if the provider
-    rejects the request. 2. If there are any DENY policies that match the
-    request, the request is denied. 3. If there are no ALLOW policies for the
-    resource or if any of the ALLOW policies match the request, the request is
-    allowed. 4. Else the request is denied by default if none of the
-    configured AuthzPolicies with ALLOW action match the request.
+    r"""Required. Can be one of `ALLOW`, `DENY`, `CUSTOM`. When the action is
+    `CUSTOM`, `customProvider` must be specified. When the action is `ALLOW`,
+    only requests matching the policy will be allowed. When the action is
+    `DENY`, only requests matching the policy will be denied. When a request
+    arrives, the policies are evaluated in the following order: 1. If there is
+    a `CUSTOM` policy that matches the request, the `CUSTOM` policy is
+    evaluated using the custom authorization providers and the request is
+    denied if the provider rejects the request. 2. If there are any `DENY`
+    policies that match the request, the request is denied. 3. If there are no
+    `ALLOW` policies for the resource or if any of the `ALLOW` policies match
+    the request, the request is allowed. 4. Else the request is denied by
+    default if none of the configured AuthzPolicies with `ALLOW` action match
+    the request.
 
     Values:
       AUTHZ_ACTION_UNSPECIFIED: Unspecified action.
@@ -565,15 +566,15 @@ class AuthzPolicyTarget(_messages.Message):
     LoadBalancingSchemeValueValuesEnum: Required. All gateways and forwarding
       rules referenced by this policy and extensions must share the same load
       balancing scheme. Supported values: `INTERNAL_MANAGED` and
-      `EXTERNAL_MANAGED`. For more information, refer to [Choosing a load
-      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
 
   Fields:
     loadBalancingScheme: Required. All gateways and forwarding rules
       referenced by this policy and extensions must share the same load
       balancing scheme. Supported values: `INTERNAL_MANAGED` and
-      `EXTERNAL_MANAGED`. For more information, refer to [Choosing a load
-      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
     resources: Required. A list of references to the Forwarding Rules on which
       this policy will be applied.
   """
@@ -582,7 +583,7 @@ class AuthzPolicyTarget(_messages.Message):
     r"""Required. All gateways and forwarding rules referenced by this policy
     and extensions must share the same load balancing scheme. Supported
     values: `INTERNAL_MANAGED` and `EXTERNAL_MANAGED`. For more information,
-    refer to [Choosing a load balancer](https://cloud.google.com/load-
+    refer to [Backend services overview](https://cloud.google.com/load-
     balancing/docs/backend-service).
 
     Values:
@@ -907,7 +908,7 @@ class FirewallEndpointAssociation(_messages.Message):
       ACTIVE: Active and ready for traffic.
       DELETING: Being deleted.
       INACTIVE: Down or in an error state.
-      ORPHAN: The GCP project that housed the association has been deleted.
+      ORPHAN: The project that housed the association has been deleted.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -1979,7 +1980,7 @@ class MirroringDeploymentGroupConnectedEndpointGroup(_messages.Message):
 
 
 class MirroringEndpointGroup(_messages.Message):
-  r"""Message describing MirroringEndpointGroup object
+  r"""Message describing MirroringEndpointGroup object. Next ID: 10
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the endpoint group.
@@ -3234,9 +3235,9 @@ class NetworksecurityProjectsLocationsAuthzPoliciesPatchRequest(_messages.Messag
       (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Used to specify the fields to be overwritten in the
       `AuthzPolicy` resource by the update. The fields specified in the
-      update_mask are relative to the resource, not the full request. A field
-      is overwritten if it is in the mask. If the user does not specify a
-      mask, then all fields are overwritten.
+      `update_mask` are relative to the resource, not the full request. A
+      field is overwritten if it is in the mask. If the user does not specify
+      a mask, then all fields are overwritten.
   """
 
   authzPolicy = _messages.MessageField('AuthzPolicy', 1)

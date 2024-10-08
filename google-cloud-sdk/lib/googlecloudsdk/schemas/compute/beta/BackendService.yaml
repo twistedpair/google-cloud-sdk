@@ -371,6 +371,14 @@ properties:
     - HEADER_FIELD
     - HTTP_COOKIE
     - NONE
+    - STRONG_COOKIE_AFFINITY
+  strongSessionAffinityCookie:
+    description: |-
+      Describes the HTTP cookie used for stateful
+      session affinity. This field is applicable and
+      required if the sessionAffinity is set to
+      STRONG_COOKIE_AFFINITY.
+    $ref: BackendServiceHttpCookie.yaml
   subsetting:
     description: A Subsetting attribute.
     $ref: Subsetting.yaml

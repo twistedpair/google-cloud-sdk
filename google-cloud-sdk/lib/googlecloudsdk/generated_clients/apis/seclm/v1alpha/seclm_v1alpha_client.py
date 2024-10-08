@@ -308,7 +308,7 @@ class SeclmV1alpha(base_api.BaseApiClient):
     )
 
     def Query(self, request, global_params=None):
-      r"""WorkbenchQuery is a custom pass-through verb that returns a single SecLM Workbench.
+      r"""WorkbenchQuery is a custom pass-through verb that returns a single SecLM Workbench query response.
 
       Args:
         request: (SeclmProjectsLocationsWorkbenchesQueryRequest) input message

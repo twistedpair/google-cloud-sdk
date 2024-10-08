@@ -167,6 +167,7 @@ def get_bucket_resource_from_metadata(metadata):
       location_type=metadata.locationType,
       logging_config=_message_to_dict(metadata.logging),
       metadata=metadata,
+      generation=metadata.generation,
       metageneration=metadata.metageneration,
       per_object_retention=_message_to_dict(metadata.objectRetention),
       project_number=metadata.projectNumber,
@@ -180,6 +181,8 @@ def get_bucket_resource_from_metadata(metadata):
       soft_delete_policy=_message_to_dict(metadata.softDeletePolicy),
       uniform_bucket_level_access=uniform_bucket_level_access,
       update_time=metadata.updated,
+      soft_delete_time=metadata.softDeleteTime,
+      hard_delete_time=metadata.hardDeleteTime,
       versioning_enabled=getattr(metadata.versioning, 'enabled', None),
       website_config=_message_to_dict(metadata.website),
   )

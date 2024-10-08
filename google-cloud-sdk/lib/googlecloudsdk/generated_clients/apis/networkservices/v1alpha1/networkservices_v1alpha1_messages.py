@@ -97,14 +97,14 @@ class AuditLogConfig(_messages.Message):
 
 class AuthzExtension(_messages.Message):
   r"""`AuthzExtension` is a resource that allows traffic forwarding to a
-  callout backend to make an authorization decision.
+  callout backend service to make an authorization decision.
 
   Enums:
     LoadBalancingSchemeValueValuesEnum: Required. All backend services and
       forwarding rules referenced by this extension must share the same load
       balancing scheme. Supported values: `INTERNAL_MANAGED`,
-      `EXTERNAL_MANAGED`. For more information, refer to [Choosing a load
-      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
     WireFormatValueValuesEnum: Optional. The format of communication supported
       by the callout extension. If not specified, the default is
       `EXT_PROC_GRPC`.
@@ -147,8 +147,8 @@ class AuthzExtension(_messages.Message):
     loadBalancingScheme: Required. All backend services and forwarding rules
       referenced by this extension must share the same load balancing scheme.
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
-      information, refer to [Choosing a load
-      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+      information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
     metadata: Optional. The metadata provided here is included as part of the
       `metadata_context` (of type `google.protobuf.Struct`) in the
       `ProcessingRequest` message sent to the extension server. The metadata
@@ -160,13 +160,12 @@ class AuthzExtension(_messages.Message):
       following format: `projects/{project}/locations/{location}/authzExtensio
       ns/{authz_extension}`.
     service: Required. The reference to the service that runs the extension.
-      Currently only callout extensions are supported here. To configure a
-      callout extension, `service` must be a fully-qualified reference to a
-      [backend service](https://cloud.google.com/compute/docs/reference/rest/v
-      1/backendServices) in the format: `https://www.googleapis.com/compute/v1
-      /projects/{project}/regions/{region}/backendServices/{backendService}`
-      or `https://www.googleapis.com/compute/v1/projects/{project}/global/back
-      endServices/{backendService}`.
+      To configure a callout extension, `service` must be a fully-qualified
+      reference to a [backend service](https://cloud.google.com/compute/docs/r
+      eference/rest/v1/backendServices) in the format: `https://www.googleapis
+      .com/compute/v1/projects/{project}/regions/{region}/backendServices/{bac
+      kendService}` or `https://www.googleapis.com/compute/v1/projects/{projec
+      t}/global/backendServices/{backendService}`.
     timeout: Required. Specifies the timeout for each individual message on
       the stream. The timeout must be between 10-10000 milliseconds.
     updateTime: Output only. The timestamp when the resource was updated.
@@ -178,7 +177,7 @@ class AuthzExtension(_messages.Message):
     r"""Required. All backend services and forwarding rules referenced by this
     extension must share the same load balancing scheme. Supported values:
     `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more information, refer to
-    [Choosing a load balancer](https://cloud.google.com/load-
+    [Backend services overview](https://cloud.google.com/load-
     balancing/docs/backend-service).
 
     Values:
@@ -2889,8 +2888,8 @@ class LbObservabilityExtension(_messages.Message):
     LoadBalancingSchemeValueValuesEnum: Required. All backend services and
       forwarding rules referenced by this extension must share the same load
       balancing scheme. Supported values: `INTERNAL_MANAGED`,
-      `EXTERNAL_MANAGED`. For more information, refer to [Choosing a load
-      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
     SupportedEventsValueListEntryValuesEnum:
 
   Messages:
@@ -2932,8 +2931,8 @@ class LbObservabilityExtension(_messages.Message):
     loadBalancingScheme: Required. All backend services and forwarding rules
       referenced by this extension must share the same load balancing scheme.
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
-      information, refer to [Choosing a load
-      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+      information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
     metadata: Optional. The metadata provided here is included as part of the
       `metadata_context` (of type `google.protobuf.Struct`) in the
       `ProcessingRequest` message sent to the extension server. The metadata
@@ -2961,7 +2960,7 @@ class LbObservabilityExtension(_messages.Message):
     r"""Required. All backend services and forwarding rules referenced by this
     extension must share the same load balancing scheme. Supported values:
     `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more information, refer to
-    [Choosing a load balancer](https://cloud.google.com/load-
+    [Backend services overview](https://cloud.google.com/load-
     balancing/docs/backend-service).
 
     Values:
@@ -3081,8 +3080,8 @@ class LbRouteExtension(_messages.Message):
     LoadBalancingSchemeValueValuesEnum: Required. All backend services and
       forwarding rules referenced by this extension must share the same load
       balancing scheme. Supported values: `INTERNAL_MANAGED`,
-      `EXTERNAL_MANAGED`. For more information, refer to [Choosing a load
-      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
 
   Messages:
     LabelsValue: Optional. Set of labels associated with the
@@ -3095,8 +3094,7 @@ class LbRouteExtension(_messages.Message):
       is available under the namespace `com.google.lb_route_extension.`. The
       following variables are supported in the metadata Struct:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. Only one of the resource level metadata and
-      extension level metadata can be set.
+      qualified resource name.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -3118,16 +3116,15 @@ class LbRouteExtension(_messages.Message):
     loadBalancingScheme: Required. All backend services and forwarding rules
       referenced by this extension must share the same load balancing scheme.
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
-      information, refer to [Choosing a load
-      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+      information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
     metadata: Optional. The metadata provided here is included as part of the
       `metadata_context` (of type `google.protobuf.Struct`) in the
       `ProcessingRequest` message sent to the extension server. The metadata
       is available under the namespace `com.google.lb_route_extension.`. The
       following variables are supported in the metadata Struct:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. Only one of the resource level metadata and
-      extension level metadata can be set.
+      qualified resource name.
     name: Required. Identifier. Name of the `LbRouteExtension` resource in the
       following format: `projects/{project}/locations/{location}/lbRouteExtens
       ions/{lb_route_extension}`.
@@ -3138,7 +3135,7 @@ class LbRouteExtension(_messages.Message):
     r"""Required. All backend services and forwarding rules referenced by this
     extension must share the same load balancing scheme. Supported values:
     `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more information, refer to
-    [Choosing a load balancer](https://cloud.google.com/load-
+    [Backend services overview](https://cloud.google.com/load-
     balancing/docs/backend-service).
 
     Values:
@@ -3187,8 +3184,7 @@ class LbRouteExtension(_messages.Message):
     available under the namespace `com.google.lb_route_extension.`. The
     following variables are supported in the metadata Struct:
     `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-    qualified resource name. Only one of the resource level metadata and
-    extension level metadata can be set.
+    qualified resource name.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -3231,8 +3227,8 @@ class LbTrafficExtension(_messages.Message):
     LoadBalancingSchemeValueValuesEnum: Required. All backend services and
       forwarding rules referenced by this extension must share the same load
       balancing scheme. Supported values: `INTERNAL_MANAGED`,
-      `EXTERNAL_MANAGED`. For more information, refer to [Choosing a load
-      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
 
   Messages:
     LabelsValue: Optional. Set of labels associated with the
@@ -3244,8 +3240,7 @@ class LbTrafficExtension(_messages.Message):
       metadata is available under the key `com.google.lb_traffic_extension.`.
       The following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. Only one of the resource level metadata and
-      extension level metadata can be set.
+      qualified resource name.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -3267,15 +3262,14 @@ class LbTrafficExtension(_messages.Message):
     loadBalancingScheme: Required. All backend services and forwarding rules
       referenced by this extension must share the same load balancing scheme.
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
-      information, refer to [Choosing a load
-      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+      information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
     metadata: Optional. The metadata provided here is included in the
       `ProcessingRequest.metadata_context.filter_metadata` map field. The
       metadata is available under the key `com.google.lb_traffic_extension.`.
       The following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name. Only one of the resource level metadata and
-      extension level metadata can be set.
+      qualified resource name.
     name: Required. Identifier. Name of the `LbTrafficExtension` resource in
       the following format: `projects/{project}/locations/{location}/lbTraffic
       Extensions/{lb_traffic_extension}`.
@@ -3286,7 +3280,7 @@ class LbTrafficExtension(_messages.Message):
     r"""Required. All backend services and forwarding rules referenced by this
     extension must share the same load balancing scheme. Supported values:
     `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more information, refer to
-    [Choosing a load balancer](https://cloud.google.com/load-
+    [Backend services overview](https://cloud.google.com/load-
     balancing/docs/backend-service).
 
     Values:
@@ -3334,8 +3328,7 @@ class LbTrafficExtension(_messages.Message):
     metadata is available under the key `com.google.lb_traffic_extension.`.
     The following variables are supported in the metadata:
     `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-    qualified resource name. Only one of the resource level metadata and
-    extension level metadata can be set.
+    qualified resource name.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -3973,6 +3966,56 @@ class LogConfig(_messages.Message):
 
   enable = _messages.BooleanField(1)
   sampleRate = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class LoggingConfig(_messages.Message):
+  r"""The configuration for Platform Telemetry logging for Eventarc Avdvanced
+  resources.
+
+  Enums:
+    LogSeverityValueValuesEnum: Optional. The minimum severity of logs that
+      will be sent to Stackdriver/Platform Telemetry. Logs at severitiy
+      \\u2265 this value will be sent, unless it is NONE.
+
+  Fields:
+    logSeverity: Optional. The minimum severity of logs that will be sent to
+      Stackdriver/Platform Telemetry. Logs at severitiy \u2265 this value will
+      be sent, unless it is NONE.
+  """
+
+  class LogSeverityValueValuesEnum(_messages.Enum):
+    r"""Optional. The minimum severity of logs that will be sent to
+    Stackdriver/Platform Telemetry. Logs at severitiy \\u2265 this value will
+    be sent, unless it is NONE.
+
+    Values:
+      LOG_SEVERITY_UNSPECIFIED: Log severity is not specified. This value is
+        treated the same as NONE, but is used to distinguish between no update
+        and update to NONE in update_masks.
+      NONE: Default value at resource creation, presence of this value must be
+        treated as no logging/disable logging.
+      DEBUG: Debug or trace level logging.
+      INFO: Routine information, such as ongoing status or performance.
+      NOTICE: Normal but significant events, such as start up, shut down, or a
+        configuration change.
+      WARNING: Warning events might cause problems.
+      ERROR: Error events are likely to cause problems.
+      CRITICAL: Critical events cause more severe problems or outages.
+      ALERT: A person must take action immediately.
+      EMERGENCY: One or more systems are unusable.
+    """
+    LOG_SEVERITY_UNSPECIFIED = 0
+    NONE = 1
+    DEBUG = 2
+    INFO = 3
+    NOTICE = 4
+    WARNING = 5
+    ERROR = 6
+    CRITICAL = 7
+    ALERT = 8
+    EMERGENCY = 9
+
+  logSeverity = _messages.EnumField('LogSeverityValueValuesEnum', 1)
 
 
 class MatchRule(_messages.Message):
@@ -4662,6 +4705,12 @@ class MulticastGroupDefinition(_messages.Message):
     LabelsValue: Optional. Labels as key-value pairs.
 
   Fields:
+    consumerAcceptList: Optional. A list of consumer projects that are allowed
+      to subscribe to the multicast IP addresses within the range defined by
+      this MulticastGroupDefinition. The project can be specified using its
+      project ID or project number. If left empty, then all consumer projects
+      are allowed once they have VPC networks associated to the multicast
+      domain. The current max length of the accept list is 100.
     createTime: Output only. [Output only] The timestamp when the multicast
       group definition was created.
     description: Optional. An optional text description of the multicast group
@@ -4713,15 +4762,16 @@ class MulticastGroupDefinition(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  ipCidrRange = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  multicastDomain = _messages.StringField(5)
-  name = _messages.StringField(6)
-  reservedInternalRange = _messages.StringField(7)
-  uniqueId = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  consumerAcceptList = _messages.StringField(1, repeated=True)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  ipCidrRange = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  multicastDomain = _messages.StringField(6)
+  name = _messages.StringField(7)
+  reservedInternalRange = _messages.StringField(8)
+  uniqueId = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class MulticastGroupProducerActivation(_messages.Message):
@@ -4965,9 +5015,9 @@ class NetworkservicesProjectsLocationsAuthzExtensionsPatchRequest(_messages.Mess
       (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Used to specify the fields to be overwritten in the
       `AuthzExtension` resource by the update. The fields specified in the
-      update_mask are relative to the resource, not the full request. A field
-      is overwritten if it is in the mask. If the user does not specify a
-      mask, then all fields are overwritten.
+      `update_mask` are relative to the resource, not the full request. A
+      field is overwritten if it is in the mask. If the user does not specify
+      a mask, then all fields are overwritten.
   """
 
   authzExtension = _messages.MessageField('AuthzExtension', 1)
@@ -5980,9 +6030,9 @@ class NetworkservicesProjectsLocationsLbObservabilityExtensionsPatchRequest(_mes
       (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Used to specify the fields to be overwritten in the
       `LbObservabilityExtension` resource by the update. The fields specified
-      in the update_mask are relative to the resource, not the full request. A
-      field is overwritten if it is in the mask. If the user does not specify
-      a mask, then all fields are overwritten.
+      in the `update_mask` are relative to the resource, not the full request.
+      A field is overwritten if it is in the mask. If the user does not
+      specify a mask, then all fields are overwritten.
   """
 
   lbObservabilityExtension = _messages.MessageField('LbObservabilityExtension', 1)
@@ -6101,9 +6151,9 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest(_messages.Me
       (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Used to specify the fields to be overwritten in the
       `LbRouteExtension` resource by the update. The fields specified in the
-      update_mask are relative to the resource, not the full request. A field
-      is overwritten if it is in the mask. If the user does not specify a
-      mask, then all fields are overwritten.
+      `update_mask` are relative to the resource, not the full request. A
+      field is overwritten if it is in the mask. If the user does not specify
+      a mask, then all fields are overwritten.
   """
 
   lbRouteExtension = _messages.MessageField('LbRouteExtension', 1)
@@ -6226,9 +6276,9 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsPatchRequest(_messages.
       (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Used to specify the fields to be overwritten in the
       `LbTrafficExtension` resource by the update. The fields specified in the
-      update_mask are relative to the resource, not the full request. A field
-      is overwritten if it is in the mask. If the user does not specify a
-      mask, then all fields are overwritten.
+      `update_mask` are relative to the resource, not the full request. A
+      field is overwritten if it is in the mask. If the user does not specify
+      a mask, then all fields are overwritten.
   """
 
   lbTrafficExtension = _messages.MessageField('LbTrafficExtension', 1)
@@ -6641,10 +6691,10 @@ class NetworkservicesProjectsLocationsMulticastDomainGroupsCreateRequest(_messag
   Fields:
     multicastDomainGroup: A MulticastDomainGroup resource to be passed as the
       request body.
-    multicastDomainGroupId: Required. A unique name for the multicast group.
-      The name is restricted to letters, numbers, and hyphen, with the first
-      character a letter, and the last a letter or a number. The name must not
-      exceed 48 characters.
+    multicastDomainGroupId: Required. A unique name for the multicast domain
+      group. The name is restricted to letters, numbers, and hyphen, with the
+      first character a letter, and the last a letter or a number. The name
+      must not exceed 48 characters.
     parent: Required. The parent resource of the multicast domain group. Use
       the following format: `projects/*/locations/global`.
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -7783,33 +7833,6 @@ class NetworkservicesProjectsLocationsServiceLbPoliciesDeleteRequest(_messages.M
   name = _messages.StringField(1, required=True)
 
 
-class NetworkservicesProjectsLocationsServiceLbPoliciesGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
 class NetworkservicesProjectsLocationsServiceLbPoliciesGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsServiceLbPoliciesGetRequest object.
 
@@ -7858,41 +7881,6 @@ class NetworkservicesProjectsLocationsServiceLbPoliciesPatchRequest(_messages.Me
   name = _messages.StringField(1, required=True)
   serviceLbPolicy = _messages.MessageField('ServiceLbPolicy', 2)
   updateMask = _messages.StringField(3)
-
-
-class NetworkservicesProjectsLocationsServiceLbPoliciesSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsServiceLbPoliciesTestIamPermissionsRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsServiceLbPoliciesTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsTcpRoutesCreateRequest(_messages.Message):
@@ -8713,6 +8701,17 @@ class QueryParameterMatcher(_messages.Message):
   exactMatch = _messages.StringField(1)
   name = _messages.StringField(2)
   presentMatch = _messages.BooleanField(3)
+
+
+class RetryFilterPerRouteConfig(_messages.Message):
+  r"""A RetryFilterPerRouteConfig object.
+
+  Fields:
+    cryptoKeyName: The name of the crypto key to use for encrypting event
+      data.
+  """
+
+  cryptoKeyName = _messages.StringField(1)
 
 
 class RouteAction(_messages.Message):
@@ -9790,9 +9789,7 @@ class WasmPlugin(_messages.Message):
     logConfig: Optional. Specifies the logging options for the activity
       performed by this `WasmPlugin`. If logging is enabled, plugin logs are
       exported to Cloud Logging. Note that the settings relate to the logs
-      generated by using logging statements in your Wasm code. The HTTP
-      request logs are additionally configured in the Media CDN service that
-      uses this `WasmPlugin` on the request path.
+      generated by using logging statements in your Wasm code.
     mainVersionId: Optional. The ID of the `WasmPluginVersion` resource that
       is the currently serving one. The version referred to must be a child of
       this `WasmPlugin` resource.
@@ -9911,17 +9908,11 @@ class WasmPluginLogConfig(_messages.Message):
       `INFO` by default.
     sampleRate: Non-empty default. Configures the sampling rate of activity
       logs, where `1.0` means all logged activity is reported and `0.0` means
-      no activity is reported. The default value is `1.0`, and the value of
-      the field must be between `0` and `1` (inclusive). The setting relates
-      to logs generated in your Wasm code. Note that for the logs generated on
-      the HTTP processing path, the sample rate is multiplied by the sample
-      rate configured in the Media CDN service using this Wasm plugin. For
-      example: - 0.5 of HTTP requests are logged because of the setting on the
-      Media CDN service - Among those requests, 0.5 of logs are exported due
-      to the setting on the Wasm plugin - In effect, 0.25 of logs on HTTP
-      processing path are exported This field can only be specified if logging
-      is enabled for this `WasmPlugin`. If the field is not provided when
-      logging is enabled it is set to `1` by default.
+      no activity is reported. A floating point value between `0.0` and `1.0`
+      indicates that a percentage of log messages is stored. The default value
+      when logging is enabled is `1.0`. The value of the field must be between
+      `0` and `1` (inclusive). This field can only be specified if logging is
+      enabled for this `WasmPlugin`.
   """
 
   class MinLogLevelValueValuesEnum(_messages.Enum):
@@ -10136,5 +10127,3 @@ encoding.AddCustomJsonFieldMapping(
     NetworkservicesProjectsLocationsEdgeCacheOriginsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     NetworkservicesProjectsLocationsEdgeCacheServicesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
-encoding.AddCustomJsonFieldMapping(
-    NetworkservicesProjectsLocationsServiceLbPoliciesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

@@ -34,8 +34,7 @@ def AddParentNicNameArg(parser):
       '--parent-nic-name',
       type=str,
       help="""
-        Name of the parent network interface of a VLAN based network interface.
-        If this field is specified, vlan must be set.
+        Name of the parent network interface of a dynamic network interface.
       """,
   )
 
@@ -45,9 +44,8 @@ def AddVlanArg(parser):
       '--vlan',
       type=int,
       help="""
-        VLAN tag of a VLAN based network interface, must be in range from 2 to
-        4094 inclusively. This field is mandatory if the parent network
-        interface name is set.
+        VLAN tag of a dynamic network interface, must be in range from 2 to
+        4094 inclusively.
       """,
   )
 

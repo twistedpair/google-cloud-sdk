@@ -33,15 +33,15 @@ class AlloydbProjectsLocationsBackupsCreateRequest(_messages.Message):
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
     validateOnly: Optional. If set, the backend validates the request, but
       doesn't actually execute it.
   """
@@ -64,15 +64,15 @@ class AlloydbProjectsLocationsBackupsDeleteRequest(_messages.Message):
       comment on the Backup.name field.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
     validateOnly: Optional. If set, the backend validates the request, but
       doesn't actually execute it.
   """
@@ -130,15 +130,15 @@ class AlloydbProjectsLocationsBackupsPatchRequest(_messages.Message):
       projects/{project}/locations/{region}
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Backup resource by the update. The fields specified
       in the update_mask are relative to the resource, not the full request. A
@@ -166,18 +166,18 @@ class AlloydbProjectsLocationsClustersCreateRequest(_messages.Message):
       format, see the comment on the Cluster.name field.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, performs request validation (e.g.
-      permission checks and any other type of validation), but do not actually
-      execute the create request.
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation, for example,
+      permission checks and any other type of validation, but does not
+      actually execute the create request.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -197,18 +197,18 @@ class AlloydbProjectsLocationsClustersCreatesecondaryRequest(_messages.Message):
       format, see the comment on the Cluster.name field.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, performs request validation (e.g.
-      permission checks and any other type of validation), but do not actually
-      execute the create request.
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation, for example,
+      permission checks and any other type of validation, but does not
+      actually execute the create request.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -231,18 +231,18 @@ class AlloydbProjectsLocationsClustersDeleteRequest(_messages.Message):
       comment on the Cluster.name field.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, performs request validation (e.g.
-      permission checks and any other type of validation), but do not actually
-      execute the delete.
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation, for example,
+      permission checks and any other type of validation, but does not
+      actually execute the create request.
   """
 
   etag = _messages.StringField(1)
@@ -312,18 +312,18 @@ class AlloydbProjectsLocationsClustersInstancesCreateRequest(_messages.Message):
       format, see the comment on the Instance.name field.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, performs request validation (e.g.
-      permission checks and any other type of validation), but do not actually
-      execute the create request.
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation, for example,
+      permission checks and any other type of validation, but does not
+      actually execute the create request.
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -344,18 +344,18 @@ class AlloydbProjectsLocationsClustersInstancesCreatesecondaryRequest(_messages.
       format, see the comment on the Instance.name field.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, performs request validation (e.g.
-      permission checks and any other type of validation), but do not actually
-      execute the create request.
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation, for example,
+      permission checks and any other type of validation, but does not
+      actually execute the create request.
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -376,18 +376,18 @@ class AlloydbProjectsLocationsClustersInstancesDeleteRequest(_messages.Message):
       comment on the Instance.name field.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, performs request validation (e.g.
-      permission checks and any other type of validation), but do not actually
-      execute the delete.
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation, for example,
+      permission checks and any other type of validation, but does not
+      actually execute the create request.
   """
 
   etag = _messages.StringField(1)
@@ -420,15 +420,15 @@ class AlloydbProjectsLocationsClustersInstancesGetConnectionInfoRequest(_message
       stance}
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -524,23 +524,23 @@ class AlloydbProjectsLocationsClustersInstancesPatchRequest(_messages.Message):
       projects/{project}/locations/{region}/clusters/{cluster_id}
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Instance resource by the update. The fields specified
       in the update_mask are relative to the resource, not the full request. A
       field will be overwritten if it is in the mask. If the user does not
       provide a mask then all fields will be overwritten.
-    validateOnly: Optional. If set, performs request validation (e.g.
-      permission checks and any other type of validation), but do not actually
-      execute the update request.
+    validateOnly: Optional. If set, performs request validation, for example,
+      permission checks and any other type of validation, but does not
+      actually execute the create request.
   """
 
   allowMissing = _messages.BooleanField(1)
@@ -603,23 +603,23 @@ class AlloydbProjectsLocationsClustersPatchRequest(_messages.Message):
       projects/{project}/locations/{region}
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Cluster resource by the update. The fields specified
       in the update_mask are relative to the resource, not the full request. A
       field will be overwritten if it is in the mask. If the user does not
       provide a mask then all fields will be overwritten.
-    validateOnly: Optional. If set, performs request validation (e.g.
-      permission checks and any other type of validation), but do not actually
-      execute the update request.
+    validateOnly: Optional. If set, performs request validation, for example,
+      permission checks and any other type of validation, but does not
+      actually execute the create request.
   """
 
   allowMissing = _messages.BooleanField(1)
@@ -692,15 +692,15 @@ class AlloydbProjectsLocationsClustersUsersCreateRequest(_messages.Message):
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
     user: A User resource to be passed as the request body.
     userId: Required. ID of the requesting object.
     validateOnly: Optional. If set, the backend validates the request, but
@@ -722,15 +722,15 @@ class AlloydbProjectsLocationsClustersUsersDeleteRequest(_messages.Message):
       comment on the User.name field.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
     validateOnly: Optional. If set, the backend validates the request, but
       doesn't actually execute it.
   """
@@ -780,15 +780,15 @@ class AlloydbProjectsLocationsClustersUsersPatchRequest(_messages.Message):
       projects/{project}/locations/{location}/cluster/{cluster}/users/{user}.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the User resource by the update. The fields specified in
       the update_mask are relative to the resource, not the full request. A
@@ -1237,7 +1237,7 @@ class ClientConnectionConfig(_messages.Message):
   Fields:
     requireConnectors: Optional. Configuration to enforce connectors only (ex:
       AuthProxy) connections to the database.
-    sslConfig: Optional. SSL config option for this instance.
+    sslConfig: Optional. SSL configuration option for this instance.
   """
 
   requireConnectors = _messages.BooleanField(1)
@@ -1481,8 +1481,8 @@ class Cluster(_messages.Message):
     r"""Optional. Subscription type of the cluster.
 
     Values:
-      SUBSCRIPTION_TYPE_UNSPECIFIED: This is an unknown Subscription type (By
-        default, Subscription Type is STANDARD)
+      SUBSCRIPTION_TYPE_UNSPECIFIED: This is an unknown subscription type. By
+        default, the subscription type is STANDARD.
       STANDARD: Standard subscription.
       TRIAL: Trial subscription.
     """
@@ -1930,18 +1930,18 @@ class FailoverInstanceRequest(_messages.Message):
   Fields:
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, performs request validation (e.g.
-      permission checks and any other type of validation), but do not actually
-      execute the failover.
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation, for example,
+      permission checks and any other type of validation, but does not
+      actually execute the create request.
   """
 
   requestId = _messages.StringField(1)
@@ -2141,22 +2141,22 @@ class InjectFaultRequest(_messages.Message):
   Fields:
     faultType: Required. The type of fault to be injected in an instance.
     nodeIds: Optional. Full name of the nodes as obtained from
-      INSTANCE_VIEW_FULL to subject the fault injection upon. Only applicable
-      for read instances, where at least 1 node should be passed.
+      INSTANCE_VIEW_FULL to subject the fault injection upon. Applicable only
+      to read instances, where at least 1 node should be passed.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, performs request validation (e.g.
-      permission checks and any other type of validation), but do not actually
-      execute the fault injection.
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation, for example,
+      permission checks and any other type of validation, but does not
+      actually execute the create request.
   """
 
   class FaultTypeValueValuesEnum(_messages.Enum):
@@ -2257,12 +2257,13 @@ class Instance(_messages.Message):
       https://google.aip.dev/122. The prefix of the instance resource name is
       the name of the parent resource: *
       projects/{project}/locations/{region}/clusters/{cluster_id}
-    networkConfig: Optional. Instance level network configuration.
+    networkConfig: Optional. Instance-level network configuration.
     nodes: Output only. List of available read-only VMs in this instance,
       including the standby for a PRIMARY instance.
     observabilityConfig: Configuration for observability.
     outboundPublicIpAddresses: Output only. All outbound public IP addresses
       configured for the instance.
+    pgbouncerConfig: Optional. The configuration for managed PgBouncer.
     pscInstanceConfig: Optional. The configuration for Private Service Connect
       (PSC) for the instance.
     publicIpAddress: Output only. The public IP addresses for the Instance.
@@ -2462,22 +2463,23 @@ class Instance(_messages.Message):
   nodes = _messages.MessageField('Node', 18, repeated=True)
   observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 19)
   outboundPublicIpAddresses = _messages.StringField(20, repeated=True)
-  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 21)
-  publicIpAddress = _messages.StringField(22)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 23)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 24)
-  reconciling = _messages.BooleanField(25)
-  satisfiesPzi = _messages.BooleanField(26)
-  satisfiesPzs = _messages.BooleanField(27)
-  state = _messages.EnumField('StateValueValuesEnum', 28)
-  uid = _messages.StringField(29)
-  updatePolicy = _messages.MessageField('UpdatePolicy', 30)
-  updateTime = _messages.StringField(31)
-  writableNode = _messages.MessageField('Node', 32)
+  pgbouncerConfig = _messages.MessageField('PgBouncerConfig', 21)
+  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 22)
+  publicIpAddress = _messages.StringField(23)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 24)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 25)
+  reconciling = _messages.BooleanField(26)
+  satisfiesPzi = _messages.BooleanField(27)
+  satisfiesPzs = _messages.BooleanField(28)
+  state = _messages.EnumField('StateValueValuesEnum', 29)
+  uid = _messages.StringField(30)
+  updatePolicy = _messages.MessageField('UpdatePolicy', 31)
+  updateTime = _messages.StringField(32)
+  writableNode = _messages.MessageField('Node', 33)
 
 
 class InstanceNetworkConfig(_messages.Message):
-  r"""Metadata related to instance level network configuration.
+  r"""Metadata related to instance-level network configuration.
 
   Fields:
     authorizedExternalNetworks: Optional. A list of external network
@@ -2973,6 +2975,66 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class PgBouncerConfig(_messages.Message):
+  r"""Configuration for managed PgBouncer.
+
+  Enums:
+    PoolModeValueValuesEnum: Optional. The pool mode. Defaults to
+      `POOL_MODE_SESSION`.
+
+  Fields:
+    defaultPoolSize: Optional. The default pool size. Defaults to 20.
+    enablePgbouncer: Optional. Whether to enable managed PgBouncer.
+    ignoreStartupParameters: Optional. The list of startup parameters to
+      ignore. By default, pgbouncer only allows client_encoding, datestyle,
+      timezone and standard_conforming_strings. Defaults to empty list.
+    maxClientConn: Optional. The maximum number of client connections allowed.
+      Defaults to 100.
+    maxPreparedStatements: Optional. The maximum number of prepared statements
+      allowed. PgBouncer makes sure that any statement prepared by a client,
+      up to this limit, is available on the backing server connection in
+      transaction and statement pooling mode. Even if the statement was
+      originally prepared on another server connection. Defaults to 0.
+    minPoolSize: Optional. The minimum pool size. Defaults to 0.
+    poolMode: Optional. The pool mode. Defaults to `POOL_MODE_SESSION`.
+    queryWaitTimeout: Optional. The maximum number of seconds queries are
+      allowed to spend waiting for execution. If the query is not assigned to
+      a server during that time, the client is disconnected. 0 disables.
+      Defaults to 120.
+    serverIdleTimeout: Optional. The maximum number of seconds a server is
+      allowed to be idle before it is disconnected. 0 disables. Defaults to
+      600.
+    statsUsers: Optional. The list of users that are allowed to connect to the
+      stats "pgbouncer" database. The users must exist in the database.
+  """
+
+  class PoolModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The pool mode. Defaults to `POOL_MODE_SESSION`.
+
+    Values:
+      POOL_MODE_UNSPECIFIED: The pool mode is not specified. Defaults to
+        `POOL_MODE_SESSION`.
+      POOL_MODE_SESSION: Server is released back to pool after a client
+        disconnects.
+      POOL_MODE_TRANSACTION: Server is released back to pool after a
+        transaction finishes.
+    """
+    POOL_MODE_UNSPECIFIED = 0
+    POOL_MODE_SESSION = 1
+    POOL_MODE_TRANSACTION = 2
+
+  defaultPoolSize = _messages.StringField(1)
+  enablePgbouncer = _messages.BooleanField(2)
+  ignoreStartupParameters = _messages.StringField(3, repeated=True)
+  maxClientConn = _messages.StringField(4)
+  maxPreparedStatements = _messages.StringField(5)
+  minPoolSize = _messages.StringField(6)
+  poolMode = _messages.EnumField('PoolModeValueValuesEnum', 7)
+  queryWaitTimeout = _messages.StringField(8)
+  serverIdleTimeout = _messages.StringField(9)
+  statsUsers = _messages.StringField(10, repeated=True)
+
+
 class PrimaryConfig(_messages.Message):
   r"""Configuration for the primary cluster. It has the list of clusters that
   are replicating from this cluster. This should be set if and only if the
@@ -2995,18 +3057,18 @@ class PromoteClusterRequest(_messages.Message):
       blocked and an ABORTED error will be returned.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, performs request validation (e.g.
-      permission checks and any other type of validation), but do not actually
-      execute the delete.
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation, for example,
+      permission checks and any other type of validation, but does not
+      actually execute the create request.
   """
 
   etag = _messages.StringField(1)
@@ -3020,9 +3082,13 @@ class PscConfig(_messages.Message):
   Fields:
     pscEnabled: Optional. Create an instance that allows connections from
       Private Service Connect endpoints to the instance.
+    serviceOwnedProjectNumber: Output only. The project number that needs to
+      be allowlisted on the network attachment to enable outbound
+      connectivity.
   """
 
   pscEnabled = _messages.BooleanField(1)
+  serviceOwnedProjectNumber = _messages.IntegerField(2)
 
 
 class PscInstanceConfig(_messages.Message):
@@ -3034,6 +3100,10 @@ class PscInstanceConfig(_messages.Message):
       allowed to create PSC endpoints to service-attachments to this instance.
     pscDnsName: Output only. The DNS name of the instance for PSC
       connectivity. Name convention: ...alloydb-psc.goog
+    pscInterfaceConfigs: Optional. Configurations for setting up PSC
+      interfaces attached to the instance which are used for outbound
+      connectivity. Only primary instances can have PSC interface attached.
+      Currently we only support 0 or 1 PSC interface.
     serviceAttachmentLink: Output only. The service attachment created when
       Private Service Connect (PSC) is enabled for the instance. The name of
       the resource will be in the format of
@@ -3042,7 +3112,23 @@ class PscInstanceConfig(_messages.Message):
 
   allowedConsumerProjects = _messages.StringField(1, repeated=True)
   pscDnsName = _messages.StringField(2)
-  serviceAttachmentLink = _messages.StringField(3)
+  pscInterfaceConfigs = _messages.MessageField('PscInterfaceConfig', 3, repeated=True)
+  serviceAttachmentLink = _messages.StringField(4)
+
+
+class PscInterfaceConfig(_messages.Message):
+  r"""Configuration for setting up a PSC interface to enable outbound
+  connectivity.
+
+  Fields:
+    networkAttachmentResource: The network attachment resource created in the
+      consumer network to which the PSC interface will be linked. This is of
+      the format: "projects/${CONSUMER_PROJECT}/regions/${REGION}/networkAttac
+      hments/${NETWORK_ATTACHMENT_NAME}". The network attachment must be in
+      the same region as the instance.
+  """
+
+  networkAttachmentResource = _messages.StringField(1)
 
 
 class QuantityBasedExpiry(_messages.Message):
@@ -3114,21 +3200,21 @@ class RestartInstanceRequest(_messages.Message):
 
   Fields:
     nodeIds: Optional. Full name of the nodes as obtained from
-      INSTANCE_VIEW_FULL to restart upon. Only applicable for read instances.
+      INSTANCE_VIEW_FULL to restart upon. Applicable only to read instances.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, performs request validation (e.g.
-      permission checks and any other type of validation), but do not actually
-      execute the restart.
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation, for example,
+      permission checks and any other type of validation, but does not
+      actually execute the create request.
   """
 
   nodeIds = _messages.StringField(1, repeated=True)
@@ -3148,18 +3234,18 @@ class RestoreClusterRequest(_messages.Message):
       to be enabled in the source cluster for this operation to succeed.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, performs request validation (e.g.
-      permission checks and any other type of validation), but do not actually
-      execute the import request.
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation, for example,
+      permission checks and any other type of validation, but does not
+      actually execute the create request.
   """
 
   backupSource = _messages.MessageField('BackupSource', 1)
@@ -3236,7 +3322,7 @@ class SslConfig(_messages.Message):
     behavior.
 
     Values:
-      SSL_MODE_UNSPECIFIED: SSL mode not specified. Defaults to
+      SSL_MODE_UNSPECIFIED: SSL mode is not specified. Defaults to
         ENCRYPTED_ONLY.
       SSL_MODE_ALLOW: SSL connections are optional. CA verification not
         enforced.
@@ -3244,8 +3330,8 @@ class SslConfig(_messages.Message):
         enforced. Clients may use locally self-signed certificates (default
         psql client behavior).
       SSL_MODE_VERIFY_CA: SSL connections are required. CA verification
-        enforced. Clients must have certificates signed by a Cluster CA, e.g.
-        via GenerateClientCertificate.
+        enforced. Clients must have certificates signed by a Cluster CA, for
+        example, using GenerateClientCertificate.
       ALLOW_UNENCRYPTED_AND_ENCRYPTED: SSL connections are optional. CA
         verification not enforced.
       ENCRYPTED_ONLY: SSL connections are required. CA verification not
@@ -4120,10 +4206,13 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Message):
-  r"""Common model for database resource instance metadata. Next ID: 21
+  r"""Common model for database resource instance metadata. Next ID: 23
 
   Enums:
     CurrentStateValueValuesEnum: Current state of the instance.
+    EditionValueValuesEnum: Optional. Edition represents whether the instance
+      is ENTERPRISE or ENTERPRISE_PLUS. This information is core to Cloud SQL
+      only and is used to identify the edition of the instance.
     ExpectedStateValueValuesEnum: The state that the instance is expected to
       be in. For example, an instance state can transition to UNHEALTHY due to
       wrong patch update, while the expected state will remain at the HEALTHY.
@@ -4138,6 +4227,9 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
       resource is created and recorded in partner service.
     currentState: Current state of the instance.
     customMetadata: Any custom metadata associated with the resource
+    edition: Optional. Edition represents whether the instance is ENTERPRISE
+      or ENTERPRISE_PLUS. This information is core to Cloud SQL only and is
+      used to identify the edition of the instance.
     entitlements: Entitlements associated with the resource
     expectedState: The state that the instance is expected to be in. For
       example, an instance state can transition to UNHEALTHY due to wrong
@@ -4151,6 +4243,9 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
       Database resource. Else it would be NULL. REQUIRED if the immediate
       parent exists when first time resource is getting ingested, otherwise
       optional.
+    primaryResourceLocation: Primary resource location. REQUIRED if the
+      immediate parent exists when first time resource is getting ingested,
+      otherwise optional.
     product: The product this resource represents.
     resourceContainer: Closest parent Cloud Resource Manager container of this
       resource. It must be resource name of a Cloud Resource Manager project
@@ -4184,6 +4279,21 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     SUSPENDED = 3
     DELETED = 4
     STATE_OTHER = 5
+
+  class EditionValueValuesEnum(_messages.Enum):
+    r"""Optional. Edition represents whether the instance is ENTERPRISE or
+    ENTERPRISE_PLUS. This information is core to Cloud SQL only and is used to
+    identify the edition of the instance.
+
+    Values:
+      EDITION_UNSPECIFIED: Default, to make it consistent with instance
+        edition enum.
+      EDITION_ENTERPRISE: Represents the enterprise edition.
+      EDITION_ENTERPRISE_PLUS: Represents the enterprise plus edition.
+    """
+    EDITION_UNSPECIFIED = 0
+    EDITION_ENTERPRISE = 1
+    EDITION_ENTERPRISE_PLUS = 2
 
   class ExpectedStateValueValuesEnum(_messages.Enum):
     r"""The state that the instance is expected to be in. For example, an
@@ -4238,19 +4348,21 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
   creationTime = _messages.StringField(4)
   currentState = _messages.EnumField('CurrentStateValueValuesEnum', 5)
   customMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainCustomMetadataData', 6)
-  entitlements = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainEntitlement', 7, repeated=True)
-  expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 8)
-  id = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 9)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 10)
-  location = _messages.StringField(11)
-  machineConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainMachineConfiguration', 12)
-  primaryResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 13)
-  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 14)
-  resourceContainer = _messages.StringField(15)
-  resourceName = _messages.StringField(16)
-  tagsSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainTags', 17)
-  updationTime = _messages.StringField(18)
-  userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 19)
+  edition = _messages.EnumField('EditionValueValuesEnum', 7)
+  entitlements = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainEntitlement', 8, repeated=True)
+  expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 9)
+  id = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 10)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 11)
+  location = _messages.StringField(12)
+  machineConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainMachineConfiguration', 13)
+  primaryResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 14)
+  primaryResourceLocation = _messages.StringField(15)
+  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 16)
+  resourceContainer = _messages.StringField(17)
+  resourceName = _messages.StringField(18)
+  tagsSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainTags', 19)
+  updationTime = _messages.StringField(20)
+  userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 21)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData(_messages.Message):
@@ -4816,6 +4928,8 @@ class StorageDatabasecenterPartnerapiV1mainRetentionSettings(_messages.Message):
     RetentionUnitValueValuesEnum: The unit that 'retained_backups' represents.
 
   Fields:
+    durationBasedRetention: Duration based retention period i.e. 172800
+      seconds (2 days)
     quantityBasedRetention: A integer attribute.
     retentionUnit: The unit that 'retained_backups' represents.
     timeBasedRetention: A string attribute.
@@ -4829,17 +4943,22 @@ class StorageDatabasecenterPartnerapiV1mainRetentionSettings(_messages.Message):
         be treated as COUNT.
       COUNT: Retention will be by count, eg. "retain the most recent 7
         backups".
-      TIME: Retention will be by Time, eg. "retain the last 7 days backups".
+      TIME: Retention will be by Time, eg. "retain backups till a specific
+        time" i.e. till 2024-05-01T00:00:00Z.
+      DURATION: Retention will be by duration, eg. "retain the backups for
+        172800 seconds (2 days)".
       RETENTION_UNIT_OTHER: For rest of the other category
     """
     RETENTION_UNIT_UNSPECIFIED = 0
     COUNT = 1
     TIME = 2
-    RETENTION_UNIT_OTHER = 3
+    DURATION = 3
+    RETENTION_UNIT_OTHER = 4
 
-  quantityBasedRetention = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  retentionUnit = _messages.EnumField('RetentionUnitValueValuesEnum', 2)
-  timeBasedRetention = _messages.StringField(3)
+  durationBasedRetention = _messages.StringField(1)
+  quantityBasedRetention = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  retentionUnit = _messages.EnumField('RetentionUnitValueValuesEnum', 3)
+  timeBasedRetention = _messages.StringField(4)
 
 
 class StorageDatabasecenterPartnerapiV1mainTags(_messages.Message):
@@ -5126,18 +5245,18 @@ class SwitchoverClusterRequest(_messages.Message):
   Fields:
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, performs request validation (e.g.
-      permission checks and any other type of validation), but do not actually
-      execute the delete.
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation, for example,
+      permission checks and any other type of validation, but does not
+      actually execute the create request.
   """
 
   requestId = _messages.StringField(1)
@@ -5210,18 +5329,18 @@ class UpgradeClusterRequest(_messages.Message):
       blocked and an ABORTED error will be returned.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, performs request validation (e.g.
-      permission checks and any other type of validation), but does not
-      actually execute the upgrade.
+      ignores the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation, for example,
+      permission checks and any other type of validation, but does not
+      actually execute the create request.
     version: Required. The version the cluster is going to be upgraded to.
   """
 

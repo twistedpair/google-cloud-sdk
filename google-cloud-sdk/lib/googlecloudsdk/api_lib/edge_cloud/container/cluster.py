@@ -176,6 +176,10 @@ def PopulateClusterMessage(req, messages, args):
     req.cluster.survivabilityConfig.offlineRebootTtl = (
         json.dumps(args.offline_reboot_ttl) + 's'
     )
+  if flags.FlagIsExplicitlySet(args, 'control_plane_node_storage_schema'):
+    req.cluster.controlPlane.local.controlPlaneNodeStorageSchema = (
+        args.control_plane_node_storage_schema
+    )
 
 
 def PopulateClusterAlphaMessage(req, args):
@@ -195,10 +199,6 @@ def PopulateClusterAlphaMessage(req, args):
     )
   resource_args.SetSystemAddonsConfig(args, req)
   resource_args.SetExternalLoadBalancerAddressPoolsConfig(args, req)
-  if flags.FlagIsExplicitlySet(args, 'control_plane_node_storage_schema'):
-    req.cluster.controlPlane.local.controlPlaneNodeStorageSchema = (
-        args.control_plane_node_storage_schema
-    )
   messages = util.GetMessagesModule(base.ReleaseTrack.ALPHA)
   if flags.FlagIsExplicitlySet(args, 'zone_storage_kms_key'):
     req.cluster.zoneStorageEncryption = messages.ZoneStorageEncryption()

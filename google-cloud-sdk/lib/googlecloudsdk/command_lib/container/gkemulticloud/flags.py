@@ -1165,6 +1165,7 @@ def AddWorkloadVulnerabilityScanning(parser):
       '--workload-vulnerability-scanning',
       choices=['disabled', 'enterprise'],
       default=None,
+      hidden=True,
       help=textwrap.dedent("""\
       Sets the mode of the Kubernetes security posture API's workload vulnerability scanning.
       To enable Advanced vulnerability insights mode explicitly set the flag to --workload-vulnerability-scanning=enterprise.

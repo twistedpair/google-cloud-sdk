@@ -758,6 +758,8 @@ class RecognitionConfig(_messages.Message):
         ([WebM](https://www.webmproject.org/docs/container/)).
         `sample_rate_hertz` must be one of 8000, 12000, 16000, 24000, or
         48000.
+      ALAW: 8-bit samples that compand 13-bit audio samples using G.711
+        PCMU/a-law.
     """
     ENCODING_UNSPECIFIED = 0
     LINEAR16 = 1
@@ -769,6 +771,7 @@ class RecognitionConfig(_messages.Message):
     SPEEX_WITH_HEADER_BYTE = 7
     MP3 = 8
     WEBM_OPUS = 9
+    ALAW = 10
 
   adaptation = _messages.MessageField('SpeechAdaptation', 1)
   alternativeLanguageCodes = _messages.StringField(2, repeated=True)

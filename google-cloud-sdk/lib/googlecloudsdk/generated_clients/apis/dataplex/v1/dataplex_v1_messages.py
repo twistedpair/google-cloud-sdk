@@ -1194,12 +1194,13 @@ class DataplexProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Message)
     aspectKeys: Optional. The map keys of the Aspects which the service should
       modify. It supports the following syntaxes: - matches an aspect of the
       given type and empty path. @path - matches an aspect of the given type
-      and specified path. * - matches aspects of the given type for all paths.
-      *@path - matches aspects of all types on the given path.The service will
-      not remove existing aspects matching the syntax unless
-      delete_missing_aspects is set to true.If this field is left empty, the
-      service treats it as specifying exactly those Aspects present in the
-      request.
+      and specified path. For example, to attach an aspect to a field that is
+      specified by the schema aspect, the path should have the format Schema..
+      * - matches aspects of the given type for all paths. *@path - matches
+      aspects of all types on the given path.The service will not remove
+      existing aspects matching the syntax unless delete_missing_aspects is
+      set to true.If this field is left empty, the service treats it as
+      specifying exactly those Aspects present in the request.
     deleteMissingAspects: Optional. If set to true and the aspect_keys specify
       aspect ranges, the service deletes any existing aspects from that range
       that weren't provided in the request.
@@ -5521,10 +5522,10 @@ class GoogleCloudDataplexV1DataScan(_messages.Message):
   Fields:
     createTime: Output only. The time when the scan was created.
     data: Required. The data source for DataScan.
-    dataProfileResult: Output only. The result of the data profile scan.
-    dataProfileSpec: DataProfileScan related setting.
-    dataQualityResult: Output only. The result of the data quality scan.
-    dataQualitySpec: DataQualityScan related setting.
+    dataProfileResult: Output only. The result of a data profile scan.
+    dataProfileSpec: Settings for a data profile scan.
+    dataQualityResult: Output only. The result of a data quality scan.
+    dataQualitySpec: Settings for a data quality scan.
     description: Optional. Description of the scan. Must be between 1-1024
       characters.
     displayName: Optional. User friendly display name. Must be between 1-256
@@ -5565,9 +5566,9 @@ class GoogleCloudDataplexV1DataScan(_messages.Message):
     r"""Output only. The type of DataScan.
 
     Values:
-      DATA_SCAN_TYPE_UNSPECIFIED: The DataScan type is unspecified.
-      DATA_QUALITY: Data Quality scan.
-      DATA_PROFILE: Data Profile scan.
+      DATA_SCAN_TYPE_UNSPECIFIED: The data scan type is unspecified.
+      DATA_QUALITY: Data quality scan.
+      DATA_PROFILE: Data profile scan.
     """
     DATA_SCAN_TYPE_UNSPECIFIED = 0
     DATA_QUALITY = 1
@@ -5963,10 +5964,10 @@ class GoogleCloudDataplexV1DataScanJob(_messages.Message):
 
   Fields:
     createTime: Output only. The time when the DataScanJob was created.
-    dataProfileResult: Output only. The result of the data profile scan.
-    dataProfileSpec: Output only. DataProfileScan related setting.
-    dataQualityResult: Output only. The result of the data quality scan.
-    dataQualitySpec: Output only. DataQualityScan related setting.
+    dataProfileResult: Output only. The result of a data profile scan.
+    dataProfileSpec: Output only. Settings for a data profile scan.
+    dataQualityResult: Output only. The result of a data quality scan.
+    dataQualitySpec: Output only. Settings for a data quality scan.
     endTime: Output only. The time when the DataScanJob ended.
     message: Output only. Additional information about the current state.
     name: Output only. The relative resource name of the DataScanJob, of the
@@ -6003,9 +6004,9 @@ class GoogleCloudDataplexV1DataScanJob(_messages.Message):
     r"""Output only. The type of the parent DataScan.
 
     Values:
-      DATA_SCAN_TYPE_UNSPECIFIED: The DataScan type is unspecified.
-      DATA_QUALITY: Data Quality scan.
-      DATA_PROFILE: Data Profile scan.
+      DATA_SCAN_TYPE_UNSPECIFIED: The data scan type is unspecified.
+      DATA_QUALITY: Data quality scan.
+      DATA_PROFILE: Data profile scan.
     """
     DATA_SCAN_TYPE_UNSPECIFIED = 0
     DATA_QUALITY = 1
@@ -6118,10 +6119,13 @@ class GoogleCloudDataplexV1DiscoveryEvent(_messages.Message):
     assetId: The id of the associated asset.
     config: Details about discovery configuration in effect.
     dataLocation: The data location associated with the event.
+    datascanId: The id of the associated datascan for standalone discovery.
     entity: Details about the entity associated with the event.
     lakeId: The id of the associated lake.
     message: The log message.
     partition: Details about the partition associated with the event.
+    table: Details about the BigQuery table publishing associated with the
+      event.
     type: The type of the event being logged.
     zoneId: The id of the associated zone.
   """
@@ -6152,12 +6156,14 @@ class GoogleCloudDataplexV1DiscoveryEvent(_messages.Message):
   assetId = _messages.StringField(2)
   config = _messages.MessageField('GoogleCloudDataplexV1DiscoveryEventConfigDetails', 3)
   dataLocation = _messages.StringField(4)
-  entity = _messages.MessageField('GoogleCloudDataplexV1DiscoveryEventEntityDetails', 5)
-  lakeId = _messages.StringField(6)
-  message = _messages.StringField(7)
-  partition = _messages.MessageField('GoogleCloudDataplexV1DiscoveryEventPartitionDetails', 8)
-  type = _messages.EnumField('TypeValueValuesEnum', 9)
-  zoneId = _messages.StringField(10)
+  datascanId = _messages.StringField(5)
+  entity = _messages.MessageField('GoogleCloudDataplexV1DiscoveryEventEntityDetails', 6)
+  lakeId = _messages.StringField(7)
+  message = _messages.StringField(8)
+  partition = _messages.MessageField('GoogleCloudDataplexV1DiscoveryEventPartitionDetails', 9)
+  table = _messages.MessageField('GoogleCloudDataplexV1DiscoveryEventTableDetails', 10)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
+  zoneId = _messages.StringField(12)
 
 
 class GoogleCloudDataplexV1DiscoveryEventActionDetails(_messages.Message):
@@ -6273,6 +6279,35 @@ class GoogleCloudDataplexV1DiscoveryEventPartitionDetails(_messages.Message):
   partition = _messages.StringField(2)
   sampledDataLocations = _messages.StringField(3, repeated=True)
   type = _messages.EnumField('TypeValueValuesEnum', 4)
+
+
+class GoogleCloudDataplexV1DiscoveryEventTableDetails(_messages.Message):
+  r"""Details about the published table.
+
+  Enums:
+    TypeValueValuesEnum: The type of the table resource.
+
+  Fields:
+    table: The fully-qualified resource name of the table resource.
+    type: The type of the table resource.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of the table resource.
+
+    Values:
+      TABLE_TYPE_UNSPECIFIED: An unspecified table type.
+      EXTERNAL_TABLE: External table type.
+      BIGLAKE_TABLE: BigLake table type.
+      OBJECT_TABLE: Object table type for unstructured data.
+    """
+    TABLE_TYPE_UNSPECIFIED = 0
+    EXTERNAL_TABLE = 1
+    BIGLAKE_TABLE = 2
+    OBJECT_TABLE = 3
+
+  table = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class GoogleCloudDataplexV1Entity(_messages.Message):
@@ -9249,10 +9284,9 @@ class GoogleCloudDataplexV1TaskSparkTaskConfig(_messages.Message):
       sequence of named process arguments (--key=value).
     sqlScript: The query text. The execution args are used to declare a set of
       script variables (set key="value";).
-    sqlScriptFile: A reference to a query file. This can be the Cloud Storage
-      URI of the query file or it can the path to a SqlScript Content. The
-      execution args are used to declare a set of script variables (set
-      key="value";).
+    sqlScriptFile: A reference to a query file. This should be the Cloud
+      Storage URI of the query file. The execution args are used to declare a
+      set of script variables (set key="value";).
   """
 
   archiveUris = _messages.StringField(1, repeated=True)

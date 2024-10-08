@@ -3098,9 +3098,11 @@ class GPUDirectConfig(_messages.Message):
       GPU_DIRECT_STRATEGY_UNSPECIFIED: Default value. No GPU Direct strategy
         is enabled on the node.
       TCPX: GPUDirect-TCPX on A3
+      RDMA: GPUDirect-RDMA on A3 Ultra, and A4 machine types
     """
     GPU_DIRECT_STRATEGY_UNSPECIFIED = 0
     TCPX = 1
+    RDMA = 2
 
   gpuDirectStrategy = _messages.EnumField('GpuDirectStrategyValueValuesEnum', 1)
 

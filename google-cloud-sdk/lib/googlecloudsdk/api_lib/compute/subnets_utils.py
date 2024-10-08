@@ -84,6 +84,7 @@ def MakeSubnetworkUpdateRequest(
     stack_type=None,
     ipv6_access_type=None,
     external_ipv6_prefix=None,
+    ip_collection=None,
 ):
   """Make the appropriate update request for the args.
 
@@ -115,6 +116,8 @@ def MakeSubnetworkUpdateRequest(
     stack_type: The stack type for this subnet.
     ipv6_access_type: The IPv6 access type for this subnet.
     external_ipv6_prefix: The IPv6 external prefix to be assigned to this
+      subnet.
+    ip_collection: The IP collection that provisions BYOIP v6 addresses for this
       subnet.
 
   Returns:
@@ -278,6 +281,8 @@ def MakeSubnetworkUpdateRequest(
               ipv6_access_type))
     if external_ipv6_prefix is not None:
       subnetwork.externalIpv6Prefix = external_ipv6_prefix
+    if ip_collection is not None:
+      subnetwork.ipCollection = ip_collection
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
 

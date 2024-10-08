@@ -64,7 +64,11 @@ def _GetOrCreateBucket(gcs_client, region):
   # This will throw an error if we're using the default bucket but it already
   # exists in a different project, then it could belong to a malicious attacker.
   gcs_client.CreateBucketIfNotExists(
-      bucket, location=region, check_ownership=True, cors=cors
+      bucket,
+      location=region,
+      check_ownership=True,
+      cors=cors,
+      enable_uniform_level_access=True,
   )
   return bucket
 

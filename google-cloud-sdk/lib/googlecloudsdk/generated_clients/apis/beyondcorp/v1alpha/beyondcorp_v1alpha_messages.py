@@ -2706,66 +2706,6 @@ class BeyondcorpProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class BeyondcorpProjectsLocationsNetConnectionsGetIamPolicyRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsNetConnectionsGetIamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class BeyondcorpProjectsLocationsNetConnectionsSetIamPolicyRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsNetConnectionsSetIamPolicyRequest object.
-
-  Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class BeyondcorpProjectsLocationsNetConnectionsTestIamPermissionsRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsNetConnectionsTestIamPermissionsRequest
-  object.
-
-  Fields:
-    googleIamV1TestIamPermissionsRequest: A
-      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
 class BeyondcorpProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsOperationsCancelRequest object.
 
@@ -4994,12 +4934,39 @@ class GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription(_message
   type = _messages.EnumField('TypeValueValuesEnum', 11)
 
 
+class GoogleCloudBeyondcorpSecuritygatewaysV1SecurityGatewayOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have been
+      cancelled successfully have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
 class GoogleCloudBeyondcorpSecuritygatewaysV1alphaApplication(_messages.Message):
   r"""A Beyondcorp Application resource information.
 
   Fields:
     createTime: Output only. Timestamp when the resource was created.
-    displayName: Optional. An arbitrary user-provided name for the Route
+    displayName: Optional. An arbitrary user-provided name for the Application
       resource. Cannot exceed 64 characters.
     endpointMatchers: Required. Endpoint matchers associated with an
       application. A combination of hostname and ports as endpoint matcher is
@@ -6175,8 +6142,6 @@ encoding.AddCustomJsonFieldMapping(
     BeyondcorpProjectsLocationsInsightsConfiguredInsightRequest, 'customGrouping_fieldFilter', 'customGrouping.fieldFilter')
 encoding.AddCustomJsonFieldMapping(
     BeyondcorpProjectsLocationsInsightsConfiguredInsightRequest, 'customGrouping_groupFields', 'customGrouping.groupFields')
-encoding.AddCustomJsonFieldMapping(
-    BeyondcorpProjectsLocationsNetConnectionsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     BeyondcorpProjectsLocationsSecurityGatewaysGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(

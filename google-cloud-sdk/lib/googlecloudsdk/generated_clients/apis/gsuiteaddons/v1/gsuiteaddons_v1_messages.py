@@ -62,6 +62,9 @@ class GoogleAppsScriptTypeCalendarCalendarAddOnManifest(_messages.Message):
 
   Fields:
     conferenceSolution: Defines conference solutions provided by this add-on.
+      Third-party conferencing add-ons can only be built in [Apps
+      Script](https://developers.google.com/apps-script/reference/conference-
+      data).
     createSettingsUrlFunction: An endpoint to execute that creates a URL to
       the add-on's settings page.
     currentEventAccess: Defines the level of data access when an event add-on
@@ -124,7 +127,9 @@ class GoogleAppsScriptTypeCalendarCalendarExtensionPoint(_messages.Message):
 
 
 class GoogleAppsScriptTypeCalendarConferenceSolution(_messages.Message):
-  r"""Defines conference related values.
+  r"""Defines conference-related values. Third-party conferencing add-ons can
+  only be built in [Apps Script](https://developers.google.com/apps-
+  script/reference/conference-data).
 
   Fields:
     id: Required. IDs should be uniquely assigned across conference solutions

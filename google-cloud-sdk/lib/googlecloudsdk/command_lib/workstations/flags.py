@@ -911,3 +911,21 @@ def AddVmTags(parser):
       type=arg_parsers.ArgDict(key_type=str, value_type=str),
       help=help_text,
   )
+
+
+def AddMaxUsableWorkstationsCount(parser):
+  """Adds a --max-usable-workstations-count flag to the given parser."""
+  help_text = """\
+  Maximum number of workstations under this configuration a user can have
+  `workstations.workstation.use` permission on.
+
+  If not specified, defaults to `0`, which indicates a user can have unlimited
+  number of workstations under this configuration."""
+
+  parser.add_argument(
+      '--max-usable-workstations-count',
+      metavar='MAX_USABLE_WORKSTATIONS_COUNT',
+      type=int,
+      default=0,
+      help=help_text,
+  )

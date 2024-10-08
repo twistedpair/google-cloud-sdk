@@ -5455,21 +5455,22 @@ class StreamConfig(_messages.Message):
       resources. After this field is added, all subsequent
       creates/updates/patches to the source store will be de-identified using
       the provided configuration and applied to the destination store.
-      Importing resources to the source store will not trigger the streaming.
-      If the source store already contains resources when this option is
-      enabled, those resources will not be copied to the destination store
-      unless they are subsequently updated. This may result in invalid
-      references in the destination store. Before adding this config, you must
-      grant the healthcare.fhirResources.update permission on the destination
-      store to your project's **Cloud Healthcare Service Agent** [service
-      account](https://cloud.google.com/healthcare/docs/how-tos/permissions-
-      healthcare-api-gcp-products#the_cloud_healthcare_service_agent). The
-      destination store must set `enable_update_create` to true. The
-      destination store must have `disable_referential_integrity` set to true.
-      If a resource cannot be de-identified, errors will be logged to Cloud
-      Logging (see [Viewing error logs in Cloud
-      Logging](https://cloud.google.com/healthcare/docs/how-tos/cloud-
-      logging)).
+      Resources deleted from the source store will be deleted from the
+      destination store. Importing resources to the source store will not
+      trigger the streaming. If the source store already contains resources
+      when this option is enabled, those resources will not be copied to the
+      destination store unless they are subsequently updated. This may result
+      in invalid references in the destination store. Before adding this
+      config, you must grant the healthcare.fhirResources.update permission on
+      the destination store to your project's **Cloud Healthcare Service
+      Agent** [service account](https://cloud.google.com/healthcare/docs/how-
+      tos/permissions-healthcare-api-gcp-
+      products#the_cloud_healthcare_service_agent). The destination store must
+      set `enable_update_create` to true. The destination store must have
+      `disable_referential_integrity` set to true. If a resource cannot be de-
+      identified, errors will be logged to Cloud Logging (see [Viewing error
+      logs in Cloud Logging](https://cloud.google.com/healthcare/docs/how-
+      tos/cloud-logging)).
     resourceTypes: Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
       types.html for a list of all FHIR resource types. The server treats an

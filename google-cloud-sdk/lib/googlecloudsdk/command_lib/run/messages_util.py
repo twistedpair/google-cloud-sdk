@@ -20,6 +20,35 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
+def GetSuccessMessageForMultiRegionSynchronousDeploy(service, regions):
+  """Returns a user message for a successful synchronous deploy.
+
+  Args:
+    service: googlecloudsdk.api_lib.run.service.Service, Deployed service for
+      which to build a success message.
+    regions: list of regions that we deployed to.
+  """
+  msg = (
+      'Multi-Region Service [{{bold}}{s}{{reset}}] '
+      'has been deployed to regions {{bold}}{r}{{reset}}.'
+      '\nRegional URLs:'
+  ).format(
+      s=service.name,
+      r=regions,
+  )
+  for region in regions:
+    condition = 'MultiRegionReady/' + region
+    url = (
+        service.conditions[condition].get('message')
+        if condition in service.conditions
+        else ''
+    )
+    msg += '\n{{bold}}{url}{{reset}} ({{bold}}{r}{{reset}})'.format(
+        r=region, url=url
+    )
+  return msg
+
+
 def GetSuccessMessageForSynchronousDeploy(service, no_traffic):
   """Returns a user message for a successful synchronous deploy.
 
@@ -173,11 +202,7 @@ def GetBuildEquivalentForSourceRunMessage(name, pack, source, subgroup=''):
     subgroup: subgroup name for this command. Either 'jobs ', 'workers ' or
       empty for services
   """
-  build_flag = ''
-  if pack:
-    build_flag = '--pack image=[IMAGE]'
-  else:
-    build_flag = '--tag [IMAGE]'
+  build_flag = '--pack image=[IMAGE]' if pack else '--tag [IMAGE]'
   msg = (
       'This command is equivalent to running '
       '`gcloud builds submit {build_flag} {source}` and '
