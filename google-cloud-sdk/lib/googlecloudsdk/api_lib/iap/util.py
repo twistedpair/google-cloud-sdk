@@ -42,6 +42,7 @@ IAP_API = 'iap'
 
 APPENGINE_APPS_COLLECTION = 'appengine.apps'
 COMPUTE_BACKEND_SERVICES_COLLECTION = 'compute.backendServices'
+COMPUTE_REGION_BACKEND_SERVICES_COLLECTION = 'compute.regionBackendServices'
 PROJECTS_COLLECTION = 'iap.projects'
 IAP_WEB_COLLECTION = 'iap.projects.iap_web'
 IAP_WEB_SERVICES_COLLECTION = 'iap.projects.iap_web.services'
@@ -351,17 +352,40 @@ class BackendService(IapIamResource):
     holder = base_classes.ComputeApiHolder(base.ReleaseTrack.GA)
     client = holder.client
     def MakeRequest(method, request):
-      return holder.client.apitools_client.backendServices, method, request
+      if self.region_id:
+        return (
+            holder.client.apitools_client.regionBackendServices,
+            method,
+            request,
+        )
+      else:
+        return holder.client.apitools_client.backendServices, method, request
 
-    backend_service = holder.resources.Parse(
-        self.service_id,
-        params={
-            'project': self.project,
-        },
-        collection=COMPUTE_BACKEND_SERVICES_COLLECTION)
-    get_request = client.messages.ComputeBackendServicesGetRequest(
-        project=backend_service.project,
-        backendService=backend_service.Name())
+    if self.region_id:
+      backend_service = holder.resources.Parse(
+          self.service_id,
+          params={
+              'project': self.project,
+              'region': self.region_id,
+          },
+          collection=COMPUTE_REGION_BACKEND_SERVICES_COLLECTION,
+      )
+      get_request = client.messages.ComputeRegionBackendServicesGetRequest(
+          project=backend_service.project,
+          region=backend_service.region,
+          backendService=backend_service.Name(),
+      )
+    else:
+      backend_service = holder.resources.Parse(
+          self.service_id,
+          params={
+              'project': self.project,
+          },
+          collection=COMPUTE_BACKEND_SERVICES_COLLECTION,
+      )
+      get_request = client.messages.ComputeBackendServicesGetRequest(
+          project=backend_service.project, backendService=backend_service.Name()
+      )
 
     objects = client.MakeRequests([MakeRequest('Get', get_request)])
     if (enabled and objects[0].protocol is
@@ -373,10 +397,20 @@ class BackendService(IapIamResource):
                                 oauth2_client_id, oauth2_client_secret)
     replacement = encoding.CopyProtoMessage(objects[0])
     replacement.iap = client.messages.BackendServiceIAP(**iap_kwargs)
-    update_request = client.messages.ComputeBackendServicesPatchRequest(
-        project=backend_service.project,
-        backendService=backend_service.Name(),
-        backendServiceResource=replacement)
+
+    if self.region_id:
+      update_request = client.messages.ComputeRegionBackendServicesPatchRequest(
+          project=backend_service.project,
+          region=backend_service.region,
+          backendService=backend_service.Name(),
+          backendServiceResource=replacement,
+      )
+    else:
+      update_request = client.messages.ComputeBackendServicesPatchRequest(
+          project=backend_service.project,
+          backendService=backend_service.Name(),
+          backendServiceResource=replacement)
+
     return client.MakeRequests([MakeRequest('Patch', update_request)])
 
   def Enable(self, oauth2_client_id, oauth2_client_secret):

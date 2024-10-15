@@ -749,7 +749,7 @@ def AddStatementArgs(parser):
           'A BigQuery Standard SQL compatible statement. If the query execution '
           'finishes within timeout and there is no pagination, the full query '
           'results will be returned. Otherwise, pass job_reference from '
-          'previous call as `--job-referrence` to obtain the full results.'))
+          'previous call as `--job-reference` to obtain the full results.'))
 
 
 def AddJobReferenceArgs(parser):

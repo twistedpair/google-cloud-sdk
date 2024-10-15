@@ -542,6 +542,7 @@ def AddDatabaseVersion(
       'POSTGRES_14',
       'POSTGRES_15',
       'POSTGRES_16',
+      'POSTGRES_17',
       'SQLSERVER_2017_EXPRESS',
       'SQLSERVER_2017_WEB',
       'SQLSERVER_2017_STANDARD',
@@ -2595,12 +2596,12 @@ def AddPscAutoConnections(parser, hidden=False):
       ),
       required=False,
       help=(
-          'A comma-separated list of networks or a comma-separated list of'
-          ' pairs of project and network. Each project in this list might be'
-          ' represented by a project number (numeric) or by a project ID'
-          ' (alphanumeric). This allows Private Service Connect connections to'
-          ' be created automatically for the specified networks. For example,'
-          ' this would use the "form:'
+          'A comma-separated list of networks or a comma-separated list of '
+          'network-project pairs. Each project in this list is represented '
+          'by a project number (numeric) or by a project ID (alphanumeric).'
+          ' This allows Private Service Connect connections to be created '
+          'automatically for the specified networks. For example, this'
+          ' connection uses "the form'
           ' `psc-auto-connections`=`network=projects/testproject1/global/'
           'networks/testnetwork1`" or "the form'
           ' `psc-auto-connections`=`project=testproject1,network=projects/'
@@ -2617,8 +2618,9 @@ def AddClearPscAutoConnections(parser, hidden=False):
       '--clear-psc-auto-connections',
       required=False,
       help=(
-          'This removes all automatically created connections that Cloud SQL'
-          ' uses to connect to an instance using Private Service Connect.'
+          'This removes all connections created automatically. Cloud SQL'
+          ' uses these connections to connect to an instance using Private'
+          ' Service Connect.'
       ),
       hidden=hidden,
       **kwargs

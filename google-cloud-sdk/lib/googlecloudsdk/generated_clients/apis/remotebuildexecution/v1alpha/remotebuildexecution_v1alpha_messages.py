@@ -1874,6 +1874,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
       instance.
     state: Output only. State of the instance.
     storageSettings: User-specified storage settings for this instance.
+    zoneDrains: Optional. The list of zones that should be drained (no new
+      tasks should be assigned to all or part of the workers in these).
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1929,6 +1931,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
   schedulerNotificationConfig = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaSchedulerNotificationConfig', 7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
   storageSettings = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaStorageSettings', 9)
+  zoneDrains = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaZoneDrain', 10, repeated=True)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesRequest(_messages.Message):
@@ -2228,6 +2231,20 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message
   state = _messages.EnumField('StateValueValuesEnum', 5)
   workerConfig = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig', 6)
   workerCount = _messages.IntegerField(7)
+
+
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaZoneDrain(_messages.Message):
+  r"""ZoneDrain indicates a zone that should be drained (no new tasks should
+  be assigned to all or part of the workers in it).
+
+  Fields:
+    percent: Optional. The percentage of workers in the zone to drain, from 0
+      (no workers drained) to 100 (all workers drained).
+    zone: Required. The zone to drain.
+  """
+
+  percent = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(2)
 
 
 class GoogleDevtoolsRemoteworkersV1test2AdminTemp(_messages.Message):

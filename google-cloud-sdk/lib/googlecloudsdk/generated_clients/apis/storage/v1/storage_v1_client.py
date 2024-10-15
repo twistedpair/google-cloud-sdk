@@ -1999,6 +1999,32 @@ class StorageV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AdvanceRelocateBucket(self, request, global_params=None):
+      r"""Starts asynchronous advancement of the relocate bucket operation in the case of required write downtime, to allow it to lock the bucket at the source location, and proceed with the bucket location swap. The server makes a best effort to advance the relocate bucket operation, but success is not guaranteed.
+
+      Args:
+        request: (StorageBucketsOperationsAdvanceRelocateBucketRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StorageBucketsOperationsAdvanceRelocateBucketResponse) The response message.
+      """
+      config = self.GetMethodConfig('AdvanceRelocateBucket')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AdvanceRelocateBucket.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='storage.buckets.operations.advanceRelocateBucket',
+        ordered_params=['bucket', 'operationId'],
+        path_params=['bucket', 'operationId'],
+        query_params=[],
+        relative_path='b/{bucket}/operations/{operationId}/advanceRelocateBucket',
+        request_field='advanceRelocateBucketOperationRequest',
+        request_type_name='StorageBucketsOperationsAdvanceRelocateBucketRequest',
+        response_type_name='StorageBucketsOperationsAdvanceRelocateBucketResponse',
+        supports_download=False,
+    )
+
     def Cancel(self, request, global_params=None):
       r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed.
 

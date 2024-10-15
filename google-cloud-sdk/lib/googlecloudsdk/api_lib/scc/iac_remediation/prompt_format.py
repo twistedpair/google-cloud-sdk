@@ -271,6 +271,8 @@ data "google_iam_policy" "admin" {
   }
 }
 
+NOTE: google_project_iam_policy cannot be used in conjunction with google_project_iam_binding, google_project_iam_member, or google_project_iam_audit_config or they will fight over what your policy should be.
+
     """
     return self._policy_prompt_format
 
@@ -296,6 +298,7 @@ data "google_iam_policy" "admin" {
 - google_project_iam_binding resources can be used in conjunction with google_project_iam_member resources only if they do not grant privilege to the same role.
 - Refer to the summary of TERRAFORM_DOCUMENTATION given below for updating the files.
 - **Validate that the generated Terraform code does not create unnecessary google_project_iam_member_remove resources when the corresponding resource granting the role is already deleted.**
+- When faced with complex scenarios involving multiple projects or resources within a module, consider if decomposing the module into smaller, more specialized modules would improve clarity, maintainability, and reduce the risk of unintended changes.
 - The output must be list of valid .tf files.
 - The output must contains only those files which were updated.
 - The output should start with: ```
@@ -396,6 +399,64 @@ resource "google_project_iam_member" "project" {
   }
 }
 
+## Documentation for terraform modules
+Terraform modules are self-contained packages of Terraform configurations that manage a specific collection of resources. Think of them as reusable building blocks for your infrastructure.
+
+Types:
+1. Public Modules: Published online (e.g., Terraform Registry), offering pre-built solutions for common scenarios.
+2. Private Modules: Custom modules created for internal use within an organization.
+
+Basic Usage:
+1. Define a Module: Create a directory containing .tf files with resource definitions.
+2. Call the Module: Use the module block in your main configuration to invoke and configure the module.
+
+Example:
+Imagine a module for deploying an AWS EC2 instance:
+
+# module/ec2-instance/main.tf
+resource "aws_instance" "example" {
+  # ... instance configuration ...
+}
+
+You can then use this module in your main configuration:
+
+# main.tf
+module "my_instance" {
+  source = "./modules/ec2-instance"
+  # ... module input variables ...
+}
+
+Advanced Usage:
+1. Define a Module: Create a directory containing .tf files with resource definitions.
+2. Call the Module: Use the module block in your main configuration to invoke and configure the module.
+3. Use Variables: Define variables in the main.tf file to customize the module's behavior.
+4. Use Outputs: Specify the values that the module returns as outputs.
+5. Use Providers: Specify the provider block to use the module in a specific environment.
+
+#Handling Modules in code.
+
+1. Module Integrity:
+
+"Do not modify the internal configuration of modules directly, especially when those modules manage multiple resources."
+
+"Treat modules as black boxes when possible: modify their behavior through inputs and outputs, rather than altering their internal code."
+
+2. Project-Specific Actions:
+
+"When making changes to IAM bindings for a specific project, ensure that those changes are isolated to that project and do not affect other projects managed by the same module."
+
+"If a module manages multiple projects and you need to make project-specific IAM changes, consider using separate google_project_iam_* resources outside the module to target those specific projects."
+
+3. Modularity as a Solution:
+
+"When faced with complex scenarios involving multiple projects or resources within a module, consider if decomposing the module into smaller, more specialized modules would improve clarity, maintainability, and reduce the risk of unintended changes."
+
+
+#NOTE:
+  1. google_project_iam_binding resources can be used in conjunction with google_project_iam_member resources only if they do not grant privilege to the same role.
+  2. google_project_iam_member-remove resource will conflict with google_project_iam_policy and google_project_iam_binding resources that share a role, as well as google_project_iam_member resources that target the same membership. When multiple resources conflict the final state is not guaranteed to include or omit the membership.
+
+
 # FORMAT is as follows
 FilePath= "file_path1"
 ```
@@ -406,6 +467,7 @@ FilePath= "file_path2"
 ```
 The complete terraform file(s) which were updated as per given IAM bindings .
 The output must be valid .tf files.
+```
 
 ## IAM_BINDINGS
 {{iam_bindings}}
@@ -618,6 +680,132 @@ resource "google_project_iam_member" "iam_member_for_bigquery" {
 }
 ```
 
+# EXAMPLE3 is as follows
+
+## INPUT_TF_FILES
+FilePath= "file_path1"
+```
+module "project_iam_binding" {
+  source  = "terraform-google-modules/iam/google//modules/projects_iam"
+  version = "~> 7.0"
+
+  projects = [var.project_one, var.project_two]
+  mode     = "additive"
+
+  bindings = {
+    "roles/compute.networkAdmin" = [
+      "serviceAccount:${var.sa_email}",
+      "group:${var.group_email}",
+      "user:${var.user_email}",
+    ]
+    "roles/appengine.appAdmin" = [
+      "serviceAccount:${var.sa_email}",
+      "group:${var.group_email}",
+      "user:${var.user_email}",
+    ]
+  }
+}
+```
+FilePath= "file_path2"
+```
+variable "group_email" {
+  type        = string
+  description = "Email for group to receive roles (ex. group@example.com)"
+  default = "scc-ai-eng@google.com"
+}
+
+variable "sa_email" {
+  type        = string
+  description = "Email for Service Account to receive roles (Ex. default-sa@example-project-id.iam.gserviceaccount.com)"
+  default = "bqdw-uat-1@drs-issue-2.iam.gserviceaccount.com"
+}
+
+variable "user_email" {
+  type        = string
+  description = "Email for group to receive roles (Ex. user@example.com)"
+  default = "varunbhardwaj@google.com"
+}
+
+/******************************************
+  project_iam_binding variables
+ *****************************************/
+variable "project_one" {
+  type        = string
+  description = "First project id to add the IAM policies/bindings"
+  default = "project-name-test"
+}
+
+variable "project_two" {
+  type        = string
+  description = "Second project id to add the IAM policies/bindings"
+  default = "test-blueprint-deployment"
+}
+```
+
+## IAM_BINDINGS
+
+Member: "user:varunbhardwaj@google.com"
+
+Action: "ADD"
+Role: "roles/compute.viewer"
+
+Action: "REMOVE"
+Role: "roles/compute.admin"
+
+## RESOURCE_NAME
+project-name-test
+
+** ANSWER **
+FilePath= "file_path1"
+```
+module "project_iam_binding_for_project_one" {
+  source  = "terraform-google-modules/iam/google//modules/projects_iam"
+  version = "~> 7.0"
+
+  projects = [var.project_one]
+  mode     = "additive"
+
+  bindings = {
+    "roles/compute.networkAdmin" = [
+      "serviceAccount:${var.sa_email}",
+      "group:${var.group_email}",
+      "user:${var.user_email}",
+    ]
+    "roles/compute.admin" = [
+      "serviceAccount:${var.sa_email}",
+      "group:${var.group_email}",
+    ]
+  }
+}
+
+module "project_iam_binding_for_project_two" {
+  source  = "terraform-google-modules/iam/google//modules/projects_iam"
+  version = "~> 7.0"
+
+  projects = [var.project_two]
+  mode     = "additive"
+
+  bindings = {
+    "roles/compute.networkAdmin" = [
+      "serviceAccount:${var.sa_email}",
+      "group:${var.group_email}",
+      "user:${var.user_email}",
+    ]
+    "roles/compute.admin" = [
+      "serviceAccount:${var.sa_email}",
+      "group:${var.group_email}",
+      "user:${var.user_email}",
+    ]
+  }
+}
+
+resource "google_project_iam_member" "project_iam_member" {
+  project = var.project_one
+  role    = "roles/compute.viewer"
+  member  = "user:varunbhardwaj@google.com"
+}
+```
+
 
 ** Steps **
 1. **Identify the file**: Identify the file(s) that contains the resources that need to be updated as per information in IAM Binding and TFSTATE_INFORMATION.
@@ -642,6 +830,6 @@ resource "google_project_iam_member" "iam_member_for_bigquery" {
 10. If the role is present in for loop in a "google_project_iam_member" and any action has to be performed, create a new binding for the role and perform action while preserving the existing permissions.
 11. Ensure that no new permissions are being assigned or removed to any user other than asked in IAM_BINDING field.
 12. **Update the file**: Update the file(s) as per information in IAM Binding.
-13. **Test the file**: Test the file(s) to ensure that the changes made are correct.
+13. **Test the file**: Test the file(s) to ensure that the changes made are correct. Always verify that both the ADD and REMOVE actions are working as expected.
     """
     return self._binding_prompt_format

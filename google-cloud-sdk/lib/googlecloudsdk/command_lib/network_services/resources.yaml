@@ -235,3 +235,27 @@ multicastGroupConsumerActivation:
     parameter_name: multicastGroupConsumerActivationsId
     attribute_name: multicast_group_consumer_activation
     help: Id of the multicast group consumer activation.
+
+multicastProducerAssociation:
+  name: multicast producer association
+  collection: networkservices.projects.locations.multicastProducerAssociations
+  request_id_field: multicastProducerAssociationId
+  attributes:
+  - *project
+  - *location
+  - &multicastProducerAssociation
+    parameter_name: multicastProducerAssociationsId
+    attribute_name: multicast_producer_association
+    help: Id of the multicast producer association.
+
+multicastGroupProducerActivation:
+  name: multicast group producer activation
+  collection: networkservices.projects.locations.multicastGroupProducerActivations
+  request_id_field: multicastGroupProducerActivationId
+  attributes:
+  - *project
+  - *location
+  - &multicastGroupProducerActivation
+    parameter_name: multicastGroupProducerActivationsId
+    attribute_name: multicast_group_producer_activation
+    help: Id of the multicast group producer activation.

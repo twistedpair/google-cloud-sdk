@@ -58,8 +58,7 @@ properties:
     type: number
   customMetrics:
     description: |-
-      List of custom metrics that are used for CUSTOM_METRICS BalancingMode and
-      WEIGHTED_ROUND_ROBIN BackendService locality_lb_policy.
+      List of custom metrics that are used for CUSTOM_METRICS BalancingMode.
     type: array
     items:
       $ref: BackendCustomMetric.yaml

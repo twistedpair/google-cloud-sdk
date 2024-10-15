@@ -2492,11 +2492,17 @@ class APIAdapter(object):
           directMetricsOptIn=options.pod_autoscaling_direct_metrics_opt_in)
       cluster.podAutoscaling = pod_autoscaling_config
 
-    if (options.hpa_profile is not None
-        and options.hpa_profile.lower() == 'performance'):
-      pod_autoscaling_config = self.messages.PodAutoscaling(
-          directMetricsOptIn=True)
-      cluster.podAutoscaling = pod_autoscaling_config
+    if options.hpa_profile is not None:
+      if cluster.podAutoscaling is None:
+        cluster.podAutoscaling = self.messages.PodAutoscaling()
+      if options.hpa_profile.lower() == 'performance':
+        cluster.podAutoscaling.hpaProfile = (
+            self.messages.PodAutoscaling.HpaProfileValueValuesEnum.PERFORMANCE
+        )
+      elif options.hpa_profile.lower() == 'none':
+        cluster.podAutoscaling.hpaProfile = (
+            self.messages.PodAutoscaling.HpaProfileValueValuesEnum.NONE
+        )
 
     if options.managed_config is not None:
       if options.managed_config.lower() == 'autofleet':
@@ -4090,14 +4096,18 @@ class APIAdapter(object):
     if options.hpa_profile is not None:
       if options.hpa_profile == 'performance':
         pod_autoscaling_config = self.messages.PodAutoscaling(
-            directMetricsOptIn=True)
+            hpaProfile=self.messages.PodAutoscaling.HpaProfileValueValuesEnum.PERFORMANCE
+        )
         update = self.messages.ClusterUpdate(
-            desiredPodAutoscaling=pod_autoscaling_config)
-      else:
+            desiredPodAutoscaling=pod_autoscaling_config
+        )
+      elif options.hpa_profile == 'none':
         pod_autoscaling_config = self.messages.PodAutoscaling(
-            directMetricsOptIn=False)
+            hpaProfile=self.messages.PodAutoscaling.HpaProfileValueValuesEnum.NONE
+        )
         update = self.messages.ClusterUpdate(
-            desiredPodAutoscaling=pod_autoscaling_config)
+            desiredPodAutoscaling=pod_autoscaling_config
+        )
 
     if options.logging_variant is not None:
       logging_config = self.messages.NodePoolLoggingConfig()

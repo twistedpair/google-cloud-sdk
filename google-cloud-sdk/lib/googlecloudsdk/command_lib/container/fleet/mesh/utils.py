@@ -48,10 +48,62 @@ class FleetDefaultMemberConfigObject(file_parsers.YamlConfigObject):
 
 
 def ParseFleetDefaultMemberConfig(yaml_config, msg):
-  """Parses the ASM Fleet Default MEmber Config from a yaml file.
+  """Parses the ASM Fleet Default Member Config from a yaml file.
 
   Args:
-    yaml_config: object containing arguments passed as flags with the command
+    yaml_config: Object containing arguments passed as flags with the command.
+    msg: The gkehub messages package.
+
+  Returns:
+    member_config: The Membership spec configuration
+  """
+
+  if len(yaml_config.data) != 1:
+    raise exceptions.Error('Input config file must contain one YAML document.')
+  config = yaml_config.data[0]
+
+  management = config.GetManagement()
+
+  if management is None:
+    raise exceptions.Error('Missing required field .management')
+
+  # Create empty MemberConfig.
+  member_config = msg.ServiceMeshMembershipSpec()
+
+  # The config must contain a value of 'automatic' or 'manual' for the
+  # 'management' field.
+  if management == 'automatic':
+    member_config.management = (
+        msg.ServiceMeshMembershipSpec.ManagementValueValuesEnum(
+            'MANAGEMENT_AUTOMATIC'
+        )
+    )
+  # Provision Google proto from Google ClientConfig dictionary.
+  elif management == 'manual':
+    member_config.management = (
+        msg.ServiceMeshMembershipSpec.ManagementValueValuesEnum(
+            'MANAGEMENT_MANUAL'
+        )
+    )
+  elif management is None or management == 'unspecified':
+    member_config.management = (
+        msg.ServiceMeshMembershipSpec.ManagementValueValuesEnum(
+            'MANAGEMENT_UNSPECIFIED'
+        )
+    )
+  # Unsupported configuration found.
+  else:
+    status_msg = ('management [{}] is not supported.').format(management)
+    log.status.Print(status_msg)
+
+  return member_config
+
+
+def ParseFleetDefaultMemberConfigV2(yaml_config, msg):
+  """Parses the ASM Fleet Default Member Config from a yaml file.
+
+  Args:
+    yaml_config: Object containing arguments passed as flags with the command.
     msg: The gkehub messages package.
 
   Returns:

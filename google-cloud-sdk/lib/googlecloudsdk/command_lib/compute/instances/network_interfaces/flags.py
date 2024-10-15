@@ -300,3 +300,13 @@ def AddIpv6PrefixLengthArg(parser):
         is `96`.
       """,
   )
+
+
+def AddNetworkAttachmentArg(parser):
+  parser.add_argument(
+      '--network-attachment',
+      type=str,
+      help="""
+        The network attachment URL this network interface should connect to.
+      """,
+  )

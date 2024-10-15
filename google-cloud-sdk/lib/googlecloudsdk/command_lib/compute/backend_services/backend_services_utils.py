@@ -455,6 +455,25 @@ def ApplyAffinityCookieArgs(client, args, backend_service):
       )
     else:
       backend_service.affinityCookieTtlSec = args.affinity_cookie_ttl
+  if args.affinity_cookie_path is not None:
+    if args.session_affinity == 'STRONG_COOKIE_AFFINITY':
+      if backend_service.strongSessionAffinityCookie is None:
+        backend_service.strongSessionAffinityCookie = (
+            client.messages.BackendServiceHttpCookie()
+        )
+      backend_service.strongSessionAffinityCookie.path = (
+          args.affinity_cookie_path
+      )
+    elif args.session_affinity == 'HTTP_COOKIE':
+      if backend_service.consistentHash is None:
+        backend_service.consistentHash = (
+            client.messages.ConsistentHashLoadBalancerSettings()
+        )
+      if backend_service.consistentHash.httpCookie is None:
+        backend_service.consistentHash.httpCookie = (
+            client.messages.ConsistentHashLoadBalancerSettingsHttpCookie()
+        )
+      backend_service.consistentHash.httpCookie.path = args.affinity_cookie_path
 
 
 def GetNegativeCachingPolicy(client, args, backend_service):
@@ -766,6 +785,19 @@ def ApplyLogConfigArgs(
       if not args.logging_optional_fields and cleared_fields is not None:
         cleared_fields.append('logConfig.optionalFields')
     backend_service.logConfig = log_config
+
+
+def ApplyCustomMetrics(args, backend_service):
+  """Applies the Custom Metrics argument to the backend service.
+
+  Args:
+    args: The arguments passed to the gcloud command.
+    backend_service: The backend service object.
+  """
+  if args.custom_metrics:
+    backend_service.customMetrics = args.custom_metrics
+  if args.custom_metrics_file:
+    backend_service.customMetrics = args.custom_metrics_file
 
 
 def SendGetRequest(client, backend_service_ref):

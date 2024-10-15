@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.core import properties
 
 _DETAILED_SOURCE_SNAPSHOT_HELP = """\
@@ -131,6 +132,37 @@ class SnapshotsCompleter(compute_completers.ListCommandCompleter):
         collection='compute.snapshots',
         list_command='compute snapshots list --uri',
         **kwargs)
+
+
+class SnapshotsCompleterAlpha(completers.MultiResourceCompleter):
+
+  def __init__(self, **kwargs):
+    super(SnapshotsCompleterAlpha, self).__init__(
+        completers=[RegionSnapshotsCompleter, GlobalSnapshotsCompleter],
+        **kwargs
+    )
+
+
+class GlobalSnapshotsCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(GlobalSnapshotsCompleter, self).__init__(
+        collection='compute.snapshots',
+        list_command='compute snapshots list --uri',
+        api_version='alpha',
+        **kwargs
+    )
+
+
+class RegionSnapshotsCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(RegionSnapshotsCompleter, self).__init__(
+        collection='compute.regionSnapshots',
+        list_command='compute regionSnapshots list --uri',
+        api_version='alpha',
+        **kwargs
+    )
 
 
 def MakeDiskArgZonal(plural):
@@ -258,8 +290,11 @@ def AddArchitectureFlag(parser, messages):
       '--architecture',
       choices=architecture_choices,
       help=(
-          'Specifies the architecture or processor type that this disk can support. For available processor types on Compute Engine, see https://cloud.google.com/compute/docs/cpu-platforms.'
-      ))
+          'Specifies the architecture or processor type that this disk can '
+          'support. For available processor types on Compute Engine, '
+          'see https://cloud.google.com/compute/docs/cpu-platforms.'
+      ),
+  )
 
 
 def AddAccessModeFlag(parser, messages):
@@ -321,6 +356,31 @@ def AddPrimaryDiskProject(parser, category=None):
   )
 
 
+def AddKeepOldDiskArgs(parser):
+  """Adds keep old disk argument group to parser."""
+  group = parser.add_group()
+  group.add_argument(
+      '--keep-old-disk',
+      action='store_true',
+      help=(
+          'If true, the old disk will be kept after the conversion. '
+          'The old disk will be renamed to the original disk name with a '
+          'suffix.'
+      ),
+  )
+  group.add_argument(
+      '--target-disk-name',
+      help=(
+          'Specifies the name of the new disk, '
+          'it can only be used with --keep-old-disk.'
+          ' For details on the naming convention for this '
+          'resource, refer to: '
+          'https://cloud.google.com/compute/docs/'
+          'naming-resources'
+      ),
+  )
+
+
 SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     resource_name='snapshot',
     completer=SnapshotsCompleter,
@@ -329,7 +389,20 @@ SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     required=False,
     global_collection='compute.snapshots',
     short_help='Source snapshot used to create the disks.',
-    detailed_help=_DETAILED_SOURCE_SNAPSHOT_HELP,)
+    detailed_help=_DETAILED_SOURCE_SNAPSHOT_HELP,
+)
+
+SOURCE_SNAPSHOT_ARG_ALPHA = compute_flags.ResourceArgument(
+    resource_name='snapshot',
+    completer=SnapshotsCompleterAlpha,
+    name='--source-snapshot',
+    plural=False,
+    required=False,
+    global_collection='compute.snapshots',
+    regional_collection='compute.regionSnapshots',
+    short_help='Source snapshot used to create the disks.',
+    detailed_help=_DETAILED_SOURCE_SNAPSHOT_HELP,
+)
 
 SOURCE_INSTANT_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     resource_name='source instant snapshot',

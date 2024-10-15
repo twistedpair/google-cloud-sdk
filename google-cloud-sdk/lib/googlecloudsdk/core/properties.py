@@ -1282,6 +1282,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.faultinjectiontesting = self._Add(
         'faultinjectiontesting', command='gcloud fault-injection')
     self.file = self._Add('file', command='gcloud filestore')
+    self.firebasedataconnect = self._Add(
+        'firebasedataconnect', command='gcloud firebase-data-connect')
     self.firestore = self._Add('firestore', command='gcloud firestore')
     self.genomics = self._Add('genomics', command='gcloud genomics')
     self.gkebackup = self._Add('gkebackup', hidden=True)
@@ -1603,8 +1605,8 @@ class _SectionArtifacts(_Section):
         help_text='Default batching size for BatchCreateNotes requests.',
     )
 
-    self.allow_unrecongized_registry = self._AddBool(
-        'allow_unrecongized_registry',
+    self.allow_unrecognized_registry = self._AddBool(
+        'allow_unrecognized_registry',
         default=False,
         hidden=True,
         help_text=(

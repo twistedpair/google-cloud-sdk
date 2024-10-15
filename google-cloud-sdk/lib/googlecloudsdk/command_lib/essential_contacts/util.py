@@ -51,31 +51,13 @@ def GetParent(args):
 
   parent = None
   if args.project:
-    _ValidateProject(args.project)
     parent = 'projects/%s' % args.project
   elif args.folder:
-    _ValidateFolder(args.folder)
     parent = 'folders/%s' % args.folder
   else:
-    _ValidateOrganization(args.organization)
     parent = 'organizations/%s' % args.organization
 
   return parent
-
-
-def _ValidateProject(flag_value):
-  if not re.match('^[a-z0-9-]+$', flag_value):
-    raise exceptions.InvalidArgumentException('project', flag_value)
-
-
-def _ValidateFolder(flag_value):
-  if not re.match('^[0-9]+$', flag_value):
-    raise exceptions.InvalidArgumentException('folder', flag_value)
-
-
-def _ValidateOrganization(flag_value):
-  if not re.match('^[0-9]+$', flag_value):
-    raise exceptions.InvalidArgumentException('organization', flag_value)
 
 
 def GetNotificationCategories(args, notification_category_enum_message):

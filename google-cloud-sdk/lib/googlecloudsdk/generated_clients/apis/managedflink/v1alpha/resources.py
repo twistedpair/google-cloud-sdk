@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://managedflink.googleapis.com/v1alpha/'
-DOCS_URL = 'go/managed-flink-design'
+DOCS_URL = 'https://cloud.google.com/managed-flink/docs/overview'
 
 
 class Collections(enum.Enum):

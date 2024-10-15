@@ -1442,6 +1442,8 @@ class WorkstationCluster(_messages.Message):
       [Labels](https://cloud.google.com/workstations/docs/label-resources)
       that are applied to the workstation cluster and that are also propagated
       to the underlying Compute Engine resources.
+    TagsValue: Optional. Tag keys/values directly bound to this resource. For
+      example: "123/environment": "production", "123/costCenter": "marketing"
 
   Fields:
     annotations: Optional. Client-specified annotations.
@@ -1478,6 +1480,8 @@ class WorkstationCluster(_messages.Message):
     subnetwork: Immutable. Name of the Compute Engine subnetwork in which
       instances associated with this workstation cluster will be created. Must
       be part of the subnetwork specified for this workstation cluster.
+    tags: Optional. Tag keys/values directly bound to this resource. For
+      example: "123/environment": "production", "123/costCenter": "marketing"
     uid: Output only. A system-assigned unique identifier for this workstation
       cluster.
     updateTime: Output only. Time when this workstation cluster was most
@@ -1535,6 +1539,31 @@ class WorkstationCluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Tag keys/values directly bound to this resource. For
+    example: "123/environment": "production", "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   conditions = _messages.MessageField('Status', 2, repeated=True)
   controlPlaneIp = _messages.StringField(3)
@@ -1552,8 +1581,9 @@ class WorkstationCluster(_messages.Message):
   satisfiesPzi = _messages.BooleanField(15)
   satisfiesPzs = _messages.BooleanField(16)
   subnetwork = _messages.StringField(17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
+  tags = _messages.MessageField('TagsValue', 18)
+  uid = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
 
 
 class WorkstationConfig(_messages.Message):

@@ -43,6 +43,30 @@ def MakeSnapshotArgAlpha(plural=False):
   )
 
 
+def AddScopeArg(parser):
+  """Adds scope flag to the parser.
+
+  Args:
+    parser: parser for command line arguments.
+  """
+  group = parser.add_group(
+      mutex=True,
+      help='Scope for snapshot.',
+  )
+
+  group.add_argument(
+      '--global',
+      action='store_true',
+      help='If set, the snapshot will be created in the global scope',
+  )
+
+  group.add_argument(
+      '--region',
+      help='If set, the snapshot will be created in the regional scope',
+      completer=compute_completers.RegionsCompleter,
+  )
+
+
 def AddChainArg(parser):
   parser.add_argument(
       '--chain-name',

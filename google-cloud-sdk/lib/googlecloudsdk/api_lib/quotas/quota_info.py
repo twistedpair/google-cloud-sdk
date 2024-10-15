@@ -26,38 +26,40 @@ def _GetClientInstance(no_http=False):
   return apis.GetClientInstance('cloudquotas', 'v1', no_http=no_http)
 
 
-def GetQuotaInfo(args):
+def GetQuotaInfo(project, folder, organization, service, quota_id):
   """Retrieve the QuotaInfo of a quota for a project, folder or organization.
 
   Args:
-    args: argparse.Namespace, The arguments that this command was invoked with.
+    project: str, The project ID.
+    folder: str, The folder ID.
+    organization: str, The organization ID.
+    service: str, The service name.
+    quota_id: str, The quota ID.
 
   Returns:
     The request QuotaInfo
   """
-  consumer = message_util.CreateConsumer(
-      args.project, args.folder, args.organization
-  )
+  consumer = message_util.CreateConsumer(project, folder, organization)
   client = _GetClientInstance()
   messages = client.MESSAGES_MODULE
   name = (
-      _CONSUMER_LOCATION_SERVICE_RESOURCE % (consumer, args.service)
-      + '/quotaInfos/%s' % args.QUOTA_ID
+      _CONSUMER_LOCATION_SERVICE_RESOURCE % (consumer, service)
+      + '/quotaInfos/%s' % quota_id
   )
 
-  if args.project:
+  if project:
     request = messages.CloudquotasProjectsLocationsServicesQuotaInfosGetRequest(
         name=name
     )
     return client.projects_locations_services_quotaInfos.Get(request)
 
-  if args.folder:
+  if folder:
     request = messages.CloudquotasFoldersLocationsServicesQuotaInfosGetRequest(
         name=name
     )
     return client.folders_locations_services_quotaInfos.Get(request)
 
-  if args.organization:
+  if organization:
     request = (
         messages.CloudquotasOrganizationsLocationsServicesQuotaInfosGetRequest(
             name=name

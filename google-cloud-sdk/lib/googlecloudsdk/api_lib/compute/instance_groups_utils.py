@@ -247,8 +247,14 @@ list as parameter:
 }
 
 
-def CreateInstanceReferences(resources, compute_client, igm_ref,
-                             instance_names_or_urls):
+def CreateInstanceReferences(
+    resources,
+    compute_client,
+    igm_ref,
+    instance_names_or_urls,
+    skip_instances_on_validation_error=False,
+    warnings=None,
+):
   """Creates reference to instances in instance group (zonal or regional).
 
   Args:
@@ -256,6 +262,11 @@ def CreateInstanceReferences(resources, compute_client, igm_ref,
     compute_client: Client for the current release track.
     igm_ref: URL to the target IGM.
     instance_names_or_urls: names or full URLs of target instances.
+    skip_instances_on_validation_error: If true, skip instances that are not yet
+      allocated to any zone. This can happen when the instance is being created
+      in a regional IGM by a resize-request and is still in a queue.
+    warnings: A list to collect warnings for skipped instances if
+      skip_instances_on_validation_error is true.
 
   Returns:
     A dict where instance names are keys, and corresponding references are
@@ -292,6 +303,24 @@ def CreateInstanceReferences(resources, compute_client, igm_ref,
     resolved_references = {}
     for instance_ref in compute_client.MakeRequests(
         requests=[(service, 'ListManagedInstances', request)]):
+      if not instance_ref.instance:
+        if not skip_instances_on_validation_error:
+          raise ValueError(
+              'Cannot perform action on instance {name} as it is not'
+              ' yet allocated to any zone.'.format(
+                  name=instance_ref.name
+              )
+          )
+        else:
+          if warnings is None:
+            warnings = []
+          warnings.append(
+              'Skipped performing action on instance {name} as it is not'
+              ' yet allocated to any zone.'.format(
+                  name=instance_ref.name
+              )
+          )
+          continue
       resolved_references[path_simplifier.Name(
           instance_ref.instance)] = instance_ref.instance
     for instance_name in names_to_resolve:
@@ -563,7 +592,8 @@ def SendInstancesRequestsAndPostProcessOutputs(
     instances_holder_field,
     igm_ref,
     instances,
-    per_instance_status_enabled=False):
+    per_instance_status_enabled=False,
+    skip_instances_on_validation_error=False):
   """Make *-instances requests and format output.
 
   Method resolves instance references, splits them to make batch of requests,
@@ -584,6 +614,9 @@ def SendInstancesRequestsAndPostProcessOutputs(
       status output. The plan is to gradually enable this for all per-instance
       commands in GA (even where graceful validation is not available / not
       used).
+    skip_instances_on_validation_error: If true, skip instances that are not yet
+      allocated to any zone. This can happen when the instance is being created
+      in a regional IGM by a resize-request and is still in a queue.
 
   Yields:
     A list of request statuses per instance. Requests status is a dictionary
@@ -601,9 +634,17 @@ def SendInstancesRequestsAndPostProcessOutputs(
   else:
     raise ValueError('Unknown reference type {0}'.format(igm_ref.Collection()))
 
-  instances_with_references = CreateInstanceReferences(api_holder.resources,
-                                                       client, igm_ref,
-                                                       instances)
+  errors_to_collect = []
+  warnings_to_collect = []
+
+  instances_with_references = CreateInstanceReferences(
+      api_holder.resources,
+      client,
+      igm_ref,
+      instances,
+      skip_instances_on_validation_error,
+      warnings_to_collect,
+  )
   resolved_references = [
       instance.instance_reference
       for instance in instances_with_references
@@ -613,9 +654,6 @@ def SendInstancesRequestsAndPostProcessOutputs(
           instances_holder_field).instances = resolved_references
   requests = SplitInstancesInRequest(request_template, instances_holder_field)
   request_tuples = GenerateRequestTuples(service, method_name, requests)
-
-  errors_to_collect = []
-  warnings_to_collect = []
 
   request_status_per_instance = []
   if per_instance_status_enabled:

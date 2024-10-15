@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.network_security.security_profiles import sp_api
 
-_CUSTOM_MIRRORING_PROFILE_TYPE = 'CUSTOM_MIRRORING'
+CUSTOM_MIRRORING_PROFILE_TYPE = 'CUSTOM_MIRRORING'
 
 
 class Client(sp_api.Client):
@@ -39,7 +39,7 @@ class Client(sp_api.Client):
 
     response = self.GetSecurityProfile(name)
     if response.type != self._ParseSecurityProfileType(
-        _CUSTOM_MIRRORING_PROFILE_TYPE
+        CUSTOM_MIRRORING_PROFILE_TYPE
     ):
       return response.etag, None
 
@@ -52,7 +52,7 @@ class Client(sp_api.Client):
         profile
         for profile in profiles
         if profile.type
-        == self._ParseSecurityProfileType(_CUSTOM_MIRRORING_PROFILE_TYPE)
+        == self._ParseSecurityProfileType(CUSTOM_MIRRORING_PROFILE_TYPE)
     ]
 
   def CreateCustomMirroringProfile(
@@ -65,7 +65,7 @@ class Client(sp_api.Client):
   ):
     """Calls the Create Security Profile API to create a Custom Mirroring Profile."""
     profile = self.messages.SecurityProfile(
-        type=self._ParseSecurityProfileType(_CUSTOM_MIRRORING_PROFILE_TYPE),
+        type=self._ParseSecurityProfileType(CUSTOM_MIRRORING_PROFILE_TYPE),
         customMirroringProfile=self.messages.CustomMirroringProfile(
             mirroringEndpointGroup=mirroring_endpoint_group
         ),

@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.eventarc import base
 from googlecloudsdk.api_lib.eventarc import common
+from googlecloudsdk.api_lib.eventarc import common_publishing
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
@@ -28,6 +29,10 @@ from googlecloudsdk.core import resources
 
 class NoFieldsSpecifiedError(exceptions.Error):
   """Error when no fields were specified for a Patch operation."""
+
+
+class MessageBusAlreadyExistsInProjectError(exceptions.Error):
+  """Error when a MessageBus already exists in the project."""
 
 
 def GetMessageBusURI(resource):
@@ -50,6 +55,14 @@ class MessageBusClientV1(base.EventarcClientBase):
 
     self._messages = client.MESSAGES_MODULE
     self._service = client.projects_locations_messageBuses
+
+    # Eventarc Publishing client
+    publishing_client = apis.GetClientInstance(
+        common_publishing.API_NAME, common_publishing.API_VERSION_1
+    )
+
+    self._publishing_messages = publishing_client.MESSAGES_MODULE
+    self._publishing_service = publishing_client.projects_locations_messageBuses
 
   def Create(self, message_bus_ref, message_bus_message, dry_run=False):
     """Creates a new MessageBus.
@@ -148,6 +161,59 @@ class MessageBusClientV1(base.EventarcClientBase):
     )
     return self._service.Delete(delete_req)
 
+  def Publish(
+      self,
+      message_bus_ref,
+      json_message,
+      avro_message,
+      event_id,
+      event_type,
+      event_source,
+      event_data,
+      event_attributes,
+  ):
+    """Publish a Cloud Event to a MessageBus.
+
+    Args:
+      message_bus_ref: Resource, the message bus to publish to.
+      json_message: str, the json string to publish.
+      avro_message: byte, the avro payload to publish.
+      event_id: str, the id of the event.
+      event_type: str, the type of the event.
+      event_source: str, the source of the event.
+      event_data: str, the data of the event.
+      event_attributes: dict, the attributes of the event.
+    """
+
+    publish_req = self._publishing_messages.EventarcpublishingProjectsLocationsMessageBusesPublishRequest(
+        messageBus=message_bus_ref.RelativeName(),
+        googleCloudEventarcPublishingV1PublishRequest=self._publishing_messages.GoogleCloudEventarcPublishingV1PublishRequest(
+            protoMessage=self._BuildCloudEventProtoMessage(
+                event_id, event_type, event_source, event_data, event_attributes
+            ),
+            avroMessage=avro_message,
+            jsonMessage=json_message,
+        ),
+    )
+
+    # GoogleCloudEventarcPublishingV1PublishEventsResponse
+    self._publishing_service.Publish(publish_req)
+
+  def ListEnrollments(self, message_bus_ref, limit, page_size):
+    """List available enrollments attached to the specified messageBus."""
+    list_req = self._messages.EventarcProjectsLocationsMessageBusesListEnrollmentsRequest(
+        parent=message_bus_ref.RelativeName(), pageSize=page_size
+    )
+    return list_pager.YieldFromList(
+        service=self._service,
+        method='ListEnrollments',
+        request=list_req,
+        field='enrollments',
+        limit=limit,
+        batch_size=page_size,
+        batch_size_attribute='pageSize',
+    )
+
   def BuildMessageBus(self, message_bus_ref, logging_config, crypto_key_name):
     logging_config_enum = None
     if logging_config is not None:
@@ -186,6 +252,51 @@ class MessageBusClientV1(base.EventarcClientBase):
     if not update_mask:
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
     return ','.join(update_mask)
+
+  def RaiseErrorIfMessageBusExists(self, project):
+    list_req = self._messages.EventarcProjectsLocationsMessageBusesListRequest(
+        parent=f'projects/{project}/locations/-'
+    )
+    response = self._service.List(list_req)
+    if getattr(response, 'messageBuses'):
+      raise MessageBusAlreadyExistsInProjectError(
+          'A message bus already exists in the project. Currently, only one'
+          ' message bus per project is supported.'
+      )
+
+  def _BuildCloudEventProtoMessage(
+      self, event_id, event_type, event_source, event_data, event_attributes
+  ):
+    if (
+        event_id is None
+        or event_type is None
+        or event_source is None
+        or event_data is None
+    ):
+      return None
+    return self._publishing_messages.IoCloudeventsV1CloudEvent(
+        id=event_id,
+        type=event_type,
+        source=event_source,
+        specVersion='1.0',
+        textData=event_data,
+        attributes=self._BuildCloudEventAttributes(event_attributes),
+    )
+
+  def _BuildCloudEventAttributes(self, event_attributes):
+    if event_attributes is None:
+      return None
+    return self._publishing_messages.IoCloudeventsV1CloudEvent.AttributesValue(
+        additionalProperties=[
+            self._publishing_messages.IoCloudeventsV1CloudEvent.AttributesValue.AdditionalProperty(
+                key=key,
+                value=self._publishing_messages.IoCloudeventsV1CloudEventCloudEventAttributeValue(
+                    ceString=value
+                ),
+            )
+            for key, value in event_attributes.items()
+        ]
+    )
 
   @property
   def _resource_label_plural(self):

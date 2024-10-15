@@ -40,12 +40,12 @@ class Counters(_messages.Message):
 
   Fields:
     failedObjectCount: Output only. Number of objects failed.
-    succeddedObjectCount: Output only. Number of objects completed.
+    succeededObjectCount: Output only. Number of objects completed.
     totalObjectCount: Output only. Number of objects listed.
   """
 
   failedObjectCount = _messages.IntegerField(1)
-  succeddedObjectCount = _messages.IntegerField(2)
+  succeededObjectCount = _messages.IntegerField(2)
   totalObjectCount = _messages.IntegerField(3)
 
 
@@ -72,7 +72,6 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
 
 
 class ErrorLogEntry(_messages.Message):
@@ -594,9 +593,11 @@ class PutMetadata(_messages.Message):
   r"""Describes options for object metadata update.
 
   Messages:
-    CustomMetadataValue: Optional. Updates objects custom metadata. Refer to
-      documentation in https://cloud.google.com/storage/docs/metadata#custom-
-      metadata
+    CustomMetadataValue: Optional. Updates objects custom metadata. Adds or
+      sets individual custom metadata key value pairs on objects. Empty custom
+      metadata values are ignored. Existing custom metadata not specified with
+      this flag is not changed. Refer to documentation in
+      https://cloud.google.com/storage/docs/metadata#custom-metadata
 
   Fields:
     cacheControl: Optional. Updates objects Cache-Control fixed metadata.
@@ -618,9 +619,11 @@ class PutMetadata(_messages.Message):
     contentType: Optional. Updates objects Content-Type fixed metadata. Refer
       to documentation in
       https://cloud.google.com/storage/docs/metadata#content-type
-    customMetadata: Optional. Updates objects custom metadata. Refer to
-      documentation in https://cloud.google.com/storage/docs/metadata#custom-
-      metadata
+    customMetadata: Optional. Updates objects custom metadata. Adds or sets
+      individual custom metadata key value pairs on objects. Empty custom
+      metadata values are ignored. Existing custom metadata not specified with
+      this flag is not changed. Refer to documentation in
+      https://cloud.google.com/storage/docs/metadata#custom-metadata
     customTime: Optional. Updates objects Custom-Time fixed metadata. Empty
       values are ignored. Refer to documentation in
       https://cloud.google.com/storage/docs/metadata#custom-time.
@@ -628,7 +631,11 @@ class PutMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CustomMetadataValue(_messages.Message):
-    r"""Optional. Updates objects custom metadata. Refer to documentation in
+    r"""Optional. Updates objects custom metadata.
+
+    Adds or sets individual custom metadata key value pairs on objects. Empty
+    custom metadata values are ignored. Existing custom metadata not specified
+    with this flag is not changed. Refer to documentation in
     https://cloud.google.com/storage/docs/metadata#custom-metadata
 
     Messages:

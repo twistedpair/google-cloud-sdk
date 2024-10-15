@@ -54,10 +54,15 @@ class ConnectionProfilesClient(object):
     Returns:
       A string representing the SQL engine
     """
-    if cloudsql.settings.databaseVersion:
-      # Taking the DB engine from the version enum which is of the format:
-      # <SQL_ENGINE>_<VERSION_NUMBER> e.g. MYSQL_5_6
-      return '{}'.format(cloudsql.settings.databaseVersion).split('_')[0]
+    # Taking the DB engine from the version enum which is of the format:
+    # <SQL_ENGINE>_<VERSION_NUMBER> e.g. MYSQL_5_6
+    database_versoin = (
+        cloudsql.settings.databaseVersion
+        if cloudsql.settings.databaseVersion
+        else cloudsql.settings.databaseVersionName
+    )
+    if database_versoin:
+      return '{}'.format(database_versoin).split('_')[0]
     else:
       return ''
 
@@ -430,9 +435,6 @@ class ConnectionProfilesClient(object):
     database_flags = labels_util.ParseCreateArgs(
         args, cp_type.DatabaseFlagsValue, 'database_flags')
     cloud_sql_settings = self.messages.CloudSqlSettings(
-        databaseVersion=self._GetDatabaseVersion(
-            cp_type, args.database_version
-        ),
         userLabels=user_labels_value,
         tier=args.tier,
         storageAutoResizeLimit=args.storage_auto_resize_limit,
@@ -448,6 +450,12 @@ class ConnectionProfilesClient(object):
         rootPassword=args.root_password,
         sourceId=source_id,
     )
+    if args.database_version:
+      cloud_sql_settings.databaseVersion = self._GetDatabaseVersion(
+          cp_type, args.database_version
+      )
+    else:
+      cloud_sql_settings.databaseVersionName = args.database_version_name
     if self._api_version == 'v1':
       cloud_sql_settings.availabilityType = self._GetAvailabilityType(
           cp_type, args.availability_type

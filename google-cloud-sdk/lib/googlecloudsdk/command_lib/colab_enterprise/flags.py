@@ -62,7 +62,7 @@ def AddRuntimeTemplateResourceArg(parser, verb, is_positional):
         resource_name=resource_name,
         projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
         locationsId=GetRegionAttributeConfig(),
-        disable_auto_completers=False,
+        disable_auto_completers=True,
     )
 
   if is_positional:
@@ -102,7 +102,7 @@ def AddRuntimeResourceArg(parser, verb):
         resource_name=resource_name,
         projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
         locationsId=GetRegionAttributeConfig(),
-        disable_auto_completers=False,
+        disable_auto_completers=True,
     )
 
   concept_parsers.ConceptParser.ForResource(
@@ -128,6 +128,7 @@ def AddRegionResourceArg(parser, verb):
       resource_name='region',
       locationsId=GetRegionAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=True,
   )
 
   concept_parsers.ConceptParser.ForResource(

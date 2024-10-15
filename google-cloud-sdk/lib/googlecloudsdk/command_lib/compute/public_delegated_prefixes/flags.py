@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 PUBLIC_DELEGATED_PREFIX_FLAG_ARG = compute_flags.ResourceArgument(
@@ -44,7 +45,7 @@ def MakeRegionalPublicDelegatedPrefixesArg():
   )
 
 
-def AddCreatePdpArgsToParser(parser):
+def AddCreatePdpArgsToParser(parser, include_subnetwork_creation_mode=False):
   """Adds flags for public delegated prefixes create command."""
   parent_prefix_args = parser.add_mutually_exclusive_group(required=True)
   parent_prefix_args.add_argument(
@@ -81,11 +82,14 @@ def AddCreatePdpArgsToParser(parser):
           'migrated.'
       ),
   )
-  parser.add_argument(
+  mode_choices = ['delegation', 'external-ipv6-forwarding-rule-creation']
+  if include_subnetwork_creation_mode:
+    mode_choices.append('external-ipv6-subnetwork-creation')
+  base.ChoiceArgument(
       '--mode',
-      choices=['EXTERNAL_IPV6_FORWARDING_RULE_CREATION', 'DELEGATION'],
-      help='Specifies the mode of this IPv6 PDP.',
-  )
+      choices=mode_choices,
+      help_str='Specifies the mode of this IPv6 PDP.',
+  ).AddToParser(parser)
   parser.add_argument(
       '--allocatable-prefix-length',
       help='The allocatable prefix length supported by this PDP.',
@@ -102,7 +106,7 @@ def _AddCommonSubPrefixArgs(parser, verb):
   )
 
 
-def AddCreateSubPrefixArgs(parser):
+def AddCreateSubPrefixArgs(parser, include_subnetwork_creation_mode=False):
   """Adds flags for delegate sub prefixes create command."""
   _AddCommonSubPrefixArgs(parser, 'create')
   parser.add_argument(
@@ -131,18 +135,17 @@ def AddCreateSubPrefixArgs(parser):
           'resources in the delegatee project. Default is false.'
       ),
   )
-  parser.add_argument(
+  mode_choices = ['delegation', 'external-ipv6-forwarding-rule-creation']
+  if include_subnetwork_creation_mode:
+    mode_choices.append('external-ipv6-subnetwork-creation')
+  base.ChoiceArgument(
       '--mode',
-      choices=['DELEGATION', 'EXTERNAL_IPV6_FORWARDING_RULE_CREATION'],
-      help=(
-          'Specify mode for the sub prefix.'
-      ),
-  )
+      choices=mode_choices,
+      help_str='Specifies the mode of this IPv6 PDP.',
+  ).AddToParser(parser)
   parser.add_argument(
       '--allocatable-prefix-length',
-      help=(
-          'Specify allocatable prefix length supported by this sub prefix.'
-      ),
+      help='Specify allocatable prefix length supported by this sub prefix.',
   )
 
 

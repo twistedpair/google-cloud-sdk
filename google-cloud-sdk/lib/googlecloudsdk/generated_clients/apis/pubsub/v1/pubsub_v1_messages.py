@@ -128,6 +128,58 @@ class AwsKinesis(_messages.Message):
   streamArn = _messages.StringField(5)
 
 
+class AwsMsk(_messages.Message):
+  r"""Ingestion settings for Amazon MSK.
+
+  Enums:
+    StateValueValuesEnum: Output only. An output-only field that indicates the
+      state of the Amazon MSK ingestion source.
+
+  Fields:
+    awsRoleArn: Required. AWS role ARN to be used for Federated Identity
+      authentication with Amazon MSK. Check the Pub/Sub docs for how to set up
+      this role and the required permissions that need to be attached to it.
+    clusterArn: Required. The Amazon Resource Name (ARN) that uniquely
+      identifies the cluster.
+    gcpServiceAccount: Required. The GCP service account to be used for
+      Federated Identity authentication with Amazon MSK (via a
+      `AssumeRoleWithWebIdentity` call for the provided role). The
+      `aws_role_arn` must be set up with `accounts.google.com:sub` equals to
+      this service account number.
+    state: Output only. An output-only field that indicates the state of the
+      Amazon MSK ingestion source.
+    topic: Required. The name of the topic in the Amazon MSK cluster that
+      Pub/Sub will import from.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. An output-only field that indicates the state of the
+    Amazon MSK ingestion source.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: Ingestion is active.
+      MSK_PERMISSION_DENIED: Permission denied encountered while consuming
+        data from Amazon MSK.
+      PUBLISH_PERMISSION_DENIED: Permission denied encountered while
+        publishing to the topic.
+      CLUSTER_NOT_FOUND: The provided MSK cluster wasn't found.
+      TOPIC_NOT_FOUND: The provided topic wasn't found.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    MSK_PERMISSION_DENIED = 2
+    PUBLISH_PERMISSION_DENIED = 3
+    CLUSTER_NOT_FOUND = 4
+    TOPIC_NOT_FOUND = 5
+
+  awsRoleArn = _messages.StringField(1)
+  clusterArn = _messages.StringField(2)
+  gcpServiceAccount = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  topic = _messages.StringField(5)
+
+
 class AzureEventHubs(_messages.Message):
   r"""Ingestion settings for Azure Event Hubs.
 
@@ -503,6 +555,62 @@ class CommitSchemaRequest(_messages.Message):
   schema = _messages.MessageField('Schema', 1)
 
 
+class ConfluentCloud(_messages.Message):
+  r"""Ingestion settings for Confluent Cloud.
+
+  Enums:
+    StateValueValuesEnum: Output only. An output-only field that indicates the
+      state of the Confluent Cloud ingestion source.
+
+  Fields:
+    bootstrapServer: Required. The address of the bootstrap server. The format
+      is url:port.
+    clusterId: Required. The id of the cluster.
+    gcpServiceAccount: Required. The GCP service account to be used for
+      Federated Identity authentication with `identity_pool_id`.
+    identityPoolId: Required. The id of the identity pool to be used for
+      Federated Identity authentication with Confluent Cloud. See
+      https://docs.confluent.io/cloud/current/security/authenticate/workload-
+      identities/identity-providers/oauth/identity-pools.html#add-oauth-
+      identity-pools.
+    state: Output only. An output-only field that indicates the state of the
+      Confluent Cloud ingestion source.
+    topic: Required. The name of the topic in the Confluent Cloud cluster that
+      Pub/Sub will import from.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. An output-only field that indicates the state of the
+    Confluent Cloud ingestion source.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: Ingestion is active.
+      CONFLUENT_CLOUD_PERMISSION_DENIED: Permission denied encountered while
+        consuming data from Confluent Cloud.
+      PUBLISH_PERMISSION_DENIED: Permission denied encountered while
+        publishing to the topic.
+      UNREACHABLE_BOOTSTRAP_SERVER: The provided bootstrap server address is
+        unreachable.
+      CLUSTER_NOT_FOUND: The provided cluster wasn't found.
+      TOPIC_NOT_FOUND: The provided topic wasn't found.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CONFLUENT_CLOUD_PERMISSION_DENIED = 2
+    PUBLISH_PERMISSION_DENIED = 3
+    UNREACHABLE_BOOTSTRAP_SERVER = 4
+    CLUSTER_NOT_FOUND = 5
+    TOPIC_NOT_FOUND = 6
+
+  bootstrapServer = _messages.StringField(1)
+  clusterId = _messages.StringField(2)
+  gcpServiceAccount = _messages.StringField(3)
+  identityPoolId = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  topic = _messages.StringField(6)
+
+
 class CreateSnapshotRequest(_messages.Message):
   r"""Request for the `CreateSnapshot` method.
 
@@ -652,16 +760,20 @@ class IngestionDataSourceSettings(_messages.Message):
 
   Fields:
     awsKinesis: Optional. Amazon Kinesis Data Streams.
+    awsMsk: Optional. Amazon MSK.
     azureEventHubs: Optional. Azure Event Hubs.
     cloudStorage: Optional. Cloud Storage.
+    confluentCloud: Optional. Confluent Cloud.
     platformLogsSettings: Optional. Platform Logs settings. If unset, no
       Platform Logs will be generated.
   """
 
   awsKinesis = _messages.MessageField('AwsKinesis', 1)
-  azureEventHubs = _messages.MessageField('AzureEventHubs', 2)
-  cloudStorage = _messages.MessageField('CloudStorage', 3)
-  platformLogsSettings = _messages.MessageField('PlatformLogsSettings', 4)
+  awsMsk = _messages.MessageField('AwsMsk', 2)
+  azureEventHubs = _messages.MessageField('AzureEventHubs', 3)
+  cloudStorage = _messages.MessageField('CloudStorage', 4)
+  confluentCloud = _messages.MessageField('ConfluentCloud', 5)
+  platformLogsSettings = _messages.MessageField('PlatformLogsSettings', 6)
 
 
 class ListSchemaRevisionsResponse(_messages.Message):

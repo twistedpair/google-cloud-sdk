@@ -352,6 +352,31 @@ class CloudApi(object):
     """
     raise NotImplementedError('list_buckets must be overridden.')
 
+  def relocate_bucket(
+      self,
+      bucket_name,
+      destination_location,
+      destination_custom_placement_config,
+      validate_only,
+  ):
+    """Relocates a bucket between different locations.
+
+    Args:
+      bucket_name (str): Name of the bucket.
+      destination_location (str): The new location the bucket will be relocated
+        to.
+      destination_custom_placement_config (list[str]): The bucket's new custom
+        placement configuration if relocating to a Custom Dual Region.
+      validate_only (bool): If true, validate the operation, but do not actually
+        relocate the bucket.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    raise NotImplementedError('relocate_bucket must be overridden.')
+
   def lock_bucket_retention_policy(self, bucket_resource, request_config):
     """Locks a bucket's retention policy.
 

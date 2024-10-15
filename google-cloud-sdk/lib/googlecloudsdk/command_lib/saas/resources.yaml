@@ -9,6 +9,7 @@ project:
     help: Project ID
     property: core/project
   disable_auto_completers: true
+
 project_location:
   name: location
   plural_name: locations
@@ -20,6 +21,25 @@ project_location:
     attribute_name: location
     help: Location ID
   disable_auto_completers: true
+
+# This is for the 'parent' argument for list commands. It is the same as project_location, but with
+# a default value of '-' to support fanout when the parent isn't specified.
+project_location_with_default:
+  name: location
+  plural_name: locations
+  collection: saasservicemgmt.projects.locations
+  attributes:
+  - *project
+  - &project_location_with_default
+    parameter_name: locationsId
+    attribute_name: location
+    help: Location ID
+    fallthroughs:
+    - value: "-"
+      hint: |-
+        if left empty, will use the wildcard '-' to list all locations
+  disable_auto_completers: true
+
 rollout_type:
   name: rolloutTypeId
   plural_name: rolloutTypes
@@ -44,6 +64,7 @@ rollout:
     attribute_name: rollout
     help: Rollout ID
   disable_auto_completers: false
+
 saas_type:
   name: saasType
   plural_name: saasTypes
@@ -56,6 +77,7 @@ saas_type:
     attribute_name: saas_type
     help: SaasType ID
   disable_auto_completers: false
+
 tenant:
   name: tenant
   plural_name: tenants
@@ -68,6 +90,7 @@ tenant:
     attribute_name: tenant
     help: Tenant ID
   disable_auto_completers: false
+
 unit_kind:
   name: unitKind
   plural_name: unitKinds
@@ -92,6 +115,7 @@ unit:
     attribute_name: unit
     help: Unit ID
   disable_auto_completers: false
+
 unit_operation:
   name: unitOperation
   plural_name: unitOperations
@@ -116,6 +140,7 @@ parent_unit_operation:
     attribute_name: unit_operation
     help: Unit Operation ID
   disable_auto_completers: false
+
 release:
   name: release
   plural_name: releases
@@ -128,6 +153,7 @@ release:
     attribute_name: release
     help: Release ID
   disable_auto_completers: false
+
 operation:
   name: operation
   plural_name: operations

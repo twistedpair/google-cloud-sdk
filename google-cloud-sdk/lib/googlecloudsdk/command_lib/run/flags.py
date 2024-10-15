@@ -61,6 +61,15 @@ SERVICE_MESH_FLAG = base.Argument(
     ),
 )
 
+IDENTITY_FLAG = base.Argument(
+    '--identity',
+    help=(
+        'Configures a managed workload identity to be used by the service.'
+        ' Must have the form //TRUST_DOMAIN/ns/NAMESPACE/sa/NAME.'
+    ),
+    hidden=True,
+)
+
 _VISIBILITY_MODES = {
     'internal': 'Visible only within the cluster.',
     'external': 'Visible from outside the cluster.',
@@ -2931,6 +2940,19 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
       changes.append(
           config_changes.DeleteTemplateAnnotationChange(
               revision.MESH_ANNOTATION
+          )
+      )
+  if FlagIsExplicitlySet(args, 'identity'):
+    if args.identity:
+      changes.append(
+          config_changes.SetTemplateAnnotationChange(
+              revision.IDENTITY_ANNOTATION, args.identity
+          )
+      )
+    else:
+      changes.append(
+          config_changes.DeleteTemplateAnnotationChange(
+              revision.IDENTITY_ANNOTATION
           )
       )
 

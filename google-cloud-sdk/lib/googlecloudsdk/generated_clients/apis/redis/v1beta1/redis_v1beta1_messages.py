@@ -351,6 +351,7 @@ class Cluster(_messages.Message):
   Fields:
     authorizationMode: Optional. The authorization mode of the Redis cluster.
       If not provided, auth feature is disabled for the cluster.
+    clusterEndpoints: Optional. A list of cluster enpoints.
     createTime: Output only. The timestamp associated with the cluster
       creation request.
     crossClusterReplicationConfig: Optional. Cross cluster replication config.
@@ -491,31 +492,32 @@ class Cluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 1)
-  createTime = _messages.StringField(2)
-  crossClusterReplicationConfig = _messages.MessageField('CrossClusterReplicationConfig', 3)
-  deletionProtectionEnabled = _messages.BooleanField(4)
-  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 5, repeated=True)
-  gcsSource = _messages.MessageField('GcsBackupSource', 6)
-  maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 7)
-  maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 8)
-  managedBackupSource = _messages.MessageField('ManagedBackupSource', 9)
-  name = _messages.StringField(10)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 11)
-  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 12)
-  preciseSizeGb = _messages.FloatField(13)
-  pscConfigs = _messages.MessageField('PscConfig', 14, repeated=True)
-  pscConnections = _messages.MessageField('PscConnection', 15, repeated=True)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 16)
-  replicaCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  satisfiesPzi = _messages.BooleanField(18)
-  satisfiesPzs = _messages.BooleanField(19)
-  shardCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  sizeGb = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  stateInfo = _messages.MessageField('StateInfo', 23)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 24)
-  uid = _messages.StringField(25)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 26)
+  clusterEndpoints = _messages.MessageField('ClusterEndpoint', 2, repeated=True)
+  createTime = _messages.StringField(3)
+  crossClusterReplicationConfig = _messages.MessageField('CrossClusterReplicationConfig', 4)
+  deletionProtectionEnabled = _messages.BooleanField(5)
+  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 6, repeated=True)
+  gcsSource = _messages.MessageField('GcsBackupSource', 7)
+  maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 8)
+  maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 9)
+  managedBackupSource = _messages.MessageField('ManagedBackupSource', 10)
+  name = _messages.StringField(11)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 12)
+  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 13)
+  preciseSizeGb = _messages.FloatField(14)
+  pscConfigs = _messages.MessageField('PscConfig', 15, repeated=True)
+  pscConnections = _messages.MessageField('PscConnection', 16, repeated=True)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 17)
+  replicaCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  satisfiesPzi = _messages.BooleanField(19)
+  satisfiesPzs = _messages.BooleanField(20)
+  shardCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  stateInfo = _messages.MessageField('StateInfo', 24)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 25)
+  uid = _messages.StringField(26)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 27)
 
 
 class ClusterDenyMaintenancePeriod(_messages.Message):
@@ -538,6 +540,19 @@ class ClusterDenyMaintenancePeriod(_messages.Message):
   endDate = _messages.MessageField('Date', 1)
   startDate = _messages.MessageField('Date', 2)
   time = _messages.MessageField('TimeOfDay', 3)
+
+
+class ClusterEndpoint(_messages.Message):
+  r"""ClusterEndpoint consists of PSC connections that are created as a group
+  in each VPC network for accessing the cluster. In each group, there shall be
+  one connection for each service attachment in the cluster.
+
+  Fields:
+    connections: A group of PSC connections. They are created in the same VPC
+      network, one for each service attachment in the cluster.
+  """
+
+  connections = _messages.MessageField('ConnectionDetail', 1, repeated=True)
 
 
 class ClusterMaintenancePolicy(_messages.Message):
@@ -657,6 +672,20 @@ class Compliance(_messages.Message):
 
   standard = _messages.StringField(1)
   version = _messages.StringField(2)
+
+
+class ConnectionDetail(_messages.Message):
+  r"""Detailed information of each PSC connection.
+
+  Fields:
+    pscAutoConnection: Detailed information of a PSC connection that is
+      created through service connectivity automation.
+    pscConnection: Detailed information of a PSC connection that is created by
+      the customer who owns the cluster.
+  """
+
+  pscAutoConnection = _messages.MessageField('PscAutoConnection', 1)
+  pscConnection = _messages.MessageField('PscConnection', 2)
 
 
 class CrossClusterReplicationConfig(_messages.Message):
@@ -3486,6 +3515,79 @@ class Product(_messages.Message):
   version = _messages.StringField(3)
 
 
+class PscAutoConnection(_messages.Message):
+  r"""Details of consumer resources in a PSC connection that is created
+  through Service Connectivity Automation.
+
+  Enums:
+    ConnectionTypeValueValuesEnum: Output only. Type of the PSC connection.
+    PscConnectionStatusValueValuesEnum: Output only. The status of the PSC
+      connection. Please note that this value is updated periodically. Please
+      use Private Service Connect APIs for the latest status.
+
+  Fields:
+    address: Output only. The IP allocated on the consumer network for the PSC
+      forwarding rule.
+    connectionType: Output only. Type of the PSC connection.
+    forwardingRule: Output only. The URI of the consumer side forwarding rule.
+      Example: projects/{projectNumOrId}/regions/us-
+      east1/forwardingRules/{resourceId}.
+    network: Required. The consumer network where the IP address resides, in
+      the form of projects/{project_id}/global/networks/{network_id}.
+    projectId: Required. The consumer project_id where the forwarding rule is
+      created from.
+    pscConnectionId: Output only. The PSC connection id of the forwarding rule
+      connected to the service attachment.
+    pscConnectionStatus: Output only. The status of the PSC connection. Please
+      note that this value is updated periodically. Please use Private Service
+      Connect APIs for the latest status.
+    serviceAttachment: Output only. The service attachment which is the target
+      of the PSC connection, in the form of projects/{project-
+      id}/regions/{region}/serviceAttachments/{service-attachment-id}.
+  """
+
+  class ConnectionTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of the PSC connection.
+
+    Values:
+      CONNECTION_TYPE_UNSPECIFIED: Cluster endpoint Type is not set
+      CONNECTION_TYPE_DISCOVERY: Cluster endpoint that will be used as for
+        cluster topology discovery.
+      CONNECTION_TYPE_PRIMARY: Cluster endpoint that will be used as primary
+        endpoint to access primary.
+      CONNECTION_TYPE_READER: Cluster endpoint that will be used as reader
+        endpoint to access replicas.
+    """
+    CONNECTION_TYPE_UNSPECIFIED = 0
+    CONNECTION_TYPE_DISCOVERY = 1
+    CONNECTION_TYPE_PRIMARY = 2
+    CONNECTION_TYPE_READER = 3
+
+  class PscConnectionStatusValueValuesEnum(_messages.Enum):
+    r"""Output only. The status of the PSC connection. Please note that this
+    value is updated periodically. Please use Private Service Connect APIs for
+    the latest status.
+
+    Values:
+      PSC_CONNECTION_STATUS_UNSPECIFIED: PSC connection status is not
+        specified.
+      PSC_CONNECTION_STATUS_ACTIVE: The connection is active
+      PSC_CONNECTION_STATUS_NOT_FOUND: Connection not found
+    """
+    PSC_CONNECTION_STATUS_UNSPECIFIED = 0
+    PSC_CONNECTION_STATUS_ACTIVE = 1
+    PSC_CONNECTION_STATUS_NOT_FOUND = 2
+
+  address = _messages.StringField(1)
+  connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 2)
+  forwardingRule = _messages.StringField(3)
+  network = _messages.StringField(4)
+  projectId = _messages.StringField(5)
+  pscConnectionId = _messages.StringField(6)
+  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 7)
+  serviceAttachment = _messages.StringField(8)
+
+
 class PscConfig(_messages.Message):
   r"""A PscConfig object.
 
@@ -4448,13 +4550,16 @@ class TimeOfDay(_messages.Message):
   seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
 
   Fields:
-    hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
-      choose to allow the value "24:00:00" for scenarios like business closing
-      time.
-    minutes: Minutes of hour of day. Must be from 0 to 59.
-    nanos: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
-    seconds: Seconds of minutes of the time. Must normally be from 0 to 59. An
-      API may allow the value 60 if it allows leap-seconds.
+    hours: Hours of a day in 24 hour format. Must be greater than or equal to
+      0 and typically must be less than or equal to 23. An API may choose to
+      allow the value "24:00:00" for scenarios like business closing time.
+    minutes: Minutes of an hour. Must be greater than or equal to 0 and less
+      than or equal to 59.
+    nanos: Fractions of seconds, in nanoseconds. Must be greater than or equal
+      to 0 and less than or equal to 999,999,999.
+    seconds: Seconds of a minute. Must be greater than or equal to 0 and
+      typically must be less than or equal to 59. An API may allow the value
+      60 if it allows leap-seconds.
   """
 
   hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)

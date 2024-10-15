@@ -2300,6 +2300,7 @@ def RegisterInstanceSelectionsPatchEncoders(messages):
     Returns:
       JSON string with null value.
     """
+
     def _GetInstanceSelectionValueOrNone(prop):
       if prop.value is None:
         return None
@@ -2337,3 +2338,16 @@ def RegisterInstanceSelectionsPatchEncoders(messages):
   )(
       messages.InstanceGroupManagerInstanceFlexibilityPolicy.InstanceSelectionsValue
   )
+
+
+def CreateTargetSizePolicy(messages, mode):
+  """Creates target size policy from args."""
+  target_size_policy = messages.InstanceGroupManagerTargetSizePolicy()
+  mode_enum = arg_utils.ChoiceToEnumName(mode)
+  target_size_policy.mode = (
+      messages.InstanceGroupManagerTargetSizePolicy.ModeValueValuesEnum(
+          mode_enum
+      )
+  )
+
+  return target_size_policy

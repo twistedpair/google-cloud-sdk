@@ -386,7 +386,7 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
   def _should_only_display_buckets(self, raw_cloud_url):
     # Ls received a provider URL ("gs://") -> List all buckets.
     # Received buckets flag and bucket URL -> List matching buckets, ignoring
-    #   recursion.
+    # recursion.
     return raw_cloud_url.is_provider() or (
         self._buckets_flag and raw_cloud_url.is_bucket()
     )

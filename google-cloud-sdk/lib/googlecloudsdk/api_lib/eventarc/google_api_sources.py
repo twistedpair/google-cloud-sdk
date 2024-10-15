@@ -18,10 +18,20 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.eventarc import base
 from googlecloudsdk.api_lib.eventarc import common
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
+
+
+class NoFieldsSpecifiedError(exceptions.Error):
+  """Error when no fields were specified for a Patch operation."""
+
+
+class GoogleApiSourceAlreadyExistsInProjectError(exceptions.Error):
+  """Error when a GoogleApiSource already exists in the project."""
 
 
 def GetGoogleAPISourceURI(resource):
@@ -70,6 +80,89 @@ class GoogleApiSourceClientV1(base.EventarcClientBase):
     )
     return self._service.Create(create_req)
 
+  def Get(self, google_api_source_ref):
+    """Gets the requested GoogleApiSource.
+
+    Args:
+      google_api_source_ref: Resource, the GoogleApiSource to get.
+
+    Returns:
+      The GoogleApiSource message.
+    """
+    get_req = (
+        self._messages.EventarcProjectsLocationsGoogleApiSourcesGetRequest(
+            name=google_api_source_ref.RelativeName()
+        )
+    )
+    return self._service.Get(get_req)
+
+  def List(self, location_ref, limit, page_size):
+    """List available googleApiSources in location.
+
+    Args:
+      location_ref: Resource, the location to list GoogleApiSources in.
+      limit: int or None, the total number of results to return.
+      page_size: int, the number of entries in each batch (affects requests
+        made, but not the yielded results).
+
+    Returns:
+      A generator of GoogleApiSources in the location.
+    """
+    list_req = (
+        self._messages.EventarcProjectsLocationsGoogleApiSourcesListRequest(
+            parent=location_ref.RelativeName(), pageSize=page_size
+        )
+    )
+    return list_pager.YieldFromList(
+        service=self._service,
+        request=list_req,
+        field='googleApiSources',
+        limit=limit,
+        batch_size=page_size,
+        batch_size_attribute='pageSize',
+    )
+
+  def Patch(
+      self, google_api_source_ref, google_api_source_message, update_mask
+  ):
+    """Updates the specified GoogleApiSource.
+
+    Args:
+      google_api_source_ref: Resource, the GoogleApiSource to update.
+      google_api_source_message: GoogleApiSource, the googleApiSource message
+        that holds googleApiSource's name, destination message bus, logging
+        config, crypto key name, etc.
+      update_mask: str, a comma-separated list of GoogleApiSource fields to
+        update.
+
+    Returns:
+      A long-running operation for update.
+    """
+    patch_req = (
+        self._messages.EventarcProjectsLocationsGoogleApiSourcesPatchRequest(
+            name=google_api_source_ref.RelativeName(),
+            googleApiSource=google_api_source_message,
+            updateMask=update_mask,
+        )
+    )
+    return self._service.Patch(patch_req)
+
+  def Delete(self, google_api_source_ref):
+    """Deletes the specified GoogleApiSource.
+
+    Args:
+      google_api_source_ref: Resource, the GoogleApiSource to delete.
+
+    Returns:
+      A long-running operation for delete.
+    """
+    delete_req = (
+        self._messages.EventarcProjectsLocationsGoogleApiSourcesDeleteRequest(
+            name=google_api_source_ref.RelativeName()
+        )
+    )
+    return self._service.Delete(delete_req)
+
   def BuildGoogleApiSource(
       self,
       google_api_source_ref,
@@ -86,10 +179,55 @@ class GoogleApiSourceClientV1(base.EventarcClientBase):
       )
     return self._messages.GoogleApiSource(
         name=google_api_source_ref.RelativeName(),
-        destination=destination_ref.RelativeName(),
+        destination=destination_ref.RelativeName()
+        if destination_ref is not None
+        else '',
         loggingConfig=logging_config_enum,
         cryptoKeyName=crypto_key_name,
     )
+
+  def BuildUpdateMask(
+      self, destination, logging_config, crypto_key, clear_crypto_key
+  ):
+    """Builds an update mask for updating a GoogleApiSource.
+
+    Args:
+      destination: bool, whether to update the destination.
+      logging_config: bool, whether to update the logging config.
+      crypto_key: bool, whether to update the crypto key.
+      clear_crypto_key: bool, whether to clear the crypto key.
+
+    Returns:
+      The update mask as a string.
+
+
+    Raises:
+      NoFieldsSpecifiedError: No fields are being updated.
+    """
+    update_mask = []
+    if destination:
+      update_mask.append('destination')
+    if logging_config:
+      update_mask.append('loggingConfig')
+    if crypto_key or clear_crypto_key:
+      update_mask.append('cryptoKeyName')
+
+    if not update_mask:
+      raise NoFieldsSpecifiedError('Must specify at least one field to update.')
+    return ','.join(update_mask)
+
+  def RaiseErrorIfGoogleApiSourceExists(self, project):
+    list_req = (
+        self._messages.EventarcProjectsLocationsGoogleApiSourcesListRequest(
+            parent=f'projects/{project}/locations/-'
+        )
+    )
+    response = self._service.List(list_req)
+    if getattr(response, 'googleApiSources'):
+      raise GoogleApiSourceAlreadyExistsInProjectError(
+          'A Google API source already exists in the project. Currently, only'
+          ' one Google API source per project is supported.'
+      )
 
   @property
   def _resource_label_plural(self):

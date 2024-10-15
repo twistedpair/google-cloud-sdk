@@ -2015,6 +2015,16 @@ MAP = {
                     client_classpath='firebasedataconnect_v1alpha_client.FirebasedataconnectV1alpha',
                     base_url='https://firebasedataconnect.googleapis.com/',
                     messages_modulepath='firebasedataconnect_v1alpha_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v1beta':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.firebasedataconnect.v1beta',
+                    client_classpath='firebasedataconnect_v1beta_client.FirebasedataconnectV1beta',
+                    base_url='https://firebasedataconnect.googleapis.com/',
+                    messages_modulepath='firebasedataconnect_v1beta_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

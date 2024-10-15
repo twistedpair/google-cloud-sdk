@@ -56,7 +56,6 @@ class HubClient(object):
         result_service=self.client.projects_locations_features,
         operation_service=self.client.projects_locations_operations,
     )
-    # TODO(b/181243034): Add a membership_waiter when v1alpha+ is ready.
 
   def CreateFeature(self, parent, feature_id, feature):
     """Creates a Feature and returns the long-running operation message.

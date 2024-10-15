@@ -5,6 +5,75 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 497.0.0 (2024-10-15)
+
+### Breaking Changes
+
+*   **(Colab Enterprise)** Deprecated `gcloud beta colab-enterprise` command group. Use `gcloud beta colab` instead.
+
+
+### Cloud Dataproc
+
+* Added `secondary-worker-standard-capacity-base` and `secondary-worker-standard-capacity-percent-above-base` flags to `gcloud dataproc clusters create` to support mixing of spot and standard instances for secondary workers.
+
+### Cloud Datastore
+
+* Promoted changed to `gcloud datastore indexes create` and `gcloud datastore
+  indexes cleanup` commands which uses the Firestore Admin API to beta.
+* Added `--database-id` flag to `gcloud datastore indexes cleanup`.
+
+### Cloud On Demand Scanning
+
+*   Added support for scanning for new OS packages (Wolfi, Chainguard, Google
+    Distroless, SUSE Linux Enterprise Server, Rocky Linux, Alma Linux).
+*   Added support for scanning new language packages (NPM, Python, Rust,
+    RubyGems, Composer, NuGet).
+*   Changed the default behavior of `gcloud artifacts docker images scan` to
+    scan for vulnerabilities in all supported language packages, and added
+    `--skip-package-types` flag to skip scanning for specific language package
+    types.
+*   Deprecated `--additional-package-types` flag of `gcloud artifacts docker
+    images scan` command. Scanning for all package types is now the default.
+
+### Cloud SQL
+
+* Added PostgreSQL 17 to supported database versions.
+
+### Cloud Storage
+
+* Promoted `gcloud storage folders` to GA.
+* Promoted `gcloud storage buckets create --enable-hierarchical-namespace` flag to GA.
+* Updated gsutil component to 5.31.
+
+### Colab
+
+* Added `gcloud beta colab` command group to replace `gcloud beta colab-enterprise`.
+
+### Compute Engine
+
+* Promoted `--ip-address-selection-policy` flag of
+  `gcloud compute backend-services create` and
+  `gcloud compute backend-services update` to GA.
+* Promoted IPv6-only support for `gcloud compute instances create`, `gcloud compute instances bulk create`, `gcloud compute instance-templates create`, and `gcloud compute networks subnets create` to GA.
+* Promoted support for `gcloud compute instance-groups managed resize-requests create` for regional igm to beta.
+* Promoted support for `gcloud compute instance-groups managed resize-requests cancel` for regional igm to beta.
+* Promoted support for `gcloud compute instance-groups managed resize-requests delete` for regional igm to beta.
+* Added `path` to cookie for `STRONG_COOKIE_AFFINITY` and `HTTP_COOKIE` sessionAffinity type in GA.
+
+### Database Migration
+
+* Added `--database-version-name` flag to
+`gcloud database-migration connection-profiles create cloudsql`.
+
+### Network Connectivity
+
+* Added `effective-location` argument to routes list CLI to filter hub routes
+  effective at a specific location.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 496.0.0 (2024-10-08)
 
 ### Breaking Changes

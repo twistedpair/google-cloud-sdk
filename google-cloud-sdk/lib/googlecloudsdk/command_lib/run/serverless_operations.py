@@ -22,6 +22,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import contextlib
+import copy
 import dataclasses
 import functools
 import json
@@ -46,6 +47,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.run import config_changes as config_changes_mod
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
@@ -671,7 +673,9 @@ class ServerlessOperations(object):
           )
       )
 
-  def UpdateTraffic(self, service_ref, config_changes, tracker, asyn):
+  def UpdateTraffic(
+      self, service_ref, config_changes, tracker, asyn, is_verbose
+  ):
     """Update traffic splits for service."""
     if tracker is None:
       tracker = progress_tracker.NoOpStagedProgressTracker(
@@ -695,7 +699,7 @@ class ServerlessOperations(object):
 
       getter = (
           functools.partial(self.GetService, service_ref)
-          if updated_serv.operation_id is None
+          if updated_serv.operation_id is None or is_verbose
           else functools.partial(self.WaitService, updated_serv.operation_id)
       )
       poller = op_pollers.ServiceConditionPoller(
@@ -752,6 +756,22 @@ class ServerlessOperations(object):
           return env_var.split('=', 1)[1]
     return None
 
+  def _ValidateServiceBeforeSourceDeploy(
+      self, tracker, service_ref, prefetch, config_changes
+  ):
+    """Validate the service in dry run before building."""
+    svc = None
+    if prefetch:
+      svc = service.Service(
+          copy.deepcopy(prefetch.Message()), self.messages_module
+      )
+    tracker.StartStage(stages.VALIDATE_SERVICE)
+    tracker.UpdateHeaderMessage('Validating Service...')
+    self._UpdateOrCreateService(
+        service_ref, config_changes, True, svc, dry_run=True
+    )
+    tracker.CompleteStage(stages.VALIDATE_SERVICE)
+
   def ReleaseService(
       self,
       service_ref,
@@ -777,6 +797,7 @@ class ServerlessOperations(object):
       build_worker_pool=None,
       build_env_vars=None,
       enable_automatic_updates=False,
+      is_verbose=False,
   ):
     """Change the given service in prod using the given config_changes.
 
@@ -820,6 +841,7 @@ class ServerlessOperations(object):
       build_env_vars: Dictionary of build env vars to send to submit build.
       enable_automatic_updates: If true, opt-in automatic build image updates.
         If false, opt-out automatic build image updates.
+      is_verbose: Print verbose output. Forces polling instead of waiting.
 
     Returns:
       service.Service, the service as returned by the server on the POST/PUT
@@ -829,6 +851,8 @@ class ServerlessOperations(object):
       tracker = progress_tracker.NoOpStagedProgressTracker(
           stages.ServiceStages(
               allow_unauthenticated is not None,
+              include_validate_service=build_source is not None
+              and release_track == base.ReleaseTrack.ALPHA,
               include_build=build_source is not None,
               include_create_repo=repo_to_create is not None,
           ),
@@ -837,6 +861,10 @@ class ServerlessOperations(object):
       )
 
     if build_source is not None:
+      if release_track == base.ReleaseTrack.ALPHA:
+        self._ValidateServiceBeforeSourceDeploy(
+            tracker, service_ref, prefetch, config_changes
+        )
       # TODO(b/355762514): Either remove or re-enable this validation.
       # self._ValidateService(service_ref, config_changes)
       (
@@ -928,7 +956,7 @@ class ServerlessOperations(object):
 
       getter = (
           functools.partial(self.GetService, service_ref)
-          if updated_service.operation_id is None
+          if updated_service.operation_id is None or is_verbose
           else functools.partial(self.WaitService, updated_service.operation_id)
       )
       poller = op_pollers.ServiceConditionPoller(
@@ -1115,8 +1143,12 @@ class ServerlessOperations(object):
           'Worker [{}] could not be found.'.format(worker_ref.servicesId)
       )
 
-  def UpdateInstanceSplit(self, worker_ref, config_changes, tracker, asyn):
-    return self.UpdateTraffic(worker_ref, config_changes, tracker, asyn)
+  def UpdateInstanceSplit(
+      self, worker_ref, config_changes, tracker, asyn, is_verbose
+  ):
+    return self.UpdateTraffic(
+        worker_ref, config_changes, tracker, asyn, is_verbose
+    )
 
   def GetWorkerRevision(self, revision_ref):
     return self.GetRevision(revision_ref)
@@ -1823,7 +1855,7 @@ class ServerlessOperations(object):
     config_changes.append(
         config_changes_mod.DeleteAnnotationChange(
             service.RUN_FUNCTIONS_BUILD_SOURCE_LOCATION_ANNOTATION
-            )
+        )
     )
     config_changes.append(
         config_changes_mod.DeleteAnnotationChange(
@@ -1874,9 +1906,11 @@ class ServerlessOperations(object):
         service.RUN_FUNCTIONS_BUILD_NAME_ANNOTATION: build_name,
         service.RUN_FUNCTIONS_IMAGE_URI_ANNOTATION_DEPRECATED: image_uri,
         service.RUN_FUNCTIONS_SOURCE_LOCATION_ANNOTATION_DEPRECATED: (
-            source_path),
+            source_path
+        ),
         service.RUN_FUNCTIONS_FUNCTION_TARGET_ANNOTATION_DEPRECATED: (
-            function_target),
+            function_target
+        ),
         service.RUN_FUNCTIONS_ENABLE_AUTOMATIC_UPDATES_DEPRECATED: (
             'true' if enable_automatic_updates else 'false'
         ),

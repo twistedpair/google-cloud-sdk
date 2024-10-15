@@ -750,6 +750,33 @@ def AddInstanceFlexibilityPolicyArgs(
     )
 
 
+def AddTargetSizePolicyModeFlag(parser):
+  """Add target size policy mode to the parser."""
+  help_text = 'Specifies mode in which operations on size are processed.'
+  choices = {
+      'individual': (
+          'Default mode in which MIG creates and starts VMs individually'
+          ' without cross-dependency between VMs. This means that in case of'
+          ' something blocking part of VMs to be provisioned, the other part'
+          ' will be created.'
+      ),
+      'bulk': (
+          'Mode in which MIG creates and starts VMs in all-or-nothing manner.'
+          ' If any VM from the request cannot be provisioned, the whole request'
+          ' waits for conditions that allow for provisioning whole capacity in'
+          ' bulk.'
+      ),
+  }
+
+  parser.add_argument(
+      '--target-size-policy-mode',
+      metavar='TARGET_SIZE_POLICY_MODE',
+      type=arg_utils.EnumNameToChoice,
+      choices=choices,
+      help=help_text,
+  )
+
+
 class ArgMultiValueDict:
   """Converts argument values into multi-valued mappings.
 

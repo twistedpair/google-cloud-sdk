@@ -35,6 +35,8 @@ MESH_ANNOTATION = 'run.googleapis.com/mesh'
 # gcloud-disable-gdu-domain
 BASE_IMAGES_ANNOTATION = 'run.googleapis.com/base-images'
 # gcloud-disable-gdu-domain
+IDENTITY_ANNOTATION = 'run.googleapis.com/identity'
+# gcloud-disable-gdu-domain
 BASE_IMAGE_UPDATE_RUNTIME_CLASS_NAME = (
     'run.googleapis.com/linux-base-image-update'
 )

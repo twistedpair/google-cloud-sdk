@@ -225,20 +225,27 @@ def ArgsForClusterRef(
 
   parser.add_argument(
       '--secondary-worker-standard-capacity-base',
-      # hide in non-alpha track.
-      hidden=not alpha,
       type=int,
-      help='The number of standard VMs in the Spot and Standard Mix feature.',
+      help=(
+          'This flag sets the base number of Standard VMs to use for [secondary'
+          ' workers](https://cloud.google.com/dataproc/docs/concepts/compute/secondary-vms#preemptible_and_non-preemptible_secondary_workers).'
+          ' Dataproc will create only standard VMs until it reaches this'
+          ' number, then it will mix Spot and Standard VMs according to'
+          " ``SECONDARY_WORKER_STANDARD_CAPACITY_PERCENT_ABOVE_BASE''."
+      ),
   )
 
   parser.add_argument(
       '--secondary-worker-standard-capacity-percent-above-base',
-      hidden=True,
       type=int,
       help=(
-          'The percentage of target capacity that should use Standard VM. The'
-          ' remaining percentage will use Spot VMs. The percentage applies only'
-          ' to the capacity above standard_capacity_base.'
+          'When combining Standard and Spot VMs for'
+          ' [secondary-workers](https://cloud.google.com/dataproc/docs/concepts/compute/secondary-vms#preemptible_and_non-preemptible_secondary_workers)'
+          ' once the number of Standard VMs specified by'
+          " ``SECONDARY_WORKER_STANDARD_CAPACITY_BASE'' has been used, this"
+          ' flag specifies the percentage of the total number of additional'
+          ' Standard VMs secondary workers will use. Spot VMs will be used for'
+          ' the remaining percentage.'
       ),
   )
 

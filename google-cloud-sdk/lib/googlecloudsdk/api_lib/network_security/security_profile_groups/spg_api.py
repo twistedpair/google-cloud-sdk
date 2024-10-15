@@ -138,6 +138,7 @@ class Client:
       description,
       threat_prevention_profile=None,
       custom_mirroring_profile=None,
+      custom_intercept_profile=None,
       labels=None,
   ):
     """Calls the Create Security Profile Group API."""
@@ -150,6 +151,8 @@ class Client:
     # v1 API doesn't have the new field yet, so don't assign it.
     if hasattr(security_profile_group, 'customMirroringProfile'):
       security_profile_group.customMirroringProfile = custom_mirroring_profile
+    if hasattr(security_profile_group, 'customInterceptProfile'):
+      security_profile_group.customInterceptProfile = custom_intercept_profile
 
     api_request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfileGroupsCreateRequest(
         parent=parent,

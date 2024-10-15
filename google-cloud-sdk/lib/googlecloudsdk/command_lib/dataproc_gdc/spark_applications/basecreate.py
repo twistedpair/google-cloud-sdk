@@ -60,10 +60,16 @@ class BaseGDCSparkApplicationCommand(base.CreateCommand):
         command_level_fallthroughs={
             # Set the Application Environment to the same instance and location
             # as the Spark Application.
-            '--application-environment.instance': ['--instance.instance'],
-            '--application-environment.location': ['--instance.location'],
-            '--application.instance': ['--instance.instance'],
-            '--application.location': ['--instance.location'],
+            '--application-environment.service-instance': [
+                '--service-instance.service-instance'
+            ],
+            '--application-environment.location': [
+                '--service-instance.location'
+            ],
+            '--application.service-instance': [
+                '--service-instance.service-instance'
+            ],
+            '--application.location': ['--service-instance.location'],
         },
     ).AddToParser(parser)
     parser.add_argument(
@@ -177,7 +183,7 @@ def GetSparkApplicationResourcePresentationSpec():
       group_help='Spark application to create.',
       required=False,
       prefixes=False,
-      flag_name_overrides={'instance': '', 'location': ''},
+      flag_name_overrides={'service-instance': '', 'location': ''},
   )
 
 
@@ -195,7 +201,7 @@ def GetApplicationEnvironmentResourcePresentationSpec():
       ),
       required=False,
       prefixes=True,
-      flag_name_overrides={'instance': '', 'location': ''},
+      flag_name_overrides={'service-instance': '', 'location': ''},
   )
 
 
@@ -205,7 +211,7 @@ def GetInstanceResourcePresentationSpec():
   )
   resource_spec = concepts.ResourceSpec.FromYaml(instance_data.GetData())
   return presentation_specs.ResourcePresentationSpec(
-      name='--instance',
+      name='--service-instance',
       concept_spec=resource_spec,
       group_help=(
           'Name of the service instance on which this Spark Application will '

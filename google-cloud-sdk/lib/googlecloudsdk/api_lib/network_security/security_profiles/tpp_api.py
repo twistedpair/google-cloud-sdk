@@ -20,7 +20,8 @@ from __future__ import unicode_literals
 
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.network_security.security_profiles import sp_api
-_THREAT_PREVENTION_PROFILE_TYPE = 'THREAT_PREVENTION'
+
+THREAT_PREVENTION_PROFILE_TYPE = 'THREAT_PREVENTION'
 
 
 class Client(sp_api.Client):
@@ -38,7 +39,7 @@ class Client(sp_api.Client):
     """
     response = self.GetSecurityProfile(name)
     if response.type != self._ParseSecurityProfileType(
-        _THREAT_PREVENTION_PROFILE_TYPE
+        THREAT_PREVENTION_PROFILE_TYPE
     ):
       return response.etag, None
 
@@ -148,7 +149,7 @@ class Client(sp_api.Client):
       overrides,
       operation_type,
       update_mask,
-      profile_type=_THREAT_PREVENTION_PROFILE_TYPE,
+      profile_type=THREAT_PREVENTION_PROFILE_TYPE,
       labels=None,
   ):
     """Modify the existing threat prevention profile."""
@@ -204,7 +205,7 @@ class Client(sp_api.Client):
       name,
       overrides,
       update_mask,
-      profile_type=_THREAT_PREVENTION_PROFILE_TYPE,
+      profile_type=THREAT_PREVENTION_PROFILE_TYPE,
       labels=None,
   ):
     """Delete the existing threat prevention profile override."""
@@ -263,7 +264,7 @@ class Client(sp_api.Client):
     """Calls the SPG API to create a Threat Prevention Profile."""
     profile = self.messages.SecurityProfile(
         name=name,
-        type=self._ParseSecurityProfileType(_THREAT_PREVENTION_PROFILE_TYPE),
+        type=self._ParseSecurityProfileType(THREAT_PREVENTION_PROFILE_TYPE),
         description=description,
         labels=labels,
     )
@@ -281,5 +282,5 @@ class Client(sp_api.Client):
         profile
         for profile in self.ListSecurityProfiles(parent, limit, page_size)
         if profile.type
-        == self._ParseSecurityProfileType(_THREAT_PREVENTION_PROFILE_TYPE)
+        == self._ParseSecurityProfileType(THREAT_PREVENTION_PROFILE_TYPE)
     ]

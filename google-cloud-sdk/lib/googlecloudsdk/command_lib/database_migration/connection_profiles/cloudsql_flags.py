@@ -29,6 +29,15 @@ _CIDR_REGEX = r'{addr_part}(\.{addr_part}){{3}}(\/{prefix_part})?$'.format(
     addr_part=_IP_ADDRESS_PART, prefix_part=_CIDR_PREFIX_PART)
 
 
+def AddDatabaseVersionGroup(parser, support_new_versions, support_version_name):
+  """Adds the database version flags to the given parser."""
+
+  database_version_group = parser.add_group(required=True, mutex=True)
+  AddDatabaseVersionFlag(database_version_group, support_new_versions)
+  if support_version_name:
+    AddDatabaseVersionNameFlag(database_version_group)
+
+
 def AddDatabaseVersionFlag(parser, support_new_versions):
   """Adds a --database-version flag to the given parser."""
   help_text = """\
@@ -75,7 +84,14 @@ def AddDatabaseVersionFlag(parser, support_new_versions):
     ]
 
   parser.add_argument(
-      '--database-version', help=help_text, choices=choices, required=True)
+      '--database-version', help=help_text, choices=choices, required=False
+  )
+
+
+def AddDatabaseVersionNameFlag(parser):
+  """Adds a --database-version-name flag to the given parser."""
+  help_text = 'Database version name (e.g. POSTGRES_15)'
+  parser.add_argument('--database-version-name', help=help_text, required=False)
 
 
 def AddUserLabelsFlag(parser):

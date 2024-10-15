@@ -5959,12 +5959,33 @@ class PodAutoscaling(_messages.Message):
   r"""PodAutoscaling is used for configuration of parameters for workload
   autoscaling.
 
+  Enums:
+    HpaProfileValueValuesEnum: Selected Horizontal Pod Autoscaling profile.
+
   Fields:
-    directMetricsOptIn: Indicates the cluster has opted-into direct metrics
-      collection.
+    directMetricsOptIn: DEPRECATED: use HPAProfile instead. Indicates the
+      cluster has opted-into direct metrics collection.
+    hpaProfile: Selected Horizontal Pod Autoscaling profile.
   """
 
+  class HpaProfileValueValuesEnum(_messages.Enum):
+    r"""Selected Horizontal Pod Autoscaling profile.
+
+    Values:
+      HPA_PROFILE_UNSPECIFIED: HPA_PROFILE_UNSPECIFIED is used when no custom
+        HPA profile is set.
+      NONE: Customers explicitly opt-out of HPA profiles.
+      PERFORMANCE: PERFORMANCE is used when customers opt-in to the
+        performance HPA profile. In this profile we support a higher number of
+        HPAs per cluster and faster metrics collection for workload
+        autoscaling.
+    """
+    HPA_PROFILE_UNSPECIFIED = 0
+    NONE = 1
+    PERFORMANCE = 2
+
   directMetricsOptIn = _messages.BooleanField(1)
+  hpaProfile = _messages.EnumField('HpaProfileValueValuesEnum', 2)
 
 
 class PodCIDROverprovisionConfig(_messages.Message):
@@ -6590,6 +6611,18 @@ class RollingSettings(_messages.Message):
   maxUnavailablePercentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class RotationConfig(_messages.Message):
+  r"""RotationConfig is config for secret manager auto rotation.
+
+  Fields:
+    enabled: Whether the rotation is enabled.
+    rotationInterval: The interval between two consecutive rotations.
+  """
+
+  enabled = _messages.BooleanField(1)
+  rotationInterval = _messages.StringField(2)
+
+
 class RuntimeVulnerabilityInsightConfig(_messages.Message):
   r"""RuntimeVulnerabilityInsightConfig defines the flags needed to
   enable/disable RVI features for the cluster.
@@ -6683,9 +6716,11 @@ class SecretManagerConfig(_messages.Message):
 
   Fields:
     enabled: Enable/Disable Secret Manager Config.
+    rotationConfig: Rotation config for secret manager.
   """
 
   enabled = _messages.BooleanField(1)
+  rotationConfig = _messages.MessageField('RotationConfig', 2)
 
 
 class SecurityBulletinEvent(_messages.Message):

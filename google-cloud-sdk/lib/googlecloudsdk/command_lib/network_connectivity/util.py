@@ -23,6 +23,12 @@ import argparse
 from googlecloudsdk.core import exceptions
 
 
+# Constants
+PROJECTS_RESOURCE_PATH = "projects/"
+LOCATION_FILTER_FMT = "location:projects/{0}/locations/{1}"
+ROUTE_TYPE_FILTER = "-type:DYNAMIC_ROUTE"
+
+
 class NetworkConnectivityError(exceptions.Error):
   """Top-level exception for all Network Connectivity errors."""
 
@@ -78,6 +84,32 @@ def AppendLocationsGlobalToParent(unused_ref, unused_args, request):
   """Add locations/global to parent path."""
 
   request.parent += "/locations/global"
+  return request
+
+
+def DeriveProjectFromResource(resource):
+  """Returns the project from a resource string."""
+  if PROJECTS_RESOURCE_PATH not in resource:
+    raise InvalidInputError(
+        "Resource must contain a project path, but received: {0}".format(
+            resource
+        )
+    )
+  project = resource[
+      resource.index(PROJECTS_RESOURCE_PATH) + len(PROJECTS_RESOURCE_PATH) :
+  ]
+  project = project.split("/")[0]
+  return project
+
+
+def AppendEffectiveLocationFilter(unused_ref, args, request):
+  """Append filter to limit listing dynamic routes at an effective location."""
+
+  if args.IsSpecified("effective_location"):
+    location = args.effective_location
+    project = DeriveProjectFromResource(request.parent)
+    location_filter = LOCATION_FILTER_FMT.format(project, location)
+    request.filter = "{0} OR {1}".format(location_filter, ROUTE_TYPE_FILTER)
   return request
 
 

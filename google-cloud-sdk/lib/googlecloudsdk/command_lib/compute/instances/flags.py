@@ -107,13 +107,23 @@ table(
             networkInterfaces[].ipv6AccessConfigs[0].externalIpv6.notnull().list():label=EXTERNAL_IPV6,
             networkInterfaces[].ipv6Address.notnull().list():label=INTERNAL_IPV6)"""
 
+# Due to limitations of resource projection parser, we must make sure each
+# column maps to a different projection node (i.e. has a different key),
+# otherwise there may be undefined behaviors with sorting by column name. The
+# key of a projection node is determined by the resource field path before a
+# transform. For example, in the below list, the keys are ['name'], ['zone'],
+# ['machineType'], ['scheduling', 'preemptible'], ['networkInterfaces'], and [].
+# Though for INTERNAL_IP and EXTERNAL_IP columns, the transformation is similar,
+# we choose to implement it differently so that they have different keys to make
+# sure sorting by these column names work.
+# See b/370564874 for an example of the undefined behavior before the fix.
 DEFAULT_LIST_FORMAT_WITH_IPV6 = """\
     table(
       name,
       zone.basename(),
       machineType.machine_type().basename(),
       scheduling.preemptible.yesno(yes=true, no=''),
-      internal_ip():label=INTERNAL_IP,
+      networkInterfaces.internal_ip():label=INTERNAL_IP,
       external_ip():label=EXTERNAL_IP,
       status
     )"""
@@ -162,7 +172,9 @@ SSH_INSTANCE_RESOLVER = compute_flags.ResourceResolver.FromMap(
 
 
 def TransformInstanceExternalIp(resource):
-  """Transforms the instance resource to collect IPv4 and IPv6 external IPs."""
+  """Transforms an instance resource to collect IPv4 and IPv6 external IPs."""
+  if not resource:
+    return ''
   if not resource.get('networkInterfaces'):
     return ''
   ipv4_external_ips = [
@@ -181,17 +193,17 @@ def TransformInstanceExternalIp(resource):
 
 
 def TransformInstanceInternalIp(resource):
-  """Transforms the instance resource to collect IPv4 and IPv6 internal IPs."""
-  if not resource.get('networkInterfaces'):
+  """Transforms a list of network interface resources to collect IPv4 and IPv6 internal IPs."""
+  if not resource:
     return ''
   ipv4_internal_ips = [
       r['networkIP']
-      for r in resource['networkInterfaces']
+      for r in resource
       if r.get('networkIP')
   ]
   ipv6_internal_ips = [
       f"{r['ipv6Address']}/{r['internalIpv6PrefixLength']}"
-      for r in resource['networkInterfaces']
+      for r in resource
       if r.get('ipv6Address') and r.get('internalIpv6PrefixLength')
   ]
   return '\n'.join(ipv4_internal_ips + ipv6_internal_ips)

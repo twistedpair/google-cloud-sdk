@@ -18,9 +18,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import datetime
+
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.ai import operations
 from googlecloudsdk.api_lib.ai.models import client as client_models
+from googlecloudsdk.api_lib.monitoring import metric
+from googlecloudsdk.api_lib.quotas import quota_info
 from googlecloudsdk.command_lib.ai import endpoints_util
 from googlecloudsdk.command_lib.ai import models_util
 from googlecloudsdk.command_lib.ai import operations_util
@@ -30,7 +34,46 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import requests
 from googlecloudsdk.core import resources
 
+
 _MAX_LABEL_VALUE_LENGTH = 63
+
+
+_ACCELERATOR_TYPE_TO_QUOTA_ID_MAP = {
+    'NVIDIA_TESLA_P4': 'CustomModelServingP4GPUsPerProjectPerRegion',
+    'NVIDIA_TESLA_T4': 'CustomModelServingT4GPUsPerProjectPerRegion',
+    'NVIDIA_L4': 'CustomModelServingL4GPUsPerProjectPerRegion',
+    'NVIDIA_TESLA_K80': 'CustomModelServingK80GPUsPerProjectPerRegion',
+    'NVIDIA_TESLA_V100': 'CustomModelServingV100GPUsPerProjectPerRegion',
+    'NVIDIA_TESLA_P100': 'CustomModelServingP100GPUsPerProjectPerRegion',
+    'NVIDIA_TESLA_A100': 'CustomModelServingA100GPUsPerProjectPerRegion',
+    'NVIDIA_A100_80GB': 'CustomModelServingA10080GBGPUsPerProjectPerRegion',
+    'NVIDIA_H100_80GB': 'CustomModelServingH100GPUsPerProjectPerRegion',
+    'TPU_V5_LITEPOD': 'CustomModelServingV5ETPUPerProjectPerRegion',
+}
+
+
+_ACCELERATOR_TYPE_TP_QUOTA_METRIC_MAP = {
+    'NVIDIA_TESLA_P4': 'custom_model_serving_nvidia_p4_gpus',
+    'NVIDIA_TESLA_T4': 'custom_model_serving_nvidia_t4_gpus',
+    'NVIDIA_L4': 'custom_model_serving_nvidia_l4_gpus',
+    'NVIDIA_TESLA_K80': 'custom_model_serving_nvidia_k80_gpus',
+    'NVIDIA_TESLA_V100': 'custom_model_serving_nvidia_v100_gpus',
+    'NVIDIA_TESLA_P100': 'custom_model_serving_nvidia_p100_gpus',
+    'NVIDIA_TESLA_A100': 'custom_model_serving_nvidia_a100_gpus',
+    'NVIDIA_A100_80GB': 'custom_model_serving_nvidia_a100_80gb_gpus',
+    'NVIDIA_H100_80GB': 'custom_model_serving_nvidia_h100_gpus',
+    'TPU_V5_LITEPOD': 'custom_model_serving_tpu_v5e',
+}
+_TIME_SERIES_FILTER = (
+    # gcloud-disable-gdu-domain
+    'metric.type="serviceruntime.googleapis.com/quota/allocation/usage" AND'
+    ' resource.type="consumer_quota" AND'
+    # gcloud-disable-gdu-domain
+    ' metric.label.quota_metric="aiplatform.googleapis.com/{}"'
+    ' AND resource.label.project_id="{}" AND resource.label.location="{}" AND'
+    # gcloud-disable-gdu-domain
+    ' resource.label.service="aiplatform.googleapis.com"'
+)
 
 
 def _ParseEndpoint(endpoint_id, location_id):
@@ -43,6 +86,62 @@ def _ParseEndpoint(endpoint_id, location_id):
       },
       collection='aiplatform.projects.locations.endpoints',
   )
+
+
+def _GetQuotaLimit(region, project, accelerator_type):
+  """Gets the quota limit for the accelerator type in the region."""
+  accelerator_quota = quota_info.GetQuotaInfo(
+      project,
+      None,
+      None,
+      # gcloud-disable-gdu-domain
+      'aiplatform.googleapis.com',
+      _ACCELERATOR_TYPE_TO_QUOTA_ID_MAP[accelerator_type],
+  )
+  # Skip the last item in the list because it only contains the list of
+  # supported region.
+  for region_info in accelerator_quota.dimensionsInfos[:-1]:
+    if region_info.applicableLocations[0] == region:
+      return region_info.details.value or 0
+  return 0
+
+
+def _GetQuotaUsage(region, project, accelerator_type):
+  """Gets the quota usage for the accelerator type in the region using the monitoring AP."""
+  # Format the time in RFC3339 UTC Zulu format
+  current_time_utc = datetime.datetime.now(datetime.timezone.utc)
+  # Need to go back at least 24 hours to reliably get a data point
+  twenty_five_hours_ago_time_utc = current_time_utc - datetime.timedelta(
+      hours=25
+  )
+
+  rfc3339_time = current_time_utc.isoformat(timespec='seconds').replace(
+      '+00:00', 'Z'
+  )
+  rfc3339_time_twenty_five_hours_ago = twenty_five_hours_ago_time_utc.isoformat(
+      timespec='seconds'
+  ).replace('+00:00', 'Z')
+
+  quota_usage_time_series = metric.MetricClient().ListTimeSeriesByProject(
+      project=project,
+      aggregation_alignment_period='60s',
+      aggregation_per_series_aligner=metric.GetMessagesModule().MonitoringProjectsTimeSeriesListRequest.AggregationPerSeriesAlignerValueValuesEnum.ALIGN_NEXT_OLDER,
+      interval_start_time=rfc3339_time_twenty_five_hours_ago,
+      interval_end_time=rfc3339_time,
+      filter_str=_TIME_SERIES_FILTER.format(
+          _ACCELERATOR_TYPE_TP_QUOTA_METRIC_MAP[accelerator_type],
+          project,
+          region,
+      ),
+  )
+  try:
+    current_usage = (
+        quota_usage_time_series.timeSeries[0].points[0].value.int64Value
+    )
+  except IndexError:
+    # If no data point is found, the usage is 0.
+    current_usage = 0
+  return current_usage
 
 
 def GetCLIEndpointLabelValue(
@@ -147,6 +246,48 @@ def GetDeployConfig(args, publisher_model):
   if machine_spec.acceleratorCount:
     log.status.Print(f' Accelerator count: {machine_spec.acceleratorCount}')
   return deploy_config
+
+
+def CheckAcceleratorQuota(
+    args, machine_type, accelerator_type, accelerator_count
+):
+  """Checks the accelerator quota for the project and region."""
+  # In the machine spec, TPUs don't have accelerator type and count, but they
+  # have machine type.
+  if machine_type == 'ct5lp-hightpu-1t':
+    accelerator_type = 'TPU_V5_LITEPOD'
+    accelerator_count = 1
+  elif machine_type == 'ct5lp-hightpu-4t':
+    accelerator_type = 'TPU_V5_LITEPOD'
+    accelerator_count = 4
+  project = properties.VALUES.core.project.GetOrFail()
+  quota_limit = _GetQuotaLimit(args.region, project, accelerator_type)
+  if quota_limit < accelerator_count:
+    raise core_exceptions.Error(
+        f'The project does not have enough quota for {accelerator_type} in'
+        f' {args.region} to'
+        f' deploy the model. The quota limit is {quota_limit} and you are'
+        f' requesting for {accelerator_count}. Please'
+        ' use a different region or request more quota by following'
+        ' https://cloud.google.com/vertex-ai/docs/quotas#requesting_additional_quota.'
+    )
+
+  current_usage = _GetQuotaUsage(args.region, project, accelerator_type)
+  if current_usage + accelerator_count > quota_limit:
+    raise core_exceptions.Error(
+        f'The project does not have enough quota for {accelerator_type} in'
+        f' {args.region} to'
+        f' deploy the model. The current usage is {current_usage} out of'
+        f' {quota_limit} and you are'
+        f' requesting for {accelerator_count}. Please'
+        ' use a different region or request more quota by following'
+        ' https://cloud.google.com/vertex-ai/docs/quotas#requesting_additional_quota.'
+    )
+  log.status.Print(
+      'The project has enough quota. The current usage of quota for'
+      f' accelerator type {accelerator_type} in region {args.region} is'
+      f' {current_usage} out of {quota_limit}.'
+  )
 
 
 def CreateEndpoint(

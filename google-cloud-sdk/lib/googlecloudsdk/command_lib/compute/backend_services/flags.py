@@ -905,6 +905,10 @@ def AddAffinityCookie(parser, support_stateful_affinity=False, hidden=False):
         a session cookie.  See $ gcloud topic datetimes for information on
         duration formats.
         """
+    affinity_cookie_path_help = """\
+        If `--session-affinity` is set to `HTTP_COOKIE` or
+        `STRONG_COOKIE_AFFINITY`, this flag sets the path of the cookie.
+        """
   else:
     affinity_cookie_name_help = """\
         If `--session-affinity` is set to `HTTP_COOKIE`, this flag sets the name
@@ -915,6 +919,10 @@ def AddAffinityCookie(parser, support_stateful_affinity=False, hidden=False):
         this flag sets the TTL, in seconds, of the resulting cookie.  A setting
         of 0 indicates that the cookie should be a session cookie.  See
         $ gcloud topic datetimes for information on duration formats.
+        """
+    affinity_cookie_path_help = """\
+        If `--session-affinity` is set to `HTTP_COOKIE`, this flag sets the path
+        of the cookie.
         """
 
   parser.add_argument(
@@ -928,6 +936,12 @@ def AddAffinityCookie(parser, support_stateful_affinity=False, hidden=False):
       type=arg_parsers.Duration(),
       default=None,  # Tri-valued, None => don't include property.
       help=affinity_cookie_ttl_help,
+      hidden=hidden,
+  )
+
+  parser.add_argument(
+      '--affinity-cookie-path',
+      help=affinity_cookie_path_help,
       hidden=hidden,
   )
 
@@ -1200,3 +1214,60 @@ def AddInstanceGroupAndNetworkEndpointGroupArgs(parser,
 
 def AddNetwork(parser):
   NETWORK_ARG.AddArgument(parser)
+
+
+def AddBackendServiceCustomMetrics(parser, add_clear_argument=False):
+  """Adds a --custom-metrics flag to the given parser."""
+  group = parser.add_mutually_exclusive_group()
+  help_text = """\
+  List of custom metrics that are used for
+  WEIGHTED_ROUND_ROBIN BackendService locality_lb_policy.
+
+  Example:
+
+    $ {command} --custom-metrics='name=my-signal,dryRun=true'
+    $ {command} --custom-metrics='name=my-signal,dryRun=true' --custom-metrics='name=my-signal2'
+    $ {command} --custom-metrics='[{"name" : "my-signal", "dryRun" : true}, {"name" : "my-signal2"}]'"""
+  group.add_argument(
+      '--custom-metrics',
+      metavar='CUSTOM_METRICS',
+      type=arg_parsers.ArgObject(
+          spec={
+              'name': str,
+              'dryRun': bool,
+          },
+          required_keys=['name'],
+          repeated=True,
+      ),
+      action=arg_parsers.FlattenAction(),
+      help=help_text,
+  )
+  help_text_file = """\
+  File path to json file with custom metrics that are used for
+  WEIGHTED_ROUND_ROBIN BackendService locality_lb_policy.
+
+  Example:
+
+    $ {command} --custom-metrics-file='customMetric.json'"""
+  group.add_argument(
+      '--custom-metrics-file',
+      metavar='CUSTOM_METRICS',
+      type=arg_parsers.ArgObject(
+          spec={
+              'name': str,
+              'dryRun': bool,
+          },
+          required_keys=['name'],
+          repeated=True,
+      ),
+      action=arg_parsers.FlattenAction(),
+      help=help_text_file,
+  )
+  if add_clear_argument:
+    group.add_argument(
+        '--clear-custom-metrics',
+        required=False,
+        action='store_true',
+        default=None,
+        help='Clears current list of CUSTOM_METRICS.',
+    )

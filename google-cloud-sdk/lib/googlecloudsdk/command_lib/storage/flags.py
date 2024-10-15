@@ -41,8 +41,8 @@ ALL_INVENTORY_REPORTS_METADATA_FIELDS = (
 _IP_FILTER_HELP_TEXT = """
 Sets the IP filter for the bucket. The IP filter is a list of ip
 ranges that are allowed to access the bucket. For example,
-The following example JSON document shows the IP filter configuration with mode
-enabled and list of public network sources and vpc network sources with  :
+The following JSON document shows the IP filter configuration with mode
+enabled and list of public network sources and vpc network sources:
 
   {
     "mode": "Enabled",
@@ -725,7 +725,7 @@ def add_ip_filter_file_flag(parser):
     parser (parser_arguments.ArgumentInterceptor): Parser passed to surface.
   """
   parser.add_argument(
-      '--ip-filter-file', help=_IP_FILTER_HELP_TEXT, hidden=True
+      '--ip-filter-file', help=_IP_FILTER_HELP_TEXT
   )
 
 
@@ -856,14 +856,14 @@ def check_if_use_gsutil_style(args):
 
 
 def add_batch_jobs_flags(parser):
-  """Adds the flags for the batch-actions jobs create command."""
+  """Adds the flags for the batch-operations jobs create command."""
 
   source = parser.add_group(
       mutex=True,
       required=True,
       category='SOURCE',
       help=(
-          'Source specifying objects to perform batch actions on. '
+          'Source specifying objects to perform batch operations on. '
           'Must be one of `--manifest-location=``MANIFEST_LOCATION'
           '` '
           'or `--prefix-list-file=``PREFIX_LIST_FILE'
@@ -890,8 +890,8 @@ def add_batch_jobs_flags(parser):
           'A path to a local JSON or YAML file containing a list of prefixes.'
           ' prefix is specified in the format of {"bucket": BUCKET_NAME,'
           ' "objectPrefix":OBJECT_PREFIX} where bucket is the name of the'
-          ' bucket on which batch action is being performed and objectPrefix is'
-          ' the prefix of objects in the bucket that will be acted upon.'
+          ' bucket on which batch operation is being performed and objectPrefix'
+          ' is the prefix of objects in the bucket that will be acted upon.'
       ),
       type=str,
       hidden=True,

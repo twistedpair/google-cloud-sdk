@@ -787,6 +787,8 @@ apis:
   firebasedataconnect:
     v1alpha:
       discovery_doc: firebasedataconnect_v1alpha.json
+    v1beta:
+      discovery_doc: firebasedataconnect_v1beta.json
       default: true
   firestore:
     v1beta2:
@@ -2028,6 +2030,9 @@ canonical_surfaces:
   firestore:
     name: firestore
     command: firestore
+  firebasedataconnect:
+    name: firebasedataconnect
+    command: firebase-data-connect
   genomics:
     name: genomics
     command: genomics

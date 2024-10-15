@@ -561,12 +561,15 @@ class JsonClient(cloud_api.CloudApi):
   def get_bucket_iam_policy(self, bucket_name):
     """See super class."""
     global_params = self.messages.StandardQueryParameters(
-        fields='bindings,etag')
+        fields='bindings,etag'
+    )
     return self.client.buckets.GetIamPolicy(
         self.messages.StorageBucketsGetIamPolicyRequest(
             bucket=bucket_name,
-            optionsRequestedPolicyVersion=gcs_iam_util.IAM_POLICY_VERSION),
-        global_params=global_params)
+            optionsRequestedPolicyVersion=gcs_iam_util.IAM_POLICY_VERSION,
+        ),
+        global_params=global_params,
+    )
 
   def list_buckets(
       self, fields_scope=cloud_api.FieldsScope.NO_ACL, soft_deleted=False
@@ -585,49 +588,86 @@ class JsonClient(cloud_api.CloudApi):
     global_params = None
     if fields_scope == cloud_api.FieldsScope.SHORT:
       global_params = self.messages.StandardQueryParameters(
-          fields='items/name,nextPageToken')
+          fields='items/name,nextPageToken'
+      )
     # TODO(b/160238394) Decrypt metadata fields if necessary.
     bucket_iter = list_pager.YieldFromList(
         self.client.buckets,
         request,
         batch_size=cloud_api.NUM_ITEMS_PER_LIST_PAGE,
-        global_params=global_params)
+        global_params=global_params,
+    )
     try:
       for bucket in bucket_iter:
         yield metadata_util.get_bucket_resource_from_metadata(bucket)
     except apitools_exceptions.HttpError as e:
       core_exceptions.reraise(
-          cloud_errors.translate_error(e, error_util.ERROR_TRANSLATION))
+          cloud_errors.translate_error(e, error_util.ERROR_TRANSLATION)
+      )
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def relocate_bucket(
+      self,
+      bucket_name,
+      destination_location,
+      destination_custom_placement_config=None,
+      validate_only=False,
+  ):
+    """See CloudApi class."""
+    if destination_custom_placement_config is not None:
+      destination_custom_placement_config = self.messages.RelocateBucketRequest.DestinationCustomPlacementConfigValue(
+          dataLocations=destination_custom_placement_config
+      )
+    request = self.messages.RelocateBucketRequest(
+        destinationLocation=destination_location,
+        destinationCustomPlacementConfig=destination_custom_placement_config,
+        validateOnly=validate_only,
+    )
+    relocate_request = self.messages.StorageBucketsRelocateRequest(
+        bucket=bucket_name, relocateBucketRequest=request
+    )
+    return self.client.buckets.Relocate(relocate_request)
 
   @error_util.catch_http_error_raise_gcs_api_error()
   def lock_bucket_retention_policy(self, bucket_resource, request_config):
     metageneration_precondition = (
-        request_config.precondition_metageneration_match or
-        bucket_resource.metageneration)
+        request_config.precondition_metageneration_match
+        or bucket_resource.metageneration
+    )
     request = self.messages.StorageBucketsLockRetentionPolicyRequest(
         bucket=bucket_resource.storage_url.bucket_name,
-        ifMetagenerationMatch=metageneration_precondition)
+        ifMetagenerationMatch=metageneration_precondition,
+    )
     return metadata_util.get_bucket_resource_from_metadata(
-        self.client.buckets.LockRetentionPolicy(request))
+        self.client.buckets.LockRetentionPolicy(request)
+    )
 
   @error_util.catch_http_error_raise_gcs_api_error()
-  def patch_bucket(self,
-                   bucket_resource,
-                   request_config,
-                   fields_scope=cloud_api.FieldsScope.NO_ACL):
+  def patch_bucket(
+      self,
+      bucket_resource,
+      request_config,
+      fields_scope=cloud_api.FieldsScope.NO_ACL,
+  ):
     """See super class."""
-    projection = self._get_projection(fields_scope,
-                                      self.messages.StorageBucketsPatchRequest)
-    metadata = getattr(
-        bucket_resource, 'metadata',
-        None) or (metadata_util.get_apitools_metadata_from_url(
-            bucket_resource.storage_url))
+    projection = self._get_projection(
+        fields_scope, self.messages.StorageBucketsPatchRequest
+    )
+    metadata = getattr(bucket_resource, 'metadata', None) or (
+        metadata_util.get_apitools_metadata_from_url(
+            bucket_resource.storage_url
+        )
+    )
     metadata_util.update_bucket_metadata_from_request_config(
-        metadata, request_config)
+        metadata, request_config
+    )
 
     cleared_fields = metadata_util.get_cleared_bucket_fields(request_config)
-    if (metadata.defaultObjectAcl and metadata.defaultObjectAcl[0]
-        == metadata_util.PRIVATE_DEFAULT_OBJECT_ACL):
+    if (
+        metadata.defaultObjectAcl
+        and metadata.defaultObjectAcl[0]
+        == metadata_util.PRIVATE_DEFAULT_OBJECT_ACL
+    ):
       cleared_fields.append('defaultObjectAcl')
       metadata.defaultObjectAcl = []
 

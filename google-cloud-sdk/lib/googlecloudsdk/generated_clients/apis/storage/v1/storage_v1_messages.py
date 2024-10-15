@@ -15,6 +15,21 @@ from apitools.base.py import extra_types
 package = 'storage'
 
 
+class AdvanceRelocateBucketOperationRequest(_messages.Message):
+  r"""An AdvanceRelocateBucketOperation request.
+
+  Fields:
+    expireTime: Specifies the time when the relocation will revert to the sync
+      stage if the relocation hasn't succeeded.
+    ttl: Specifies the duration after which the relocation will revert to the
+      sync stage if the relocation hasn't succeeded. Optional, if not
+      supplied, a default value of 12h will be used.
+  """
+
+  expireTime = _message_types.DateTimeField(1)
+  ttl = _messages.StringField(2)
+
+
 class AnywhereCache(_messages.Message):
   r"""An Anywhere Cache instance.
 
@@ -2298,6 +2313,26 @@ class StorageBucketsLockRetentionPolicyRequest(_messages.Message):
   bucket = _messages.StringField(1, required=True)
   ifMetagenerationMatch = _messages.IntegerField(2, required=True)
   userProject = _messages.StringField(3)
+
+
+class StorageBucketsOperationsAdvanceRelocateBucketRequest(_messages.Message):
+  r"""A StorageBucketsOperationsAdvanceRelocateBucketRequest object.
+
+  Fields:
+    advanceRelocateBucketOperationRequest: A
+      AdvanceRelocateBucketOperationRequest resource to be passed as the
+      request body.
+    bucket: Name of the bucket to advance the relocate for.
+    operationId: ID of the operation resource.
+  """
+
+  advanceRelocateBucketOperationRequest = _messages.MessageField('AdvanceRelocateBucketOperationRequest', 1)
+  bucket = _messages.StringField(2, required=True)
+  operationId = _messages.StringField(3, required=True)
+
+
+class StorageBucketsOperationsAdvanceRelocateBucketResponse(_messages.Message):
+  r"""An empty StorageBucketsOperationsAdvanceRelocateBucket response."""
 
 
 class StorageBucketsOperationsCancelRequest(_messages.Message):

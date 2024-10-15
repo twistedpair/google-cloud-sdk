@@ -26,6 +26,7 @@ import heapq
 import os
 import pathlib
 import re
+from typing import Iterator
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
@@ -877,21 +878,54 @@ class CloudWildcardIterator(WildcardIterator):
       An iterable of BucketResource or UnknownResource objects.
     """
     if contains_wildcard(self._url.bucket_name):
-      return self._expand_bucket_wildcards(self._url.bucket_name)
+      return self._list_buckets_matching_wildcard(self._url.bucket_name)
     elif self._url.is_bucket() and self._get_bucket_metadata:
+      # If --soft-deleted is specified, fetch all soft-deleted generations of
+      # this bucket. Otherwise, return the live bucket.
+      if self._soft_deleted_buckets:
+        return self._fetch_all_soft_deleted_generations_of_bucket(
+            self._url.bucket_name
+        )
+
       return [
           self._client.get_bucket(
               bucket_name=self._url.bucket_name,
               fields_scope=self._fields_scope,
-              soft_deleted=self._soft_deleted_buckets,
           )
       ]
     else:
       # Avoids API call.
       return [resource_reference.UnknownResource(self._url)]
 
-  def _expand_bucket_wildcards(self, bucket_name):
-    """Expand bucket names with wildcard.
+  def _fetch_all_soft_deleted_generations_of_bucket(
+      self, bucket_name: str
+  ) -> Iterator[resource_reference.BucketResource]:
+    """Fetch the soft-deleted buckets with the given name.
+
+      List_buckets retrieves all versions of a bucket, including
+      soft-deleted ones. Get_bucket retrieves the live bucket or a specific
+      soft-deleted version of the bucket if generation is specified. This is
+      useful when needing to access a particular deleted version that has been
+      identified from the List_buckets output.
+
+    Args:
+      bucket_name (str): Bucket name.
+
+    Yields:
+      BucketResource objects.
+    """
+    # TODO: b/350559758 - Add prefix support to list_buckets and use it here.
+    for bucket_resource in self._client.list_buckets(
+        fields_scope=self._fields_scope,
+        soft_deleted=self._soft_deleted_buckets,
+    ):
+      if bucket_name == bucket_resource.name:
+        yield bucket_resource
+
+  def _list_buckets_matching_wildcard(
+      self, bucket_name: str
+  ) -> Iterator[resource_reference.BucketResource]:
+    """List buckets matching the wildcard pattern.
 
     Args:
       bucket_name (str): Bucket name with wildcard.

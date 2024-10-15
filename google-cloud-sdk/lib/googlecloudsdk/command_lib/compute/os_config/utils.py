@@ -315,23 +315,27 @@ def ParseOSConfigAssignmentFile(ref, args, req):
   return req
 
 
-def ModifyOrchestratorPolicySetSelectors(args, req, messages):
+def ModifyOrchestratorPolicySetSelectors(args, req, messages, use_clear=False):
   """Sets selectors inside policy orchestrator.
 
   Args:
     args: args to the command
     req: request
     messages: messages for selected v2 API version
+    use_clear: if true, clear_projects flag is used to clear selectors
 
   Returns:
-    modified request
+    modified request, boolean indicating if selectors were set
   """
-  if not args.include_projects:
-    return req
+  if not args.include_projects and (not use_clear or not args.clear_projects):
+    return req, False
   # TODO(b/315289440): add validations for selectors.
+  # If clear_projects is set, we have to clear included projects from selectors.
   included_projects = []
-  for project_id in args.include_projects.split(','):
-    included_projects.append('projects/' + project_id)
+
+  if args.include_projects:
+    for project_id in args.include_projects.split(','):
+      included_projects.append('projects/' + project_id)
 
   selector = messages.GoogleCloudOsconfigV2alphaOrchestrationScopeSelector()
   selector.resourceHierarchySelector = (
@@ -345,7 +349,7 @@ def ModifyOrchestratorPolicySetSelectors(args, req, messages):
   req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestrationScope.selectors = [
       selector
   ]
-  return req
+  return req, True
 
 
 def ModifyOrchestrorPolicyCreateRequest(ref, args, req):
@@ -378,12 +382,66 @@ def ModifyOrchestrorPolicyCreateRequest(ref, args, req):
 
   req.googleCloudOsconfigV2alphaPolicyOrchestrator.action = args.action.upper()
   req.googleCloudOsconfigV2alphaPolicyOrchestrator.state = args.state.upper()
-  req = ModifyOrchestratorPolicySetSelectors(args, req, messages)
+  req, _ = ModifyOrchestratorPolicySetSelectors(args, req, messages)
 
   # Setting request-level fields.
   req.policyOrchestratorId = ref.Name()
   # req.parent contains full resource path, we have to shorten it.
   req.parent = '/'.join(req.parent.split('/')[:-2])
+  return req
+
+
+def ModifyOrchestrorPolicyUpdateRequest(unused_ref, args, req):
+  """Returns modified request with parsed orchestartor's policy assignment."""
+
+  # Settings PolicyOrchestrator payload.
+  api_version = GetApiVersionV2(args)
+  messages = GetApiMessage(api_version)
+
+  req.googleCloudOsconfigV2alphaPolicyOrchestrator = (
+      messages.GoogleCloudOsconfigV2alphaPolicyOrchestrator()
+  )
+  req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestratedResource = (
+      messages.GoogleCloudOsconfigV2alphaOrchestratedResource()
+  )
+
+  update_mask = []
+
+  if args.action:
+    req.googleCloudOsconfigV2alphaPolicyOrchestrator.action = (
+        args.action.upper()
+    )
+    update_mask.append('action')
+
+  if args.policy_file:
+    (policy_assignment_config, _) = GetResourceAndUpdateFieldsFromFile(
+        args.policy_file, messages.OSPolicyAssignment
+    )
+    req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestratedResource.osPolicyAssignmentV1Payload = (
+        policy_assignment_config
+    )
+    update_mask.append(
+        'orchestrated_resource.os_policy_assignment_v1_payload'
+    )
+
+  if args.policy_id:
+    req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestratedResource.id = (
+        args.policy_id
+    )
+    update_mask.append('orchestrated_resource.id')
+
+  if args.state:
+    req.googleCloudOsconfigV2alphaPolicyOrchestrator.state = args.state.upper()
+    update_mask.append('state')
+
+  req, modified = ModifyOrchestratorPolicySetSelectors(
+      args, req, messages, use_clear=True
+  )
+  if modified:
+    update_mask.append('orchestration_scope.selectors')
+
+  req.updateMask = ','.join(update_mask)
+
   return req
 
 
