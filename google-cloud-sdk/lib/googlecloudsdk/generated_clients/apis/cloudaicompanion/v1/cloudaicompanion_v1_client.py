@@ -536,6 +536,33 @@ class CloudaicompanionV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ServerStreamingCompleteTask(self, request, global_params=None):
+      r"""Completes a task based on some specification and context using response streaming.
+
+      Args:
+        request: (CloudaicompanionProjectsLocationsInstancesServerStreamingCompleteTaskRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServerStreamingCompleteTaskResponse) The response message.
+      """
+      config = self.GetMethodConfig('ServerStreamingCompleteTask')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ServerStreamingCompleteTask.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:serverStreamingCompleteTask',
+        http_method='POST',
+        method_id='cloudaicompanion.projects.locations.instances.serverStreamingCompleteTask',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:serverStreamingCompleteTask',
+        request_field='serverStreamingCompleteTaskRequest',
+        request_type_name='CloudaicompanionProjectsLocationsInstancesServerStreamingCompleteTaskRequest',
+        response_type_name='ServerStreamingCompleteTaskResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 

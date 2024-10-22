@@ -934,8 +934,8 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsPatchRequest(
   object.
 
   Fields:
-    name: The name of the version, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/versions/art1". If the package
+    name: The name of the version, for example: `projects/p1/locations/us-
+      central1/repositories/repo1/packages/pkg1/versions/art1`. If the package
       or version ID parts contain slashes, the slashes are escaped.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
@@ -1072,8 +1072,8 @@ class ArtifactregistryProjectsLocationsRepositoriesRulesPatchRequest(_messages.M
     googleDevtoolsArtifactregistryV1Rule: A
       GoogleDevtoolsArtifactregistryV1Rule resource to be passed as the
       request body.
-    name: The name of the rule, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/rules/rule1".
+    name: The name of the rule, for example: `projects/p1/locations/us-
+      central1/repositories/repo1/rules/rule1`.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
@@ -1183,36 +1183,36 @@ class ArtifactregistryProjectsUpdateProjectSettingsRequest(_messages.Message):
 
 class Attachment(_messages.Message):
   r"""An Attachment refers to additional metadata that can be attached to
-  artifacts in ArtifactRegistry. An attachment consists of one or more files.
+  artifacts in Artifact Registry. An attachment consists of one or more files.
 
   Messages:
     AnnotationsValue: Optional. User annotations. These attributes can only be
       set and used by the user, and not by Artifact Registry. See
       https://google.aip.dev/128#annotations for more details such as format
-      and size limitations. Client specified annotations.
+      and size limitations.
 
   Fields:
     annotations: Optional. User annotations. These attributes can only be set
       and used by the user, and not by Artifact Registry. See
       https://google.aip.dev/128#annotations for more details such as format
-      and size limitations. Client specified annotations.
+      and size limitations.
     attachmentNamespace: The namespace this attachment belongs to. E.g. If an
-      Attachment is created by artifact analysis, namespace is set to
-      artifactanalysis.googleapis.com.
+      attachment is created by artifact analysis, namespace is set to
+      `artifactanalysis.googleapis.com`.
     createTime: Output only. The time when the attachment was created.
-    files: Required. The files that blong to this Attachment. If the file ID
-      part contains slashes, they are escaped. E.g. "projects/p1/locations/us-
-      central1/repositories/repo1/files/sha:".
+    files: Required. The files that belong to this attachment. If the file ID
+      part contains slashes, they are escaped. E.g. `projects/p1/locations/us-
+      central1/repositories/repo1/files/sha:`.
     name: The name of the attachment. E.g.
-      "projects/p1/locations/us/repositories/repo/attachments/sbom".
+      `projects/p1/locations/us/repositories/repo/attachments/sbom`.
     ociVersionName: Output only. The name of the OCI version that this
       attachment created. Only populated for Docker attachments. E.g.
-      "projects/p1/locations/us-
-      central1/repositories/repo1/packages/p1/versions/v1".
+      `projects/p1/locations/us-
+      central1/repositories/repo1/packages/p1/versions/v1`.
     target: Required. The target the attachment is for, can be a Version,
-      Package or Repository. E.g. "projects/p1/locations/us-
-      central1/repositories/repo1/packages/p1/versions/v1".
-    type: Type of Attachment. E.g. application/vnd.spdx+jsonn
+      Package or Repository. E.g. `projects/p1/locations/us-
+      central1/repositories/repo1/packages/p1/versions/v1`.
+    type: Type of attachment. E.g. `application/vnd.spdx+json`
     updateTime: Output only. The time when the attachment was last updated.
   """
 
@@ -1221,7 +1221,7 @@ class Attachment(_messages.Message):
     r"""Optional. User annotations. These attributes can only be set and used
     by the user, and not by Artifact Registry. See
     https://google.aip.dev/128#annotations for more details such as format and
-    size limitations. Client specified annotations.
+    size limitations.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -1459,7 +1459,7 @@ class CommonRemoteRepository(_messages.Message):
   r"""Common remote repository settings type.
 
   Fields:
-    uri: Required. A common public repository base for Remote Repository.
+    uri: Required. A common public repository base for remote repository.
   """
 
   uri = _messages.StringField(1)
@@ -1936,26 +1936,28 @@ class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryPublicR
 
 
 class GoogleDevtoolsArtifactregistryV1Rule(_messages.Message):
-  r"""A Rule applies to repository or package level. It defines the deny or
-  allow action of the operation when the conditions in the rule are met.
+  r"""A rule defines the deny or allow action of the operation it applies to
+  and the conditions required for the rule to apply. You can set one rule for
+  an entire repository and one rule for each package within.
 
   Enums:
-    ActionValueValuesEnum: The action this rule makes.
+    ActionValueValuesEnum: The action this rule takes.
     OperationValueValuesEnum:
 
   Fields:
-    action: The action this rule makes.
-    condition: Optional. The condition of the rule in CEL expression. If not
-      provided, the rule matches all the objects.
-    name: The name of the rule, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/rules/rule1".
+    action: The action this rule takes.
+    condition: Optional. A CEL expression for conditions that must be met in
+      order for the rule to apply. If not provided, the rule matches all
+      objects.
+    name: The name of the rule, for example: `projects/p1/locations/us-
+      central1/repositories/repo1/rules/rule1`.
     operation: A OperationValueValuesEnum attribute.
     packageId: The package ID the rule applies to. If empty, this rule applies
-      to all the packages inside the repository.
+      to all packages inside the repository.
   """
 
   class ActionValueValuesEnum(_messages.Enum):
-    r"""The action this rule makes.
+    r"""The action this rule takes.
 
     Values:
       ACTION_UNSPECIFIED: Action not specified.
@@ -1972,11 +1974,11 @@ class GoogleDevtoolsArtifactregistryV1Rule(_messages.Message):
     Values:
       OPERATION_UNSPECIFIED: Operation not specified.
       DOWNLOAD: Download operation.
-      MUTABILITY_EXCEPTION: Mutability exception operation.
+      TAG_MUTATION: Tag Mutation operation.
     """
     OPERATION_UNSPECIFIED = 0
     DOWNLOAD = 1
-    MUTABILITY_EXCEPTION = 2
+    TAG_MUTATION = 2
 
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   condition = _messages.MessageField('Expr', 2)
@@ -2186,7 +2188,7 @@ class ListAttachmentsResponse(_messages.Message):
   r"""The response from listing attachments.
 
   Fields:
-    attachments: The Attachments returned.
+    attachments: The attachments returned.
     nextPageToken: The token to retrieve the next page of attachments, or
       empty if there are no more attachments to return.
   """
@@ -2872,10 +2874,6 @@ class ProjectSettings(_messages.Message):
   pullPercent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
-class PromoteArtifactMetadata(_messages.Message):
-  r"""The metadata for promote artifact long running operation."""
-
-
 class PythonPackage(_messages.Message):
   r"""PythonPackage represents a python artifact.
 
@@ -2946,9 +2944,8 @@ class RemoteRepositoryConfig(_messages.Message):
 
   Fields:
     aptRepository: Specific settings for an Apt remote repository.
-    commonRepository: Common remote repository settings. Used as the RR
-      upstream URL instead of Predefined and Custom remote repositories. UI
-      and Gcloud will map all the new remote repositories to this field.
+    commonRepository: Common remote repository settings. Used as the remote
+      repository upstream URL.
     deleteNotFoundCacheFiles: Optional. If files are removed from the remote
       host, should they also be removed from the Artifact Registry repository
       when requested? Only supported for docker, maven, and python
@@ -2962,6 +2959,7 @@ class RemoteRepositoryConfig(_messages.Message):
     npmRepository: Specific settings for an Npm remote repository.
     pythonRepository: Specific settings for a Python remote repository.
     remoteType: A RemoteTypeValueValuesEnum attribute.
+    rubyRepository: Specific settings for a Ruby remote repository.
     serviceDirectoryConfig: A ServiceDirectoryConfig attribute.
     upstreamCredentials: Optional. The credentials used to access the remote
       repository.
@@ -2991,9 +2989,10 @@ class RemoteRepositoryConfig(_messages.Message):
   npmRepository = _messages.MessageField('NpmRepository', 9)
   pythonRepository = _messages.MessageField('PythonRepository', 10)
   remoteType = _messages.EnumField('RemoteTypeValueValuesEnum', 11)
-  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 12)
-  upstreamCredentials = _messages.MessageField('UpstreamCredentials', 13)
-  yumRepository = _messages.MessageField('YumRepository', 14)
+  rubyRepository = _messages.MessageField('RubyRepository', 12)
+  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 13)
+  upstreamCredentials = _messages.MessageField('UpstreamCredentials', 14)
+  yumRepository = _messages.MessageField('YumRepository', 15)
 
 
 class Repository(_messages.Message):
@@ -3191,6 +3190,30 @@ class Repository(_messages.Message):
   updateTime = _messages.StringField(19)
   virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 20)
   vulnerabilityScanningConfig = _messages.MessageField('VulnerabilityScanningConfig', 21)
+
+
+class RubyRepository(_messages.Message):
+  r"""Configuration for a Ruby remote repository.
+
+  Enums:
+    PublicRepositoryValueValuesEnum: One of the publicly available Ruby
+      repositories.
+
+  Fields:
+    publicRepository: One of the publicly available Ruby repositories.
+  """
+
+  class PublicRepositoryValueValuesEnum(_messages.Enum):
+    r"""One of the publicly available Ruby repositories.
+
+    Values:
+      PUBLIC_REPOSITORY_UNSPECIFIED: Unspecified repository
+      RUBYGEMS: RubyGems.
+    """
+    PUBLIC_REPOSITORY_UNSPECIFIED = 0
+    RUBYGEMS = 1
+
+  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 1)
 
 
 class SbomConfig(_messages.Message):
@@ -3402,8 +3425,8 @@ class Tag(_messages.Message):
       have characters in [a-zA-Z0-9\-._~:@], anything else must be URL
       encoded.
     version: The name of the version the tag refers to, for example:
-      "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/versions/sha256:5243811" If
+      `projects/p1/locations/us-
+      central1/repositories/repo1/packages/pkg1/versions/sha256:5243811` If
       the package or version ID parts contain slashes, the slashes are
       escaped.
   """
@@ -3726,8 +3749,8 @@ class Version(_messages.Message):
       version. The fields returned are defined by the underlying repository-
       specific resource. Currently, the resources could be: DockerImage
       MavenArtifact
-    name: The name of the version, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/versions/art1". If the package
+    name: The name of the version, for example: `projects/p1/locations/us-
+      central1/repositories/repo1/packages/pkg1/versions/art1`. If the package
       or version ID parts contain slashes, the slashes are escaped.
     relatedTags: Output only. A list of related tags. Will contain up to 100
       tags that reference this version.
@@ -3821,8 +3844,7 @@ class VulnerabilityScanningConfig(_messages.Message):
       vulnerability scanning disabled.
     enablementState: Output only. State of feature enablement, combining
       repository enablement config and API enablement state.
-    enablementStateReason: Output only. Reason for the repository state and
-      potential actions to activate it.
+    enablementStateReason: Output only. Reason for the repository state.
     lastEnableTime: Output only. The last time this repository config was
       enabled.
   """
@@ -3832,14 +3854,11 @@ class VulnerabilityScanningConfig(_messages.Message):
     scanning disabled.
 
     Values:
-      ENABLEMENT_CONFIG_UNSPECIFIED: Unspecified config was not set. This will
-        be interpreted as DISABLED. On Repository creation, UNSPECIFIED
-        vulnerability scanning will be defaulted to INHERITED.
-      INHERITED: Inherited indicates the repository is allowed for
-        vulnerability scanning, however the actual state will be inherited
-        from the API enablement state.
-      DISABLED: Disabled indicates the repository will not perform
-        vulnerability scanning.
+      ENABLEMENT_CONFIG_UNSPECIFIED: Not set. This will be treated as
+        INHERITED.
+      INHERITED: Scanning is Enabled, but dependent on API enablement.
+      DISABLED: No automatic vulnerability scanning will be performed for this
+        repository.
     """
     ENABLEMENT_CONFIG_UNSPECIFIED = 0
     INHERITED = 1

@@ -1298,6 +1298,23 @@ class CloudaicompanionProjectsLocationsInstancesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class CloudaicompanionProjectsLocationsInstancesServerStreamingCompleteTaskRequest(_messages.Message):
+  r"""A
+  CloudaicompanionProjectsLocationsInstancesServerStreamingCompleteTaskRequest
+  object.
+
+  Fields:
+    name: Required. The full name of the Instance resource for this request.
+      Format: `projects/{project}/locations/{location}/instances/{instance}`
+      Use the special 'default' name to refer to the default instance.
+    serverStreamingCompleteTaskRequest: A ServerStreamingCompleteTaskRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  serverStreamingCompleteTaskRequest = _messages.MessageField('ServerStreamingCompleteTaskRequest', 2)
+
+
 class CloudaicompanionProjectsLocationsInstancesSummarizeDataRequest(_messages.Message):
   r"""A CloudaicompanionProjectsLocationsInstancesSummarizeDataRequest object.
 
@@ -1489,6 +1506,117 @@ class CloudaicompanionProjectsLocationsSettingsPatchRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
   setting = _messages.MessageField('Setting', 3)
+  updateMask = _messages.StringField(4)
+
+
+class CloudaicompanionProjectsLocationsTopicsCreateRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsTopicsCreateRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    topic: A Topic resource to be passed as the request body.
+    topicId: Required. Id of the requesting object If auto-generating Id
+      server-side, remove this field and topic_id from the method_signature of
+      Create RPC
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  topic = _messages.MessageField('Topic', 3)
+  topicId = _messages.StringField(4)
+
+
+class CloudaicompanionProjectsLocationsTopicsDeleteRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsTopicsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class CloudaicompanionProjectsLocationsTopicsGetRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsTopicsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudaicompanionProjectsLocationsTopicsListRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsTopicsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListTopicsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class CloudaicompanionProjectsLocationsTopicsPatchRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsTopicsPatchRequest object.
+
+  Fields:
+    name: Identifier. name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    topic: A Topic resource to be passed as the request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Topic resource by the update. The fields specified in
+      the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields present in the request will be
+      overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  topic = _messages.MessageField('Topic', 3)
   updateMask = _messages.StringField(4)
 
 
@@ -2024,6 +2152,21 @@ class Database(_messages.Message):
 
   database = _messages.StringField(1)
   tables = _messages.MessageField('Table', 2, repeated=True)
+
+
+class DatabaseMetadata(_messages.Message):
+  r"""Metadata about the current database that the user is connecting to. This
+  field will be populated by the frontrow. For cloudSQL studio, the user
+  selects the instance and the database.
+
+  Fields:
+    instance: Optional. The instance of the database. Eg. "nl2sql-synthetic-
+      pg"
+    name: Optional. The name of the database. Eg. "air_travel"
+  """
+
+  instance = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 class Dataset(_messages.Message):
@@ -2645,6 +2788,29 @@ class InputDataContext(_messages.Message):
   additionalContext = _messages.MessageField('AdditionalContextValue', 1)
 
 
+class InsightInfo(_messages.Message):
+  r"""Insight info for each insight point in the summary.
+
+  Fields:
+    insight: Insight point of the summary.
+    insightMetadata: List of insight metadata for the insight. One insight can
+      be mapped to multiple intents/rawtexts.
+  """
+
+  insight = _messages.StringField(1)
+  insightMetadata = _messages.MessageField('InsightMetadata', 2, repeated=True)
+
+
+class InsightMetadata(_messages.Message):
+  r"""Insight metadata for each insight.
+
+  Fields:
+    insightDetail: Insight detail for each insight.
+  """
+
+  insightDetail = _messages.StringField(1)
+
+
 class Instance(_messages.Message):
   r"""Message describing Instance object
 
@@ -2903,6 +3069,49 @@ class IntegrationVersion(_messages.Message):
   triggerConfigs = _messages.MessageField('TriggerConfig', 6, repeated=True)
 
 
+class JavascriptRecommendation(_messages.Message):
+  r"""Individual Javascript recommendation containing the task config with the
+  new code, integration parameters and the explanation.
+
+  Fields:
+    explanation: The explanation of the Javascript code.
+    integrationParameters: Optional. The list of the new integration
+      parameters.
+    taskConfig: Optional. The task config of the Javascript task.
+  """
+
+  explanation = _messages.StringField(1)
+  integrationParameters = _messages.MessageField('IntegrationParameter', 2, repeated=True)
+  taskConfig = _messages.MessageField('TaskConfig', 3)
+
+
+class JavascriptRequest(_messages.Message):
+  r"""Request message for Javascript Task using Gemini.
+
+  Fields:
+    integrationVersion: Required. The integration version which contains all
+      the integration parameters, all triggers and tasks including the
+      Javascript task.
+    taskId: Required. The task id of the Javascript task.
+    useCurrentScript: Optional. Whether to use the current javascript task
+      config (JS code) to generate the Javascript code.
+  """
+
+  integrationVersion = _messages.MessageField('IntegrationVersion', 1)
+  taskId = _messages.StringField(2)
+  useCurrentScript = _messages.BooleanField(3)
+
+
+class JavascriptResponse(_messages.Message):
+  r"""Response message for Javascript Task using Gemini.
+
+  Fields:
+    recommendations: List of the Javascript recommendations.
+  """
+
+  recommendations = _messages.MessageField('JavascriptRecommendation', 1, repeated=True)
+
+
 class ListCodeRepositoryIndexesResponse(_messages.Message):
   r"""Message for response to listing CodeRepositoryIndexes
 
@@ -2995,6 +3204,21 @@ class ListSettingsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   settings = _messages.MessageField('Setting', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListTopicsResponse(_messages.Message):
+  r"""Message for response to listing Topics
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    topics: The list of Topic
+    unreachable: Unordered list. Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  topics = _messages.MessageField('Topic', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -3692,10 +3916,14 @@ class ResponseItem(_messages.Message):
   r"""Response for the data summarization request.
 
   Fields:
+    insightInfo: Optional. List of insight info for each insight point in the
+      summary. Summary will always be provided in the response, even if
+      InsightInfo is not provided.
     summary: Optional. Summary of the data.
   """
 
-  summary = _messages.StringField(1)
+  insightInfo = _messages.MessageField('InsightInfo', 1, repeated=True)
+  summary = _messages.StringField(2)
 
 
 class Samples(_messages.Message):
@@ -3719,6 +3947,44 @@ class SchemaDetails(_messages.Message):
 
   tables = _messages.MessageField('TableInfo', 1, repeated=True)
   views = _messages.MessageField('ViewInfo', 2, repeated=True)
+
+
+class ServerStreamingCompleteTaskRequest(_messages.Message):
+  r"""Input for task completion.
+
+  Fields:
+    backendResourcesContext: Optional. The GCP resources that the code
+      generation process needs to reference
+    clientContext: Optional. Client context (e.g. IDE name, version, etc)
+    experienceContext: Required. Duet product context -- required
+    input: Required. Represents the raw input for inference. It will be
+      modified as part of prompt engineering and other transforms before it is
+      consumed by the LLM.
+    inputDataContext: Optional. Additional user content not captured in the
+      `input` field above
+  """
+
+  backendResourcesContext = _messages.MessageField('BackendResourcesContext', 1)
+  clientContext = _messages.MessageField('ClientContext', 2)
+  experienceContext = _messages.MessageField('ExperienceContext', 3)
+  input = _messages.MessageField('TaskCompletionInput', 4)
+  inputDataContext = _messages.MessageField('InputDataContext', 5)
+
+
+class ServerStreamingCompleteTaskResponse(_messages.Message):
+  r"""Output of task completion.
+
+  Fields:
+    attributionContext: Attribution context.
+    displayContext: Output display context.
+    output: The task completion/chat output.
+    outputDataContext: Additional generated data.
+  """
+
+  attributionContext = _messages.MessageField('AttributionContext', 1)
+  displayContext = _messages.MessageField('DisplayContext', 2)
+  output = _messages.MessageField('TaskCompletionOutput', 3)
+  outputDataContext = _messages.MessageField('OutputDataContext', 4)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -3806,6 +4072,9 @@ class SqlGenContext(_messages.Message):
       We will consider this given database while generating query, mainly
       DDL/DML in MySQL as there can be multiple databases in one schema
       information.
+    databaseMetadata: Optional. The current database that the user is
+      connecting to. This information will be consumed by the CRS service to
+      retrieve the schema metadata.
     providers: Optional. A list of sources of contextual information to be
       used when answering
     queryGrammar: Optional. Information on how to generate the SQL query based
@@ -3813,8 +4082,9 @@ class SqlGenContext(_messages.Message):
   """
 
   database = _messages.StringField(1)
-  providers = _messages.MessageField('SqlGenContextProvider', 2, repeated=True)
-  queryGrammar = _messages.MessageField('QueryGrammar', 3)
+  databaseMetadata = _messages.MessageField('DatabaseMetadata', 2)
+  providers = _messages.MessageField('SqlGenContextProvider', 3, repeated=True)
+  queryGrammar = _messages.MessageField('QueryGrammar', 4)
 
 
 class SqlGenContextProvider(_messages.Message):
@@ -4285,10 +4555,10 @@ class TaskCompletionResponse(_messages.Message):
   r"""Output of task completion.
 
   Fields:
-    attributionContext: Attribution context
-    displayContext: Output display context
+    attributionContext: Attribution context.
+    displayContext: Output display context.
     output: The task completion/chat output.
-    outputDataContext: Additional generated data
+    outputDataContext: Additional generated data.
   """
 
   attributionContext = _messages.MessageField('AttributionContext', 1)
@@ -4485,6 +4755,49 @@ class TextGenerationResponse(_messages.Message):
   displayContext = _messages.MessageField('DisplayContext', 2)
   output = _messages.MessageField('TextGenerationOutput', 3)
   outputDataContext = _messages.MessageField('OutputDataContext', 4)
+
+
+class Topic(_messages.Message):
+  r"""Message describing Topic object
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Optional. Labels as key value pairs
+    name: Identifier. name of resource
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
 
 
 class TranslationContext(_messages.Message):

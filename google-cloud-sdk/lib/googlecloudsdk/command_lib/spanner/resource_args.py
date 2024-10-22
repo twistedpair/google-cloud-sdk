@@ -368,7 +368,6 @@ def AddKmsKeyResourceArg(parser, verb, positional=False):
           'Cloud KMS key(s) to be used {}.'.format(verb),
           required=False,
           prefixes=True,
-          hidden=True,
           plural=True,
           group=group,
           flag_name_overrides={

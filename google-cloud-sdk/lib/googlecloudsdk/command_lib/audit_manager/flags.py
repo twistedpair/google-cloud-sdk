@@ -84,11 +84,11 @@ def AddLocationFlag(parser, help_text, required=True):
   )
 
 
-def AddComplianceStandardFlag(parser, required=True):
+def AddComplianceFrameworkFlag(parser, required=True):
   parser.add_argument(
-      '--compliance-standard',
+      '--compliance-framework',
       help=(
-          'Compliance Standard against which the Report must be generated.'
+          'Compliance Framework against which the Report must be generated.'
           ' Eg: FEDRAMP_MODERATE'
       ),
       required=required,

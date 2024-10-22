@@ -217,12 +217,22 @@ def GetEncryptionKmsKeyNameArg():
   )
 
 
-def GetGdceZoneArg():
+def GetHiddenGdceZoneArg():
   return base.Argument(
       '--gdce-zone',
       required=False,
       default=None,
       hidden=True,
+      help="""\
+      The name of the GDCE zone. If set, the endpoint is in GDCE.
+      """)
+
+
+def GetGdceZoneArg():
+  return base.Argument(
+      '--gdce-zone',
+      required=False,
+      default=None,
       help="""\
       The name of the GDCE zone. If set, the endpoint is in GDCE.
       """)

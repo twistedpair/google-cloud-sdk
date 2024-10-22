@@ -138,7 +138,7 @@ def ArgsForClusterRef(
           'Minimum fraction of worker nodes required to create the cluster.'
           ' If it is not met, cluster creation will fail. Must be a decimal'
           ' value between 0 and 1. The number of required workers will be'
-          ' calcualted by ceil(min-worker-fraction * num_workers).'
+          ' calculated by ceil(min-worker-fraction * num_workers).'
       ),
   )
   worker_group.add_argument(
@@ -193,20 +193,27 @@ def ArgsForClusterRef(
   worker_machine_type_group.add_argument(
       '--worker-machine-type',
       help=(
-          'The type of machine to use for workers. Defaults to '
+          'The type of machine to use for primary workers. Defaults to '
           'server-specified.'
       ),
   )
   worker_machine_type_group.add_argument(
       '--worker-machine-types',
       help=(
-          'Types of machines with optional rank for worker nodes to use. '
-          'Defaults to server-specified.'
-          'eg. --worker-machine-types="type=e2-standard-8,type=t2d-standard-8,rank=0"'
+          '[Machine'
+          ' types](https://cloud.google.com/dataproc/docs/concepts/compute/supported-machine-types)'
+          ' for primary worker nodes to use with optional rank. A lower rank'
+          ' number is given higher preference. Based on availablilty, Dataproc'
+          ' tries to create primary worker VMs using the worker machine type'
+          ' with the lowest rank, and then tries to use machine types with'
+          ' higher ranks as necessary. Machine types with the same rank are'
+          ' given the same preference. Example use:'
+          ' --worker-machine-types="type=e2-standard-8,type=n2-standard-8,rank=0".'
+          ' For more information, see [Dataproc Flexible'
+          ' VMs](https://cloud.google.com/dataproc/docs/concepts/configuring-clusters/flexible-vms)'
       ),
       metavar='type=MACHINE_TYPE[,type=MACHINE_TYPE...][,rank=RANK]',
       type=ArgMultiValueDict(),
-      hidden=True,
       action=arg_parsers.FlattenAction(),
   )
 

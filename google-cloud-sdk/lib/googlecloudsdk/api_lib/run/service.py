@@ -48,6 +48,9 @@ RUN_FUNCTIONS_BUILD_ID_ANNOTATION = 'run.googleapis.com/build-id'
 RUN_FUNCTIONS_BUILD_ENV_VARS_ANNOTATION = (
     'run.googleapis.com/build-environment-variables'
 )
+RUN_FUNCTIONS_BUILD_SOURCE_LOCATION_ANNOTATION = 'run.googleapis.com/build-source-location'
+RUN_FUNCTIONS_BUILD_FUNCTION_TARGET_ANNOTATION = 'run.googleapis.com/build-function-target'
+RUN_FUNCTIONS_BUILD_IMAGE_URI_ANNOTATION = 'run.googleapis.com/build-image-uri'
 RUN_FUNCTIONS_BUILD_WORKER_POOL_ANNOTATION = (
     'run.googleapis.com/build-worker-pool'
 )
@@ -239,3 +242,12 @@ class Service(k8s_object.KubernetesObject):
   @description.setter
   def description(self, value):
     self.annotations['run.googleapis.com/description'] = value
+
+  @property
+  def source_location(self):
+    return self.annotations.get(
+        RUN_FUNCTIONS_BUILD_SOURCE_LOCATION_ANNOTATION,
+        self.annotations.get(
+            RUN_FUNCTIONS_SOURCE_LOCATION_ANNOTATION_DEPRECATED
+        ),
+    )

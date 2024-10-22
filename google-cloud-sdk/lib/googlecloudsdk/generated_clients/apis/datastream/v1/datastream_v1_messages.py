@@ -1354,11 +1354,12 @@ class MysqlObjectIdentifier(_messages.Message):
 
 
 class MysqlProfile(_messages.Message):
-  r"""MySQL database profile.
+  r"""MySQL database profile. Next ID: 7.
 
   Fields:
     hostname: Required. Hostname for the MySQL connection.
-    password: Required. Input only. Password for the MySQL connection.
+    password: Optional. Input only. Password for the MySQL connection.
+      Mutually exclusive with the `secret_manager_stored_password` field.
     port: Port for the MySQL connection, default value is 3306.
     sslConfig: SSL configuration for the MySQL connection.
     username: Required. Username for the MySQL connection.
@@ -1626,7 +1627,7 @@ class OracleObjectIdentifier(_messages.Message):
 
 
 class OracleProfile(_messages.Message):
-  r"""Oracle database profile.
+  r"""Oracle database profile. Next ID: 10.
 
   Messages:
     ConnectionAttributesValue: Connection string attributes
@@ -1636,7 +1637,8 @@ class OracleProfile(_messages.Message):
     databaseService: Required. Database for the Oracle connection.
     hostname: Required. Hostname for the Oracle connection.
     oracleSslConfig: Optional. SSL configuration for the Oracle connection.
-    password: Required. Password for the Oracle connection.
+    password: Optional. Password for the Oracle connection. Mutually exclusive
+      with the `secret_manager_stored_password` field.
     port: Port for the Oracle connection, default value is 1521.
     username: Required. Username for the Oracle connection.
   """
@@ -1796,12 +1798,13 @@ class PostgresqlObjectIdentifier(_messages.Message):
 
 
 class PostgresqlProfile(_messages.Message):
-  r"""PostgreSQL database profile.
+  r"""PostgreSQL database profile. Next ID: 7.
 
   Fields:
     database: Required. Database for the PostgreSQL connection.
     hostname: Required. Hostname for the PostgreSQL connection.
-    password: Required. Password for the PostgreSQL connection.
+    password: Optional. Password for the PostgreSQL connection. Mutually
+      exclusive with the `secret_manager_stored_password` field.
     port: Port for the PostgreSQL connection, default value is 5432.
     username: Required. Username for the PostgreSQL connection.
   """
@@ -2135,12 +2138,13 @@ class SqlServerObjectIdentifier(_messages.Message):
 
 
 class SqlServerProfile(_messages.Message):
-  r"""SQLServer database profile
+  r"""SQLServer database profile. Next ID: 8.
 
   Fields:
     database: Required. Database for the SQLServer connection.
     hostname: Required. Hostname for the SQLServer connection.
-    password: Required. Password for the SQLServer connection.
+    password: Optional. Password for the SQLServer connection. Mutually
+      exclusive with the `secret_manager_stored_password` field.
     port: Port for the SQLServer connection, default value is 1433.
     username: Required. Username for the SQLServer connection.
   """

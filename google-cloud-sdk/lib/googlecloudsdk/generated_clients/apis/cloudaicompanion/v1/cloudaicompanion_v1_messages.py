@@ -735,6 +735,23 @@ class CloudaicompanionProjectsLocationsInstancesGenerateTextRequest(_messages.Me
   textGenerationRequest = _messages.MessageField('TextGenerationRequest', 2)
 
 
+class CloudaicompanionProjectsLocationsInstancesServerStreamingCompleteTaskRequest(_messages.Message):
+  r"""A
+  CloudaicompanionProjectsLocationsInstancesServerStreamingCompleteTaskRequest
+  object.
+
+  Fields:
+    name: Required. The full name of the Instance resource for this request.
+      Format: `projects/{project}/locations/{location}/instances/{instance}`
+      Use the special 'default' name to refer to the default instance.
+    serverStreamingCompleteTaskRequest: A ServerStreamingCompleteTaskRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  serverStreamingCompleteTaskRequest = _messages.MessageField('ServerStreamingCompleteTaskRequest', 2)
+
+
 class CloudaicompanionProjectsLocationsListRequest(_messages.Message):
   r"""A CloudaicompanionProjectsLocationsListRequest object.
 
@@ -1411,6 +1428,49 @@ class IntegrationVersion(_messages.Message):
   triggerConfigs = _messages.MessageField('TriggerConfig', 6, repeated=True)
 
 
+class JavascriptRecommendation(_messages.Message):
+  r"""Individual Javascript recommendation containing the task config with the
+  new code, integration parameters and the explanation.
+
+  Fields:
+    explanation: The explanation of the Javascript code.
+    integrationParameters: Optional. The list of the new integration
+      parameters.
+    taskConfig: Optional. The task config of the Javascript task.
+  """
+
+  explanation = _messages.StringField(1)
+  integrationParameters = _messages.MessageField('IntegrationParameter', 2, repeated=True)
+  taskConfig = _messages.MessageField('TaskConfig', 3)
+
+
+class JavascriptRequest(_messages.Message):
+  r"""Request message for Javascript Task using Gemini.
+
+  Fields:
+    integrationVersion: Required. The integration version which contains all
+      the integration parameters, all triggers and tasks including the
+      Javascript task.
+    taskId: Required. The task id of the Javascript task.
+    useCurrentScript: Optional. Whether to use the current javascript task
+      config (JS code) to generate the Javascript code.
+  """
+
+  integrationVersion = _messages.MessageField('IntegrationVersion', 1)
+  taskId = _messages.StringField(2)
+  useCurrentScript = _messages.BooleanField(3)
+
+
+class JavascriptResponse(_messages.Message):
+  r"""Response message for Javascript Task using Gemini.
+
+  Fields:
+    recommendations: List of the Javascript recommendations.
+  """
+
+  recommendations = _messages.MessageField('JavascriptRecommendation', 1, repeated=True)
+
+
 class ListCodeRepositoryIndexesResponse(_messages.Message):
   r"""Message for response to listing CodeRepositoryIndexes
 
@@ -1911,6 +1971,44 @@ class SelfAssignLicenseResponse(_messages.Message):
   r"""Response message for EntitlementService.SelfAssignLicense."""
 
 
+class ServerStreamingCompleteTaskRequest(_messages.Message):
+  r"""Input for task completion.
+
+  Fields:
+    backendResourcesContext: Optional. The GCP resources that the code
+      generation process needs to reference
+    clientContext: Optional. Client context (e.g. IDE name, version, etc)
+    experienceContext: Required. Duet product context -- required
+    input: Required. Represents the raw input for inference. It will be
+      modified as part of prompt engineering and other transforms before it is
+      consumed by the LLM.
+    inputDataContext: Optional. Additional user content not captured in the
+      `input` field above
+  """
+
+  backendResourcesContext = _messages.MessageField('BackendResourcesContext', 1)
+  clientContext = _messages.MessageField('ClientContext', 2)
+  experienceContext = _messages.MessageField('ExperienceContext', 3)
+  input = _messages.MessageField('TaskCompletionInput', 4)
+  inputDataContext = _messages.MessageField('InputDataContext', 5)
+
+
+class ServerStreamingCompleteTaskResponse(_messages.Message):
+  r"""Output of task completion.
+
+  Fields:
+    attributionContext: Attribution context.
+    displayContext: Output display context.
+    output: The task completion/chat output.
+    outputDataContext: Additional generated data.
+  """
+
+  attributionContext = _messages.MessageField('AttributionContext', 1)
+  displayContext = _messages.MessageField('DisplayContext', 2)
+  output = _messages.MessageField('TaskCompletionOutput', 3)
+  outputDataContext = _messages.MessageField('OutputDataContext', 4)
+
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -2114,10 +2212,10 @@ class TaskCompletionResponse(_messages.Message):
   r"""Output of task completion.
 
   Fields:
-    attributionContext: Attribution context
-    displayContext: Output display context
+    attributionContext: Attribution context.
+    displayContext: Output display context.
     output: The task completion/chat output.
-    outputDataContext: Additional generated data
+    outputDataContext: Additional generated data.
   """
 
   attributionContext = _messages.MessageField('AttributionContext', 1)

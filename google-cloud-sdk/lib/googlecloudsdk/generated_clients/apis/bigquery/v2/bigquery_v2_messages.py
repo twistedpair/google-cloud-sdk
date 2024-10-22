@@ -650,6 +650,21 @@ class BigqueryDatasetsGetRequest(_messages.Message):
       information are returned.
 
   Fields:
+    accessPolicyVersion: Optional. The version of the access policy schema to
+      fetch. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for conditional access policy binding
+      in datasets must specify version 3. Dataset with no conditional role
+      bindings in access policy may specify any valid value or leave the field
+      unset. This field will be maped to [IAM Policy version]
+      (https://cloud.google.com/iam/docs/policies#versions) and will be used
+      to fetch policy from IAM. If unset or if 0 or 1 value is used for
+      dataset with conditional bindings, access entry with condition will have
+      role string appended by 'withcond' string followed by a hash value. For
+      example : { "access": [ { "role":
+      "roles/bigquery.dataViewer_with_conditionalbinding_7a34awqsda",
+      "userByEmail": "user@example.com", } ] } Please refer
+      https://cloud.google.com/iam/docs/troubleshooting-withcond for more
+      details.
     datasetId: Required. Dataset ID of the requested dataset
     datasetView: Optional. Specifies the view that determines which dataset
       information is returned. By default, metadata and ACL information are
@@ -674,21 +689,36 @@ class BigqueryDatasetsGetRequest(_messages.Message):
     ACL = 2
     FULL = 3
 
-  datasetId = _messages.StringField(1, required=True)
-  datasetView = _messages.EnumField('DatasetViewValueValuesEnum', 2)
-  projectId = _messages.StringField(3, required=True)
+  accessPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  datasetId = _messages.StringField(2, required=True)
+  datasetView = _messages.EnumField('DatasetViewValueValuesEnum', 3)
+  projectId = _messages.StringField(4, required=True)
 
 
 class BigqueryDatasetsInsertRequest(_messages.Message):
   r"""A BigqueryDatasetsInsertRequest object.
 
   Fields:
+    accessPolicyVersion: Optional. The version of the provided access policy
+      schema. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. This version refers to the schema version of the
+      access policy and not the version of access policy. This field's value
+      can be equal or more than the access policy schema provided in the
+      request. For example, * Requests with conditional access policy binding
+      in datasets must specify version 3. * But dataset with no conditional
+      role bindings in access policy may specify any valid value or leave the
+      field unset. If unset or if 0 or 1 value is used for dataset with
+      conditional bindings, request will be rejected. This field will be maped
+      to IAM Policy version
+      (https://cloud.google.com/iam/docs/policies#versions) and will be used
+      to set policy in IAM.
     dataset: A Dataset resource to be passed as the request body.
     projectId: Required. Project ID of the new dataset
   """
 
-  dataset = _messages.MessageField('Dataset', 1)
-  projectId = _messages.StringField(2, required=True)
+  accessPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  dataset = _messages.MessageField('Dataset', 2)
+  projectId = _messages.StringField(3, required=True)
 
 
 class BigqueryDatasetsListRequest(_messages.Message):
@@ -720,14 +750,30 @@ class BigqueryDatasetsPatchRequest(_messages.Message):
   r"""A BigqueryDatasetsPatchRequest object.
 
   Fields:
+    accessPolicyVersion: Optional. The version of the provided access policy
+      schema. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. This version refers to the schema version of the
+      access policy and not the version of access policy. This field's value
+      can be equal or more than the access policy schema provided in the
+      request. For example, * Operations updating conditional access policy
+      binding in datasets must specify version 3. Some of the operations are :
+      - Adding a new access policy entry with condition. - Removing an access
+      policy entry with condition. - Updating an access policy entry with
+      condition. * But dataset with no conditional role bindings in access
+      policy may specify any valid value or leave the field unset. If unset or
+      if 0 or 1 value is used for dataset with conditional bindings, request
+      will be rejected. This field will be maped to IAM Policy version
+      (https://cloud.google.com/iam/docs/policies#versions) and will be used
+      to set policy in IAM.
     dataset: A Dataset resource to be passed as the request body.
     datasetId: Required. Dataset ID of the dataset being updated
     projectId: Required. Project ID of the dataset being updated
   """
 
-  dataset = _messages.MessageField('Dataset', 1)
-  datasetId = _messages.StringField(2, required=True)
-  projectId = _messages.StringField(3, required=True)
+  accessPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  dataset = _messages.MessageField('Dataset', 2)
+  datasetId = _messages.StringField(3, required=True)
+  projectId = _messages.StringField(4, required=True)
 
 
 class BigqueryDatasetsUndeleteRequest(_messages.Message):
@@ -749,14 +795,30 @@ class BigqueryDatasetsUpdateRequest(_messages.Message):
   r"""A BigqueryDatasetsUpdateRequest object.
 
   Fields:
+    accessPolicyVersion: Optional. The version of the provided access policy
+      schema. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. This version refers to the schema version of the
+      access policy and not the version of access policy. This field's value
+      can be equal or more than the access policy schema provided in the
+      request. For example, * Operations updating conditional access policy
+      binding in datasets must specify version 3. Some of the operations are :
+      - Adding a new access policy entry with condition. - Removing an access
+      policy entry with condition. - Updating an access policy entry with
+      condition. * But dataset with no conditional role bindings in access
+      policy may specify any valid value or leave the field unset. If unset or
+      if 0 or 1 value is used for dataset with conditional bindings, request
+      will be rejected. This field will be maped to IAM Policy version
+      (https://cloud.google.com/iam/docs/policies#versions) and will be used
+      to set policy in IAM.
     dataset: A Dataset resource to be passed as the request body.
     datasetId: Required. Dataset ID of the dataset being updated
     projectId: Required. Project ID of the dataset being updated
   """
 
-  dataset = _messages.MessageField('Dataset', 1)
-  datasetId = _messages.StringField(2, required=True)
-  projectId = _messages.StringField(3, required=True)
+  accessPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  dataset = _messages.MessageField('Dataset', 2)
+  datasetId = _messages.StringField(3, required=True)
+  projectId = _messages.StringField(4, required=True)
 
 
 class BigqueryJobsCancelRequest(_messages.Message):
@@ -2219,6 +2281,8 @@ class Dataset(_messages.Message):
     r"""An object that defines dataset access for an entity.
 
     Fields:
+      condition: Optional. condition for the binding. If CEL expression in
+        this field is true, this access binding will be considered
       dataset: [Pick one] A grant authorizing all resources of a particular
         type in a particular dataset access to this dataset. Only views are
         supported for now. The role field is not required when this field is
@@ -2259,15 +2323,16 @@ class Dataset(_messages.Message):
         the view needs to be granted again via an update operation.
     """
 
-    dataset = _messages.MessageField('DatasetAccessEntry', 1)
-    domain = _messages.StringField(2)
-    groupByEmail = _messages.StringField(3)
-    iamMember = _messages.StringField(4)
-    role = _messages.StringField(5)
-    routine = _messages.MessageField('RoutineReference', 6)
-    specialGroup = _messages.StringField(7)
-    userByEmail = _messages.StringField(8)
-    view = _messages.MessageField('TableReference', 9)
+    condition = _messages.MessageField('Expr', 1)
+    dataset = _messages.MessageField('DatasetAccessEntry', 2)
+    domain = _messages.StringField(3)
+    groupByEmail = _messages.StringField(4)
+    iamMember = _messages.StringField(5)
+    role = _messages.StringField(6)
+    routine = _messages.MessageField('RoutineReference', 7)
+    specialGroup = _messages.StringField(8)
+    userByEmail = _messages.StringField(9)
+    view = _messages.MessageField('TableReference', 10)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

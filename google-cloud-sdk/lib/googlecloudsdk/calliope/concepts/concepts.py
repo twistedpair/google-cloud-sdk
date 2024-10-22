@@ -425,7 +425,8 @@ class ResourceSpec(ConceptSpec):
           deps_lib.Get(
               self.anchor.name, fallthroughs_map, parsed_args=parsed_args),
           collection=self.collection,
-          params=params)
+          params=params,
+          api_version=self._collection_info.api_version)
     except deps_lib.AttributeNotFoundError as e:
       raise InitializationError(
           'The [{}] resource is not properly specified.\n'

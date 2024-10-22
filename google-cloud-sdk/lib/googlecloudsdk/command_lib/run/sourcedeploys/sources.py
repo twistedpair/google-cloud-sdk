@@ -26,11 +26,21 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import times
 
 
-def Upload(source, region, resource_ref):
-  """Uploads a source to a staging bucket."""
+def Upload(source, region, resource_ref, source_bucket=None):
+  """Uploads a source to a staging bucket.
+
+  Args:
+    source: The source to upload.
+    region: The region to upload to.
+    resource_ref: The Cloud Run service resource reference.
+    source_bucket: The source bucket to upload to, if not None.
+
+  Returns:
+    storage_v1_messages.Object, The written GCS object.
+  """
   gcs_client = storage_api.StorageClient()
 
-  bucket_name = _GetOrCreateBucket(gcs_client, region)
+  bucket_name = _GetOrCreateBucket(gcs_client, region, source_bucket)
   object_name = _GetObject(source, resource_ref)
   log.debug(f'Uploading source to gs://{bucket_name}/{object_name}')
 
@@ -44,9 +54,9 @@ def Upload(source, region, resource_ref):
   )
 
 
-def _GetOrCreateBucket(gcs_client, region):
+def _GetOrCreateBucket(gcs_client, region, bucket_name=None):
   """Gets or Creates bucket used to store sources."""
-  bucket = _GetBucketName(region)
+  bucket = bucket_name or _GetBucketName(region)
 
   cors = [
       storage_util.GetMessages().Bucket.CorsValueListEntry(

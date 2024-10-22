@@ -22,7 +22,6 @@ from apitools.base.py import encoding
 from googlecloudsdk.api_lib.container.fleet import client
 from googlecloudsdk.api_lib.container.fleet import util
 from googlecloudsdk.api_lib.util import waiter
-from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -44,7 +43,7 @@ class HubCommand(object):
     """The HubClient for the current release track."""
     # Build the client lazily, but only once.
     if not hasattr(self, '_client_v2'):
-      self._client_v2 = client.HubV2Client(base.ReleaseTrack.ALPHA)
+      self._client_v2 = client.HubV2Client(self.ReleaseTrack())
     return self._client_v2
 
   @property

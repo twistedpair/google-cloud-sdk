@@ -169,6 +169,7 @@ def _ConstructClusterForCreateRequestGA(alloydb_messages, args):
         _ConstructMaintenanceWindows(alloydb_messages, args)
     )
   cluster.subscriptionType = args.subscription_type
+  cluster.tags = flags.GetTagsFromArgs(args, alloydb_messages.Cluster.TagsValue)
   return cluster
 
 
@@ -212,7 +213,7 @@ def _ConstructClusterForCreateRequestBeta(alloydb_messages, args):
     cluster.maintenanceUpdatePolicy.denyMaintenancePeriods = (
         _ConstructDenyPeriods(alloydb_messages, args)
     )
-  cluster.tags = flags.GetTagsFromArgs(args, alloydb_messages.Cluster.TagsValue)
+
   return cluster
 
 

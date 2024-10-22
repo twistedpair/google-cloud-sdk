@@ -2758,7 +2758,7 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServiceP
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServicePerimeterResponse(_messages.Message):
-  r"""Response to troubleshoot service perimeters NextTAG: 11
+  r"""Response to troubleshoot service perimeters NextTAG: 12
 
   Enums:
     AccessStateValueValuesEnum: The access state of the active service
@@ -2775,6 +2775,8 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServiceP
       troubleshoot token.
     principalIp: The ip address of the violation principal from troubleshoot
       token.
+    principalIpRegion: The region code of the principal ip address from
+      troubleshoot token.
     requestTime: The request_time from troubleshooting token. It captures when
       the request generating the token was made. The violation time when token
       is logged because of the VPC SC violation.
@@ -2820,9 +2822,10 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServiceP
   operation = _messages.StringField(4)
   principal = _messages.StringField(5)
   principalIp = _messages.StringField(6)
-  requestTime = _messages.StringField(7)
-  resolvedResources = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResource', 8, repeated=True)
-  service = _messages.StringField(9)
+  principalIpRegion = _messages.StringField(7)
+  requestTime = _messages.StringField(8)
+  resolvedResources = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResource', 9, repeated=True)
+  service = _messages.StringField(10)
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaVpcAccessibleServicesExplanation(_messages.Message):
@@ -3946,6 +3949,10 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
   Fields:
     description: Description of the `ServicePerimeter` and its use. Does not
       affect behavior.
+    etag: Optional. An opaque identifier for the current version of the
+      `ServicePerimeter`. Clients should not expect this to be in any specific
+      format. If etag is not provided, the operation will be performed as if a
+      valid etag is provided.
     name: Identifier. Resource name for the `ServicePerimeter`. Format:
       `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`.
       The `service_perimeter` component must begin with a letter, followed by
@@ -3997,13 +4004,14 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
     PERIMETER_TYPE_BRIDGE = 1
 
   description = _messages.StringField(1)
-  name = _messages.StringField(2)
-  perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 3)
-  spec = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig', 4)
-  status = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig', 5)
-  title = _messages.StringField(6)
-  useExplicitDryRunSpec = _messages.BooleanField(7)
-  weakenedForTesting = _messages.BooleanField(8)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 4)
+  spec = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig', 5)
+  status = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig', 6)
+  title = _messages.StringField(7)
+  useExplicitDryRunSpec = _messages.BooleanField(8)
+  weakenedForTesting = _messages.BooleanField(9)
 
 
 class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig(_messages.Message):
@@ -4162,10 +4170,12 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressPolicy(_me
       EgressPolicy to apply.
     egressTo: Defines the conditions on the ApiOperation and destination
       resources that cause this EgressPolicy to apply.
+    title: Human readable title. Must be unique within the Policy.
   """
 
   egressFrom = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressFrom', 1)
   egressTo = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressTo', 2)
+  title = _messages.StringField(3)
 
 
 class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressSource(_messages.Message):
@@ -4294,10 +4304,12 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressPolicy(_m
       this IngressPolicy to apply.
     ingressTo: Defines the conditions on the ApiOperation and request
       destination that cause this IngressPolicy to apply.
+    title: Human readable title. Must be unique within the Policy.
   """
 
   ingressFrom = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressFrom', 1)
   ingressTo = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressTo', 2)
+  title = _messages.StringField(3)
 
 
 class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressSource(_messages.Message):

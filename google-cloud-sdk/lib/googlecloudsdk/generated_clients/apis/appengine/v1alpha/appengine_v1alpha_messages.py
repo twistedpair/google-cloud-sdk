@@ -291,6 +291,48 @@ class AppengineAppsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class AppengineAppsServicesMigrationCheckGen1appIdRequest(_messages.Message):
+  r"""A AppengineAppsServicesMigrationCheckGen1appIdRequest object.
+
+  Fields:
+    checkGen1AppIdRequest: A CheckGen1AppIdRequest resource to be passed as
+      the request body.
+    name: Required. Name of the resource requested. Example:
+      apps/myapp/services/default.
+  """
+
+  checkGen1AppIdRequest = _messages.MessageField('CheckGen1AppIdRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AppengineAppsServicesMigrationMigrateCodeFileRequest(_messages.Message):
+  r"""A AppengineAppsServicesMigrationMigrateCodeFileRequest object.
+
+  Fields:
+    migrateCodeFileRequest: A MigrateCodeFileRequest resource to be passed as
+      the request body.
+    name: Required. Name of the resource requested. Example:
+      apps/myapp/services/default.
+  """
+
+  migrateCodeFileRequest = _messages.MessageField('MigrateCodeFileRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AppengineAppsServicesMigrationMigrateConfigYamlRequest(_messages.Message):
+  r"""A AppengineAppsServicesMigrationMigrateConfigYamlRequest object.
+
+  Fields:
+    migrateConfigYamlRequest: A MigrateConfigYamlRequest resource to be passed
+      as the request body.
+    name: Required. Name of the resource requested. Example:
+      apps/myapp/services/default.
+  """
+
+  migrateConfigYamlRequest = _messages.MessageField('MigrateConfigYamlRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AppengineProjectsLocationsApplicationsAuthorizedDomainsListRequest(_messages.Message):
   r"""A AppengineProjectsLocationsApplicationsAuthorizedDomainsListRequest
   object.
@@ -304,6 +346,52 @@ class AppengineProjectsLocationsApplicationsAuthorizedDomainsListRequest(_messag
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class AppengineProjectsLocationsApplicationsServicesMigrationCheckGen1appIdRequest(_messages.Message):
+  r"""A
+  AppengineProjectsLocationsApplicationsServicesMigrationCheckGen1appIdRequest
+  object.
+
+  Fields:
+    checkGen1AppIdRequest: A CheckGen1AppIdRequest resource to be passed as
+      the request body.
+    name: Required. Name of the resource requested. Example:
+      apps/myapp/services/default.
+  """
+
+  checkGen1AppIdRequest = _messages.MessageField('CheckGen1AppIdRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AppengineProjectsLocationsApplicationsServicesMigrationMigrateCodeFileRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsApplicationsServicesMigrationMigrateCodeFile
+  Request object.
+
+  Fields:
+    migrateCodeFileRequest: A MigrateCodeFileRequest resource to be passed as
+      the request body.
+    name: Required. Name of the resource requested. Example:
+      apps/myapp/services/default.
+  """
+
+  migrateCodeFileRequest = _messages.MessageField('MigrateCodeFileRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AppengineProjectsLocationsApplicationsServicesMigrationMigrateConfigYamlRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsApplicationsServicesMigrationMigrateConfigYa
+  mlRequest object.
+
+  Fields:
+    migrateConfigYamlRequest: A MigrateConfigYamlRequest resource to be passed
+      as the request body.
+    name: Required. Name of the resource requested. Example:
+      apps/myapp/services/default.
+  """
+
+  migrateConfigYamlRequest = _messages.MessageField('MigrateConfigYamlRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class AppengineProjectsLocationsGetRequest(_messages.Message):
@@ -446,6 +534,26 @@ class CertificateRawData(_messages.Message):
 
   privateKey = _messages.StringField(1)
   publicCertificate = _messages.StringField(2)
+
+
+class CheckGen1AppIdRequest(_messages.Message):
+  r"""Request message for MigrationAssistService.CheckGen1AppId
+
+  Fields:
+    projectId: Required. The project id of the app to be migrated
+  """
+
+  projectId = _messages.StringField(1)
+
+
+class CheckGen1AppIdResponse(_messages.Message):
+  r"""Response message for MigrationAssistService.CheckGen1AppId
+
+  Fields:
+    exists: Whether the app exists in App Engine Gen1
+  """
+
+  exists = _messages.BooleanField(1)
 
 
 class ContainerState(_messages.Message):
@@ -832,6 +940,72 @@ class ManagedCertificate(_messages.Message):
 
   lastRenewalTime = _messages.StringField(1)
   status = _messages.EnumField('StatusValueValuesEnum', 2)
+
+
+class MigrateCodeFileRequest(_messages.Message):
+  r"""Request message for MigrationAssistService.MigrateCodeFile
+
+  Enums:
+    RuntimeValueValuesEnum: Required. Runtime for which migration is being
+      done
+
+  Fields:
+    codeAsString: Required. User's code file as a string
+    projectId: Required. The project id of the app to be migrated
+    runtime: Required. Runtime for which migration is being done
+  """
+
+  class RuntimeValueValuesEnum(_messages.Enum):
+    r"""Required. Runtime for which migration is being done
+
+    Values:
+      MIGRATION_ASSIST_RUNTIME_UNSPECIFIED: Unspecified runtime
+      GEN1_PYTHON27: App Engine Gen1 Python 2.7 runtime
+    """
+    MIGRATION_ASSIST_RUNTIME_UNSPECIFIED = 0
+    GEN1_PYTHON27 = 1
+
+  codeAsString = _messages.StringField(1)
+  projectId = _messages.StringField(2)
+  runtime = _messages.EnumField('RuntimeValueValuesEnum', 3)
+
+
+class MigrateConfigYamlRequest(_messages.Message):
+  r"""Request message for MigrationAssistService.MigrateConfigYaml
+
+  Enums:
+    RuntimeValueValuesEnum: Required. Runtime for which migration is being
+      done
+
+  Fields:
+    configAsString: Required. User's config yaml file as a string
+    projectId: Required. The project id of the app to be migrated
+    runtime: Required. Runtime for which migration is being done
+  """
+
+  class RuntimeValueValuesEnum(_messages.Enum):
+    r"""Required. Runtime for which migration is being done
+
+    Values:
+      MIGRATION_ASSIST_RUNTIME_UNSPECIFIED: Unspecified runtime
+      GEN1_PYTHON27: App Engine Gen1 Python 2.7 runtime
+    """
+    MIGRATION_ASSIST_RUNTIME_UNSPECIFIED = 0
+    GEN1_PYTHON27 = 1
+
+  configAsString = _messages.StringField(1)
+  projectId = _messages.StringField(2)
+  runtime = _messages.EnumField('RuntimeValueValuesEnum', 3)
+
+
+class MigrateConfigYamlResponse(_messages.Message):
+  r"""Response message for MigrationAssistService.MigrateConfigYaml
+
+  Fields:
+    configAsString: The migrated config yaml file as a string
+  """
+
+  configAsString = _messages.StringField(1)
 
 
 class Operation(_messages.Message):

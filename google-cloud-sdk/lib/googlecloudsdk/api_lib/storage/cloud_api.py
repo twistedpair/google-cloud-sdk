@@ -1165,6 +1165,23 @@ class CloudApi(object):
     raise NotImplementedError(
         'list_notification_configurations must be overridden.')
 
+  def advance_relocate_bucket(self, bucket_name, operation_id, ttl=None):
+    """Advances a bucket relocation operation, by applying write lock.
+
+    Args:
+      bucket_name (str): Name of the bucket to advance the relocate for.
+      operation_id (str): ID of the operation resource.
+      ttl (str | None): Specifies the duration after which the relocation will
+        revert to the sync stage if the relocation hasn't succeeded. Optional,
+        if not supplied, a default value of 12h will be used.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    raise NotImplementedError('advance_relocate_bucket must be overridden.')
+
   def cancel_operation(self, bucket_name, operation_id):
     """Cancels a long-running operation if it's still running.
 

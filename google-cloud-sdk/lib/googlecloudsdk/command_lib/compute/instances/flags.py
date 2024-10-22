@@ -1303,7 +1303,7 @@ def ValidateDiskBootFlags(args, enable_kms=False):
     ):
       raise exceptions.InvalidArgumentException(
           '--boot-disk-size',
-          'Value must be greater than or equal to 10 GB; reveived {0} GB'
+          'Value must be greater than or equal to 10 GB; received {0} GB'
           .format(size_gb),
       )
 

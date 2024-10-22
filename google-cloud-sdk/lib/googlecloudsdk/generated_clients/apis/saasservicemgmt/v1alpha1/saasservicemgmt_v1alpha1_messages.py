@@ -2400,10 +2400,15 @@ class Unit(_messages.Message):
   Tenant.
 
   Enums:
+    ManagementModeValueValuesEnum: Optional. Immutable. Indicates whether the
+      Unit life cycle is controlled by the user or by the system. Immutable
+      once created.
     OperationModeValueValuesEnum: Optional. The operation mode for how the
       unit can be run.
     StateValueValuesEnum: Optional. Output only. Current lifecycle state of
       the resource (e.g. if it's being created or ready to use).
+    SystemManagedStateValueValuesEnum: Optional. Output only. Indicates the
+      system managed state of the unit.
 
   Messages:
     LabelsValue: Optional. The labels on the resource, which can be used for
@@ -2431,6 +2436,8 @@ class Unit(_messages.Message):
       maintenance for a period of time and remain pinned to its current
       release as well as controls for postponing maintenance scheduled in
       future.
+    managementMode: Optional. Immutable. Indicates whether the Unit life cycle
+      is controlled by the user or by the system. Immutable once created.
     name: Identifier. The resource name (full URI of the resource) following
       the standard naming scheme:
       "projects/{project}/locations/{location}/units/{unit}"
@@ -2452,6 +2459,10 @@ class Unit(_messages.Message):
       UnitOperations for this unit.
     state: Optional. Output only. Current lifecycle state of the resource
       (e.g. if it's being created or ready to use).
+    systemCleanupAt: Optional. Output only. If set, indicates the time when
+      the system will start removing the unit.
+    systemManagedState: Optional. Output only. Indicates the system managed
+      state of the unit.
     targetInputVariables: Optional. Indicates the target input variables
       specified by the customer. Maximum 100.
     targetRelease: Optional. Reference to the Release object to use for the
@@ -2480,6 +2491,21 @@ class Unit(_messages.Message):
       Any change to the resource made by users must refresh this value.
       Changes to a resource made by the service should refresh this value.
   """
+
+  class ManagementModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Immutable. Indicates whether the Unit life cycle is
+    controlled by the user or by the system. Immutable once created.
+
+    Values:
+      MANAGEMENT_MODE_UNSPECIFIED: <no description>
+      MANAGEMENT_MODE_USER: Unit's lifecycle is managed by the user.
+      MANAGEMENT_MODE_SYSTEM: The system will decide when to deprovision and
+        delete the unit. User still can deprovision or delete the unit
+        manually.
+    """
+    MANAGEMENT_MODE_UNSPECIFIED = 0
+    MANAGEMENT_MODE_USER = 1
+    MANAGEMENT_MODE_SYSTEM = 2
 
   class OperationModeValueValuesEnum(_messages.Enum):
     r"""Optional. The operation mode for how the unit can be run.
@@ -2521,6 +2547,22 @@ class Unit(_messages.Message):
     UNIT_STATE_READY = 5
     UNIT_STATE_ERROR = 6
 
+  class SystemManagedStateValueValuesEnum(_messages.Enum):
+    r"""Optional. Output only. Indicates the system managed state of the unit.
+
+    Values:
+      SYSTEM_MANAGED_STATE_UNSPECIFIED: <no description>
+      SYSTEM_MANAGED_STATE_ACTIVE: Unit has dependents attached.
+      SYSTEM_MANAGED_STATE_INACTIVE: Unit has no dependencies attached, but
+        attachment is allowed.
+      SYSTEM_MANAGED_STATE_DECOMMISSIONED: Unit has no dependencies attached,
+        and attachment is not allowed.
+    """
+    SYSTEM_MANAGED_STATE_UNSPECIFIED = 0
+    SYSTEM_MANAGED_STATE_ACTIVE = 1
+    SYSTEM_MANAGED_STATE_INACTIVE = 2
+    SYSTEM_MANAGED_STATE_DECOMMISSIONED = 3
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. The labels on the resource, which can be used for
@@ -2555,21 +2597,24 @@ class Unit(_messages.Message):
   inputVariables = _messages.MessageField('UnitVariable', 7, repeated=True)
   labels = _messages.MessageField('LabelsValue', 8)
   maintenance = _messages.MessageField('MaintenanceSettings', 9)
-  name = _messages.StringField(10)
-  nextMaintenance = _messages.MessageField('UnitMaintenanceSchedule', 11)
-  ongoingOperations = _messages.StringField(12, repeated=True)
-  operationMode = _messages.EnumField('OperationModeValueValuesEnum', 13)
-  outputVariables = _messages.MessageField('UnitVariable', 14, repeated=True)
-  pendingOperations = _messages.StringField(15, repeated=True)
-  release = _messages.StringField(16)
-  scheduledOperations = _messages.StringField(17, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  targetInputVariables = _messages.MessageField('UnitVariable', 19, repeated=True)
-  targetRelease = _messages.StringField(20)
-  tenant = _messages.StringField(21)
-  uid = _messages.StringField(22)
-  unitKind = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
+  managementMode = _messages.EnumField('ManagementModeValueValuesEnum', 10)
+  name = _messages.StringField(11)
+  nextMaintenance = _messages.MessageField('UnitMaintenanceSchedule', 12)
+  ongoingOperations = _messages.StringField(13, repeated=True)
+  operationMode = _messages.EnumField('OperationModeValueValuesEnum', 14)
+  outputVariables = _messages.MessageField('UnitVariable', 15, repeated=True)
+  pendingOperations = _messages.StringField(16, repeated=True)
+  release = _messages.StringField(17)
+  scheduledOperations = _messages.StringField(18, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  systemCleanupAt = _messages.StringField(20)
+  systemManagedState = _messages.EnumField('SystemManagedStateValueValuesEnum', 21)
+  targetInputVariables = _messages.MessageField('UnitVariable', 22, repeated=True)
+  targetRelease = _messages.StringField(23)
+  tenant = _messages.StringField(24)
+  uid = _messages.StringField(25)
+  unitKind = _messages.StringField(26)
+  updateTime = _messages.StringField(27)
 
 
 class UnitCondition(_messages.Message):

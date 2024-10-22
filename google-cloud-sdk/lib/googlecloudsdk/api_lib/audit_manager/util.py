@@ -14,13 +14,16 @@
 # limitations under the License.
 """Utilities for Audit Manager API, Client Generation Functions."""
 
+from googlecloudsdk.api_lib.audit_manager import constants
 from googlecloudsdk.api_lib.util import apis
 
 
-def GetClientInstance(no_http=False, api_version='v1alpha'):
-  return apis.GetClientInstance('auditmanager', api_version, no_http=no_http)
+def GetClientInstance(*, api_version: constants.ApiVersion, no_http=False):
+  return apis.GetClientInstance(
+      'auditmanager', api_version.value, no_http=no_http
+  )
 
 
-def GetMessagesModule(client=None):
-  client = client or GetClientInstance()
+def GetMessagesModule(*, api_version: constants.ApiVersion, client=None):
+  client = client or GetClientInstance(api_version=api_version)
   return client.MESSAGES_MODULE

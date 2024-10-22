@@ -19,11 +19,13 @@ from googlecloudsdk.api_lib.colab_enterprise import runtimes as runtimes_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.colab_enterprise import completers
 from googlecloudsdk.command_lib.compute.networks import flags as compute_network_flags
 from googlecloudsdk.command_lib.compute.networks.subnets import flags as compute_subnet_flags
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.core import properties
 
 _accelerator_choices = [
     'NVIDIA_TESLA_V100',
@@ -44,6 +46,9 @@ def GetRegionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='region',
       help_text='Cloud region for the {resource}.',
+      fallthroughs=[
+          deps.PropertyFallthrough(properties.VALUES.colab.region)
+      ],
   )
 
 

@@ -4561,8 +4561,7 @@ class Permission(_messages.Message):
     apiDisabled: The service API associated with the permission is not
       enabled.
     customRolesSupportLevel: The current custom role support level.
-    description: A brief description of what this Permission is used for. This
-      permission can ONLY be used in predefined roles.
+    description: A brief description of what this Permission is used for.
     name: The name of this Permission.
     onlyInPredefinedRoles: A boolean attribute.
     primaryPermission: The preferred name for this permission. If present,

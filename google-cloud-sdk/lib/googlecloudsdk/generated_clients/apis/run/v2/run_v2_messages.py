@@ -26,7 +26,7 @@ class GoogleCloudRunV2BinaryAuthorization(_messages.Message):
       empty. For more information on breakglass, see
       https://cloud.google.com/binary-authorization/docs/using-breakglass
     policy: Optional. The path to a binary authorization policy. Format:
-      projects/{project}/platforms/cloudRun/{policy-name}
+      `projects/{project}/platforms/cloudRun/{policy-name}`
     useDefault: Optional. If True, indicates to use the default project's
       binary authorization policy. If False, binary authorization will be
       disabled.
@@ -1972,8 +1972,8 @@ class GoogleCloudRunV2RevisionTemplate(_messages.Message):
       RevisionTemplate.
     maxInstanceRequestConcurrency: Optional. Sets the maximum number of
       requests that each serving instance can receive. If not specified or 0,
-      defaults to 80 when requested CPU >= 1 and defaults to 1 when requested
-      CPU < 1.
+      defaults to 80 when requested `CPU >= 1` and defaults to 1 when
+      requested `CPU < 1`.
     nodeSelector: Optional. The node selector for the revision template.
     revision: Optional. The unique name for the revision. If this field is
       omitted, it will be automatically generated based on the Service name.
@@ -2243,8 +2243,10 @@ class GoogleCloudRunV2Service(_messages.Message):
       output, returns the currently observed ingress settings, or
       INGRESS_TRAFFIC_UNSPECIFIED if no revision is active.
     invokerIamDisabled: Optional. Disables IAM permission check for
-      run.routes.invoke for callers of this service. This setting should not
-      be used with external ingress.
+      run.routes.invoke for callers of this service. This feature is available
+      by invitation only. For more information, visit
+      https://cloud.google.com/run/docs/securing/managing-
+      access#invoker_check.
     labels: Optional. Unstructured key value map that can be used to organize
       and categorize objects. User-provided labels are shared with Google's
       billing system, so they can be used to filter, or break down billing
@@ -2499,8 +2501,8 @@ class GoogleCloudRunV2ServiceMesh(_messages.Message):
 
   Fields:
     mesh: The Mesh resource name. Format:
-      projects/{project}/locations/global/meshes/{mesh}, where {project} can
-      be project id or number.
+      `projects/{project}/locations/global/meshes/{mesh}`, where `{project}`
+      can be project id or number.
   """
 
   mesh = _messages.StringField(1)
@@ -2571,9 +2573,9 @@ class GoogleCloudRunV2SubmitBuildRequest(_messages.Message):
     workerPool: Optional. Name of the Cloud Build Custom Worker Pool that
       should be used to build the function. The format of this field is
       `projects/{project}/locations/{region}/workerPools/{workerPool}` where
-      {project} and {region} are the project id and region respectively where
-      the worker pool is defined and {workerPool} is the short name of the
-      worker pool.
+      `{project}` and `{region}` are the project id and region respectively
+      where the worker pool is defined and `{workerPool}` is the short name of
+      the worker pool.
   """
 
   buildpackBuild = _messages.MessageField('GoogleCloudRunV2BuildpacksBuild', 1)
@@ -3032,8 +3034,8 @@ class GoogleCloudRunV2VpcAccess(_messages.Message):
 
   Fields:
     connector: VPC Access connector name. Format:
-      projects/{project}/locations/{location}/connectors/{connector}, where
-      {project} can be project id or number. For more information on sending
+      `projects/{project}/locations/{location}/connectors/{connector}`, where
+      `{project}` can be project id or number. For more information on sending
       traffic to a VPC network via a connector, visit
       https://cloud.google.com/run/docs/configuring/vpc-connectors.
     egress: Optional. Traffic VPC egress settings. If not provided, it
@@ -5515,7 +5517,7 @@ class RunProjectsLocationsBuildsSubmitRequest(_messages.Message):
       resource to be passed as the request body.
     parent: Required. The project and location to build in. Location must be a
       region, e.g., 'us-central1' or 'global' if the global builder is to be
-      used. Format: projects/{project}/locations/{location}
+      used. Format: `projects/{project}/locations/{location}`
   """
 
   googleCloudRunV2SubmitBuildRequest = _messages.MessageField('GoogleCloudRunV2SubmitBuildRequest', 1)

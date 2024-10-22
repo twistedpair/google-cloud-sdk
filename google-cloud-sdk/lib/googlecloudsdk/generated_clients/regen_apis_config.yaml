@@ -46,9 +46,9 @@ apis:
   auditmanager:
     v1:
       discovery_doc: auditmanager_v1.json
+      default: true
     v1alpha:
       discovery_doc: auditmanager_v1alpha.json
-      default: true
   beyondcorp:
     v1:
       discovery_doc: beyondcorp_v1.json
@@ -2017,7 +2017,7 @@ canonical_surfaces:
     command: eventarc
   eventarcpublishing:
     name: eventarcpublishing
-    command:  eventarc publish
+    command: eventarc publish
   events:
     name: events
     command: events

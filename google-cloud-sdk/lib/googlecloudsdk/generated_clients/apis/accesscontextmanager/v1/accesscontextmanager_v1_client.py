@@ -1097,7 +1097,7 @@ class AccesscontextmanagerV1(base_api.BaseApiClient):
         method_id='accesscontextmanager.organizations.gcpUserAccessBindings.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['appendScopedAccessSettings', 'updateMask'],
+        query_params=['append', 'updateMask'],
         relative_path='v1/{+name}',
         request_field='gcpUserAccessBinding',
         request_type_name='AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest',

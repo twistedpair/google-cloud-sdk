@@ -217,6 +217,18 @@ class ConfigFile(_messages.Message):
   content = _messages.StringField(1)
 
 
+class DebugInfo(_messages.Message):
+  r"""Describes additional debugging info.
+
+  Fields:
+    detail: Additional debugging information provided by the server.
+    stackEntries: The stack trace entries indicating where the error occurred.
+  """
+
+  detail = _messages.StringField(1)
+  stackEntries = _messages.StringField(2, repeated=True)
+
+
 class Deployment(_messages.Message):
   r"""A Deployment object.
 
@@ -344,6 +356,7 @@ class DeploymentmanagerDeploymentsDeleteRequest(_messages.Message):
   Fields:
     deletePolicy: Sets the policy to use for deleting resources.
     deployment: The name of the deployment for this request.
+    header_bypassBillingFilter: A boolean attribute.
     project: The project ID for this request.
   """
 
@@ -359,21 +372,24 @@ class DeploymentmanagerDeploymentsDeleteRequest(_messages.Message):
 
   deletePolicy = _messages.EnumField('DeletePolicyValueValuesEnum', 1, default='DELETE')
   deployment = _messages.StringField(2, required=True)
-  project = _messages.StringField(3, required=True)
+  header_bypassBillingFilter = _messages.BooleanField(3)
+  project = _messages.StringField(4, required=True)
 
 
 class DeploymentmanagerDeploymentsGetIamPolicyRequest(_messages.Message):
   r"""A DeploymentmanagerDeploymentsGetIamPolicyRequest object.
 
   Fields:
+    header_bypassBillingFilter: A boolean attribute.
     optionsRequestedPolicyVersion: Requested IAM Policy version.
     project: Project ID for this request.
     resource: Name or id of the resource for this request.
   """
 
-  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
+  header_bypassBillingFilter = _messages.BooleanField(1)
+  optionsRequestedPolicyVersion = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  project = _messages.StringField(3, required=True)
+  resource = _messages.StringField(4, required=True)
 
 
 class DeploymentmanagerDeploymentsGetRequest(_messages.Message):
@@ -381,11 +397,13 @@ class DeploymentmanagerDeploymentsGetRequest(_messages.Message):
 
   Fields:
     deployment: The name of the deployment for this request.
+    header_bypassBillingFilter: A boolean attribute.
     project: The project ID for this request.
   """
 
   deployment = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
+  header_bypassBillingFilter = _messages.BooleanField(2)
+  project = _messages.StringField(3, required=True)
 
 
 class DeploymentmanagerDeploymentsInsertRequest(_messages.Message):
@@ -398,6 +416,7 @@ class DeploymentmanagerDeploymentsInsertRequest(_messages.Message):
   Fields:
     createPolicy: Sets the policy to use for creating new resources.
     deployment: A Deployment resource to be passed as the request body.
+    header_bypassBillingFilter: A boolean attribute.
     preview: If set to true, creates a deployment and creates "shell"
       resources but does not actually instantiate these resources. This allows
       you to preview what your deployment looks like. After previewing a
@@ -421,8 +440,9 @@ class DeploymentmanagerDeploymentsInsertRequest(_messages.Message):
 
   createPolicy = _messages.EnumField('CreatePolicyValueValuesEnum', 1, default='CREATE_OR_ACQUIRE')
   deployment = _messages.MessageField('Deployment', 2)
-  preview = _messages.BooleanField(3)
-  project = _messages.StringField(4, required=True)
+  header_bypassBillingFilter = _messages.BooleanField(3)
+  preview = _messages.BooleanField(4)
+  project = _messages.StringField(5, required=True)
 
 
 class DeploymentmanagerDeploymentsListRequest(_messages.Message):
@@ -503,6 +523,7 @@ class DeploymentmanagerDeploymentsPatchRequest(_messages.Message):
     deployment: The name of the deployment for this request.
     deploymentResource: A Deployment resource to be passed as the request
       body.
+    header_bypassBillingFilter: A boolean attribute.
     preview: If set to true, updates the deployment and creates and updates
       the "shell" resources but does not actually alter or instantiate these
       resources. This allows you to preview what your deployment will look
@@ -540,8 +561,9 @@ class DeploymentmanagerDeploymentsPatchRequest(_messages.Message):
   deletePolicy = _messages.EnumField('DeletePolicyValueValuesEnum', 2, default='DELETE')
   deployment = _messages.StringField(3, required=True)
   deploymentResource = _messages.MessageField('Deployment', 4)
-  preview = _messages.BooleanField(5, default=False)
-  project = _messages.StringField(6, required=True)
+  header_bypassBillingFilter = _messages.BooleanField(5)
+  preview = _messages.BooleanField(6, default=False)
+  project = _messages.StringField(7, required=True)
 
 
 class DeploymentmanagerDeploymentsSetIamPolicyRequest(_messages.Message):
@@ -578,15 +600,17 @@ class DeploymentmanagerDeploymentsTestIamPermissionsRequest(_messages.Message):
   r"""A DeploymentmanagerDeploymentsTestIamPermissionsRequest object.
 
   Fields:
+    header_bypassBillingFilter: A boolean attribute.
     project: Project ID for this request.
     resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
 
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
-  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+  header_bypassBillingFilter = _messages.BooleanField(1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
 class DeploymentmanagerDeploymentsUpdateRequest(_messages.Message):
@@ -604,6 +628,7 @@ class DeploymentmanagerDeploymentsUpdateRequest(_messages.Message):
     deployment: The name of the deployment for this request.
     deploymentResource: A Deployment resource to be passed as the request
       body.
+    header_bypassBillingFilter: A boolean attribute.
     preview: If set to true, updates the deployment and creates and updates
       the "shell" resources but does not actually alter or instantiate these
       resources. This allows you to preview what your deployment will look
@@ -641,8 +666,9 @@ class DeploymentmanagerDeploymentsUpdateRequest(_messages.Message):
   deletePolicy = _messages.EnumField('DeletePolicyValueValuesEnum', 2, default='DELETE')
   deployment = _messages.StringField(3, required=True)
   deploymentResource = _messages.MessageField('Deployment', 4)
-  preview = _messages.BooleanField(5, default=False)
-  project = _messages.StringField(6, required=True)
+  header_bypassBillingFilter = _messages.BooleanField(5)
+  preview = _messages.BooleanField(6, default=False)
+  project = _messages.StringField(7, required=True)
 
 
 class DeploymentmanagerManifestsGetRequest(_messages.Message):
@@ -650,13 +676,15 @@ class DeploymentmanagerManifestsGetRequest(_messages.Message):
 
   Fields:
     deployment: The name of the deployment for this request.
+    header_bypassBillingFilter: A boolean attribute.
     manifest: The name of the manifest for this request.
     project: The project ID for this request.
   """
 
   deployment = _messages.StringField(1, required=True)
-  manifest = _messages.StringField(2, required=True)
-  project = _messages.StringField(3, required=True)
+  header_bypassBillingFilter = _messages.BooleanField(2)
+  manifest = _messages.StringField(3, required=True)
+  project = _messages.StringField(4, required=True)
 
 
 class DeploymentmanagerManifestsListRequest(_messages.Message):
@@ -728,12 +756,14 @@ class DeploymentmanagerOperationsGetRequest(_messages.Message):
   r"""A DeploymentmanagerOperationsGetRequest object.
 
   Fields:
+    header_bypassBillingFilter: A boolean attribute.
     operation: The name of the operation for this request.
     project: The project ID for this request.
   """
 
-  operation = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
+  header_bypassBillingFilter = _messages.BooleanField(1)
+  operation = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
 
 
 class DeploymentmanagerOperationsListRequest(_messages.Message):
@@ -804,13 +834,15 @@ class DeploymentmanagerResourcesGetRequest(_messages.Message):
 
   Fields:
     deployment: The name of the deployment for this request.
+    header_bypassBillingFilter: A boolean attribute.
     project: The project ID for this request.
     resource: The name of the resource for this request.
   """
 
   deployment = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
+  header_bypassBillingFilter = _messages.BooleanField(2)
+  project = _messages.StringField(3, required=True)
+  resource = _messages.StringField(4, required=True)
 
 
 class DeploymentmanagerResourcesListRequest(_messages.Message):
@@ -991,6 +1023,83 @@ class DeploymentsStopRequest(_messages.Message):
   fingerprint = _messages.BytesField(1)
 
 
+class ErrorInfo(_messages.Message):
+  r"""Describes the cause of the error with structured details. Example of an
+  error when contacting the "pubsub.googleapis.com" API when it is not
+  enabled: { "reason": "API_DISABLED" "domain": "googleapis.com" "metadata": {
+  "resource": "projects/123", "service": "pubsub.googleapis.com" } } This
+  response indicates that the pubsub.googleapis.com API is not enabled.
+  Example of an error that is returned when attempting to create a Spanner
+  instance in a region that is out of stock: { "reason": "STOCKOUT" "domain":
+  "spanner.googleapis.com", "metadata": { "availableRegions": "us-central1,us-
+  east2" } }
+
+  Messages:
+    MetadataValue: Additional structured details about this error. Keys must
+      match /a-z+/ but should ideally be lowerCamelCase. Also they must be
+      limited to 64 characters in length. When identifying the current value
+      of an exceeded limit, the units should be contained in the key, not the
+      value. For example, rather than {"instanceLimit": "100/request"}, should
+      be returned as, {"instanceLimitPerRequest": "100"}, if the client
+      exceeds the number of instances that can be created in a single (batch)
+      request.
+
+  Fields:
+    domain: The logical grouping to which the "reason" belongs. The error
+      domain is typically the registered service name of the tool or product
+      that generates the error. Example: "pubsub.googleapis.com". If the error
+      is generated by some common infrastructure, the error domain must be a
+      globally unique value that identifies the infrastructure. For Google API
+      infrastructure, the error domain is "googleapis.com".
+    metadata: Additional structured details about this error. Keys must match
+      /a-z+/ but should ideally be lowerCamelCase. Also they must be limited
+      to 64 characters in length. When identifying the current value of an
+      exceeded limit, the units should be contained in the key, not the value.
+      For example, rather than {"instanceLimit": "100/request"}, should be
+      returned as, {"instanceLimitPerRequest": "100"}, if the client exceeds
+      the number of instances that can be created in a single (batch) request.
+    reason: The reason of the error. This is a constant value that identifies
+      the proximate cause of the error. Error reasons are unique within a
+      particular domain of errors. This should be at most 63 characters and
+      match a regular expression of `A-Z+[A-Z0-9]`, which represents
+      UPPER_SNAKE_CASE.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Additional structured details about this error. Keys must match /a-z+/
+    but should ideally be lowerCamelCase. Also they must be limited to 64
+    characters in length. When identifying the current value of an exceeded
+    limit, the units should be contained in the key, not the value. For
+    example, rather than {"instanceLimit": "100/request"}, should be returned
+    as, {"instanceLimitPerRequest": "100"}, if the client exceeds the number
+    of instances that can be created in a single (batch) request.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  domain = _messages.StringField(1)
+  metadata = _messages.MessageField('MetadataValue', 2)
+  reason = _messages.StringField(3)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -1039,11 +1148,39 @@ class GlobalSetPolicyRequest(_messages.Message):
       size of the policy is limited to a few 10s of KB. An empty policy is in
       general a valid policy but certain services (like Projects) might reject
       them.
+    updateMask: A string attribute.
   """
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   etag = _messages.BytesField(2)
   policy = _messages.MessageField('Policy', 3)
+  updateMask = _messages.StringField(4)
+
+
+class Help(_messages.Message):
+  r"""Provides links to documentation or for performing an out of band action.
+  For example, if a quota check failed with an error indicating the calling
+  project hasn't enabled the accessed service, this can contain a URL pointing
+  directly to the right place in the developer console to flip the bit.
+
+  Fields:
+    links: URL(s) pointing to additional information on handling the current
+      error.
+  """
+
+  links = _messages.MessageField('HelpLink', 1, repeated=True)
+
+
+class HelpLink(_messages.Message):
+  r"""Describes a URL link.
+
+  Fields:
+    description: Describes what the link offers.
+    url: The URL of the link.
+  """
+
+  description = _messages.StringField(1)
+  url = _messages.StringField(2)
 
 
 class ImportFile(_messages.Message):
@@ -1098,6 +1235,21 @@ class InstancesBulkInsertOperationMetadata(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   perLocationStatus = _messages.MessageField('PerLocationStatusValue', 1)
+
+
+class LocalizedMessage(_messages.Message):
+  r"""Provides a localized error message that is safe to return to the user
+  which can be attached to an RPC error.
+
+  Fields:
+    locale: The locale used following the specification defined at
+      https://www.rfc-editor.org/rfc/bcp/bcp47.txt. Examples are: "en-US",
+      "fr-CH", "es-MX"
+    message: The localized error message in the above locale.
+  """
+
+  locale = _messages.StringField(1)
+  message = _messages.StringField(2)
 
 
 class Manifest(_messages.Message):
@@ -1205,6 +1357,8 @@ class Operation(_messages.Message):
     region: [Output Only] The URL of the region where the operation resides.
       Only applicable when performing regional operations.
     selfLink: [Output Only] Server-defined URL for the resource.
+    selfLinkWithId: [Output Only] Server-defined URL for this resource with
+      the resource id.
     setCommonInstanceMetadataOperationMetadata: [Output Only] If the operation
       is for projects.setCommonInstanceMetadata, this field will contain
       information on all underlying zonal actions and their state.
@@ -1218,7 +1372,7 @@ class Operation(_messages.Message):
       incarnation of the target resource.
     targetLink: [Output Only] The URL of the resource that the operation
       modifies. For operations related to creating a snapshot, this points to
-      the persistent disk that the snapshot was created from.
+      the disk that the snapshot was created from.
     user: [Output Only] User who requested the operation, for example:
       `user@example.com` or `alice_smith_identifier
       (global/workforcePools/example-com-us-employees)`.
@@ -1256,16 +1410,48 @@ class Operation(_messages.Message):
     class ErrorsValueListEntry(_messages.Message):
       r"""A ErrorsValueListEntry object.
 
+      Messages:
+        ErrorDetailsValueListEntry: A ErrorDetailsValueListEntry object.
+
       Fields:
+        arguments: [Output Only] Optional error details WARNING: DO NOT MAKE
+          VISIBLE This is for internal use-only (like componentization) (thus
+          the visibility "none") and in case of public exposure it is strongly
+          recommended to follow pattern of: https://aip.dev/193 and expose as
+          details field.
         code: [Output Only] The error type identifier for this error.
+        debugInfo: A DebugInfo attribute.
+        errorDetails: [Output Only] An optional list of messages that contain
+          the error details. There is a set of defined message types to use
+          for providing details.The syntax depends on the error code. For
+          example, QuotaExceededInfo will have details when the error code is
+          QUOTA_EXCEEDED.
         location: [Output Only] Indicates the field in the request that caused
           the error. This property is optional.
         message: [Output Only] An optional, human-readable error message.
       """
 
-      code = _messages.StringField(1)
-      location = _messages.StringField(2)
-      message = _messages.StringField(3)
+      class ErrorDetailsValueListEntry(_messages.Message):
+        r"""A ErrorDetailsValueListEntry object.
+
+        Fields:
+          errorInfo: A ErrorInfo attribute.
+          help: A Help attribute.
+          localizedMessage: A LocalizedMessage attribute.
+          quotaInfo: A QuotaExceededInfo attribute.
+        """
+
+        errorInfo = _messages.MessageField('ErrorInfo', 1)
+        help = _messages.MessageField('Help', 2)
+        localizedMessage = _messages.MessageField('LocalizedMessage', 3)
+        quotaInfo = _messages.MessageField('QuotaExceededInfo', 4)
+
+      arguments = _messages.StringField(1, repeated=True)
+      code = _messages.StringField(2)
+      debugInfo = _messages.MessageField('DebugInfo', 3)
+      errorDetails = _messages.MessageField('ErrorDetailsValueListEntry', 4, repeated=True)
+      location = _messages.StringField(5)
+      message = _messages.StringField(6)
 
     errors = _messages.MessageField('ErrorsValueListEntry', 1, repeated=True)
 
@@ -1328,6 +1514,14 @@ class Operation(_messages.Message):
           overridden. Deprecated unused field.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
           in use.
+        NETWORK_ENDPOINT_NOT_DETACHED: Warning that network endpoint was not
+          detached.
+        PAGE_MISSING_RESULTS: Current page contains less results than
+          requested but a next page token exists.
+        SSL_POLICY_ENABLED_FEATURES_NOT_FETCHED: Warning that SSL policy
+          resource in the response does not contain information about the list
+          of enabled features.
+        RESOURCE_NOT_FOUND_WARNING: Warning that a resource is not found.
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
         EXTERNAL_API_WARNING: Warning that is present in an external api call
         SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
@@ -1351,6 +1545,17 @@ class Operation(_messages.Message):
         LIST_OVERHEAD_QUOTA_EXCEED: Resource can't be retrieved due to list
           overhead quota exceed which captures the amount of resources
           filtered out by user-defined list filter.
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
+        RESOURCE_USES_GLOBAL_DNS: Indicates that a VM is using global DNS. Can
+          also be used to indicate that a resource has attributes that could
+          result in the creation of a VM that uses global DNS.
+        RESERVED_ENTRY_134: Reserved entries for quickly adding new warnings
+          without breaking dependent clients.
+        RESERVED_ENTRY_135: <no description>
+        RESERVED_ENTRY_136: <no description>
+        RESERVED_ENTRY_139: <no description>
+        RESERVED_ENTRY_141: <no description>
       """
       DEPRECATED_RESOURCE_USED = 0
       NO_RESULTS_ON_PAGE = 1
@@ -1369,17 +1574,28 @@ class Operation(_messages.Message):
       CLEANUP_FAILED = 14
       FIELD_VALUE_OVERRIDEN = 15
       RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 16
-      MISSING_TYPE_DEPENDENCY = 17
-      EXTERNAL_API_WARNING = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      UNDECLARED_PROPERTIES = 20
-      EXPERIMENTAL_TYPE_USED = 21
-      DEPRECATED_TYPE_USED = 22
-      PARTIAL_SUCCESS = 23
-      LARGE_DEPLOYMENT_WARNING = 24
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 25
-      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 26
-      LIST_OVERHEAD_QUOTA_EXCEED = 27
+      NETWORK_ENDPOINT_NOT_DETACHED = 17
+      PAGE_MISSING_RESULTS = 18
+      SSL_POLICY_ENABLED_FEATURES_NOT_FETCHED = 19
+      RESOURCE_NOT_FOUND_WARNING = 20
+      MISSING_TYPE_DEPENDENCY = 21
+      EXTERNAL_API_WARNING = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      UNDECLARED_PROPERTIES = 24
+      EXPERIMENTAL_TYPE_USED = 25
+      DEPRECATED_TYPE_USED = 26
+      PARTIAL_SUCCESS = 27
+      LARGE_DEPLOYMENT_WARNING = 28
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 29
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 30
+      LIST_OVERHEAD_QUOTA_EXCEED = 31
+      QUOTA_INFO_UNAVAILABLE = 32
+      RESOURCE_USES_GLOBAL_DNS = 33
+      RESERVED_ENTRY_134 = 34
+      RESERVED_ENTRY_135 = 35
+      RESERVED_ENTRY_136 = 36
+      RESERVED_ENTRY_139 = 37
+      RESERVED_ENTRY_141 = 38
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -1420,15 +1636,16 @@ class Operation(_messages.Message):
   progress = _messages.IntegerField(15, variant=_messages.Variant.INT32)
   region = _messages.StringField(16)
   selfLink = _messages.StringField(17)
-  setCommonInstanceMetadataOperationMetadata = _messages.MessageField('SetCommonInstanceMetadataOperationMetadata', 18)
-  startTime = _messages.StringField(19)
-  status = _messages.EnumField('StatusValueValuesEnum', 20)
-  statusMessage = _messages.StringField(21)
-  targetId = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(23)
-  user = _messages.StringField(24)
-  warnings = _messages.MessageField('WarningsValueListEntry', 25, repeated=True)
-  zone = _messages.StringField(26)
+  selfLinkWithId = _messages.StringField(18)
+  setCommonInstanceMetadataOperationMetadata = _messages.MessageField('SetCommonInstanceMetadataOperationMetadata', 19)
+  startTime = _messages.StringField(20)
+  status = _messages.EnumField('StatusValueValuesEnum', 21)
+  statusMessage = _messages.StringField(22)
+  targetId = _messages.IntegerField(23, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(24)
+  user = _messages.StringField(25)
+  warnings = _messages.MessageField('WarningsValueListEntry', 26, repeated=True)
+  zone = _messages.StringField(27)
 
 
 class OperationsListResponse(_messages.Message):
@@ -1523,6 +1740,70 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class QuotaExceededInfo(_messages.Message):
+  r"""Additional details for quota exceeded error for resource quota.
+
+  Enums:
+    RolloutStatusValueValuesEnum: Rollout status of the future quota limit.
+
+  Messages:
+    DimensionsValue: The map holding related quota dimensions.
+
+  Fields:
+    dimensions: The map holding related quota dimensions.
+    futureLimit: Future quota limit being rolled out. The limit's unit depends
+      on the quota type or metric.
+    limit: Current effective quota limit. The limit's unit depends on the
+      quota type or metric.
+    limitName: The name of the quota limit.
+    metricName: The Compute Engine quota metric name.
+    rolloutStatus: Rollout status of the future quota limit.
+  """
+
+  class RolloutStatusValueValuesEnum(_messages.Enum):
+    r"""Rollout status of the future quota limit.
+
+    Values:
+      ROLLOUT_STATUS_UNSPECIFIED: ROLLOUT_STATUS_UNSPECIFIED - Rollout status
+        is not specified. The default value.
+      IN_PROGRESS: IN_PROGRESS - A rollout is in process which will change the
+        limit value to future limit.
+    """
+    ROLLOUT_STATUS_UNSPECIFIED = 0
+    IN_PROGRESS = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DimensionsValue(_messages.Message):
+    r"""The map holding related quota dimensions.
+
+    Messages:
+      AdditionalProperty: An additional property for a DimensionsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DimensionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DimensionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  dimensions = _messages.MessageField('DimensionsValue', 1)
+  futureLimit = _messages.FloatField(2)
+  limit = _messages.FloatField(3)
+  limitName = _messages.StringField(4)
+  metricName = _messages.StringField(5)
+  rolloutStatus = _messages.EnumField('RolloutStatusValueValuesEnum', 6)
+
+
 class Resource(_messages.Message):
   r"""A Resource object.
 
@@ -1611,6 +1892,14 @@ class Resource(_messages.Message):
           overridden. Deprecated unused field.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
           in use.
+        NETWORK_ENDPOINT_NOT_DETACHED: Warning that network endpoint was not
+          detached.
+        PAGE_MISSING_RESULTS: Current page contains less results than
+          requested but a next page token exists.
+        SSL_POLICY_ENABLED_FEATURES_NOT_FETCHED: Warning that SSL policy
+          resource in the response does not contain information about the list
+          of enabled features.
+        RESOURCE_NOT_FOUND_WARNING: Warning that a resource is not found.
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
         EXTERNAL_API_WARNING: Warning that is present in an external api call
         SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
@@ -1634,6 +1923,17 @@ class Resource(_messages.Message):
         LIST_OVERHEAD_QUOTA_EXCEED: Resource can't be retrieved due to list
           overhead quota exceed which captures the amount of resources
           filtered out by user-defined list filter.
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
+        RESOURCE_USES_GLOBAL_DNS: Indicates that a VM is using global DNS. Can
+          also be used to indicate that a resource has attributes that could
+          result in the creation of a VM that uses global DNS.
+        RESERVED_ENTRY_134: Reserved entries for quickly adding new warnings
+          without breaking dependent clients.
+        RESERVED_ENTRY_135: <no description>
+        RESERVED_ENTRY_136: <no description>
+        RESERVED_ENTRY_139: <no description>
+        RESERVED_ENTRY_141: <no description>
       """
       DEPRECATED_RESOURCE_USED = 0
       NO_RESULTS_ON_PAGE = 1
@@ -1652,17 +1952,28 @@ class Resource(_messages.Message):
       CLEANUP_FAILED = 14
       FIELD_VALUE_OVERRIDEN = 15
       RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 16
-      MISSING_TYPE_DEPENDENCY = 17
-      EXTERNAL_API_WARNING = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      UNDECLARED_PROPERTIES = 20
-      EXPERIMENTAL_TYPE_USED = 21
-      DEPRECATED_TYPE_USED = 22
-      PARTIAL_SUCCESS = 23
-      LARGE_DEPLOYMENT_WARNING = 24
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 25
-      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 26
-      LIST_OVERHEAD_QUOTA_EXCEED = 27
+      NETWORK_ENDPOINT_NOT_DETACHED = 17
+      PAGE_MISSING_RESULTS = 18
+      SSL_POLICY_ENABLED_FEATURES_NOT_FETCHED = 19
+      RESOURCE_NOT_FOUND_WARNING = 20
+      MISSING_TYPE_DEPENDENCY = 21
+      EXTERNAL_API_WARNING = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      UNDECLARED_PROPERTIES = 24
+      EXPERIMENTAL_TYPE_USED = 25
+      DEPRECATED_TYPE_USED = 26
+      PARTIAL_SUCCESS = 27
+      LARGE_DEPLOYMENT_WARNING = 28
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 29
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 30
+      LIST_OVERHEAD_QUOTA_EXCEED = 31
+      QUOTA_INFO_UNAVAILABLE = 32
+      RESOURCE_USES_GLOBAL_DNS = 33
+      RESERVED_ENTRY_134 = 34
+      RESERVED_ENTRY_135 = 35
+      RESERVED_ENTRY_136 = 36
+      RESERVED_ENTRY_139 = 37
+      RESERVED_ENTRY_141 = 38
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -1792,16 +2103,48 @@ class ResourceUpdate(_messages.Message):
     class ErrorsValueListEntry(_messages.Message):
       r"""A ErrorsValueListEntry object.
 
+      Messages:
+        ErrorDetailsValueListEntry: A ErrorDetailsValueListEntry object.
+
       Fields:
+        arguments: [Output Only] Optional error details WARNING: DO NOT MAKE
+          VISIBLE This is for internal use-only (like componentization) (thus
+          the visibility "none") and in case of public exposure it is strongly
+          recommended to follow pattern of: https://aip.dev/193 and expose as
+          details field.
         code: [Output Only] The error type identifier for this error.
+        debugInfo: A DebugInfo attribute.
+        errorDetails: [Output Only] An optional list of messages that contain
+          the error details. There is a set of defined message types to use
+          for providing details.The syntax depends on the error code. For
+          example, QuotaExceededInfo will have details when the error code is
+          QUOTA_EXCEEDED.
         location: [Output Only] Indicates the field in the request that caused
           the error. This property is optional.
         message: [Output Only] An optional, human-readable error message.
       """
 
-      code = _messages.StringField(1)
-      location = _messages.StringField(2)
-      message = _messages.StringField(3)
+      class ErrorDetailsValueListEntry(_messages.Message):
+        r"""A ErrorDetailsValueListEntry object.
+
+        Fields:
+          errorInfo: A ErrorInfo attribute.
+          help: A Help attribute.
+          localizedMessage: A LocalizedMessage attribute.
+          quotaInfo: A QuotaExceededInfo attribute.
+        """
+
+        errorInfo = _messages.MessageField('ErrorInfo', 1)
+        help = _messages.MessageField('Help', 2)
+        localizedMessage = _messages.MessageField('LocalizedMessage', 3)
+        quotaInfo = _messages.MessageField('QuotaExceededInfo', 4)
+
+      arguments = _messages.StringField(1, repeated=True)
+      code = _messages.StringField(2)
+      debugInfo = _messages.MessageField('DebugInfo', 3)
+      errorDetails = _messages.MessageField('ErrorDetailsValueListEntry', 4, repeated=True)
+      location = _messages.StringField(5)
+      message = _messages.StringField(6)
 
     errors = _messages.MessageField('ErrorsValueListEntry', 1, repeated=True)
 
@@ -1864,6 +2207,14 @@ class ResourceUpdate(_messages.Message):
           overridden. Deprecated unused field.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
           in use.
+        NETWORK_ENDPOINT_NOT_DETACHED: Warning that network endpoint was not
+          detached.
+        PAGE_MISSING_RESULTS: Current page contains less results than
+          requested but a next page token exists.
+        SSL_POLICY_ENABLED_FEATURES_NOT_FETCHED: Warning that SSL policy
+          resource in the response does not contain information about the list
+          of enabled features.
+        RESOURCE_NOT_FOUND_WARNING: Warning that a resource is not found.
         MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
         EXTERNAL_API_WARNING: Warning that is present in an external api call
         SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
@@ -1887,6 +2238,17 @@ class ResourceUpdate(_messages.Message):
         LIST_OVERHEAD_QUOTA_EXCEED: Resource can't be retrieved due to list
           overhead quota exceed which captures the amount of resources
           filtered out by user-defined list filter.
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
+        RESOURCE_USES_GLOBAL_DNS: Indicates that a VM is using global DNS. Can
+          also be used to indicate that a resource has attributes that could
+          result in the creation of a VM that uses global DNS.
+        RESERVED_ENTRY_134: Reserved entries for quickly adding new warnings
+          without breaking dependent clients.
+        RESERVED_ENTRY_135: <no description>
+        RESERVED_ENTRY_136: <no description>
+        RESERVED_ENTRY_139: <no description>
+        RESERVED_ENTRY_141: <no description>
       """
       DEPRECATED_RESOURCE_USED = 0
       NO_RESULTS_ON_PAGE = 1
@@ -1905,17 +2267,28 @@ class ResourceUpdate(_messages.Message):
       CLEANUP_FAILED = 14
       FIELD_VALUE_OVERRIDEN = 15
       RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 16
-      MISSING_TYPE_DEPENDENCY = 17
-      EXTERNAL_API_WARNING = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      UNDECLARED_PROPERTIES = 20
-      EXPERIMENTAL_TYPE_USED = 21
-      DEPRECATED_TYPE_USED = 22
-      PARTIAL_SUCCESS = 23
-      LARGE_DEPLOYMENT_WARNING = 24
-      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 25
-      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 26
-      LIST_OVERHEAD_QUOTA_EXCEED = 27
+      NETWORK_ENDPOINT_NOT_DETACHED = 17
+      PAGE_MISSING_RESULTS = 18
+      SSL_POLICY_ENABLED_FEATURES_NOT_FETCHED = 19
+      RESOURCE_NOT_FOUND_WARNING = 20
+      MISSING_TYPE_DEPENDENCY = 21
+      EXTERNAL_API_WARNING = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      UNDECLARED_PROPERTIES = 24
+      EXPERIMENTAL_TYPE_USED = 25
+      DEPRECATED_TYPE_USED = 26
+      PARTIAL_SUCCESS = 27
+      LARGE_DEPLOYMENT_WARNING = 28
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 29
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 30
+      LIST_OVERHEAD_QUOTA_EXCEED = 31
+      QUOTA_INFO_UNAVAILABLE = 32
+      RESOURCE_USES_GLOBAL_DNS = 33
+      RESERVED_ENTRY_134 = 34
+      RESERVED_ENTRY_135 = 35
+      RESERVED_ENTRY_136 = 36
+      RESERVED_ENTRY_139 = 37
+      RESERVED_ENTRY_141 = 38
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -2238,3 +2611,23 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    DeploymentmanagerDeploymentsDeleteRequest, 'header_bypassBillingFilter', 'header.bypassBillingFilter')
+encoding.AddCustomJsonFieldMapping(
+    DeploymentmanagerDeploymentsGetRequest, 'header_bypassBillingFilter', 'header.bypassBillingFilter')
+encoding.AddCustomJsonFieldMapping(
+    DeploymentmanagerDeploymentsGetIamPolicyRequest, 'header_bypassBillingFilter', 'header.bypassBillingFilter')
+encoding.AddCustomJsonFieldMapping(
+    DeploymentmanagerDeploymentsInsertRequest, 'header_bypassBillingFilter', 'header.bypassBillingFilter')
+encoding.AddCustomJsonFieldMapping(
+    DeploymentmanagerDeploymentsPatchRequest, 'header_bypassBillingFilter', 'header.bypassBillingFilter')
+encoding.AddCustomJsonFieldMapping(
+    DeploymentmanagerDeploymentsTestIamPermissionsRequest, 'header_bypassBillingFilter', 'header.bypassBillingFilter')
+encoding.AddCustomJsonFieldMapping(
+    DeploymentmanagerDeploymentsUpdateRequest, 'header_bypassBillingFilter', 'header.bypassBillingFilter')
+encoding.AddCustomJsonFieldMapping(
+    DeploymentmanagerManifestsGetRequest, 'header_bypassBillingFilter', 'header.bypassBillingFilter')
+encoding.AddCustomJsonFieldMapping(
+    DeploymentmanagerOperationsGetRequest, 'header_bypassBillingFilter', 'header.bypassBillingFilter')
+encoding.AddCustomJsonFieldMapping(
+    DeploymentmanagerResourcesGetRequest, 'header_bypassBillingFilter', 'header.bypassBillingFilter')

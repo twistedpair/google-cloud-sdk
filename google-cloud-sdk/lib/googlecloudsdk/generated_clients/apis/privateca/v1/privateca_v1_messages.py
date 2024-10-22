@@ -475,8 +475,9 @@ class CertificateAuthority(_messages.Message):
     lifetime: Required. Immutable. The desired lifetime of the CA certificate.
       Used to create the "not_before_time" and "not_after_time" fields inside
       an X.509 certificate.
-    name: Output only. The resource name for this CertificateAuthority in the
-      format `projects/*/locations/*/caPools/*/certificateAuthorities/*`.
+    name: Output only. Identifier. The resource name for this
+      CertificateAuthority in the format
+      `projects/*/locations/*/caPools/*/certificateAuthorities/*`.
     pemCaCertificates: Output only. This CertificateAuthority's certificate
       chain, including the current CertificateAuthority's certificate. Ordered
       such that the root issuer is the final element (consistent with RFC
@@ -2064,8 +2065,9 @@ class PrivatecaProjectsLocationsCaPoolsCertificateAuthoritiesPatchRequest(_messa
   Fields:
     certificateAuthority: A CertificateAuthority resource to be passed as the
       request body.
-    name: Output only. The resource name for this CertificateAuthority in the
-      format `projects/*/locations/*/caPools/*/certificateAuthorities/*`.
+    name: Output only. Identifier. The resource name for this
+      CertificateAuthority in the format
+      `projects/*/locations/*/caPools/*/certificateAuthorities/*`.
     requestId: Optional. An ID to identify requests. Specify a unique request
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will

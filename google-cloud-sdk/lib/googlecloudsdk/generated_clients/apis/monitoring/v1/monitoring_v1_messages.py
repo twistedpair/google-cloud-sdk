@@ -1686,7 +1686,7 @@ class MosaicLayout(_messages.Message):
 
   Fields:
     columns: The number of columns in the mosaic grid. The number of columns
-      must be between 1 and 12, inclusive.
+      must be between 1 and 48, inclusive.
     tiles: The tiles to display.
   """
 
@@ -2053,7 +2053,7 @@ class QueryExemplarsRequest(_messages.Message):
   Fields:
     end: The end time to evaluate the query for. Either floating point UNIX
       seconds or RFC3339 formatted timestamp.
-    query: A PromQL query string. Query lanauge documentation:
+    query: A PromQL query string. Query language documentation:
       https://prometheus.io/docs/prometheus/latest/querying/basics/.
     start: The start time to evaluate the query for. Either floating point
       UNIX seconds or RFC3339 formatted timestamp.
@@ -2069,7 +2069,7 @@ class QueryInstantRequest(_messages.Message):
   instant query API plus GCM specific parameters.
 
   Fields:
-    query: A PromQL query string. Query lanauge documentation:
+    query: A PromQL query string. Query language documentation:
       https://prometheus.io/docs/prometheus/latest/querying/basics/.
     time: The single point in time to evaluate the query for. Either floating
       point UNIX seconds or RFC3339 formatted timestamp.
@@ -2111,7 +2111,7 @@ class QueryRangeRequest(_messages.Message):
   Fields:
     end: The end time to evaluate the query for. Either floating point UNIX
       seconds or RFC3339 formatted timestamp.
-    query: A PromQL query string. Query lanauge documentation:
+    query: A PromQL query string. Query language documentation:
       https://prometheus.io/docs/prometheus/latest/querying/basics/.
     start: The start time to evaluate the query for. Either floating point
       UNIX seconds or RFC3339 formatted timestamp.

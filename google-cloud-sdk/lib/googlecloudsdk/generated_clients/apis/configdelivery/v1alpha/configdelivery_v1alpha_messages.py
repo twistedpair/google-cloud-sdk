@@ -1338,14 +1338,10 @@ class ResourceBundleDeploymentInfo(_messages.Message):
   deployment.
 
   Enums:
-    DeletionPropagationPolicyValueValuesEnum: Output only.
-      DeletionPropagationPolicy of the `FleetPackage`.
     SyncStateValueValuesEnum: Output only. Synchronization state of the
       `ResourceBundle` deployment.
 
   Fields:
-    deletionPropagationPolicy: Output only. DeletionPropagationPolicy of the
-      `FleetPackage`.
     messages: Output only. Messages contains information related to the
       `ResourceBundle` deployment. For example, in case of an error, indicate
       the reason for the error. In case of a pending deployment, reason for
@@ -1356,21 +1352,6 @@ class ResourceBundleDeploymentInfo(_messages.Message):
     variant: Output only. Refers to a variant in a `ResourceBundle` release.
     version: Output only. Refers to a version of the `ResourceBundle` release.
   """
-
-  class DeletionPropagationPolicyValueValuesEnum(_messages.Enum):
-    r"""Output only. DeletionPropagationPolicy of the `FleetPackage`.
-
-    Values:
-      DELETION_PROPAGATION_POLICY_UNSPECIFIED: Unspecified deletion
-        propagation policy. Defaults to FOREGROUND.
-      FOREGROUND: Foreground deletion propagation policy. Any resources synced
-        to the cluster will be deleted.
-      ORPHAN: Orphan deletion propagation policy. Any resources synced to the
-        cluster will be abandoned.
-    """
-    DELETION_PROPAGATION_POLICY_UNSPECIFIED = 0
-    FOREGROUND = 1
-    ORPHAN = 2
 
   class SyncStateValueValuesEnum(_messages.Enum):
     r"""Output only. Synchronization state of the `ResourceBundle` deployment.
@@ -1396,12 +1377,11 @@ class ResourceBundleDeploymentInfo(_messages.Message):
     DELETING = 7
     DELETED = 8
 
-  deletionPropagationPolicy = _messages.EnumField('DeletionPropagationPolicyValueValuesEnum', 1)
-  messages = _messages.StringField(2, repeated=True)
-  release = _messages.StringField(3)
-  syncState = _messages.EnumField('SyncStateValueValuesEnum', 4)
-  variant = _messages.StringField(5)
-  version = _messages.StringField(6)
+  messages = _messages.StringField(1, repeated=True)
+  release = _messages.StringField(2)
+  syncState = _messages.EnumField('SyncStateValueValuesEnum', 3)
+  variant = _messages.StringField(4)
+  version = _messages.StringField(5)
 
 
 class ResourceBundleSelector(_messages.Message):

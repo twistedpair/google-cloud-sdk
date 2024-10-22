@@ -4387,6 +4387,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Update(self, request, global_params=None):
+      r"""Updates an Endpoint with a long running operation.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:update',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:update',
+        request_field='googleCloudAiplatformV1beta1UpdateEndpointLongRunningRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsUpdateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsEvaluationTasksOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_evaluationTasks_operations resource."""
 
@@ -5296,6 +5323,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       super(AiplatformV1beta1.ProjectsLocationsFeatureGroupsFeaturesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def BatchCreate(self, request, global_params=None):
+      r"""Creates a batch of Features in a given FeatureGroup.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureGroupsFeaturesBatchCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('BatchCreate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/featureGroups/{featureGroupsId}/features:batchCreate',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.featureGroups.features.batchCreate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/features:batchCreate',
+        request_field='googleCloudAiplatformV1beta1BatchCreateFeaturesRequest',
+        request_type_name='AiplatformProjectsLocationsFeatureGroupsFeaturesBatchCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       r"""Creates a new Feature in a given FeatureGroup.

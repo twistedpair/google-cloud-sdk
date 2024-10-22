@@ -13,10 +13,6 @@ from apitools.base.py import extra_types
 package = 'parallelstore'
 
 
-class CancelOperationRequest(_messages.Message):
-  r"""The request message for Operations.CancelOperation."""
-
-
 class DestinationGcsBucket(_messages.Message):
   r"""Cloud Storage as the destination of a data transfer.
 
@@ -57,10 +53,10 @@ class ExportDataRequest(_messages.Message):
       not supported (00000000-0000-0000-0000-000000000000).
     serviceAccount: Optional. User-specified Service Account (SA) credentials
       to be used when performing the transfer. Use one of the following
-      formats: * {EMAIL_ADDRESS_OR_UNIQUE_ID} * `projects/{PROJECT_ID_OR_NUMBE
-      R}/serviceAccounts/{EMAIL_ADDRESS_OR_UNIQUE_ID}` *
-      `projects/-/serviceAccounts/{EMAIL_ADDRESS_OR_UNIQUE_ID} If unspecified,
-      the Parallelstore service agent is used: `service-@gcp-sa-
+      formats: * `{EMAIL_ADDRESS_OR_UNIQUE_ID}` * `projects/{PROJECT_ID_OR_NUM
+      BER}/serviceAccounts/{EMAIL_ADDRESS_OR_UNIQUE_ID}` *
+      `projects/-/serviceAccounts/{EMAIL_ADDRESS_OR_UNIQUE_ID}` If
+      unspecified, the Parallelstore service agent is used: `service-@gcp-sa-
       parallelstore.iam.gserviceaccount.com`
     sourceParallelstore: Parallelstore source.
   """
@@ -98,10 +94,10 @@ class ImportDataRequest(_messages.Message):
       not supported (00000000-0000-0000-0000-000000000000).
     serviceAccount: Optional. User-specified service account credentials to be
       used when performing the transfer. Use one of the following formats: *
-      {EMAIL_ADDRESS_OR_UNIQUE_ID} * `projects/{PROJECT_ID_OR_NUMBER}/serviceA
-      ccounts/{EMAIL_ADDRESS_OR_UNIQUE_ID}` *
-      `projects/-/serviceAccounts/{EMAIL_ADDRESS_OR_UNIQUE_ID} If unspecified,
-      the Parallelstore service agent is used: `service-@gcp-sa-
+      `{EMAIL_ADDRESS_OR_UNIQUE_ID}` * `projects/{PROJECT_ID_OR_NUMBER}/servic
+      eAccounts/{EMAIL_ADDRESS_OR_UNIQUE_ID}` *
+      `projects/-/serviceAccounts/{EMAIL_ADDRESS_OR_UNIQUE_ID}` If
+      unspecified, the Parallelstore service agent is used: `service-@gcp-sa-
       parallelstore.iam.gserviceaccount.com`
     sourceGcsBucket: The Cloud Storage source bucket and, optionally, path
       inside the bucket.
@@ -717,13 +713,10 @@ class ParallelstoreProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A ParallelstoreProjectsLocationsOperationsCancelRequest object.
 
   Fields:
-    cancelOperationRequest: A CancelOperationRequest resource to be passed as
-      the request body.
     name: The name of the operation resource to be cancelled.
   """
 
-  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class ParallelstoreProjectsLocationsOperationsDeleteRequest(_messages.Message):

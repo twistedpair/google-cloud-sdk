@@ -30,29 +30,9 @@
                 "create_bucket"
               ]
             },
-            "CreateHmacKey": {
-              "methods": [
-                "create_hmac_key"
-              ]
-            },
-            "CreateNotificationConfig": {
-              "methods": [
-                "create_notification_config"
-              ]
-            },
             "DeleteBucket": {
               "methods": [
                 "delete_bucket"
-              ]
-            },
-            "DeleteHmacKey": {
-              "methods": [
-                "delete_hmac_key"
-              ]
-            },
-            "DeleteNotificationConfig": {
-              "methods": [
-                "delete_notification_config"
               ]
             },
             "DeleteObject": {
@@ -65,19 +45,9 @@
                 "get_bucket"
               ]
             },
-            "GetHmacKey": {
-              "methods": [
-                "get_hmac_key"
-              ]
-            },
             "GetIamPolicy": {
               "methods": [
                 "get_iam_policy"
-              ]
-            },
-            "GetNotificationConfig": {
-              "methods": [
-                "get_notification_config"
               ]
             },
             "GetObject": {
@@ -85,24 +55,9 @@
                 "get_object"
               ]
             },
-            "GetServiceAccount": {
-              "methods": [
-                "get_service_account"
-              ]
-            },
             "ListBuckets": {
               "methods": [
                 "list_buckets"
-              ]
-            },
-            "ListHmacKeys": {
-              "methods": [
-                "list_hmac_keys"
-              ]
-            },
-            "ListNotificationConfigs": {
-              "methods": [
-                "list_notification_configs"
               ]
             },
             "ListObjects": {
@@ -153,11 +108,6 @@
             "UpdateBucket": {
               "methods": [
                 "update_bucket"
-              ]
-            },
-            "UpdateHmacKey": {
-              "methods": [
-                "update_hmac_key"
               ]
             },
             "UpdateObject": {
@@ -195,29 +145,9 @@
                 "create_bucket"
               ]
             },
-            "CreateHmacKey": {
-              "methods": [
-                "create_hmac_key"
-              ]
-            },
-            "CreateNotificationConfig": {
-              "methods": [
-                "create_notification_config"
-              ]
-            },
             "DeleteBucket": {
               "methods": [
                 "delete_bucket"
-              ]
-            },
-            "DeleteHmacKey": {
-              "methods": [
-                "delete_hmac_key"
-              ]
-            },
-            "DeleteNotificationConfig": {
-              "methods": [
-                "delete_notification_config"
               ]
             },
             "DeleteObject": {
@@ -230,19 +160,9 @@
                 "get_bucket"
               ]
             },
-            "GetHmacKey": {
-              "methods": [
-                "get_hmac_key"
-              ]
-            },
             "GetIamPolicy": {
               "methods": [
                 "get_iam_policy"
-              ]
-            },
-            "GetNotificationConfig": {
-              "methods": [
-                "get_notification_config"
               ]
             },
             "GetObject": {
@@ -250,24 +170,9 @@
                 "get_object"
               ]
             },
-            "GetServiceAccount": {
-              "methods": [
-                "get_service_account"
-              ]
-            },
             "ListBuckets": {
               "methods": [
                 "list_buckets"
-              ]
-            },
-            "ListHmacKeys": {
-              "methods": [
-                "list_hmac_keys"
-              ]
-            },
-            "ListNotificationConfigs": {
-              "methods": [
-                "list_notification_configs"
               ]
             },
             "ListObjects": {
@@ -318,11 +223,6 @@
             "UpdateBucket": {
               "methods": [
                 "update_bucket"
-              ]
-            },
-            "UpdateHmacKey": {
-              "methods": [
-                "update_hmac_key"
               ]
             },
             "UpdateObject": {
@@ -360,29 +260,9 @@
                 "create_bucket"
               ]
             },
-            "CreateHmacKey": {
-              "methods": [
-                "create_hmac_key"
-              ]
-            },
-            "CreateNotificationConfig": {
-              "methods": [
-                "create_notification_config"
-              ]
-            },
             "DeleteBucket": {
               "methods": [
                 "delete_bucket"
-              ]
-            },
-            "DeleteHmacKey": {
-              "methods": [
-                "delete_hmac_key"
-              ]
-            },
-            "DeleteNotificationConfig": {
-              "methods": [
-                "delete_notification_config"
               ]
             },
             "DeleteObject": {
@@ -395,19 +275,9 @@
                 "get_bucket"
               ]
             },
-            "GetHmacKey": {
-              "methods": [
-                "get_hmac_key"
-              ]
-            },
             "GetIamPolicy": {
               "methods": [
                 "get_iam_policy"
-              ]
-            },
-            "GetNotificationConfig": {
-              "methods": [
-                "get_notification_config"
               ]
             },
             "GetObject": {
@@ -415,24 +285,9 @@
                 "get_object"
               ]
             },
-            "GetServiceAccount": {
-              "methods": [
-                "get_service_account"
-              ]
-            },
             "ListBuckets": {
               "methods": [
                 "list_buckets"
-              ]
-            },
-            "ListHmacKeys": {
-              "methods": [
-                "list_hmac_keys"
-              ]
-            },
-            "ListNotificationConfigs": {
-              "methods": [
-                "list_notification_configs"
               ]
             },
             "ListObjects": {
@@ -483,11 +338,6 @@
             "UpdateBucket": {
               "methods": [
                 "update_bucket"
-              ]
-            },
-            "UpdateHmacKey": {
-              "methods": [
-                "update_hmac_key"
               ]
             },
             "UpdateObject": {

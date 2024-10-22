@@ -213,7 +213,7 @@ class HubClient(object):
 class HubV2Client(object):
   """Client for the GKE Hub V2 API with related helper methods.
 
-  If not provided, the default client is for the Alpha (v2alpha) track.
+  If not provided, the default client is for the GA (v2) track.
   This client is a thin wrapper around the base client, and does not handle
   any exceptions.
 
@@ -227,7 +227,7 @@ class HubV2Client(object):
     Membership Feature LROs.
   """
 
-  def __init__(self, release_track=base.ReleaseTrack.ALPHA):
+  def __init__(self, release_track=base.ReleaseTrack.GA):
     self.release_track = release_track
     self.client = util.GetV2ClientInstance(release_track)
     self.messages = util.GetV2MessagesModule(release_track)

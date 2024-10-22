@@ -134,6 +134,7 @@ def AddUpdateArgs(
     include_external_ipv6_prefix,
     include_allow_cidr_routes_overlap,
     api_version,
+    update_purpose_to_private,
 ):
   """Add args to the parser for subnet update.
 
@@ -143,6 +144,7 @@ def AddUpdateArgs(
     include_external_ipv6_prefix: Inlcude user assigned external IPv6 prefix.
     include_allow_cidr_routes_overlap: Include CIDR routes overlap args.
     api_version: The api version of the request.
+    update_purpose_to_private: Allow updating purpose to private.
   """
   messages = apis.GetMessagesModule('compute',
                                     compute_api.COMPUTE_GA_API_VERSION)
@@ -298,17 +300,32 @@ def AddUpdateArgs(
         only applicable when the [--role=ACTIVE] flag is being used.
         """)
 
+  choices = {
+      'REGIONAL_MANAGED_PROXY':
+          'The proxy-only subnet for regional HTTP(S) load balancers. '
+  }
+  help_text = (
+      'The purpose of the subnetwork is set to REGIONAL_MANAGED_PROXY to'
+      ' migrate from the INTERNAL_HTTPS_LOAD_BALANCER purpose.'
+  )
+  if update_purpose_to_private:
+    choices['PRIVATE'] = (
+        'The default subnet type. Only PEER_MIGRATION subnets can be changed to'
+        ' PRIVATE.'
+    )
+    choices['REGIONAL_MANAGED_PROXY'] = (
+        'The proxy-only subnet for regional HTTP(S) load balancers. Only '
+        'INTERNAL_HTTPS_LOAD_BALANCER subnets can be changed to '
+        'REGIONAL_MANAGED_PROXY.'
+    )
+    help_text = (
+        'The purpose of the subnetwork can be changed in a few scenarios.'
+    )
   updated_field.add_argument(
       '--purpose',
-      choices={
-          'REGIONAL_MANAGED_PROXY':
-              'The proxy-only subnet for regional HTTP(S) load balancers.'
-      },
+      choices=choices,
       type=lambda x: x.replace('-', '_').upper(),
-      help=("""\
-      The purpose of the subnetwork is set to REGIONAL_MANAGED_PROXY to
-      migrate from the INTERNAL_HTTPS_LOAD_BALANCER purpose.
-      """))
+      help=(help_text))
 
   parser.add_argument(
       '--stack-type',

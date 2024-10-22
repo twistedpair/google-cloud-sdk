@@ -106,6 +106,33 @@ class IamcredentialsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetAllowedLocations(self, request, global_params=None):
+      r"""Returns the trust boundary info for a given service account.
+
+      Args:
+        request: (IamcredentialsProjectsServiceAccountsGetAllowedLocationsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceAccountAllowedLocations) The response message.
+      """
+      config = self.GetMethodConfig('GetAllowedLocations')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAllowedLocations.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/allowedLocations',
+        http_method='GET',
+        method_id='iamcredentials.projects.serviceAccounts.getAllowedLocations',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}/allowedLocations',
+        request_field='',
+        request_type_name='IamcredentialsProjectsServiceAccountsGetAllowedLocationsRequest',
+        response_type_name='ServiceAccountAllowedLocations',
+        supports_download=False,
+    )
+
     def SignBlob(self, request, global_params=None):
       r"""Signs a blob using a service account's system-managed private key.
 

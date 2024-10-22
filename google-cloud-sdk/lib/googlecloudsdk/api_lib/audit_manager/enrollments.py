@@ -14,29 +14,34 @@
 # limitations under the License.
 """Utilities for Audit Manager API, Enrollments Endpoints."""
 
+from googlecloudsdk.api_lib.audit_manager import constants
 from googlecloudsdk.api_lib.audit_manager import util
 
 
 class EnrollmentsClient(object):
   """Client for operations in Audit Manager API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or util.GetClientInstance()
-    self.messages = messages or util.GetMessagesModule(client)
+  def __init__(
+      self, api_version: constants.ApiVersion, client=None, messages=None
+  ) -> None:
+    self.client = client or util.GetClientInstance(api_version=api_version)
+    self.messages = messages or util.GetMessagesModule(
+        api_version=api_version, client=client
+    )
 
   def Add(
       self,
-      scope,
-      eligible_gcs_buckets,
-      is_parent_folder,
+      scope: str,
+      eligible_gcs_buckets: str,
+      is_parent_folder: bool,
   ):
     """Enrolls a resource to Audit Manager.
 
     Args:
-      scope: str, the scope to be enrolled.
-      eligible_gcs_buckets: str, List of destination among which customer can
-        choose to upload their reports during the audit process.
-      is_parent_folder: bool, whether the parent is folder and not project.
+      scope: The scope to be enrolled.
+      eligible_gcs_buckets: List of destination among which customer can choose
+        to upload their reports during the audit process.
+      is_parent_folder: Whether the parent is folder and not project.
 
     Returns:
       Described audit operation resource.

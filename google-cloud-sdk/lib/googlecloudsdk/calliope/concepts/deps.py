@@ -296,9 +296,11 @@ class FullySpecifiedAnchorFallthrough(_FallthroughBase):
                                       self.collection_info.api_version)
 
   def _GetFromAnchor(self, anchor_value):
+    """Returns the parameter value from the parsed anchor resource."""
     try:
       resource_ref = self._resources.Parse(
-          anchor_value, collection=self.collection_info.full_name)
+          anchor_value, collection=self.collection_info.full_name,
+          api_version=self.collection_info.api_version)
     except resources.Error:
       return None
     # This should only be called for final parsing when the anchor attribute

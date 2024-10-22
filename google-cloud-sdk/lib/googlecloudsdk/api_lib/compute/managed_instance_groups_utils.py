@@ -1428,6 +1428,12 @@ def CreateInstanceLifecyclePolicy(messages, args):
         messages.InstanceGroupManagerInstanceLifecyclePolicy.DefaultActionOnFailureValueValuesEnum,
     )
 
+  if args.IsKnownAndSpecified('action_on_vm_failed_health_check'):
+    policy.onFailedHealthCheck = arg_utils.ChoiceToEnum(
+        args.action_on_vm_failed_health_check,
+        messages.InstanceGroupManagerInstanceLifecyclePolicy.OnFailedHealthCheckValueValuesEnum,
+    )
+
   return ValueOrNone(policy)
 
 

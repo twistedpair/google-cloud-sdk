@@ -3146,7 +3146,6 @@ class FlattenInstruction(_messages.Message):
 
 class FlexTemplateRuntimeEnvironment(_messages.Message):
   r"""The environment values to be set at runtime for flex template.
-  LINT.IfChange
 
   Enums:
     AutoscalingAlgorithmValueValuesEnum: The algorithm to use for autoscaling
@@ -5916,7 +5915,7 @@ class RollbackDeploymentRequest(_messages.Message):
 
 
 class RuntimeEnvironment(_messages.Message):
-  r"""The environment values to set at runtime. LINT.IfChange
+  r"""The environment values to set at runtime.
 
   Enums:
     IpConfigurationValueValuesEnum: Optional. Configuration for VM IPs.

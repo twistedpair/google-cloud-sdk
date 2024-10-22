@@ -465,12 +465,16 @@ class ConsumerPscConnection(_messages.Message):
         connection fail to be created.
       CREATING: The connection is being created.
       DELETING: The connection is being deleted.
+      CREATE_REPAIRING: The connection is being repaired to complete creation.
+      DELETE_REPAIRING: The connection is being repaired to complete deletion.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     FAILED = 2
     CREATING = 3
     DELETING = 4
+    CREATE_REPAIRING = 5
+    DELETE_REPAIRING = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ProducerInstanceMetadataValue(_messages.Message):
@@ -1249,7 +1253,8 @@ class InternalRange(_messages.Message):
       For IPv6 Ranges this field is compulsory, i.e. the address range must be
       specified explicitly.
     labels: User-defined labels.
-    migration: Optional. Should be present if usage is set to FOR_MIGRATION.
+    migration: Optional. Must be present if usage is set to FOR_MIGRATION.
+      This field is for internal use.
     name: Immutable. The name of an internal range. Format:
       projects/{project}/locations/{location}/internalRanges/{internal_range}
       See: https://google.aip.dev/122#fields-representing-resource-names
@@ -1346,7 +1351,7 @@ class InternalRange(_messages.Message):
       FOR_MIGRATION: Ranges created FOR_MIGRATION can be used to lock a CIDR
         range between a source and target subnet. If usage is set to
         FOR_MIGRATION, the peering value has to be set to FOR_SELF or default
-        to FOR_SELF when unset.
+        to FOR_SELF when unset. This value is for internal use.
     """
     USAGE_UNSPECIFIED = 0
     FOR_VPC = 1
@@ -4076,12 +4081,16 @@ class PscConnection(_messages.Message):
         connection fail to be created.
       CREATING: The connection is being created.
       DELETING: The connection is being deleted.
+      CREATE_REPAIRING: The connection is being repaired to complete creation.
+      DELETE_REPAIRING: The connection is being repaired to complete deletion.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     FAILED = 2
     CREATING = 3
     DELETING = 4
+    CREATE_REPAIRING = 5
+    DELETE_REPAIRING = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ProducerInstanceMetadataValue(_messages.Message):

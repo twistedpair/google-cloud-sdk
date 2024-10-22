@@ -162,6 +162,13 @@ class Collections(enum.Enum):
       ['folder', 'location', 'bucket', 'view'],
       True
   )
+  FOLDERS_LOCATIONS_LOGSCOPES = (
+      'folders.locations.logScopes',
+      'folders/{folder}/locations/{location}/logScopes/{log_scope}',
+      {},
+      ['folder', 'location', 'log_scope'],
+      True
+  )
   FOLDERS_LOCATIONS_RECENTQUERIES = (
       'folders.locations.recentQueries',
       'folders/{folder}/locations/{location}/recentQueries/{saved_query}',
@@ -248,6 +255,14 @@ class Collections(enum.Enum):
       ['organization', 'location', 'bucket', 'view'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_LOGSCOPES = (
+      'organizations.locations.logScopes',
+      'organizations/{organization}/locations/{location}/logScopes/'
+      '{log_scope}',
+      {},
+      ['organization', 'location', 'log_scope'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_RECENTQUERIES = (
       'organizations.locations.recentQueries',
       'organizations/{organization}/locations/{location}/recentQueries/'
@@ -332,6 +347,13 @@ class Collections(enum.Enum):
       'projects/{project}/locations/{location}/buckets/{bucket}/views/{view}',
       {},
       ['project', 'location', 'bucket', 'view'],
+      True
+  )
+  PROJECTS_LOCATIONS_LOGSCOPES = (
+      'projects.locations.logScopes',
+      'projects/{project}/locations/{location}/logScopes/{log_scope}',
+      {},
+      ['project', 'location', 'log_scope'],
       True
   )
   PROJECTS_LOCATIONS_RECENTQUERIES = (

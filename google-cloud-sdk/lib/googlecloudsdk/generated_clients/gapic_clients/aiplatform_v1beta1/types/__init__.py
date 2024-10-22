@@ -109,7 +109,9 @@ from .prediction_service import (
     StreamRawPredictRequest,
 )
 from .tool import (
+    CodeExecutionResult,
     DynamicRetrievalConfig,
+    ExecutableCode,
     FunctionCall,
     FunctionCallingConfig,
     FunctionDeclaration,
@@ -212,7 +214,9 @@ __all__ = (
     'StreamingRawPredictRequest',
     'StreamingRawPredictResponse',
     'StreamRawPredictRequest',
+    'CodeExecutionResult',
     'DynamicRetrievalConfig',
+    'ExecutableCode',
     'FunctionCall',
     'FunctionCallingConfig',
     'FunctionDeclaration',

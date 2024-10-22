@@ -5,6 +5,133 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 498.0.0 (2024-10-22)
+
+### Breaking Changes
+
+*   **(Cloud Workstations)** Fixed `gcloud beta workstations configs create` and
+*   **(Cloud Workstations)** `gcloud beta workstations configs create` flag `--boost-config`. Before
+*   **(Cloud Workstations)** when user specified `--boost-config=enable-nested-virtualization=false`,
+*   **(Cloud Workstations)** `enableNestedVirtualization` was set to True. Fix enables user to set
+*   **(Cloud Workstations)** `enableNestedVirtualization` to False by specifying
+*   **(Cloud Workstations)** `--boost-config=enable-nested-virtualization=false`.
+*   **(Compute Engine)** Deprecated default guest image family for `--confidential-compute-type=TDX` from `ubuntu-2304-amd64` to `ubuntu-2204-lts`.
+
+
+### AlloyDB
+
+* Added `--tags` flag to
+  * `gcloud alloydb clusters create` to support associating Tags while creating Cluster.
+
+### Anthos Multi-Cloud
+
+*   Added `--kubelet-config-cpu-manager-policy` flag to
+`gcloud container aws node-pools create` for choosing which CPU manager policy
+to use in the kubeletConfig.
+*   Added `--kubelet-config-cpu-cfs-quota` flag to
+`gcloud container aws node-pools create` for enabling or disabling CPU CFS
+throttling.
+*   Added `--kubelet-config-cpu-cfs-quota-period` flag to
+`gcloud container aws node-pools create` for setting the period for throttling
+when CPU CFS throttling is enabled.
+*   Added `--kubelet-config-pod-pids-limit` flag to
+`gcloud container aws node-pools create` for setting the maximum number of PIDs
+in any pod.
+
+### Cloud DNS
+
+* Fix response policy update command for zonal response policies.
+
+### Cloud Dataproc
+
+* Added `worker-machine-types` flag to `gcloud dataproc clusters create` to support flexible machine types for primary workers.
+
+### Cloud Datastore
+
+* Promoted changed to `gcloud datastore indexes create` and `gcloud datastore
+  indexes cleanup` commands which uses the Firestore Admin API to GA.
+* promoted `--database-id` flag for `gcloud datastore indexes cleanup` to GA.
+
+### Cloud Logging
+
+* Promoted the following commands to GA:
+    * `gcloud logging scopes create`
+    * `gcloud logging scopes list`
+    * `gcloud logging scopes delete`
+    * `gcloud logging scopes describe`
+    * `gcloud logging scopes update`
+
+### Cloud Run
+
+*   Source deploy will respect the source bucket set on an existing Cloud Run
+    service in the `run.googleapis.com/source-location` or the
+    `run.googleapis.com/build-source-location` (giving preference to the
+    latter).
+*  Updated the output of `gcloud run jobs executions tasks describe` to include
+   the exit code of the last task attempt if the task has run.
+*   Fixed `gcloud multi-region-services update` crashing when called without
+    `--add-region` or `--remove-region`.
+*   Fixed `gcloud beta multi-region-services update` documentation, where
+    ALPHA arguments were erroneously included.
+
+### Cloud SQL
+
+*   Add `--replication-lag-max-seconds-for-recreate` flag to recreate MySQL read-replica after the replication lag on the instance exceeds the defined threshold.
+
+### Cloud Spanner
+
+* Added `--kms-keys` flag to
+  * `gcloud spanner databases create`
+  * `gcloud spanner backups create`
+  * `gcloud spanner backups copy`
+  * `gcloud spanner databases restore` to support Cloud Spanner Customer Managed Encryption(CMEK) with multiple KMS keys.
+
+### Colab
+
+* Add `colab/region` property to set default region for `gcloud colab` commands.
+
+### Compute Engine
+
+* Promoted `--custom-end-time` flag of `gcloud compute commitments create` and `gcloud compute commitments update` to GA.
+* Promoted `--load-balancing-scheme` flag of
+  `gcloud compute backend-buckets create` to beta.
+* Promoted `--propagated-connection-limit` flag of `gcloud compute service-attachments create` and `gcloud compute service-attachments update` to GA.
+* Added `--action-on-vm-failed-health-check` flag of `gcloud compute instance-groups managed create` and `gcloud compute instance-groups managed create` to Alpha.
+* Promoted support for `gcloud compute instance-groups managed resize-requests describe` for regional igm to beta.
+* Promoted support for `gcloud compute instance-groups managed resize-requests list` for regional igm to beta.
+
+### GKE Hub
+
+* Migrated `gcloud container fleet mesh update` to use v2 MembershipFeature API for mutation.
+* Migrated `gcloud container fleet policycontroller content bundles remove` to use v2 MembershipFeature API for per membership spec mutation.
+* Migrated `gcloud container fleet policycontroller content bundles set` to use v2 MembershipFeature API for per membership spec mutation.
+* Migrated `gcloud container fleet policycontroller content templates disable` to use v2 MembershipFeature API for per membership spec mutation.
+* Migrated `gcloud container fleet policycontroller content templates enable` to use v2 MembershipFeature API for per membership spec mutation.
+* Migrated `gcloud container fleet policycontroller content deployment remove` to use v2 MembershipFeature API for per membership spec mutation.
+* Migrated `gcloud container fleet policycontroller content deployment set` to use v2 MembershipFeature API for per membership spec mutation.
+* Migrated `gcloud container fleet policycontroller content detach` to use v2 MembershipFeature API for per membership spec mutation.
+* Migrated `gcloud container fleet policycontroller content enable` to use v2 MembershipFeature API for per membership spec mutation.
+* Migrated `gcloud container fleet policycontroller content suspend` to use v2 MembershipFeature API for per membership spec mutation.
+* Migrated `gcloud container fleet policycontroller content update` to use v2 MembershipFeature API for per membership spec mutation.
+* Migrated `gcloud beta container fleet config-management apply` to use v2 MembershipFeature API for per membership spec mutation.
+* Migrated `gcloud beta container fleet config-management unmange` to use v2 MembershipFeature API for per membership spec mutation.
+* Migrated `gcloud beta container fleet config-management upgrade` to use v2 MembershipFeature API for per membership spec mutation.
+
+### Kubernetes Engine
+
+* Fixed issue where `gcloud container clusters create` with `--cluster-dns=clouddns` incorrectly shows a confirmation prompt about recreating node pools. Recreating node pools is only necessary when changing from a different DNS provider.
+* Added `--enable-multi-networking` flags to `gcloud container clusters create-auto`.
+
+### Network Management
+
+* Added `--destination-redis-instance` and `--destination-redis-cluster` flags
+  to `gcloud network-management connectivity-tests` to allow executing
+  Connectivity tests to Redis instances and Redis clusters.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 497.0.0 (2024-10-15)
 
 ### Breaking Changes

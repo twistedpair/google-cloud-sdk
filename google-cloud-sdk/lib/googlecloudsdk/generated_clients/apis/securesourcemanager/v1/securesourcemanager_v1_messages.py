@@ -1426,6 +1426,12 @@ class SecuresourcemanagerProjectsLocationsRepositoriesListRequest(_messages.Mess
 
   Fields:
     filter: Optional. Filter results.
+    instance: Optional. The name of the instance in which the repository is
+      hosted, formatted as `projects/{project_number}/locations/{location_id}/
+      instances/{instance_id}`. When listing repositories via
+      *.sourcemanager.dev (Data Plane API), this field is ignored. When
+      listing repositories via securesourcemanager.googleapis.com (Control
+      Plane API), this field is required.
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results the server should return.
@@ -1433,9 +1439,10 @@ class SecuresourcemanagerProjectsLocationsRepositoriesListRequest(_messages.Mess
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  instance = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class SecuresourcemanagerProjectsLocationsRepositoriesSetIamPolicyRequest(_messages.Message):

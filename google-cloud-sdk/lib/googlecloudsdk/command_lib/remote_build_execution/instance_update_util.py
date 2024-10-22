@@ -25,3 +25,10 @@ def RemoveFeaturePolicy(ref, _, request):
   del ref
   request.updateMask = "featurePolicy"
   return request
+
+
+def RemoveZoneDrains(ref, _, request):
+  """Remove zone drains."""
+  del ref
+  request.updateMask = "zoneDrains"
+  return request

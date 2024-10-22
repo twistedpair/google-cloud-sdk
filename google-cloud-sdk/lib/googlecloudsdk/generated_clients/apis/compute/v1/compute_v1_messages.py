@@ -39386,6 +39386,8 @@ class HealthStatusForNetworkEndpoint(_messages.Message):
   Enums:
     HealthStateValueValuesEnum: Health state of the network endpoint
       determined based on the health checks configured.
+    Ipv6HealthStateValueValuesEnum: Health state of the ipv6 network endpoint
+      determined based on the health checks configured.
 
   Fields:
     backendService: URL of the backend service associated with the health
@@ -39398,6 +39400,8 @@ class HealthStatusForNetworkEndpoint(_messages.Message):
       health state of the network endpoint.
     healthState: Health state of the network endpoint determined based on the
       health checks configured.
+    ipv6HealthState: Health state of the ipv6 network endpoint determined
+      based on the health checks configured.
   """
 
   class HealthStateValueValuesEnum(_messages.Enum):
@@ -39415,11 +39419,27 @@ class HealthStatusForNetworkEndpoint(_messages.Message):
     UNHEALTHY = 2
     UNKNOWN = 3
 
+  class Ipv6HealthStateValueValuesEnum(_messages.Enum):
+    r"""Health state of the ipv6 network endpoint determined based on the
+    health checks configured.
+
+    Values:
+      DRAINING: Endpoint is being drained.
+      HEALTHY: Endpoint is healthy.
+      UNHEALTHY: Endpoint is unhealthy.
+      UNKNOWN: Health status of the endpoint is unknown.
+    """
+    DRAINING = 0
+    HEALTHY = 1
+    UNHEALTHY = 2
+    UNKNOWN = 3
+
   backendService = _messages.MessageField('BackendServiceReference', 1)
   forwardingRule = _messages.MessageField('ForwardingRuleReference', 2)
   healthCheck = _messages.MessageField('HealthCheckReference', 3)
   healthCheckService = _messages.MessageField('HealthCheckServiceReference', 4)
   healthState = _messages.EnumField('HealthStateValueValuesEnum', 5)
+  ipv6HealthState = _messages.EnumField('Ipv6HealthStateValueValuesEnum', 6)
 
 
 class Help(_messages.Message):
@@ -41894,8 +41914,8 @@ class InstanceGroupManager(_messages.Message):
       listManagedInstances API method for this managed instance group.
     name: The name of the managed instance group. The name must be 1-63
       characters long, and comply with RFC1035.
-    namedPorts: Named ports configured for the Instance Groups complementary
-      to this Instance Group Manager.
+    namedPorts: [Output Only] Named ports configured on the Instance Groups
+      complementary to this Instance Group Manager.
     region: [Output Only] The URL of the region where the managed instance
       group resides (for regional resources).
     satisfiesPzi: [Output Only] Reserved for future use.
@@ -45629,7 +45649,7 @@ class InstancesGetEffectiveFirewallsResponse(_messages.Message):
   r"""A InstancesGetEffectiveFirewallsResponse object.
 
   Fields:
-    firewallPolicys: Effective firewalls from firewall policies.
+    firewallPolicys: [Output Only] Effective firewalls from firewall policies.
     firewalls: Effective firewalls on the instance.
   """
 
@@ -45651,7 +45671,9 @@ class InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Me
     name: [Output Only] The name of the firewall policy.
     priority: [Output only] Priority of firewall policy association. Not
       applicable for type=HIERARCHY.
-    rules: The rules that apply to the network.
+    rules: [Output Only] The rules that apply to the instance. Only rules that
+      target the specific VM instance are returned if target service accounts
+      or target secure tags are specified in the rules.
     shortName: [Output Only] The short name of the firewall policy.
     type: [Output Only] The type of the firewall policy. Can be one of
       HIERARCHY, NETWORK, NETWORK_REGIONAL, SYSTEM_GLOBAL, SYSTEM_REGIONAL.
@@ -52514,6 +52536,7 @@ class NetworkEndpoint(_messages.Message):
       the subnetwork of the NEG. The primary internal IP address from any NIC
       of a multi-NIC VM instance can be added to a NEG as long as it matches
       the NEG subnetwork.
+    ipv6Address: Optional IPv6 address of network endpoint.
     port: Optional port number of network endpoint. If not specified, the
       defaultPort for the network endpoint group will be used. This field can
       not be set for network endpoints of type GCE_VM_IP.
@@ -52549,7 +52572,8 @@ class NetworkEndpoint(_messages.Message):
   fqdn = _messages.StringField(3)
   instance = _messages.StringField(4)
   ipAddress = _messages.StringField(5)
-  port = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  ipv6Address = _messages.StringField(6)
+  port = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class NetworkEndpointGroup(_messages.Message):
@@ -54057,7 +54081,10 @@ class NetworksGetEffectiveFirewallsResponse(_messages.Message):
   r"""A NetworksGetEffectiveFirewallsResponse object.
 
   Fields:
-    firewallPolicys: Effective firewalls from firewall policy.
+    firewallPolicys: [Output Only] Effective firewalls from firewall policy.
+      It returns Global Network Firewall Policies and Hierarchical Firewall
+      Policies. Use regionNetworkFirewallPolicies.getEffectiveFirewalls to get
+      Regional Network Firewall Policies as well.
     firewalls: Effective firewalls on the network.
   """
 
@@ -54077,7 +54104,7 @@ class NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Mes
     name: [Output Only] The name of the firewall policy.
     priority: [Output only] Priority of firewall policy association. Not
       applicable for type=HIERARCHY.
-    rules: The rules that apply to the network.
+    rules: [Output Only] The rules that apply to the network.
     shortName: [Output Only] The short name of the firewall policy.
     type: [Output Only] The type of the firewall policy.
   """
@@ -62152,7 +62179,10 @@ class RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponse(_messages.Messa
   r"""A RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponse object.
 
   Fields:
-    firewallPolicys: Effective firewalls from firewall policy.
+    firewallPolicys: [Output only] Effective firewalls from firewall policy.
+      It applies to Regional Network Firewall Policies in the specified
+      region, Global Network Firewall Policies and Hierachial Firewall
+      Policies which are associated with the network.
     firewalls: Effective firewalls on the network.
   """
 
@@ -62172,7 +62202,7 @@ class RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewal
   Fields:
     displayName: [Output Only] The display name of the firewall policy.
     name: [Output Only] The name of the firewall policy.
-    rules: The rules that apply to the network.
+    rules: [Output only] The rules that apply to the network.
     type: [Output Only] The type of the firewall policy. Can be one of
       HIERARCHY, NETWORK, NETWORK_REGIONAL, SYSTEM_GLOBAL, SYSTEM_REGIONAL.
   """
@@ -62306,7 +62336,11 @@ class Reservation(_messages.Message):
   more information, read Reserving zonal resources.
 
   Enums:
-    StatusValueValuesEnum: [Output Only] The status of the reservation.
+    StatusValueValuesEnum: [Output Only] The status of the reservation. -
+      CREATING: Reservation resources are being allocated. - READY:
+      Reservation resources have been allocated, and the reservation is ready
+      for use. - DELETING: Reservation deletion is in progress. - UPDATING:
+      Reservation update is in progress.
 
   Messages:
     ResourcePoliciesValue: Resource policies to be added to this reservation.
@@ -62350,20 +62384,28 @@ class Reservation(_messages.Message):
       consumed by VMs with affinity for "any" reservation. If the field is
       set, then only VMs that target the reservation by name can consume from
       this reservation.
-    status: [Output Only] The status of the reservation.
+    status: [Output Only] The status of the reservation. - CREATING:
+      Reservation resources are being allocated. - READY: Reservation
+      resources have been allocated, and the reservation is ready for use. -
+      DELETING: Reservation deletion is in progress. - UPDATING: Reservation
+      update is in progress.
     zone: Zone in which the reservation resides. A zone must be provided if
       the reservation is created within a commitment.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The status of the reservation.
+    r"""[Output Only] The status of the reservation. - CREATING: Reservation
+    resources are being allocated. - READY: Reservation resources have been
+    allocated, and the reservation is ready for use. - DELETING: Reservation
+    deletion is in progress. - UPDATING: Reservation update is in progress.
 
     Values:
-      CREATING: Resources are being allocated for the reservation.
-      DELETING: Reservation is currently being deleted.
+      CREATING: Reservation resources are being allocated.
+      DELETING: Reservation deletion is in progress.
       INVALID: <no description>
-      READY: Reservation has allocated all its resources.
-      UPDATING: Reservation is currently being resized.
+      READY: Reservation resources have been allocated, and the reservation is
+        ready for use.
+      UPDATING: Reservation update is in progress.
     """
     CREATING = 0
     DELETING = 1

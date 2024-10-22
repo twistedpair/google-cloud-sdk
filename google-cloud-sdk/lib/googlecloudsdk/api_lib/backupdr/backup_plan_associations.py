@@ -30,12 +30,15 @@ class BackupPlanAssociationsClient(util.BackupDrClientBase):
     super(BackupPlanAssociationsClient, self).__init__()
     self.service = self.client.projects_locations_backupPlanAssociations
 
-  def Create(self, bpa_resource, backup_plan, workload_resource):
+  def Create(
+      self, bpa_resource, backup_plan, workload_resource, resource_type=""
+  ):
     parent = bpa_resource.Parent().RelativeName()
     bpa_id = bpa_resource.Name()
     bpa = self.messages.BackupPlanAssociation(
         backupPlan=backup_plan.RelativeName(),
         resource=workload_resource,
+        resourceType=resource_type,
     )
 
     request = self.messages.BackupdrProjectsLocationsBackupPlanAssociationsCreateRequest(

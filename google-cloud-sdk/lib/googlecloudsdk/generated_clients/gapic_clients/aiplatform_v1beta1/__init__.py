@@ -102,7 +102,9 @@ from .types.prediction_service import StreamingPredictResponse
 from .types.prediction_service import StreamingRawPredictRequest
 from .types.prediction_service import StreamingRawPredictResponse
 from .types.prediction_service import StreamRawPredictRequest
+from .types.tool import CodeExecutionResult
 from .types.tool import DynamicRetrievalConfig
+from .types.tool import ExecutableCode
 from .types.tool import FunctionCall
 from .types.tool import FunctionCallingConfig
 from .types.tool import FunctionDeclaration
@@ -134,6 +136,7 @@ __all__ = (
 'ChatCompletionsRequest',
 'Citation',
 'CitationMetadata',
+'CodeExecutionResult',
 'ContainerRegistryDestination',
 'Content',
 'CountTokensRequest',
@@ -150,6 +153,7 @@ __all__ = (
 'Examples',
 'ExamplesOverride',
 'ExamplesRestrictionsNamespace',
+'ExecutableCode',
 'ExplainRequest',
 'ExplainResponse',
 'Explanation',

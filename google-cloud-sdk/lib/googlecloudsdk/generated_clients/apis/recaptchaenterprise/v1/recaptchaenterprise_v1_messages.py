@@ -1063,9 +1063,12 @@ class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
   r"""Risk analysis result for an event.
 
   Enums:
+    ChallengeValueValuesEnum: Output only. Challenge information for
+      SCORE_AND_CHALLENGE keys
     ReasonsValueListEntryValuesEnum:
 
   Fields:
+    challenge: Output only. Challenge information for SCORE_AND_CHALLENGE keys
     extendedVerdictReasons: Output only. Extended verdict reasons to be used
       for experimentation only. The set of possible reasons is subject to
       change.
@@ -1074,6 +1077,21 @@ class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
       very likely legitimate traffic while 0.0 means very likely non-
       legitimate traffic).
   """
+
+  class ChallengeValueValuesEnum(_messages.Enum):
+    r"""Output only. Challenge information for SCORE_AND_CHALLENGE keys
+
+    Values:
+      CHALLENGE_UNSPECIFIED: Default unspecified type.
+      NOCAPTCHA: No challenge was presented for solving.
+      PASSED: A solution was submitted that was correct.
+      FAILED: A solution was submitted that was incorrect or otherwise deemed
+        suspicious.
+    """
+    CHALLENGE_UNSPECIFIED = 0
+    NOCAPTCHA = 1
+    PASSED = 2
+    FAILED = 3
 
   class ReasonsValueListEntryValuesEnum(_messages.Enum):
     r"""ReasonsValueListEntryValuesEnum enum type.
@@ -1103,9 +1121,10 @@ class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
     SUSPECTED_CARDING = 6
     SUSPECTED_CHARGEBACK = 7
 
-  extendedVerdictReasons = _messages.StringField(1, repeated=True)
-  reasons = _messages.EnumField('ReasonsValueListEntryValuesEnum', 2, repeated=True)
-  score = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  challenge = _messages.EnumField('ChallengeValueValuesEnum', 1)
+  extendedVerdictReasons = _messages.StringField(2, repeated=True)
+  reasons = _messages.EnumField('ReasonsValueListEntryValuesEnum', 3, repeated=True)
+  score = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudRecaptchaenterpriseV1ScoreDistribution(_messages.Message):

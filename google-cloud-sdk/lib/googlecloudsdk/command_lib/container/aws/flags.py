@@ -556,3 +556,83 @@ def AddClearAutoscalingMetrics(parser):
           'associated with the nodepool.'
       ),
   )
+
+
+def AddKubeletConfigCpuManagerPolicy(parser):
+  """Sets kubelet configuration CPU manager policy.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+  parser.add_argument(
+      '--kubelet-config-cpu-manager-policy',
+      required=False,
+      help=(
+          'Kubelet CPU manager policy.'
+      ),
+      choices=['none', 'static']
+  )
+
+
+def GetKubeletConfigCpuManagerPolicy(args):
+  return getattr(args, 'kubelet_config_cpu_manager_policy', None)
+
+
+def AddKubeletConfigCpuCfsQuota(parser):
+  """Sets kubelet configuration CPU CFS quota.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+  parser.add_argument(
+      '--kubelet-config-cpu-cfs-quota',
+      type=bool,
+      required=False,
+      help=(
+          'Enforce a Kubelet CPU CFS quota.'
+      ),
+  )
+
+
+def GetKubeletConfigCpuCfsQuota(args):
+  return getattr(args, 'kubelet_config_cpu_cfs_quota', None)
+
+
+def AddKubeletConfigCpuCfsQuotaPeriod(parser):
+  """Sets kubelet configuration CPU CFS quota period.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+  parser.add_argument(
+      '--kubelet-config-cpu-cfs-quota-period',
+      required=False,
+      help=(
+          'Kubelet CPU CFS quota period, within the range "1ms" to "1s".'
+      ),
+  )
+
+
+def GetKubeletConfigCpuCfsQuotaPeriod(args):
+  return getattr(args, 'kubelet_config_cpu_cfs_quota_period', None)
+
+
+def AddKubeletConfigPodPidsLimit(parser):
+  """Sets kubelet configuration pod PIDS limit.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+  parser.add_argument(
+      '--kubelet-config-pod-pids-limit',
+      type=int,
+      required=False,
+      help=(
+          'Kubelet maximum number of PIDS in any pod, within the '
+          'range 1024 to 4194304.'
+      ),
+  )
+
+
+def GetKubeletConfigPodPidsLimit(args):
+  return getattr(args, 'kubelet_config_pod_pids_limit', None)

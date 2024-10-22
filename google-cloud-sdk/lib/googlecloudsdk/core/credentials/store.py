@@ -217,13 +217,14 @@ class GceCredentialProvider(object):
   """Provides account, project and credential data for gce vm env."""
 
   def GetCredentials(self, account, use_google_auth=True):
-    if account in c_gce.Metadata().Accounts():
-      # Here we just return the google-auth credential without refreshing it.
-      # In _Load method we will attach the token store to the cred object, then
-      # refresh. This way the refreshed token can be cached in the token store
-      # automatically.
-      refresh = not use_google_auth
-      return AcquireFromGCE(account, use_google_auth, refresh)
+    if properties.VALUES.core.check_gce_metadata.GetBool():
+      if account in c_gce.Metadata().Accounts():
+        # Here we just return the google-auth credential without refreshing it.
+        # In _Load method we will attach the token store to the cred object,
+        # then refresh. This way the refreshed token can be cached in the
+        # token store automatically.
+        refresh = not use_google_auth
+        return AcquireFromGCE(account, use_google_auth, refresh)
     return None
 
   def GetAccount(self):
@@ -232,7 +233,9 @@ class GceCredentialProvider(object):
     return None
 
   def GetAccounts(self):
-    return set(c_gce.Metadata().Accounts())
+    if properties.VALUES.core.check_gce_metadata.GetBool():
+      return set(c_gce.Metadata().Accounts())
+    return set()
 
   def GetUniverseDomain(self):
     """Gets the universe domain from GCE metadata.

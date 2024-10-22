@@ -4727,7 +4727,7 @@ class ApigeeOrganizationsSecurityProfilesV2CreateRequest(_messages.Message):
     googleCloudApigeeV1SecurityProfileV2: A
       GoogleCloudApigeeV1SecurityProfileV2 resource to be passed as the
       request body.
-    parent: Required. The parent resource name.
+    parent: Required. The parent resource name. Format: `organizations/{org}`
     securityProfileV2Id: Required. The security profile id.
   """
 
@@ -4740,7 +4740,8 @@ class ApigeeOrganizationsSecurityProfilesV2DeleteRequest(_messages.Message):
   r"""A ApigeeOrganizationsSecurityProfilesV2DeleteRequest object.
 
   Fields:
-    name: Required. The name of the security profile v2 to delete.
+    name: Required. The name of the security profile v2 to delete. Format:
+      `organizations/{org}/securityProfilesV2/{profile}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -4750,7 +4751,8 @@ class ApigeeOrganizationsSecurityProfilesV2GetRequest(_messages.Message):
   r"""A ApigeeOrganizationsSecurityProfilesV2GetRequest object.
 
   Fields:
-    name: Required. The security profile id.
+    name: Required. The name of the security profile v2 to get. Format:
+      `organizations/{org}/securityProfilesV2/{profile}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -4782,7 +4784,8 @@ class ApigeeOrganizationsSecurityProfilesV2PatchRequest(_messages.Message):
       request body.
     name: Identifier. Name of the security profile v2 resource. Format:
       organizations/{org}/securityProfilesV2/{profile}
-    updateMask: Required. The list of fields to update.
+    updateMask: Optional. The list of fields to update. Valid fields to update
+      are `description` and `profileAssessmentConfigs`.
   """
 
   googleCloudApigeeV1SecurityProfileV2 = _messages.MessageField('GoogleCloudApigeeV1SecurityProfileV2', 1)

@@ -165,6 +165,39 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GLOSSARIES = (
+      'projects.locations.glossaries',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/glossaries/'
+              '{glossariesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_GLOSSARIES_CATEGORIES = (
+      'projects.locations.glossaries.categories',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/glossaries/'
+              '{glossariesId}/categories/{categoriesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_GLOSSARIES_TERMS = (
+      'projects.locations.glossaries.terms',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/glossaries/'
+              '{glossariesId}/terms/{termsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_GOVERNANCERULES = (
       'projects.locations.governanceRules',
       '{+name}',

@@ -664,10 +664,20 @@ class ExecuteSqlRequest(proto.Message):
                 performance overhead compared to the other
                 modes. It is not recommended to use this mode
                 for production traffic.
+            WITH_STATS (3):
+                This mode returns the overall (but not
+                operator-level) execution statistics along with
+                the results.
+            WITH_PLAN_AND_STATS (4):
+                This mode returns the query plan, overall
+                (but not operator-level) execution statistics
+                along with the results.
         """
         NORMAL = 0
         PLAN = 1
         PROFILE = 2
+        WITH_STATS = 3
+        WITH_PLAN_AND_STATS = 4
 
     class QueryOptions(proto.Message):
         r"""Query optimizer configuration.
@@ -970,6 +980,13 @@ class ExecuteBatchDmlResponse(proto.Message):
             If all DML statements are executed successfully, the status
             is ``OK``. Otherwise, the error status of the first failed
             statement.
+        precommit_token (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.MultiplexedSessionPrecommitToken):
+            Optional. A precommit token will be included if the
+            read-write transaction is on a multiplexed session. The
+            precommit token with the highest sequence number from this
+            transaction attempt should be passed to the
+            [Commit][google.spanner.v1.Spanner.Commit] request for this
+            transaction.
     """
 
     result_sets: MutableSequence[result_set.ResultSet] = proto.RepeatedField(
@@ -981,6 +998,11 @@ class ExecuteBatchDmlResponse(proto.Message):
         proto.MESSAGE,
         number=2,
         message=status_pb2.Status,
+    )
+    precommit_token: gs_transaction.MultiplexedSessionPrecommitToken = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        message=gs_transaction.MultiplexedSessionPrecommitToken,
     )
 
 
@@ -1490,6 +1512,13 @@ class BeginTransactionRequest(proto.Message):
             struct will not do anything. To set the priority for a
             transaction, set it on the reads and writes that are part of
             this transaction instead.
+        mutation_key (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.Mutation):
+            Optional. Required for read-write
+            transactions on a multiplexed session that
+            commit mutations but do not perform any reads or
+            queries. Clients should randomly select one of
+            the mutations from the mutation set and send it
+            as a part of this request.
     """
 
     session: str = proto.Field(
@@ -1505,6 +1534,11 @@ class BeginTransactionRequest(proto.Message):
         proto.MESSAGE,
         number=3,
         message='RequestOptions',
+    )
+    mutation_key: mutation.Mutation = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        message=mutation.Mutation,
     )
 
 
@@ -1558,6 +1592,13 @@ class CommitRequest(proto.Message):
             delay value between 0 and 500 ms.
         request_options (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.RequestOptions):
             Common options for this request.
+        precommit_token (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.MultiplexedSessionPrecommitToken):
+            Optional. If the read-write transaction was
+            executed on a multiplexed session, the precommit
+            token with the highest sequence number received
+            in this transaction attempt, should be included
+            here. Failing to do so will result in a
+            FailedPrecondition error.
     """
 
     session: str = proto.Field(
@@ -1593,6 +1634,11 @@ class CommitRequest(proto.Message):
         proto.MESSAGE,
         number=6,
         message='RequestOptions',
+    )
+    precommit_token: gs_transaction.MultiplexedSessionPrecommitToken = proto.Field(
+        proto.MESSAGE,
+        number=9,
+        message=gs_transaction.MultiplexedSessionPrecommitToken,
     )
 
 

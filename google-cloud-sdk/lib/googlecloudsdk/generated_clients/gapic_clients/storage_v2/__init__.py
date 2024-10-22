@@ -32,30 +32,16 @@ from .types.storage import CommonObjectRequestParams
 from .types.storage import ComposeObjectRequest
 from .types.storage import ContentRange
 from .types.storage import CreateBucketRequest
-from .types.storage import CreateHmacKeyRequest
-from .types.storage import CreateHmacKeyResponse
-from .types.storage import CreateNotificationConfigRequest
 from .types.storage import CustomerEncryption
 from .types.storage import DeleteBucketRequest
-from .types.storage import DeleteHmacKeyRequest
-from .types.storage import DeleteNotificationConfigRequest
 from .types.storage import DeleteObjectRequest
 from .types.storage import GetBucketRequest
-from .types.storage import GetHmacKeyRequest
-from .types.storage import GetNotificationConfigRequest
 from .types.storage import GetObjectRequest
-from .types.storage import GetServiceAccountRequest
-from .types.storage import HmacKeyMetadata
 from .types.storage import ListBucketsRequest
 from .types.storage import ListBucketsResponse
-from .types.storage import ListHmacKeysRequest
-from .types.storage import ListHmacKeysResponse
-from .types.storage import ListNotificationConfigsRequest
-from .types.storage import ListNotificationConfigsResponse
 from .types.storage import ListObjectsRequest
 from .types.storage import ListObjectsResponse
 from .types.storage import LockBucketRetentionPolicyRequest
-from .types.storage import NotificationConfig
 from .types.storage import Object
 from .types.storage import ObjectAccessControl
 from .types.storage import ObjectChecksums
@@ -68,12 +54,10 @@ from .types.storage import ReadObjectResponse
 from .types.storage import RestoreObjectRequest
 from .types.storage import RewriteObjectRequest
 from .types.storage import RewriteResponse
-from .types.storage import ServiceAccount
 from .types.storage import ServiceConstants
 from .types.storage import StartResumableWriteRequest
 from .types.storage import StartResumableWriteResponse
 from .types.storage import UpdateBucketRequest
-from .types.storage import UpdateHmacKeyRequest
 from .types.storage import UpdateObjectRequest
 from .types.storage import WriteObjectRequest
 from .types.storage import WriteObjectResponse
@@ -92,30 +76,16 @@ __all__ = (
 'ComposeObjectRequest',
 'ContentRange',
 'CreateBucketRequest',
-'CreateHmacKeyRequest',
-'CreateHmacKeyResponse',
-'CreateNotificationConfigRequest',
 'CustomerEncryption',
 'DeleteBucketRequest',
-'DeleteHmacKeyRequest',
-'DeleteNotificationConfigRequest',
 'DeleteObjectRequest',
 'GetBucketRequest',
-'GetHmacKeyRequest',
-'GetNotificationConfigRequest',
 'GetObjectRequest',
-'GetServiceAccountRequest',
-'HmacKeyMetadata',
 'ListBucketsRequest',
 'ListBucketsResponse',
-'ListHmacKeysRequest',
-'ListHmacKeysResponse',
-'ListNotificationConfigsRequest',
-'ListNotificationConfigsResponse',
 'ListObjectsRequest',
 'ListObjectsResponse',
 'LockBucketRetentionPolicyRequest',
-'NotificationConfig',
 'Object',
 'ObjectAccessControl',
 'ObjectChecksums',
@@ -128,13 +98,11 @@ __all__ = (
 'RestoreObjectRequest',
 'RewriteObjectRequest',
 'RewriteResponse',
-'ServiceAccount',
 'ServiceConstants',
 'StartResumableWriteRequest',
 'StartResumableWriteResponse',
 'StorageClient',
 'UpdateBucketRequest',
-'UpdateHmacKeyRequest',
 'UpdateObjectRequest',
 'WriteObjectRequest',
 'WriteObjectResponse',

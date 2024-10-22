@@ -107,6 +107,10 @@ class TopicsClient(object):
       azure_event_hubs_ingestion_client_id=None,
       azure_event_hubs_ingestion_tenant_id=None,
       azure_event_hubs_ingestion_service_account=None,
+      aws_msk_ingestion_cluster_arn=None,
+      aws_msk_ingestion_topic=None,
+      aws_msk_ingestion_aws_role_arn=None,
+      aws_msk_ingestion_service_account=None,
       ingestion_log_severity=None,
   ):
     """Returns an IngestionDataSourceSettings message from the provided args."""
@@ -133,6 +137,13 @@ class TopicsClient(object):
         and (azure_event_hubs_ingestion_client_id is not None)
         and (azure_event_hubs_ingestion_tenant_id is not None)
         and (azure_event_hubs_ingestion_service_account is not None)
+    )
+
+    is_msk = (
+        (aws_msk_ingestion_cluster_arn is not None)
+        and (aws_msk_ingestion_topic is not None)
+        and (aws_msk_ingestion_aws_role_arn is not None)
+        and (aws_msk_ingestion_service_account is not None)
     )
 
     if is_kinesis:
@@ -184,6 +195,20 @@ class TopicsClient(object):
               ingestion_log_severity
           ),
       )
+    elif is_msk:
+      msk_source = self.messages.AwsMsk(
+          clusterArn=aws_msk_ingestion_cluster_arn,
+          topic=aws_msk_ingestion_topic,
+          awsRoleArn=aws_msk_ingestion_aws_role_arn,
+          gcpServiceAccount=aws_msk_ingestion_service_account,
+      )
+
+      return self.messages.IngestionDataSourceSettings(
+          awsMsk=msk_source,
+          platformLogsSettings=self._ParseIngestionPlatformLogsSettings(
+              ingestion_log_severity
+          ),
+      )
     elif ingestion_log_severity:
       raise ConflictingIngestionSettingsException(
           'Must set ingestion settings with log severity.'
@@ -217,6 +242,10 @@ class TopicsClient(object):
       azure_event_hubs_ingestion_client_id=None,
       azure_event_hubs_ingestion_tenant_id=None,
       azure_event_hubs_ingestion_service_account=None,
+      aws_msk_ingestion_cluster_arn=None,
+      aws_msk_ingestion_topic=None,
+      aws_msk_ingestion_aws_role_arn=None,
+      aws_msk_ingestion_service_account=None,
       ingestion_log_severity=None,
   ):
     """Creates a Topic.
@@ -269,6 +298,14 @@ class TopicsClient(object):
         Event Hubs application used to authenticate Pub/Sub.
       azure_event_hubs_ingestion_service_account (str): The GCP service account
         to be used for Federated Identity authentication with Azure Event Hubs.
+      aws_msk_ingestion_cluster_arn (str): The ARN that uniquely identifies the
+        MSK cluster.
+      aws_msk_ingestion_topic (str): The name of the MSK topic that Pub/Sub will
+        import from.
+      aws_msk_ingestion_aws_role_arn (str): AWS role ARN to be used for
+        Federated Identity authentication with MSK.
+      aws_msk_ingestion_service_account (str): The GCP service account to be
+        used for Federated Identity authentication with MSK.
       ingestion_log_severity (optional[str]): The log severity to use for
         ingestion.
 
@@ -320,6 +357,10 @@ class TopicsClient(object):
         azure_event_hubs_ingestion_client_id=azure_event_hubs_ingestion_client_id,
         azure_event_hubs_ingestion_tenant_id=azure_event_hubs_ingestion_tenant_id,
         azure_event_hubs_ingestion_service_account=azure_event_hubs_ingestion_service_account,
+        aws_msk_ingestion_cluster_arn=aws_msk_ingestion_cluster_arn,
+        aws_msk_ingestion_topic=aws_msk_ingestion_topic,
+        aws_msk_ingestion_aws_role_arn=aws_msk_ingestion_aws_role_arn,
+        aws_msk_ingestion_service_account=aws_msk_ingestion_service_account,
         ingestion_log_severity=ingestion_log_severity,
     )
     return self._service.Create(topic)
@@ -577,6 +618,10 @@ class TopicsClient(object):
       azure_event_hubs_ingestion_client_id=None,
       azure_event_hubs_ingestion_tenant_id=None,
       azure_event_hubs_ingestion_service_account=None,
+      aws_msk_ingestion_cluster_arn=None,
+      aws_msk_ingestion_topic=None,
+      aws_msk_ingestion_aws_role_arn=None,
+      aws_msk_ingestion_service_account=None,
       ingestion_log_severity=None,
   ):
     """Updates a Topic.
@@ -637,6 +682,14 @@ class TopicsClient(object):
         Event Hubs application used to authenticate Pub/Sub.
       azure_event_hubs_ingestion_service_account (str): The GCP service account
         to be used for Federated Identity authentication with Azure Event Hubs.
+      aws_msk_ingestion_cluster_arn (str): The ARN that uniquely identifies the
+        MSK cluster.
+      aws_msk_ingestion_topic (str): The name of the MSK topic that Pub/Sub will
+        import from.
+      aws_msk_ingestion_aws_role_arn (str): AWS role ARN to be used for
+        Federated Identity authentication with MSK.
+      aws_msk_ingestion_service_account (str): The GCP service account to be
+        used for Federated Identity authentication with MSK.
       ingestion_log_severity (optional[str]): The log severity to use for
         ingestion.
 
@@ -718,6 +771,10 @@ class TopicsClient(object):
           azure_event_hubs_ingestion_client_id=azure_event_hubs_ingestion_client_id,
           azure_event_hubs_ingestion_tenant_id=azure_event_hubs_ingestion_tenant_id,
           azure_event_hubs_ingestion_service_account=azure_event_hubs_ingestion_service_account,
+          aws_msk_ingestion_cluster_arn=aws_msk_ingestion_cluster_arn,
+          aws_msk_ingestion_topic=aws_msk_ingestion_topic,
+          aws_msk_ingestion_aws_role_arn=aws_msk_ingestion_aws_role_arn,
+          aws_msk_ingestion_service_account=aws_msk_ingestion_service_account,
           ingestion_log_severity=ingestion_log_severity,
       )
       if new_settings is not None:

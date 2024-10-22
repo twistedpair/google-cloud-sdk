@@ -745,6 +745,71 @@ class Filter(_messages.Message):
   propertyFilter = _messages.MessageField('PropertyFilter', 2)
 
 
+class FindNearest(_messages.Message):
+  r"""Nearest Neighbors search config. The ordering provided by FindNearest
+  supersedes the order_by stage. If multiple documents have the same vector
+  distance, the returned document order is not guaranteed to be stable between
+  queries.
+
+  Enums:
+    DistanceMeasureValueValuesEnum: Required. The Distance Measure to use,
+      required.
+
+  Fields:
+    distanceMeasure: Required. The Distance Measure to use, required.
+    distanceResultProperty: Optional. Optional name of the field to output the
+      result of the vector distance calculation. Must conform to entity
+      property limitations.
+    distanceThreshold: Optional. Option to specify a threshold for which no
+      less similar documents will be returned. The behavior of the specified
+      `distance_measure` will affect the meaning of the distance threshold.
+      Since DOT_PRODUCT distances increase when the vectors are more similar,
+      the comparison is inverted. For EUCLIDEAN, COSINE: WHERE distance <=
+      distance_threshold For DOT_PRODUCT: WHERE distance >= distance_threshold
+    limit: Required. The number of nearest neighbors to return. Must be a
+      positive integer of no more than 100.
+    queryVector: Required. The query vector that we are searching on. Must be
+      a vector of no more than 2048 dimensions.
+    vectorProperty: Required. An indexed vector property to search upon. Only
+      documents which contain vectors whose dimensionality match the
+      query_vector can be returned.
+  """
+
+  class DistanceMeasureValueValuesEnum(_messages.Enum):
+    r"""Required. The Distance Measure to use, required.
+
+    Values:
+      DISTANCE_MEASURE_UNSPECIFIED: Should not be set.
+      EUCLIDEAN: Measures the EUCLIDEAN distance between the vectors. See
+        [Euclidean](https://en.wikipedia.org/wiki/Euclidean_distance) to learn
+        more. The resulting distance decreases the more similar two vectors
+        are.
+      COSINE: COSINE distance compares vectors based on the angle between
+        them, which allows you to measure similarity that isn't based on the
+        vectors magnitude. We recommend using DOT_PRODUCT with unit normalized
+        vectors instead of COSINE distance, which is mathematically equivalent
+        with better performance. See [Cosine
+        Similarity](https://en.wikipedia.org/wiki/Cosine_similarity) to learn
+        more about COSINE similarity and COSINE distance. The resulting COSINE
+        distance decreases the more similar two vectors are.
+      DOT_PRODUCT: Similar to cosine but is affected by the magnitude of the
+        vectors. See [Dot Product](https://en.wikipedia.org/wiki/Dot_product)
+        to learn more. The resulting distance increases the more similar two
+        vectors are.
+    """
+    DISTANCE_MEASURE_UNSPECIFIED = 0
+    EUCLIDEAN = 1
+    COSINE = 2
+    DOT_PRODUCT = 3
+
+  distanceMeasure = _messages.EnumField('DistanceMeasureValueValuesEnum', 1)
+  distanceResultProperty = _messages.StringField(2)
+  distanceThreshold = _messages.FloatField(3)
+  limit = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  queryVector = _messages.MessageField('Value', 5)
+  vectorProperty = _messages.MessageField('PropertyReference', 6)
+
+
 class GoogleDatastoreAdminV1CommonMetadata(_messages.Message):
   r"""Metadata common to all Datastore Admin operations.
 
@@ -1860,10 +1925,18 @@ class LookupResponse(_messages.Message):
 class Mutation(_messages.Message):
   r"""A mutation to apply to an entity.
 
+  Enums:
+    ConflictResolutionStrategyValueValuesEnum: The strategy to use when a
+      conflict is detected. Defaults to `SERVER_VALUE`. If this is set, then
+      `conflict_detection_strategy` must also be set.
+
   Fields:
     baseVersion: The version of the entity that this mutation is being applied
       to. If this does not match the current version on the server, the
       mutation conflicts.
+    conflictResolutionStrategy: The strategy to use when a conflict is
+      detected. Defaults to `SERVER_VALUE`. If this is set, then
+      `conflict_detection_strategy` must also be set.
     delete: The key of the entity to delete. The entity may or may not already
       exist. Must have a complete key path and must not be reserved/read-only.
     insert: The entity to insert. The entity must not already exist. The
@@ -1874,6 +1947,10 @@ class Mutation(_messages.Message):
       properties referenced in the mask are updated, others are left
       untouched. Properties referenced in the mask but not in the entity are
       deleted.
+    propertyTransforms: Optional. The transforms to perform on the entity.
+      This field can be set only when the operation is `insert`, `update`, or
+      `upsert`. If present, the transforms are be applied to the entity
+      regardless of the property mask, in order, after the operation.
     update: The entity to update. The entity must already exist. Must have a
       complete key path.
     updateTime: The update time of the entity that this mutation is being
@@ -1883,13 +1960,29 @@ class Mutation(_messages.Message):
       entity key's final path element may be incomplete.
   """
 
+  class ConflictResolutionStrategyValueValuesEnum(_messages.Enum):
+    r"""The strategy to use when a conflict is detected. Defaults to
+    `SERVER_VALUE`. If this is set, then `conflict_detection_strategy` must
+    also be set.
+
+    Values:
+      STRATEGY_UNSPECIFIED: Unspecified. Defaults to `SERVER_VALUE`.
+      SERVER_VALUE: The server entity is kept.
+      FAIL: The whole commit request fails.
+    """
+    STRATEGY_UNSPECIFIED = 0
+    SERVER_VALUE = 1
+    FAIL = 2
+
   baseVersion = _messages.IntegerField(1)
-  delete = _messages.MessageField('Key', 2)
-  insert = _messages.MessageField('Entity', 3)
-  propertyMask = _messages.MessageField('PropertyMask', 4)
-  update = _messages.MessageField('Entity', 5)
-  updateTime = _messages.StringField(6)
-  upsert = _messages.MessageField('Entity', 7)
+  conflictResolutionStrategy = _messages.EnumField('ConflictResolutionStrategyValueValuesEnum', 2)
+  delete = _messages.MessageField('Key', 3)
+  insert = _messages.MessageField('Entity', 4)
+  propertyMask = _messages.MessageField('PropertyMask', 5)
+  propertyTransforms = _messages.MessageField('PropertyTransform', 6, repeated=True)
+  update = _messages.MessageField('Entity', 7)
+  updateTime = _messages.StringField(8)
+  upsert = _messages.MessageField('Entity', 9)
 
 
 class MutationResult(_messages.Message):
@@ -1903,6 +1996,8 @@ class MutationResult(_messages.Message):
       after a 'delete'.
     key: The automatically allocated key. Set only when the mutation allocated
       a key.
+    transformResults: The results of applying each PropertyTransform, in the
+      same order of the request.
     updateTime: The update time of the entity on the server after processing
       the mutation. If the mutation doesn't change anything on the server,
       then the timestamp will be the update timestamp of the current entity.
@@ -1917,8 +2012,9 @@ class MutationResult(_messages.Message):
   conflictDetected = _messages.BooleanField(1)
   createTime = _messages.StringField(2)
   key = _messages.MessageField('Key', 3)
-  updateTime = _messages.StringField(4)
-  version = _messages.IntegerField(5)
+  transformResults = _messages.MessageField('Value', 4, repeated=True)
+  updateTime = _messages.StringField(5)
+  version = _messages.IntegerField(6)
 
 
 class PartitionId(_messages.Message):
@@ -2134,8 +2230,92 @@ class PropertyReference(_messages.Message):
   name = _messages.StringField(1)
 
 
+class PropertyTransform(_messages.Message):
+  r"""A transformation of an entity property.
+
+  Enums:
+    SetToServerValueValueValuesEnum: Sets the property to the given server
+      value.
+
+  Fields:
+    appendMissingElements: Appends the given elements in order if they are not
+      already present in the current property value. If the property is not an
+      array, or if the property does not yet exist, it is first set to the
+      empty array. Equivalent numbers of different types (e.g. 3L and 3.0) are
+      considered equal when checking if a value is missing. NaN is equal to
+      NaN, and the null value is equal to the null value. If the input
+      contains multiple equivalent values, only the first will be considered.
+      The corresponding transform result will be the null value.
+    increment: Adds the given value to the property's current value. This must
+      be an integer or a double value. If the property is not an integer or
+      double, or if the property does not yet exist, the transformation will
+      set the property to the given value. If either of the given value or the
+      current property value are doubles, both values will be interpreted as
+      doubles. Double arithmetic and representation of double values follows
+      IEEE 754 semantics. If there is positive/negative integer overflow, the
+      property is resolved to the largest magnitude positive/negative integer.
+    maximum: Sets the property to the maximum of its current value and the
+      given value. This must be an integer or a double value. If the property
+      is not an integer or double, or if the property does not yet exist, the
+      transformation will set the property to the given value. If a maximum
+      operation is applied where the property and the input value are of mixed
+      types (that is - one is an integer and one is a double) the property
+      takes on the type of the larger operand. If the operands are equivalent
+      (e.g. 3 and 3.0), the property does not change. 0, 0.0, and -0.0 are all
+      zero. The maximum of a zero stored value and zero input value is always
+      the stored value. The maximum of any numeric value x and NaN is NaN.
+    minimum: Sets the property to the minimum of its current value and the
+      given value. This must be an integer or a double value. If the property
+      is not an integer or double, or if the property does not yet exist, the
+      transformation will set the property to the input value. If a minimum
+      operation is applied where the property and the input value are of mixed
+      types (that is - one is an integer and one is a double) the property
+      takes on the type of the smaller operand. If the operands are equivalent
+      (e.g. 3 and 3.0), the property does not change. 0, 0.0, and -0.0 are all
+      zero. The minimum of a zero stored value and zero input value is always
+      the stored value. The minimum of any numeric value x and NaN is NaN.
+    property: Optional. The name of the property. Property paths (a list of
+      property names separated by dots (`.`)) may be used to refer to
+      properties inside entity values. For example `foo.bar` means the
+      property `bar` inside the entity property `foo`. If a property name
+      contains a dot `.` or a backlslash `\`, then that name must be escaped.
+    removeAllFromArray: Removes all of the given elements from the array in
+      the property. If the property is not an array, or if the property does
+      not yet exist, it is set to the empty array. Equivalent numbers of
+      different types (e.g. 3L and 3.0) are considered equal when deciding
+      whether an element should be removed. NaN is equal to NaN, and the null
+      value is equal to the null value. This will remove all equivalent values
+      if there are duplicates. The corresponding transform result will be the
+      null value.
+    setToServerValue: Sets the property to the given server value.
+  """
+
+  class SetToServerValueValueValuesEnum(_messages.Enum):
+    r"""Sets the property to the given server value.
+
+    Values:
+      SERVER_VALUE_UNSPECIFIED: Unspecified. This value must not be used.
+      REQUEST_TIME: The time at which the server processed the request, with
+        millisecond precision. If used on multiple properties (same or
+        different entities) in a transaction, all the properties will get the
+        same server timestamp.
+    """
+    SERVER_VALUE_UNSPECIFIED = 0
+    REQUEST_TIME = 1
+
+  appendMissingElements = _messages.MessageField('ArrayValue', 1)
+  increment = _messages.MessageField('Value', 2)
+  maximum = _messages.MessageField('Value', 3)
+  minimum = _messages.MessageField('Value', 4)
+  property = _messages.StringField(5)
+  removeAllFromArray = _messages.MessageField('ArrayValue', 6)
+  setToServerValue = _messages.EnumField('SetToServerValueValueValuesEnum', 7)
+
+
 class Query(_messages.Message):
-  r"""A query for entities.
+  r"""A query for entities. The query stages are executed in the following
+  order: 1. kind 2. filter 3. projection 4. order + start_cursor + end_cursor
+  5. offset 6. limit 7. find_nearest
 
   Fields:
     distinctOn: The properties to make distinct. The query results will
@@ -2148,6 +2328,9 @@ class Query(_messages.Message):
       query](https://cloud.google.com/datastore/docs/concepts/queries#cursors_
       limits_and_offsets).
     filter: The filter to apply.
+    findNearest: Optional. A potential Nearest Neighbors Search. Applies after
+      all other filters and ordering. Finds the closest vector embeddings to
+      the given query vector.
     kind: The kinds to query (if empty, returns entities of all kinds).
       Currently at most 1 kind may be specified.
     limit: The maximum number of results to return. Applies after all other
@@ -2168,12 +2351,13 @@ class Query(_messages.Message):
   distinctOn = _messages.MessageField('PropertyReference', 1, repeated=True)
   endCursor = _messages.BytesField(2)
   filter = _messages.MessageField('Filter', 3)
-  kind = _messages.MessageField('KindExpression', 4, repeated=True)
-  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  offset = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  order = _messages.MessageField('PropertyOrder', 7, repeated=True)
-  projection = _messages.MessageField('Projection', 8, repeated=True)
-  startCursor = _messages.BytesField(9)
+  findNearest = _messages.MessageField('FindNearest', 4)
+  kind = _messages.MessageField('KindExpression', 5, repeated=True)
+  limit = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  offset = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  order = _messages.MessageField('PropertyOrder', 8, repeated=True)
+  projection = _messages.MessageField('Projection', 9, repeated=True)
+  startCursor = _messages.BytesField(10)
 
 
 class QueryResultBatch(_messages.Message):

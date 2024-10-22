@@ -59,6 +59,13 @@ class Collections(enum.Enum):
       ['project', 'backendService'],
       True
   )
+  CROSSSITENETWORKS = (
+      'crossSiteNetworks',
+      'projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}',
+      {},
+      ['project', 'crossSiteNetwork'],
+      True
+  )
   DISKSETTINGS = (
       'diskSettings',
       'projects/{project}/zones/{zone}/diskSettings',
@@ -853,6 +860,14 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/vpnTunnels/{vpnTunnel}',
       {},
       ['project', 'region', 'vpnTunnel'],
+      True
+  )
+  WIREGROUPS = (
+      'wireGroups',
+      'projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}/'
+      'wireGroups/{wireGroup}',
+      {},
+      ['project', 'crossSiteNetwork', 'wireGroup'],
       True
   )
   ZONEOPERATIONS = (

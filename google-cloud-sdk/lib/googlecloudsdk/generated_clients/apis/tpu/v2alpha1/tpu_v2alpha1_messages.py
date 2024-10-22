@@ -837,6 +837,7 @@ class Node(_messages.Message):
       HIDING: TPU node is currently hiding.
       HIDDEN: TPU node has been hidden.
       UNHIDING: TPU node is currently unhiding.
+      UNKNOWN: TPU node has unknown state after a failed repair.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -853,6 +854,7 @@ class Node(_messages.Message):
     HIDING = 12
     HIDDEN = 13
     UNHIDING = 14
+    UNKNOWN = 15
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

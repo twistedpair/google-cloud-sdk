@@ -9920,7 +9920,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def GetControlPlaneAccess(self, request, global_params=None):
-      r"""Lists the service accounts with the permissions required to allow Apigee runtime-plane components access to control plane resources. Currently, the permissions required are to: 1. Allow runtime components to publish analytics data to the control plane. **Note**: Available to Apigee hybrid only.
+      r"""Lists the service accounts allowed to access Apigee control plane directly for limited functionality. **Note**: Available to Apigee hybrid only.
 
       Args:
         request: (ApigeeOrganizationsGetControlPlaneAccessRequest) input message

@@ -2701,14 +2701,13 @@ def AddReplicationLagMaxSecondsForRecreate(parser):
   parser.add_argument(
       '--replication-lag-max-seconds-for-recreate',
       type=arg_parsers.BoundedInt(lower_bound=300, upper_bound=31536000),
-      hidden=True,
       action=arg_parsers.StoreOnceAction,
       required=False,
       help=(
-          'Set a maximum replication lag for a read replica in'
-          'seconds, If the replica lag exceeds the specified value, the read'
+          'Set a maximum replication lag for a MySQL read replica in '
+          'seconds. If the replica lag exceeds the specified value, the read'
           'replica(s) will be recreated. Min value=300 seconds,'
-          'Max value=31536000 seconds.'))
+          'Max value=31536000 seconds, default value=31536000 seconds.'))
 
 
 def AddSslMode(parser, hidden=False):

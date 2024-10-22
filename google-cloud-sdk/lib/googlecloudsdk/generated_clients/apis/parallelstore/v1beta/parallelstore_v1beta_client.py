@@ -274,7 +274,7 @@ class ParallelstoreV1beta(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v1beta/{+name}:cancel',
-        request_field='cancelOperationRequest',
+        request_field='',
         request_type_name='ParallelstoreProjectsLocationsOperationsCancelRequest',
         response_type_name='GoogleProtobufEmpty',
         supports_download=False,

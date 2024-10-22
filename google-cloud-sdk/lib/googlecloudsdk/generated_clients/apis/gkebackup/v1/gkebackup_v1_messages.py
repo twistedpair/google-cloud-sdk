@@ -397,7 +397,7 @@ class BackupPlan(_messages.Message):
     lastSuccessfulBackupTime: Output only. Completion time of the last
       successful Backup. This is sourced from a successful Backup's
       complete_time field. This field is added to maintain consistency with
-      BackupPlanAssociation to display last successful backup time.
+      BackupPlanBinding to display last successful backup time.
     name: Output only. The full name of the BackupPlan resource. Format:
       `projects/*/locations/*/backupPlans/*`
     protectedPodCount: Output only. The number of Kubernetes Pods backed up in
@@ -518,6 +518,45 @@ class BackupPlanAssociation(_messages.Message):
     uid: Output only. Server generated global unique identifier of
       [UUID4](https://en.wikipedia.org/wiki/Universally_unique_identifier)
     updateTime: Output only. The timestamp when this association was created.
+  """
+
+  backupPlan = _messages.StringField(1)
+  cluster = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  name = _messages.StringField(5)
+  uid = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+
+
+class BackupPlanBinding(_messages.Message):
+  r"""A BackupPlanBinding binds a BackupPlan with a BackupChannel. This
+  resource is created automatically when a BackupPlan is created using a
+  BackupChannel. This also serves as a holder for cross-project fields that
+  need to be displayed in the current project.
+
+  Fields:
+    backupPlan: Output only. Immutable. The fully qualified name of the
+      BackupPlan bound with the parent BackupChannel.
+      `projects/*/locations/*/backupPlans/{backup_plan}`
+    cluster: Output only. Immutable. The fully qualified name of the cluster
+      that is being backed up Valid formats: -
+      `projects/*/locations/*/clusters/*` - `projects/*/zones/*/clusters/*`
+    createTime: Output only. The timestamp when this binding was created.
+    etag: Output only. `etag` is used for optimistic concurrency control as a
+      way to help prevent simultaneous updates of a BackupPlanBinding from
+      overwriting each other. It is strongly suggested that systems make use
+      of the 'etag' in the read-modify-write cycle to perform
+      BackupPlanBinding updates in order to avoid race conditions: An `etag`
+      is returned in the response to `GetBackupPlanBinding`, and systems are
+      expected to put that etag in the request to `UpdateBackupPlanBinding` or
+      `DeleteBackupPlanBinding` to ensure that their change will be applied to
+      the same version of the resource.
+    name: Identifier. The fully qualified name of the BackupPlanBinding.
+      `projects/*/locations/*/backupChannels/*/backupPlanBindings/*`
+    uid: Output only. Server generated global unique identifier of
+      [UUID4](https://en.wikipedia.org/wiki/Universally_unique_identifier)
+    updateTime: Output only. The timestamp when this binding was created.
   """
 
   backupPlan = _messages.StringField(1)
@@ -916,6 +955,46 @@ class GkebackupProjectsLocationsBackupChannelsBackupPlanAssociationsListRequest(
     parent: Required. The BackupChannel that contains the
       BackupPlanAssociations to list. Format:
       `projects/*/locations/*/backupChannels/*`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class GkebackupProjectsLocationsBackupChannelsBackupPlanBindingsGetRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsBackupChannelsBackupPlanBindingsGetRequest
+  object.
+
+  Fields:
+    name: Required. Fully qualified BackupPlanBinding name. Format:
+      `projects/*/locations/*/backupChannels/*/backupPlanBindings/*`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkebackupProjectsLocationsBackupChannelsBackupPlanBindingsListRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsBackupChannelsBackupPlanBindingsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Field match expression used to filter the results.
+    orderBy: Optional. Field by which to sort the results.
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
+      `ListBackupPlanBindings` call. Provide this to retrieve the subsequent
+      page in a multi-page list of results. When paginating, all other
+      parameters provided to `ListBackupPlanBindings` must match the call that
+      provided the page token.
+    parent: Required. The BackupChannel that contains the BackupPlanBindings
+      to list. Format: `projects/*/locations/*/backupChannels/*`
   """
 
   filter = _messages.StringField(1)
@@ -1675,6 +1754,48 @@ class GkebackupProjectsLocationsRestoreChannelsRestorePlanAssociationsListReques
   parent = _messages.StringField(5, required=True)
 
 
+class GkebackupProjectsLocationsRestoreChannelsRestorePlanBindingsGetRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsRestoreChannelsRestorePlanBindingsGetRequest
+  object.
+
+  Fields:
+    name: Required. Fully qualified RestorePlanBinding name. Format:
+      `projects/*/locations/*/restoreChannels/*/restorePlanBindings/*`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkebackupProjectsLocationsRestoreChannelsRestorePlanBindingsListRequest(_messages.Message):
+  r"""A
+  GkebackupProjectsLocationsRestoreChannelsRestorePlanBindingsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Field match expression used to filter the results.
+    orderBy: Optional. Field by which to sort the results.
+    pageSize: Optional. The target number of results to return in a single
+      response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
+      `ListRestorePlanBindings` call. Provide this to retrieve the subsequent
+      page in a multi-page list of results. When paginating, all other
+      parameters provided to `ListRestorePlanBindings` must match the call
+      that provided the page token.
+    parent: Required. The RestoreChannel that contains the
+      ListRestorePlanBindings to list. Format:
+      `projects/*/locations/*/restoreChannels/*`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class GkebackupProjectsLocationsRestorePlansCreateRequest(_messages.Message):
   r"""A GkebackupProjectsLocationsRestorePlansCreateRequest object.
 
@@ -2334,6 +2455,24 @@ class ListBackupPlanAssociationsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListBackupPlanBindingsResponse(_messages.Message):
+  r"""Response message for ListBackupPlanBindings.
+
+  Fields:
+    backupPlanBindings: The list of BackupPlanBindings matching the given
+      criteria.
+    nextPageToken: A token which may be sent as page_token in a subsequent
+      `ListBackupPlanBindingss` call to retrieve the next page of results. If
+      this field is omitted or empty, then there are no more results to
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  backupPlanBindings = _messages.MessageField('BackupPlanBinding', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListBackupPlansResponse(_messages.Message):
   r"""Response message for ListBackupPlans.
 
@@ -2408,6 +2547,24 @@ class ListRestorePlanAssociationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   restorePlanAssociations = _messages.MessageField('RestorePlanAssociation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListRestorePlanBindingsResponse(_messages.Message):
+  r"""Response message for ListRestorePlanBindings.
+
+  Fields:
+    nextPageToken: A token which may be sent as page_token in a subsequent
+      `ListRestorePlanBindings` call to retrieve the next page of results. If
+      this field is omitted or empty, then there are no more results to
+      return.
+    restorePlanBindings: The list of RestorePlanBindings matching the given
+      criteria.
+    unreachable: Unordered list. Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  restorePlanBindings = _messages.MessageField('RestorePlanBinding', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -2864,6 +3021,8 @@ class Restore(_messages.Message):
         workloads may not yet be operational.
       FAILED: The restore operation has failed.
       DELETING: This Restore resource is in the process of being deleted.
+      VALIDATING: The Kubernetes resources created by this Restore are being
+        validated.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -2871,6 +3030,7 @@ class Restore(_messages.Message):
     SUCCEEDED = 3
     FAILED = 4
     DELETING = 5
+    VALIDATING = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3327,6 +3487,41 @@ class RestorePlanAssociation(_messages.Message):
   updateTime = _messages.StringField(6)
 
 
+class RestorePlanBinding(_messages.Message):
+  r"""A RestorePlanBinding binds a RestorePlan with a RestoreChannel. This
+  resource is created automatically when a RestorePlan is created using a
+  RestoreChannel. This also serves as a holder for cross-project fields that
+  need to be displayed in the current project.
+
+  Fields:
+    createTime: Output only. The timestamp when this binding was created.
+    etag: Output only. `etag` is used for optimistic concurrency control as a
+      way to help prevent simultaneous updates of a RestorePlanBinding from
+      overwriting each other. It is strongly suggested that systems make use
+      of the 'etag' in the read-modify-write cycle to perform
+      RestorePlanBinding updates in order to avoid race conditions: An `etag`
+      is returned in the response to `GetRestorePlanBinding`, and systems are
+      expected to put that etag in the request to `UpdateRestorePlanBinding`
+      or `DeleteRestorePlanBinding` to ensure that their change will be
+      applied to the same version of the resource.
+    name: Identifier. The fully qualified name of the RestorePlanBinding.
+      `projects/*/locations/*/restoreChannels/*/restorePlanBindings/*`
+    restorePlan: Output only. The fully qualified name of the RestorePlan
+      binded with this RestoreChannel.
+      `projects/*/locations/*/restorePlans/{restore_plan}`
+    uid: Output only. Server generated global unique identifier of
+      [UUID4](https://en.wikipedia.org/wiki/Universally_unique_identifier)
+    updateTime: Output only. The timestamp when this binding was created.
+  """
+
+  createTime = _messages.StringField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  restorePlan = _messages.StringField(4)
+  uid = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
 class RetentionPolicy(_messages.Message):
   r"""RetentionPolicy defines a Backup retention policy for a BackupPlan.
 
@@ -3569,13 +3764,16 @@ class TimeOfDay(_messages.Message):
   seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
 
   Fields:
-    hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
-      choose to allow the value "24:00:00" for scenarios like business closing
-      time.
-    minutes: Minutes of hour of day. Must be from 0 to 59.
-    nanos: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
-    seconds: Seconds of minutes of the time. Must normally be from 0 to 59. An
-      API may allow the value 60 if it allows leap-seconds.
+    hours: Hours of a day in 24 hour format. Must be greater than or equal to
+      0 and typically must be less than or equal to 23. An API may choose to
+      allow the value "24:00:00" for scenarios like business closing time.
+    minutes: Minutes of an hour. Must be greater than or equal to 0 and less
+      than or equal to 59.
+    nanos: Fractions of seconds, in nanoseconds. Must be greater than or equal
+      to 0 and less than or equal to 999,999,999.
+    seconds: Seconds of a minute. Must be greater than or equal to 0 and
+      typically must be less than or equal to 59. An API may allow the value
+      60 if it allows leap-seconds.
   """
 
   hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)

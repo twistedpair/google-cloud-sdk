@@ -28,18 +28,6 @@ properties:
   authentication:
     description: '[Deprecated] Use clientTlsPolicy instead.'
     type: string
-  authenticationPolicy:
-    description: |-
-      [Deprecated] Authentication policy defines what authentication methods can
-      be accepted on backends, and if authenticated, which method/certificate
-      will set the request principal. request principal.
-    $ref: AuthenticationPolicy.yaml
-  authorizationConfig:
-    description: |-
-      [Deprecated] Authorization config defines the Role Based Access Control
-      (RBAC) config. Authorization config defines the Role Based Access Control
-      (RBAC) config.
-    $ref: AuthorizationConfig.yaml
   awsV4Authentication:
     description: |-
       The configuration needed to generate a signature for access to private
@@ -54,9 +42,6 @@ properties:
       loadBalancingScheme set to INTERNAL_SELF_MANAGED. If left blank,
       communications are not encrypted.
     type: string
-  clientTlsSettings:
-    description: '[Deprecated] TLS Settings for the backend service.'
-    $ref: ClientTlsSettings.yaml
   subjectAltNames:
     description: |-
       A list of Subject Alternative Names (SANs) that the client verifies during
@@ -70,8 +55,7 @@ properties:
       Infrastructure which provisions server identities. Only applies to a
       global BackendService with loadBalancingScheme set to
       INTERNAL_SELF_MANAGED. Only applies when BackendService has an attached
-      clientTlsPolicy with clientCertificate (mTLS mode). Note: This field
-      currently has no impact.
+      clientTlsPolicy with clientCertificate (mTLS mode).
     type: array
     items:
       type: string

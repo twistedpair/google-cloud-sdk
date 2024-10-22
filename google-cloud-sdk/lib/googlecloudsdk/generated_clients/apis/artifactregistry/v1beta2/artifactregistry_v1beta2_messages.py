@@ -1630,8 +1630,8 @@ class Tag(_messages.Message):
       have characters in [a-zA-Z0-9\-._~:@], anything else must be URL
       encoded.
     version: The name of the version the tag refers to, for example:
-      "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/versions/sha256:5243811" If
+      `projects/p1/locations/us-
+      central1/repositories/repo1/packages/pkg1/versions/sha256:5243811` If
       the package or version ID parts contain slashes, the slashes are
       escaped.
   """
@@ -1741,8 +1741,8 @@ class Version(_messages.Message):
       version. The fields returned are defined by the underlying repository-
       specific resource. Currently, the resources could be: DockerImage
       MavenArtifact
-    name: The name of the version, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/versions/art1". If the package
+    name: The name of the version, for example: `projects/p1/locations/us-
+      central1/repositories/repo1/packages/pkg1/versions/art1`. If the package
       or version ID parts contain slashes, the slashes are escaped.
     relatedTags: Output only. A list of related tags. Will contain up to 100
       tags that reference this version.

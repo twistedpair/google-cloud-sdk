@@ -101,6 +101,8 @@ def ClearSingleEndpointAttr(patch_request, endpoint_type, endpoint_name):
       "appEngineVersion",
       "cloudRunRevision",
       "forwardingRule",
+      "redisInstance",
+      "redisCluster",
   }
   non_empty_endpoint_fields = 0
   for field in endpoint_fields:
@@ -131,6 +133,8 @@ def ClearSingleEndpointAttr(patch_request, endpoint_type, endpoint_name):
     if endpoint_type == "destination":
       endpoints.extend([
           "forwarding-rule",
+          "redis-instance",
+          "redis-cluster",
       ])
     raise InvalidInputError(
         GetClearSingleEndpointAttrErrorMsg(endpoints, endpoint_type)
@@ -159,11 +163,9 @@ def ClearEndpointAttrs(unused_ref, args, patch_request):
           "destination",
           "cloudSqlInstance",
       ),
-      (
-          "clear_destination_forwarding_rule",
-          "destination",
-          "forwardingRule",
-      ),
+      ("clear_destination_forwarding_rule", "destination", "forwardingRule"),
+      ("clear_destination_redis_instance", "destination", "redisInstance"),
+      ("clear_destination_redis_cluster", "destination", "redisCluster"),
   ]
 
   for flag, endpoint_type, endpoint_name in flags_and_endpoints:
@@ -190,6 +192,8 @@ def ClearSingleEndpointAttrBeta(patch_request, endpoint_type, endpoint_name):
       "appEngineVersion",
       "cloudRunRevision",
       "forwardingRule",
+      "redisInstance",
+      "redisCluster",
   }
   non_empty_endpoint_fields = 0
   for field in endpoint_fields:
@@ -220,6 +224,8 @@ def ClearSingleEndpointAttrBeta(patch_request, endpoint_type, endpoint_name):
     if endpoint_type == "destination":
       endpoints.extend([
           "forwarding-rule",
+          "redis-instance",
+          "redis-cluster",
       ])
     raise InvalidInputError(
         GetClearSingleEndpointAttrErrorMsg(endpoints, endpoint_type)
@@ -248,11 +254,9 @@ def ClearEndpointAttrsBeta(unused_ref, args, patch_request):
           "destination",
           "cloudSqlInstance",
       ),
-      (
-          "clear_destination_forwarding_rule",
-          "destination",
-          "forwardingRule",
-      ),
+      ("clear_destination_forwarding_rule", "destination", "forwardingRule"),
+      ("clear_destination_redis_instance", "destination", "redisInstance"),
+      ("clear_destination_redis_cluster", "destination", "redisCluster"),
   ]
 
   for flag, endpoint_type, endpoint_name in flags_and_endpoints:
@@ -447,5 +451,45 @@ def ValidateForwardingRulesURIs(unused_ref, args, request):
           + "Expected forwarding rule in one of the following formats:\n"
           + "  projects/my-project/global/forwardingRules/my-forwarding-rule\n"
           + "  projects/my-project/regions/us-central1/forwardingRules/my-forwarding-rule"
+      )
+  return request
+
+
+def ValidateRedisInstancesURIs(unused_ref, args, request):
+  """Checks if all provided Redis Instance URIs are in correct format."""
+  flags = ["destination_redis_instance"]
+  redis_instance_pattern = re.compile(
+      r"projects/(?:[a-z][a-z0-9-\.:]*[a-z0-9])/locations/[-\w]+/instances/[-\w]+"
+  )
+  for flag in flags:
+    if not args.IsSpecified(flag):
+      continue
+
+    redis_instance = getattr(args, flag)
+    if not redis_instance_pattern.match(redis_instance):
+      raise InvalidInputError(
+          "Invalid value for flag {flag}: {redis_instance}\n"
+          + "Expected Redis Instance in the following format:\n"
+          + "  projects/my-project/locations/location/instances/my-redis-instance\n"
+      )
+  return request
+
+
+def ValidateRedisClustersURIs(unused_ref, args, request):
+  """Checks if all provided Redis Cluster URIs are in correct format."""
+  flags = ["destination_redis_cluster"]
+  redis_cluster_pattern = re.compile(
+      r"projects/(?:[a-z][a-z0-9-\.:]*[a-z0-9])/locations/[-\w]+/clusters/[-\w]+"
+  )
+  for flag in flags:
+    if not args.IsSpecified(flag):
+      continue
+
+    redis_cluster = getattr(args, flag)
+    if not redis_cluster_pattern.match(redis_cluster):
+      raise InvalidInputError(
+          "Invalid value for flag {flag}: {redis_cluster}\n"
+          + "Expected Redis Cluster in the following format:\n"
+          + "  projects/my-project/locations/location/clusters/my-redis-cluster\n"
       )
   return request

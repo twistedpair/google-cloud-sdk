@@ -26,6 +26,10 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
 
 
+class NoFieldsSpecifiedError(exceptions.Error):
+  """Error when no fields were specified for a Patch operation."""
+
+
 class InvalidDestinationsArgumentError(exceptions.Error):
   """Error when the pipeline's destinations argument is invalid."""
 
@@ -110,6 +114,26 @@ class PipelineClientV1(base.EventarcClientBase):
     )
     return self._service.Get(get_req)
 
+  def Patch(self, pipeline_ref, pipeline_message, update_mask):
+    """Updates the specified Pipeline.
+
+    Args:
+      pipeline_ref: Resource, the Pipeline to update.
+      pipeline_message: Pipeline, the pipeline message that holds pipeline's
+        name, destinations, mediations, input payload format, logging config,
+        retry policy, crypto key name, etc.
+      update_mask: str, a comma-separated list of Pipeline fields to update.
+
+    Returns:
+      A long-running operation for update.
+    """
+    patch_req = self._messages.EventarcProjectsLocationsPipelinesPatchRequest(
+        name=pipeline_ref.RelativeName(),
+        pipeline=pipeline_message,
+        updateMask=update_mask,
+    )
+    return self._service.Patch(patch_req)
+
   def Delete(self, pipeline_ref):
     """Deletes the specified Pipeline.
 
@@ -154,9 +178,75 @@ class PipelineClientV1(base.EventarcClientBase):
         cryptoKeyName=crypto_key_name,
     )
 
+  def BuildUpdateMask(
+      self,
+      destinations,
+      input_payload_format_json,
+      input_payload_format_avro_schema_definition,
+      input_payload_format_protobuf_schema_definition,
+      mediations,
+      logging_config,
+      max_retry_attempts,
+      min_retry_delay,
+      max_retry_delay,
+      crypto_key,
+      clear_crypto_key,
+  ):
+    """Builds an update mask for updating a pipeline.
+
+    Args:
+      destinations: bool, whether to update the destinations.
+      input_payload_format_json: bool, whether to update the
+        input_payload_format_json.
+      input_payload_format_avro_schema_definition: bool, whether to update the
+        input_payload_format_avro_schema_definition.
+      input_payload_format_protobuf_schema_definition: bool, whether to update
+        the input_payload_format_protobuf_schema_definition.
+      mediations: bool, whether to update the mediations.
+      logging_config: bool, whether to update the logging_config.
+      max_retry_attempts: bool, whether to update the max_retry_attempts.
+      min_retry_delay: bool, whether to update the min_retry_delay.
+      max_retry_delay: bool, whether to update the max_retry_delay.
+      crypto_key: bool, whether to update the crypto_key.
+      clear_crypto_key: bool, whether to clear the crypto_key.
+
+    Returns:
+      The update mask as a string.
+
+
+    Raises:
+      NoFieldsSpecifiedError: No fields are being updated.
+    """
+    update_mask = []
+    if destinations:
+      update_mask.append('destinations')
+    if (
+        input_payload_format_json
+        or input_payload_format_avro_schema_definition
+        or input_payload_format_protobuf_schema_definition
+    ):
+      update_mask.append('inputPayloadFormat')
+    if mediations:
+      update_mask.append('mediations')
+    if logging_config:
+      update_mask.append('loggingConfig')
+    if (
+        max_retry_attempts
+        or max_retry_attempts
+        or min_retry_delay
+        or max_retry_delay
+    ):
+      update_mask.append('retryPolicy')
+    if crypto_key or clear_crypto_key:
+      update_mask.append('cryptoKeyName')
+
+    if not update_mask:
+      raise NoFieldsSpecifiedError('Must specify at least one field to update.')
+    return ','.join(update_mask)
+
   def _BuildDestinations(self, pipeline_ref, destinations):
     if destinations is None:
-      raise InvalidDestinationsArgumentError()
+      return []
     return [self._BuildDestination(pipeline_ref, d) for d in destinations]
 
   def _BuildDestination(self, pipeline_ref, destination):

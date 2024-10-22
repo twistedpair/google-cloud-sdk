@@ -3013,6 +3013,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/encryption-key`: Revision, Execution. *
       `run.googleapis.com/execution-environment`: Revision, Execution. *
       `run.googleapis.com/gc-traffic-tags`: Service. *
+      `run.googleapis.com/health-check-disabled`: Revision. *
       `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
       stage`: Service, Job. * `run.googleapis.com/minScale`: Service *
       `run.googleapis.com/network-interfaces`: Revision, Execution. *
@@ -3059,6 +3060,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/encryption-key`: Revision, Execution. *
       `run.googleapis.com/execution-environment`: Revision, Execution. *
       `run.googleapis.com/gc-traffic-tags`: Service. *
+      `run.googleapis.com/health-check-disabled`: Revision. *
       `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
       stage`: Service, Job. * `run.googleapis.com/minScale`: Service *
       `run.googleapis.com/network-interfaces`: Revision, Execution. *
@@ -3132,6 +3134,7 @@ class ObjectMeta(_messages.Message):
     `run.googleapis.com/encryption-key`: Revision, Execution. *
     `run.googleapis.com/execution-environment`: Revision, Execution. *
     `run.googleapis.com/gc-traffic-tags`: Service. *
+    `run.googleapis.com/health-check-disabled`: Revision. *
     `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
     stage`: Service, Job. * `run.googleapis.com/minScale`: Service *
     `run.googleapis.com/network-interfaces`: Revision, Execution. *
@@ -3632,12 +3635,13 @@ class RevisionTemplate(_messages.Message):
       * `autoscaling.knative.dev/maxScale` sets the maximum number of
       instances. * `run.googleapis.com/cloudsql-instances` sets Cloud SQL
       connections. Multiple values should be comma separated. *
-      `run.googleapis.com/vpc-access-connector` sets a Serverless VPC Access
-      connector. * `run.googleapis.com/vpc-access-egress` sets VPC egress.
-      Supported values are `all-traffic`, `all` (deprecated), and `private-
-      ranges-only`. `all-traffic` and `all` provide the same functionality.
-      `all` is deprecated but will continue to be supported. Prefer `all-
-      traffic`.
+      `run.googleapis.com/health-check-disabled`: if true, deploy-time startup
+      probes will not run for this revision. * `run.googleapis.com/vpc-access-
+      connector` sets a Serverless VPC Access connector. *
+      `run.googleapis.com/vpc-access-egress` sets VPC egress. Supported values
+      are `all-traffic`, `all` (deprecated), and `private-ranges-only`. `all-
+      traffic` and `all` provide the same functionality. `all` is deprecated
+      but will continue to be supported. Prefer `all-traffic`.
     spec: RevisionSpec holds the desired state of the Revision (from the
       client).
   """

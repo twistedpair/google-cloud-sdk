@@ -19,9 +19,10 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import parser_arguments
 
 
-def AddEntityFilterFlags(parser):
+def AddEntityFilterFlags(parser: parser_arguments.ArgumentInterceptor) -> None:
   """Adds flags for entity filters to the given parser."""
   parser.add_argument(
       '--kinds',
@@ -33,7 +34,8 @@ def AddEntityFilterFlags(parser):
       'Customer' and 'Order' Kinds:
 
         $ {command} --kinds='Customer','Order'
-      """)
+      """,
+  )
 
   parser.add_argument(
       '--namespaces',
@@ -48,11 +50,12 @@ def AddEntityFilterFlags(parser):
       namespaces:
 
         $ {command} --namespaces='(default)','customers'
-      """)
+      """,
+  )
 
 
-def AddLabelsFlag(parser):
-  """Adds a --operation-labels flag to the given parser."""
+def AddLabelsFlag(parser: parser_arguments.ArgumentInterceptor) -> None:
+  """Adds an --operation-labels flag to the given parser."""
   parser.add_argument(
       '--operation-labels',
       metavar='OPERATION_LABEL',
@@ -62,11 +65,12 @@ def AddLabelsFlag(parser):
       For example:
 
         $ {command} --operation-labels=comment='customer orders','sales rep'=pending
-      """)
+      """,
+  )
 
 
-def AddIndexFileFlag(parser):
-  """Adds a index_file flag to the given parser.
+def AddIndexFileFlag(parser: parser_arguments.ArgumentInterceptor) -> None:
+  """Adds an index_file flag to the given parser.
 
   Args:
     parser: The argparse parser.
@@ -81,7 +85,28 @@ def AddIndexFileFlag(parser):
   )
 
 
-def AddOperationNameFlag(parser, operation_type):
+def AddDatabaseIdFlag(parser: parser_arguments.ArgumentInterceptor) -> None:
+  """Adds a --database flag to the given parser.
+
+  Args:
+    parser: The argparse parser.
+  """
+  parser.add_argument(
+      '--database',
+      help="""\
+      The database to operate on. If not specified, the CLI refers the
+      `(default)` database by default.
+
+      For example, to operate on database `testdb`:
+
+        $ {command} --database='testdb'
+      """,
+  )
+
+
+def AddOperationNameFlag(
+    parser: parser_arguments.ArgumentInterceptor, operation_type: str
+) -> None:
   """Adds a name flag to the given parser.
 
   Args:

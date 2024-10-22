@@ -14,15 +14,20 @@
 # limitations under the License.
 """Utilities for Audit Manager API, Audit Scope Endpoints."""
 
+from googlecloudsdk.api_lib.audit_manager import constants
 from googlecloudsdk.api_lib.audit_manager import util
 
 
 class AuditScopesClient(object):
   """Client for Audit Scopes in Audit Manager API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or util.GetClientInstance()
-    self.messages = messages or util.GetMessagesModule(client)
+  def __init__(
+      self, api_version: constants.ApiVersion, client=None, messages=None
+  ) -> None:
+    self.client = client or util.GetClientInstance(api_version=api_version)
+    self.messages = messages or util.GetMessagesModule(
+        api_version=api_version, client=client
+    )
 
     scope_report_format_enum = (
         self.messages.GenerateAuditScopeReportRequest.ReportFormatValueValuesEnum
@@ -33,20 +38,19 @@ class AuditScopesClient(object):
 
   def Generate(
       self,
-      scope,
-      compliance_standard,
-      report_format,
-      is_parent_folder,
+      scope: str,
+      compliance_standard: str,
+      report_format: str,
+      is_parent_folder: bool,
   ):
     """Generate an Audit Scope.
 
     Args:
-      scope: str, the scope for which to generate the scope.
-      compliance_standard: str, Compliance standard against which the scope
-        must be generated.
-      report_format: str, The format in which the audit scope should be
+      scope: The scope for which to generate the scope.
+      compliance_standard: Compliance standard against which the scope must be
         generated.
-      is_parent_folder: bool, whether the parent is folder and not project.
+      report_format: The format in which the audit scope should be generated.
+      is_parent_folder: Whether the parent is folder and not project.
 
     Returns:
       Described audit scope resource.

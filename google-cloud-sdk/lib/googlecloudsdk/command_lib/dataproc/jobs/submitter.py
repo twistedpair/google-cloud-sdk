@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.dataproc import dataproc as dp
 from googlecloudsdk.api_lib.dataproc import util
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import log
@@ -62,12 +63,29 @@ class JobSubmitter(base.Command):
             ' node group).'
         ),
     )
+    parser.add_argument(
+        '--ttl',
+        hidden=True,
+        type=arg_parsers.Duration(),
+        help=(
+            'The maximum duration this job is allowed to run before being'
+            ' killed automatically. Specified using a s, m, h, or d (seconds,'
+            ' minutes, hours, or days) suffix. The minimum value is 10 minutes'
+            ' (10m), and the maximum value is 14 days (14d) Run'
+            ' [gcloud topic datetimes]'
+            ' (https://cloud.google.com/sdk/gcloud/reference/topic/datetimes)'
+            ' for information on duration formats.'
+        ),
+    )
+
     cluster_placement = parser.add_mutually_exclusive_group(required=True)
     cluster_placement.add_argument(
-        '--cluster', help='The Dataproc cluster to submit the job to.')
+        '--cluster', help='The Dataproc cluster to submit the job to.'
+    )
     labels_util.GetCreateLabelsFlag(
         'Labels of Dataproc cluster on which to place the job.',
-        'cluster-labels').AddToParser(cluster_placement)
+        'cluster-labels',
+    ).AddToParser(cluster_placement)
 
   def Run(self, args):
     """This is what gets called when the user runs this command."""
@@ -109,10 +127,16 @@ class JobSubmitter(base.Command):
           vcores=args.driver_required_vcores)
       job.driverSchedulingConfig = driver_scheduling_config
 
-    if args.max_failures_per_hour or args.max_failures_total:
+    if args.max_failures_per_hour or args.max_failures_total or args.ttl:
       scheduling = dataproc.messages.JobScheduling(
-          maxFailuresPerHour=args.max_failures_per_hour,
-          maxFailuresTotal=args.max_failures_total)
+          maxFailuresPerHour=args.max_failures_per_hour
+          if args.max_failures_per_hour
+          else None,
+          maxFailuresTotal=args.max_failures_total
+          if args.max_failures_total
+          else None,
+          ttl=str(args.ttl) + 's' if args.ttl else None,
+      )
       job.scheduling = scheduling
 
     request = dataproc.messages.DataprocProjectsRegionsJobsSubmitRequest(

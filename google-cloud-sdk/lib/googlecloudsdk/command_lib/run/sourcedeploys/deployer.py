@@ -54,6 +54,7 @@ def CreateImage(
     build_worker_pool=None,
     build_env_vars=None,
     enable_automatic_updates=False,
+    source_bucket=None,
 ):
   """Creates an image from Source."""
   if repo_to_create:
@@ -73,7 +74,7 @@ def CreateImage(
     # builds API.
     tracker.StartStage(stages.UPLOAD_SOURCE)
     tracker.UpdateHeaderMessage('Uploading sources.')
-    source = sources.Upload(local_source, region, resource_ref)
+    source = sources.Upload(local_source, region, resource_ref, source_bucket)
     tracker.CompleteStage(stages.UPLOAD_SOURCE)
     submit_build_request = _PrepareSubmitBuildRequest(
         build_image,

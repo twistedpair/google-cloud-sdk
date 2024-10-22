@@ -357,6 +357,11 @@ class Service(proto.Message):
         scaling (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.ServiceScaling):
             Optional. Specifies service-level scaling
             settings
+        invoker_iam_disabled (bool):
+            Optional. Disables IAM permission check for
+            run.routes.invoke for callers of this service. This feature
+            is available by invitation only. For more information, visit
+            https://cloud.google.com/run/docs/securing/managing-access#invoker_check.
         default_uri_disabled (bool):
             Optional. Disables public resolution of the
             default URI of this service.
@@ -532,6 +537,10 @@ class Service(proto.Message):
         proto.MESSAGE,
         number=20,
         message=vendor_settings.ServiceScaling,
+    )
+    invoker_iam_disabled: bool = proto.Field(
+        proto.BOOL,
+        number=21,
     )
     default_uri_disabled: bool = proto.Field(
         proto.BOOL,

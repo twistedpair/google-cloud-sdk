@@ -68,9 +68,7 @@ class RegistrationsClient(object):
         'and Squarespace Domain Registration Agreement '
         '(https://www.squarespace.com/domain-registration-agreement),\n'
         'which Google resells pursuant to an agreement with Squarespace.\n'
-        "Initially, Google will manage your domain(s) on Squarespace's behalf."
-        ' Once your domain is transitioned to Squarespace,\n'
-        'Google will share your name, contact information, and other '
+        'Google shares your name, contact information, and other '
         'domain-related information with Squarespace.\n'
         "You can review Squarespace's Privacy Policy "
         '(https://www.squarespace.com/privacy) for details on how they '

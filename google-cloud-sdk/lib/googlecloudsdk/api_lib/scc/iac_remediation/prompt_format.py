@@ -39,20 +39,27 @@ class PromptFormatLookup:
 - The resource "google_project_iam_member_remove" should be created only if the role needs to be removed.
 - Refer to the summary of TERRAFORM_DOCUMENTATION given below for updating the files.
 - Refer to TFSTATE_INFORMATION to identify the terraform files from INPUT_TF_FILES which needs to be updated.
-- The output must be a valid json file with the following OUTPUT_FORMAT.
+- The output must be a valid string with the following OUTPUT_FORMAT.
 - The output must contains only those files which were updated.
 - The output should be in the OUTPUT_FORMAT given below.
 
 # OUTPUT_FORMAT is as follows
-FilePath= "file_path1"
 ```
-The complete terraform file(s) which were updated as per given IAM bindings .
-The output must be valid .tf files.
+file_path1
+<<<<<<< SEARCH
+Terraform resource which is getting changed OR empty if new resource is to be created.
+=======
+Updated terraform resource OR empty if the resource is to be deleted.
+>>>>>>> REPLACE
 ```
-FilePath= "file_path2"
+
 ```
-The complete terraform file(s) which were updated as per given IAM bindings .
-The output must be valid .tf files.
+file_path2
+<<<<<<< SEARCH
+Terraform resource which is getting changed OR empty if new resource is to be created.
+=======
+Updated terraform resource OR empty if the resource is to be deleted.
+>>>>>>> REPLACE
 ```
 
 # IAM_BINDINGS
@@ -284,26 +291,72 @@ NOTE: google_project_iam_policy cannot be used in conjunction with google_projec
 - You have access to a complete and up-to-date knowledge base of all GCP resource types terraform documentation.
 - Identify the most relevant GCP terraform resource used to grant the permission from the given IAM BINDING .
 - You have to update the relevant terraform file for the given IAM binding as per the roles and permissions required.
-- When a resource that grants an IAM role is deleted, do not create a google_project_iam_member_remove resource for that role and member. The deletion of the resource implicitly removes the permission.
-- Ensure that the generated Terraform code is idempotent. Avoid creating unnecessary resources, especially if the desired state is already achieved by deleting an existing resource.
+- Each resource (characterized by its type, name and the attributes values) should have a single source of truth within the configuration.  If a resource needs to be modified, update it in its existing location. Do not create duplicate definitions in other files.
+- **Do not create duplicate resources. A resource should be defined only once across all input files. Creating duplicate resources will be considered an incorrect response.**
+- Ensure that the generated Terraform code is idempotent at both the resource and configuration levels. Avoid creating unnecessary resources (especially if the desired state is already achieved by deleting an existing resource), or duplicate resources across multiple files. The final configuration, considering all files, should represent the desired state without redundancies.
+- Assume all necessary APIs are already enabled. Do not generate Terraform code to enable or disable APIs.
+- **Focus exclusively on updating or creating resources related to the member specified in the IAM_BINDINGS section. Do not modify any other resources, including project services. Generating code for resources outside of IAM (e.g., enabling APIs, creating other resources) will be considered an incorrect response.**
+- **Pay extremely close attention to the resource name, member name, and roles to be deleted or added. Prioritize creating new resources or modifying existing resources in a way that doesn't affect other members. Ensure that no existing permissions for other members are unintentionally changed.**
+- **Avoid modifying existing resources if those changes would affect other members' permissions.  Do not add a role for the specified member if the intended action is to remove that role.**
+- **Crucially, avoid redundant resource definitions. A resource should be defined only once across all input files. For example, if you need to remove a role from a user on a project, do this in only one location within the configuration. Do not repeat the removal in other files where the project is mentioned. Consider the combined effect of all files. The final configuration, considering all files, should represent the desired state without redundancies. **
 
 #TASK
 - Analyze the INPUT_TF_FILES and identify the files that needs to be updated by referring to TFSTATE_INFORMATION.
 - Assume that the complete system information is provided in INPUT_TF_FILES.
 - **Identify the resource types in INPUT_TF_FILES that are most likely to contain the IAM_BINDING information.**
-- ** Give meaningful names to the resources which are being created. A name must start with a letter or underscore and may contain only letters, digits, underscores, and dashes.**
+- ** Give meaningful names to the resources which are being created, refer examples for the naming ideas. A name must start with a letter or underscore and may contain only letters, digits, underscores, and dashes.**
 - **Prioritize resource types which are most likely to create or remove the permissions given in IAM binding for the given RESOURCE_NAME.**
-- The output should contain the complete INPUT_TF_FILES which were updated as per given IAM bindings .
 - **Pay close attention to resources that use `for_each` loops or dynamic blocks and handle changes within those constructs to ensure idempotency.**
 - google_project_iam_binding resources can be used in conjunction with google_project_iam_member resources only if they do not grant privilege to the same role.
 - Refer to the summary of TERRAFORM_DOCUMENTATION given below for updating the files.
 - **Validate that the generated Terraform code does not create unnecessary google_project_iam_member_remove resources when the corresponding resource granting the role is already deleted.**
-- When faced with complex scenarios involving multiple projects or resources within a module, consider if decomposing the module into smaller, more specialized modules would improve clarity, maintainability, and reduce the risk of unintended changes.
-- The output must be list of valid .tf files.
-- The output must contains only those files which were updated.
-- The output should start with: ```
-- The output must end with: ```
-- The output should be in the FORMAT given below.
+- The output must be list of valid *SEARCH/REPLACE* blocks for *ONLY* the blocks in the INPUT_TF_FILES that were updated, or for the case where new resource is created or existing resource is deleted.
+- **DO NOT** create *SEARCH/REPLACE* blocks for files that were not present in input. That is no new files needs to be created.
+- Add only one blank line between the *SEARCH/REPLACE* blocks.
+- The blocks should follow the rules as per the format given below.
+
+# OUTPUT_FORMAT is as follows
+```
+file_path1
+<<<<<<< SEARCH
+Terraform resource which is getting changed OR empty if new resource is to be created.
+=======
+Updated terraform resource OR empty if the resource is to be deleted.
+>>>>>>> REPLACE
+```
+
+```
+file_path2
+<<<<<<< SEARCH
+Terraform resource which is getting changed OR empty if new resource is to be created.
+=======
+Updated terraform resource OR empty if the resource is to be deleted.
+>>>>>>> REPLACE
+```
+
+# SEARCH/REPLACE block Rules:
+
+Every *SEARCH/REPLACE block* must use this format:
+1. The *FULL* file path alone on a line, verbatim. No bold asterisks, no quotes around it, no escaping of characters, etc.
+2. The opening fence: ```
+3. The start of search block: <<<<<<< SEARCH
+4. Terraform resource content which needs to be searched
+5. The dividing line: =======
+6. Terraform resource content which needs to be replaced
+7. The end of the replace block: >>>>>>> REPLACE
+8. The closing fence: ```
+
+Use the *FULL* file path, as given in the INPUT_TF_FILES.
+
+Every *SEARCH* section must be **either EMPTY or contain EXACTLY ONE** terraform resource.
+Every *REPLACE* section must be **either EMPTY or contain EXACTLY ONE** terraform resource.
+Every *REPLACE* section must be *valid terraform cod*.
+
+To add a new resource, *always keep the SEARCH section EMPTY* and fill the *REPLACE* section with the new resource.
+To update the existing resource, create a new *SEARCH/REPLACE* block following the rules above. The *SEARCH* section must *MATCH EXACTLY ONE* of the existing terraform resources, character for character, including all comments, docstrings, etc.
+To delete the existing resource, *always keep the *REPLACE* section empty* and fill the *SEARCH* section with the existing resource.
+
+ONLY EVER RETURN CODE IN A *SEARCH/REPLACE BLOCK*!
 
 # TERRAFORM DOCUMENTATION
 
@@ -457,17 +510,7 @@ Advanced Usage:
   2. google_project_iam_member-remove resource will conflict with google_project_iam_policy and google_project_iam_binding resources that share a role, as well as google_project_iam_member resources that target the same membership. When multiple resources conflict the final state is not guaranteed to include or omit the membership.
 
 
-# FORMAT is as follows
-FilePath= "file_path1"
-```
-The complete terraform file(s) which were updated as per given IAM bindings .
-The output must be valid .tf files.
-```
-FilePath= "file_path2"
-```
-The complete terraform file(s) which were updated as per given IAM bindings .
-The output must be valid .tf files.
-```
+
 
 ## IAM_BINDINGS
 {{iam_bindings}}
@@ -481,12 +524,12 @@ The output must be valid .tf files.
 ## TFSTATE_INFORMATION
 {{tfstate_information}}
 
-# EXAMPLE1 is as follows
+# EXAMPLE 1 is as follows
 
 ## INPUT_TF_FILES
 FilePath1= "file_path1"
 ```
-resource "google_project_iam_binding" "iam_binding_for_admin_project" {
+resource "google_project_iam_binding" "iam_binding_for_compute_admin" {
   project = project_name_test
   role    = "roles/compute.admin"
   members = [
@@ -496,7 +539,7 @@ resource "google_project_iam_binding" "iam_binding_for_admin_project" {
   ]
 }
 
-resource "google_project_iam_binding" "iam_binding_for_bigquery" {
+resource "google_project_iam_binding" "iam_binding_for_bigquery_data_viewer" {
   project = project_name_test
   role    = "roles/bigquery.dataViewer"
   members = [
@@ -507,7 +550,7 @@ resource "google_project_iam_binding" "iam_binding_for_bigquery" {
 ```
 FilePath2= "file_path2"
 ```
-resource "google_project_iam_binding" "iam_binding_for_admin_project2" {
+resource "google_project_iam_binding" "iam_binding_for_compute_project2" {
   project = var.project_id2
   role =  "roles/compute.admin"
   members = [
@@ -534,9 +577,20 @@ Role: "roles/bigquery.dataEditor"
 project_name_test
 
 ** ANSWER **
-FilePath= "file_path1"
 ```
-resource "google_project_iam_binding" "iam_binding_for_admin_project" {
+file_path1
+<<<<<<< SEARCH
+resource "google_project_iam_binding" "iam_binding_for_compute_admin" {
+  project = project_name_test
+  role    = "roles/compute.admin"
+  members = [
+    "user:user1@google.com",
+    "user:user2@google.com",
+    "user:user3@google.com",
+  ]
+}
+=======
+resource "google_project_iam_binding" "iam_binding_for_compute_admin" {
   project = project_name_test
   role    = "roles/compute.admin"
   members = [
@@ -544,14 +598,22 @@ resource "google_project_iam_binding" "iam_binding_for_admin_project" {
     "user:user3@google.com",
   ]
 }
+>>>>>>> REPLACE
+```
 
-resource "google_project_iam_member" "iam_member_for_bigquery" {
+```
+file_path1
+<<<<<<< SEARCH
+resource "google_project_iam_binding" "iam_binding_for_bigquery_data_viewer" {
   project = project_name_test
-  role    = "roles/compute.viewer"
-  member = "user:user1@google.com"
+  role    = "roles/bigquery.dataViewer"
+  members = [
+    "user:user2@google.com",
+    "user:user3@google.com",
+  ]
 }
-
-resource "google_project_iam_binding" "iam_binding_for_bigquery" {
+=======
+resource "google_project_iam_binding" "iam_binding_for_bigquery_data_viewer" {
   project = project_name_test
   role    = "roles/bigquery.dataViewer"
   members = [
@@ -560,15 +622,34 @@ resource "google_project_iam_binding" "iam_binding_for_bigquery" {
     "user:user1@google.com",
   ]
 }
+>>>>>>> REPLACE
+```
 
-resource "google_project_iam_member_remove" "iam_member_remove_for_bigquery" {
+```
+file_path1
+<<<<<<< SEARCH
+=======
+resource "google_project_iam_member" "compute_viewer_role_for_user1" {
+  project = project_name_test
+  role    = "roles/compute.viewer"
+  member = "user:user1@google.com"
+}
+>>>>>>> REPLACE
+```
+
+```
+file_path1
+<<<<<<< SEARCH
+=======
+resource "google_project_iam_member_remove" "remove_bigquery_data_editor_role_for_user1" {
   project = project_name_test
   role    = "roles/bigquery.dataEditor"
   member = "user:user1@google.com"
 }
+>>>>>>> REPLACE
 ```
 
-# EXAMPLE2 is as follows
+# EXAMPLE 2 is as follows
 
 ## INPUT_TF_FILES
 FilePath= "file_path1"
@@ -615,19 +696,43 @@ Member: "user:user1@google.com"
 
 Action: "ADD"
 Role: "roles/compute.viewer"
-Role: "roles/bigquery.dataViewer"
 
 Action: "REMOVE"
 Role: "roles/compute.admin"
-Role: "roles/bigquery.dataEditor"
 
 ## RESOURCE_NAME
 project_name_test
 
 
 ** ANSWER **
-FilePath= "file_path1"
 ```
+file_path1
+<<<<<<< SEARCH
+resource "google_project_iam_binding" "iam_binding_for_admin_project" {
+  for_each = toset([
+    "roles/billing.projectManager",            # assign billing account to project
+    "roles/billing.user",                      # view and associate billing accounts
+    "roles/compute.admin",
+    "roles/iam.organizationRoleAdmin",         # create custom org roles
+    "roles/iam.serviceAccountAdmin",           # create service accounts and setIamPolicy
+    "roles/iam.workloadIdentityPoolAdmin",     # create workload identity pool and providers
+    "roles/orgpolicy.policyAdmin",             # create org policies
+    "roles/resourcemanager.organizationAdmin", # setIamPolicy on organization
+    "roles/resourcemanager.folderAdmin",       # create folders
+    "roles/resourcemanager.projectCreator",    # create projects
+    "roles/resourcemanager.tagAdmin",          # create tag keys and values
+    "roles/resourcemanager.tagUser",           # create tag bindings on resources
+    "roles/serviceusage.serviceUsageAdmin",    # enable services
+  ])
+  project = project_name_test
+  role    = each.value
+  members = [
+    "user:user1@google.com",
+    "user:user2@google.com",
+    "user:user3@google.com",
+  ]
+}
+=======
 resource "google_project_iam_binding" "iam_binding_for_admin_project" {
   for_each = toset([
     "roles/billing.projectManager",            # assign billing account to project
@@ -651,8 +756,40 @@ resource "google_project_iam_binding" "iam_binding_for_admin_project" {
     "user:user3@google.com",
   ]
 }
+>>>>>>> REPLACE
+```
 
 resource "google_project_iam_binding" "iam_binding_for_admin_project" {
+  for_each = toset([
+    "roles/billing.projectManager",            # assign billing account to project
+    "roles/billing.user",                      # view and associate billing accounts
+    "roles/iam.organizationRoleAdmin",         # create custom org roles
+    "roles/iam.serviceAccountAdmin",           # create service accounts and setIamPolicy
+    "roles/iam.workloadIdentityPoolAdmin",     # create workload identity pool and providers
+    "roles/orgpolicy.policyAdmin",             # create org policies
+    "roles/resourcemanager.organizationAdmin", # setIamPolicy on organization
+    "roles/resourcemanager.folderAdmin",       # create folders
+    "roles/resourcemanager.projectCreator",    # create projects
+    "roles/resourcemanager.tagAdmin",          # create tag keys and values
+    "roles/resourcemanager.tagUser",           # create tag bindings on resources
+    "roles/serviceusage.serviceUsageAdmin",    # enable services
+  ])
+  project = project_name_test
+  role    = each.value
+  members = [
+    "user:user1@google.com",
+    "user:user2@google.com",
+    "user:user3@google.com",
+  ]
+}
+>>>>>>> REPLACE
+```
+
+```
+file_path1
+<<<<<<< SEARCH
+=======
+resource "google_project_iam_binding" "iam_binding_for_role_compute_admin" {
   project = project_name_test
   role    = "roles/compute.admin"
   members = [
@@ -660,23 +797,60 @@ resource "google_project_iam_binding" "iam_binding_for_admin_project" {
     "user:user3@google.com",
   ]
 }
+>>>>>>> REPLACE
+```
 
-resource "google_project_iam_member" "iam_member_for_compute_viewer" {
+```
+file_path1
+<<<<<<< SEARCH
+=======
+resource "google_project_iam_member" "compute_viewer_role_for_user1" {
   project = project_name_test
   role    = "roles/compute.viewer"
   member = "user:user1@google.com"
 }
+>>>>>>> REPLACE
+```
 
-resource "google_project_iam_member_remove" "iam_member_remove_for_bigquery" {
+# EXAMPLE 3 is as follows
+
+## INPUT_TF_FILES
+FilePath1= "file_path1"
+```
+resource "google_project_iam_binding" "iam_binding_for_compute_admin" {
   project = project_name_test
-  role    = "roles/bigquery.dataEditor"
-  member = "user:user1@google.com"
+  role    = "roles/compute.admin"
+  members = [
+    "user:user1@google.com",
+    "user:user2@google.com",
+    "user:user3@google.com",
+  ]
 }
 
-resource "google_project_iam_member" "iam_member_for_bigquery" {
+resource "google_project_iam_binding" "iam_binding_for_bigquery_data_viewer" {
   project = project_name_test
   role    = "roles/bigquery.dataViewer"
-  member = "user:user1@google.com"
+  members = [
+    "user:user2@google.com",
+    "user:user3@google.com",
+  ]
+}
+
+resource "google_project_iam_member_remove" "remove_bigquery_data_editor_role_for_user1" {
+  project = project_name_test
+  role    = "roles/bigquery.dataEditor"
+  member  = "user:user1@google.com"
+}
+```
+FilePath2= "file_path2"
+```
+resource "google_project_iam_binding" "iam_binding_for_compute_project2" {
+  project = var.project_id2
+  role =  "roles/compute.admin"
+  members = [
+    "user:user1@google.com",
+    "user:user2@google.com",
+  ]
 }
 ```
 
@@ -823,13 +997,13 @@ resource "google_project_iam_member" "project_iam_member" {
   8b. Remove the Member:
       1. If the roles are managed within a google_project_iam_binding resource using the members attribute, remove member from that list for each role.
       2. **If you find individual google_project_iam_member resources granting those specific roles to member, you can either delete those resources entirely or comment them out**.
-      3.  If the role is not present in the INPUT_TF_FILES, use "google_project_iam_member_remove" to remove the user(s) from the role(s).
+      3. If the role is not present in the INPUT_TF_FILES, use "google_project_iam_member_remove" to remove the user(s) from the role(s).
       4. If a "google_project_iam_binding" exist for the role and member list in IAM_BINDING is not part of it, Nothing needs to be done for that role.
 
 9. If the role is present in for loop in a "google_project_iam_binding" and any action has to be performed, create a new binding for the role and perform action while preserving the existing permissions.
 10. If the role is present in for loop in a "google_project_iam_member" and any action has to be performed, create a new binding for the role and perform action while preserving the existing permissions.
 11. Ensure that no new permissions are being assigned or removed to any user other than asked in IAM_BINDING field.
-12. **Update the file**: Update the file(s) as per information in IAM Binding.
-13. **Test the file**: Test the file(s) to ensure that the changes made are correct. Always verify that both the ADD and REMOVE actions are working as expected.
+12. **Update the file**: Update the file(s) blocks as per information in IAM Binding.
+13. **Test the file**: Test the file(s) to ensure that the changes made are correct. Always verify that both the ADD and REMOVE actions are working as expected. **
     """
     return self._binding_prompt_format

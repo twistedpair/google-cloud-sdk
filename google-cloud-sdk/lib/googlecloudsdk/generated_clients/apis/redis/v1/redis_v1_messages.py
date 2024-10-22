@@ -3849,6 +3849,8 @@ class RetentionSettings(_messages.Message):
     quantityBasedRetention: A integer attribute.
     retentionUnit: The unit that 'retained_backups' represents.
     timeBasedRetention: A string attribute.
+    timestampBasedRetentionTime: Timestamp based retention period i.e.
+      2024-05-01T00:00:00Z
   """
 
   class RetentionUnitValueValuesEnum(_messages.Enum):
@@ -3875,6 +3877,7 @@ class RetentionSettings(_messages.Message):
   quantityBasedRetention = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   retentionUnit = _messages.EnumField('RetentionUnitValueValuesEnum', 3)
   timeBasedRetention = _messages.StringField(4)
+  timestampBasedRetentionTime = _messages.StringField(5)
 
 
 class SpannerLocation(_messages.Message):

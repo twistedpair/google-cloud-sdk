@@ -52,6 +52,7 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files as file_utils
+from googlecloudsdk.core.util import retry
 
 _SIGNED_URL_UPLOAD_ERROR_MESSSAGE = (
     'There was a problem uploading the source code to a signed Cloud Storage '
@@ -1184,6 +1185,15 @@ def _UpdateAndWait(
     log.status.Print('Nothing to update.')
 
 
+@retry.RetryOnException(max_retrials=3, sleep_ms=2000)
+def _GetFunctionWithRetry(client, function_ref):
+  """Retrieves a function with retry."""
+  try:
+    return client.GetFunction(function_ref.RelativeName())
+  except apitools_exceptions.HttpError as error:
+    raise exceptions.FunctionsError('Function not found after retries, ', error)
+
+
 def Run(
     args: parser_extensions.Namespace, release_track: calliope_base.ReleaseTrack
 ) -> api_types.Function:
@@ -1315,7 +1325,7 @@ def Run(
     )
     _UpdateAndWait(client, function_ref, function, updated_fields)
 
-  function = client.GetFunction(function_ref.RelativeName())
+  function = _GetFunctionWithRetry(client, function_ref)
 
   if (
       # New functions do not allow unauthenticated invocations by default so we

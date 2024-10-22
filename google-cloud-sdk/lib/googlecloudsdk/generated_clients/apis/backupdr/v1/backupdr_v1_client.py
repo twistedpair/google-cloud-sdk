@@ -767,7 +767,7 @@ class BackupdrV1(base_api.BaseApiClient):
         method_id='backupdr.projects.locations.backupVaults.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'etag', 'force', 'requestId', 'validateOnly'],
+        query_params=['allowMissing', 'etag', 'force', 'ignoreBackupPlanReferences', 'requestId', 'validateOnly'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='BackupdrProjectsLocationsBackupVaultsDeleteRequest',

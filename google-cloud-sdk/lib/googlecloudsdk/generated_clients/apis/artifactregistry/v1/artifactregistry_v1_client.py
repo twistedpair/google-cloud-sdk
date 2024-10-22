@@ -184,7 +184,7 @@ class ArtifactregistryV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an attachment. The returned Operation will finish once the attachment has been created. Its response will be the created Attachment.
+      r"""Creates an attachment. The returned Operation will finish once the attachment has been created. Its response will be the created attachment.
 
       Args:
         request: (ArtifactregistryProjectsLocationsRepositoriesAttachmentsCreateRequest) input message
@@ -211,7 +211,7 @@ class ArtifactregistryV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an attachment. The returned Operation will finish once the attachments has been deleted. It will not have any Operation metadata and will return a google.protobuf.Empty response.
+      r"""Deletes an attachment. The returned Operation will finish once the attachments has been deleted. It will not have any Operation metadata and will return a `google.protobuf.Empty` response.
 
       Args:
         request: (ArtifactregistryProjectsLocationsRepositoriesAttachmentsDeleteRequest) input message
@@ -265,7 +265,7 @@ class ArtifactregistryV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists repositories.
+      r"""Lists attachments.
 
       Args:
         request: (ArtifactregistryProjectsLocationsRepositoriesAttachmentsListRequest) input message
@@ -512,7 +512,7 @@ class ArtifactregistryV1(base_api.BaseApiClient):
     )
 
     def Upload(self, request, global_params=None, upload=None):
-      r"""Directly uploads a File to a repository. The returned Operation will complete once the resources are uploaded.
+      r"""Directly uploads a file to a repository. The returned Operation will complete once the resources are uploaded.
 
       Args:
         request: (ArtifactregistryProjectsLocationsRepositoriesFilesUploadRequest) input message

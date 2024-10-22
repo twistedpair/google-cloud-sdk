@@ -44,12 +44,10 @@ class SubmitBuildRequest(proto.Message):
 
     Attributes:
         parent (str):
-            Required. The project and location to build
-            in. Location must be a region, e.g.,
-            'us-central1' or 'global' if the global builder
-            is to be used. Format:
-
-            projects/{project}/locations/{location}
+            Required. The project and location to build in. Location
+            must be a region, e.g., 'us-central1' or 'global' if the
+            global builder is to be used. Format:
+            ``projects/{project}/locations/{location}``
         storage_source (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.StorageSource):
             Required. Source for the build.
 
@@ -75,9 +73,9 @@ class SubmitBuildRequest(proto.Message):
             should be used to build the function. The format of this
             field is
             ``projects/{project}/locations/{region}/workerPools/{workerPool}``
-            where {project} and {region} are the project id and region
-            respectively where the worker pool is defined and
-            {workerPool} is the short name of the worker pool.
+            where ``{project}`` and ``{region}`` are the project id and
+            region respectively where the worker pool is defined and
+            ``{workerPool}`` is the short name of the worker pool.
         tags (MutableSequence[str]):
             Optional. Additional tags to annotate the
             build.

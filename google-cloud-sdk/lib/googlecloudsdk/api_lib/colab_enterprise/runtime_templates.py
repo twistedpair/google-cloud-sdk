@@ -30,13 +30,8 @@ def GetParentForRuntimeTemplate(args):
     The resource name in the form projects/{project}/locations/{location}.
   """
 
-  if args.IsSpecified('region'):
-    region = args.CONCEPTS.region.Parse()
-    return region.RelativeName()
-  raise ValueError(
-      'Region must be specified. See here for choices:'
-      ' https://cloud.google.com/colab/docs/locations'
-  )
+  region = args.CONCEPTS.region.Parse()
+  return region.RelativeName()
 
 
 def ParseRuntimeTemplateOperation(operation_name):

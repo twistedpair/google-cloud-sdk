@@ -225,9 +225,11 @@ class AwsSourceVmDetails(_messages.Message):
   r"""Represent the source AWS VM details.
 
   Enums:
+    ArchitectureValueValuesEnum: Output only. The VM architecture.
     FirmwareValueValuesEnum: Output only. The firmware type of the source VM.
 
   Fields:
+    architecture: Output only. The VM architecture.
     committedStorageBytes: Output only. The total size of the disks being
       migrated in bytes.
     disks: Output only. The disks attached to the source VM.
@@ -235,6 +237,19 @@ class AwsSourceVmDetails(_messages.Message):
     vmCapabilitiesInfo: Output only. Information about VM capabilities needed
       for some Compute Engine features.
   """
+
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""Output only. The VM architecture.
+
+    Values:
+      VM_ARCHITECTURE_UNSPECIFIED: The architecture is unknown.
+      VM_ARCHITECTURE_X86_FAMILY: The architecture is one of the x86
+        architectures.
+      VM_ARCHITECTURE_ARM64: The architecture is ARM64.
+    """
+    VM_ARCHITECTURE_UNSPECIFIED = 0
+    VM_ARCHITECTURE_X86_FAMILY = 1
+    VM_ARCHITECTURE_ARM64 = 2
 
   class FirmwareValueValuesEnum(_messages.Enum):
     r"""Output only. The firmware type of the source VM.
@@ -248,10 +263,11 @@ class AwsSourceVmDetails(_messages.Message):
     EFI = 1
     BIOS = 2
 
-  committedStorageBytes = _messages.IntegerField(1)
-  disks = _messages.MessageField('AwsDiskDetails', 2, repeated=True)
-  firmware = _messages.EnumField('FirmwareValueValuesEnum', 3)
-  vmCapabilitiesInfo = _messages.MessageField('VmCapabilities', 4)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  committedStorageBytes = _messages.IntegerField(2)
+  disks = _messages.MessageField('AwsDiskDetails', 3, repeated=True)
+  firmware = _messages.EnumField('FirmwareValueValuesEnum', 4)
+  vmCapabilitiesInfo = _messages.MessageField('VmCapabilities', 5)
 
 
 class AwsVmDetails(_messages.Message):
@@ -507,9 +523,11 @@ class AzureSourceVmDetails(_messages.Message):
   r"""Represent the source Azure VM details.
 
   Enums:
+    ArchitectureValueValuesEnum: Output only. The VM architecture.
     FirmwareValueValuesEnum: Output only. The firmware type of the source VM.
 
   Fields:
+    architecture: Output only. The VM architecture.
     committedStorageBytes: Output only. The total size of the disks being
       migrated in bytes.
     disks: Output only. The disks attached to the source VM.
@@ -517,6 +535,19 @@ class AzureSourceVmDetails(_messages.Message):
     vmCapabilitiesInfo: Output only. Information about VM capabilities needed
       for some Compute Engine features.
   """
+
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""Output only. The VM architecture.
+
+    Values:
+      VM_ARCHITECTURE_UNSPECIFIED: The architecture is unknown.
+      VM_ARCHITECTURE_X86_FAMILY: The architecture is one of the x86
+        architectures.
+      VM_ARCHITECTURE_ARM64: The architecture is ARM64.
+    """
+    VM_ARCHITECTURE_UNSPECIFIED = 0
+    VM_ARCHITECTURE_X86_FAMILY = 1
+    VM_ARCHITECTURE_ARM64 = 2
 
   class FirmwareValueValuesEnum(_messages.Enum):
     r"""Output only. The firmware type of the source VM.
@@ -530,16 +561,18 @@ class AzureSourceVmDetails(_messages.Message):
     EFI = 1
     BIOS = 2
 
-  committedStorageBytes = _messages.IntegerField(1)
-  disks = _messages.MessageField('AzureDiskDetails', 2, repeated=True)
-  firmware = _messages.EnumField('FirmwareValueValuesEnum', 3)
-  vmCapabilitiesInfo = _messages.MessageField('VmCapabilities', 4)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  committedStorageBytes = _messages.IntegerField(2)
+  disks = _messages.MessageField('AzureDiskDetails', 3, repeated=True)
+  firmware = _messages.EnumField('FirmwareValueValuesEnum', 4)
+  vmCapabilitiesInfo = _messages.MessageField('VmCapabilities', 5)
 
 
 class AzureVmDetails(_messages.Message):
   r"""AzureVmDetails describes a VM in Azure.
 
   Enums:
+    ArchitectureValueValuesEnum: The CPU architecture.
     BootOptionValueValuesEnum: The VM Boot Option.
     PowerStateValueValuesEnum: The power state of the VM at the moment list
       was taken.
@@ -548,6 +581,7 @@ class AzureVmDetails(_messages.Message):
     TagsValue: The tags of the VM.
 
   Fields:
+    architecture: The CPU architecture.
     bootOption: The VM Boot Option.
     committedStorageMb: The total size of the storage allocated to the VM in
       MB.
@@ -563,6 +597,19 @@ class AzureVmDetails(_messages.Message):
     vmId: The VM full path in Azure.
     vmSize: VM size as configured in Azure. Determines the VM's hardware spec.
   """
+
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""The CPU architecture.
+
+    Values:
+      VM_ARCHITECTURE_UNSPECIFIED: The architecture is unknown.
+      VM_ARCHITECTURE_X86_FAMILY: The architecture is one of the x86
+        architectures.
+      VM_ARCHITECTURE_ARM64: The architecture is ARM64.
+    """
+    VM_ARCHITECTURE_UNSPECIFIED = 0
+    VM_ARCHITECTURE_X86_FAMILY = 1
+    VM_ARCHITECTURE_ARM64 = 2
 
   class BootOptionValueValuesEnum(_messages.Enum):
     r"""The VM Boot Option.
@@ -622,19 +669,20 @@ class AzureVmDetails(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  bootOption = _messages.EnumField('BootOptionValueValuesEnum', 1)
-  committedStorageMb = _messages.IntegerField(2)
-  computerName = _messages.StringField(3)
-  cpuCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  diskCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  disks = _messages.MessageField('Disk', 6, repeated=True)
-  memoryMb = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  osDescription = _messages.MessageField('OSDescription', 8)
-  osDisk = _messages.MessageField('OSDisk', 9)
-  powerState = _messages.EnumField('PowerStateValueValuesEnum', 10)
-  tags = _messages.MessageField('TagsValue', 11)
-  vmId = _messages.StringField(12)
-  vmSize = _messages.StringField(13)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  bootOption = _messages.EnumField('BootOptionValueValuesEnum', 2)
+  committedStorageMb = _messages.IntegerField(3)
+  computerName = _messages.StringField(4)
+  cpuCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  diskCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  disks = _messages.MessageField('Disk', 7, repeated=True)
+  memoryMb = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  osDescription = _messages.MessageField('OSDescription', 9)
+  osDisk = _messages.MessageField('OSDisk', 10)
+  powerState = _messages.EnumField('PowerStateValueValuesEnum', 11)
+  tags = _messages.MessageField('TagsValue', 12)
+  vmId = _messages.StringField(13)
+  vmSize = _messages.StringField(14)
 
 
 class AzureVmsDetails(_messages.Message):
@@ -4795,9 +4843,11 @@ class VmwareSourceVmDetails(_messages.Message):
   r"""Represent the source Vmware VM details.
 
   Enums:
+    ArchitectureValueValuesEnum: Output only. The VM architecture.
     FirmwareValueValuesEnum: Output only. The firmware type of the source VM.
 
   Fields:
+    architecture: Output only. The VM architecture.
     committedStorageBytes: Output only. The total size of the disks being
       migrated in bytes.
     disks: Output only. The disks attached to the source VM.
@@ -4805,6 +4855,19 @@ class VmwareSourceVmDetails(_messages.Message):
     vmCapabilitiesInfo: Output only. Information about VM capabilities needed
       for some Compute Engine features.
   """
+
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""Output only. The VM architecture.
+
+    Values:
+      VM_ARCHITECTURE_UNSPECIFIED: The architecture is unknown.
+      VM_ARCHITECTURE_X86_FAMILY: The architecture is one of the x86
+        architectures.
+      VM_ARCHITECTURE_ARM64: The architecture is ARM64.
+    """
+    VM_ARCHITECTURE_UNSPECIFIED = 0
+    VM_ARCHITECTURE_X86_FAMILY = 1
+    VM_ARCHITECTURE_ARM64 = 2
 
   class FirmwareValueValuesEnum(_messages.Enum):
     r"""Output only. The firmware type of the source VM.
@@ -4818,21 +4881,24 @@ class VmwareSourceVmDetails(_messages.Message):
     EFI = 1
     BIOS = 2
 
-  committedStorageBytes = _messages.IntegerField(1)
-  disks = _messages.MessageField('VmwareDiskDetails', 2, repeated=True)
-  firmware = _messages.EnumField('FirmwareValueValuesEnum', 3)
-  vmCapabilitiesInfo = _messages.MessageField('VmCapabilities', 4)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  committedStorageBytes = _messages.IntegerField(2)
+  disks = _messages.MessageField('VmwareDiskDetails', 3, repeated=True)
+  firmware = _messages.EnumField('FirmwareValueValuesEnum', 4)
+  vmCapabilitiesInfo = _messages.MessageField('VmCapabilities', 5)
 
 
 class VmwareVmDetails(_messages.Message):
   r"""VmwareVmDetails describes a VM in vCenter.
 
   Enums:
+    ArchitectureValueValuesEnum: Output only. The CPU architecture.
     BootOptionValueValuesEnum: Output only. The VM Boot Option.
     PowerStateValueValuesEnum: The power state of the VM at the moment list
       was taken.
 
   Fields:
+    architecture: Output only. The CPU architecture.
     bootOption: Output only. The VM Boot Option.
     committedStorageMb: The total size of the storage allocated to the VM in
       MB.
@@ -4854,6 +4920,19 @@ class VmwareVmDetails(_messages.Message):
     vmId: The VM's id in the source (note that this is not the MigratingVm's
       id). This is the moref id of the VM.
   """
+
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""Output only. The CPU architecture.
+
+    Values:
+      VM_ARCHITECTURE_UNSPECIFIED: The architecture is unknown.
+      VM_ARCHITECTURE_X86_FAMILY: The architecture is one of the x86
+        architectures.
+      VM_ARCHITECTURE_ARM64: The architecture is ARM64.
+    """
+    VM_ARCHITECTURE_UNSPECIFIED = 0
+    VM_ARCHITECTURE_X86_FAMILY = 1
+    VM_ARCHITECTURE_ARM64 = 2
 
   class BootOptionValueValuesEnum(_messages.Enum):
     r"""Output only. The VM Boot Option.
@@ -4882,18 +4961,19 @@ class VmwareVmDetails(_messages.Message):
     OFF = 2
     SUSPENDED = 3
 
-  bootOption = _messages.EnumField('BootOptionValueValuesEnum', 1)
-  committedStorageMb = _messages.IntegerField(2)
-  cpuCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  datacenterDescription = _messages.StringField(4)
-  datacenterId = _messages.StringField(5)
-  diskCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  displayName = _messages.StringField(7)
-  guestDescription = _messages.StringField(8)
-  memoryMb = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  powerState = _messages.EnumField('PowerStateValueValuesEnum', 10)
-  uuid = _messages.StringField(11)
-  vmId = _messages.StringField(12)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  bootOption = _messages.EnumField('BootOptionValueValuesEnum', 2)
+  committedStorageMb = _messages.IntegerField(3)
+  cpuCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  datacenterDescription = _messages.StringField(5)
+  datacenterId = _messages.StringField(6)
+  diskCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  displayName = _messages.StringField(8)
+  guestDescription = _messages.StringField(9)
+  memoryMb = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  powerState = _messages.EnumField('PowerStateValueValuesEnum', 11)
+  uuid = _messages.StringField(12)
+  vmId = _messages.StringField(13)
 
 
 class VmwareVmsDetails(_messages.Message):

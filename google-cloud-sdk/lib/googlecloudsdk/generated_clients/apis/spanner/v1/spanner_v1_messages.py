@@ -15,6 +15,26 @@ from apitools.base.py import extra_types
 package = 'spanner'
 
 
+class AddSplitPointsRequest(_messages.Message):
+  r"""The request for AddSplitPoints.
+
+  Fields:
+    initiator: Optional. A user-supplied tag associated with the split points.
+      For example, "intital_data_load", "special_event_1". Defaults to
+      "CloudAddSplitPointsAPI" if not specified. The length of the tag must
+      not exceed 50 characters,else will be trimmed. Only valid UTF8
+      characters are allowed.
+    splitPoints: Required. The split points to add.
+  """
+
+  initiator = _messages.StringField(1)
+  splitPoints = _messages.MessageField('SplitPoints', 2, repeated=True)
+
+
+class AddSplitPointsResponse(_messages.Message):
+  r"""The response for AddSplitPoints."""
+
+
 class AsymmetricAutoscalingOption(_messages.Message):
   r"""AsymmetricAutoscalingOption specifies the scaling of replicas identified
   by the given selection.
@@ -398,6 +418,10 @@ class BeginTransactionRequest(_messages.Message):
   r"""The request for BeginTransaction.
 
   Fields:
+    mutationKey: Optional. Required for read-write transactions on a
+      multiplexed session that commit mutations but do not perform any reads
+      or queries. Clients should randomly select one of the mutations from the
+      mutation set and send it as a part of this request.
     options: Required. Options for the new transaction.
     requestOptions: Common options for this request. Priority is ignored for
       this request. Setting the priority in this request_options struct will
@@ -405,8 +429,9 @@ class BeginTransactionRequest(_messages.Message):
       reads and writes that are part of this transaction instead.
   """
 
-  options = _messages.MessageField('TransactionOptions', 1)
-  requestOptions = _messages.MessageField('RequestOptions', 2)
+  mutationKey = _messages.MessageField('Mutation', 1)
+  options = _messages.MessageField('TransactionOptions', 2)
+  requestOptions = _messages.MessageField('RequestOptions', 3)
 
 
 class Binding(_messages.Message):
@@ -566,6 +591,10 @@ class CommitRequest(_messages.Message):
       commit delay value between 0 and 500 ms.
     mutations: The mutations to be executed when this transaction commits. All
       mutations are applied atomically, in the order they appear in this list.
+    precommitToken: Optional. If the read-write transaction was executed on a
+      multiplexed session, the precommit token with the highest sequence
+      number received in this transaction attempt, should be included here.
+      Failing to do so will result in a FailedPrecondition error.
     requestOptions: Common options for this request.
     returnCommitStats: If `true`, then statistics related to the transaction
       will be included in the CommitResponse. Default value is `false`.
@@ -581,10 +610,11 @@ class CommitRequest(_messages.Message):
 
   maxCommitDelay = _messages.StringField(1)
   mutations = _messages.MessageField('Mutation', 2, repeated=True)
-  requestOptions = _messages.MessageField('RequestOptions', 3)
-  returnCommitStats = _messages.BooleanField(4)
-  singleUseTransaction = _messages.MessageField('TransactionOptions', 5)
-  transactionId = _messages.BytesField(6)
+  precommitToken = _messages.MessageField('MultiplexedSessionPrecommitToken', 3)
+  requestOptions = _messages.MessageField('RequestOptions', 4)
+  returnCommitStats = _messages.BooleanField(5)
+  singleUseTransaction = _messages.MessageField('TransactionOptions', 6)
+  transactionId = _messages.BytesField(7)
 
 
 class CommitResponse(_messages.Message):
@@ -595,10 +625,13 @@ class CommitResponse(_messages.Message):
       For more information, see CommitRequest.return_commit_stats.
     commitTimestamp: The Cloud Spanner timestamp at which the transaction
       committed.
+    precommitToken: If specified, transaction has not committed yet. Clients
+      must retry the commit with the new precommit token.
   """
 
   commitStats = _messages.MessageField('CommitStats', 1)
   commitTimestamp = _messages.StringField(2)
+  precommitToken = _messages.MessageField('MultiplexedSessionPrecommitToken', 3)
 
 
 class CommitStats(_messages.Message):
@@ -1437,6 +1470,10 @@ class ExecuteBatchDmlResponse(_messages.Message):
   and fifth statements were not executed.
 
   Fields:
+    precommitToken: Optional. A precommit token will be included if the read-
+      write transaction is on a multiplexed session. The precommit token with
+      the highest sequence number from this transaction attempt should be
+      passed to the Commit request for this transaction.
     resultSets: One ResultSet for each statement in the request that ran
       successfully, in the same order as the statements in the request. Each
       ResultSet does not contain any rows. The ResultSetStats in each
@@ -1446,8 +1483,9 @@ class ExecuteBatchDmlResponse(_messages.Message):
       `OK`. Otherwise, the error status of the first failed statement.
   """
 
-  resultSets = _messages.MessageField('ResultSet', 1, repeated=True)
-  status = _messages.MessageField('Status', 2)
+  precommitToken = _messages.MessageField('MultiplexedSessionPrecommitToken', 1)
+  resultSets = _messages.MessageField('ResultSet', 2, repeated=True)
+  status = _messages.MessageField('Status', 3)
 
 
 class ExecuteSqlRequest(_messages.Message):
@@ -1542,10 +1580,16 @@ class ExecuteSqlRequest(_messages.Message):
         operator level execution statistics along with the results. This has a
         performance overhead compared to the other modes. It is not
         recommended to use this mode for production traffic.
+      WITH_STATS: This mode returns the overall (but not operator-level)
+        execution statistics along with the results.
+      WITH_PLAN_AND_STATS: This mode returns the query plan, overall (but not
+        operator-level) execution statistics along with the results.
     """
     NORMAL = 0
     PLAN = 1
     PROFILE = 2
+    WITH_STATS = 3
+    WITH_PLAN_AND_STATS = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamTypesValue(_messages.Message):
@@ -2006,8 +2050,11 @@ class Instance(_messages.Message):
       number of nodes allocated to the instance. If autoscaling is enabled,
       `node_count` is treated as an `OUTPUT_ONLY` field and reflects the
       current number of nodes allocated to the instance. This might be zero in
-      API responses for instances that are not yet in the `READY` state. For
-      more information, see [Compute capacity, nodes, and processing
+      API responses for instances that are not yet in the `READY` state. If
+      the instance has varying node count across replicas (achieved by setting
+      asymmetric_autoscaling_options in autoscaling config), the node_count
+      here is the maximum node count across all replicas. For more
+      information, see [Compute capacity, nodes, and processing
       units](https://cloud.google.com/spanner/docs/compute-capacity).
     processingUnits: The number of processing units allocated to this
       instance. At most, one of either `processing_units` or `node_count`
@@ -2016,9 +2063,13 @@ class Instance(_messages.Message):
       instance. If autoscaling is enabled, `processing_units` is treated as an
       `OUTPUT_ONLY` field and reflects the current number of processing units
       allocated to the instance. This might be zero in API responses for
-      instances that are not yet in the `READY` state. For more information,
-      see [Compute capacity, nodes and processing
-      units](https://cloud.google.com/spanner/docs/compute-capacity).
+      instances that are not yet in the `READY` state. If the instance has
+      varying processing units per replica (achieved by setting
+      asymmetric_autoscaling_options in autoscaling config), the
+      processing_units here is the maximum processing units across all
+      replicas. For more information, see [Compute capacity, nodes and
+      processing units](https://cloud.google.com/spanner/docs/compute-
+      capacity).
     replicaComputeCapacity: Output only. Lists the compute capacity per
       ReplicaSelection. A replica selection identifies a set of replicas with
       common properties. Replicas identified by a ReplicaSelection are scaled
@@ -2527,6 +2578,16 @@ class InstanceReplicaSelection(_messages.Message):
   """
 
   location = _messages.StringField(1)
+
+
+class Key(_messages.Message):
+  r"""A split key.
+
+  Fields:
+    keyParts: Required. The column values making up the split key.
+  """
+
+  keyParts = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
 
 
 class KeyRange(_messages.Message):
@@ -3304,6 +3365,10 @@ class PartialResultSet(_messages.Message):
       obtain a complete field value.
     metadata: Metadata about the result set, such as row type information.
       Only present in the first response.
+    precommitToken: Optional. A precommit token will be included if the read-
+      write transaction is on a multiplexed session. The precommit token with
+      the highest sequence number from this transaction attempt should be
+      passed to the Commit request for this transaction.
     resumeToken: Streaming calls might be interrupted for a variety of
       reasons, such as TCP connection loss. If this occurs, the stream of
       results can be resumed by re-sending the original request and including
@@ -3357,9 +3422,10 @@ class PartialResultSet(_messages.Message):
 
   chunkedValue = _messages.BooleanField(1)
   metadata = _messages.MessageField('ResultSetMetadata', 2)
-  resumeToken = _messages.BytesField(3)
-  stats = _messages.MessageField('ResultSetStats', 4)
-  values = _messages.MessageField('extra_types.JsonValue', 5, repeated=True)
+  precommitToken = _messages.MessageField('MultiplexedSessionPrecommitToken', 3)
+  resumeToken = _messages.BytesField(4)
+  stats = _messages.MessageField('ResultSetStats', 5)
+  values = _messages.MessageField('extra_types.JsonValue', 6, repeated=True)
 
 
 class Partition(_messages.Message):
@@ -4090,6 +4156,9 @@ class ReadWrite(_messages.Message):
     ReadLockModeValueValuesEnum: Read lock mode for the transaction.
 
   Fields:
+    multiplexedSessionPreviousTransactionId: Optional. Clients should pass the
+      transaction ID of the previous transaction attempt that was aborted if
+      this transaction is being executed on a multiplexed session.
     readLockMode: Read lock mode for the transaction.
   """
 
@@ -4110,7 +4179,8 @@ class ReadWrite(_messages.Message):
     PESSIMISTIC = 1
     OPTIMISTIC = 2
 
-  readLockMode = _messages.EnumField('ReadLockModeValueValuesEnum', 1)
+  multiplexedSessionPreviousTransactionId = _messages.BytesField(1)
+  readLockMode = _messages.EnumField('ReadLockModeValueValuesEnum', 2)
 
 
 class ReplicaComputeCapacity(_messages.Message):
@@ -4416,6 +4486,10 @@ class ResultSet(_messages.Message):
 
   Fields:
     metadata: Metadata about the result set, such as row type information.
+    precommitToken: Optional. A precommit token will be included if the read-
+      write transaction is on a multiplexed session. The precommit token with
+      the highest sequence number from this transaction attempt should be
+      passed to the Commit request for this transaction.
     rows: Each element in `rows` is a row whose format is defined by
       metadata.row_type. The ith element in each row matches the ith field in
       metadata.row_type. Elements are encoded based on type as described here.
@@ -4438,8 +4512,9 @@ class ResultSet(_messages.Message):
     entry = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
 
   metadata = _messages.MessageField('ResultSetMetadata', 1)
-  rows = _messages.MessageField('RowsValueListEntry', 2, repeated=True)
-  stats = _messages.MessageField('ResultSetStats', 3)
+  precommitToken = _messages.MessageField('MultiplexedSessionPrecommitToken', 2)
+  rows = _messages.MessageField('RowsValueListEntry', 3, repeated=True)
+  stats = _messages.MessageField('ResultSetStats', 4)
 
 
 class ResultSetMetadata(_messages.Message):
@@ -5359,7 +5434,7 @@ class SpannerProjectsInstancesDatabaseOperationsListRequest(_messages.Message):
       value for filtering. The value must be a string, a number, or a boolean.
       The comparison operator must be one of: `<`, `>`, `<=`, `>=`, `!=`, `=`,
       or `:`. Colon `:` is the contains operator. Filter rules are not case
-      sensitive. The following fields in the Operation are eligible for
+      sensitive. The following fields in the operation are eligible for
       filtering: * `name` - The name of the long-running operation * `done` -
       False if the operation is in progress, else true. * `metadata.@type` -
       the type of metadata. For example, the type string for
@@ -5395,6 +5470,20 @@ class SpannerProjectsInstancesDatabaseOperationsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class SpannerProjectsInstancesDatabasesAddSplitPointsRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesDatabasesAddSplitPointsRequest object.
+
+  Fields:
+    addSplitPointsRequest: A AddSplitPointsRequest resource to be passed as
+      the request body.
+    database: Required. The database on whose tables/indexes split points are
+      to be added. Values are of the form `projects//instances//databases/`.
+  """
+
+  addSplitPointsRequest = _messages.MessageField('AddSplitPointsRequest', 1)
+  database = _messages.StringField(2, required=True)
 
 
 class SpannerProjectsInstancesDatabasesBackupSchedulesCreateRequest(_messages.Message):
@@ -6432,6 +6521,26 @@ class SpannerScansListRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
+class SplitPoints(_messages.Message):
+  r"""The split points of a table/index.
+
+  Fields:
+    expireTime: Optional. The expiration timestamp of the split points. A
+      timestamp in the past means immediate expiration. The maximum value can
+      be 30 days in the future. Defaults to 10 days in the future if not
+      specified.
+    index: The index to split. If specified, the `table` field must refer to
+      the index's base table.
+    keys: Required. The list of split keys, i.e., the split boundaries.
+    table: The table to split.
+  """
+
+  expireTime = _messages.StringField(1)
+  index = _messages.StringField(2)
+  keys = _messages.MessageField('Key', 3, repeated=True)
+  table = _messages.StringField(4)
+
+
 class SsdCache(_messages.Message):
   r"""SSD Cache to optimize Disk IO capacity usage when using HDD storage.
 
@@ -7260,7 +7369,7 @@ class UpdateDatabaseDdlRequest(_messages.Message):
       operation ID simplifies determining whether the statements were executed
       in the event that the UpdateDatabaseDdl call is replayed, or the return
       value is otherwise lost: the database and `operation_id` fields can be
-      combined to form the name of the resulting longrunning.Operation:
+      combined to form the `name` of the resulting longrunning.Operation:
       `/operations/`. `operation_id` should be unique within the database, and
       must be a valid identifier: `a-z*`. Note that automatically-generated
       operation IDs always begin with an underscore. If the named operation

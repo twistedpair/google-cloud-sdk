@@ -54,6 +54,7 @@ class _AwsClientBase(client.ClientBase):
         'annotations': self._Annotations(args, nodepool_type),
         'autoscaling': self._NodePoolAutoscaling(args),
         'config': self._NodeConfig(args),
+        'kubeletConfig': self._KubeletConfig(args),
         'maxPodsConstraint': self._MaxPodsConstraint(args),
         'management': self._NodeManagement(args),
         'name': node_pool_ref.awsNodePoolsId,
@@ -280,6 +281,19 @@ class _AwsClientBase(client.ClientBase):
     }
     return (
         self._messages.GoogleCloudGkemulticloudV1AwsNodeConfig(**kwargs)
+        if any(kwargs.values())
+        else None
+    )
+
+  def _KubeletConfig(self, args):
+    kwargs = {
+        'cpuManagerPolicy': aws_flags.GetKubeletConfigCpuManagerPolicy(args),
+        'cpuCfsQuota': aws_flags.GetKubeletConfigCpuCfsQuota(args),
+        'cpuCfsQuotaPeriod': aws_flags.GetKubeletConfigCpuCfsQuotaPeriod(args),
+        'podPidsLimit': aws_flags.GetKubeletConfigPodPidsLimit(args),
+    }
+    return (
+        self._messages.GoogleCloudGkemulticloudV1NodeKubeletConfig(**kwargs)
         if any(kwargs.values())
         else None
     )

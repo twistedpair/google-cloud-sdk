@@ -172,7 +172,6 @@ def AddCreateFlags(
     support_share_setting=False,
     support_stable_fleet=False,
     support_existing_reservation=False,
-    support_custom_end_time=False,
     support_reservation_sharing_policy=False,
 ):
   """Add general arguments for `commitments create` flag."""
@@ -187,8 +186,7 @@ def AddCreateFlags(
   AddResourcesArgGroup(parser)
   AddSplitSourceCommitment(parser)
   AddMergeSourceCommitments(parser)
-  if support_custom_end_time:
-    AddCustomEndTime(parser)
+  AddCustomEndTime(parser)
 
 
 def AddUpdateFlags(parser):

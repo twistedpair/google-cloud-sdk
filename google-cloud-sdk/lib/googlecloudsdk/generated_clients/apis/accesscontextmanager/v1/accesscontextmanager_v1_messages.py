@@ -700,12 +700,15 @@ class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messag
   object.
 
   Fields:
-    appendScopedAccessSettings: Optional. This field will be used to control
-      whether or not scoped access settings are appended to the existing list
-      of scoped access settings. If true, the scoped access settings in the
-      request will be appended to the existing list of scoped access settings.
-      If false, the scoped access settings in the request replace the existing
-      list of scoped access settings.
+    append: Optional. This field controls whether or not certain repeated
+      settings in the update request overwrite or append to existing settings
+      on the binding. If true, then append. Otherwise overwrite. So far, only
+      scoped_access_settings supports appending. Global access_levels,
+      dry_run_access_levels, and reauth_settings are not compatible with
+      append functionality, and the request will return an error if
+      append=true when these settings are in the update_mask. The request will
+      also return an error if append=true when "scoped_access_settings" is not
+      set in the update_mask.
     gcpUserAccessBinding: A GcpUserAccessBinding resource to be passed as the
       request body.
     name: Immutable. Assigned by the server during creation. The last segment
@@ -717,10 +720,11 @@ class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messag
     updateMask: Required. Only the fields specified in this mask are updated.
       Because name and group_key cannot be changed, update_mask is required
       and may only contain the following fields: `access_levels`,
-      `dry_run_access_levels`. update_mask { paths: "access_levels" }
+      `dry_run_access_levels`, `reauth_settings`, `scoped_access_settings`.
+      update_mask { paths: "access_levels" }
   """
 
-  appendScopedAccessSettings = _messages.BooleanField(1)
+  append = _messages.BooleanField(1)
   gcpUserAccessBinding = _messages.MessageField('GcpUserAccessBinding', 2)
   name = _messages.StringField(3, required=True)
   updateMask = _messages.StringField(4)

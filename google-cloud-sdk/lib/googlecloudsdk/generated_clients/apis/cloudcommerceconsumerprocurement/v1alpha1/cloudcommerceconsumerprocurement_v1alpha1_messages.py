@@ -186,6 +186,19 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersGetAuditLogRequest(_m
   name = _messages.StringField(1, required=True)
 
 
+class CloudcommerceconsumerprocurementBillingAccountsOrdersGetLicensePoolRequest(_messages.Message):
+  r"""A
+  CloudcommerceconsumerprocurementBillingAccountsOrdersGetLicensePoolRequest
+  object.
+
+  Fields:
+    name: Required. The name of the license pool to get. Format:
+      `billingAccounts/{billing_account}/orders/{order}/licensePool`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class CloudcommerceconsumerprocurementBillingAccountsOrdersGetRequest(_messages.Message):
   r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersGetRequest
   object.
@@ -195,6 +208,73 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersGetRequest(_messages.
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolAssignRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolAssign
+  Request object.
+
+  Fields:
+    googleCloudCommerceConsumerProcurementV1alpha1AssignRequest: A
+      GoogleCloudCommerceConsumerProcurementV1alpha1AssignRequest resource to
+      be passed as the request body.
+    parent: Required. License pool name.
+  """
+
+  googleCloudCommerceConsumerProcurementV1alpha1AssignRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1AssignRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolEnumerateLicensedUsersRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolEnumer
+  ateLicensedUsersRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of users to return. The service may
+      return fewer than this value.
+    pageToken: Optional. A page token, received from a previous
+      `EnumerateLicensedUsers` call. Provide this to retrieve the subsequent
+      page.
+    parent: Required. License pool name.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolPatchRequest(_messages.Message):
+  r"""A
+  CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolPatchRequest
+  object.
+
+  Fields:
+    googleCloudCommerceConsumerProcurementV1alpha1LicensePool: A
+      GoogleCloudCommerceConsumerProcurementV1alpha1LicensePool resource to be
+      passed as the request body.
+    name: Identifier. Format:
+      `billingAccounts/{billing_account}/orders/{order}/licensePool`
+    updateMask: Required. The list of fields to update.
+  """
+
+  googleCloudCommerceConsumerProcurementV1alpha1LicensePool = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1LicensePool', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolUnassignRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolUnassi
+  gnRequest object.
+
+  Fields:
+    googleCloudCommerceConsumerProcurementV1alpha1UnassignRequest: A
+      GoogleCloudCommerceConsumerProcurementV1alpha1UnassignRequest resource
+      to be passed as the request body.
+    parent: Required. License pool name.
+  """
+
+  googleCloudCommerceConsumerProcurementV1alpha1UnassignRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1UnassignRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class CloudcommerceconsumerprocurementBillingAccountsOrdersListRequest(_messages.Message):
@@ -631,6 +711,52 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1AddOnDetails(_messages.Messa
   isAddOn = _messages.BooleanField(1)
 
 
+class GoogleCloudCommerceConsumerProcurementV1alpha1AssignRequest(_messages.Message):
+  r"""Request message for LicenseManagementService.Assign.
+
+  Fields:
+    usernames: Required. Username. Format: `name@domain.com`.
+  """
+
+  usernames = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1AssignResponse(_messages.Message):
+  r"""Response message for LicenseManagementService.Assign."""
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1AssignmentProtocol(_messages.Message):
+  r"""Assignment protocol for a license pool.
+
+  Fields:
+    autoAssignmentType: Allow automatic assignments triggered by data plane
+      operations.
+    manualAssignmentType: Allow manual assignments triggered by administrative
+      operations only.
+  """
+
+  autoAssignmentType = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1AssignmentProtocolAutoAssignmentType', 1)
+  manualAssignmentType = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1AssignmentProtocolManualAssignmentType', 2)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1AssignmentProtocolAutoAssignmentType(_messages.Message):
+  r"""Configuration for automatic assignments handled by data plane
+  operations.
+
+  Fields:
+    inactiveLicenseTtl: Optional. The time to live for an inactive license.
+      After this time has passed, the license will be automatically unassigned
+      from the user. Must be at least 7 days, if set. If unset, the license
+      will never expire.
+  """
+
+  inactiveLicenseTtl = _messages.StringField(1)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1AssignmentProtocolManualAssignmentType(_messages.Message):
+  r"""Allow manual assignments triggered by administrative operations only."""
+
+
 class GoogleCloudCommerceConsumerProcurementV1alpha1AuditLog(_messages.Message):
   r"""Consumer Procurement Order Audit Log To be deprecated
 
@@ -1047,6 +1173,19 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementInfo(_messages.Me
   services = _messages.StringField(2, repeated=True)
 
 
+class GoogleCloudCommerceConsumerProcurementV1alpha1EnumerateLicensedUsersResponse(_messages.Message):
+  r"""Response message for LicenseManagementService.EnumerateLicensedUsers.
+
+  Fields:
+    licensedUsers: The list of licensed users.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  licensedUsers = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1LicensedUser', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudCommerceConsumerProcurementV1alpha1Event(_messages.Message):
   r"""Consumer Procurement Order Event
 
@@ -1151,6 +1290,42 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1GrantConsentRequest(_message
 
   consent = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Consent', 1)
   validateOnly = _messages.BooleanField(2)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1LicensePool(_messages.Message):
+  r"""A license pool represents a pool of licenses that can be assigned to
+  users.
+
+  Fields:
+    availableLicenseCount: Output only. Licenses count that are available to
+      be assigned.
+    licenseAssignmentProtocol: Required. Assignment protocol for the license
+      pool.
+    name: Identifier. Format:
+      `billingAccounts/{billing_account}/orders/{order}/licensePool`
+    totalLicenseCount: Output only. Total number of licenses in the pool.
+  """
+
+  availableLicenseCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  licenseAssignmentProtocol = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1AssignmentProtocol', 2)
+  name = _messages.StringField(3)
+  totalLicenseCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1LicensedUser(_messages.Message):
+  r"""A licensed user.
+
+  Fields:
+    assignTime: Output only. Timestamp when the license was assigned.
+    recentUsageTime: Output only. Timestamp when the license was recently
+      used. This may not be the most recent usage time, and will be updated
+      regularly (within 24 hours).
+    username: Username. Format: `name@domain.com`.
+  """
+
+  assignTime = _messages.StringField(1)
+  recentUsageTime = _messages.StringField(2)
+  username = _messages.StringField(3)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1LineItem(_messages.Message):
@@ -1458,7 +1633,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderMetadata(_message
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest(_messages.Message):
-  r"""Request message for ConsumerProcurementService.ModifyOrder. Next Id: 10
+  r"""Request message for ConsumerProcurementService.ModifyOrder.
 
   Fields:
     displayName: Optional. Updated display name of the order, leave as empty
@@ -1930,6 +2105,20 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1TestConfig(_messages.Message
   """
 
   isTesting = _messages.BooleanField(1)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1UnassignRequest(_messages.Message):
+  r"""Request message for LicenseManagementService.Unassign.
+
+  Fields:
+    usernames: Required. Username. Format: `name@domain.com`.
+  """
+
+  usernames = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1UnassignResponse(_messages.Message):
+  r"""Response message for LicenseManagementService.Unassign."""
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1UpdateOrderAttributionMetadata(_messages.Message):

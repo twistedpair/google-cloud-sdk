@@ -24,6 +24,13 @@ DOCS_URL = 'https://cloud.google.com/apis/docs/overview'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  LOCATIONS_POLICY = (
+      'locations.policy',
+      'locations/{location}/policy',
+      {},
+      ['location'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{project}',
@@ -83,6 +90,13 @@ class Collections(enum.Enum):
       ['project', 'location', 'key_ring', 'crypto_key'],
       True
   )
+  PROJECTS_LOCATIONS_MESHES = (
+      'projects.locations.meshes',
+      'projects/{project}/locations/{location}/meshes/{mesh}',
+      {},
+      ['project', 'location', 'mesh'],
+      True
+  )
   PROJECTS_LOCATIONS_SERVICES = (
       'projects.locations.services',
       'projects/{project}/locations/{location}/services/{service}',
@@ -103,6 +117,13 @@ class Collections(enum.Enum):
       'projects/{project}/locations/{location}/workerPools/{worker_pool}',
       {},
       ['project', 'location', 'worker_pool'],
+      True
+  )
+  PROJECTS_POLICY = (
+      'projects.policy',
+      'projects/{project}/policy',
+      {},
+      ['project'],
       True
   )
   PROJECTS_SECRETS = (

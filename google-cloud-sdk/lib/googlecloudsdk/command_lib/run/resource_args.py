@@ -660,6 +660,7 @@ CLUSTER_PRESENTATION = presentation_specs.ResourcePresentationSpec(
     '--cluster',
     GetClusterResourceSpec(),
     'Kubernetes Engine cluster to connect to.',
+    hidden=True,
     required=False,
     prefixes=True,
 )

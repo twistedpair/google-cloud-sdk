@@ -105,11 +105,10 @@ class RevisionTemplate(proto.Message):
             image. For more information, go to
             https://cloud.google.com/run/docs/securing/using-cmek
         max_instance_request_concurrency (int):
-            Optional. Sets the maximum number of requests
-            that each serving instance can receive. If not
-            specified or 0, defaults to 80 when requested
-            CPU >= 1 and defaults to 1 when requested CPU <
-            1.
+            Optional. Sets the maximum number of requests that each
+            serving instance can receive. If not specified or 0,
+            defaults to 80 when requested ``CPU >= 1`` and defaults to 1
+            when requested ``CPU < 1``.
         service_mesh (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.ServiceMesh):
             Optional. Enables service mesh connectivity.
         session_affinity (bool):

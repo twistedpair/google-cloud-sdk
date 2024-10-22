@@ -2412,8 +2412,9 @@ class LogScope(_messages.Message):
     createTime: Output only. The creation timestamp of the log scope.
     description: Optional. Describes this log scope.The maximum length of the
       description is 8000 characters.
-    name: Output only. The resource name of the log scope.For
-      example:projects/my-project/locations/global/logScopes/my-log-scope
+    name: Output only. The resource name of the log scope.Log scopes are only
+      available in the global location. For example:projects/my-
+      project/locations/global/logScopes/my-log-scope
     resourceNames: Required. Names of one or more parent resources:
       projects/[PROJECT_ID]May alternatively be one or more views: projects/[P
       ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]A
@@ -4272,8 +4273,9 @@ class LoggingFoldersLocationsLogScopesPatchRequest(_messages.Message):
 
   Fields:
     logScope: A LogScope resource to be passed as the request body.
-    name: Output only. The resource name of the log scope.For
-      example:projects/my-project/locations/global/logScopes/my-log-scope
+    name: Output only. The resource name of the log scope.Log scopes are only
+      available in the global location. For example:projects/my-
+      project/locations/global/logScopes/my-log-scope
     updateMask: Optional. Field mask that specifies the fields in log_scope
       that need an update. A field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.For a
@@ -5931,8 +5933,9 @@ class LoggingOrganizationsLocationsLogScopesPatchRequest(_messages.Message):
 
   Fields:
     logScope: A LogScope resource to be passed as the request body.
-    name: Output only. The resource name of the log scope.For
-      example:projects/my-project/locations/global/logScopes/my-log-scope
+    name: Output only. The resource name of the log scope.Log scopes are only
+      available in the global location. For example:projects/my-
+      project/locations/global/logScopes/my-log-scope
     updateMask: Optional. Field mask that specifies the fields in log_scope
       that need an update. A field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.For a
@@ -7073,8 +7076,9 @@ class LoggingProjectsLocationsLogScopesPatchRequest(_messages.Message):
 
   Fields:
     logScope: A LogScope resource to be passed as the request body.
-    name: Output only. The resource name of the log scope.For
-      example:projects/my-project/locations/global/logScopes/my-log-scope
+    name: Output only. The resource name of the log scope.Log scopes are only
+      available in the global location. For example:projects/my-
+      project/locations/global/logScopes/my-log-scope
     updateMask: Optional. Field mask that specifies the fields in log_scope
       that need an update. A field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.For a
@@ -8854,15 +8858,25 @@ class QueryParameter(_messages.Message):
 
 class QueryRestriction(_messages.Message):
   r"""Specifies query restrictions to apply. This allows UI to provide common
-  filter needs (e.g. timestamps) without having the user to write them in SQL.
+  filter needs (e.g. timestamps) without having the user to write them in
+  SQL.Note: Each restriction is independent of the others and can be used in
+  any combination. For example, you can use either timerange or
+  receive_timerange or both to combine the two restrictions.
 
   Fields:
+    receiveTimerange: Optional. This restriction is a TIME_RANGE restriction
+      type in the QueryRestrictionConflict based on the receive_timestamp log
+      field. Range is [start_time, end_time). Granularity: down to
+      milliseconds (not nanoseconds)
     timerange: Optional. This restriction is the TIME_RANGE restriction type
-      in the QueryRestrictionConflict. Range is [start_time, end_time).
-      Granularity: down to milliseconds (not nanoseconds)
+      in the QueryRestrictionConflict based on the primary timestamp column
+      (ex. 'timestamp' for log entries, 'start_time' for spans). Range is
+      [start_time, end_time). Granularity: down to milliseconds (not
+      nanoseconds)
   """
 
-  timerange = _messages.MessageField('Interval', 1)
+  receiveTimerange = _messages.MessageField('Interval', 1)
+  timerange = _messages.MessageField('Interval', 2)
 
 
 class QueryRestrictionConflict(_messages.Message):
@@ -8927,6 +8941,13 @@ class QueryRestrictionConflict(_messages.Message):
         query conflicts with the timepicker in the UI. Native tables' schemas
         are controlled by the users, and thus we do not know how to properly
         apply time restrictions to those tables.
+      NO_VALID_TIMESTAMP_COLUMNS: Indicates that none of the views in the
+        query have a valid timestamp column. This should cause the timepicker
+        to be disabled. There are no row or columns associated with this
+        conflict type. All bucketed views (Log, Trace, and Metrics views) have
+        a valid timestamp. Analytics views must have a column named timestamp
+        of type timestamp, non-repeated to be considered as having a valid
+        timestamp column.
     """
     RESTRICTION_TYPE_UNSPECIFIED = 0
     TIME_RANGE = 1
@@ -8934,6 +8955,7 @@ class QueryRestrictionConflict(_messages.Message):
     LIMIT = 3
     CUSTOMER_PROJECT_SLOT_RESERVATION = 4
     BQ_NATIVE_TABLE = 5
+    NO_VALID_TIMESTAMP_COLUMNS = 6
 
   column = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   confidence = _messages.EnumField('ConfidenceValueValuesEnum', 2)

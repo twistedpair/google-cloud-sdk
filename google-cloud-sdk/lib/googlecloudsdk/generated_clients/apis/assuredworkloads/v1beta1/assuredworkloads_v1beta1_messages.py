@@ -1028,6 +1028,8 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       should only be updated via updateWorkload call. Any Changes to this
       field during the createWorkload call will not be honored. This will
       always be true while creating the workload.
+    workloadOptions: Optional. Options to be set for the given created
+      workload.
   """
 
   class ComplianceRegimeValueValuesEnum(_messages.Enum):
@@ -1180,6 +1182,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
   resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo', 26, repeated=True)
   saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadSaaEnrollmentResponse', 27)
   violationNotificationsEnabled = _messages.BooleanField(28)
+  workloadOptions = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadWorkloadOptions', 29)
 
 
 class GoogleCloudAssuredworkloadsV1beta1WorkloadCJISSettings(_messages.Message):
@@ -1523,6 +1526,31 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadUpdate(_messages.Message):
   name = _messages.StringField(3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
   updateTime = _messages.StringField(5)
+
+
+class GoogleCloudAssuredworkloadsV1beta1WorkloadWorkloadOptions(_messages.Message):
+  r"""Options to be set for the given created workload.
+
+  Enums:
+    KajEnrollmentTypeValueValuesEnum: Optional. Specifies type of KAJ
+      Enrollment if provided.
+
+  Fields:
+    kajEnrollmentType: Optional. Specifies type of KAJ Enrollment if provided.
+  """
+
+  class KajEnrollmentTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies type of KAJ Enrollment if provided.
+
+    Values:
+      KAJ_ENROLLMENT_TYPE_UNSPECIFIED: KAJ Enrollment type is unspecified
+      KEY_ACCESS_TRANSPARENCY_OFF: KAT sets External, Hardware, and Software
+        key feature logging only to TRUE. (no enforcement)
+    """
+    KAJ_ENROLLMENT_TYPE_UNSPECIFIED = 0
+    KEY_ACCESS_TRANSPARENCY_OFF = 1
+
+  kajEnrollmentType = _messages.EnumField('KajEnrollmentTypeValueValuesEnum', 1)
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):

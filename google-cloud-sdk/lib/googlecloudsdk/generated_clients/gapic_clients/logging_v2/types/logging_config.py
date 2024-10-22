@@ -418,6 +418,7 @@ class LogScope(proto.Message):
         name (str):
             Output only. The resource name of the log scope.
 
+            Log scopes are only available in the ``global`` location.
             For example:
 
             ``projects/my-project/locations/global/logScopes/my-log-scope``

@@ -265,6 +265,10 @@ class GoogleIamV3PolicyInaccessible(_messages.Message):
   r"""A marker to indicate that the policy is inaccessible"""
 
 
+class GoogleIamV3PolicyNotFound(_messages.Message):
+  r"""A marker to indicate that the policy was not found"""
+
+
 class GoogleIamV3PrincipalAccessBoundaryPolicy(_messages.Message):
   r"""An IAM principal access boundary policy resource.
 
@@ -415,11 +419,15 @@ class GoogleIamV3SearchApplicablePoliciesResponseBindingAndPolicy(_messages.Mess
       policy cannot be retrieved due to lack of permissions
     policyInaccessible: Will be set if there was a permission error getting
       the policy (even though the binding was accessible).
+    policyNotFound: Will be set if there was not a permission error, but the
+      policy was not found. This would indicate the binding is orphaned. Any
+      orphan binding will eventually be cleaned up - this state is temporary.
   """
 
   binding = _messages.MessageField('GoogleIamV3PolicyBinding', 1)
   policy = _messages.MessageField('GoogleIamV3Policy', 2)
   policyInaccessible = _messages.MessageField('GoogleIamV3PolicyInaccessible', 3)
+  policyNotFound = _messages.MessageField('GoogleIamV3PolicyNotFound', 4)
 
 
 class GoogleIamV3SearchPrincipalAccessBoundaryPolicyBindingsResponse(_messages.Message):

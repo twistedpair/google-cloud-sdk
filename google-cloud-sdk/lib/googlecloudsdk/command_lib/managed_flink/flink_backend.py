@@ -16,14 +16,19 @@
 
 import copy
 import os
+from urllib import parse
 
+from apitools.base.py import transfer
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.artifacts import requests
 from googlecloudsdk.command_lib.util.anthos import binary_operations
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import resources
+from googlecloudsdk.core.credentials import transports
 from googlecloudsdk.core.util import platforms
 
 
@@ -54,9 +59,16 @@ MISSING_BINARY = (
     'more details.'
 )
 
+# 3 MiB as from the Artifact Registry default.
+DEFAULT_CHUNK_SIZE = 3 * 1024 * 1024
+
 
 class FileUploadError(core_exceptions.Error):
   """Exception raised when a file upload fails."""
+
+
+class FileDownloadError(core_exceptions.Error):
+  """Exception raised when a file download fails."""
 
 
 def DummyJar():
@@ -88,6 +100,75 @@ def Upload(files, destination, storage_client=None):
           )
       )
   return destinations
+
+
+def CreateRegistryFromArtifactUri(artifact_uri):
+  """Creates a registry from an artifact URI.
+
+  Args:
+    artifact_uri:
+      ar://<project>/<location>/<repository>/<file/path/version/file.jar>.
+
+  Returns:
+    Jar file name, The registry resource.
+  """
+  try:
+    parsed_url = parse.urlparse(artifact_uri)
+  except:
+    raise exceptions.InvalidArgumentException(
+        'JAR|PY|SQL',
+        'Artifact URI [{0}] is invalid. Must be in the format of'
+        ' ar://<project>/<location>/<repository>/<file/path/version/file.jar>.'
+        .format(artifact_uri),
+    )
+  split_path = parsed_url.path.split('/')
+  cleaned_split_path = [path for path in split_path if path]
+  if parsed_url.netloc:
+    cleaned_split_path = [parsed_url.netloc] + cleaned_split_path
+  if len(cleaned_split_path) < 4 or not cleaned_split_path[-1].endswith('.jar'):
+    raise exceptions.InvalidArgumentException(
+        'JAR|PY|SQL',
+        'Artifact URI [{0}] is invalid. Must be in the format of'
+        ' ar://<project>/<location>/<repository>/<file/path/version/file.jar>.'
+        .format(artifact_uri),
+    )
+  jar_file = '/'.join(cleaned_split_path[3:])
+  cleaned_jar_file = (
+      jar_file.replace('/', '%2F').replace('+', '%2B').replace('^', '%5E')
+  )
+
+  return jar_file, resources.REGISTRY.Create(
+      'artifactregistry.projects.locations.repositories.files',
+      projectsId=cleaned_split_path[0],
+      locationsId=cleaned_split_path[1],
+      repositoriesId=cleaned_split_path[2],
+      filesId=cleaned_jar_file)
+
+
+def DownloadJarFromArtifactRegistry(
+    dest_path, artifact_jar_path, artifact_client=None
+):
+  """Downloads a JAR file from Google Artifact Registry."""
+
+  # 1. Initialize Clients
+  client = artifact_client or requests.GetClient()
+  messages = requests.GetMessages()
+
+  # 2. Construct the Request
+  request = messages.ArtifactregistryProjectsLocationsRepositoriesFilesDownloadRequest(
+      name=artifact_jar_path
+  )
+
+  d = transfer.Download.FromFile(dest_path, True, chunksize=DEFAULT_CHUNK_SIZE)
+  d.bytes_http = transports.GetApitoolsTransport(response_encoding=None)
+  try:
+    client.projects_locations_repositories_files.Download(request, download=d)
+  except Exception as e:
+    raise FileDownloadError(
+        'Failed to download JAR from Artifact Registry: {}'.format(e)
+    )
+  finally:
+    d.stream.close()
 
 
 def CheckStagingLocation(staging_location):

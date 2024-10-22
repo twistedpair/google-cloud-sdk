@@ -781,10 +781,11 @@ class Registry(object):
     parsers_by_collection: {str: {str: {str: _ResourceParser}}}, All the
         resource parsers indexed by their api name, api version
         and collection name.
-    parsers_by_url: Deeply-nested dict. The first key is the API's URL root,
-        and each key after that is one of the remaining tokens which can be
-        either a constant or a parameter name. At the end, a key of None
-        indicates the value is a _ResourceParser.
+    parsers_by_url: {str: {str: <Deeply-nested dict>}}, URL parsing tries
+        indexed by api name and api version. Each key within a trie can be
+        either a constant or a parameter name and represents a possible URL
+        token after the API's base URL. At the end, a key of None indicates the
+        value is a _ResourceParser.
     registered_apis: {str: str}, The most recently registered API version for
         each API. For instance, {'dns': 'v1', 'compute': 'alpha'}.
   """
@@ -873,12 +874,11 @@ class Registry(object):
     """Registers parser for given path."""
     tokens = [api_name, api_version] + path.split('/')
 
-    # Build up a search tree to match URLs against URL templates.
-    # The tree will branch at each URL segment, where the first segment
-    # is the API's base url, and each subsequent segment is a token in
-    # the instance's get method's relative path. At the leaf, a key of
-    # None indicates that the URL can finish here, and provides the parser
-    # for this resource.
+    # Build up a search tree to match URLs against URL templates. For a given
+    # API name and version, the search tree branches at each URL segment after
+    # the base URL, where the segments are tokens in the instance's get method's
+    # relative path. At the leaf, a key of None indicates that the URL can
+    # finish here, and provides the parser for this resource.
     cur_level = self.parsers_by_url
     while tokens:
       token = tokens.pop(0)
@@ -984,28 +984,31 @@ class Registry(object):
       raise InvalidCollectionException(collection_name, api_version)
     return parser.collection_info
 
-  def ParseURL(self, url):
+  def ParseURL(self, url, api_version=None):
     """Parse a URL into a Resource.
 
-    This method does not yet handle "api.google.com" in place of
-    "www.googleapis.com/api/version".
-
     Searches self.parsers_by_url to find a _ResourceParser. The parsers_by_url
-    attribute is a deeply nested dictionary, where each key corresponds to
-    a URL segment. The first segment is an API's base URL (eg.
-    "https://www.googleapis.com/compute/v1/"), and after that it's each
-    remaining token in the URL, split on '/'. Then a path down the tree is
-    followed, keyed by the extracted pieces of the provided URL. If the key in
-    the tree is a literal string, like "project" in .../project/{project}/...,
-    the token from the URL must match exactly. If it's a parameter, like
-    "{project}", then any token can match it, and that token is stored in a
-    dict of params to with the associated key ("project" in this case). If there
-    are no URL tokens left, and one of the keys at the current level is None,
-    the None points to a _ResourceParser that can turn the collected
+    attribute is a deeply nested dictionary, indexed by API name, API version,
+    then a series of keys corresponding to URL segments (split on '/') after the
+    API's base URL. Each of these keys can be either a literal segment (e.g.
+    "projects" in
+    "https://compute.googleapis.com/compute/v1/projects/{projectsId}/..."), in
+    which case it must match exactly, or a wildcard parameter ("{}"), in which
+    case it can match any token. For the URL provided, the API name (and if
+    unspecified, the API version) is extracted from the base URL, then a path
+    down the tree is followed, branching at each remaining token in the URL. If
+    there are no URL tokens left, and one of the keys at the current level is
+    None, the None points to a _ResourceParser that can turn the collected
     params into a Resource.
 
     Args:
       url: str, The URL of the resource.
+      api_version: str, The API client version to use for parsing. For
+        channel-based versioned clients, this argument is not needed as it
+        can always be inferred from the URL. For interface-based versioned
+        clients (as of 2024), this argument can be used to explicitly specify a
+        client version (since multiple clients can share the same URL API
+        version). If not provided, defaults to the API version in the URL.
 
     Returns:
       Resource, The resource indicated by the provided URL.
@@ -1018,8 +1021,9 @@ class Registry(object):
     if not match:
       raise InvalidResourceException(url, reason='unknown API host')
 
-    api_name, api_version, resource_path = (
+    api_name, url_api_version, resource_path = (
         resource_util.SplitEndpointUrl(url))
+    api_version = api_version or url_api_version
 
     try:
       # pylint:disable=protected-access
@@ -1155,7 +1159,11 @@ class Registry(object):
     if line:
       if line.startswith('https://') or line.startswith('http://'):
         try:
-          ref = self.ParseURL(line)
+          ref = self.ParseURL(
+              line,
+              # Propagate API version identifier for interface-based versioned
+              # clients (where it can't be inferred from the URL).
+              api_version if _IsInterfaceBasedVersion(api_version) else None)
         except InvalidResourceException as e:
           bucket = None
 
@@ -1309,3 +1317,20 @@ def _GetApiBaseUrl(base_url, api_name, api_version):
       api_base_url += api_version + '/'
     api_base_url = apis_internal.UniversifyAddress(api_base_url)
   return api_base_url
+
+
+def _IsInterfaceBasedVersion(api_version):
+  """Returns whether the version represents an interface-based versioned API.
+
+  By convention, we expect interface-based versioned API clients to be
+  configured such that their version identifiers begin with 'v_' e.g.
+  'v_20240101_preview'. Anything else (e.g. 'v1', 'alpha', etc.) is assumed to
+  be a traditional channel-based version.
+
+  Args:
+    api_version: str, API version identifier.
+
+  Returns:
+    bool, True for interface-based versions; False for channel-based versions.
+  """
+  return api_version and api_version.startswith('v_')

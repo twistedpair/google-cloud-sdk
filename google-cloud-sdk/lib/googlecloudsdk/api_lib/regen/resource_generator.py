@@ -133,21 +133,14 @@ class DiscoveryDoc(object):
       flat_path = None
     # Normalize base url so it includes api_version.
     url = self.base_url + path
-    url_api_name, url_api_version, path = resource_util.SplitEndpointUrl(url)
-    if url_api_version != api_version:
-      raise UnsupportedDiscoveryDoc(
-          'Collection {0} for version {1}/{2} is using url {3} '
-          'with version {4}'.format(
-              collection_name, self.api_name, api_version, url, url_api_version
-          )
-      )
+    url_api_name, _, path = resource_util.SplitEndpointUrl(url)
     if flat_path:
       _, _, flat_path = resource_util.SplitEndpointUrl(
           self.base_url + flat_path
       )
     # Use url_api_name instead as it is assumed to be source of truth.
-    # Also note that api_version not always equal to url_api_version,
-    # this is the case where api_version is an alias.
+    # Also note that the client api_version identifier may differ from the API
+    # version in the URL for interface-based versioned APIs (as of 2024).
     url = url[:-len(path)]
     return resource_util.CollectionInfo(
         url_api_name,

@@ -2202,16 +2202,23 @@ class GoogleCloudEventarcV1PipelineMessagePayloadFormatProtobufFormat(_messages.
 class GoogleCloudEventarcV1PipelineRetryPolicy(_messages.Message):
   r"""The retry policy configuration for the Pipeline. The pipeline
   exponentially backs off in case the destination is non responsive or returns
-  a retryable error code. The semantics are as follows: The backoff starts
-  with a 1 second delay and doubles the delay after each failed attempt (2
-  seconds, 4 seconds, 8 seconds, etc.). The delay is capped at 60 seconds.
-  Please note that if you set the min_retry_delay and max_retry_delay fields
-  to the same value this will make the duration between retries constant.
+  a retryable error code. The default semantics are as follows: The backoff
+  starts with a 5 second delay and doubles the delay after each failed attempt
+  (10 seconds, 20 seconds, 40 seconds, etc.). The delay is capped at 60
+  seconds by default. Please note that if you set the min_retry_delay and
+  max_retry_delay fields to the same value this will make the duration between
+  retries constant.
 
   Fields:
-    maxAttempts: Optional. 5 (can be set to any positive real number).
-    maxRetryDelay: Optional. 60 seconds (can be set to any number of seconds).
-    minRetryDelay: Optional. 1 second (can be set to any number of seconds).
+    maxAttempts: Optional. The maximum number of delivery attempts for any
+      message. The value must be between 1 and 100. The default value for this
+      field is 5.
+    maxRetryDelay: Optional. The maximum amount of seconds to wait between
+      retry attempts. The value must be between 0 and 600. The default value
+      for this field is 60.
+    minRetryDelay: Optional. The minimum amount of seconds to wait between
+      retry attempts. The value must be between 0 and 600. The default value
+      for this field is 5.
   """
 
   maxAttempts = _messages.IntegerField(1, variant=_messages.Variant.INT32)

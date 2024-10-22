@@ -3846,7 +3846,7 @@ class StructuredAggregationQuery(_messages.Message):
 class StructuredQuery(_messages.Message):
   r"""A Firestore query. The query stages are executed in the following order:
   1. from 2. where 3. select 4. order_by + start_at + end_at 5. offset 6.
-  limit
+  limit 7. find_nearest
 
   Fields:
     endAt: A potential prefix of a position in the result set to end the query

@@ -205,6 +205,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/encryption-key`: Revision, Execution. *
       `run.googleapis.com/execution-environment`: Revision, Execution. *
       `run.googleapis.com/gc-traffic-tags`: Service. *
+      `run.googleapis.com/health-check-disabled`: Revision. *
       `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
       stage`: Service, Job. * `run.googleapis.com/minScale`: Service *
       `run.googleapis.com/network-interfaces`: Revision, Execution. *
@@ -251,6 +252,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/encryption-key`: Revision, Execution. *
       `run.googleapis.com/execution-environment`: Revision, Execution. *
       `run.googleapis.com/gc-traffic-tags`: Service. *
+      `run.googleapis.com/health-check-disabled`: Revision. *
       `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
       stage`: Service, Job. * `run.googleapis.com/minScale`: Service *
       `run.googleapis.com/network-interfaces`: Revision, Execution. *
@@ -324,6 +326,7 @@ class ObjectMeta(_messages.Message):
     `run.googleapis.com/encryption-key`: Revision, Execution. *
     `run.googleapis.com/execution-environment`: Revision, Execution. *
     `run.googleapis.com/gc-traffic-tags`: Service. *
+    `run.googleapis.com/health-check-disabled`: Revision. *
     `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
     stage`: Service, Job. * `run.googleapis.com/minScale`: Service *
     `run.googleapis.com/network-interfaces`: Revision, Execution. *

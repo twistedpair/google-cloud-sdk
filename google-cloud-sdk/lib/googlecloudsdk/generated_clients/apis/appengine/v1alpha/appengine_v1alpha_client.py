@@ -44,8 +44,12 @@ class AppengineV1alpha(base_api.BaseApiClient):
     self.apps_domainMappings = self.AppsDomainMappingsService(self)
     self.apps_locations = self.AppsLocationsService(self)
     self.apps_operations = self.AppsOperationsService(self)
+    self.apps_services_migration = self.AppsServicesMigrationService(self)
+    self.apps_services = self.AppsServicesService(self)
     self.apps = self.AppsService(self)
     self.projects_locations_applications_authorizedDomains = self.ProjectsLocationsApplicationsAuthorizedDomainsService(self)
+    self.projects_locations_applications_services_migration = self.ProjectsLocationsApplicationsServicesMigrationService(self)
+    self.projects_locations_applications_services = self.ProjectsLocationsApplicationsServicesService(self)
     self.projects_locations_applications = self.ProjectsLocationsApplicationsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -506,6 +510,107 @@ class AppengineV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class AppsServicesMigrationService(base_api.BaseApiService):
+    """Service class for the apps_services_migration resource."""
+
+    _NAME = 'apps_services_migration'
+
+    def __init__(self, client):
+      super(AppengineV1alpha.AppsServicesMigrationService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def CheckGen1appId(self, request, global_params=None):
+      r"""rpc to check if a given app_id exists in App Engine Gen1.
+
+      Args:
+        request: (AppengineAppsServicesMigrationCheckGen1appIdRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckGen1AppIdResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckGen1appId')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckGen1appId.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services/{servicesId}/migration/checkGen1appId',
+        http_method='POST',
+        method_id='appengine.apps.services.migration.checkGen1appId',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}/migration/checkGen1appId',
+        request_field='checkGen1AppIdRequest',
+        request_type_name='AppengineAppsServicesMigrationCheckGen1appIdRequest',
+        response_type_name='CheckGen1AppIdResponse',
+        supports_download=False,
+    )
+
+    def MigrateCodeFile(self, request, global_params=None):
+      r"""rpc to migrate a code file. Eg. app.py.
+
+      Args:
+        request: (AppengineAppsServicesMigrationMigrateCodeFileRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('MigrateCodeFile')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MigrateCodeFile.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services/{servicesId}/migration/migrateCodeFile',
+        http_method='POST',
+        method_id='appengine.apps.services.migration.migrateCodeFile',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}/migration/migrateCodeFile',
+        request_field='migrateCodeFileRequest',
+        request_type_name='AppengineAppsServicesMigrationMigrateCodeFileRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def MigrateConfigYaml(self, request, global_params=None):
+      r"""rpc to migrate the config yaml file eg. app.yaml.
+
+      Args:
+        request: (AppengineAppsServicesMigrationMigrateConfigYamlRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MigrateConfigYamlResponse) The response message.
+      """
+      config = self.GetMethodConfig('MigrateConfigYaml')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MigrateConfigYaml.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services/{servicesId}/migration/migrateConfigYaml',
+        http_method='POST',
+        method_id='appengine.apps.services.migration.migrateConfigYaml',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}/migration/migrateConfigYaml',
+        request_field='migrateConfigYamlRequest',
+        request_type_name='AppengineAppsServicesMigrationMigrateConfigYamlRequest',
+        response_type_name='MigrateConfigYamlResponse',
+        supports_download=False,
+    )
+
+  class AppsServicesService(base_api.BaseApiService):
+    """Service class for the apps_services resource."""
+
+    _NAME = 'apps_services'
+
+    def __init__(self, client):
+      super(AppengineV1alpha.AppsServicesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
   class AppsService(base_api.BaseApiService):
     """Service class for the apps resource."""
 
@@ -552,6 +657,107 @@ class AppengineV1alpha(base_api.BaseApiClient):
         response_type_name='ListAuthorizedDomainsResponse',
         supports_download=False,
     )
+
+  class ProjectsLocationsApplicationsServicesMigrationService(base_api.BaseApiService):
+    """Service class for the projects_locations_applications_services_migration resource."""
+
+    _NAME = 'projects_locations_applications_services_migration'
+
+    def __init__(self, client):
+      super(AppengineV1alpha.ProjectsLocationsApplicationsServicesMigrationService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def CheckGen1appId(self, request, global_params=None):
+      r"""rpc to check if a given app_id exists in App Engine Gen1.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsServicesMigrationCheckGen1appIdRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckGen1AppIdResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckGen1appId')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckGen1appId.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/services/{servicesId}/migration/checkGen1appId',
+        http_method='POST',
+        method_id='appengine.projects.locations.applications.services.migration.checkGen1appId',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='checkGen1AppIdRequest',
+        request_type_name='AppengineProjectsLocationsApplicationsServicesMigrationCheckGen1appIdRequest',
+        response_type_name='CheckGen1AppIdResponse',
+        supports_download=False,
+    )
+
+    def MigrateCodeFile(self, request, global_params=None):
+      r"""rpc to migrate a code file. Eg. app.py.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsServicesMigrationMigrateCodeFileRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('MigrateCodeFile')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MigrateCodeFile.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/services/{servicesId}/migration/migrateCodeFile',
+        http_method='POST',
+        method_id='appengine.projects.locations.applications.services.migration.migrateCodeFile',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='migrateCodeFileRequest',
+        request_type_name='AppengineProjectsLocationsApplicationsServicesMigrationMigrateCodeFileRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def MigrateConfigYaml(self, request, global_params=None):
+      r"""rpc to migrate the config yaml file eg. app.yaml.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsServicesMigrationMigrateConfigYamlRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MigrateConfigYamlResponse) The response message.
+      """
+      config = self.GetMethodConfig('MigrateConfigYaml')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MigrateConfigYaml.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/services/{servicesId}/migration/migrateConfigYaml',
+        http_method='POST',
+        method_id='appengine.projects.locations.applications.services.migration.migrateConfigYaml',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='migrateConfigYamlRequest',
+        request_type_name='AppengineProjectsLocationsApplicationsServicesMigrationMigrateConfigYamlRequest',
+        response_type_name='MigrateConfigYamlResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsApplicationsServicesService(base_api.BaseApiService):
+    """Service class for the projects_locations_applications_services resource."""
+
+    _NAME = 'projects_locations_applications_services'
+
+    def __init__(self, client):
+      super(AppengineV1alpha.ProjectsLocationsApplicationsServicesService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsApplicationsService(base_api.BaseApiService):
     """Service class for the projects_locations_applications resource."""

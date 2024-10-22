@@ -5005,13 +5005,20 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1alphaHub(_messages.Message):
   path deployments.
 
   Fields:
-    natGatewayConfig: Optional. NAT gateway setup to ensure enough NAT IP
-      addresses are available to handle the traffic needed to access the
-      applications. Allows to explicitly enable or disable the NAT in the Hub
-      along with the total IPs allocated to handle the capacity limits.
+    internetGateway: Optional. Internet Gateway configuration.
   """
 
-  natGatewayConfig = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1alphaNatGatewayConfig', 1)
+  internetGateway = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1alphaInternetGateway', 1)
+
+
+class GoogleCloudBeyondcorpSecuritygatewaysV1alphaInternetGateway(_messages.Message):
+  r"""Represents the Internet Gateway configuration.
+
+  Fields:
+    assignedIps: Output only. List of IP addresses assigned to the Cloud NAT.
+  """
+
+  assignedIps = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudBeyondcorpSecuritygatewaysV1alphaListApplicationsResponse(_messages.Message):
@@ -5044,29 +5051,18 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1alphaListSecurityGatewaysResponse(_
   unreachable = _messages.StringField(3, repeated=True)
 
 
-class GoogleCloudBeyondcorpSecuritygatewaysV1alphaNatGatewayConfig(_messages.Message):
-  r"""Represents the NAT Gateway configuration.
-
-  Fields:
-    natIps: Output only. List of NAT IPs that will be used for establishing
-      connection to the endpoints.
-  """
-
-  natIps = _messages.StringField(1, repeated=True)
-
-
 class GoogleCloudBeyondcorpSecuritygatewaysV1alphaPeering(_messages.Message):
   r"""VPC Peering details.
 
   Fields:
     dnsZones: Optional. List of DNS zones for DNS peering with the customer
       VPC network.
-    targetVpcNetwork: Required. The name of the Target VPC network name in the
+    targetNetwork: Required. The name of the Target VPC network name in the
       format: `projects/{project}/global/networks/{network}
   """
 
   dnsZones = _messages.StringField(1, repeated=True)
-  targetVpcNetwork = _messages.StringField(2)
+  targetNetwork = _messages.StringField(2)
 
 
 class GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway(_messages.Message):
@@ -5181,6 +5177,7 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1alphaSetPeeringRequest(_messages.Me
   and customer networks.
 
   Fields:
+    peerings: Required. List of Peering connection information.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -5194,12 +5191,11 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1alphaSetPeeringRequest(_messages.Me
       not supported (00000000-0000-0000-0000-000000000000).
     validateOnly: Optional. If set, validates request by executing a dry-run
       which would not alter the resource in any way.
-    vpcPeerings: Required. List of Peering connection information.
   """
 
-  requestId = _messages.StringField(1)
-  validateOnly = _messages.BooleanField(2)
-  vpcPeerings = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1alphaPeering', 3, repeated=True)
+  peerings = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1alphaPeering', 1, repeated=True)
+  requestId = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
 
 
 class GoogleCloudLocationListLocationsResponse(_messages.Message):

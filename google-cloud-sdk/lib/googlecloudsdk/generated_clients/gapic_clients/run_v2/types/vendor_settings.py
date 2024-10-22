@@ -101,12 +101,11 @@ class VpcAccess(proto.Message):
 
     Attributes:
         connector (str):
-            VPC Access connector name.
-            Format:
-            projects/{project}/locations/{location}/connectors/{connector},
-            where {project} can be project id or number.
-            For more information on sending traffic to a VPC
-            network via a connector, visit
+            VPC Access connector name. Format:
+            ``projects/{project}/locations/{location}/connectors/{connector}``,
+            where ``{project}`` can be project id or number. For more
+            information on sending traffic to a VPC network via a
+            connector, visit
             https://cloud.google.com/run/docs/configuring/vpc-connectors.
         egress (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.VpcAccess.VpcEgress):
             Optional. Traffic VPC egress settings. If not provided, it
@@ -207,9 +206,8 @@ class BinaryAuthorization(proto.Message):
 
             This field is a member of `oneof`_ ``binauthz_method``.
         policy (str):
-            Optional. The path to a binary authorization
-            policy. Format:
-            projects/{project}/platforms/cloudRun/{policy-name}
+            Optional. The path to a binary authorization policy. Format:
+            ``projects/{project}/platforms/cloudRun/{policy-name}``
 
             This field is a member of `oneof`_ ``binauthz_method``.
         breakglass_justification (str):
@@ -268,9 +266,8 @@ class ServiceMesh(proto.Message):
     Attributes:
         mesh (str):
             The Mesh resource name. Format:
-
-            projects/{project}/locations/global/meshes/{mesh},
-            where {project} can be project id or number.
+            ``projects/{project}/locations/global/meshes/{mesh}``, where
+            ``{project}`` can be project id or number.
     """
 
     mesh: str = proto.Field(
@@ -289,7 +286,6 @@ class ServiceScaling(proto.Message):
             service. This number of instances is divided
             among all revisions with specified traffic based
             on the percent of traffic they are receiving.
-            (BETA)
         scaling_mode (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.ServiceScaling.ScalingMode):
             Optional. The scaling mode for the service.
     """

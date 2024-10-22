@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import Any
+
 from googlecloudsdk.api_lib.compute import utils as compute_utils
 from googlecloudsdk.core.exceptions import Error
 
@@ -237,3 +239,40 @@ def IsProvisioningTypeThroughput(disk_type):
   """
   disk_type_name = disk_type.split('/')[-1]
   return disk_type_name in _SUPPORTED_DISK_TYPES_THROUGHPUT
+
+
+def GetDiskTypeUri(
+    disk_type: str, disk_ref: Any, compute_holder: Any
+):
+  """Get the disk type URI for a given disk type name and disk reference.
+
+  Args:
+    disk_type: name of the disk type.
+    disk_ref: the disk resource reference that is parsed from resource
+      arguments.
+    compute_holder: the compute api_tools_client.
+
+  Returns:
+    The disk type URI.
+  """
+  type_ref = None
+  if disk_type:
+    if disk_ref.Collection() == 'compute.disks':
+      type_ref = compute_holder.resources.Parse(
+          disk_type,
+          collection='compute.diskTypes',
+          params={
+              'project': disk_ref.project,
+              'zone': disk_ref.zone
+          })
+    elif disk_ref.Collection() == 'compute.regionDisks':
+      type_ref = compute_holder.resources.Parse(
+          disk_type,
+          collection='compute.regionDiskTypes',
+          params={
+              'project': disk_ref.project,
+              'region': disk_ref.region
+          })
+    if type_ref:
+      return type_ref.SelfLink()
+  return None

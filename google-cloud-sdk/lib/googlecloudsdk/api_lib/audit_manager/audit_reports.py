@@ -14,15 +14,21 @@
 # limitations under the License.
 """Utilities for Audit Manager API, Audit Report Endpoints."""
 
+from googlecloudsdk.api_lib.audit_manager import constants
 from googlecloudsdk.api_lib.audit_manager import util
 
 
 class AuditReportsClient(object):
   """Client for Audit Reports in Audit Manager API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or util.GetClientInstance()
-    self.messages = messages or util.GetMessagesModule(client)
+  def __init__(
+      self, api_version: constants.ApiVersion, client=None, messages=None
+  ) -> None:
+    self.client = client or util.GetClientInstance(api_version=api_version)
+    self.messages = messages or util.GetMessagesModule(
+        api_version=api_version,
+        client=client,
+    )
 
     report_format_enum = (
         self.messages.GenerateAuditReportRequest.ReportFormatValueValuesEnum
@@ -31,23 +37,22 @@ class AuditReportsClient(object):
 
   def Generate(
       self,
-      scope,
-      compliance_standard,
-      report_format,
-      gcs_uri,
-      is_parent_folder,
+      scope: str,
+      compliance_standard: str,
+      report_format: str,
+      gcs_uri: str,
+      is_parent_folder: bool,
   ):
     """Generate an Audit Report.
 
     Args:
-      scope: str, the scope for which to generate the report.
-      compliance_standard: str, Compliance standard against which the Report
-        must be generated.
-      report_format: str, The format in which the audit report should be
+      scope: The scope for which to generate the report.
+      compliance_standard: Compliance standard against which the Report must be
         generated.
-      gcs_uri: str, Destination Cloud storage bucket where report and evidence
-        must be uploaded.
-      is_parent_folder: bool, whether the parent is folder and not project.
+      report_format: The format in which the audit report should be generated.
+      gcs_uri: Destination Cloud storage bucket where report and evidence must
+        be uploaded.
+      is_parent_folder: Whether the parent is folder and not project.
 
     Returns:
       Described audit operation resource.

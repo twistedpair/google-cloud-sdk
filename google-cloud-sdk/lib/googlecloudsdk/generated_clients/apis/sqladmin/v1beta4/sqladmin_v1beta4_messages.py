@@ -756,7 +756,8 @@ class ConnectSettings(_messages.Message):
     r"""Specify what type of CA is used for the server certificate.
 
     Values:
-      CA_MODE_UNSPECIFIED: CA mode is unknown.
+      CA_MODE_UNSPECIFIED: CA mode is unspecified. It is effectively the same
+        as `GOOGLE_MANAGED_INTERNAL_CA`.
       GOOGLE_MANAGED_INTERNAL_CA: Google-managed self-signed internal CA.
       GOOGLE_MANAGED_CAS_CA: Google-managed regional CA part of root CA
         hierarchy hosted on Google Cloud's Certificate Authority Service
@@ -778,6 +779,46 @@ class ConnectSettings(_messages.Message):
   region = _messages.StringField(7)
   serverCaCert = _messages.MessageField('SslCert', 8)
   serverCaMode = _messages.EnumField('ServerCaModeValueValuesEnum', 9)
+
+
+class ConnectionPoolConfig(_messages.Message):
+  r"""The managed connection pooling configuration.
+
+  Enums:
+    PoolModeValueValuesEnum: The managed connection pool mode for the
+      instance.
+
+  Fields:
+    clientConnectionIdleTimeout: Client idle timeout.
+    connPoolSize: Managed connection pool size.
+    connectionPoolingEnabled: Whether managed connection pooling is enabled.
+    maxClientConnections: Maximum number of client connections in connection
+      pool.
+    poolMode: The managed connection pool mode for the instance.
+    queryWaitTimeout: Query wait timeout.
+    serverConnectionIdleTimeout: Server idle timeout.
+  """
+
+  class PoolModeValueValuesEnum(_messages.Enum):
+    r"""The managed connection pool mode for the instance.
+
+    Values:
+      POOL_MODE_UNSPECIFIED: The pool mode is unknown.
+      SESSION: The session mode for managed connection pooling.
+      TRANSACTION: The transaction(default) mode for managed connection
+        pooling.
+    """
+    POOL_MODE_UNSPECIFIED = 0
+    SESSION = 1
+    TRANSACTION = 2
+
+  clientConnectionIdleTimeout = _messages.StringField(1)
+  connPoolSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  connectionPoolingEnabled = _messages.BooleanField(3)
+  maxClientConnections = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  poolMode = _messages.EnumField('PoolModeValueValuesEnum', 5)
+  queryWaitTimeout = _messages.StringField(6)
+  serverConnectionIdleTimeout = _messages.StringField(7)
 
 
 class DataCacheConfig(_messages.Message):
@@ -2396,11 +2437,11 @@ class InstancesRestoreBackupRequest(_messages.Message):
       of restore_backup_context or backup can be passed to the input.
     restoreBackupContext: Parameters required to perform the restore backup
       operation.
-    restoreInstanceSettings: Optional. By using this parameter, Cloud SQL
-      overrides any instance settings that it stored with the instance
-      settings that you want to restore. You can't change the Instance's major
-      database version and you can only increase the disk size. You can use
-      this field to restore new instances only.
+    restoreInstanceSettings: By using this parameter, Cloud SQL overrides any
+      instance settings that it stored with the instance settings that you
+      want to restore. You can't change the Instance's major database version
+      and you can only increase the disk size. You can use this field to
+      restore new instances only.
   """
 
   backup = _messages.StringField(1)
@@ -2489,6 +2530,8 @@ class IpConfiguration(_messages.Message):
     authorizedNetworks: The list of external networks that are allowed to
       connect to the instance using the IP. In 'CIDR' notation, also known as
       'slash' notation (for example: `157.197.200.0/24`).
+    customSubjectAlternativeNames: Optional. Custom Subject Alternative
+      Name(SAN)s for a Cloud SQL instance.
     enablePrivatePathForGoogleCloudServices: Controls connectivity to private
       IP instances from Google services, such as BigQuery.
     ipv4Enabled: Whether the instance is assigned a public IP address or not.
@@ -2527,7 +2570,8 @@ class IpConfiguration(_messages.Message):
     r"""Specify what type of CA is used for the server certificate.
 
     Values:
-      CA_MODE_UNSPECIFIED: CA mode is unknown.
+      CA_MODE_UNSPECIFIED: CA mode is unspecified. It is effectively the same
+        as `GOOGLE_MANAGED_INTERNAL_CA`.
       GOOGLE_MANAGED_INTERNAL_CA: Google-managed self-signed internal CA.
       GOOGLE_MANAGED_CAS_CA: Google-managed regional CA part of root CA
         hierarchy hosted on Google Cloud's Certificate Authority Service
@@ -2587,14 +2631,15 @@ class IpConfiguration(_messages.Message):
 
   allocatedIpRange = _messages.StringField(1)
   authorizedNetworks = _messages.MessageField('AclEntry', 2, repeated=True)
-  enablePrivatePathForGoogleCloudServices = _messages.BooleanField(3)
-  ipv4Enabled = _messages.BooleanField(4)
-  privateNetwork = _messages.StringField(5)
-  pscConfig = _messages.MessageField('PscConfig', 6)
-  requireSsl = _messages.BooleanField(7)
-  reservedIpRange = _messages.StringField(8)
-  serverCaMode = _messages.EnumField('ServerCaModeValueValuesEnum', 9)
-  sslMode = _messages.EnumField('SslModeValueValuesEnum', 10)
+  customSubjectAlternativeNames = _messages.StringField(3, repeated=True)
+  enablePrivatePathForGoogleCloudServices = _messages.BooleanField(4)
+  ipv4Enabled = _messages.BooleanField(5)
+  privateNetwork = _messages.StringField(6)
+  pscConfig = _messages.MessageField('PscConfig', 7)
+  requireSsl = _messages.BooleanField(8)
+  reservedIpRange = _messages.StringField(9)
+  serverCaMode = _messages.EnumField('ServerCaModeValueValuesEnum', 10)
+  sslMode = _messages.EnumField('SslModeValueValuesEnum', 11)
 
 
 class IpMapping(_messages.Message):
@@ -3432,6 +3477,8 @@ class Settings(_messages.Message):
       availability).
     backupConfiguration: The daily backup configuration for the instance.
     collation: The name of server Instance collation.
+    connectionPoolConfig: The managed connection pooling configuration for the
+      instance.
     connectorEnforcement: Specifies if connections must use Cloud SQL
       connectors. Option values include the following: `NOT_REQUIRED` (Cloud
       SQL instances can be connected without Cloud SQL Connectors) and
@@ -3670,40 +3717,41 @@ class Settings(_messages.Message):
   availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 5)
   backupConfiguration = _messages.MessageField('BackupConfiguration', 6)
   collation = _messages.StringField(7)
-  connectorEnforcement = _messages.EnumField('ConnectorEnforcementValueValuesEnum', 8)
-  crashSafeReplicationEnabled = _messages.BooleanField(9)
-  dataCacheConfig = _messages.MessageField('DataCacheConfig', 10)
-  dataDiskProvisionedIops = _messages.IntegerField(11)
-  dataDiskProvisionedThroughput = _messages.IntegerField(12)
-  dataDiskSizeGb = _messages.IntegerField(13)
-  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 14)
-  databaseFlags = _messages.MessageField('DatabaseFlags', 15, repeated=True)
-  databaseReplicationEnabled = _messages.BooleanField(16)
-  deletionProtectionEnabled = _messages.BooleanField(17)
-  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 18, repeated=True)
-  edition = _messages.EnumField('EditionValueValuesEnum', 19)
-  enableDataplexIntegration = _messages.BooleanField(20)
-  enableGoogleMlIntegration = _messages.BooleanField(21)
-  insightsConfig = _messages.MessageField('InsightsConfig', 22)
-  instanceVersion = _messages.StringField(23)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 24)
-  kind = _messages.StringField(25)
-  locationPreference = _messages.MessageField('LocationPreference', 26)
-  maintenanceVersion = _messages.StringField(27)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 28)
-  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 29)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 30)
-  recreateReplicasOnPrimaryCrash = _messages.BooleanField(31)
-  replicationLagMaxSeconds = _messages.IntegerField(32, variant=_messages.Variant.INT32)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 33)
-  retainBackupsOnDelete = _messages.BooleanField(34)
-  settingsVersion = _messages.IntegerField(35)
-  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 36)
-  storageAutoResize = _messages.BooleanField(37)
-  storageAutoResizeLimit = _messages.IntegerField(38)
-  tier = _messages.StringField(39)
-  timeZone = _messages.StringField(40)
-  userLabels = _messages.MessageField('UserLabelsValue', 41)
+  connectionPoolConfig = _messages.MessageField('ConnectionPoolConfig', 8)
+  connectorEnforcement = _messages.EnumField('ConnectorEnforcementValueValuesEnum', 9)
+  crashSafeReplicationEnabled = _messages.BooleanField(10)
+  dataCacheConfig = _messages.MessageField('DataCacheConfig', 11)
+  dataDiskProvisionedIops = _messages.IntegerField(12)
+  dataDiskProvisionedThroughput = _messages.IntegerField(13)
+  dataDiskSizeGb = _messages.IntegerField(14)
+  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 15)
+  databaseFlags = _messages.MessageField('DatabaseFlags', 16, repeated=True)
+  databaseReplicationEnabled = _messages.BooleanField(17)
+  deletionProtectionEnabled = _messages.BooleanField(18)
+  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 19, repeated=True)
+  edition = _messages.EnumField('EditionValueValuesEnum', 20)
+  enableDataplexIntegration = _messages.BooleanField(21)
+  enableGoogleMlIntegration = _messages.BooleanField(22)
+  insightsConfig = _messages.MessageField('InsightsConfig', 23)
+  instanceVersion = _messages.StringField(24)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 25)
+  kind = _messages.StringField(26)
+  locationPreference = _messages.MessageField('LocationPreference', 27)
+  maintenanceVersion = _messages.StringField(28)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 29)
+  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 30)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 31)
+  recreateReplicasOnPrimaryCrash = _messages.BooleanField(32)
+  replicationLagMaxSeconds = _messages.IntegerField(33, variant=_messages.Variant.INT32)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 34)
+  retainBackupsOnDelete = _messages.BooleanField(35)
+  settingsVersion = _messages.IntegerField(36)
+  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 37)
+  storageAutoResize = _messages.BooleanField(38)
+  storageAutoResizeLimit = _messages.IntegerField(39)
+  tier = _messages.StringField(40)
+  timeZone = _messages.StringField(41)
+  userLabels = _messages.MessageField('UserLabelsValue', 42)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):
@@ -4090,6 +4138,8 @@ class SqlExternalSyncSettingError(_messages.Message):
         with the FULL or NOTHING replica identity. Before starting your
         migration, either remove the identity or change it to DEFAULT. Note
         that this is an error and will block the migration.
+      SELECTED_OBJECTS_NOT_EXIST_ON_SOURCE: The selected objects don't exist
+        on the source instance.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -4144,6 +4194,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     USERS_NOT_CREATED_IN_REPLICA = 50
     UNSUPPORTED_SYSTEM_OBJECTS = 51
     UNSUPPORTED_TABLES_WITH_REPLICA_IDENTITY = 52
+    SELECTED_OBJECTS_NOT_EXIST_ON_SOURCE = 53
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)
@@ -4238,12 +4289,10 @@ class SqlInstancesDeleteRequest(_messages.Message):
   Fields:
     enableFinalBackup: Flag to opt-in for final backup. By default, it is
       turned off.
-    finalBackupDescription: Optional. The description of the final backup.
-    finalBackupExpiryTime: Optional. A timestamp (in UTC) of when the backup
-      is set to expire. This value can't exceed 1 year.
-    finalBackupTtlDays: Optional. The number of days to retain the final
-      backup. This is known as time to live (TTL). The allowed retention
-      period varies from 1 day to 1 year.
+    finalBackupDescription: The description of the final backup.
+    finalBackupExpiryTime: Optional. Final Backup expiration time. Timestamp
+      in UTC of when this resource is considered expired.
+    finalBackupTtlDays: Optional. Retention period of the final backup.
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance to be
       deleted.

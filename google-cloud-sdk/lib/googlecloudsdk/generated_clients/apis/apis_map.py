@@ -529,7 +529,7 @@ MAP = {
                     client_classpath='auditmanager_v1_client.AuditmanagerV1',
                     base_url='https://auditmanager.googleapis.com/',
                     messages_modulepath='auditmanager_v1_messages'),
-                default_version=False,
+                default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1alpha':
@@ -539,7 +539,7 @@ MAP = {
                     client_classpath='auditmanager_v1alpha_client.AuditmanagerV1alpha',
                     base_url='https://auditmanager.googleapis.com/',
                     messages_modulepath='auditmanager_v1alpha_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

@@ -64,6 +64,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_BACKUPCHANNELS_BACKUPPLANBINDINGS = (
+      'projects.locations.backupChannels.backupPlanBindings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/backupChannels/'
+              '{backupChannelsId}/backupPlanBindings/{backupPlanBindingsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_BACKUPPLANS = (
       'projects.locations.backupPlans',
       '{+name}',
@@ -128,6 +139,18 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/restoreChannels/'
               '{restoreChannelsId}/restorePlanAssociations/'
               '{restorePlanAssociationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_RESTORECHANNELS_RESTOREPLANBINDINGS = (
+      'projects.locations.restoreChannels.restorePlanBindings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/restoreChannels/'
+              '{restoreChannelsId}/restorePlanBindings/'
+              '{restorePlanBindingsId}',
       },
       ['name'],
       True

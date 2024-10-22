@@ -989,6 +989,7 @@ def AddIngestionDatasourceFlags(
     parser,
     is_update=False,
     include_ingestion_from_azure_event_hubs_flags=False,
+    include_ingestion_from_aws_msk_flags=False,
 ):
   """Adds the flags for Datasource Ingestion.
 
@@ -997,7 +998,9 @@ def AddIngestionDatasourceFlags(
     is_update: (bool) If true, add a wrapper group with
       clear-ingestion-data-source-settings as a mutually exclusive argument.
     include_ingestion_from_azure_event_hubs_flags: whether to include ingestion
-      from Azure Event Hubs flags and log severity.
+      from Azure Event Hubs flags.
+    include_ingestion_from_aws_msk_flags: whether to include ingestion from AWS
+      MSK flags.
   """
   current_group = parser
 
@@ -1182,6 +1185,48 @@ def AddIngestionDatasourceFlags(
         default=None,
         help=(
             'Azure event hub Google Cloud service account to use for ingestion.'
+        ),
+        required=True,
+    )
+  if include_ingestion_from_aws_msk_flags:
+    aws_msk_group = ingestion_data_source_group.add_argument_group(
+        help=arg_parsers.UniverseHelpText(
+            default=(
+                'Flags that specify settings for an import topic from Amazon'
+                ' Web Services (AWS) Managed Streaming for Apache Kafka (MSK)'
+            )
+            + MustSpecifyAllHelpText('AWS MSK Source', is_update),
+            universe_help=INGESTION_NOT_SUPPORTED_IN_TPC,
+        ),
+        hidden=True,
+    )
+    aws_msk_group.add_argument(
+        '--aws_msk-ingestion-cluster-arn',
+        default=None,
+        help='ARN that uniquely identifies the MSK cluster.',
+        required=True,
+    )
+    aws_msk_group.add_argument(
+        '--aws_msk-ingestion-topic',
+        default=None,
+        help='Name of the MSK topic that Pub/Sub will import from.',
+        required=True,
+    )
+    aws_msk_group.add_argument(
+        '--aws_msk-ingestion-aws-role-arn',
+        default=None,
+        help=(
+            'AWS role ARN to be used for Federated Identity authentication with'
+            ' MSK.'
+        ),
+        required=True,
+    )
+    aws_msk_group.add_argument(
+        '--aws_msk-ingestion-service-account',
+        default=None,
+        help=(
+            'Service account to be used for Federated Identity authentication'
+            ' with Kinesis.'
         ),
         required=True,
     )

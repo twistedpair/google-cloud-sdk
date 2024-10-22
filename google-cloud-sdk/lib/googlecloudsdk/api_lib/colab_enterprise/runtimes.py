@@ -14,7 +14,6 @@
 # limitations under the License.
 """colab-enterprise runtimes api helper."""
 
-from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -29,14 +28,8 @@ def GetParentForRuntime(args):
     The resource name in the form projects/{project}/locations/{location}.
   """
 
-  if args.IsSpecified('region'):
-    region = args.CONCEPTS.region.Parse()
-    return region.RelativeName()
-  raise exceptions.RequiredArgumentException(
-      '--region',
-      'Region must be specified for runtime assignment. See here for choices:'
-      ' https://cloud.google.com/colab/docs/locations',
-  )
+  region = args.CONCEPTS.region.Parse()
+  return region.RelativeName()
 
 
 def ParseRuntimeOperation(operation_name):

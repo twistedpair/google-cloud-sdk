@@ -135,6 +135,17 @@ class IamcredentialsProjectsServiceAccountsGenerateIdTokenRequest(_messages.Mess
   name = _messages.StringField(2, required=True)
 
 
+class IamcredentialsProjectsServiceAccountsGetAllowedLocationsRequest(_messages.Message):
+  r"""A IamcredentialsProjectsServiceAccountsGetAllowedLocationsRequest
+  object.
+
+  Fields:
+    name: Required. Resource name of service account.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class IamcredentialsProjectsServiceAccountsSignBlobRequest(_messages.Message):
   r"""A IamcredentialsProjectsServiceAccountsSignBlobRequest object.
 
@@ -167,6 +178,20 @@ class IamcredentialsProjectsServiceAccountsSignJwtRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   signJwtRequest = _messages.MessageField('SignJwtRequest', 2)
+
+
+class ServiceAccountAllowedLocations(_messages.Message):
+  r"""Represents a list of allowed locations for given service account.
+
+  Fields:
+    encodedLocations: Output only. The hex encoded bitmap of the trust
+      boundary locations
+    locations: Output only. The human readable trust boundary locations. For
+      example, ["us-central1", "europe-west1"]
+  """
+
+  encodedLocations = _messages.StringField(1)
+  locations = _messages.StringField(2, repeated=True)
 
 
 class SignBlobRequest(_messages.Message):

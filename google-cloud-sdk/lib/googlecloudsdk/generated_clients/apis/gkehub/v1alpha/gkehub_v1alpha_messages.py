@@ -1270,16 +1270,19 @@ class ConfigManagementConfigSync(_messages.Message):
       and Cloud Monarch when Workload Identity is enabled. The GSA should have
       the Monitoring Metric Writer (roles/monitoring.metricWriter) IAM role.
       The Kubernetes ServiceAccount `default` in the namespace `config-
-      management-monitoring` should be bound to the GSA.
+      management-monitoring` should be bound to the GSA. Deprecated: If
+      Workload Identity Federation for GKE is enabled, Google Cloud Service
+      Account is no longer needed for exporting Config Sync metrics:
+      https://cloud.google.com/kubernetes-engine/enterprise/config-
+      sync/docs/how-to/monitor-config-sync-cloud-monitoring#custom-monitoring.
     oci: OCI repo configuration for the cluster
     preventDrift: Set to true to enable the Config Sync admission webhook to
       prevent drifts. If set to `false`, disables the Config Sync admission
       webhook and does not prevent drifts.
     sourceFormat: Specifies whether the Config Sync Repo is in "hierarchical"
       or "unstructured" mode.
-    stopSyncing: Set to true to stop syncing configs for a single cluster when
-      automatic Feature management is enabled. Default to false. The field
-      will be ignored when automatic Feature management is disabled.
+    stopSyncing: Set to true to stop syncing configs for a single cluster.
+      Default to false.
   """
 
   allowVerticalScale = _messages.BooleanField(1)
@@ -1490,12 +1493,16 @@ class ConfigManagementConfigSyncState(_messages.Message):
   r"""State information for ConfigSync
 
   Enums:
+    ClusterLevelStopSyncingStateValueValuesEnum: Whether syncing resources to
+      the cluster is stopped at the cluster level.
     ReposyncCrdValueValuesEnum: The state of the Reposync CRD
     RootsyncCrdValueValuesEnum: The state of the RootSync CRD
     StateValueValuesEnum: The state of CS This field summarizes the other
       fields in this message.
 
   Fields:
+    clusterLevelStopSyncingState: Whether syncing resources to the cluster is
+      stopped at the cluster level.
     deploymentState: Information about the deployment of ConfigSync, including
       the version of the various Pods deployed
     errors: Errors pertaining to the installation of Config Sync.
@@ -1506,6 +1513,24 @@ class ConfigManagementConfigSyncState(_messages.Message):
     syncState: The state of ConfigSync's process to sync configs to a cluster
     version: The version of ConfigSync deployed
   """
+
+  class ClusterLevelStopSyncingStateValueValuesEnum(_messages.Enum):
+    r"""Whether syncing resources to the cluster is stopped at the cluster
+    level.
+
+    Values:
+      STOP_SYNCING_STATE_UNSPECIFIED: State cannot be determined
+      NOT_STOPPED: Syncing resources to the cluster is not stopped at the
+        cluster level.
+      PENDING: Some reconcilers stop syncing resources to the cluster, while
+        others are still syncing.
+      STOPPED: Syncing resources to the cluster is stopped at the cluster
+        level.
+    """
+    STOP_SYNCING_STATE_UNSPECIFIED = 0
+    NOT_STOPPED = 1
+    PENDING = 2
+    STOPPED = 3
 
   class ReposyncCrdValueValuesEnum(_messages.Enum):
     r"""The state of the Reposync CRD
@@ -1559,13 +1584,14 @@ class ConfigManagementConfigSyncState(_messages.Message):
     CONFIG_SYNC_ERROR = 3
     CONFIG_SYNC_PENDING = 4
 
-  deploymentState = _messages.MessageField('ConfigManagementConfigSyncDeploymentState', 1)
-  errors = _messages.MessageField('ConfigManagementConfigSyncError', 2, repeated=True)
-  reposyncCrd = _messages.EnumField('ReposyncCrdValueValuesEnum', 3)
-  rootsyncCrd = _messages.EnumField('RootsyncCrdValueValuesEnum', 4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  syncState = _messages.MessageField('ConfigManagementSyncState', 6)
-  version = _messages.MessageField('ConfigManagementConfigSyncVersion', 7)
+  clusterLevelStopSyncingState = _messages.EnumField('ClusterLevelStopSyncingStateValueValuesEnum', 1)
+  deploymentState = _messages.MessageField('ConfigManagementConfigSyncDeploymentState', 2)
+  errors = _messages.MessageField('ConfigManagementConfigSyncError', 3, repeated=True)
+  reposyncCrd = _messages.EnumField('ReposyncCrdValueValuesEnum', 4)
+  rootsyncCrd = _messages.EnumField('RootsyncCrdValueValuesEnum', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  syncState = _messages.MessageField('ConfigManagementSyncState', 7)
+  version = _messages.MessageField('ConfigManagementConfigSyncVersion', 8)
 
 
 class ConfigManagementConfigSyncVersion(_messages.Message):

@@ -128,6 +128,14 @@ class BillingAccount(_messages.Message):
   account to one or more projects.
 
   Fields:
+    currencyCode: Optional. The currency in which the billing account is
+      billed and charged, represented as an ISO 4217 code such as `USD`.
+      Billing account currency is determined at the time of billing account
+      creation and cannot be updated subsequently, so this field should not be
+      set on update requests. In addition, a subaccount always matches the
+      currency of its parent billing account, so this field should not be set
+      on subaccount creation requests. Clients can read this field to
+      determine the currency of an existing billing account.
     displayName: The display name given to the billing account, such as `My
       Billing Account`. This name is displayed in the Google Cloud Console.
     masterBillingAccount: If this account is a
@@ -150,11 +158,12 @@ class BillingAccount(_messages.Message):
       `billingAccounts/012345-567890-ABCDEF`
   """
 
-  displayName = _messages.StringField(1)
-  masterBillingAccount = _messages.StringField(2)
-  name = _messages.StringField(3)
-  open = _messages.BooleanField(4)
-  parent = _messages.StringField(5)
+  currencyCode = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  masterBillingAccount = _messages.StringField(3)
+  name = _messages.StringField(4)
+  open = _messages.BooleanField(5)
+  parent = _messages.StringField(6)
 
 
 class Binding(_messages.Message):

@@ -295,6 +295,8 @@ class DataDisk(_messages.Message):
       applicable if disk_encryption is CMEK. Format: `projects/{project_id}/lo
       cations/{location}/keyRings/{key_ring_id}/cryptoKeys/{key_id}` Learn
       more about using your own encryption keys.
+    resourcePolicies: Optional. The resource policies to apply to the data
+      disk.
   """
 
   class DiskEncryptionValueValuesEnum(_messages.Enum):
@@ -330,6 +332,7 @@ class DataDisk(_messages.Message):
   diskSizeGb = _messages.IntegerField(2)
   diskType = _messages.EnumField('DiskTypeValueValuesEnum', 3)
   kmsKey = _messages.StringField(4)
+  resourcePolicies = _messages.StringField(5, repeated=True)
 
 
 class DefaultValues(_messages.Message):

@@ -45,6 +45,7 @@ class CloudaicompanionV1alpha(base_api.BaseApiClient):
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_settings = self.ProjectsLocationsSettingsService(self)
+    self.projects_locations_topics = self.ProjectsLocationsTopicsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -979,6 +980,33 @@ class CloudaicompanionV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ServerStreamingCompleteTask(self, request, global_params=None):
+      r"""Completes a task based on some specification and context using response streaming.
+
+      Args:
+        request: (CloudaicompanionProjectsLocationsInstancesServerStreamingCompleteTaskRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServerStreamingCompleteTaskResponse) The response message.
+      """
+      config = self.GetMethodConfig('ServerStreamingCompleteTask')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ServerStreamingCompleteTask.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:serverStreamingCompleteTask',
+        http_method='POST',
+        method_id='cloudaicompanion.projects.locations.instances.serverStreamingCompleteTask',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:serverStreamingCompleteTask',
+        request_field='serverStreamingCompleteTaskRequest',
+        request_type_name='CloudaicompanionProjectsLocationsInstancesServerStreamingCompleteTaskRequest',
+        response_type_name='ServerStreamingCompleteTaskResponse',
+        supports_download=False,
+    )
+
     def SummarizeData(self, request, global_params=None):
       r"""Data Summarization: go/anarres-data-summarization Generates a summary for the data/chart data passed in the request.
 
@@ -1266,6 +1294,151 @@ class CloudaicompanionV1alpha(base_api.BaseApiClient):
         request_field='setting',
         request_type_name='CloudaicompanionProjectsLocationsSettingsPatchRequest',
         response_type_name='Setting',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsTopicsService(base_api.BaseApiService):
+    """Service class for the projects_locations_topics resource."""
+
+    _NAME = 'projects_locations_topics'
+
+    def __init__(self, client):
+      super(CloudaicompanionV1alpha.ProjectsLocationsTopicsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Topic in a given project and location.
+
+      Args:
+        request: (CloudaicompanionProjectsLocationsTopicsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/topics',
+        http_method='POST',
+        method_id='cloudaicompanion.projects.locations.topics.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'topicId'],
+        relative_path='v1alpha/{+parent}/topics',
+        request_field='topic',
+        request_type_name='CloudaicompanionProjectsLocationsTopicsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single Topic.
+
+      Args:
+        request: (CloudaicompanionProjectsLocationsTopicsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}',
+        http_method='DELETE',
+        method_id='cloudaicompanion.projects.locations.topics.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='CloudaicompanionProjectsLocationsTopicsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Topic.
+
+      Args:
+        request: (CloudaicompanionProjectsLocationsTopicsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Topic) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}',
+        http_method='GET',
+        method_id='cloudaicompanion.projects.locations.topics.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='CloudaicompanionProjectsLocationsTopicsGetRequest',
+        response_type_name='Topic',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Topics in a given project and location.
+
+      Args:
+        request: (CloudaicompanionProjectsLocationsTopicsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTopicsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/topics',
+        http_method='GET',
+        method_id='cloudaicompanion.projects.locations.topics.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/topics',
+        request_field='',
+        request_type_name='CloudaicompanionProjectsLocationsTopicsListRequest',
+        response_type_name='ListTopicsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single Topic.
+
+      Args:
+        request: (CloudaicompanionProjectsLocationsTopicsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}',
+        http_method='PATCH',
+        method_id='cloudaicompanion.projects.locations.topics.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='topic',
+        request_type_name='CloudaicompanionProjectsLocationsTopicsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

@@ -194,6 +194,8 @@ class AzureEventHubs(_messages.Message):
     gcpServiceAccount: Optional. The GCP service account to be used for
       Federated Identity authentication.
     namespace: Optional. The name of the Event Hubs namespace.
+    resourceGroup: Optional. Name of the resource group within the azure
+      subscription.
     state: Output only. An output-only field that indicates the state of the
       Event Hubs ingestion source.
     subscriptionId: Optional. The Azure subscription id.
@@ -229,9 +231,10 @@ class AzureEventHubs(_messages.Message):
   eventHub = _messages.StringField(2)
   gcpServiceAccount = _messages.StringField(3)
   namespace = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  subscriptionId = _messages.StringField(6)
-  tenantId = _messages.StringField(7)
+  resourceGroup = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  subscriptionId = _messages.StringField(7)
+  tenantId = _messages.StringField(8)
 
 
 class BigQueryConfig(_messages.Message):

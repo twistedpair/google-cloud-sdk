@@ -1602,6 +1602,19 @@ class JsonClient(cloud_api.CloudApi):
       yield notification_configuration
 
   @error_util.catch_http_error_raise_gcs_api_error()
+  def advance_relocate_bucket(self, bucket_name, operation_id, ttl=None):
+    """See CloudApi class."""
+    advance_relocate_bucket_operation_request = (
+        self.messages.AdvanceRelocateBucketOperationRequest(ttl=ttl)
+    )
+    request = self.messages.StorageBucketsOperationsAdvanceRelocateBucketRequest(
+        advanceRelocateBucketOperationRequest=advance_relocate_bucket_operation_request,
+        bucket=bucket_name,
+        operationId=operation_id,
+    )
+    return self.client.operations.AdvanceRelocateBucket(request)
+
+  @error_util.catch_http_error_raise_gcs_api_error()
   def cancel_operation(self, bucket_name, operation_id):
     """See CloudApi class."""
     self.client.operations.Cancel(

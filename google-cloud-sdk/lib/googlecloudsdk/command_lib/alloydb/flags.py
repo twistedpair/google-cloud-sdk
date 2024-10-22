@@ -1426,7 +1426,6 @@ def AddTags(parser):
       type=arg_parsers.ArgDict(),
       action=arg_parsers.UpdateAction,
       help='\n'.join(help_parts),
-      hidden=True,
   )
 
 
@@ -1839,16 +1838,4 @@ def GetTagsArg(parser):
   )
 
 
-def GetTagsFromArgs(args, tags_message, tags_arg_name='tags'):
-  """Makes the tags message object."""
-  tags = getattr(args, tags_arg_name)
-  if not tags:
-    return None
-  # Sorted for test stability
-  return tags_message(
-      additionalProperties=[
-          tags_message.AdditionalProperty(key=key, value=value)
-          for key, value in sorted(tags.items())
-      ]
-  )
 

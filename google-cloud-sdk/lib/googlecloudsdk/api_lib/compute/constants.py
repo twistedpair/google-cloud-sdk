@@ -105,7 +105,7 @@ DEFAULT_IMAGE_FAMILY = 'debian-11'
 DEFAULT_IMAGE_FAMILY_FOR_CONFIDENTIAL_VMS = {
     CONFIDENTIAL_VM_TYPES.SEV: 'ubuntu-2204-lts',
     CONFIDENTIAL_VM_TYPES.SEV_SNP: 'ubuntu-2204-lts',
-    CONFIDENTIAL_VM_TYPES.TDX: 'ubuntu-2304-amd64',
+    CONFIDENTIAL_VM_TYPES.TDX: 'ubuntu-2204-lts',
 }
 
 ImageAlias = collections.namedtuple(

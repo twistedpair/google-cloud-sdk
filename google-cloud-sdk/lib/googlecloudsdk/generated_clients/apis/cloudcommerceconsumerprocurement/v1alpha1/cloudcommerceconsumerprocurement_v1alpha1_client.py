@@ -42,6 +42,7 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
     self.billingAccounts_accounts = self.BillingAccountsAccountsService(self)
     self.billingAccounts_consents = self.BillingAccountsConsentsService(self)
     self.billingAccounts_orders_events = self.BillingAccountsOrdersEventsService(self)
+    self.billingAccounts_orders_licensePool = self.BillingAccountsOrdersLicensePoolService(self)
     self.billingAccounts_orders_operations = self.BillingAccountsOrdersOperationsService(self)
     self.billingAccounts_orders_orderAttributions_operations = self.BillingAccountsOrdersOrderAttributionsOperationsService(self)
     self.billingAccounts_orders_orderAttributions = self.BillingAccountsOrdersOrderAttributionsService(self)
@@ -325,6 +326,124 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class BillingAccountsOrdersLicensePoolService(base_api.BaseApiService):
+    """Service class for the billingAccounts_orders_licensePool resource."""
+
+    _NAME = 'billingAccounts_orders_licensePool'
+
+    def __init__(self, client):
+      super(CloudcommerceconsumerprocurementV1alpha1.BillingAccountsOrdersLicensePoolService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Assign(self, request, global_params=None):
+      r"""Assigns a license to a user.
+
+      Args:
+        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolAssignRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudCommerceConsumerProcurementV1alpha1AssignResponse) The response message.
+      """
+      config = self.GetMethodConfig('Assign')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Assign.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/licensePool:assign',
+        http_method='POST',
+        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.licensePool.assign',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha1/{+parent}:assign',
+        request_field='googleCloudCommerceConsumerProcurementV1alpha1AssignRequest',
+        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolAssignRequest',
+        response_type_name='GoogleCloudCommerceConsumerProcurementV1alpha1AssignResponse',
+        supports_download=False,
+    )
+
+    def EnumerateLicensedUsers(self, request, global_params=None):
+      r"""Enumerates all users assigned a license.
+
+      Args:
+        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolEnumerateLicensedUsersRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudCommerceConsumerProcurementV1alpha1EnumerateLicensedUsersResponse) The response message.
+      """
+      config = self.GetMethodConfig('EnumerateLicensedUsers')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EnumerateLicensedUsers.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/licensePool:enumerateLicensedUsers',
+        http_method='GET',
+        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.licensePool.enumerateLicensedUsers',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}:enumerateLicensedUsers',
+        request_field='',
+        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolEnumerateLicensedUsersRequest',
+        response_type_name='GoogleCloudCommerceConsumerProcurementV1alpha1EnumerateLicensedUsersResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the license pool if one exists for this Order.
+
+      Args:
+        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudCommerceConsumerProcurementV1alpha1LicensePool) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/licensePool/{licensePoolId}',
+        http_method='PATCH',
+        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.licensePool.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='googleCloudCommerceConsumerProcurementV1alpha1LicensePool',
+        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolPatchRequest',
+        response_type_name='GoogleCloudCommerceConsumerProcurementV1alpha1LicensePool',
+        supports_download=False,
+    )
+
+    def Unassign(self, request, global_params=None):
+      r"""Unassigns a license from a user.
+
+      Args:
+        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolUnassignRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudCommerceConsumerProcurementV1alpha1UnassignResponse) The response message.
+      """
+      config = self.GetMethodConfig('Unassign')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Unassign.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/licensePool:unassign',
+        http_method='POST',
+        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.licensePool.unassign',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha1/{+parent}:unassign',
+        request_field='googleCloudCommerceConsumerProcurementV1alpha1UnassignRequest',
+        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersLicensePoolUnassignRequest',
+        response_type_name='GoogleCloudCommerceConsumerProcurementV1alpha1UnassignResponse',
+        supports_download=False,
+    )
+
   class BillingAccountsOrdersOperationsService(base_api.BaseApiService):
     """Service class for the billingAccounts_orders_operations resource."""
 
@@ -551,6 +670,33 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersGetAuditLogRequest',
         response_type_name='GoogleCloudCommerceConsumerProcurementV1alpha1AuditLog',
+        supports_download=False,
+    )
+
+    def GetLicensePool(self, request, global_params=None):
+      r"""Gets the license pool.
+
+      Args:
+        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersGetLicensePoolRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudCommerceConsumerProcurementV1alpha1LicensePool) The response message.
+      """
+      config = self.GetMethodConfig('GetLicensePool')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetLicensePool.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/licensePool',
+        http_method='GET',
+        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.getLicensePool',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersGetLicensePoolRequest',
+        response_type_name='GoogleCloudCommerceConsumerProcurementV1alpha1LicensePool',
         supports_download=False,
     )
 

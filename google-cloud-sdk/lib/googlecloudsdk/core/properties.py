@@ -368,6 +368,7 @@ class _Sections(object):
       Cloud SDK.
     code: Section, The section containing local development properties for Cloud
       SDK.
+    colab: Section, The section containing colab properties for the Cloud SDK.
     component_manager: Section, The section containing properties for the
       component_manager.
     composer: Section, The section containing composer properties for the Cloud
@@ -510,6 +511,7 @@ class _Sections(object):
     self.billing = _SectionBilling()
     self.builds = _SectionBuilds()
     self.code = _SectionCode()
+    self.colab = _SectionColab()
     self.component_manager = _SectionComponentManager()
     self.composer = _SectionComposer()
     self.compute = _SectionCompute()
@@ -592,6 +594,7 @@ class _Sections(object):
         self.builds,
         self.artifacts,
         self.code,
+        self.colab,
         self.component_manager,
         self.composer,
         self.compute,
@@ -1863,6 +1866,20 @@ class _SectionCode(_Section):
         'skaffold_path_override',
         hidden=True,
         help_text='Location of skaffold binary.')
+
+
+class _SectionColab(_Section):
+  """Contains the properties for the 'colab' section."""
+
+  def __init__(self):
+    super(_SectionColab, self).__init__('colab')
+    self.region = self._Add(
+        'region',
+        help_text='Default region to use when working with Colab Enterprise '
+        'resources. When a `--region` flag is required but not provided, the '
+        'command will fall back to this value, if set. Please see '
+        'https://cloud.google.com/colab/docs/locations for a list of supported '
+        'regions.')
 
 
 class _SectionComponentManager(_Section):

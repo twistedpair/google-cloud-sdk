@@ -56,16 +56,6 @@ __protobuf__ = proto.module(
         'StartResumableWriteRequest',
         'StartResumableWriteResponse',
         'UpdateObjectRequest',
-        'GetServiceAccountRequest',
-        'ServiceAccount',
-        'CreateHmacKeyRequest',
-        'CreateHmacKeyResponse',
-        'DeleteHmacKeyRequest',
-        'GetHmacKeyRequest',
-        'ListHmacKeysRequest',
-        'ListHmacKeysResponse',
-        'UpdateHmacKeyRequest',
-        'HmacKeyMetadata',
         'CommonObjectRequestParams',
         'ServiceConstants',
         'Bucket',
@@ -79,12 +69,6 @@ __protobuf__ = proto.module(
         'ProjectTeam',
         'Owner',
         'ContentRange',
-        'DeleteNotificationConfigRequest',
-        'GetNotificationConfigRequest',
-        'CreateNotificationConfigRequest',
-        'ListNotificationConfigsRequest',
-        'ListNotificationConfigsResponse',
-        'NotificationConfig',
     },
 )
 
@@ -655,6 +639,14 @@ class RestoreObjectRequest(proto.Message):
         generation (int):
             Required. The specific revision of the object
             to restore.
+        restore_token (str):
+            Optional. Restore token used to differentiate
+            soft-deleted objects with the same name and
+            generation. Only applicable for hierarchical
+            namespace buckets. This parameter is optional,
+            and is only required in the rare case when there
+            are multiple soft-deleted objects with the same
+            name and generation.
         if_generation_match (int):
             Makes the operation conditional on whether
             the object's current generation matches the
@@ -707,6 +699,10 @@ class RestoreObjectRequest(proto.Message):
     generation: int = proto.Field(
         proto.INT64,
         number=3,
+    )
+    restore_token: str = proto.Field(
+        proto.STRING,
+        number=11,
     )
     if_generation_match: int = proto.Field(
         proto.INT64,
@@ -956,6 +952,13 @@ class GetObjectRequest(proto.Message):
             -  may be used to mean "all fields".
 
             This field is a member of `oneof`_ ``_read_mask``.
+        restore_token (str):
+            Optional. Restore token used to differentiate soft-deleted
+            objects with the same name and generation. Only applicable
+            for hierarchical namespace buckets and if soft_deleted is
+            set to true. This parameter is optional, and is only
+            required in the rare case when there are multiple
+            soft-deleted objects with the same name and generation.
     """
 
     bucket: str = proto.Field(
@@ -1005,6 +1008,10 @@ class GetObjectRequest(proto.Message):
         number=10,
         optional=True,
         message=field_mask_pb2.FieldMask,
+    )
+    restore_token: str = proto.Field(
+        proto.STRING,
+        number=12,
     )
 
 
@@ -2103,308 +2110,6 @@ class UpdateObjectRequest(proto.Message):
     )
 
 
-class GetServiceAccountRequest(proto.Message):
-    r"""Request message for GetServiceAccount.
-
-    Attributes:
-        project (str):
-            Required. Project ID, in the format of
-            "projects/{projectIdentifier}".
-            {projectIdentifier} can be the project ID or
-            project number.
-    """
-
-    project: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-
-
-class ServiceAccount(proto.Message):
-    r"""A service account, owned by Cloud Storage, which may be used
-    when taking action on behalf of a given project, for example to
-    publish Pub/Sub notifications or to retrieve security keys.
-
-    Attributes:
-        email_address (str):
-            The ID of the notification.
-    """
-
-    email_address: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-
-
-class CreateHmacKeyRequest(proto.Message):
-    r"""Request message for CreateHmacKey.
-
-    Attributes:
-        project (str):
-            Required. The project that the HMAC-owning
-            service account lives in, in the format of
-            "projects/{projectIdentifier}".
-            {projectIdentifier} can be the project ID or
-            project number.
-        service_account_email (str):
-            Required. The service account to create the
-            HMAC for.
-    """
-
-    project: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    service_account_email: str = proto.Field(
-        proto.STRING,
-        number=2,
-    )
-
-
-class CreateHmacKeyResponse(proto.Message):
-    r"""Create hmac response.  The only time the secret for an HMAC
-    will be returned.
-
-    Attributes:
-        metadata (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.HmacKeyMetadata):
-            Key metadata.
-        secret_key_bytes (bytes):
-            HMAC key secret material.
-            In raw bytes format (not base64-encoded).
-    """
-
-    metadata: 'HmacKeyMetadata' = proto.Field(
-        proto.MESSAGE,
-        number=1,
-        message='HmacKeyMetadata',
-    )
-    secret_key_bytes: bytes = proto.Field(
-        proto.BYTES,
-        number=3,
-    )
-
-
-class DeleteHmacKeyRequest(proto.Message):
-    r"""Request object to delete a given HMAC key.
-
-    Attributes:
-        access_id (str):
-            Required. The identifying key for the HMAC to
-            delete.
-        project (str):
-            Required. The project that owns the HMAC key,
-            in the format of "projects/{projectIdentifier}".
-            {projectIdentifier} can be the project ID or
-            project number.
-    """
-
-    access_id: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    project: str = proto.Field(
-        proto.STRING,
-        number=2,
-    )
-
-
-class GetHmacKeyRequest(proto.Message):
-    r"""Request object to get metadata on a given HMAC key.
-
-    Attributes:
-        access_id (str):
-            Required. The identifying key for the HMAC to
-            delete.
-        project (str):
-            Required. The project the HMAC key lies in,
-            in the format of "projects/{projectIdentifier}".
-            {projectIdentifier} can be the project ID or
-            project number.
-    """
-
-    access_id: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    project: str = proto.Field(
-        proto.STRING,
-        number=2,
-    )
-
-
-class ListHmacKeysRequest(proto.Message):
-    r"""Request to fetch a list of HMAC keys under a given project.
-
-    Attributes:
-        project (str):
-            Required. The project to list HMAC keys for,
-            in the format of "projects/{projectIdentifier}".
-            {projectIdentifier} can be the project ID or
-            project number.
-        page_size (int):
-            The maximum number of keys to return.
-        page_token (str):
-            A previously returned token from
-            ListHmacKeysResponse to get the next page.
-        service_account_email (str):
-            If set, filters to only return HMAC keys for
-            specified service account.
-        show_deleted_keys (bool):
-            If set, return deleted keys that have not yet
-            been wiped out.
-    """
-
-    project: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    page_size: int = proto.Field(
-        proto.INT32,
-        number=2,
-    )
-    page_token: str = proto.Field(
-        proto.STRING,
-        number=3,
-    )
-    service_account_email: str = proto.Field(
-        proto.STRING,
-        number=4,
-    )
-    show_deleted_keys: bool = proto.Field(
-        proto.BOOL,
-        number=5,
-    )
-
-
-class ListHmacKeysResponse(proto.Message):
-    r"""Hmac key list response with next page information.
-
-    Attributes:
-        hmac_keys (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.HmacKeyMetadata]):
-            The list of items.
-        next_page_token (str):
-            The continuation token, used to page through
-            large result sets. Provide this value in a
-            subsequent request to return the next page of
-            results.
-    """
-
-    @property
-    def raw_page(self):
-        return self
-
-    hmac_keys: MutableSequence['HmacKeyMetadata'] = proto.RepeatedField(
-        proto.MESSAGE,
-        number=1,
-        message='HmacKeyMetadata',
-    )
-    next_page_token: str = proto.Field(
-        proto.STRING,
-        number=2,
-    )
-
-
-class UpdateHmacKeyRequest(proto.Message):
-    r"""Request object to update an HMAC key state.
-    HmacKeyMetadata.state is required and the only writable field in
-    UpdateHmacKey operation. Specifying fields other than state will
-    result in an error.
-
-    Attributes:
-        hmac_key (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.HmacKeyMetadata):
-            Required. The HMAC key to update. If present, the hmac_key's
-            ``id`` field will be used to identify the key. Otherwise,
-            the hmac_key's access_id and project fields will be used to
-            identify the key.
-        update_mask (google.protobuf.field_mask_pb2.FieldMask):
-            Update mask for hmac_key. Not specifying any fields will
-            mean only the ``state`` field is updated to the value
-            specified in ``hmac_key``.
-    """
-
-    hmac_key: 'HmacKeyMetadata' = proto.Field(
-        proto.MESSAGE,
-        number=1,
-        message='HmacKeyMetadata',
-    )
-    update_mask: field_mask_pb2.FieldMask = proto.Field(
-        proto.MESSAGE,
-        number=3,
-        message=field_mask_pb2.FieldMask,
-    )
-
-
-class HmacKeyMetadata(proto.Message):
-    r"""Hmac Key Metadata, which includes all information other than
-    the secret.
-
-    Attributes:
-        id (str):
-            Immutable. Resource name ID of the key in the
-            format {projectIdentifier}/{accessId}.
-            {projectIdentifier} can be the project ID or
-            project number.
-        access_id (str):
-            Immutable. Globally unique id for keys.
-        project (str):
-            Immutable. Identifies the project that owns
-            the service account of the specified HMAC key,
-            in the format "projects/{projectIdentifier}".
-            {projectIdentifier} can be the project ID or
-            project number.
-        service_account_email (str):
-            Output only. Email of the service account the
-            key authenticates as.
-        state (str):
-            Optional. State of the key. One of ACTIVE,
-            INACTIVE, or DELETED. Writable, can be updated
-            by UpdateHmacKey operation.
-        create_time (google.protobuf.timestamp_pb2.Timestamp):
-            Output only. The creation time of the HMAC
-            key.
-        update_time (google.protobuf.timestamp_pb2.Timestamp):
-            Output only. The last modification time of
-            the HMAC key metadata.
-        etag (str):
-            Optional. The etag of the HMAC key.
-    """
-
-    id: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    access_id: str = proto.Field(
-        proto.STRING,
-        number=2,
-    )
-    project: str = proto.Field(
-        proto.STRING,
-        number=3,
-    )
-    service_account_email: str = proto.Field(
-        proto.STRING,
-        number=4,
-    )
-    state: str = proto.Field(
-        proto.STRING,
-        number=5,
-    )
-    create_time: timestamp_pb2.Timestamp = proto.Field(
-        proto.MESSAGE,
-        number=6,
-        message=timestamp_pb2.Timestamp,
-    )
-    update_time: timestamp_pb2.Timestamp = proto.Field(
-        proto.MESSAGE,
-        number=7,
-        message=timestamp_pb2.Timestamp,
-    )
-    etag: str = proto.Field(
-        proto.STRING,
-        number=8,
-    )
-
-
 class CommonObjectRequestParams(proto.Message):
     r"""Parameters that can be passed to any object request.
 
@@ -2660,8 +2365,8 @@ class Bucket(proto.Message):
         custom_placement_config (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket.CustomPlacementConfig):
             Configuration that, if present, specifies the data placement
             for a
-            [https://cloud.google.com/storage/docs/use-dual-regions][Dual
-            Region].
+            [https://cloud.google.com/storage/docs/locations#location-dr][configurable
+            dual-region].
         autoclass (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket.Autoclass):
             The bucket's Autoclass configuration. If
             there is no configuration, the Autoclass feature
@@ -3551,6 +3256,13 @@ class Object(proto.Message):
         generation (int):
             Immutable. The content generation of this
             object. Used for object versioning.
+        restore_token (str):
+            Output only. Restore token used to
+            differentiate deleted objects with the same name
+            and generation. This field is output only, and
+            only set for deleted objects in HNS buckets.
+
+            This field is a member of `oneof`_ ``_restore_token``.
         metageneration (int):
             Output only. The version of the metadata for
             this generation of this object. Used for
@@ -3708,6 +3420,11 @@ class Object(proto.Message):
     generation: int = proto.Field(
         proto.INT64,
         number=3,
+    )
+    restore_token: str = proto.Field(
+        proto.STRING,
+        number=35,
+        optional=True,
     )
     metageneration: int = proto.Field(
         proto.INT64,
@@ -4025,192 +3742,6 @@ class ContentRange(proto.Message):
     complete_length: int = proto.Field(
         proto.INT64,
         number=3,
-    )
-
-
-class DeleteNotificationConfigRequest(proto.Message):
-    r"""Request message for DeleteNotificationConfig.
-
-    Attributes:
-        name (str):
-            Required. The parent bucket of the
-            NotificationConfig.
-    """
-
-    name: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-
-
-class GetNotificationConfigRequest(proto.Message):
-    r"""Request message for GetNotificationConfig.
-
-    Attributes:
-        name (str):
-            Required. The parent bucket of the NotificationConfig.
-            Format:
-            ``projects/{project}/buckets/{bucket}/notificationConfigs/{notificationConfig}``
-    """
-
-    name: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-
-
-class CreateNotificationConfigRequest(proto.Message):
-    r"""Request message for CreateNotificationConfig.
-
-    Attributes:
-        parent (str):
-            Required. The bucket to which this
-            NotificationConfig belongs.
-        notification_config (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig):
-            Required. Properties of the
-            NotificationConfig to be inserted.
-    """
-
-    parent: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    notification_config: 'NotificationConfig' = proto.Field(
-        proto.MESSAGE,
-        number=2,
-        message='NotificationConfig',
-    )
-
-
-class ListNotificationConfigsRequest(proto.Message):
-    r"""Request message for ListNotifications.
-
-    Attributes:
-        parent (str):
-            Required. Name of a Google Cloud Storage
-            bucket.
-        page_size (int):
-            Optional. The maximum number of NotificationConfigs to
-            return. The service may return fewer than this value. The
-            default value is 100. Specifying a value above 100 will
-            result in a page_size of 100.
-        page_token (str):
-            Optional. A page token, received from a previous
-            ``ListNotificationConfigs`` call. Provide this to retrieve
-            the subsequent page.
-
-            When paginating, all other parameters provided to
-            ``ListNotificationConfigs`` must match the call that
-            provided the page token.
-    """
-
-    parent: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    page_size: int = proto.Field(
-        proto.INT32,
-        number=2,
-    )
-    page_token: str = proto.Field(
-        proto.STRING,
-        number=3,
-    )
-
-
-class ListNotificationConfigsResponse(proto.Message):
-    r"""The result of a call to ListNotificationConfigs
-
-    Attributes:
-        notification_configs (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig]):
-            The list of items.
-        next_page_token (str):
-            A token, which can be sent as ``page_token`` to retrieve the
-            next page. If this field is omitted, there are no subsequent
-            pages.
-    """
-
-    @property
-    def raw_page(self):
-        return self
-
-    notification_configs: MutableSequence['NotificationConfig'] = proto.RepeatedField(
-        proto.MESSAGE,
-        number=1,
-        message='NotificationConfig',
-    )
-    next_page_token: str = proto.Field(
-        proto.STRING,
-        number=2,
-    )
-
-
-class NotificationConfig(proto.Message):
-    r"""A directive to publish Pub/Sub notifications upon changes to
-    a bucket.
-
-    Attributes:
-        name (str):
-            Required. The resource name of this NotificationConfig.
-            Format:
-            ``projects/{project}/buckets/{bucket}/notificationConfigs/{notificationConfig}``
-            The ``{project}`` portion may be ``_`` for globally unique
-            buckets.
-        topic (str):
-            Required. The Pub/Sub topic to which this
-            subscription publishes. Formatted as:
-
-            '//pubsub.googleapis.com/projects/{project-identifier}/topics/{my-topic}'
-        etag (str):
-            Optional. The etag of the NotificationConfig.
-            If included in the metadata of
-            GetNotificationConfigRequest, the operation will
-            only be performed if the etag matches that of
-            the NotificationConfig.
-        event_types (MutableSequence[str]):
-            Optional. If present, only send notifications
-            about listed event types. If empty, sent
-            notifications for all event types.
-        custom_attributes (MutableMapping[str, str]):
-            Optional. A list of additional attributes to
-            attach to each Pub/Sub message published for
-            this NotificationConfig.
-        object_name_prefix (str):
-            Optional. If present, only apply this
-            NotificationConfig to object names that begin
-            with this prefix.
-        payload_format (str):
-            Required. The desired content of the Payload.
-    """
-
-    name: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    topic: str = proto.Field(
-        proto.STRING,
-        number=2,
-    )
-    etag: str = proto.Field(
-        proto.STRING,
-        number=7,
-    )
-    event_types: MutableSequence[str] = proto.RepeatedField(
-        proto.STRING,
-        number=3,
-    )
-    custom_attributes: MutableMapping[str, str] = proto.MapField(
-        proto.STRING,
-        proto.STRING,
-        number=4,
-    )
-    object_name_prefix: str = proto.Field(
-        proto.STRING,
-        number=5,
-    )
-    payload_format: str = proto.Field(
-        proto.STRING,
-        number=6,
     )
 
 

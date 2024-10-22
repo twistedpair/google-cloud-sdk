@@ -434,6 +434,11 @@ class TransactionOptions(proto.Message):
         Attributes:
             read_lock_mode (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.TransactionOptions.ReadWrite.ReadLockMode):
                 Read lock mode for the transaction.
+            multiplexed_session_previous_transaction_id (bytes):
+                Optional. Clients should pass the transaction
+                ID of the previous transaction attempt that was
+                aborted if this transaction is being executed on
+                a multiplexed session.
         """
         class ReadLockMode(proto.Enum):
             r"""``ReadLockMode`` is used to set the read lock mode for read-write
@@ -465,6 +470,10 @@ class TransactionOptions(proto.Message):
             proto.ENUM,
             number=1,
             enum='TransactionOptions.ReadWrite.ReadLockMode',
+        )
+        multiplexed_session_previous_transaction_id: bytes = proto.Field(
+            proto.BYTES,
+            number=2,
         )
 
     class PartitionedDml(proto.Message):

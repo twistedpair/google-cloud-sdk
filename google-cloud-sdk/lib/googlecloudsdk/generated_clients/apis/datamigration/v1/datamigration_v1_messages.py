@@ -920,15 +920,19 @@ class ConnectionProfile(_messages.Message):
       RDS: Amazon RDS is the source instance provider.
       AURORA: Amazon Aurora is the source instance provider.
       ALLOYDB: AlloyDB for PostgreSQL is the source instance provider.
-      AZURE: Microsoft Azure SQL Managed Instance is the source instance
-        provider.
+      AZURE_DATABASE: Microsoft Azure Database for MySQL/PostgreSQL.
+      AZURE_SQL_DATABASE: Microsoft Azure SQL Database
+      AZURE_MANAGED_INSTANCE: Microsoft Azure SQL Managed Instance is the
+        source instance provider.
     """
     DATABASE_PROVIDER_UNSPECIFIED = 0
     CLOUDSQL = 1
     RDS = 2
     AURORA = 3
     ALLOYDB = 4
-    AZURE = 5
+    AZURE_DATABASE = 5
+    AZURE_SQL_DATABASE = 6
+    AZURE_MANAGED_INSTANCE = 7
 
   class RoleValueValuesEnum(_messages.Enum):
     r"""Optional. The connection profile role.
@@ -1461,15 +1465,19 @@ class DatabaseType(_messages.Message):
       RDS: Amazon RDS is the source instance provider.
       AURORA: Amazon Aurora is the source instance provider.
       ALLOYDB: AlloyDB for PostgreSQL is the source instance provider.
-      AZURE: Microsoft Azure SQL Managed Instance is the source instance
-        provider.
+      AZURE_DATABASE: Microsoft Azure Database for MySQL/PostgreSQL.
+      AZURE_SQL_DATABASE: Microsoft Azure SQL Database
+      AZURE_MANAGED_INSTANCE: Microsoft Azure SQL Managed Instance is the
+        source instance provider.
     """
     DATABASE_PROVIDER_UNSPECIFIED = 0
     CLOUDSQL = 1
     RDS = 2
     AURORA = 3
     ALLOYDB = 4
-    AZURE = 5
+    AZURE_DATABASE = 5
+    AZURE_SQL_DATABASE = 6
+    AZURE_MANAGED_INSTANCE = 7
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   provider = _messages.EnumField('ProviderValueValuesEnum', 2)
@@ -4226,6 +4234,8 @@ class MigrationJobObject(_messages.Message):
       RESTARTING: The migration job object is restarting.
       FAILED: The migration job object failed.
       REMOVING: The migration job object is deleting.
+      NOT_SELECTED: The migration job object is not selected for migration.
+      COMPLETED: The migration job object is completed.
     """
     STATE_UNSPECIFIED = 0
     NOT_STARTED = 1
@@ -4235,6 +4245,8 @@ class MigrationJobObject(_messages.Message):
     RESTARTING = 5
     FAILED = 6
     REMOVING = 7
+    NOT_SELECTED = 8
+    COMPLETED = 9
 
   createTime = _messages.StringField(1)
   error = _messages.MessageField('Status', 2)
@@ -5914,7 +5926,7 @@ class SslConfig(_messages.Message):
   r"""SSL configuration information.
 
   Enums:
-    TypeValueValuesEnum: Output only. The ssl config type according to
+    TypeValueValuesEnum: Optional. The ssl config type according to
       'client_key', 'client_certificate' and 'ca_certificate'.
 
   Fields:
@@ -5927,12 +5939,12 @@ class SslConfig(_messages.Message):
     clientKey: Input only. The unencrypted PKCS#1 or PKCS#8 PEM-encoded
       private key associated with the Client Certificate. If this field is
       used then the 'client_certificate' field is mandatory.
-    type: Output only. The ssl config type according to 'client_key',
+    type: Optional. The ssl config type according to 'client_key',
       'client_certificate' and 'ca_certificate'.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Output only. The ssl config type according to 'client_key',
+    r"""Optional. The ssl config type according to 'client_key',
     'client_certificate' and 'ca_certificate'.
 
     Values:

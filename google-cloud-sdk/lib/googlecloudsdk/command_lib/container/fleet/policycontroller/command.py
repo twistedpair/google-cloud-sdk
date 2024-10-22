@@ -25,7 +25,6 @@ from googlecloudsdk.api_lib.container.fleet import util as fleet_util
 from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.command_lib.container.fleet.features import base as feature_base
 from googlecloudsdk.command_lib.container.fleet.membershipfeatures import convert
-from googlecloudsdk.command_lib.container.fleet.membershipfeatures import util
 from googlecloudsdk.command_lib.container.fleet.policycontroller import exceptions
 from googlecloudsdk.core import exceptions as gcloud_exceptions
 import six
@@ -188,7 +187,7 @@ class PocoCommand:
         membershipSpecs=self.hubclient.ToMembershipSpecs(specs)
     )
 
-    if not use_default_cfg and util.UseMembershipFeatureV2(self.ReleaseTrack()):
+    if not use_default_cfg:
       for spec in feature.membershipSpecs.additionalProperties:
         membership_path = spec.key
         v1_spec = spec.value

@@ -1392,9 +1392,21 @@ class ExtensionChainExtension(_messages.Message):
   Enums:
     SupportedEventsValueListEntryValuesEnum:
 
+  Messages:
+    MetadataValue: Optional. The metadata provided here is included as part of
+      the `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      is available under the namespace `com.google....`. For example:
+      `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
+      following variables are supported in the metadata:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name. This field is not supported for plugin
+      extensions and must not be set.
+
   Fields:
     authority: Optional. The `:authority` header in the gRPC request sent from
-      Envoy to the extension service. Required for Callout extensions.
+      Envoy to the extension service. Required for Callout extensions. This
+      field is not supported for plugin extensions and must not be set.
     failOpen: Optional. Determines how the proxy behaves if the call to the
       extension fails or times out. When set to `TRUE`, request or response
       processing continues without error. Any subsequent extensions in the
@@ -1408,6 +1420,15 @@ class ExtensionChainExtension(_messages.Message):
     forwardHeaders: Optional. List of the HTTP headers to forward to the
       extension (from the client or backend). If omitted, all headers are
       sent. Each element is a string indicating the header name.
+    metadata: Optional. The metadata provided here is included as part of the
+      `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      is available under the namespace `com.google....`. For example:
+      `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
+      following variables are supported in the metadata:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name. This field is not supported for plugin
+      extensions and must not be set.
     name: Required. The name for this extension. The name is logged as part of
       the HTTP request logs. The name must conform with RFC-1034, is
       restricted to lower-cased letters, numbers and hyphens, and can have a
@@ -1420,14 +1441,21 @@ class ExtensionChainExtension(_messages.Message):
       1/backendServices) in the format: `https://www.googleapis.com/compute/v1
       /projects/{project}/regions/{region}/backendServices/{backendService}`
       or `https://www.googleapis.com/compute/v1/projects/{project}/global/back
-      endServices/{backendService}`.
+      endServices/{backendService}`. To configure a plugin extension, this
+      must be a reference to a [wasm plugin](https://cloud.google.com/service-
+      extensions/docs/reference/rest/v1beta1/projects.locations.wasmPlugins)
+      in the format:
+      `projects/{project}/locations/{location}/wasmPlugins/{plugin}` or `//net
+      workservices.googleapis.com/projects/{project}/locations/{location}/wasm
+      Plugins/{wasmPlugin}`.
     supportedEvents: Optional. A set of events during request or response
       processing for which this extension is called. This field is required
       for the `LbTrafficExtension` resource. It must not be set for the
       `LbRouteExtension` resource.
     timeout: Optional. Specifies the timeout for each individual message on
       the stream. The timeout must be between 10-1000 milliseconds. Required
-      for Callout extensions.
+      for callout extensions. This field is not supported for plugin
+      extensions and must not be set.
   """
 
   class SupportedEventsValueListEntryValuesEnum(_messages.Enum):
@@ -1456,13 +1484,45 @@ class ExtensionChainExtension(_messages.Message):
     REQUEST_TRAILERS = 5
     RESPONSE_TRAILERS = 6
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Optional. The metadata provided here is included as part of the
+    `metadata_context` (of type `google.protobuf.Struct`) in the
+    `ProcessingRequest` message sent to the extension server. The metadata is
+    available under the namespace `com.google....`. For example:
+    `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
+    following variables are supported in the metadata: `{forwarding_rule_id}`
+    - substituted with the forwarding rule's fully qualified resource name.
+    This field is not supported for plugin extensions and must not be set.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   authority = _messages.StringField(1)
   failOpen = _messages.BooleanField(2)
   forwardHeaders = _messages.StringField(3, repeated=True)
-  name = _messages.StringField(4)
-  service = _messages.StringField(5)
-  supportedEvents = _messages.EnumField('SupportedEventsValueListEntryValuesEnum', 6, repeated=True)
-  timeout = _messages.StringField(7)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
+  service = _messages.StringField(6)
+  supportedEvents = _messages.EnumField('SupportedEventsValueListEntryValuesEnum', 7, repeated=True)
+  timeout = _messages.StringField(8)
 
 
 class ExtensionChainMatchCondition(_messages.Message):
@@ -1680,9 +1740,9 @@ class GatewayRouteView(_messages.Message):
   r"""GatewayRouteView defines view-only resource for Routes to a Gateway
 
   Fields:
-    name: Output only. Full path name of the GatewayRouteView resource.
-      Format: projects/{project_number}/locations/{location}/gateways/{gateway
-      _name}/routeViews/{route_view_name}
+    name: Output only. Identifier. Full path name of the GatewayRouteView
+      resource. Format: projects/{project_number}/locations/{location}/gateway
+      s/{gateway_name}/routeViews/{route_view_name}
     routeId: Output only. The resource id for the route.
     routeLocation: Output only. Location where the route exists.
     routeProjectNumber: Output only. Project number where the route exists.
@@ -3094,7 +3154,8 @@ class LbRouteExtension(_messages.Message):
       is available under the namespace `com.google.lb_route_extension.`. The
       following variables are supported in the metadata Struct:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name.
+      qualified resource name. This field is not supported for plugin
+      extensions and must not be set.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -3124,7 +3185,8 @@ class LbRouteExtension(_messages.Message):
       is available under the namespace `com.google.lb_route_extension.`. The
       following variables are supported in the metadata Struct:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name.
+      qualified resource name. This field is not supported for plugin
+      extensions and must not be set.
     name: Required. Identifier. Name of the `LbRouteExtension` resource in the
       following format: `projects/{project}/locations/{location}/lbRouteExtens
       ions/{lb_route_extension}`.
@@ -3184,7 +3246,8 @@ class LbRouteExtension(_messages.Message):
     available under the namespace `com.google.lb_route_extension.`. The
     following variables are supported in the metadata Struct:
     `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-    qualified resource name.
+    qualified resource name. This field is not supported for plugin extensions
+    and must not be set.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -3240,7 +3303,8 @@ class LbTrafficExtension(_messages.Message):
       metadata is available under the key `com.google.lb_traffic_extension.`.
       The following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name.
+      qualified resource name. This field is not supported for plugin
+      extensions and must not be set.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -3269,7 +3333,8 @@ class LbTrafficExtension(_messages.Message):
       metadata is available under the key `com.google.lb_traffic_extension.`.
       The following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name.
+      qualified resource name. This field is not supported for plugin
+      extensions and must not be set.
     name: Required. Identifier. Name of the `LbTrafficExtension` resource in
       the following format: `projects/{project}/locations/{location}/lbTraffic
       Extensions/{lb_traffic_extension}`.
@@ -3328,7 +3393,8 @@ class LbTrafficExtension(_messages.Message):
     metadata is available under the key `com.google.lb_traffic_extension.`.
     The following variables are supported in the metadata:
     `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-    qualified resource name.
+    qualified resource name. This field is not supported for plugin extensions
+    and must not be set.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -4150,9 +4216,9 @@ class MeshRouteView(_messages.Message):
   r"""MeshRouteView defines view-only resource for Routes to a Mesh
 
   Fields:
-    name: Output only. Full path name of the MeshRouteView resource. Format: p
-      rojects/{project_number}/locations/{location}/meshes/{mesh_name}/routeVi
-      ews/{route_view_name}
+    name: Output only. Identifier. Full path name of the MeshRouteView
+      resource. Format: projects/{project_number}/locations/{location}/meshes/
+      {mesh_name}/routeViews/{route_view_name}
     routeId: Output only. The resource id for the route.
     routeLocation: Output only. Location where the route exists.
     routeProjectNumber: Output only. Project number where the route exists.
@@ -7866,9 +7932,9 @@ class NetworkservicesProjectsLocationsServiceLbPoliciesPatchRequest(_messages.Me
   r"""A NetworkservicesProjectsLocationsServiceLbPoliciesPatchRequest object.
 
   Fields:
-    name: Required. Name of the ServiceLbPolicy resource. It matches pattern `
-      projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_po
-      licy_name}`.
+    name: Identifier. Name of the ServiceLbPolicy resource. It matches pattern
+      `projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_p
+      olicy_name}`.
     serviceLbPolicy: A ServiceLbPolicy resource to be passed as the request
       body.
     updateMask: Optional. Field mask is used to specify the fields to be
@@ -8927,9 +8993,9 @@ class ServiceLbPolicy(_messages.Message):
       resource.
     loadBalancingAlgorithm: Optional. The type of load balancing algorithm to
       be used. The default behavior is WATERFALL_BY_REGION.
-    name: Required. Name of the ServiceLbPolicy resource. It matches pattern `
-      projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_po
-      licy_name}`.
+    name: Identifier. Name of the ServiceLbPolicy resource. It matches pattern
+      `projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_p
+      olicy_name}`.
     updateTime: Output only. The timestamp when this resource was last
       updated.
   """

@@ -1555,6 +1555,37 @@ class DataplexProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class DataplexProjectsLocationsGlossariesCategoriesCreateRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesCategoriesCreateRequest object.
+
+  Fields:
+    categoryId: Required. Category ID: GlossaryCategory identifier.
+    googleCloudDataplexV1GlossaryCategory: A
+      GoogleCloudDataplexV1GlossaryCategory resource to be passed as the
+      request body.
+    parent: Required. The parent resource where this GlossaryCategory will be
+      created. Format:
+      projects/{projectId}/locations/{locationId}/glossaries/{glossaryId}
+      where locationId refers to a GCP region.
+  """
+
+  categoryId = _messages.StringField(1)
+  googleCloudDataplexV1GlossaryCategory = _messages.MessageField('GoogleCloudDataplexV1GlossaryCategory', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DataplexProjectsLocationsGlossariesCategoriesDeleteRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesCategoriesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the GlossaryCategory to delete. Format: projec
+      ts/{project}/locations/{location}/glossary/{glossary}/categories/{glossa
+      ry_category}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class DataplexProjectsLocationsGlossariesCategoriesGetIamPolicyRequest(_messages.Message):
   r"""A DataplexProjectsLocationsGlossariesCategoriesGetIamPolicyRequest
   object.
@@ -1578,6 +1609,68 @@ class DataplexProjectsLocationsGlossariesCategoriesGetIamPolicyRequest(_messages
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsGlossariesCategoriesGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesCategoriesGetRequest object.
+
+  Fields:
+    name: Required. The name of the GlossaryCategory to retrieve. Format: proj
+      ects/{project}/locations/{location}/glossaries/{glossary}/categories/{gl
+      ossary_category}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsGlossariesCategoriesListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesCategoriesListRequest object.
+
+  Fields:
+    filter: Optional. Filter expression that filters categories listed in the
+      response. Filters supported: List GlossaryCategories based on immediate
+      parent in the resource hierarchy. This will only return the
+      GlossaryCategories nested directly under the parent and no other
+      subsequent nested categories will be returned.
+    orderBy: Optional. Order by expression that orders categories listed in
+      the response. Order by fields are: name or create_time for the result.
+      If not specified, the ordering is undefined.
+    pageSize: Optional. The maximum number of categories to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      categories will be returned. The maximum value is 1000; values above
+      1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      ListGlossaryCategories call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      ListGlossaryCategories must match the call that provided the page token.
+    parent: Required. The parent, which has this collection of categories.
+      Format: projects/{project}/locations/{location}/glossaries/{glossary}
+      Location is the GCP region.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class DataplexProjectsLocationsGlossariesCategoriesPatchRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesCategoriesPatchRequest object.
+
+  Fields:
+    googleCloudDataplexV1GlossaryCategory: A
+      GoogleCloudDataplexV1GlossaryCategory resource to be passed as the
+      request body.
+    name: Output only. Identifier. The resource name of the GlossaryCategory.
+      Format: projects/{projectId}/locations/{locationId}/glossaries/{glossary
+      Id}/categories/{categoryId}
+    updateMask: Required. The list of fields to update.
+  """
+
+  googleCloudDataplexV1GlossaryCategory = _messages.MessageField('GoogleCloudDataplexV1GlossaryCategory', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class DataplexProjectsLocationsGlossariesCategoriesSetIamPolicyRequest(_messages.Message):
@@ -1614,6 +1707,41 @@ class DataplexProjectsLocationsGlossariesCategoriesTestIamPermissionsRequest(_me
   resource = _messages.StringField(2, required=True)
 
 
+class DataplexProjectsLocationsGlossariesCreateRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesCreateRequest object.
+
+  Fields:
+    glossaryId: Required. Glossary ID: Glossary identifier.
+    googleCloudDataplexV1Glossary: A GoogleCloudDataplexV1Glossary resource to
+      be passed as the request body.
+    parent: Required. The parent resource where this Glossary will be created.
+      Format: projects/{projectId}/locations/{locationId} where locationId
+      refers to a GCP region.
+    validateOnly: Optional. Validates the request without actually creating
+      the glossary. Default: false.
+  """
+
+  glossaryId = _messages.StringField(1)
+  googleCloudDataplexV1Glossary = _messages.MessageField('GoogleCloudDataplexV1Glossary', 2)
+  parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class DataplexProjectsLocationsGlossariesDeleteRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesDeleteRequest object.
+
+  Fields:
+    etag: Optional. The etag of the Glossary. If this is provided, it must
+      match the server's etag. If the etag is provided and does not match the
+      server-computed etag, the request must fail with a ABORTED error code.
+    name: Required. The name of the Glossary to delete. Format:
+      projects/{project}/locations/{location}/glossary/{glossary}
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
 class DataplexProjectsLocationsGlossariesGetIamPolicyRequest(_messages.Message):
   r"""A DataplexProjectsLocationsGlossariesGetIamPolicyRequest object.
 
@@ -1638,6 +1766,65 @@ class DataplexProjectsLocationsGlossariesGetIamPolicyRequest(_messages.Message):
   resource = _messages.StringField(2, required=True)
 
 
+class DataplexProjectsLocationsGlossariesGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesGetRequest object.
+
+  Fields:
+    name: Required. The name of the Glossary to retrieve. Format:
+      projects/{project}/locations/{location}/glossaries/{glossary}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsGlossariesListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesListRequest object.
+
+  Fields:
+    filter: Optional. Filter expression that filters glossaries listed in the
+      response. Initially, no filter is supported.
+    orderBy: Optional. Order by expression that orders glossaries listed in
+      the response. Order by fields are: name or create_time for the result.
+      If not specified, the ordering is undefined.
+    pageSize: Optional. The maximum number of glossaries to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      glossaries will be returned. The maximum value is 1000; values above
+      1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous ListGlossaries
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to ListGlossaries must match the call that
+      provided the page token.
+    parent: Required. The parent, which has this collection of glossaries.
+      Format: projects/{project}/locations/{location} Location is the GCP
+      region.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class DataplexProjectsLocationsGlossariesPatchRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesPatchRequest object.
+
+  Fields:
+    googleCloudDataplexV1Glossary: A GoogleCloudDataplexV1Glossary resource to
+      be passed as the request body.
+    name: Output only. Identifier. The resource name of the Glossary. Format:
+      projects/{projectId}/locations/{locationId}/glossaries/{glossaryId}
+    updateMask: Required. The list of fields to update.
+    validateOnly: Optional. Validates the request without actually updating
+      the glossary. Default: false.
+  """
+
+  googleCloudDataplexV1Glossary = _messages.MessageField('GoogleCloudDataplexV1Glossary', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
 class DataplexProjectsLocationsGlossariesSetIamPolicyRequest(_messages.Message):
   r"""A DataplexProjectsLocationsGlossariesSetIamPolicyRequest object.
 
@@ -1651,6 +1838,35 @@ class DataplexProjectsLocationsGlossariesSetIamPolicyRequest(_messages.Message):
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
   resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsGlossariesTermsCreateRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesTermsCreateRequest object.
+
+  Fields:
+    googleCloudDataplexV1GlossaryTerm: A GoogleCloudDataplexV1GlossaryTerm
+      resource to be passed as the request body.
+    parent: Required. The parent resource where this GlossaryTerm will be
+      created. Format:
+      projects/{projectId}/locations/{locationId}/glossaries/{glossaryId}
+      where locationId refers to a GCP region.
+    termId: Required. Term ID: GlossaryTerm identifier.
+  """
+
+  googleCloudDataplexV1GlossaryTerm = _messages.MessageField('GoogleCloudDataplexV1GlossaryTerm', 1)
+  parent = _messages.StringField(2, required=True)
+  termId = _messages.StringField(3)
+
+
+class DataplexProjectsLocationsGlossariesTermsDeleteRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesTermsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the GlossaryTerm to delete. Format: projects/{
+      project}/locations/{location}/glossary/{glossary}/terms/{glossary_term}
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class DataplexProjectsLocationsGlossariesTermsGetIamPolicyRequest(_messages.Message):
@@ -1675,6 +1891,67 @@ class DataplexProjectsLocationsGlossariesTermsGetIamPolicyRequest(_messages.Mess
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsGlossariesTermsGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesTermsGetRequest object.
+
+  Fields:
+    name: Required. The name of the GlossaryTerm to retrieve. Format: projects
+      /{project}/locations/{location}/glossaries/{glossary}/terms/{glossary_te
+      rm}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsGlossariesTermsListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesTermsListRequest object.
+
+  Fields:
+    filter: Optional. Filter expression that filters terms listed in the
+      response. Filters supported: List GlossaryTerms based on immediate
+      parent in the resource hierarchy. This will only return the terms nested
+      directly under the parent and no other subsequent nested terms will be
+      returned.
+    orderBy: Optional. Order by expression that orders terms listed in the
+      response. Order by fields are: name or create_time for the result. If
+      not specified, the ordering is undefined.
+    pageSize: Optional. The maximum number of terms to return. The service may
+      return fewer than this value. If unspecified, at most 50 terms will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: Optional. A page token, received from a previous
+      ListGlossaryTerms call. Provide this to retrieve the subsequent page.
+      When paginating, all other parameters provided to ListGlossaryTerms must
+      match the call that provided the page token.
+    parent: Required. The parent, which has this collection of terms. Format:
+      projects/{project}/locations/{location}/glossaries/{glossary} Location
+      is the GCP region.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class DataplexProjectsLocationsGlossariesTermsPatchRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsGlossariesTermsPatchRequest object.
+
+  Fields:
+    googleCloudDataplexV1GlossaryTerm: A GoogleCloudDataplexV1GlossaryTerm
+      resource to be passed as the request body.
+    name: Output only. Identifier. The resource name of the GlossaryTerm.
+      Format: projects/{projectId}/locations/{locationId}/glossaries/{glossary
+      Id}/terms/{termId}
+    updateMask: Required. The list of fields to update.
+  """
+
+  googleCloudDataplexV1GlossaryTerm = _messages.MessageField('GoogleCloudDataplexV1GlossaryTerm', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class DataplexProjectsLocationsGlossariesTermsSetIamPolicyRequest(_messages.Message):
@@ -3802,11 +4079,16 @@ class GoogleCloudDataplexV1AspectSource(_messages.Message):
 
   Fields:
     createTime: The time the aspect was created in the source system.
+    dataVersion: The version of the data format used to produce this data.
+      This field is used to indicated when the underlying data format changes
+      (e.g., schema modifications, changes to the source URL format
+      definition, etc).
     updateTime: The time the aspect was last updated in the source system.
   """
 
   createTime = _messages.StringField(1)
-  updateTime = _messages.StringField(2)
+  dataVersion = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
 
 
 class GoogleCloudDataplexV1AspectType(_messages.Message):
@@ -4971,7 +5253,7 @@ class GoogleCloudDataplexV1DataQualityDimension(_messages.Message):
   Fields:
     name: The dimension name a rule belongs to. Supported dimensions are
       "COMPLETENESS", "ACCURACY", "CONSISTENCY", "VALIDITY", "UNIQUENESS",
-      "INTEGRITY"
+      "FRESHNESS", "VOLUME"
   """
 
   name = _messages.StringField(1)
@@ -5077,7 +5359,7 @@ class GoogleCloudDataplexV1DataQualityRule(_messages.Message):
     dimension: Required. The dimension a rule belongs to. Results are also
       aggregated at the dimension level. Supported dimensions are
       "COMPLETENESS", "ACCURACY", "CONSISTENCY", "VALIDITY", "UNIQUENESS",
-      "INTEGRITY"
+      "FRESHNESS", "VOLUME"
     ignoreNull: Optional. Rows with null values will automatically fail a
       rule, unless ignore_null is true. In that case, such null rows are
       trivially considered passing.This field is only valid for the following
@@ -6170,10 +6452,12 @@ class GoogleCloudDataplexV1DiscoveryEventActionDetails(_messages.Message):
   r"""Details about the action.
 
   Fields:
+    issue: The human readable issue associated with the action.
     type: The type of action. Eg. IncompatibleDataSchema, InvalidDataFormat
   """
 
-  type = _messages.StringField(1)
+  issue = _messages.StringField(1)
+  type = _messages.StringField(2)
 
 
 class GoogleCloudDataplexV1DiscoveryEventConfigDetails(_messages.Message):
@@ -6996,6 +7280,198 @@ class GoogleCloudDataplexV1GenerateDataQualityRulesResponse(_messages.Message):
   """
 
   rule = _messages.MessageField('GoogleCloudDataplexV1DataQualityRule', 1, repeated=True)
+
+
+class GoogleCloudDataplexV1Glossary(_messages.Message):
+  r"""A Glossary represents a collection of categories and terms defined by
+  the user. Glossary is a top level resource and is the GCP parent resource of
+  all the categories and terms within it.
+
+  Messages:
+    LabelsValue: Optional. User-defined labels for the Glossary.
+
+  Fields:
+    categoryCount: Output only. The number of categories in the glossary.
+    createTime: Output only. The time at which the glossary was created.
+    description: Optional. The user-mutable description of the glossary.
+    displayName: Optional. User friendly display name of the glossary. This is
+      user-mutable. This will be same as the glossaryId, if not specified.
+    etag: Optional. Needed for resource freshness validation. This checksum is
+      computed by the server based on the value of other fields, and may be
+      sent on update and delete requests to ensure the client has an up-to-
+      date value before proceeding.
+    labels: Optional. User-defined labels for the Glossary.
+    name: Output only. Identifier. The resource name of the Glossary. Format:
+      projects/{projectId}/locations/{locationId}/glossaries/{glossaryId}
+    termCount: Output only. The number of terms in the glossary.
+    uid: Output only. System generated unique id for the Glossary. This ID
+      will be different if the Glossary is deleted and re-created with the
+      same name.
+    updateTime: Output only. The time at which the glossary was last updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User-defined labels for the Glossary.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  categoryCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  termCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class GoogleCloudDataplexV1GlossaryCategory(_messages.Message):
+  r"""A GlossaryCategory represents a collection of categories and terms
+  within a Glossary that are related to each other.
+
+  Messages:
+    LabelsValue: Optional. User-defined labels for the GlossaryCategory.
+
+  Fields:
+    createTime: Output only. The time at which the GlossaryCategory was
+      created.
+    description: Optional. The user-mutable description of the
+      GlossaryCategory.
+    displayName: Optional. User friendly display name of the GlossaryCategory.
+      This is user-mutable. This will be same as the categoryId, if not
+      specified.
+    labels: Optional. User-defined labels for the GlossaryCategory.
+    name: Output only. Identifier. The resource name of the GlossaryCategory.
+      Format: projects/{projectId}/locations/{locationId}/glossaries/{glossary
+      Id}/categories/{categoryId}
+    parent: Required. The immediate parent of the GlossaryCategory in the
+      resource-hierarchy. It can either be a Glossary or a Category. Format:
+      projects/{projectId}/locations/{locationId}/glossaries/{glossaryId} OR p
+      rojects/{projectId}/locations/{locationId}/glossaries/{glossaryId}/categ
+      ories/{categoryId}
+    uid: Output only. System generated unique id for the GlossaryCategory.
+      This ID will be different if the GlossaryCategory is deleted and re-
+      created with the same name.
+    updateTime: Output only. The time at which the GlossaryCategory was last
+      updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User-defined labels for the GlossaryCategory.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  parent = _messages.StringField(6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class GoogleCloudDataplexV1GlossaryTerm(_messages.Message):
+  r"""GlossaryTerms are the core of glossary. A GlossaryTerm holds a rich text
+  description that can be attached to entries or specific columns to enrich
+  them.
+
+  Messages:
+    LabelsValue: Optional. User-defined labels for the GlossaryTerm.
+
+  Fields:
+    createTime: Output only. The time at which the GlossaryTerm was created.
+    description: Optional. The user-mutable description of the GlossaryTerm.
+    displayName: Optional. User friendly display name of the GlossaryTerm.
+      This is user-mutable. This will be same as the termId, if not specified.
+    labels: Optional. User-defined labels for the GlossaryTerm.
+    name: Output only. Identifier. The resource name of the GlossaryTerm.
+      Format: projects/{projectId}/locations/{locationId}/glossaries/{glossary
+      Id}/terms/{termId}
+    parent: Required. The immediate parent of the GlossaryTerm in the
+      resource-hierarchy. It can either be a Glossary or a Category. Format:
+      projects/{projectId}/locations/{locationId}/glossaries/{glossaryId} OR p
+      rojects/{projectId}/locations/{locationId}/glossaries/{glossaryId}/categ
+      ories/{categoryId}
+    uid: Output only. System generated unique id for the GlossaryTerm. This ID
+      will be different if the GlossaryTerm is deleted and re-created with the
+      same name.
+    updateTime: Output only. The time at which the GlossaryTerm was last
+      updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User-defined labels for the GlossaryTerm.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  parent = _messages.StringField(6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class GoogleCloudDataplexV1GovernanceEvent(_messages.Message):
@@ -7827,6 +8303,51 @@ class GoogleCloudDataplexV1ListEnvironmentsResponse(_messages.Message):
 
   environments = _messages.MessageField('GoogleCloudDataplexV1Environment', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudDataplexV1ListGlossariesResponse(_messages.Message):
+  r"""List Glossaries Response
+
+  Fields:
+    glossaries: Lists the glossaries in the specified parent.
+    nextPageToken: A token, which can be sent as page_token to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachableLocations: Locations that the service couldn't reach.
+  """
+
+  glossaries = _messages.MessageField('GoogleCloudDataplexV1Glossary', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachableLocations = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudDataplexV1ListGlossaryCategoriesResponse(_messages.Message):
+  r"""List GlossaryCategories Response
+
+  Fields:
+    categories: Lists the glossaryCategories in the specified parent.
+    nextPageToken: A token, which can be sent as page_token to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachableLocations: Locations that the service couldn't reach.
+  """
+
+  categories = _messages.MessageField('GoogleCloudDataplexV1GlossaryCategory', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachableLocations = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudDataplexV1ListGlossaryTermsResponse(_messages.Message):
+  r"""List GlossaryTerms Response
+
+  Fields:
+    nextPageToken: A token, which can be sent as page_token to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    terms: Lists the terms in the specified parent.
+    unreachableLocations: Locations that the service couldn't reach.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  terms = _messages.MessageField('GoogleCloudDataplexV1GlossaryTerm', 2, repeated=True)
+  unreachableLocations = _messages.StringField(3, repeated=True)
 
 
 class GoogleCloudDataplexV1ListGovernanceRulesResponse(_messages.Message):

@@ -77,7 +77,6 @@ class AdvanceRolloutResponse(_messages.Message):
 
 class AdvanceRolloutRule(_messages.Message):
   r"""The `AdvanceRollout` automation rule will automatically advance a
-
   successful Rollout to the next phase.
 
   Fields:
@@ -468,15 +467,18 @@ class AutomationRuleCondition(_messages.Message):
   Fields:
     targetsPresentCondition: Optional. Details around targets enumerated in
       the rule.
+    timedPromoteReleaseCondition: Optional. TimedPromoteReleaseCondition
+      contains rule conditions specific to a an Automation with a timed
+      promote release rule defined.
   """
 
   targetsPresentCondition = _messages.MessageField('TargetsPresentCondition', 1)
+  timedPromoteReleaseCondition = _messages.MessageField('TimedPromoteReleaseCondition', 2)
 
 
 class AutomationRun(_messages.Message):
-  r"""An `AutomationRun` resource in the Cloud Deploy API.
-
-  An `AutomationRun` represents an execution instance of an automation rule.
+  r"""An `AutomationRun` resource in the Cloud Deploy API. An `AutomationRun`
+  represents an execution instance of an automation rule.
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the `AutomationRun`.
@@ -2943,10 +2945,9 @@ class DeployParameters(_messages.Message):
 
 
 class DeployPolicy(_messages.Message):
-  r"""A `DeployPolicy` resource in the Cloud Deploy API.
-
-  A `DeployPolicy` inhibits manual or automation-driven actions within a
-  Delivery Pipeline or Target.
+  r"""A `DeployPolicy` resource in the Cloud Deploy API. A `DeployPolicy`
+  inhibits manual or automation-driven actions within a Delivery Pipeline or
+  Target.
 
   Messages:
     AnnotationsValue: User annotations. These attributes can only be set and
@@ -3174,9 +3175,7 @@ class DeployPolicyEvaluationEvent(_messages.Message):
   deployPolicyUid = _messages.StringField(4)
   invoker = _messages.EnumField('InvokerValueValuesEnum', 5)
   message = _messages.StringField(6)
-  overrides = _messages.EnumField(
-      'OverridesValueListEntryValuesEnum', 7, repeated=True
-  )
+  overrides = _messages.EnumField('OverridesValueListEntryValuesEnum', 7, repeated=True)
   pipelineUid = _messages.StringField(8)
   rule = _messages.StringField(9)
   ruleType = _messages.StringField(10)
@@ -3277,6 +3276,7 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class ExecutionConfig(_messages.Message):
@@ -4489,7 +4489,6 @@ class PromoteReleaseOperation(_messages.Message):
 
 class PromoteReleaseRule(_messages.Message):
   r"""The `PromoteRelease` rule will automatically promote a release from the
-
   current target to a specified target.
 
   Fields:
@@ -4980,7 +4979,6 @@ class RepairRolloutOperation(_messages.Message):
 
 class RepairRolloutRule(_messages.Message):
   r"""The `RepairRolloutRule` automation rule will automatically repair a
-
   failed `Rollout`.
 
   Fields:
@@ -6347,9 +6345,8 @@ class TargetArtifact(_messages.Message):
 
 
 class TargetAttribute(_messages.Message):
-  r"""Contains criteria for selecting Targets.
-
-  This could be used to select targets for a Deploy Policy or for an Automation.
+  r"""Contains criteria for selecting Targets. This could be used to select
+  targets for a Deploy Policy or for an Automation.
 
   Messages:
     LabelsValue: Target labels.
@@ -6516,6 +6513,18 @@ class TargetRender(_messages.Message):
   renderingState = _messages.EnumField('RenderingStateValueValuesEnum', 5)
 
 
+class Targets(_messages.Message):
+  r"""The targets involved in a single timed promotion.
+
+  Fields:
+    destinationTargetId: Optional. The destination target ID.
+    sourceTargetId: Optional. The source target ID.
+  """
+
+  destinationTargetId = _messages.StringField(1)
+  sourceTargetId = _messages.StringField(2)
+
+
 class TargetsPresentCondition(_messages.Message):
   r"""`TargetsPresentCondition` contains information on any Targets referenced
   in the Delivery Pipeline that do not actually exist.
@@ -6592,13 +6601,16 @@ class TimeOfDay(_messages.Message):
   seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
 
   Fields:
-    hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
-      choose to allow the value "24:00:00" for scenarios like business closing
-      time.
-    minutes: Minutes of hour of day. Must be from 0 to 59.
-    nanos: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
-    seconds: Seconds of minutes of the time. Must normally be from 0 to 59. An
-      API may allow the value 60 if it allows leap-seconds.
+    hours: Hours of a day in 24 hour format. Must be greater than or equal to
+      0 and typically must be less than or equal to 23. An API may choose to
+      allow the value "24:00:00" for scenarios like business closing time.
+    minutes: Minutes of an hour. Must be greater than or equal to 0 and less
+      than or equal to 59.
+    nanos: Fractions of seconds, in nanoseconds. Must be greater than or equal
+      to 0 and less than or equal to 999,999,999.
+    seconds: Seconds of a minute. Must be greater than or equal to 0 and
+      typically must be less than or equal to 59. An API may allow the value
+      60 if it allows leap-seconds.
   """
 
   hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -6608,9 +6620,8 @@ class TimeOfDay(_messages.Message):
 
 
 class TimeWindows(_messages.Message):
-  r"""Time windows within which actions are restricted.
-
-  See the [documentation](https://cloud.google.com/deploy/docs/deploy-
+  r"""Time windows within which actions are restricted. See the
+  [documentation](https://cloud.google.com/deploy/docs/deploy-
   policy#dates_times) for more information on how to configure dates/times.
 
   Fields:
@@ -6625,6 +6636,21 @@ class TimeWindows(_messages.Message):
   oneTimeWindows = _messages.MessageField('OneTimeWindow', 1, repeated=True)
   timeZone = _messages.StringField(2)
   weeklyWindows = _messages.MessageField('WeeklyWindow', 3, repeated=True)
+
+
+class TimedPromoteReleaseCondition(_messages.Message):
+  r"""`TimedPromoteReleaseCondition` contains conditions specific to an
+  Automation with a Timed Promote Release rule defined.
+
+  Fields:
+    nextPromotionTime: Output only. When the next scheduled promotion(s) will
+      occur.
+    targetsList: Output only. A list of targets involved in the upcoming timed
+      promotion(s).
+  """
+
+  nextPromotionTime = _messages.StringField(1)
+  targetsList = _messages.MessageField('Targets', 2, repeated=True)
 
 
 class TimedPromoteReleaseOperation(_messages.Message):

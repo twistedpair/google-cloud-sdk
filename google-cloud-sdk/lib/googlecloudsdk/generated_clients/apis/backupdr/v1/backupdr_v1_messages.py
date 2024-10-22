@@ -700,8 +700,8 @@ class BackupPlan(_messages.Message):
       Format:
       `projects/{project}/locations/{location}/backupPlans/{backup_plan}`
     resourceType: Required. The resource type to which the `BackupPlan` will
-      be applied. Examples include, "compute.googleapis.com/Instance" and
-      "storage.googleapis.com/Bucket".
+      be applied. Examples include, "compute.googleapis.com/Instance",
+      "sqladmin.googleapis.com/Instance" and "storage.googleapis.com/Bucket".
     state: Output only. The `State` for the `BackupPlan`.
     updateTime: Output only. When the `BackupPlan` was last updated.
   """
@@ -798,12 +798,14 @@ class BackupPlanAssociation(_messages.Message):
       ACTIVE: The resource has been created and is fully usable.
       DELETING: The resource is being deleted.
       INACTIVE: The resource has been created but is not usable.
+      UPDATING: The resource is being updated.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
     INACTIVE = 4
+    UPDATING = 5
 
   backupPlan = _messages.StringField(1)
   createTime = _messages.StringField(2)
@@ -1582,6 +1584,9 @@ class BackupdrProjectsLocationsBackupVaultsDeleteRequest(_messages.Message):
       blocked.
     force: Optional. If set to true, any data source from this backup vault
       will also be deleted.
+    ignoreBackupPlanReferences: Optional. If set to true, backupvault deletion
+      will proceed even if there are backup plans referencing the backupvault.
+      The default is 'false'.
     name: Required. Name of the resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -1601,9 +1606,10 @@ class BackupdrProjectsLocationsBackupVaultsDeleteRequest(_messages.Message):
   allowMissing = _messages.BooleanField(1)
   etag = _messages.StringField(2)
   force = _messages.BooleanField(3)
-  name = _messages.StringField(4, required=True)
-  requestId = _messages.StringField(5)
-  validateOnly = _messages.BooleanField(6)
+  ignoreBackupPlanReferences = _messages.BooleanField(4)
+  name = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(6)
+  validateOnly = _messages.BooleanField(7)
 
 
 class BackupdrProjectsLocationsBackupVaultsFetchUsableRequest(_messages.Message):

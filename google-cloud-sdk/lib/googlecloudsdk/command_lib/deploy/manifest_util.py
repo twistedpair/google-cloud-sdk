@@ -1333,7 +1333,7 @@ def _ParseBackoffMode(messages, backoff):
   return arg_utils.ChoiceToEnum(
       backoff,
       messages.Retry.BackoffModeValueValuesEnum,
-      valid_choices=BACKOFF_CHOICES,
+      valid_choices=BACKOFF_CHOICES_SHORT,
   )
 
 

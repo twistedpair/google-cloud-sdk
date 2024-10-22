@@ -982,6 +982,9 @@ class Backup(_messages.Message):
       of arbitrary data. This is distinct from labels.
       https://google.aip.dev/128
     LabelsValue: Labels as key value pairs
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: ``` "123/environment": "production",
+      "123/costCenter": "marketing" ```
 
   Fields:
     annotations: Annotations to allow client tools to store small amount of
@@ -1025,6 +1028,9 @@ class Backup(_messages.Message):
     satisfiesPzs: Output only. Reserved for future use.
     sizeBytes: Output only. The size of the backup in bytes.
     state: Output only. The current state of the backup.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: ``` "123/environment": "production",
+      "123/costCenter": "marketing" ```
     type: The backup type, which suggests the trigger for the backup.
     uid: Output only. The system-generated UID of the resource. The UID is
       assigned when the resource is created, and it is retained until it is
@@ -1133,6 +1139,32 @@ class Backup(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: ``` "123/environment": "production",
+    "123/costCenter": "marketing" ```
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   clusterName = _messages.StringField(2)
   clusterUid = _messages.StringField(3)
@@ -1152,9 +1184,10 @@ class Backup(_messages.Message):
   satisfiesPzs = _messages.BooleanField(17)
   sizeBytes = _messages.IntegerField(18)
   state = _messages.EnumField('StateValueValuesEnum', 19)
-  type = _messages.EnumField('TypeValueValuesEnum', 20)
-  uid = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
+  tags = _messages.MessageField('TagsValue', 20)
+  type = _messages.EnumField('TypeValueValuesEnum', 21)
+  uid = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
 
 
 class BackupSource(_messages.Message):
@@ -1247,6 +1280,9 @@ class Cluster(_messages.Message):
       of arbitrary data. This is distinct from labels.
       https://google.aip.dev/128
     LabelsValue: Labels as key value pairs
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: ``` "123/environment": "production",
+      "123/costCenter": "marketing" ```
 
   Fields:
     annotations: Annotations to allow client tools to store small amount of
@@ -1319,6 +1355,9 @@ class Cluster(_messages.Message):
     sslConfig: SSL configuration for this AlloyDB cluster.
     state: Output only. The current serving state of the cluster.
     subscriptionType: Optional. Subscription type of the cluster.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: ``` "123/environment": "production",
+      "123/costCenter": "marketing" ```
     trialMetadata: Output only. Metadata for free trial clusters
     uid: Output only. The system-generated UID of the resource. The UID is
       assigned when the resource is created, and it is retained until it is
@@ -1459,6 +1498,32 @@ class Cluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: ``` "123/environment": "production",
+    "123/costCenter": "marketing" ```
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   automatedBackupPolicy = _messages.MessageField('AutomatedBackupPolicy', 2)
   backupSource = _messages.MessageField('BackupSource', 3)
@@ -1488,9 +1553,10 @@ class Cluster(_messages.Message):
   sslConfig = _messages.MessageField('SslConfig', 27)
   state = _messages.EnumField('StateValueValuesEnum', 28)
   subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 29)
-  trialMetadata = _messages.MessageField('TrialMetadata', 30)
-  uid = _messages.StringField(31)
-  updateTime = _messages.StringField(32)
+  tags = _messages.MessageField('TagsValue', 30)
+  trialMetadata = _messages.MessageField('TrialMetadata', 31)
+  uid = _messages.StringField(32)
+  updateTime = _messages.StringField(33)
 
 
 class ClusterUpgradeDetails(_messages.Message):
@@ -1860,13 +1926,16 @@ class GoogleTypeTimeOfDay(_messages.Message):
   seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
 
   Fields:
-    hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
-      choose to allow the value "24:00:00" for scenarios like business closing
-      time.
-    minutes: Minutes of hour of day. Must be from 0 to 59.
-    nanos: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
-    seconds: Seconds of minutes of the time. Must normally be from 0 to 59. An
-      API may allow the value 60 if it allows leap-seconds.
+    hours: Hours of a day in 24 hour format. Must be greater than or equal to
+      0 and typically must be less than or equal to 23. An API may choose to
+      allow the value "24:00:00" for scenarios like business closing time.
+    minutes: Minutes of an hour. Must be greater than or equal to 0 and less
+      than or equal to 59.
+    nanos: Fractions of seconds, in nanoseconds. Must be greater than or equal
+      to 0 and less than or equal to 999,999,999.
+    seconds: Seconds of a minute. Must be greater than or equal to 0 and
+      typically must be less than or equal to 59. An API may allow the value
+      60 if it allows leap-seconds.
   """
 
   hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -4511,6 +4580,8 @@ class StorageDatabasecenterPartnerapiV1mainRetentionSettings(_messages.Message):
     quantityBasedRetention: A integer attribute.
     retentionUnit: The unit that 'retained_backups' represents.
     timeBasedRetention: A string attribute.
+    timestampBasedRetentionTime: Timestamp based retention period i.e.
+      2024-05-01T00:00:00Z
   """
 
   class RetentionUnitValueValuesEnum(_messages.Enum):
@@ -4537,6 +4608,7 @@ class StorageDatabasecenterPartnerapiV1mainRetentionSettings(_messages.Message):
   quantityBasedRetention = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   retentionUnit = _messages.EnumField('RetentionUnitValueValuesEnum', 3)
   timeBasedRetention = _messages.StringField(4)
+  timestampBasedRetentionTime = _messages.StringField(5)
 
 
 class StorageDatabasecenterPartnerapiV1mainTags(_messages.Message):

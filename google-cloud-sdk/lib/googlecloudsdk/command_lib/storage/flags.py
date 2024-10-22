@@ -869,7 +869,6 @@ def add_batch_jobs_flags(parser):
           'or `--prefix-list-file=``PREFIX_LIST_FILE'
           '`'
       ),
-      hidden=True,
   )
   source.add_argument(
       '--manifest-location',
@@ -882,31 +881,27 @@ def add_batch_jobs_flags(parser):
           ' `--manifest-location=gs://bucket_name/path/manifest_name.csv`'
       ),
       type=str,
-      hidden=True,
   )
   source.add_argument(
       '--prefix-list-file',
       help=(
           'A path to a local JSON or YAML file containing a list of prefixes.'
           ' prefix is specified in the format of {"bucket": BUCKET_NAME,'
-          ' "objectPrefix":OBJECT_PREFIX} where bucket is the name of the'
+          ' "objectPrefix": OBJECT_PREFIX} where bucket is the name of the'
           ' bucket on which batch operation is being performed and objectPrefix'
           ' is the prefix of objects in the bucket that will be acted upon.'
       ),
       type=str,
-      hidden=True,
   )
   transformation = parser.add_group(
       mutex=True,
       required=True,
       category='TRANSFORMATION',
       help='Transformation to be performed on the objects.',
-      hidden=True,
   )
   put_object_hold = transformation.add_group(
       category='PUT_OBJECT_HOLD',
       help='Describes options to update object hold.',
-      hidden=True,
   )
   put_object_hold.add_argument(
       '--put-object-temporary-hold',
@@ -915,7 +910,6 @@ def add_batch_jobs_flags(parser):
           'Sets or unsets object temporary holds state. When object temporary '
           'hold is set, object cannot be deleted or replaced.'
       ),
-      hidden=True,
   )
   put_object_hold.add_argument(
       '--put-object-event-based-hold',
@@ -924,12 +918,10 @@ def add_batch_jobs_flags(parser):
           'Sets or unsets object event based holds state. When object event '
           'based hold is set, object cannot be deleted or replaced'
       ),
-      hidden=True,
   )
   delete_object = transformation.add_group(
       category='DELETE_OBJECT',
       help='Describes options to delete objects.',
-      hidden=True,
   )
   delete_object.add_argument(
       '--delete-object',
@@ -937,59 +929,56 @@ def add_batch_jobs_flags(parser):
       action='store_true',
       help=(
           'If this flag is set, objects specified in source will be deleted.'
-          ' Live objects in versioned buckets will become noncurrent and'
-          ' objects that were already noncurrent will be skipped.'
+          ' When versioning is enabled on the buckets, live objects in'
+          ' versioned buckets will become noncurrent and objects that were'
+          ' already noncurrent will be skipped.'
       ),
-      hidden=True,
   )
   delete_object.add_argument(
       '--enable-permanent-object-deletion',
       action='store_true',
       help=(
-          'If this flag is set, both live and noncurrent objects will be '
-          'permanently deleted'
+          'If this flag is set and versioning is enabled on the buckets, '
+          'both live and noncurrent objects will be permanently deleted.'
       ),
-      hidden=True,
   )
   transformation.add_argument(
       '--put-kms-key',
       help=(
-          'Sets the resource name of the Cloud KMS key that will be used to'
-          ' encrypt the object. The Cloud KMS key must be located in same'
-          ' location as the object.'
+          'Sets the resource name of the Cloud KMS key that will be used to '
+          'encrypt the object. The Cloud KMS key must be located in same '
+          'location as the object. Format: '
+          '`--put-kms-key=projects/PROJECT_ID/locations/LOCATION/keyRings/KEY_RING/cryptoKeys/CRYPTO_KEY`'
       ),
       type=str,
-      hidden=True,
   )
   transformation.add_argument(
       '--put-metadata',
       help=(
           'Sets object metadata. To set how content should be displayed, '
-          'specify the the key-value pair Content-Disposition={VALUE}. '
+          'specify the the key-value pair `Content-Disposition={VALUE}.` '
           'To set how content is encoded (e.g. "gzip"), specify the key-value '
-          "pair Content-Encoding={VALUE}. To set content's language (e.g. "
+          "pair `Content-Encoding={VALUE}`. To set content's language (e.g. "
           '"en" signifies "English"), specify the key-value pair '
-          'Content-Language={VALUE}. To set the type of data contained in the '
-          'object (e.g. "text/html"), specify the key-value pair '
-          'Content-Type={VALUE}. To set how caches should handle requests and '
-          'responses, specify the key-value pair Cache-Control={VALUE}. To set '
-          'custom time for Cloud Storage objects in RFC 3339 format, specify '
-          'the key-value pair Custom-Time={VALUE}. To set custom metadata on '
-          'objects, specify key-value pairs {CUSTOM-KEY}:{VALUE}. '
-          'Note that all predefined keys are case-insensitive. '
+          '`Content-Language={VALUE}`. To set the type of data contained in '
+          'the object (e.g. "text/html"), specify the key-value pair '
+          '`Content-Type={VALUE}`. To set how caches should handle requests '
+          'and responses, specify the key-value pair `Cache-Control={VALUE}`. '
+          'To set custom time for Cloud Storage objects in RFC 3339 format, '
+          'specify the key-value pair `Custom-Time={VALUE}`. To set custom '
+          'metadata on objects, specify key-value pairs `{CUSTOM-KEY}:{VALUE}`.'
+          ' Note that all predefined keys are case-insensitive. '
           'Multiple key-value pairs can be specified by separating them with '
           'commas. For example, '
-          '--put-metadata=Content-Disposition=inline,Content-Encoding=gzip'
+          '`--put-metadata=Content-Disposition=inline,Content-Encoding=gzip`'
       ),
       type=arg_parsers.ArgDict(min_length=1),
       default={},
       metavar='KEY=VALUE',
       action=arg_parsers.StoreOnceAction,
-      hidden=True,
   )
   parser.add_argument(
       '--description',
       help='Description for the batch job.',
       type=str,
-      hidden=True,
   )

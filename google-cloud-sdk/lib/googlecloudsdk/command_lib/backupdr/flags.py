@@ -167,6 +167,8 @@ def AddCreateBackupPlanAssociationFlags(parser):
       ),
   )
 
+  AddResourceType(parser)
+
 
 def AddTriggerBackupFlags(parser):
   """Adds flags required to create a backup plan association."""
@@ -445,16 +447,15 @@ def AddUnlockBackupMinEnforcedRetention(parser):
   )
 
 
-def AddResourceType(parser, required=True):
+def AddResourceType(parser):
   """Adds a positional resource-type argument to parser.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
-    required: Whether or not --resource-type is required.
   """
   parser.add_argument(
       '--resource-type',
-      required=required,
+      required=True,
       type=str,
       help=("""Type of resource to which the backup plan should be applied.
           E.g., `compute.<UNIVERSE_DOMAIN>.com/Instance` """),

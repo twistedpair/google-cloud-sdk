@@ -487,7 +487,8 @@ class InternalRange(_messages.Message):
       IPv6 Ranges this field is compulsory, i.e. the address range must be
       specified explicitly.
     labels: User-defined labels.
-    migration: Optional. Should be present if usage is set to FOR_MIGRATION.
+    migration: Optional. Must be present if usage is set to FOR_MIGRATION.
+      This field is for internal use.
     name: Immutable. The name of an internal range. Format:
       projects/{project}/locations/{location}/internalRanges/{internal_range}
       See: https://google.aip.dev/122#fields-representing-resource-names
@@ -584,7 +585,7 @@ class InternalRange(_messages.Message):
       FOR_MIGRATION: Ranges created FOR_MIGRATION can be used to lock a CIDR
         range between a source and target subnet. If usage is set to
         FOR_MIGRATION the peering value has to be set to FOR_SELF or default
-        to FOR_SELF when unset.
+        to FOR_SELF when unset. This value is for internal use.
     """
     USAGE_UNSPECIFIED = 0
     FOR_VPC = 1

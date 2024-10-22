@@ -694,6 +694,10 @@ class GoogleIamV3alphaPolicyInaccessible(_messages.Message):
   r"""A marker to indicate that the policy is inaccessible"""
 
 
+class GoogleIamV3alphaPolicyNotFound(_messages.Message):
+  r"""A marker to indicate that the policy was not found"""
+
+
 class GoogleIamV3alphaPolicyPorter(_messages.Message):
   r"""Policy porter resource defines a workspace where customers can upload
   security policies from different clouds and get them translated to GCP
@@ -1061,11 +1065,15 @@ class GoogleIamV3alphaSearchApplicablePoliciesResponseBindingAndPolicy(_messages
       policy cannot be retrieved due to lack of permissions
     policyInaccessible: Will be set if there was a permission error getting
       the policy (even though the binding was accessible).
+    policyNotFound: Will be set if there was not a permission error, but the
+      policy was not found. This would indicate the binding is orphaned. Any
+      orphan binding will eventually be cleaned up - this state is temporary.
   """
 
   binding = _messages.MessageField('GoogleIamV3alphaPolicyBinding', 1)
   policy = _messages.MessageField('GoogleIamV3alphaPolicy', 2)
   policyInaccessible = _messages.MessageField('GoogleIamV3alphaPolicyInaccessible', 3)
+  policyNotFound = _messages.MessageField('GoogleIamV3alphaPolicyNotFound', 4)
 
 
 class GoogleIamV3alphaSearchPrincipalAccessBoundaryPolicyBindingsResponse(_messages.Message):
@@ -1671,15 +1679,13 @@ class IamFoldersLocationsAccessPoliciesPatchRequest(_messages.Message):
       `folders/{folder_id}/locations/{location}/accessPolicies/{policy_id}` `o
       rganizations/{organization_id}/locations/{location}/accessPolicies/{poli
       cy_id}`
-    updateMask: Optional. The list of fields to update
     validateOnly: Optional. If set, validate the request and preview the
       update, but do not actually post it.
   """
 
   googleIamV3alphaAccessPolicy = _messages.MessageField('GoogleIamV3alphaAccessPolicy', 1)
   name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-  validateOnly = _messages.BooleanField(4)
+  validateOnly = _messages.BooleanField(3)
 
 
 class IamFoldersLocationsOperationsGetRequest(_messages.Message):
@@ -1954,15 +1960,13 @@ class IamOrganizationsLocationsAccessPoliciesPatchRequest(_messages.Message):
       `folders/{folder_id}/locations/{location}/accessPolicies/{policy_id}` `o
       rganizations/{organization_id}/locations/{location}/accessPolicies/{poli
       cy_id}`
-    updateMask: Optional. The list of fields to update
     validateOnly: Optional. If set, validate the request and preview the
       update, but do not actually post it.
   """
 
   googleIamV3alphaAccessPolicy = _messages.MessageField('GoogleIamV3alphaAccessPolicy', 1)
   name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-  validateOnly = _messages.BooleanField(4)
+  validateOnly = _messages.BooleanField(3)
 
 
 class IamOrganizationsLocationsOperationsGetRequest(_messages.Message):
@@ -2370,15 +2374,13 @@ class IamProjectsLocationsAccessPoliciesPatchRequest(_messages.Message):
       `folders/{folder_id}/locations/{location}/accessPolicies/{policy_id}` `o
       rganizations/{organization_id}/locations/{location}/accessPolicies/{poli
       cy_id}`
-    updateMask: Optional. The list of fields to update
     validateOnly: Optional. If set, validate the request and preview the
       update, but do not actually post it.
   """
 
   googleIamV3alphaAccessPolicy = _messages.MessageField('GoogleIamV3alphaAccessPolicy', 1)
   name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-  validateOnly = _messages.BooleanField(4)
+  validateOnly = _messages.BooleanField(3)
 
 
 class IamProjectsLocationsOperationsGetRequest(_messages.Message):

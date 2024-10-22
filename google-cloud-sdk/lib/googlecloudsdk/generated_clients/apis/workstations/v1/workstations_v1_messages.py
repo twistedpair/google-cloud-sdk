@@ -177,6 +177,55 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class BoostConfig(_messages.Message):
+  r"""A configuration that workstations can boost to.
+
+  Fields:
+    accelerators: Optional. A list of the type and count of accelerator cards
+      attached to the boost instance. Defaults to `none`.
+    bootDiskSizeGb: Optional. The size of the boot disk for the VM in
+      gigabytes (GB). The minimum boot disk size is `30` GB. Defaults to `50`
+      GB.
+    enableNestedVirtualization: Optional. Whether to enable nested
+      virtualization on boosted Cloud Workstations VMs running using this
+      boost configuration. Defaults to false. Nested virtualization lets you
+      run virtual machine (VM) instances inside your workstation. Before
+      enabling nested virtualization, consider the following important
+      considerations. Cloud Workstations instances are subject to the [same
+      restrictions as Compute Engine
+      instances](https://cloud.google.com/compute/docs/instances/nested-
+      virtualization/overview#restrictions): * **Organization policy**:
+      projects, folders, or organizations may be restricted from creating
+      nested VMs if the **Disable VM nested virtualization** constraint is
+      enforced in the organization policy. For more information, see the
+      Compute Engine section, [Checking whether nested virtualization is
+      allowed](https://cloud.google.com/compute/docs/instances/nested-
+      virtualization/managing-
+      constraint#checking_whether_nested_virtualization_is_allowed). *
+      **Performance**: nested VMs might experience a 10% or greater decrease
+      in performance for workloads that are CPU-bound and possibly greater
+      than a 10% decrease for workloads that are input/output bound. *
+      **Machine Type**: nested virtualization can only be enabled on boost
+      configurations that specify a machine_type in the N1 or N2 machine
+      series.
+    id: Optional. Required. The id to be used for the boost configuration.
+    machineType: Optional. The type of machine that boosted VM instances will
+      use-for example, `e2-standard-4`. For more information about machine
+      types that Cloud Workstations supports, see the list of [available
+      machine types](https://cloud.google.com/workstations/docs/available-
+      machine-types). Defaults to `e2-standard-4`.
+    poolSize: Optional. The number of boost VMs that the system should keep
+      idle so that workstations can be boosted quickly. Defaults to `0`.
+  """
+
+  accelerators = _messages.MessageField('Accelerator', 1, repeated=True)
+  bootDiskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  enableNestedVirtualization = _messages.BooleanField(3)
+  id = _messages.StringField(4)
+  machineType = _messages.StringField(5)
+  poolSize = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -351,6 +400,9 @@ class GceInstance(_messages.Message):
   Fields:
     accelerators: Optional. A list of the type and count of accelerator cards
       attached to the instance.
+    boostConfigs: Optional. A list of the boost configurations that
+      workstations created using this workstation configuration are allowed to
+      use.
     bootDiskSizeGb: Optional. The size of the boot disk for the VM in
       gigabytes (GB). The minimum boot disk size is `30` GB. Defaults to `50`
       GB.
@@ -459,19 +511,20 @@ class GceInstance(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   accelerators = _messages.MessageField('Accelerator', 1, repeated=True)
-  bootDiskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  confidentialInstanceConfig = _messages.MessageField('GceConfidentialInstanceConfig', 3)
-  disablePublicIpAddresses = _messages.BooleanField(4)
-  disableSsh = _messages.BooleanField(5)
-  enableNestedVirtualization = _messages.BooleanField(6)
-  machineType = _messages.StringField(7)
-  poolSize = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  pooledInstances = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  serviceAccount = _messages.StringField(10)
-  serviceAccountScopes = _messages.StringField(11, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 12)
-  tags = _messages.StringField(13, repeated=True)
-  vmTags = _messages.MessageField('VmTagsValue', 14)
+  boostConfigs = _messages.MessageField('BoostConfig', 2, repeated=True)
+  bootDiskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  confidentialInstanceConfig = _messages.MessageField('GceConfidentialInstanceConfig', 4)
+  disablePublicIpAddresses = _messages.BooleanField(5)
+  disableSsh = _messages.BooleanField(6)
+  enableNestedVirtualization = _messages.BooleanField(7)
+  machineType = _messages.StringField(8)
+  poolSize = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  pooledInstances = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  serviceAccount = _messages.StringField(11)
+  serviceAccountScopes = _messages.StringField(12, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 13)
+  tags = _messages.StringField(14, repeated=True)
+  vmTags = _messages.MessageField('VmTagsValue', 15)
 
 
 class GcePersistentDisk(_messages.Message):

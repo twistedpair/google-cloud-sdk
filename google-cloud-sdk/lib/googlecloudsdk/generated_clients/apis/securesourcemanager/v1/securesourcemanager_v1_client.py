@@ -726,7 +726,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
         method_id='securesourcemanager.projects.locations.repositories.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'instance', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/repositories',
         request_field='',
         request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesListRequest',

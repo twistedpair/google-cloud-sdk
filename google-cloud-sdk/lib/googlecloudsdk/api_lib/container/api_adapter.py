@@ -3304,15 +3304,16 @@ class APIAdapter(object):
         desired_cluster_dns = provider_enum.PLATFORM_DEFAULT
 
       if desired_cluster_dns != dns_config.clusterDns:
-        console_io.PromptContinue(
-            message=(
-                'All the node-pools in the cluster need to be re-created '
-                'by the user to start using the new DNS provider. It is '
-                'highly recommended to perform this step shortly after '
-                'completing the update.'
-            ),
-            cancel_on_no=True,
-        )
+        if is_update:
+          console_io.PromptContinue(
+              message=(
+                  'All the node-pools in the cluster need to be re-created '
+                  'by the user to start using the new DNS provider. It is '
+                  'highly recommended to perform this step shortly after '
+                  'completing the update.'
+              ),
+              cancel_on_no=True,
+          )
         dns_config.clusterDns = desired_cluster_dns
 
     if options.cluster_dns_scope is not None:

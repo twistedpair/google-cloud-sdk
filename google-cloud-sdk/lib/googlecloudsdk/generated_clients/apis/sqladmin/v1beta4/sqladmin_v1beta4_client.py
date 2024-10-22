@@ -586,7 +586,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
           }
 
     def ListServerCertificates(self, request, global_params=None):
-      r"""Lists all versions of server certificates and certificate authorities (CAs) for the specified instance. There can be up to three sets of certs listed: the certificate that is currently in use, a future that has been added but not yet used to sign a certificate, and a certificate that has been rotated out.
+      r"""Lists all versions of server certificates and certificate authorities (CAs) for the specified instance. There can be up to three sets of certs listed: the certificate that is currently in use, a future that has been added but not yet used to sign a certificate, and a certificate that has been rotated out. For instances not using Certificate Authority Service (CAS) server CA, use ListServerCas instead.
 
       Args:
         request: (SqlInstancesListServerCertificatesRequest) input message
@@ -612,7 +612,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def RotateServerCertificate(self, request, global_params=None):
-      r"""Rotates the server certificate version to one previously added with the addServerCertificate method. For instances not using Certificate Authority Service (CAS) server CA, please use RotateServerCa instead.
+      r"""Rotates the server certificate version to one previously added with the addServerCertificate method. For instances not using Certificate Authority Service (CAS) server CA, use RotateServerCa instead.
 
       Args:
         request: (SqlInstancesRotateServerCertificateRequest) input message
@@ -664,7 +664,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def AddServerCa(self, request, global_params=None):
-      r"""Add a new trusted Certificate Authority (CA) version for the specified instance. Required to prepare for a certificate rotation. If a CA version was previously added but never used in a certificate rotation, this operation replaces that version. There cannot be more than one CA version waiting to be rotated in. For instances that have enabled Certificate Authority Service (CAS) based server CA, please use AddServerCertificate to add a new server certificate.
+      r"""Add a new trusted Certificate Authority (CA) version for the specified instance. Required to prepare for a certificate rotation. If a CA version was previously added but never used in a certificate rotation, this operation replaces that version. There cannot be more than one CA version waiting to be rotated in. For instances that have enabled Certificate Authority Service (CAS) based server CA, use AddServerCertificate to add a new server certificate.
 
       Args:
         request: (SqlInstancesAddServerCaRequest) input message
@@ -690,7 +690,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def AddServerCertificate(self, request, global_params=None):
-      r"""Add a new trusted server certificate version for the specified instance using Certificate Authority Service (CAS) server CA. Required to prepare for a certificate rotation. If a server certificate version was previously added but never used in a certificate rotation, this operation replaces that version. There cannot be more than one certificate version waiting to be rotated in. For instances not using CAS server CA, please use AddServerCa instead.
+      r"""Add a new trusted server certificate version for the specified instance using Certificate Authority Service (CAS) server CA. Required to prepare for a certificate rotation. If a server certificate version was previously added but never used in a certificate rotation, this operation replaces that version. There cannot be more than one certificate version waiting to be rotated in. For instances not using CAS server CA, use AddServerCa instead.
 
       Args:
         request: (SqlInstancesAddServerCertificateRequest) input message
@@ -1184,7 +1184,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def RotateServerCa(self, request, global_params=None):
-      r"""Rotates the server certificate to one signed by the Certificate Authority (CA) version previously added with the addServerCA method. For instances that have enabled Certificate Authority Service (CAS) based server CA, please use RotateServerCertificate to rotate the server certificate.
+      r"""Rotates the server certificate to one signed by the Certificate Authority (CA) version previously added with the addServerCA method. For instances that have enabled Certificate Authority Service (CAS) based server CA, use RotateServerCertificate to rotate the server certificate.
 
       Args:
         request: (SqlInstancesRotateServerCaRequest) input message

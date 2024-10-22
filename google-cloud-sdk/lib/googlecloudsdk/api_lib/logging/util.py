@@ -104,12 +104,13 @@ def ConvertToJsonObject(json_string):
     raise InvalidJSONValueError('Invalid JSON value: %s' % e)
 
 
-def AddParentArgs(parser, help_string):
+def AddParentArgs(parser, help_string, exclude_billing_account=False):
   """Adds arguments for parent of the entities.
 
   Args:
     parser: parser to which arguments are added.
     help_string: text that is prepended to help for each argument.
+    exclude_billing_account: whether to exclude the billing account argument.
   """
   entity_group = parser.add_mutually_exclusive_group()
   entity_group.add_argument(
@@ -126,13 +127,13 @@ def AddParentArgs(parser, help_string):
       metavar='FOLDER_ID',
       help='Folder of the {0}.'.format(help_string),
   )
-
-  entity_group.add_argument(
-      '--billing-account',
-      required=False,
-      metavar='BILLING_ACCOUNT_ID',
-      help='Billing account of the {0}.'.format(help_string),
-  )
+  if not exclude_billing_account:
+    entity_group.add_argument(
+        '--billing-account',
+        required=False,
+        metavar='BILLING_ACCOUNT_ID',
+        help='Billing account of the {0}.'.format(help_string),
+    )
 
   common_args.ProjectArgument(
       help_text_to_prepend='Project of the {0}.'.format(help_string)
@@ -209,11 +210,12 @@ def GetBillingAccountResource(billing_account):
   )
 
 
-def GetParentResourceFromArgs(args):
+def GetParentResourceFromArgs(args, exclude_billing_account=False):
   """Returns the parent resource derived from the given args.
 
   Args:
     args: command line args.
+    exclude_billing_account: whether to exclude the billing account argument.
 
   Returns:
     The parent resource.
@@ -222,22 +224,23 @@ def GetParentResourceFromArgs(args):
     return GetOrganizationResource(args.organization)
   elif args.folder:
     return GetFolderResource(args.folder)
-  elif args.billing_account:
+  elif not exclude_billing_account and args.billing_account:
     return GetBillingAccountResource(args.billing_account)
   else:
     return GetProjectResource(args.project)
 
 
-def GetParentFromArgs(args):
+def GetParentFromArgs(args, exclude_billing_account=False):
   """Returns the relative path to the parent from args.
 
   Args:
     args: command line args.
+    exclude_billing_account: whether to exclude the billing account argument.
 
   Returns:
     The relative path. e.g. 'projects/foo', 'folders/1234'.
   """
-  return GetParentResourceFromArgs(args).RelativeName()
+  return GetParentResourceFromArgs(args, exclude_billing_account).RelativeName()
 
 
 def GetBucketLocationFromArgs(args):

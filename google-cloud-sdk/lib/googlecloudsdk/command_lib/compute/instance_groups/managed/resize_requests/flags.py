@@ -73,8 +73,33 @@ def _TransformRequestedRunDuration(resource):
   return times.FormatDuration(duration, parts=-1)
 
 
+def _TransformLocation(resource):
+  if resource.get('location', ''):
+    return resource['location']
+  self_link = resource.get('selfLink', '')
+  if not self_link:
+    return ''
+  return self_link.split('/')[-5]
+
+
+def _TransformLocationScope(resource):
+  if resource.get('location_scope', ''):
+    return resource['location_scope']
+  self_link = resource.get('selfLink', '')
+  if not self_link:
+    return ''
+  return self_link.split('/')[-6][:-1]
+
+
 def AddOutputFormat(parser, release_track):
   parser.display_info.AddFormat(_RELEASE_TRACK_TO_LIST_FORMAT[release_track])
   parser.display_info.AddTransforms({
       'requestedRunDuration': _TransformRequestedRunDuration,
   })
+  # TODO: b/370477532 - Remove below transforms once the region field is
+  # available in Beta.
+  if release_track == base.ReleaseTrack.BETA:
+    parser.display_info.AddTransforms({
+        'location': _TransformLocation,
+        'location_scope': _TransformLocationScope,
+    })

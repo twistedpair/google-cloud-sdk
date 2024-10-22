@@ -1237,8 +1237,7 @@ class Instance(_messages.Message):
 
 
 class ListInstancesResponse(_messages.Message):
-  r"""Response message for ListInstances. The list of instances in the
-  specified location.
+  r"""Response message for ListInstances.
 
   Fields:
     instances: If the {location} requested was "-" the response contains a

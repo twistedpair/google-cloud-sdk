@@ -78,19 +78,16 @@ _VISIBILITY_MODES = {
 _INGRESS_MODES = {
     'all': 'Inbound requests from all sources are allowed.',
     'internal': """\
-        For Cloud Run (fully managed), only inbound requests from VPC networks
+        For Cloud Run, only inbound requests from VPC networks
         in the same project or VPC Service Controls perimeter, as well as
         Pub/Sub subscriptions and Eventarc events in the same project or VPC
         Service Controls perimeter are allowed. All other requests are rejected.
         See https://cloud.google.com/run/docs/securing/ingress for full details
-        on the definition of internal traffic for Cloud Run (fully managed). For
-        Cloud Run for Anthos, only inbound requests from the same cluster are
-        allowed.
+        on the definition of internal traffic for Cloud Run.
         """,
     'internal-and-cloud-load-balancing': """\
-        Only supported for Cloud Run (fully managed). Only inbound requests
-        from Google Cloud Load Balancing or a traffic source allowed by the
-        internal option are allowed.
+        Only inbound requests from Google Cloud Load Balancing or a traffic
+        source allowed by the internal option are allowed.
         """,
 }
 
@@ -145,7 +142,11 @@ class Product(enum.Enum):
   STACKS = 'Stacks'
 
 
-def AddImageArg(parser, required=True, image='gcr.io/cloudrun/hello:latest'):
+def AddImageArg(
+    parser,
+    required=True,
+    image='us-docker.pkg.dev/cloudrun/container/hello:latest',
+):
   """Add an image resource arg."""
   parser.add_argument(
       '--image',
@@ -156,84 +157,15 @@ def AddImageArg(parser, required=True, image='gcr.io/cloudrun/hello:latest'):
   )
 
 
-def ImageArg(required=True, image='gcr.io/cloudrun/hello:latest'):
+def ImageArg(
+    required=True, image='us-docker.pkg.dev/cloudrun/container/hello:latest'
+):
   """Image resource arg."""
   return base.Argument(
       '--image',
       required=required,
       help='Name of the container image to deploy (e.g. `{image}`).'.format(
           image=image
-      ),
-  )
-
-
-_ARG_GROUP_HELP_TEXT = (
-    'Only applicable if connecting to {platform_desc}. '
-    'Specify {platform} to use:'
-)
-
-
-def _GetOrAddArgGroup(parser, help_text):
-  """Create a new arg group or return existing group with given help text."""
-  for arg in parser.arguments:
-    if arg.is_group and arg.help == help_text:
-      return arg
-  return parser.add_argument_group(help_text)
-
-
-def GetManagedArgGroup(parser):
-  """Get an arg group for managed CR-only flags."""
-  return _GetOrAddArgGroup(
-      parser,
-      _ARG_GROUP_HELP_TEXT.format(
-          platform='`--platform={}`'.format(platforms.PLATFORM_MANAGED),
-          platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
-              platforms.PLATFORM_MANAGED
-          ],
-      ),
-  )
-
-
-def GetGkeArgGroup(parser):
-  """Get an arg group for CRoGKE-only flags."""
-  return _GetOrAddArgGroup(
-      parser,
-      _ARG_GROUP_HELP_TEXT.format(
-          platform='`--platform={}`'.format(platforms.PLATFORM_GKE),
-          platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
-              platforms.PLATFORM_GKE
-          ],
-      ),
-  )
-
-
-def GetKubernetesArgGroup(parser):
-  """Get an arg group for --platform=kubernetes only flags."""
-  return _GetOrAddArgGroup(
-      parser,
-      _ARG_GROUP_HELP_TEXT.format(
-          platform='`--platform={}`'.format(platforms.PLATFORM_KUBERNETES),
-          platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
-              platforms.PLATFORM_KUBERNETES
-          ],
-      ),
-  )
-
-
-def GetClusterArgGroup(parser):
-  """Get an arg group for any generic cluster flags."""
-  return _GetOrAddArgGroup(
-      parser,
-      _ARG_GROUP_HELP_TEXT.format(
-          platform='`--platform={}` or `--platform={}`'.format(
-              platforms.PLATFORM_GKE, platforms.PLATFORM_KUBERNETES
-          ),
-          platform_desc='{} or {}'.format(
-              platforms.PLATFORM_SHORT_DESCRIPTIONS[platforms.PLATFORM_GKE],
-              platforms.PLATFORM_SHORT_DESCRIPTIONS[
-                  platforms.PLATFORM_KUBERNETES
-              ],
-          ),
       ),
   )
 
@@ -247,26 +179,17 @@ def AddPlatformAndLocationFlags(parser, managed_only=False, anthos_only=False):
     AddRegionArg(parser)
     return None
 
-  # When multiple platforms are supported, add a arg group that covers the
-  # various ways to specify region/zone/cluster.
-  platform_helpers_group = parser.add_mutually_exclusive_group(
-      help='Arguments to locate resources, depending on the platform used.'
-  )
-
   if not anthos_only:
     # Add --region flag
-    managed_group = GetManagedArgGroup(platform_helpers_group)
-    AddRegionArg(managed_group)
+    AddRegionArg(parser)
 
   # Add --cluster and --cluster-location (plus properties)
-  gke_group = GetGkeArgGroup(platform_helpers_group)
   concept_parsers.ConceptParser(
       [resource_args.CLUSTER_PRESENTATION]
-  ).AddToParser(gke_group)
+  ).AddToParser(parser)
 
   # Add --kubeconfig and --context
-  kubernetes_group = GetKubernetesArgGroup(platform_helpers_group)
-  AddKubeconfigFlags(kubernetes_group)
+  AddKubeconfigFlags(parser)
 
 
 def AddAllowUnauthenticatedFlag(parser):
@@ -282,17 +205,12 @@ def AddAllowUnauthenticatedFlag(parser):
 
 
 def AddAsyncFlag(
-    parser, default_async_for_cluster=False, is_managed_only=False
+    parser, default_async_for_cluster=False
 ):
   """Add an async flag."""
   help_text = """\
     Return immediately, without waiting for the operation in progress to
-    complete."""
-  if is_managed_only:
-    help_text += ' Defaults to --no-async.'
-  else:
-    help_text += """ Defaults to --no-async for Cloud Run (fully managed) and --async
-    for Cloud Run for Anthos."""
+    complete. Defaults to --no-async."""
   if default_async_for_cluster:
     modified_async_flag = base.Argument(
         '--async',
@@ -309,6 +227,7 @@ def AddEndpointVisibilityEnum(parser):
   """Add the --connectivity=[external|internal] flag."""
   parser.add_argument(
       '--connectivity',
+      hidden=True,
       choices=_VISIBILITY_MODES,
       help=(
           "Defaults to 'external'. If 'external', the service can be "
@@ -343,7 +262,7 @@ def AddIngressFlag(parser):
       choices=_INGRESS_MODES,
       help=(
           'Set the ingress traffic sources allowed to call the service. For '
-          'Cloud Run (fully managed) the `--[no-]allow-unauthenticated` flag '
+          'Cloud Run the `--[no-]allow-unauthenticated` flag '
           'separately controls the identities allowed to call the service.'
       ),
       default='all',
@@ -1017,25 +936,19 @@ def AddMemoryFlag(parser):
   MemoryFlag().AddToParser(parser)
 
 
-def CpuFlag(managed_only=False):
+def CpuFlag():
   """Create the --cpu flag."""
   help_msg = (
       'Set a CPU limit in Kubernetes cpu units.\n\n'
-      'Cloud Run (fully managed) supports values 1, 2 and 4.'
-      '  For Cloud Run (fully managed), 4 cpus also requires a minimum '
-      '2Gi `--memory` value.  Examples 2, 2.0, 2000m'
+      'Cloud Run supports values fractional values below 1, 1, 2, 4, and 8.'
+      '  Some CPU values requires a minimum Memory `--memory` value.'
   )
-  if not managed_only:
-    help_msg += (
-        '\n\nCloud Run for Anthos and Knative-compatible Kubernetes '
-        'clusters support fractional values.  Examples .5, 500m, 2'
-    )
   return base.Argument('--cpu', help=help_msg)
 
 
-def AddCpuFlag(parser, managed_only=False):
+def AddCpuFlag(parser):
   """Add the --cpu flag."""
-  CpuFlag(managed_only=managed_only).AddToParser(parser)
+  CpuFlag().AddToParser(parser)
 
 
 def AddGpuTypeFlag(parser, hidden=True):
@@ -1185,29 +1098,13 @@ def AddTimeoutFlag(parser):
   )
 
 
-def AddServiceAccountFlag(parser, managed_only=False):
+def AddServiceAccountFlag(parser):
   """Add the --service-account flag."""
   help_text = (
-      'Service account associated with the revision of the service. '
-      'The service account represents the identity of '
-      'the running revision, and determines what permissions the revision has. '
+      'the email address of an IAM service account associated with the revision'
+      ' of the service. The service account represents the identity of the'
+      ' running revision, and determines what permissions the revision has. '
   )
-  if managed_only:
-    help_text += 'This is the email address of an IAM service account.'
-  else:
-    help_text += (
-        'For the {} platform, this is the email address of an IAM service '
-        'account. For the Kubernetes-based platforms ({}, {}), this is the '
-        'name of a Kubernetes service account in the same namespace as the '
-        'service. If not provided, the revision will use the default service '
-        'account of the project, or default Kubernetes namespace service '
-        'account respectively.'.format(
-            platforms.PLATFORM_MANAGED,
-            platforms.PLATFORM_GKE,
-            platforms.PLATFORM_KUBERNETES,
-        )
-    )
-
   parser.add_argument('--service-account', help=help_text)
 
 
@@ -1224,6 +1121,7 @@ def AddPlatformArg(parser, managed_only=False, anthos_only=False):
       choices=choices,
       action=actions.StoreProperty(properties.VALUES.run.platform),
       default=platforms.PLATFORM_MANAGED,
+      hidden=True,
       help=(
           'Target platform for running commands. '
           'Alternatively, set the property [run/platform]. '
@@ -1234,6 +1132,7 @@ def AddPlatformArg(parser, managed_only=False, anthos_only=False):
 def AddKubeconfigFlags(parser):
   parser.add_argument(
       '--kubeconfig',
+      hidden=True,
       help=(
           'The absolute path to your kubectl config file. If not specified, '
           'the colon- or semicolon-delimited list of paths specified by '
@@ -1243,6 +1142,7 @@ def AddKubeconfigFlags(parser):
   )
   parser.add_argument(
       '--context',
+      hidden=True,
       help=(
           'The name of the context in your kubectl config file to use for '
           'connecting.'
@@ -4419,12 +4319,16 @@ def SourceArg():
   )
 
 
-def AddSourceAndImageFlags(parser, image='gcr.io/cloudrun/hello:latest'):
+def AddSourceAndImageFlags(
+    parser, image='us-docker.pkg.dev/cloudrun/container/hello:latest'
+):
   """Add deploy source flags, an image or a source for build."""
   SourceAndImageFlags(image=image).AddToParser(parser)
 
 
-def SourceAndImageFlags(image='gcr.io/cloudrun/hello:latest'):
+def SourceAndImageFlags(
+    image='us-docker.pkg.dev/cloudrun/container/hello:latest',
+):
   group = base.ArgumentGroup(mutex=True)
   group.AddArgument(ImageArg(required=False, image=image))
   group.AddArgument(SourceArg())

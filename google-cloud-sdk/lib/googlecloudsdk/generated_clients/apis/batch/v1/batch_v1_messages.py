@@ -675,10 +675,10 @@ class InstancePolicy(_messages.Message):
       https://cloud.google.com/compute/docs/instances/specify-min-cpu-
       platform.
     provisioningModel: The provisioning model.
-    reservation: Optional. If specified, VMs will consume only the specified
-      reservation. If not specified (default), VMs will consume any applicable
-      reservation. Additionally, VMs will not consume any reservation if
-      "NO_RESERVATION" is specified.
+    reservation: Optional. If not specified (default), VMs will consume any
+      applicable reservation. If "NO_RESERVATION" is specified, VMs will not
+      consume any reservation. Otherwise, if specified, VMs will consume only
+      the specified reservation.
   """
 
   class ProvisioningModelValueValuesEnum(_messages.Enum):

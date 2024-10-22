@@ -4557,6 +4557,26 @@ class NodeKubeletConfig(_messages.Message):
       with certain resource characteristics to be granted increased CPU
       affinity and exclusivity on the node. The default value is 'none' if
       unspecified.
+    imageGcHighThresholdPercent: Optional. The percent of disk usage after
+      which image garbage collection is always run. The percent is calculated
+      as this field value out of 100. The default value is 85 if unspecified.
+    imageGcLowThresholdPercent: Optional. The percent of disk usage before
+      which image garbage collection is never run. Lowest disk usage to
+      garbage collect to. The percent is calculated as this field value out of
+      100. The default value is 80 if unspecified.
+    imageMaximumGcAge: Optional. The maximum age an image can be unused before
+      it is garbage collected. The string must be a sequence of decimal
+      numbers, each with optional fraction and a unit suffix, such as "300s",
+      "1.5h", and "2h45m". Valid time units are "ns", "us" (or "\xb5s"), "ms",
+      "s", "m", "h". The value must be a positive duration or "0s". The
+      default value is "0s" if unspecified, which disables this field, meaning
+      images won't be garbage collected based on being unused for too long.
+    imageMinimumGcAge: Optional. The minimum age for an unused image before it
+      is garbage collected. The string must be a sequence of decimal numbers,
+      each with optional fraction and a unit suffix, such as "300s", "1.5h",
+      and "2h45m". Valid time units are "ns", "us" (or "\xb5s"), "ms", "s",
+      "m", "h". The value must be a positive duration. The default value is
+      "2m0s" if unspecified.
     insecureKubeletReadonlyPortEnabled: Enable or disable Kubelet read only
       port.
     memoryManager: Optional. Controls NUMA-aware Memory Manager configuration
@@ -4574,10 +4594,14 @@ class NodeKubeletConfig(_messages.Message):
   cpuCfsQuota = _messages.BooleanField(1)
   cpuCfsQuotaPeriod = _messages.StringField(2)
   cpuManagerPolicy = _messages.StringField(3)
-  insecureKubeletReadonlyPortEnabled = _messages.BooleanField(4)
-  memoryManager = _messages.MessageField('MemoryManager', 5)
-  podPidsLimit = _messages.IntegerField(6)
-  topologyManager = _messages.MessageField('TopologyManager', 7)
+  imageGcHighThresholdPercent = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  imageGcLowThresholdPercent = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  imageMaximumGcAge = _messages.StringField(6)
+  imageMinimumGcAge = _messages.StringField(7)
+  insecureKubeletReadonlyPortEnabled = _messages.BooleanField(8)
+  memoryManager = _messages.MessageField('MemoryManager', 9)
+  podPidsLimit = _messages.IntegerField(10)
+  topologyManager = _messages.MessageField('TopologyManager', 11)
 
 
 class NodeLabels(_messages.Message):
@@ -5967,7 +5991,8 @@ class RotationConfig(_messages.Message):
 
   Fields:
     enabled: Whether the rotation is enabled.
-    rotationInterval: The interval between two consecutive rotations.
+    rotationInterval: The interval between two consecutive rotations. Default
+      rotation interval is 2 minutes.
   """
 
   enabled = _messages.BooleanField(1)

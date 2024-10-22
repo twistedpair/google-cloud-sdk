@@ -687,7 +687,12 @@ class BaseSSHHelper(object):
     if errors:
       utils.RaiseToolException(
           errors,
-          error_message='Could not add SSH key to instance metadata:')
+          error_message=(
+              'Could not add SSH key to instance metadata, refer'
+              ' https://cloud.google.com/compute/docs/access#granting_users_ssh_access_to_vm_instances'
+              ' for granting users SSH access to VM instances:'
+          ),
+      )
 
   def SetInstanceMetadata(self, client, instance, new_metadata):
     """Sets the instance metadata to the new metadata with progress tracker."""
@@ -1116,4 +1121,3 @@ def ConfirmSecurityKeyStatus(oslogin_state):
       'Instance requires security key for connection, but security keys are '
       'not supported by the installed SSH version. OpenSSH 8.4 or higher '
       'is required.')
-

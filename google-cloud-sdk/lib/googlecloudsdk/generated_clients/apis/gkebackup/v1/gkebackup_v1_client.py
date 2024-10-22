@@ -40,12 +40,14 @@ class GkebackupV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_backupChannels_backupPlanAssociations = self.ProjectsLocationsBackupChannelsBackupPlanAssociationsService(self)
+    self.projects_locations_backupChannels_backupPlanBindings = self.ProjectsLocationsBackupChannelsBackupPlanBindingsService(self)
     self.projects_locations_backupChannels = self.ProjectsLocationsBackupChannelsService(self)
     self.projects_locations_backupPlans_backups_volumeBackups = self.ProjectsLocationsBackupPlansBackupsVolumeBackupsService(self)
     self.projects_locations_backupPlans_backups = self.ProjectsLocationsBackupPlansBackupsService(self)
     self.projects_locations_backupPlans = self.ProjectsLocationsBackupPlansService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_restoreChannels_restorePlanAssociations = self.ProjectsLocationsRestoreChannelsRestorePlanAssociationsService(self)
+    self.projects_locations_restoreChannels_restorePlanBindings = self.ProjectsLocationsRestoreChannelsRestorePlanBindingsService(self)
     self.projects_locations_restoreChannels = self.ProjectsLocationsRestoreChannelsService(self)
     self.projects_locations_restorePlans_restores_volumeRestores = self.ProjectsLocationsRestorePlansRestoresVolumeRestoresService(self)
     self.projects_locations_restorePlans_restores = self.ProjectsLocationsRestorePlansRestoresService(self)
@@ -114,6 +116,70 @@ class GkebackupV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkebackupProjectsLocationsBackupChannelsBackupPlanAssociationsListRequest',
         response_type_name='ListBackupPlanAssociationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsBackupChannelsBackupPlanBindingsService(base_api.BaseApiService):
+    """Service class for the projects_locations_backupChannels_backupPlanBindings resource."""
+
+    _NAME = 'projects_locations_backupChannels_backupPlanBindings'
+
+    def __init__(self, client):
+      super(GkebackupV1.ProjectsLocationsBackupChannelsBackupPlanBindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieve the details of a single BackupPlanBinding.
+
+      Args:
+        request: (GkebackupProjectsLocationsBackupChannelsBackupPlanBindingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackupPlanBinding) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupChannels/{backupChannelsId}/backupPlanBindings/{backupPlanBindingsId}',
+        http_method='GET',
+        method_id='gkebackup.projects.locations.backupChannels.backupPlanBindings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='GkebackupProjectsLocationsBackupChannelsBackupPlanBindingsGetRequest',
+        response_type_name='BackupPlanBinding',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists BackupPlanBindings in a given location.
+
+      Args:
+        request: (GkebackupProjectsLocationsBackupChannelsBackupPlanBindingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBackupPlanBindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupChannels/{backupChannelsId}/backupPlanBindings',
+        http_method='GET',
+        method_id='gkebackup.projects.locations.backupChannels.backupPlanBindings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/backupPlanBindings',
+        request_field='',
+        request_type_name='GkebackupProjectsLocationsBackupChannelsBackupPlanBindingsListRequest',
+        response_type_name='ListBackupPlanBindingsResponse',
         supports_download=False,
     )
 
@@ -1065,6 +1131,70 @@ class GkebackupV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkebackupProjectsLocationsRestoreChannelsRestorePlanAssociationsListRequest',
         response_type_name='ListRestorePlanAssociationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRestoreChannelsRestorePlanBindingsService(base_api.BaseApiService):
+    """Service class for the projects_locations_restoreChannels_restorePlanBindings resource."""
+
+    _NAME = 'projects_locations_restoreChannels_restorePlanBindings'
+
+    def __init__(self, client):
+      super(GkebackupV1.ProjectsLocationsRestoreChannelsRestorePlanBindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieve the details of a single RestorePlanBinding.
+
+      Args:
+        request: (GkebackupProjectsLocationsRestoreChannelsRestorePlanBindingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RestorePlanBinding) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/restoreChannels/{restoreChannelsId}/restorePlanBindings/{restorePlanBindingsId}',
+        http_method='GET',
+        method_id='gkebackup.projects.locations.restoreChannels.restorePlanBindings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='GkebackupProjectsLocationsRestoreChannelsRestorePlanBindingsGetRequest',
+        response_type_name='RestorePlanBinding',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists RestorePlanBindings in a given location.
+
+      Args:
+        request: (GkebackupProjectsLocationsRestoreChannelsRestorePlanBindingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRestorePlanBindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/restoreChannels/{restoreChannelsId}/restorePlanBindings',
+        http_method='GET',
+        method_id='gkebackup.projects.locations.restoreChannels.restorePlanBindings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/restorePlanBindings',
+        request_field='',
+        request_type_name='GkebackupProjectsLocationsRestoreChannelsRestorePlanBindingsListRequest',
+        response_type_name='ListRestorePlanBindingsResponse',
         supports_download=False,
     )
 

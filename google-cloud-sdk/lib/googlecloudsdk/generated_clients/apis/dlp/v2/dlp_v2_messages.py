@@ -4166,10 +4166,11 @@ class GooglePrivacyDlpV2ColumnDataProfile(_messages.Message):
       unidentifiable content or mixed types.
     columnType: The data type of a given column.
     dataRiskLevel: The data risk level for this column.
-    datasetId: The BigQuery dataset ID.
-    datasetLocation: The BigQuery location where the dataset's data is stored.
-      See https://cloud.google.com/bigquery/docs/locations for supported
-      locations.
+    datasetId: The BigQuery dataset ID, if the resource profiled is a BigQuery
+      table.
+    datasetLocation: If supported, the location where the dataset's data is
+      stored. See https://cloud.google.com/bigquery/docs/locations for
+      supported BigQuery locations.
     datasetProjectId: The Google Cloud project ID that owns the profiled
       resource.
     estimatedNullPercentage: Approximate percentage of entries being null in
@@ -4191,7 +4192,7 @@ class GooglePrivacyDlpV2ColumnDataProfile(_messages.Message):
     tableDataProfile: The resource name of the table data profile.
     tableFullResource: The resource name of the resource this column is
       within.
-    tableId: The BigQuery table ID.
+    tableId: The table ID.
   """
 
   class ColumnTypeValueValuesEnum(_messages.Enum):
@@ -10012,7 +10013,8 @@ class GooglePrivacyDlpV2TableDataProfile(_messages.Message):
     expirationTime: Optional. The time when this table expires.
     failedColumnCount: The number of columns skipped in the table because of
       an error.
-    fullResource: The resource name of the resource profiled.
+    fullResource: The Cloud Asset Inventory resource that was profiled in
+      order to generate this TableDataProfile.
       https://cloud.google.com/apis/design/resource_names#full_resource_name
     lastModifiedTime: The time when this table was last modified
     name: The name of the profile.
@@ -10032,7 +10034,7 @@ class GooglePrivacyDlpV2TableDataProfile(_messages.Message):
     scannedColumnCount: The number of columns profiled in the table.
     sensitivityScore: The sensitivity score of this table.
     state: State of a profile.
-    tableId: If the resource is BigQuery, the BigQuery table ID.
+    tableId: The table ID.
     tableSizeBytes: The size of the table when the profile was generated.
   """
 
@@ -10949,13 +10951,16 @@ class GoogleTypeTimeOfDay(_messages.Message):
   seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
 
   Fields:
-    hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
-      choose to allow the value "24:00:00" for scenarios like business closing
-      time.
-    minutes: Minutes of hour of day. Must be from 0 to 59.
-    nanos: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
-    seconds: Seconds of minutes of the time. Must normally be from 0 to 59. An
-      API may allow the value 60 if it allows leap-seconds.
+    hours: Hours of a day in 24 hour format. Must be greater than or equal to
+      0 and typically must be less than or equal to 23. An API may choose to
+      allow the value "24:00:00" for scenarios like business closing time.
+    minutes: Minutes of an hour. Must be greater than or equal to 0 and less
+      than or equal to 59.
+    nanos: Fractions of seconds, in nanoseconds. Must be greater than or equal
+      to 0 and less than or equal to 999,999,999.
+    seconds: Seconds of a minute. Must be greater than or equal to 0 and
+      typically must be less than or equal to 59. An API may allow the value
+      60 if it allows leap-seconds.
   """
 
   hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)

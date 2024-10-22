@@ -1288,7 +1288,11 @@ class GoogleCloudGkemulticloudV1AttachedProxyConfig(_messages.Message):
   Fields:
     kubernetesSecret: The Kubernetes Secret resource that contains the HTTP(S)
       proxy configuration. The secret must be a JSON encoded proxy
-      configuration as described in
+      configuration as described in https://cloud.google.com/kubernetes-
+      engine/multi-cloud/docs/attached/eks/how-to/use-a-proxy#configure-proxy-
+      support for EKS clusters and https://cloud.google.com/kubernetes-
+      engine/multi-cloud/docs/attached/aks/how-to/use-a-proxy#configure-proxy-
+      support for AKS clusters.
   """
 
   kubernetesSecret = _messages.MessageField('GoogleCloudGkemulticloudV1KubernetesSecret', 1)

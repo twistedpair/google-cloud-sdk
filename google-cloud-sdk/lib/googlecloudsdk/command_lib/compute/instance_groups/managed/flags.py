@@ -614,7 +614,14 @@ def AddMigForceUpdateOnRepairFlags(parser):
   )
 
 
-def AddMigDefaultActionOnVmFailure(parser):
+def AddMigDefaultActionOnVmFailure(parser, release_track):
+  if release_track == base.ReleaseTrack.ALPHA:
+    AddMigDefaultActionOnVmFailureAlpha(parser)
+  else:
+    AddMigDefaultActionOnVmFailureGA(parser)
+
+
+def AddMigDefaultActionOnVmFailureGA(parser):
   """Add default action on VM failure to the parser."""
   help_text = """\
       Specifies the action that a MIG performs on a failed or an unhealthy VM.
@@ -629,6 +636,57 @@ def AddMigDefaultActionOnVmFailure(parser):
   parser.add_argument(
       '--default-action-on-vm-failure',
       metavar='ACTION_ON_VM_FAILURE',
+      type=arg_utils.EnumNameToChoice,
+      choices=choices,
+      help=help_text,
+  )
+
+
+def AddMigDefaultActionOnVmFailureAlpha(parser):
+  """Add default action on VM failure to the parser."""
+  help_text = """\
+      Specifies the action that a MIG performs on a failed VM. If the value of
+      the onFailedHealthCheck field is `DEFAULT_ACTION`, then the same action
+      also applies to the VMs on which your application fails a health check.
+      By default, the value of the flag is set to ``repair''."""
+  choices = collections.OrderedDict([
+      (
+          'repair',
+          '(Default) MIG automatically repairs a failed VM by recreating it.',
+      ),
+      ('do-nothing', 'MIG does not repair a failed VM.'),
+  ])
+
+  parser.add_argument(
+      '--default-action-on-vm-failure',
+      metavar='ACTION_ON_VM_FAILURE',
+      type=arg_utils.EnumNameToChoice,
+      choices=choices,
+      help=help_text,
+  )
+
+
+def AddMigActionOnVmFailedHealthCheck(parser):
+  """Add action on VM failed health check to the parser."""
+  help_text = """\
+      Specifies the action that a MIG performs on an unhealthy VM.
+      A VM is marked as unhealthy when the application running on that VM fails
+      a health check. By default, the value of the flag is set to ``default-action''."""
+  choices = collections.OrderedDict([
+      (
+          'default-action',
+          (
+              '(Default) MIG uses the same action configured for the '
+              'defaultActionOnFailure field.'
+          ),
+      ),
+      ('do-nothing', 'MIG does not repair an unhealthy VM.'),
+      ('repair', 'MIG automatically repairs an unhealthy VM by recreating it.'),
+  ])
+
+  parser.add_argument(
+      '--action-on-vm-failed-health-check',
+      metavar='ACTION_ON_FAILED_HEALTH_CHECK',
       type=arg_utils.EnumNameToChoice,
       choices=choices,
       help=help_text,

@@ -984,7 +984,7 @@ class ArgType(object):
   """Base class for arg types."""
 
 
-class ArgBoolean(ArgType):
+class ArgBoolean(usage_text.ArgTypeUsage, ArgType):
   """Interpret an argument value as a bool.
 
   This should only be used to define the spec of a key of an ArgDict flag.
@@ -1016,6 +1016,22 @@ class ArgBoolean(ArgType):
     raise ArgumentTypeError(
         'Invalid flag value [{0}], expected one of [{1}]'.format(
             arg_value, ', '.join(self._truthy_strings + self._falsey_strings)))
+
+  @property
+  def hidden(self):
+    return False
+
+  def GetUsageMetavar(self, is_custom_metavar, metavar):
+    del is_custom_metavar  # unused
+    return metavar
+
+  def GetUsageExample(self, shorthand):
+    del shorthand  # unused
+    return 'boolean'
+
+  def GetUsageHelpText(self, field_name, required, flag_name=None):
+    del field_name, required, flag_name  # unused
+    return None
 
 
 def ArgRequiredInUniverse(
@@ -1501,6 +1517,15 @@ class ArgObject(ArgDict):
     if isinstance(arg_type, ArgObject) and arg_type.enable_shorthand:
       arg_type.enable_shorthand = False
 
+  def _JSONValueType(self, value_type):
+    # bool("false") will always return True even if the user wants to specify
+    # a false value. We need to wrap the value type in an ArgBoolean so that
+    # "true" or "false" will be parsed as True or False.
+    if value_type == bool:
+      return ArgBoolean()
+    else:
+      return value_type
+
   def __init__(self, key_type=None, value_type=None, spec=None,
                required_keys=None, help_text=None, repeated=False,
                hidden=None, enable_shorthand=True, enable_file_upload=True):
@@ -1511,9 +1536,13 @@ class ArgObject(ArgDict):
       for value in spec.values():
         self._DisableShorthand(value)
 
+    spec_type = (
+        spec and
+        {key: self._JSONValueType(value) for key, value in spec.items()})
+
     super(ArgObject, self).__init__(
-        key_type=key_type, value_type=value_type, spec=spec,
-        required_keys=required_keys, includes_json=True)
+        key_type=key_type, value_type=self._JSONValueType(value_type),
+        spec=spec_type, required_keys=required_keys, includes_json=True)
     self.help_text = help_text
     self.repeated = repeated
     self._keyed_values = key_type is not None or spec is not None
@@ -1567,9 +1596,9 @@ class ArgObject(ArgDict):
       raise ArgumentTypeError(
           'Expecting {} to be json or arg_dict format'.format(value))
 
-    if key and not isinstance(key, str):
+    if key is not None and not isinstance(key, str):
       key = str(key)
-    if value and not isinstance(value, str):
+    if value is not None and not isinstance(value, str):
       value = json.dumps(value)
     return key, value
 

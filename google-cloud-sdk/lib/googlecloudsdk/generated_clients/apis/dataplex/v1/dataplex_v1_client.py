@@ -2278,6 +2278,87 @@ class DataplexV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""GlossaryCategory APIs are CCFE passthrough APIs. Creates a new GlossaryCategory resource.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesCategoriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1GlossaryCategory) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/categories',
+        http_method='POST',
+        method_id='dataplex.projects.locations.glossaries.categories.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['categoryId'],
+        relative_path='v1/{+parent}/categories',
+        request_field='googleCloudDataplexV1GlossaryCategory',
+        request_type_name='DataplexProjectsLocationsGlossariesCategoriesCreateRequest',
+        response_type_name='GoogleCloudDataplexV1GlossaryCategory',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a GlossaryCategory resource. All the categories and terms nested directly under the category will be moved one level up to the parent in the hierarchy.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesCategoriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/categories/{categoriesId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.glossaries.categories.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsGlossariesCategoriesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a specified GlossaryCategory resource.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesCategoriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1GlossaryCategory) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/categories/{categoriesId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.glossaries.categories.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsGlossariesCategoriesGetRequest',
+        response_type_name='GoogleCloudDataplexV1GlossaryCategory',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -2302,6 +2383,60 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataplexProjectsLocationsGlossariesCategoriesGetIamPolicyRequest',
         response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists GlossaryCategory resources in a glossary.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesCategoriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListGlossaryCategoriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/categories',
+        http_method='GET',
+        method_id='dataplex.projects.locations.glossaries.categories.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/categories',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsGlossariesCategoriesListRequest',
+        response_type_name='GoogleCloudDataplexV1ListGlossaryCategoriesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a GlossaryCategory resource.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesCategoriesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1GlossaryCategory) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/categories/{categoriesId}',
+        http_method='PATCH',
+        method_id='dataplex.projects.locations.glossaries.categories.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1GlossaryCategory',
+        request_type_name='DataplexProjectsLocationsGlossariesCategoriesPatchRequest',
+        response_type_name='GoogleCloudDataplexV1GlossaryCategory',
         supports_download=False,
     )
 
@@ -2369,6 +2504,87 @@ class DataplexV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""GlossaryTerm APIs are CCFE passthrough APIs. Creates a new GlossaryTerm resource.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesTermsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1GlossaryTerm) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/terms',
+        http_method='POST',
+        method_id='dataplex.projects.locations.glossaries.terms.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['termId'],
+        relative_path='v1/{+parent}/terms',
+        request_field='googleCloudDataplexV1GlossaryTerm',
+        request_type_name='DataplexProjectsLocationsGlossariesTermsCreateRequest',
+        response_type_name='GoogleCloudDataplexV1GlossaryTerm',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a GlossaryTerm resource.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesTermsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/terms/{termsId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.glossaries.terms.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsGlossariesTermsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a specified GlossaryTerm resource.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesTermsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1GlossaryTerm) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/terms/{termsId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.glossaries.terms.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsGlossariesTermsGetRequest',
+        response_type_name='GoogleCloudDataplexV1GlossaryTerm',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -2393,6 +2609,60 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataplexProjectsLocationsGlossariesTermsGetIamPolicyRequest',
         response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists GlossaryTerm resources in a glossary.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesTermsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListGlossaryTermsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/terms',
+        http_method='GET',
+        method_id='dataplex.projects.locations.glossaries.terms.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/terms',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsGlossariesTermsListRequest',
+        response_type_name='GoogleCloudDataplexV1ListGlossaryTermsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a GlossaryTerm resource.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesTermsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1GlossaryTerm) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/terms/{termsId}',
+        http_method='PATCH',
+        method_id='dataplex.projects.locations.glossaries.terms.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1GlossaryTerm',
+        request_type_name='DataplexProjectsLocationsGlossariesTermsPatchRequest',
+        response_type_name='GoogleCloudDataplexV1GlossaryTerm',
         supports_download=False,
     )
 
@@ -2460,6 +2730,87 @@ class DataplexV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a new Glossary resource.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries',
+        http_method='POST',
+        method_id='dataplex.projects.locations.glossaries.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['glossaryId', 'validateOnly'],
+        relative_path='v1/{+parent}/glossaries',
+        request_field='googleCloudDataplexV1Glossary',
+        request_type_name='DataplexProjectsLocationsGlossariesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a Glossary resource. All the categories and terms within the glossary must be deleted before a glossary can be deleted.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.glossaries.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsGlossariesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a specified Glossary resource.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Glossary) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.glossaries.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsGlossariesGetRequest',
+        response_type_name='GoogleCloudDataplexV1Glossary',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -2484,6 +2835,60 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataplexProjectsLocationsGlossariesGetIamPolicyRequest',
         response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Glossary resources in a project and location.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListGlossariesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries',
+        http_method='GET',
+        method_id='dataplex.projects.locations.glossaries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/glossaries',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsGlossariesListRequest',
+        response_type_name='GoogleCloudDataplexV1ListGlossariesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a Glossary resource.
+
+      Args:
+        request: (DataplexProjectsLocationsGlossariesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}',
+        http_method='PATCH',
+        method_id='dataplex.projects.locations.glossaries.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1Glossary',
+        request_type_name='DataplexProjectsLocationsGlossariesPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

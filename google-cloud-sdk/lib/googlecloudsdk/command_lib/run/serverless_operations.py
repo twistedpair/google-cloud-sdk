@@ -22,7 +22,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import contextlib
-import copy
 import dataclasses
 import functools
 import json
@@ -47,7 +46,6 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
 from googlecloudsdk.api_lib.util import waiter
-from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.run import config_changes as config_changes_mod
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
@@ -756,22 +754,6 @@ class ServerlessOperations(object):
           return env_var.split('=', 1)[1]
     return None
 
-  def _ValidateServiceBeforeSourceDeploy(
-      self, tracker, service_ref, prefetch, config_changes
-  ):
-    """Validate the service in dry run before building."""
-    svc = None
-    if prefetch:
-      svc = service.Service(
-          copy.deepcopy(prefetch.Message()), self.messages_module
-      )
-    tracker.StartStage(stages.VALIDATE_SERVICE)
-    tracker.UpdateHeaderMessage('Validating Service...')
-    self._UpdateOrCreateService(
-        service_ref, config_changes, True, svc, dry_run=True
-    )
-    tracker.CompleteStage(stages.VALIDATE_SERVICE)
-
   def ReleaseService(
       self,
       service_ref,
@@ -798,6 +780,7 @@ class ServerlessOperations(object):
       build_env_vars=None,
       enable_automatic_updates=False,
       is_verbose=False,
+      source_bucket=None,
   ):
     """Change the given service in prod using the given config_changes.
 
@@ -842,6 +825,7 @@ class ServerlessOperations(object):
       enable_automatic_updates: If true, opt-in automatic build image updates.
         If false, opt-out automatic build image updates.
       is_verbose: Print verbose output. Forces polling instead of waiting.
+      source_bucket: The bucket to use for source uploads.
 
     Returns:
       service.Service, the service as returned by the server on the POST/PUT
@@ -851,8 +835,6 @@ class ServerlessOperations(object):
       tracker = progress_tracker.NoOpStagedProgressTracker(
           stages.ServiceStages(
               allow_unauthenticated is not None,
-              include_validate_service=build_source is not None
-              and release_track == base.ReleaseTrack.ALPHA,
               include_build=build_source is not None,
               include_create_repo=repo_to_create is not None,
           ),
@@ -861,10 +843,6 @@ class ServerlessOperations(object):
       )
 
     if build_source is not None:
-      if release_track == base.ReleaseTrack.ALPHA:
-        self._ValidateServiceBeforeSourceDeploy(
-            tracker, service_ref, prefetch, config_changes
-        )
       # TODO(b/355762514): Either remove or re-enable this validation.
       # self._ValidateService(service_ref, config_changes)
       (
@@ -889,6 +867,7 @@ class ServerlessOperations(object):
           build_worker_pool,
           build_env_vars,
           enable_automatic_updates,
+          source_bucket,
       )
       if image_digest is None:
         return
@@ -1854,22 +1833,22 @@ class ServerlessOperations(object):
     """Clear run functions annotations to the service before setting them."""
     config_changes.append(
         config_changes_mod.DeleteAnnotationChange(
-            service.RUN_FUNCTIONS_BUILD_SOURCE_LOCATION_ANNOTATION
+            service.RUN_FUNCTIONS_SOURCE_LOCATION_ANNOTATION_DEPRECATED
+            )
+    )
+    config_changes.append(
+        config_changes_mod.DeleteAnnotationChange(
+            service.RUN_FUNCTIONS_FUNCTION_TARGET_ANNOTATION_DEPRECATED
         )
     )
     config_changes.append(
         config_changes_mod.DeleteAnnotationChange(
-            service.RUN_FUNCTIONS_BUILD_FUNCTION_TARGET_ANNOTATION
+            service.RUN_FUNCTIONS_IMAGE_URI_ANNOTATION_DEPRECATED
         )
     )
     config_changes.append(
         config_changes_mod.DeleteAnnotationChange(
-            service.RUN_FUNCTIONS_BUILD_IMAGE_URI_ANNOTATION
-        )
-    )
-    config_changes.append(
-        config_changes_mod.DeleteAnnotationChange(
-            service.RUN_FUNCTIONS_BUILD_ENABLE_AUTOMATIC_UPDATES
+            service.RUN_FUNCTIONS_ENABLE_AUTOMATIC_UPDATES_DEPRECATED
         )
     )
 
@@ -1897,21 +1876,17 @@ class ServerlessOperations(object):
       if uploaded_source.generation is not None:
         source_path += f'#{uploaded_source.generation}'
     image_uri = build_pack[0].get('image') if build_pack else build_image
-    # TODO(b/365567914): Remove these annotations once the new ones are in use.
     annotations_map = {
         service.RUN_FUNCTIONS_BUILD_SERVICE_ACCOUNT_ANNOTATION: service_account,
         service.RUN_FUNCTIONS_BUILD_WORKER_POOL_ANNOTATION: worker_pool,
         service.RUN_FUNCTIONS_BUILD_ENV_VARS_ANNOTATION: build_env_vars_str,
         service.RUN_FUNCTIONS_BUILD_ID_ANNOTATION: build_id,
         service.RUN_FUNCTIONS_BUILD_NAME_ANNOTATION: build_name,
-        service.RUN_FUNCTIONS_IMAGE_URI_ANNOTATION_DEPRECATED: image_uri,
-        service.RUN_FUNCTIONS_SOURCE_LOCATION_ANNOTATION_DEPRECATED: (
-            source_path
-        ),
-        service.RUN_FUNCTIONS_FUNCTION_TARGET_ANNOTATION_DEPRECATED: (
-            function_target
-        ),
-        service.RUN_FUNCTIONS_ENABLE_AUTOMATIC_UPDATES_DEPRECATED: (
+        service.RUN_FUNCTIONS_BUILD_IMAGE_URI_ANNOTATION: image_uri,
+        service.RUN_FUNCTIONS_BUILD_SOURCE_LOCATION_ANNOTATION: source_path,
+        service.RUN_FUNCTIONS_BUILD_FUNCTION_TARGET_ANNOTATION: (
+            function_target),
+        service.RUN_FUNCTIONS_BUILD_ENABLE_AUTOMATIC_UPDATES: (
             'true' if enable_automatic_updates else 'false'
         ),
     }

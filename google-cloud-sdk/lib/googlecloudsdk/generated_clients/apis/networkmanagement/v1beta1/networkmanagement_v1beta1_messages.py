@@ -68,6 +68,8 @@ class AbortInfo(_messages.Message):
       PERMISSION_DENIED_NO_NEG_ENDPOINT_CONFIGS: Aborted because user lacks
         permission to access Network endpoint group endpoint configs required
         to run the test.
+      PERMISSION_DENIED_NO_CLOUD_ROUTER_CONFIGS: Aborted because user lacks
+        permission to access Cloud Router configs required to run the test.
       NO_SOURCE_LOCATION: Aborted because no valid source or destination
         endpoint is derived from the input test request.
       INVALID_ARGUMENT: Aborted because the source or destination endpoint
@@ -128,26 +130,27 @@ class AbortInfo(_messages.Message):
     PERMISSION_DENIED = 12
     PERMISSION_DENIED_NO_CLOUD_NAT_CONFIGS = 13
     PERMISSION_DENIED_NO_NEG_ENDPOINT_CONFIGS = 14
-    NO_SOURCE_LOCATION = 15
-    INVALID_ARGUMENT = 16
-    TRACE_TOO_LONG = 17
-    INTERNAL_ERROR = 18
-    UNSUPPORTED = 19
-    MISMATCHED_IP_VERSION = 20
-    GKE_KONNECTIVITY_PROXY_UNSUPPORTED = 21
-    RESOURCE_CONFIG_NOT_FOUND = 22
-    VM_INSTANCE_CONFIG_NOT_FOUND = 23
-    NETWORK_CONFIG_NOT_FOUND = 24
-    FIREWALL_CONFIG_NOT_FOUND = 25
-    ROUTE_CONFIG_NOT_FOUND = 26
-    GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT = 27
-    SOURCE_PSC_CLOUD_SQL_UNSUPPORTED = 28
-    SOURCE_REDIS_CLUSTER_UNSUPPORTED = 29
-    SOURCE_REDIS_INSTANCE_UNSUPPORTED = 30
-    SOURCE_FORWARDING_RULE_UNSUPPORTED = 31
-    NON_ROUTABLE_IP_ADDRESS = 32
-    UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT = 33
-    UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 34
+    PERMISSION_DENIED_NO_CLOUD_ROUTER_CONFIGS = 15
+    NO_SOURCE_LOCATION = 16
+    INVALID_ARGUMENT = 17
+    TRACE_TOO_LONG = 18
+    INTERNAL_ERROR = 19
+    UNSUPPORTED = 20
+    MISMATCHED_IP_VERSION = 21
+    GKE_KONNECTIVITY_PROXY_UNSUPPORTED = 22
+    RESOURCE_CONFIG_NOT_FOUND = 23
+    VM_INSTANCE_CONFIG_NOT_FOUND = 24
+    NETWORK_CONFIG_NOT_FOUND = 25
+    FIREWALL_CONFIG_NOT_FOUND = 26
+    ROUTE_CONFIG_NOT_FOUND = 27
+    GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT = 28
+    SOURCE_PSC_CLOUD_SQL_UNSUPPORTED = 29
+    SOURCE_REDIS_CLUSTER_UNSUPPORTED = 30
+    SOURCE_REDIS_INSTANCE_UNSUPPORTED = 31
+    SOURCE_FORWARDING_RULE_UNSUPPORTED = 32
+    NON_ROUTABLE_IP_ADDRESS = 33
+    UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT = 34
+    UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 35
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   ipAddress = _messages.StringField(2)
@@ -769,9 +772,10 @@ class DropInfo(_messages.Message):
         requires a proxy-only subnet and the subnet is not found.
       CLOUD_NAT_NO_ADDRESSES: Packet sent to Cloud Nat without active NAT IPs.
       ROUTING_LOOP: Packet is stuck in a routing loop.
-      DROPPED_INSIDE_GOOGLE_MANAGED_SERVICE: Packet is dropped due to an
-        unspecified reason inside a Google-managed service. Used only for
-        return traces.
+      DROPPED_INSIDE_GOOGLE_MANAGED_SERVICE: Packet is dropped inside a
+        Google-managed service due to being delivered in return trace to an
+        endpoint that doesn't match the endpoint the packet was sent from in
+        forward trace. Used only for return traces.
       LOAD_BALANCER_BACKEND_INVALID_NETWORK: Packet is dropped due to a load
         balancer backend instance not having a network interface in the
         network expected by the load balancer.
@@ -3154,6 +3158,9 @@ class VpcFlowLogsConfig(_messages.Message):
     StateValueValuesEnum: Optional. The state of the VPC Flow Log
       configuration. Default value is ENABLED. When creating a new
       configuration, it must be enabled.
+    TargetResourceStateValueValuesEnum: Output only. A diagnostic bit -
+      describes the state of the configured target resource for diagnostic
+      purposes.
 
   Messages:
     LabelsValue: Optional. Resource labels to represent user-provided
@@ -3187,6 +3194,8 @@ class VpcFlowLogsConfig(_messages.Message):
       g_id}`
     state: Optional. The state of the VPC Flow Log configuration. Default
       value is ENABLED. When creating a new configuration, it must be enabled.
+    targetResourceState: Output only. A diagnostic bit - describes the state
+      of the configured target resource for diagnostic purposes.
     updateTime: Output only. The time the config was updated.
     vpnTunnel: Traffic will be logged from the VPN Tunnel. Format:
       projects/{project_id}/regions/{region}/vpnTunnels/{name}
@@ -3245,6 +3254,20 @@ class VpcFlowLogsConfig(_messages.Message):
     ENABLED = 1
     DISABLED = 2
 
+  class TargetResourceStateValueValuesEnum(_messages.Enum):
+    r"""Output only. A diagnostic bit - describes the state of the configured
+    target resource for diagnostic purposes.
+
+    Values:
+      TARGET_RESOURCE_STATE_UNSPECIFIED: Unspecified target resource state.
+      TARGET_RESOURCE_EXISTS: Indicates that the target resource exists.
+      TARGET_RESOURCE_DOES_NOT_EXIST: Indicates that the target resource does
+        not exist.
+    """
+    TARGET_RESOURCE_STATE_UNSPECIFIED = 0
+    TARGET_RESOURCE_EXISTS = 1
+    TARGET_RESOURCE_DOES_NOT_EXIST = 2
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. Resource labels to represent user-provided metadata.
@@ -3280,8 +3303,9 @@ class VpcFlowLogsConfig(_messages.Message):
   metadataFields = _messages.StringField(9, repeated=True)
   name = _messages.StringField(10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
-  vpnTunnel = _messages.StringField(13)
+  targetResourceState = _messages.EnumField('TargetResourceStateValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
+  vpnTunnel = _messages.StringField(14)
 
 
 class VpnGatewayInfo(_messages.Message):

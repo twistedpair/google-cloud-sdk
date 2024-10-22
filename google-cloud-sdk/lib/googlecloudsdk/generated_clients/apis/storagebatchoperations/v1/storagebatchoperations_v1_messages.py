@@ -74,6 +74,7 @@ class Empty(_messages.Message):
   """
 
 
+
 class ErrorLogEntry(_messages.Message):
   r"""An entry describing an error that has occurred.
 
@@ -631,11 +632,10 @@ class PutMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CustomMetadataValue(_messages.Message):
-    r"""Optional. Updates objects custom metadata.
-
-    Adds or sets individual custom metadata key value pairs on objects. Empty
-    custom metadata values are ignored. Existing custom metadata not specified
-    with this flag is not changed. Refer to documentation in
+    r"""Optional. Updates objects custom metadata. Adds or sets individual
+    custom metadata key value pairs on objects. Empty custom metadata values
+    are ignored. Existing custom metadata not specified with this flag is not
+    changed. Refer to documentation in
     https://cloud.google.com/storage/docs/metadata#custom-metadata
 
     Messages:

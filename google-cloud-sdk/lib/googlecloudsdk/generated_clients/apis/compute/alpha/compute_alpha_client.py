@@ -44,6 +44,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.autoscalers = self.AutoscalersService(self)
     self.backendBuckets = self.BackendBucketsService(self)
     self.backendServices = self.BackendServicesService(self)
+    self.crossSiteNetworks = self.CrossSiteNetworksService(self)
     self.diskSettings = self.DiskSettingsService(self)
     self.diskTypes = self.DiskTypesService(self)
     self.disks = self.DisksService(self)
@@ -151,6 +152,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.urlMaps = self.UrlMapsService(self)
     self.vpnGateways = self.VpnGatewaysService(self)
     self.vpnTunnels = self.VpnTunnelsService(self)
+    self.wireGroups = self.WireGroupsService(self)
     self.zoneOperations = self.ZoneOperationsService(self)
     self.zoneQueuedResources = self.ZoneQueuedResourcesService(self)
     self.zones = self.ZonesService(self)
@@ -1453,6 +1455,149 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class CrossSiteNetworksService(base_api.BaseApiService):
+    """Service class for the crossSiteNetworks resource."""
+
+    _NAME = 'crossSiteNetworks'
+
+    def __init__(self, client):
+      super(ComputeAlpha.CrossSiteNetworksService, self).__init__(client)
+      self._upload_configs = {}
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified cross-site network in the given scope.
+
+      Args:
+        request: (ComputeCrossSiteNetworksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.crossSiteNetworks.delete',
+        ordered_params=['project', 'crossSiteNetwork'],
+        path_params=['crossSiteNetwork', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}',
+        request_field='',
+        request_type_name='ComputeCrossSiteNetworksDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified cross-site network in the given scope.
+
+      Args:
+        request: (ComputeCrossSiteNetworksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (CrossSiteNetwork) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.crossSiteNetworks.get',
+        ordered_params=['project', 'crossSiteNetwork'],
+        path_params=['crossSiteNetwork', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}',
+        request_field='',
+        request_type_name='ComputeCrossSiteNetworksGetRequest',
+        response_type_name='CrossSiteNetwork',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a cross-site network in the specified project in the given scope using the parameters that are included in the request.
+
+      Args:
+        request: (ComputeCrossSiteNetworksInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.crossSiteNetworks.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId', 'validateOnly'],
+        relative_path='projects/{project}/global/crossSiteNetworks',
+        request_field='crossSiteNetwork',
+        request_type_name='ComputeCrossSiteNetworksInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the cross-site networks for a project in the given scope.
+
+      Args:
+        request: (ComputeCrossSiteNetworksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (CrossSiteNetworkList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.crossSiteNetworks.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/crossSiteNetworks',
+        request_field='',
+        request_type_name='ComputeCrossSiteNetworksListRequest',
+        response_type_name='CrossSiteNetworkList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified cross-site network with the data included in the request.
+
+      This method supports PATCH semantics and uses the JSON merge patch format
+      and processing rules.
+
+      Args:
+        request: (ComputeCrossSiteNetworksPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.crossSiteNetworks.patch',
+        ordered_params=['project', 'crossSiteNetwork'],
+        path_params=['crossSiteNetwork', 'project'],
+        query_params=['requestId', 'validateOnly'],
+        relative_path='projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}',
+        request_field='crossSiteNetworkResource',
+        request_type_name='ComputeCrossSiteNetworksPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class DiskSettingsService(base_api.BaseApiService):
     """Service class for the diskSettings resource."""
 
@@ -1769,6 +1914,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetAsyncReplicationStatus(self, request, global_params=None):
+      r"""Gets the status of current async replication for a given device.
+
+      Args:
+        request: (ComputeDisksGetAsyncReplicationStatusRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (GetAsyncReplicationStatusResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetAsyncReplicationStatus')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    GetAsyncReplicationStatus.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.disks.getAsyncReplicationStatus',
+        ordered_params=['project', 'zone', 'disk'],
+        path_params=['disk', 'project', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/disks/{disk}/getAsyncReplicationStatus',
+        request_field='',
+        request_type_name='ComputeDisksGetAsyncReplicationStatusRequest',
+        response_type_name='GetAsyncReplicationStatusResponse',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
@@ -2077,6 +2248,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path='projects/{project}/zones/{zone}/disks/{disk}',
         request_field='diskResource',
         request_type_name='ComputeDisksUpdateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def WaitForReplicationCatchUp(self, request, global_params=None):
+      r"""Wait for replication to catch up on the secondary disk.
+
+      Args:
+        request: (ComputeDisksWaitForReplicationCatchUpRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('WaitForReplicationCatchUp')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    WaitForReplicationCatchUp.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.disks.waitForReplicationCatchUp',
+        ordered_params=['project', 'zone', 'disk'],
+        path_params=['disk', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/disks/{disk}/waitForReplicationCatchUp',
+        request_field='waitForReplicationCatchUpRequest',
+        request_type_name='ComputeDisksWaitForReplicationCatchUpRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -13077,6 +13274,31 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListPreconfiguredExpressionSets(self, request, global_params=None):
+      r"""Gets the current list of preconfigured Web Application Firewall (WAF) expressions.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesListPreconfiguredExpressionSetsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityPoliciesListPreconfiguredExpressionSetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListPreconfiguredExpressionSets')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    ListPreconfiguredExpressionSets.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.organizationSecurityPolicies.listPreconfiguredExpressionSets',
+        ordered_params=[],
+        path_params=[],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'parentId', 'returnPartialSuccess'],
+        relative_path='locations/global/securityPolicies/listPreconfiguredExpressionSets',
+        request_field='',
+        request_type_name='ComputeOrganizationSecurityPoliciesListPreconfiguredExpressionSetsRequest',
+        response_type_name='SecurityPoliciesListPreconfiguredExpressionSetsResponse',
+        supports_download=False,
+    )
+
     def Move(self, request, global_params=None):
       r"""Moves the specified security policy.
 
@@ -15257,6 +15479,33 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetAsyncReplicationStatus(self, request, global_params=None):
+      r"""Gets the status of current async replication for a given device.
+
+      Args:
+        request: (ComputeRegionDisksGetAsyncReplicationStatusRequest) input
+          message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (GetAsyncReplicationStatusResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetAsyncReplicationStatus')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    GetAsyncReplicationStatus.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionDisks.getAsyncReplicationStatus',
+        ordered_params=['project', 'region', 'disk'],
+        path_params=['disk', 'project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/disks/{disk}/getAsyncReplicationStatus',
+        request_field='',
+        request_type_name='ComputeRegionDisksGetAsyncReplicationStatusRequest',
+        response_type_name='GetAsyncReplicationStatusResponse',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
@@ -15565,6 +15814,33 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/disks/{disk}',
         request_field='diskResource',
         request_type_name='ComputeRegionDisksUpdateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def WaitForReplicationCatchUp(self, request, global_params=None):
+      r"""Wait for replication to catch up on the secondary disk.
+
+      Args:
+        request: (ComputeRegionDisksWaitForReplicationCatchUpRequest) input
+          message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('WaitForReplicationCatchUp')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    WaitForReplicationCatchUp.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionDisks.waitForReplicationCatchUp',
+        ordered_params=['project', 'region', 'disk'],
+        path_params=['disk', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/disks/{disk}/waitForReplicationCatchUp',
+        request_field='regionWaitForReplicationCatchUpRequest',
+        request_type_name='ComputeRegionDisksWaitForReplicationCatchUpRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -17542,11 +17818,12 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified multi-MIG resource.
+      r"""Returns all the details of a specific multi-MIG.
 
       Args:
         request: (ComputeRegionMultiMigsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
+
       Returns:
         (MultiMig) The response message.
       """
@@ -26206,6 +26483,148 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputeVpnTunnelsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class WireGroupsService(base_api.BaseApiService):
+    """Service class for the wireGroups resource."""
+
+    _NAME = 'wireGroups'
+
+    def __init__(self, client):
+      super(ComputeAlpha.WireGroupsService, self).__init__(client)
+      self._upload_configs = {}
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified wire group in the given scope.
+
+      Args:
+        request: (ComputeWireGroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.wireGroups.delete',
+        ordered_params=['project', 'crossSiteNetwork', 'wireGroup'],
+        path_params=['crossSiteNetwork', 'project', 'wireGroup'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}/wireGroups/{wireGroup}',
+        request_field='',
+        request_type_name='ComputeWireGroupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified wire group resource in the given scope.
+
+      Args:
+        request: (ComputeWireGroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (WireGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.wireGroups.get',
+        ordered_params=['project', 'crossSiteNetwork', 'wireGroup'],
+        path_params=['crossSiteNetwork', 'project', 'wireGroup'],
+        query_params=[],
+        relative_path='projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}/wireGroups/{wireGroup}',
+        request_field='',
+        request_type_name='ComputeWireGroupsGetRequest',
+        response_type_name='WireGroup',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a wire group in the specified project in the given scope using the parameters that are included in the request.
+
+      Args:
+        request: (ComputeWireGroupsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.wireGroups.insert',
+        ordered_params=['project', 'crossSiteNetwork'],
+        path_params=['crossSiteNetwork', 'project'],
+        query_params=['requestId', 'validateOnly'],
+        relative_path='projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}/wireGroups',
+        request_field='wireGroup',
+        request_type_name='ComputeWireGroupsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the wire groups for a project in the given scope.
+
+      Args:
+        request: (ComputeWireGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WireGroupList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.wireGroups.list',
+        ordered_params=['project', 'crossSiteNetwork'],
+        path_params=['crossSiteNetwork', 'project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}/wireGroups',
+        request_field='',
+        request_type_name='ComputeWireGroupsListRequest',
+        response_type_name='WireGroupList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified wire group resource with the data included in the request.
+
+      This method supports PATCH semantics and uses JSON merge patch format and
+      processing rules.
+
+      Args:
+        request: (ComputeWireGroupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.wireGroups.patch',
+        ordered_params=['project', 'crossSiteNetwork', 'wireGroup'],
+        path_params=['crossSiteNetwork', 'project', 'wireGroup'],
+        query_params=['requestId', 'updateMask', 'validateOnly'],
+        relative_path='projects/{project}/global/crossSiteNetworks/{crossSiteNetwork}/wireGroups/{wireGroup}',
+        request_field='wireGroupResource',
+        request_type_name='ComputeWireGroupsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

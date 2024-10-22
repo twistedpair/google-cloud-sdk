@@ -28,7 +28,6 @@ SERVICE_CONFIGURATIONS_READY = 'ConfigurationsReady'
 BUILD_READY = 'BuildReady'
 UPLOAD_SOURCE = 'UploadSource'
 CREATE_REPO = 'CreateRepo'
-VALIDATE_SERVICE = 'ValidateService'
 
 _RESOURCES_AVAILABLE = 'ResourcesAvailable'
 _STARTED = 'Started'
@@ -38,12 +37,6 @@ _COMPLETED = 'Completed'
 def _CreateRepoStage():
   return progress_tracker.Stage(
       'Creating Container Repository...', key=CREATE_REPO
-  )
-
-
-def _ValidateServiceStage():
-  return progress_tracker.Stage(
-      'Validating Service...', key=VALIDATE_SERVICE
   )
 
 
@@ -81,7 +74,6 @@ def UpdateInstanceSplitStages():
 def ServiceStages(
     include_iam_policy_set=False,
     include_route=True,
-    include_validate_service=False,
     include_build=False,
     include_create_repo=False,
     include_create_revision=True,
@@ -90,8 +82,6 @@ def ServiceStages(
   stages = []
   if include_create_repo:
     stages.append(_CreateRepoStage())
-  if include_validate_service:
-    stages.append(_ValidateServiceStage())
   if include_build:
     stages.append(_UploadSourceStage())
     stages.append(_BuildContainerStage())

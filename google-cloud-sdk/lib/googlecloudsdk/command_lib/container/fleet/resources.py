@@ -741,3 +741,45 @@ def AddRolloutResourceArg(parser, api_version='v1'):
       # This hides the location flag as we only allow global scope.
       flag_name_overrides={'location': ''},
   ).AddToParser(parser)
+
+
+def AddWorkloadIdentityPoolResourceArg(parser, api_version='v1'):
+  """Add resource arg for projects/{}/locations/{}/workloadidentitypools/{}."""
+  # Flags without '--' prefix are automatically positional
+  flag_name = 'WORKLOAD_IDENTITY_POOL'
+  spec = concepts.ResourceSpec(
+      'iam.projects.locations.workloadIdentityPools',
+      api_version=api_version,
+      resource_name='workloadidentitypool',
+      plural_name='workloadidentitypools',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=_LocationAttributeConfig(),
+      workloadIdentityPoolsId=_BasicAttributeConfig('workloadidentitypool'),
+  )
+
+  concept_parsers.ConceptParser.ForResource(
+      name=flag_name,
+      resource_spec=spec,
+      group_help='The group of arguments defining a Workload Identity Pool.',
+      plural=False,
+      required=True,
+      # This hides the location flag as we only allow global scope.
+      flag_name_overrides={'location': ''},
+  ).AddToParser(parser)
+
+
+def WorkloadIdentityPoolResourceName(args):
+  """Gets a WorkloadIdentityPool resource name from a resource argument.
+
+  Assumes the argument is called WORKLOAD_IDENTITY_POOL.
+
+  Args:
+    args: arguments provided to a command,
+    including a WorkloadIdentityPool resource arg
+
+  Returns:
+    The WorkloadIdentityPool resource name (e.g.
+    projects/x/locations/l/workloadidentitypools/z)
+  """
+
+  return args.CONCEPTS.workload_identity_pool.Parse().RelativeName()

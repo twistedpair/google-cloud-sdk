@@ -692,6 +692,9 @@ class BuildOptions(_messages.Message):
       string operations to the substitutions. NOTE: this is always enabled for
       triggered builds and cannot be overridden in the build configuration
       file.
+    enableStructuredLogging: Optional. Option to specify whether structured
+      logging is enabled. If true, JSON-formatted logs are parsed as
+      structured logs.
     env: A list of global environment variable definitions that will exist for
       all build steps in this build. If a variable is defined in both globally
       and in a build step, the variable will use the build step value. The
@@ -862,17 +865,18 @@ class BuildOptions(_messages.Message):
   diskSizeGb = _messages.IntegerField(5)
   dockerDaemon = _messages.EnumField('DockerDaemonValueValuesEnum', 6)
   dynamicSubstitutions = _messages.BooleanField(7)
-  env = _messages.StringField(8, repeated=True)
-  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 9)
-  logging = _messages.EnumField('LoggingValueValuesEnum', 10)
-  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 11)
-  pool = _messages.MessageField('PoolOption', 12)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 13)
-  secretEnv = _messages.StringField(14, repeated=True)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 15, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 16)
-  volumes = _messages.MessageField('Volume', 17, repeated=True)
-  workerPool = _messages.StringField(18)
+  enableStructuredLogging = _messages.BooleanField(8)
+  env = _messages.StringField(9, repeated=True)
+  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 10)
+  logging = _messages.EnumField('LoggingValueValuesEnum', 11)
+  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 12)
+  pool = _messages.MessageField('PoolOption', 13)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 14)
+  secretEnv = _messages.StringField(15, repeated=True)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 16, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 17)
+  volumes = _messages.MessageField('Volume', 18, repeated=True)
+  workerPool = _messages.StringField(19)
 
 
 class BuildStep(_messages.Message):

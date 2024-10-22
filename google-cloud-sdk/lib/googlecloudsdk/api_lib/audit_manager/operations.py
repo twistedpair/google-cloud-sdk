@@ -14,22 +14,27 @@
 # limitations under the License.
 """Utilities for Audit Manager API, Operations Endpoints."""
 
+from googlecloudsdk.api_lib.audit_manager import constants
 from googlecloudsdk.api_lib.audit_manager import util
 
 
 class OperationsClient(object):
   """Client for operations in Audit Manager API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or util.GetClientInstance()
-    self.messages = messages or util.GetMessagesModule(client)
+  def __init__(
+      self, api_version: constants.ApiVersion, client=None, messages=None
+  ) -> None:
+    self.client = client or util.GetClientInstance(api_version=api_version)
+    self.messages = messages or util.GetMessagesModule(
+        api_version=api_version, client=client
+    )
 
-  def Get(self, name, is_parent_folder):
+  def Get(self, name: str, is_parent_folder: bool):
     """Describe an Audit Manager operation.
 
     Args:
-      name: str, the name of the Audit Operation being described.
-      is_parent_folder: bool, whether the parent is folder and not project.
+      name: The name of the Audit Operation being described.
+      is_parent_folder: Whether the parent is folder and not project.
 
     Returns:
       Described audit operation resource.

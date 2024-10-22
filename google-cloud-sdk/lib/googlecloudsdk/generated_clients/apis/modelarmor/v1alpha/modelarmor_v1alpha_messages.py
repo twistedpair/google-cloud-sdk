@@ -1031,14 +1031,13 @@ class SdpAdvancedConfig(_messages.Message):
     deidentifyTemplate: Optional. Optional SDP Deidentify template resource
       name. If provided then DeidentifyContent action is performed during
       Sanitization using this template and inspect template. The De-identified
-      data will be returned in SdpDeidentifyResult. Note that if only
-      Deidentify template is provided then SDP will perform identification
-      using all SDP built-in info types. e.g. `organizations/{organization}/de
-      identifyTemplates/{deidentify_template}`,
-      `projects/{project}/deidentifyTemplates/{deidentify_template}` `organiza
-      tions/{organization}/locations/{location}/deidentifyTemplates/{deidentif
-      y_template}` `projects/{project}/locations/{location}/deidentifyTemplate
-      s/{deidentify_template}`
+      data will be returned in SdpDeidentifyResult. Note that all info-types
+      present in the deidentify template must be present in inspect template.
+      e.g. `organizations/{organization}/deidentifyTemplates/{deidentify_templ
+      ate}`, `projects/{project}/deidentifyTemplates/{deidentify_template}` `o
+      rganizations/{organization}/locations/{location}/deidentifyTemplates/{de
+      identify_template}` `projects/{project}/locations/{location}/deidentifyT
+      emplates/{deidentify_template}`
     inspectTemplate: Optional. SDP inspect template resource name If only
       inspect template is provided (de-identify template not provided), then
       SDP InspectContent action is performed during Sanitization. All DLP
