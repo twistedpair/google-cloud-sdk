@@ -3548,8 +3548,8 @@ class GooglePrivacyDlpV2BigQueryTable(_messages.Message):
 
   Fields:
     datasetId: Dataset ID of the table.
-    projectId: The Google Cloud Platform project ID of the project containing
-      the table. If omitted, project ID is inferred from the API call.
+    projectId: The Google Cloud project ID of the project containing the
+      table. If omitted, project ID is inferred from the API call.
     tableId: Name of the table.
   """
 
@@ -3587,10 +3587,12 @@ class GooglePrivacyDlpV2BigQueryTableTypes(_messages.Message):
       BIG_QUERY_TABLE_TYPE_TABLE: A normal BigQuery table.
       BIG_QUERY_TABLE_TYPE_EXTERNAL_BIG_LAKE: A table that references data
         stored in Cloud Storage.
+      BIG_QUERY_TABLE_TYPE_SNAPSHOT: A snapshot of a BigQuery table.
     """
     BIG_QUERY_TABLE_TYPE_UNSPECIFIED = 0
     BIG_QUERY_TABLE_TYPE_TABLE = 1
     BIG_QUERY_TABLE_TYPE_EXTERNAL_BIG_LAKE = 2
+    BIG_QUERY_TABLE_TYPE_SNAPSHOT = 3
 
   types = _messages.EnumField('TypesValueListEntryValuesEnum', 1, repeated=True)
 

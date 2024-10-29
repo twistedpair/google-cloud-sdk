@@ -937,11 +937,14 @@ class GoogleCloudRunV2GCSVolumeSource(_messages.Message):
 
   Fields:
     bucket: Cloud Storage Bucket name.
+    mountOptions: A list of additional flags to pass to the gcsfuse CLI.
+      Options should be specified without the leading "--".
     readOnly: If true, the volume will be mounted as read only for all mounts.
   """
 
   bucket = _messages.StringField(1)
-  readOnly = _messages.BooleanField(2)
+  mountOptions = _messages.StringField(2, repeated=True)
+  readOnly = _messages.BooleanField(3)
 
 
 class GoogleCloudRunV2GRPCAction(_messages.Message):

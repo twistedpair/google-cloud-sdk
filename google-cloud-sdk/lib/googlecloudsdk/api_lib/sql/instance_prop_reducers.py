@@ -410,6 +410,58 @@ def InsightsConfig(sql_messages,
   return insights_config
 
 
+def ConnectionPoolConfig(
+    sql_messages,
+    enable_connection_pooling=None,
+    connection_pooling_pool_mode=None,
+    connection_pooling_pool_size=None,
+    connection_pooling_max_client_connections=None,
+    connection_pooling_client_idle_timeout=None,
+    connection_pooling_server_idle_timeout=None,
+    connection_pooling_query_wait_timeout=None,
+):
+  """Generates the connection pooling config for the instance."""
+
+  should_generate_config = any([
+      enable_connection_pooling is not None,
+      connection_pooling_pool_mode is not None,
+      connection_pooling_pool_size is not None,
+      connection_pooling_max_client_connections is not None,
+      connection_pooling_client_idle_timeout is not None,
+      connection_pooling_server_idle_timeout is not None,
+      connection_pooling_query_wait_timeout is not None,
+  ])
+
+  if not should_generate_config:
+    return None
+  connection_pool_config = sql_messages.ConnectionPoolConfig()
+  if enable_connection_pooling is not None:
+    connection_pool_config.connectionPoolingEnabled = enable_connection_pooling
+  if connection_pooling_pool_mode is not None:
+    connection_pool_config.poolMode = sql_messages.ConnectionPoolConfig.PoolModeValueValuesEnum.lookup_by_name(
+        connection_pooling_pool_mode
+    )
+  if connection_pooling_pool_size is not None:
+    connection_pool_config.connPoolSize = connection_pooling_pool_size
+  if connection_pooling_max_client_connections is not None:
+    connection_pool_config.maxClientConnections = (
+        connection_pooling_max_client_connections
+    )
+  if connection_pooling_client_idle_timeout is not None:
+    connection_pool_config.clientConnectionIdleTimeout = (
+        connection_pooling_client_idle_timeout
+    )
+  if connection_pooling_server_idle_timeout is not None:
+    connection_pool_config.serverConnectionIdleTimeout = (
+        connection_pooling_server_idle_timeout
+    )
+  if connection_pooling_query_wait_timeout is not None:
+    connection_pool_config.queryWaitTimeout = (
+        connection_pooling_query_wait_timeout
+    )
+  return connection_pool_config
+
+
 def _CustomMachineTypeString(cpu, memory_mib):
   """Creates a custom machine type from the CPU and memory specs.
 

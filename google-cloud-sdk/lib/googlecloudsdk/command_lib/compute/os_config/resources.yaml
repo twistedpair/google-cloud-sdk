@@ -25,6 +25,35 @@ folder:
     help: |
       Folder of the {resource}.
 
+organization:
+  name: organization
+  collection: osconfig.organizations
+  attributes:
+  - &organization
+    parameter_name: organizationsId
+    attribute_name: organization
+    help: |
+      Organization of the {resource}.
+
+# project_a, folder_a, and organization_a are used in list actions. We cannot name it project,
+# folder, and organization because it will conflict with the project, folder, and organization
+# resources defined above.
+project_folder_organization:
+  name: project_folder_organization
+  resources:
+  - name: project_a
+    collection: osconfig.projects
+    attributes:
+    - *project
+  - name: folder_a
+    collection: osconfig.folders
+    attributes:
+    - *folder
+  - name: organization_a
+    collection: osconfig.organizations
+    attributes:
+    - *organization
+
 location:
   name: location
   collection: osconfig.projects.locations
@@ -37,12 +66,34 @@ location:
     help: |
       Location of the {resource}.
 
+project_location:
+  name: project_location
+  collection: osconfig.projects.locations
+  attributes:
+  - *project
+  - &project_location
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      Location of the {resource}.
+
 folder_location:
   name: folder_location
   collection: osconfig.folders.locations
   attributes:
   - *folder
   - &folder_location
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      Location of the {resource}.
+
+organization_location:
+  name: organization_location
+  collection: osconfig.organizations.locations
+  attributes:
+  - *organization
+  - &organization_location
     parameter_name: locationsId
     attribute_name: location
     help: |
@@ -161,24 +212,53 @@ os_policy_assignment_report:
   - *instance_os_policy_assignment
 
 policy_orchestrator:
-  name: Policy Orchestrator
-  collection: osconfig.folders.locations.global.policyOrchestrators
-  attributes:
-  - *folder
-  - &policy_orchestrator
-    parameter_name: policyOrchestratorsId
-    attribute_name: policy_orchestrator
-    help: |
-      Policy orchestrator.
+  name: policy_orchestrator
+  resources:
+  - name: policy_orchestrator_project
+    collection: osconfig.projects.locations.global.policyOrchestrators
+    request_id_field: policyOrchestratorId
+    attributes:
+    - *project
+    - &policy_orchestrator
+      parameter_name: policyOrchestratorsId
+      attribute_name: policy_orchestrator
+      help: |
+        Policy orchestrator.
+  - name: policy_orchestrator_folder
+    collection: osconfig.folders.locations.global.policyOrchestrators
+    request_id_field: policyOrchestratorId
+    attributes:
+    - *folder
+    - *policy_orchestrator
+  - name: policy_orchestrator_organization
+    collection: osconfig.organizations.locations.global.policyOrchestrators
+    request_id_field: policyOrchestratorId
+    attributes:
+    - *organization
+    - *policy_orchestrator
 
-folder_operation:
-  name: Folder-level operation
-  collection: osconfig.folders.locations.operations
-  attributes:
-  - *folder
-  - *folder_location
-  - &folder_operations
-    parameter_name: operationsId
-    attribute_name: operation
-    help: |
-      Folder-level operation.
+multiparent_operation:
+  name: multiparent_operation
+  resources:
+  - name: operation_project
+    collection: osconfig.projects.locations.operations
+    attributes:
+    - *project
+    - *project_location
+    - &operation
+      parameter_name: operationsId
+      attribute_name: operation
+      help: |
+        Operation.
+  - name: operation_folder
+    collection: osconfig.folders.locations.operations
+    attributes:
+    - *folder
+    - *folder_location
+    - *operation
+  - name: operation_organization
+    collection: osconfig.organizations.locations.operations
+    attributes:
+    - *organization
+    - *organization_location
+    - *operation

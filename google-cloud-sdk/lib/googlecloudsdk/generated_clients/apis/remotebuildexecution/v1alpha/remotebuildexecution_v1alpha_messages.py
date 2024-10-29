@@ -2283,14 +2283,29 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaZoneDrain(_messages.Message)
   r"""ZoneDrain indicates a zone that should be drained (no new tasks should
   be assigned to all or part of the workers in it).
 
+  Enums:
+    ZoneTypeValueValuesEnum: Optional. Type of zone for validation purposes.
+
   Fields:
     percent: Optional. The percentage of workers in the zone to drain, from 0
       (no workers drained) to 100 (all workers drained).
     zone: Required. The zone to drain.
+    zoneType: Optional. Type of zone for validation purposes.
   """
+
+  class ZoneTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of zone for validation purposes.
+
+    Values:
+      ZONE_TYPE_UNSPECIFIED: When unspecified, defaults to GCE zone type.
+      ZONE_TYPE_GCE: Validate as GCE zone.
+    """
+    ZONE_TYPE_UNSPECIFIED = 0
+    ZONE_TYPE_GCE = 1
 
   percent = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   zone = _messages.StringField(2)
+  zoneType = _messages.EnumField('ZoneTypeValueValuesEnum', 3)
 
 
 class GoogleDevtoolsRemoteworkersV1test2AdminTemp(_messages.Message):

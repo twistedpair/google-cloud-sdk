@@ -914,6 +914,34 @@ apis:
       default: true
     v2alpha:
       discovery_doc: osconfig_v2alpha.json
+      resources:
+        projects:
+          path: projects/{projectsId}
+        projects.locations.global:
+          path: projects/{projectsId}/locations/global
+        folders:
+          path: folders/{foldersId}
+        folders.locations.global:
+          path: folders/{foldersId}/locations/global
+        organizations:
+          path: organizations/{organizationsId}
+        organizations.locations.global:
+          path: organizations/{organizationsId}/locations/global
+    v2beta:
+      discovery_doc: osconfig_v2beta.json
+      resources:
+        projects:
+          path: projects/{projectsId}
+        projects.locations.global:
+          path: projects/{projectsId}/locations/global
+        folders:
+          path: folders/{foldersId}
+        folders.locations.global:
+          path: folders/{foldersId}/locations/global
+        organizations:
+          path: organizations/{organizationsId}
+        organizations.locations.global:
+          path: organizations/{organizationsId}/locations/global
   iam:
     v1beta:
       discovery_doc: iam_v1beta.json

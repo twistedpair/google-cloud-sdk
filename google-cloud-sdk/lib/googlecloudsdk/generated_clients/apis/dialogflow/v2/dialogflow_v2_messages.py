@@ -4913,12 +4913,13 @@ class GoogleCloudDialogflowCxV3DataStoreConnection(_messages.Message):
         search.
       PUBLIC_WEB: A data store that contains public web content.
       UNSTRUCTURED: A data store that contains unstructured private data.
-      FAQ: A data store that contains structured data used as FAQ.
+      STRUCTURED: A data store that contains structured data (for example
+        FAQ).
     """
     DATA_STORE_TYPE_UNSPECIFIED = 0
     PUBLIC_WEB = 1
     UNSTRUCTURED = 2
-    FAQ = 3
+    STRUCTURED = 3
 
   dataStore = _messages.StringField(1)
   dataStoreType = _messages.EnumField('DataStoreTypeValueValuesEnum', 2)
@@ -7609,12 +7610,13 @@ class GoogleCloudDialogflowCxV3beta1DataStoreConnection(_messages.Message):
         search.
       PUBLIC_WEB: A data store that contains public web content.
       UNSTRUCTURED: A data store that contains unstructured private data.
-      FAQ: A data store that contains structured data used as FAQ.
+      STRUCTURED: A data store that contains structured data (for example
+        FAQ).
     """
     DATA_STORE_TYPE_UNSPECIFIED = 0
     PUBLIC_WEB = 1
     UNSTRUCTURED = 2
-    FAQ = 3
+    STRUCTURED = 3
 
   dataStore = _messages.StringField(1)
   dataStoreType = _messages.EnumField('DataStoreTypeValueValuesEnum', 2)
@@ -13297,6 +13299,8 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
       deprecated. Please use [`speech_contexts`]() instead. If you specify
       both [`phrase_hints`]() and [`speech_contexts`](), Dialogflow will treat
       the [`phrase_hints`]() as a single additional [`SpeechContext`]().
+    phraseSets: A collection of phrase set resources to use for speech
+      adaptation.
     sampleRateHertz: Required. Sample rate (in Hertz) of the audio content
       sent in the query. Refer to [Cloud Speech API
       documentation](https://cloud.google.com/speech-to-text/docs/basics) for
@@ -13401,9 +13405,10 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
   modelVariant = _messages.EnumField('ModelVariantValueValuesEnum', 7)
   optOutConformerModelMigration = _messages.BooleanField(8)
   phraseHints = _messages.StringField(9, repeated=True)
-  sampleRateHertz = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  singleUtterance = _messages.BooleanField(11)
-  speechContexts = _messages.MessageField('GoogleCloudDialogflowV2SpeechContext', 12, repeated=True)
+  phraseSets = _messages.StringField(10, repeated=True)
+  sampleRateHertz = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  singleUtterance = _messages.BooleanField(12)
+  speechContexts = _messages.MessageField('GoogleCloudDialogflowV2SpeechContext', 13, repeated=True)
 
 
 class GoogleCloudDialogflowV2InputConfig(_messages.Message):
@@ -16184,6 +16189,8 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
       Dialogflow non-telephony) - command_and_search Leave this field
       unspecified to use [Agent Speech settings](https://cloud.google.com/dial
       ogflow/cx/docs/concept/agent#settings-speech) for model selection.
+    phraseSets: List of names of Cloud Speech phrase sets that are used for
+      transcription.
     sampleRateHertz: Sample rate (in Hertz) of the audio content sent in the
       query. Refer to [Cloud Speech API
       documentation](https://cloud.google.com/speech-to-text/docs/basics) for
@@ -16284,9 +16291,10 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
   enableWordInfo = _messages.BooleanField(2)
   languageCode = _messages.StringField(3)
   model = _messages.StringField(4)
-  sampleRateHertz = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  speechModelVariant = _messages.EnumField('SpeechModelVariantValueValuesEnum', 6)
-  useTimeoutBasedEndpointing = _messages.BooleanField(7)
+  phraseSets = _messages.StringField(5, repeated=True)
+  sampleRateHertz = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  speechModelVariant = _messages.EnumField('SpeechModelVariantValueValuesEnum', 7)
+  useTimeoutBasedEndpointing = _messages.BooleanField(8)
 
 
 class GoogleCloudDialogflowV2SuggestArticlesRequest(_messages.Message):

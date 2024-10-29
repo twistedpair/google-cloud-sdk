@@ -38,7 +38,7 @@ class AuditReportsClient(object):
   def Generate(
       self,
       scope: str,
-      compliance_standard: str,
+      compliance_framework: str,
       report_format: str,
       gcs_uri: str,
       is_parent_folder: bool,
@@ -47,8 +47,8 @@ class AuditReportsClient(object):
 
     Args:
       scope: The scope for which to generate the report.
-      compliance_standard: Compliance standard against which the Report must be
-        generated.
+      compliance_framework: Compliance framework against which the Report must
+        be generated.
       report_format: The format in which the audit report should be generated.
       gcs_uri: Destination Cloud storage bucket where report and evidence must
         be uploaded.
@@ -64,7 +64,7 @@ class AuditReportsClient(object):
     )
 
     inner_req = self.messages.GenerateAuditReportRequest()
-    inner_req.complianceStandard = compliance_standard
+    inner_req.complianceFramework = compliance_framework
     inner_req.reportFormat = self.report_format_map[report_format]
     inner_req.gcsUri = gcs_uri
 

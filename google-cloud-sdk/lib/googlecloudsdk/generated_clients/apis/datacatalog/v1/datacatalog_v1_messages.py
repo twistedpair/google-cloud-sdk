@@ -143,6 +143,42 @@ class DatacatalogEntriesLookupRequest(_messages.Message):
   sqlResource = _messages.StringField(5)
 
 
+class DatacatalogOrganizationsLocationsRetrieveConfigRequest(_messages.Message):
+  r"""A DatacatalogOrganizationsLocationsRetrieveConfigRequest object.
+
+  Fields:
+    name: Required. The organization whose config is being retrieved.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DatacatalogOrganizationsLocationsRetrieveEffectiveConfigRequest(_messages.Message):
+  r"""A DatacatalogOrganizationsLocationsRetrieveEffectiveConfigRequest
+  object.
+
+  Fields:
+    name: Required. The resource whose effective config is being retrieved.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DatacatalogOrganizationsLocationsSetConfigRequest(_messages.Message):
+  r"""A DatacatalogOrganizationsLocationsSetConfigRequest object.
+
+  Fields:
+    googleCloudDatacatalogV1SetConfigRequest: A
+      GoogleCloudDatacatalogV1SetConfigRequest resource to be passed as the
+      request body.
+    name: Required. The organization or project whose config is being
+      specified.
+  """
+
+  googleCloudDatacatalogV1SetConfigRequest = _messages.MessageField('GoogleCloudDatacatalogV1SetConfigRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class DatacatalogProjectsLocationsEntryGroupsCreateRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsEntryGroupsCreateRequest object.
 
@@ -663,6 +699,31 @@ class DatacatalogProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class DatacatalogProjectsLocationsRetrieveEffectiveConfigRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsRetrieveEffectiveConfigRequest object.
+
+  Fields:
+    name: Required. The resource whose effective config is being retrieved.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DatacatalogProjectsLocationsSetConfigRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsSetConfigRequest object.
+
+  Fields:
+    googleCloudDatacatalogV1SetConfigRequest: A
+      GoogleCloudDatacatalogV1SetConfigRequest resource to be passed as the
+      request body.
+    name: Required. The organization or project whose config is being
+      specified.
+  """
+
+  googleCloudDatacatalogV1SetConfigRequest = _messages.MessageField('GoogleCloudDatacatalogV1SetConfigRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class DatacatalogProjectsLocationsTagTemplatesCreateRequest(_messages.Message):
@@ -2083,12 +2144,18 @@ class GoogleCloudDatacatalogV1EntryGroup(_messages.Message):
     name: Identifier. The resource name of the entry group in URL format.
       Note: The entry group itself and its child resources might not be stored
       in the location specified in its name.
+    transferredToDataplex: Optional. When set to [true], it means DataCatalog
+      EntryGroup was transferred to Dataplex Catalog Service. It makes
+      EntryGroup and its Entries to be read-only in DataCatalog. However, new
+      Tags on EntryGroup and its Entries can be created. After setting the
+      flag to [true] it cannot be unset.
   """
 
   dataCatalogTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 1)
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
   name = _messages.StringField(4)
+  transferredToDataplex = _messages.BooleanField(5)
 
 
 class GoogleCloudDatacatalogV1EntryOverview(_messages.Message):
@@ -2482,6 +2549,55 @@ class GoogleCloudDatacatalogV1LookerSystemSpec(_messages.Message):
   parentViewId = _messages.StringField(6)
 
 
+class GoogleCloudDatacatalogV1MigrationConfig(_messages.Message):
+  r"""The configuration related to the migration to Dataplex applied to an
+  organization or project. It is the response message for SetConfig and
+  RetrieveEffectiveConfig.
+
+  Enums:
+    CatalogUiExperienceValueValuesEnum: Opt-in status for the UI switch to
+      Dataplex.
+    TagTemplateMigrationValueValuesEnum: Opt-in status for the migration of
+      Tag Templates to Dataplex.
+
+  Fields:
+    catalogUiExperience: Opt-in status for the UI switch to Dataplex.
+    tagTemplateMigration: Opt-in status for the migration of Tag Templates to
+      Dataplex.
+  """
+
+  class CatalogUiExperienceValueValuesEnum(_messages.Enum):
+    r"""Opt-in status for the UI switch to Dataplex.
+
+    Values:
+      CATALOG_UI_EXPERIENCE_UNSPECIFIED: Default value. The default UI is
+        Dataplex.
+      CATALOG_UI_EXPERIENCE_ENABLED: The UI is Dataplex.
+      CATALOG_UI_EXPERIENCE_DISABLED: The UI is Data Catalog.
+    """
+    CATALOG_UI_EXPERIENCE_UNSPECIFIED = 0
+    CATALOG_UI_EXPERIENCE_ENABLED = 1
+    CATALOG_UI_EXPERIENCE_DISABLED = 2
+
+  class TagTemplateMigrationValueValuesEnum(_messages.Enum):
+    r"""Opt-in status for the migration of Tag Templates to Dataplex.
+
+    Values:
+      TAG_TEMPLATE_MIGRATION_UNSPECIFIED: Default value. Migration of Tag
+        Templates from Data Catalog to Dataplex is not performed.
+      TAG_TEMPLATE_MIGRATION_ENABLED: Migration of Tag Templates from Data
+        Catalog to Dataplex is enabled.
+      TAG_TEMPLATE_MIGRATION_DISABLED: Migration of Tag Templates from Data
+        Catalog to Dataplex is disabled.
+    """
+    TAG_TEMPLATE_MIGRATION_UNSPECIFIED = 0
+    TAG_TEMPLATE_MIGRATION_ENABLED = 1
+    TAG_TEMPLATE_MIGRATION_DISABLED = 2
+
+  catalogUiExperience = _messages.EnumField('CatalogUiExperienceValueValuesEnum', 1)
+  tagTemplateMigration = _messages.EnumField('TagTemplateMigrationValueValuesEnum', 2)
+
+
 class GoogleCloudDatacatalogV1ModelSpec(_messages.Message):
   r"""Specification that applies to a model. Valid only for entries with the
   `MODEL` type.
@@ -2511,6 +2627,51 @@ class GoogleCloudDatacatalogV1ModifyEntryOverviewRequest(_messages.Message):
   """
 
   entryOverview = _messages.MessageField('GoogleCloudDatacatalogV1EntryOverview', 1)
+
+
+class GoogleCloudDatacatalogV1OrganizationConfig(_messages.Message):
+  r"""The configuration related to the migration from Data Catalog to Dataplex
+  that has been applied to an organization and any projects under it. It is
+  the response message for RetrieveConfig.
+
+  Messages:
+    ConfigValue: Map of organizations and project resource names and their
+      configuration. The format for the map keys is
+      `organizations/{organizationId}` or `projects/{projectId}`.
+
+  Fields:
+    config: Map of organizations and project resource names and their
+      configuration. The format for the map keys is
+      `organizations/{organizationId}` or `projects/{projectId}`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ConfigValue(_messages.Message):
+    r"""Map of organizations and project resource names and their
+    configuration. The format for the map keys is
+    `organizations/{organizationId}` or `projects/{projectId}`.
+
+    Messages:
+      AdditionalProperty: An additional property for a ConfigValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ConfigValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ConfigValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudDatacatalogV1MigrationConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudDatacatalogV1MigrationConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  config = _messages.MessageField('ConfigValue', 1)
 
 
 class GoogleCloudDatacatalogV1PersonalDetails(_messages.Message):
@@ -3103,6 +3264,53 @@ class GoogleCloudDatacatalogV1ServiceSpec(_messages.Message):
   cloudBigtableInstanceSpec = _messages.MessageField('GoogleCloudDatacatalogV1CloudBigtableInstanceSpec', 1)
 
 
+class GoogleCloudDatacatalogV1SetConfigRequest(_messages.Message):
+  r"""Request message for SetConfig.
+
+  Enums:
+    CatalogUiExperienceValueValuesEnum: Opt-in status for the UI switch to
+      Dataplex.
+    TagTemplateMigrationValueValuesEnum: Opt-in status for the migration of
+      Tag Templates to Dataplex.
+
+  Fields:
+    catalogUiExperience: Opt-in status for the UI switch to Dataplex.
+    tagTemplateMigration: Opt-in status for the migration of Tag Templates to
+      Dataplex.
+  """
+
+  class CatalogUiExperienceValueValuesEnum(_messages.Enum):
+    r"""Opt-in status for the UI switch to Dataplex.
+
+    Values:
+      CATALOG_UI_EXPERIENCE_UNSPECIFIED: Default value. The default UI is
+        Dataplex.
+      CATALOG_UI_EXPERIENCE_ENABLED: The UI is Dataplex.
+      CATALOG_UI_EXPERIENCE_DISABLED: The UI is Data Catalog.
+    """
+    CATALOG_UI_EXPERIENCE_UNSPECIFIED = 0
+    CATALOG_UI_EXPERIENCE_ENABLED = 1
+    CATALOG_UI_EXPERIENCE_DISABLED = 2
+
+  class TagTemplateMigrationValueValuesEnum(_messages.Enum):
+    r"""Opt-in status for the migration of Tag Templates to Dataplex.
+
+    Values:
+      TAG_TEMPLATE_MIGRATION_UNSPECIFIED: Default value. Migration of Tag
+        Templates from Data Catalog to Dataplex is not performed.
+      TAG_TEMPLATE_MIGRATION_ENABLED: Migration of Tag Templates from Data
+        Catalog to Dataplex is enabled.
+      TAG_TEMPLATE_MIGRATION_DISABLED: Migration of Tag Templates from Data
+        Catalog to Dataplex is disabled.
+    """
+    TAG_TEMPLATE_MIGRATION_UNSPECIFIED = 0
+    TAG_TEMPLATE_MIGRATION_ENABLED = 1
+    TAG_TEMPLATE_MIGRATION_DISABLED = 2
+
+  catalogUiExperience = _messages.EnumField('CatalogUiExperienceValueValuesEnum', 1)
+  tagTemplateMigration = _messages.EnumField('TagTemplateMigrationValueValuesEnum', 2)
+
+
 class GoogleCloudDatacatalogV1SqlDatabaseSystemSpec(_messages.Message):
   r"""Specification that applies to entries that are part `SQL_DATABASE`
   system (user_specified_type)
@@ -3194,6 +3402,10 @@ class GoogleCloudDatacatalogV1Tag(_messages.Message):
   IAM](https://cloud.google.com/data-catalog/docs/concepts/iam) for
   information on the permissions needed to create or view tags.
 
+  Enums:
+    DataplexTransferStatusValueValuesEnum: Output only. Denotes the transfer
+      status of the Tag Template.
+
   Messages:
     FieldsValue: Required. Maps the ID of a tag field to its value and
       additional information about that field. Tag template defines valid
@@ -3204,6 +3416,8 @@ class GoogleCloudDatacatalogV1Tag(_messages.Message):
       scope allows you to attach tags to an individual column based on that
       schema. To attach a tag to a nested column, separate column names with a
       dot (`.`). Example: `column.nested_column`.
+    dataplexTransferStatus: Output only. Denotes the transfer status of the
+      Tag Template.
     fields: Required. Maps the ID of a tag field to its value and additional
       information about that field. Tag template defines valid field IDs. A
       tag must have at least 1 field and at most 500 fields.
@@ -3215,6 +3429,24 @@ class GoogleCloudDatacatalogV1Tag(_messages.Message):
       EMPLATE_ID}` This field cannot be modified after creation.
     templateDisplayName: Output only. The display name of the tag template.
   """
+
+  class DataplexTransferStatusValueValuesEnum(_messages.Enum):
+    r"""Output only. Denotes the transfer status of the Tag Template.
+
+    Values:
+      DATAPLEX_TRANSFER_STATUS_UNSPECIFIED: Default value. TagTemplate and its
+        tags are only visible and editable in DataCatalog.
+      MIGRATED: TagTemplate and its tags are auto-copied to Dataplex service.
+        Visible in both services. Editable in DataCatalog, read-only in
+        Dataplex. Deprecated: Individual TagTemplate migration is deprecated
+        in favor of organization or project wide TagTemplate migration opt-in.
+      TRANSFERRED: TagTemplate and its tags are auto-copied to Dataplex
+        service. Visible in both services. Editable in Dataplex, read-only in
+        DataCatalog.
+    """
+    DATAPLEX_TRANSFER_STATUS_UNSPECIFIED = 0
+    MIGRATED = 1
+    TRANSFERRED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FieldsValue(_messages.Message):
@@ -3243,10 +3475,11 @@ class GoogleCloudDatacatalogV1Tag(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   column = _messages.StringField(1)
-  fields = _messages.MessageField('FieldsValue', 2)
-  name = _messages.StringField(3)
-  template = _messages.StringField(4)
-  templateDisplayName = _messages.StringField(5)
+  dataplexTransferStatus = _messages.EnumField('DataplexTransferStatusValueValuesEnum', 2)
+  fields = _messages.MessageField('FieldsValue', 3)
+  name = _messages.StringField(4)
+  template = _messages.StringField(5)
+  templateDisplayName = _messages.StringField(6)
 
 
 class GoogleCloudDatacatalogV1TagField(_messages.Message):
@@ -3346,9 +3579,13 @@ class GoogleCloudDatacatalogV1TagTemplate(_messages.Message):
         Visible in both services. Editable in DataCatalog, read-only in
         Dataplex. Deprecated: Individual TagTemplate migration is deprecated
         in favor of organization or project wide TagTemplate migration opt-in.
+      TRANSFERRED: TagTemplate and its tags are auto-copied to Dataplex
+        service. Visible in both services. Editable in Dataplex, read-only in
+        DataCatalog.
     """
     DATAPLEX_TRANSFER_STATUS_UNSPECIFIED = 0
     MIGRATED = 1
+    TRANSFERRED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FieldsValue(_messages.Message):

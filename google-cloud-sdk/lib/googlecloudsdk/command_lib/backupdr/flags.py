@@ -290,17 +290,30 @@ def AddNoAsyncFlag(parser):
   parser.add_argument('--no-async', action='store_true', help=help_text)
 
 
-def AddForceDeleteFlag(parser):
-  """Adds a --force-delete flag to the given parser."""
+def AddIgnoreInactiveDatasourcesFlag(parser):
+  """Adds a --ignore-inactive-datasources flag to the given parser."""
   help_text = (
       'If set, the following restrictions against deletion of'
       ' the backup vault instance can be overridden:'
       ' * deletion of a backup vault instance containing no backups,'
       'but still contains empty datasources.'
+  )
+  parser.add_argument(
+      '--ignore-inactive-datasources', action='store_true', help=help_text
+  )
+
+
+def AddIgnoreBackupPlanReferencesFlag(parser):
+  """Adds a --ignore-backup-plan-references flag to the given parser."""
+  help_text = (
+      'If set, the following restrictions against deletion of'
+      ' the backup vault instance can be overridden:'
       ' * deletion of a backup vault instance being actively referenced'
       ' by a backup plan.'
   )
-  parser.add_argument('--force-delete', action='store_true', help=help_text)
+  parser.add_argument(
+      '--ignore-backup-plan-references', action='store_true', help=help_text
+  )
 
 
 def AddForceUpdateFlag(parser):
@@ -370,7 +383,8 @@ def AddEnforcedRetention(parser, required):
       help=(
           'Backups will be kept for this minimum period before they can be'
           ' deleted. Once the effective time is reached, the enforced retention'
-          ' period cannot be decreased or removed. '
+          ' period cannot be decreased or removed. The value must be specified'
+          ' in relative time format (e.g. p1d, p1m, p1m1d).'
       ),
   )
 
@@ -444,6 +458,33 @@ def AddUnlockBackupMinEnforcedRetention(parser):
       '--unlock-backup-min-enforced-retention',
       action='store_true',
       help=help_text,
+  )
+
+
+def AddBackupVaultAccessRestrictionEnumFlag(parser):
+  """Adds Backup Vault's Access Restriction flag to the parser."""
+  choices = [
+      'within-project',
+      'within-org',
+      'unrestricted',
+      'within-org-but-unrestricted-for-ba',
+  ]
+
+  parser.add_argument(
+      '--access-restriction',
+      choices=choices,
+      default='within-org',
+      hidden=True,
+      help=(
+          'Authorize certain sources and destinations for data being sent into,'
+          ' or restored from, the backup vault being created. This choice is'
+          ' permanent and determines the type of resources that can be stored.'
+          ' Restricting access to within your project or organization limits'
+          ' the resources to those managed through the Google Cloud console'
+          ' (e.g., Compute Engine VMs). Unrestricted access is required for'
+          ' resources managed through the management console (e.g., VMware'
+          ' Engine VMs, databases, and file systems).'
+      ),
   )
 
 

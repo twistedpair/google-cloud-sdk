@@ -458,7 +458,7 @@ class ChartValidation(_messages.Message):
 
 
 class ChatContext(_messages.Message):
-  r"""Next ID: 6
+  r"""A ChatContext object.
 
   Fields:
     history: Optional. History should be in sequence with the first one being
@@ -1349,6 +1349,120 @@ class CloudaicompanionProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class CloudaicompanionProjectsLocationsLoggingSettingsCreateRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsLoggingSettingsCreateRequest object.
+
+  Fields:
+    loggingSetting: A LoggingSetting resource to be passed as the request
+      body.
+    loggingSettingId: Required. Id of the requesting object. If auto-
+      generating Id server-side, remove this field and setting_id from the
+      method_signature of Create RPC.
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  loggingSetting = _messages.MessageField('LoggingSetting', 1)
+  loggingSettingId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class CloudaicompanionProjectsLocationsLoggingSettingsDeleteRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsLoggingSettingsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class CloudaicompanionProjectsLocationsLoggingSettingsGetRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsLoggingSettingsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudaicompanionProjectsLocationsLoggingSettingsListRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsLoggingSettingsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListLoggingSettingsRequest.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class CloudaicompanionProjectsLocationsLoggingSettingsPatchRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsLoggingSettingsPatchRequest object.
+
+  Fields:
+    loggingSetting: A LoggingSetting resource to be passed as the request
+      body.
+    name: Identifier. Name of the resource. Format:projects/{project}/location
+      s/{location}/loggingsettings/{loggingsetting}
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the LoggingSetting resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields present in the request will be
+      overwritten.
+  """
+
+  loggingSetting = _messages.MessageField('LoggingSetting', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class CloudaicompanionProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A CloudaicompanionProjectsLocationsOperationsCancelRequest object.
 
@@ -1396,117 +1510,6 @@ class CloudaicompanionProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
-
-
-class CloudaicompanionProjectsLocationsSettingsCreateRequest(_messages.Message):
-  r"""A CloudaicompanionProjectsLocationsSettingsCreateRequest object.
-
-  Fields:
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    setting: A Setting resource to be passed as the request body.
-    settingId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and setting_id from the method_signature
-      of Create RPC
-  """
-
-  parent = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  setting = _messages.MessageField('Setting', 3)
-  settingId = _messages.StringField(4)
-
-
-class CloudaicompanionProjectsLocationsSettingsDeleteRequest(_messages.Message):
-  r"""A CloudaicompanionProjectsLocationsSettingsDeleteRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class CloudaicompanionProjectsLocationsSettingsGetRequest(_messages.Message):
-  r"""A CloudaicompanionProjectsLocationsSettingsGetRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class CloudaicompanionProjectsLocationsSettingsListRequest(_messages.Message):
-  r"""A CloudaicompanionProjectsLocationsSettingsListRequest object.
-
-  Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListSettingsRequest
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class CloudaicompanionProjectsLocationsSettingsPatchRequest(_messages.Message):
-  r"""A CloudaicompanionProjectsLocationsSettingsPatchRequest object.
-
-  Fields:
-    name: Identifier. name of resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    setting: A Setting resource to be passed as the request body.
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the Setting resource by the update. The fields specified
-      in the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields present in the request will be
-      overwritten.
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  setting = _messages.MessageField('Setting', 3)
-  updateMask = _messages.StringField(4)
 
 
 class CloudaicompanionProjectsLocationsTopicsCreateRequest(_messages.Message):
@@ -2440,10 +2443,14 @@ class ExperienceContext(_messages.Message):
   code generation ("/appsheet/generate").
 
   Fields:
+    agent: Optional. The Backend Agent to route this request to (if known).
     experience: Required. The Duet experience that this request belongs to.
+    task: Optional. The backend Task(s) this request maps to (if known).
   """
 
-  experience = _messages.StringField(1)
+  agent = _messages.StringField(1)
+  experience = _messages.StringField(2)
+  task = _messages.StringField(3)
 
 
 class Expr(_messages.Message):
@@ -2683,6 +2690,19 @@ class GeneratePythonResponse(_messages.Message):
 
   code = _messages.StringField(1)
   errors = _messages.StringField(2, repeated=True)
+
+
+class History(_messages.Message):
+  r"""History contains past turns of query and sql in chronological order
+  (oldest first), for multi-turn SqlGen.
+
+  Fields:
+    pastTurns: Optional. A list of historical queries and generated SQLs in
+      chronological order (oldest first). The past_turns can be empty if
+      current turn is the first turn.
+  """
+
+  pastTurns = _messages.MessageField('Turn', 1, repeated=True)
 
 
 class InferSchemaRequest(_messages.Message):
@@ -3166,6 +3186,21 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListLoggingSettingsResponse(_messages.Message):
+  r"""Message for response to listing LoggingSettings
+
+  Fields:
+    loggingSettings: The list of LoggingSettings.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Unordered list. Locations that could not be reached.
+  """
+
+  loggingSettings = _messages.MessageField('LoggingSetting', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -3190,21 +3225,6 @@ class ListRepositoryGroupsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   repositoryGroups = _messages.MessageField('RepositoryGroup', 2, repeated=True)
-
-
-class ListSettingsResponse(_messages.Message):
-  r"""Message for response to listing Settings
-
-  Fields:
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    settings: The list of Setting
-    unreachable: Unordered list. Locations that could not be reached.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  settings = _messages.MessageField('Setting', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListTopicsResponse(_messages.Message):
@@ -3300,6 +3320,50 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LoggingSetting(_messages.Message):
+  r"""Message describing LoggingSetting object
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs.
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp.
+    labels: Optional. Labels as key value pairs.
+    name: Identifier. Name of the resource. Format:projects/{project}/location
+      s/{location}/loggingsettings/{loggingsetting}
+    updateTime: Output only. [Output only] Update time stamp.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
 
 
 class LongColumn(_messages.Message):
@@ -4004,49 +4068,6 @@ class SetIamPolicyRequest(_messages.Message):
   updateMask = _messages.StringField(2)
 
 
-class Setting(_messages.Message):
-  r"""Message describing Setting object
-
-  Messages:
-    LabelsValue: Optional. Labels as key value pairs
-
-  Fields:
-    createTime: Output only. [Output only] Create time stamp
-    labels: Optional. Labels as key value pairs
-    name: Identifier. name of resource
-    updateTime: Output only. [Output only] Update time stamp
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
-
-
 class SqlGenCitation(_messages.Message):
   r"""Citation identifies which parts of content have a license
 
@@ -4122,19 +4143,41 @@ class SqlGenRequest(_messages.Message):
   r"""API for generating SQL from natural language queries This API is under
   development and subject to change
 
+  Enums:
+    SkuValueValuesEnum: Required. Which SKU is active for the request.
+
   Fields:
     context: Optional. Client-provided contextual information. The service
       will process and extend this to generate context for the SQL generation
+    history: Optional. History of previous queries and generated SQL, implying
+      to use multi-turn SqlGen when present.
     overrideProjectNumber: Optional. Override project number. Used by products
       that send their producer project in the `instance` field but need to
       pass on the originating customer's project number as an identifier in
       calls to dependent systems such as inference and context retrieval.
     query: Required. User query for sql generation
+    sku: Required. Which SKU is active for the request.
   """
 
+  class SkuValueValuesEnum(_messages.Enum):
+    r"""Required. Which SKU is active for the request.
+
+    Values:
+      SKU_UNSPECIFIED: Unspecified SKU. Used for products with no SKU specific
+        entitlement config.
+      SKU_CODE_ASSIST_ENTERPRISE: SKU for Gemini code assist enterprise (CAE).
+      SKU_BIGQUERY_ENTERPRISE_PLUS_EDITION: SKU for BigQuery enterprise plus
+        edition (EPE).
+    """
+    SKU_UNSPECIFIED = 0
+    SKU_CODE_ASSIST_ENTERPRISE = 1
+    SKU_BIGQUERY_ENTERPRISE_PLUS_EDITION = 2
+
   context = _messages.MessageField('SqlGenContext', 1)
-  overrideProjectNumber = _messages.StringField(2)
-  query = _messages.StringField(3)
+  history = _messages.MessageField('History', 2)
+  overrideProjectNumber = _messages.StringField(3)
+  query = _messages.StringField(4)
+  sku = _messages.EnumField('SkuValueValuesEnum', 5)
 
 
 class SqlGenResponse(_messages.Message):
@@ -4382,12 +4425,14 @@ class SummarizeDataRequest(_messages.Message):
   Enums:
     ClientTypeValueValuesEnum: Required. Client ID assigned for the incoming
       request.
+    SkuValueValuesEnum: Optional. Which SKU is active for the request.
 
   Fields:
     chartData: Chart data.
     clientType: Required. Client ID assigned for the incoming request.
     requestContext: Optional. Context information for better tailored
       insights.
+    sku: Optional. Which SKU is active for the request.
   """
 
   class ClientTypeValueValuesEnum(_messages.Enum):
@@ -4410,9 +4455,24 @@ class SummarizeDataRequest(_messages.Message):
     LOOKER_STUDIO_CONVERSATIONAL_NOTEBOOK = 4
     DATAPORT_RESULT_SET = 5
 
+  class SkuValueValuesEnum(_messages.Enum):
+    r"""Optional. Which SKU is active for the request.
+
+    Values:
+      SKU_UNSPECIFIED: Unspecified SKU. Used for products with no SKU specific
+        entitlement config.
+      SKU_CODE_ASSIST_ENTERPRISE: SKU for Gemini code assist enterprise (CAE).
+      SKU_BIGQUERY_ENTERPRISE_PLUS_EDITION: SKU for BigQuery enterprise plus
+        edition (EPE).
+    """
+    SKU_UNSPECIFIED = 0
+    SKU_CODE_ASSIST_ENTERPRISE = 1
+    SKU_BIGQUERY_ENTERPRISE_PLUS_EDITION = 2
+
   chartData = _messages.MessageField('ChartData', 1)
   clientType = _messages.EnumField('ClientTypeValueValuesEnum', 2)
   requestContext = _messages.MessageField('RequestContext', 3)
+  sku = _messages.EnumField('SkuValueValuesEnum', 4)
 
 
 class SummarizeDataResponse(_messages.Message):
@@ -4935,6 +4995,19 @@ class TriggerConfig(_messages.Message):
   triggerId = _messages.StringField(8)
   triggerNumber = _messages.StringField(9)
   triggerType = _messages.EnumField('TriggerTypeValueValuesEnum', 10)
+
+
+class Turn(_messages.Message):
+  r"""A pair of historical user query and generated SQL of one turn.
+
+  Fields:
+    query: Required. User query for sql generation
+    sql: Required. The generated SQL that, when executed, should answer the
+      query
+  """
+
+  query = _messages.StringField(1)
+  sql = _messages.StringField(2)
 
 
 class UndeleteEnablementRequest(_messages.Message):

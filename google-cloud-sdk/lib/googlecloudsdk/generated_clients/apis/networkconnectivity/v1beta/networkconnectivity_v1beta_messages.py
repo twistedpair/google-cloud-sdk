@@ -149,6 +149,27 @@ class GoogleCloudNetworkconnectivityV1betaAcceptHubSpokeResponse(_messages.Messa
   spoke = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaSpoke', 1)
 
 
+class GoogleCloudNetworkconnectivityV1betaActivateSpokeRequest(_messages.Message):
+  r"""The request for HubService.ActivateSpoke.
+
+  Fields:
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
+      mistakenly creating duplicate commitments. The request ID must be a
+      valid UUID, with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  requestId = _messages.StringField(1)
+
+
 class GoogleCloudNetworkconnectivityV1betaAutoAccept(_messages.Message):
   r"""The auto-accept setting for a group controls whether proposed spokes are
   automatically attached to the hub. If auto-accept is enabled, the spoke
@@ -397,6 +418,27 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair(_message
   zone = _messages.StringField(8)
 
 
+class GoogleCloudNetworkconnectivityV1betaDeactivateSpokeRequest(_messages.Message):
+  r"""The request for HubService.DeactivateSpoke.
+
+  Fields:
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
+      mistakenly creating duplicate commitments. The request ID must be a
+      valid UUID, with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  requestId = _messages.StringField(1)
+
+
 class GoogleCloudNetworkconnectivityV1betaFilter(_messages.Message):
   r"""Filter matches L4 traffic.
 
@@ -437,6 +479,65 @@ class GoogleCloudNetworkconnectivityV1betaFilter(_messages.Message):
   ipProtocol = _messages.StringField(2)
   protocolVersion = _messages.EnumField('ProtocolVersionValueValuesEnum', 3)
   srcRange = _messages.StringField(4)
+
+
+class GoogleCloudNetworkconnectivityV1betaGateway(_messages.Message):
+  r"""A gateway that can apply specialized traffic processing.
+
+  Enums:
+    CapacityValueValuesEnum: Optional. The aggregate processing capacity of
+      this gateway.
+
+  Fields:
+    capacity: Optional. The aggregate processing capacity of this gateway.
+    ipRangeReservations: Optional. A list of IP ranges that are reserved for
+      this gateway's internal intfrastructure.
+    landingNetwork: Optional. This field will be deprecated and replaced
+      before gateway spokes reach General Availability.
+    services: Optional. A list of services that can process traffic sent to
+      this gateway. Only a single service is supported and that service will
+      process all traffic sent to the gateway.
+  """
+
+  class CapacityValueValuesEnum(_messages.Enum):
+    r"""Optional. The aggregate processing capacity of this gateway.
+
+    Values:
+      GATEWAY_CAPACITY_UNSPECIFIED: The gateway capacity is unspecified.
+      CAPACITY_1_GBPS: The gateway has 1 Gbps of aggregate processing capacity
+      CAPACITY_5_GBPS: The gateway has 5 Gbps of aggregate processing capacity
+      CAPACITY_10_GBPS: The gateway has 10 Gbps of aggregate processing
+        capacity
+      CAPACITY_25_GBPS: The gateway has 25 Gbps of aggregate processing
+        capacity
+      CAPACITY_50_GBPS: The gateway has 50 Gbps of aggregate processing
+        capacity
+      CAPACITY_100_GBPS: The gateway has 100 Gbps of aggregate processing
+        capacity
+    """
+    GATEWAY_CAPACITY_UNSPECIFIED = 0
+    CAPACITY_1_GBPS = 1
+    CAPACITY_5_GBPS = 2
+    CAPACITY_10_GBPS = 3
+    CAPACITY_25_GBPS = 4
+    CAPACITY_50_GBPS = 5
+    CAPACITY_100_GBPS = 6
+
+  capacity = _messages.EnumField('CapacityValueValuesEnum', 1)
+  ipRangeReservations = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaIpRangeReservation', 2, repeated=True)
+  landingNetwork = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLandingNetwork', 3)
+  services = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaGatewayService', 4, repeated=True)
+
+
+class GoogleCloudNetworkconnectivityV1betaGatewayService(_messages.Message):
+  r"""Exactly one field must be populated. For multiple services, add
+  additional entries to `HubGateway.services`.
+
+  Fields:
+    linkedSseGateway: Optional. Apply Secure Services Edge processing
+  """
+
+  linkedSseGateway = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedSSEGateway', 1)
 
 
 class GoogleCloudNetworkconnectivityV1betaGroup(_messages.Message):
@@ -482,6 +583,8 @@ class GoogleCloudNetworkconnectivityV1betaGroup(_messages.Message):
       CREATING: The resource's create operation is in progress.
       ACTIVE: The resource is active
       DELETING: The resource's delete operation is in progress.
+      ACTIVATING: The resource's activate operation is in progress.
+      DEACTIVATING: The resource's deactivate operation is in progress.
       ACCEPTING: The resource's accept operation is in progress.
       REJECTING: The resource's reject operation is in progress.
       UPDATING: The resource's update operation is in progress.
@@ -493,11 +596,13 @@ class GoogleCloudNetworkconnectivityV1betaGroup(_messages.Message):
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
-    ACCEPTING = 4
-    REJECTING = 5
-    UPDATING = 6
-    INACTIVE = 7
-    OBSOLETE = 8
+    ACTIVATING = 4
+    DEACTIVATING = 5
+    ACCEPTING = 6
+    REJECTING = 7
+    UPDATING = 8
+    INACTIVE = 9
+    OBSOLETE = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -566,6 +671,9 @@ class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
   Fields:
     createTime: Output only. The time the hub was created.
     description: An optional description of the hub.
+    exchangePupi: Optional. Whether Privately Used Public IP (PUPI) exchange
+      is enabled for the hub. If true, PUPI exchange will be allowed in VPC
+      spokes attached to the hub. The default value is false.
     exportPsc: Optional. Whether Private Service Connect transitivity is
       enabled for the hub. If true, Private Service Connect endpoints in VPC
       spokes attached to the hub are made accessible to other VPC spokes
@@ -632,10 +740,14 @@ class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
       STAR: Star topology is implemented. Two groups, `center` and `edge`, are
         automatically created along with hub creation. Spokes have to join one
         of the groups during creation.
+      HYBRID_INSPECTION: Hybrid inspection has 4 groups ('non-prod', 'prod',
+        'services', and 'untrusted') that are automatically created along with
+        hub creation.
     """
     PRESET_TOPOLOGY_UNSPECIFIED = 0
     MESH = 1
     STAR = 2
+    HYBRID_INSPECTION = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current lifecycle state of this hub.
@@ -645,6 +757,8 @@ class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
       CREATING: The resource's create operation is in progress.
       ACTIVE: The resource is active
       DELETING: The resource's delete operation is in progress.
+      ACTIVATING: The resource's activate operation is in progress.
+      DEACTIVATING: The resource's deactivate operation is in progress.
       ACCEPTING: The resource's accept operation is in progress.
       REJECTING: The resource's reject operation is in progress.
       UPDATING: The resource's update operation is in progress.
@@ -656,11 +770,13 @@ class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
-    ACCEPTING = 4
-    REJECTING = 5
-    UPDATING = 6
-    INACTIVE = 7
-    OBSOLETE = 8
+    ACTIVATING = 4
+    DEACTIVATING = 5
+    ACCEPTING = 6
+    REJECTING = 7
+    UPDATING = 8
+    INACTIVE = 9
+    OBSOLETE = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -690,17 +806,33 @@ class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  exportPsc = _messages.BooleanField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  policyMode = _messages.EnumField('PolicyModeValueValuesEnum', 6)
-  presetTopology = _messages.EnumField('PresetTopologyValueValuesEnum', 7)
-  routeTables = _messages.StringField(8, repeated=True)
-  routingVpcs = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaRoutingVPC', 9, repeated=True)
-  spokeSummary = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaSpokeSummary', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  uniqueId = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  exchangePupi = _messages.BooleanField(3)
+  exportPsc = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  policyMode = _messages.EnumField('PolicyModeValueValuesEnum', 7)
+  presetTopology = _messages.EnumField('PresetTopologyValueValuesEnum', 8)
+  routeTables = _messages.StringField(9, repeated=True)
+  routingVpcs = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaRoutingVPC', 10, repeated=True)
+  spokeSummary = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaSpokeSummary', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  uniqueId = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+
+
+class GoogleCloudNetworkconnectivityV1betaHubStatusEntry(_messages.Message):
+  r"""The hub status entry.
+
+  Fields:
+    count: The number of status. If group_by is not set in the request, the
+      default is 1.
+    groupBy: The same group_by field from the request.
+    pscPropagationStatus: The PSC propagation status.
+  """
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  groupBy = _messages.StringField(2)
+  pscPropagationStatus = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaPscPropagationStatus', 3)
 
 
 class GoogleCloudNetworkconnectivityV1betaInterconnectAttachment(_messages.Message):
@@ -713,6 +845,40 @@ class GoogleCloudNetworkconnectivityV1betaInterconnectAttachment(_messages.Messa
   """
 
   region = _messages.StringField(1)
+
+
+class GoogleCloudNetworkconnectivityV1betaIpRangeReservation(_messages.Message):
+  r"""A list of IP ranges that are reserved for this gateway's internal
+  intfrastructure.
+
+  Fields:
+    ipRange: Required. A block of IP addresses used to allocate supporting
+      infrastructure for this gateway. This block must not overlap with
+      subnets in any spokes or peer VPC networks that the gateway can
+      communicate with. Example: "10.1.2.0/24"
+  """
+
+  ipRange = _messages.StringField(1)
+
+
+class GoogleCloudNetworkconnectivityV1betaLandingNetwork(_messages.Message):
+  r"""Information about the landing network connected to this gateway.
+
+  Fields:
+    network: Optional. A VPC network containing Interconnect VLAN attachments.
+      We will initiate peering to this network; you probably want to
+      reciprocate by peering `network` with `peer_network`.
+    peerNetwork: Optional. We'll initiate peering to `landing_network_uri`
+      from this VPC network. You should reciprocate peering to this network.
+    targetIp: Optional. To egress traffic to the Internet, you should create a
+      static route in the landing network that directs traffic toward this IP
+      address. We will pass traffic through any services attached to this
+      gateway en route to or from the Internet.
+  """
+
+  network = _messages.StringField(1)
+  peerNetwork = _messages.StringField(2)
+  targetIp = _messages.StringField(3)
 
 
 class GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments(_messages.Message):
@@ -741,11 +907,13 @@ class GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments(_message
 
 
 class GoogleCloudNetworkconnectivityV1betaLinkedProducerVpcNetwork(_messages.Message):
-  r"""Next ID: 7
+  r"""A GoogleCloudNetworkconnectivityV1betaLinkedProducerVpcNetwork object.
 
   Fields:
     excludeExportRanges: Optional. IP ranges encompassing the subnets to be
       excluded from peering.
+    includeExportRanges: Optional. IP ranges allowed to be included from
+      peering.
     network: Immutable. The URI of the Service Consumer VPC that the Producer
       VPC is peered with.
     peering: Immutable. The name of the VPC peering between the Service
@@ -756,10 +924,11 @@ class GoogleCloudNetworkconnectivityV1betaLinkedProducerVpcNetwork(_messages.Mes
   """
 
   excludeExportRanges = _messages.StringField(1, repeated=True)
-  network = _messages.StringField(2)
-  peering = _messages.StringField(3)
-  producerNetwork = _messages.StringField(4)
-  serviceConsumerVpcSpoke = _messages.StringField(5)
+  includeExportRanges = _messages.StringField(2, repeated=True)
+  network = _messages.StringField(3)
+  peering = _messages.StringField(4)
+  producerNetwork = _messages.StringField(5)
+  serviceConsumerVpcSpoke = _messages.StringField(6)
 
 
 class GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances(_messages.Message):
@@ -785,6 +954,16 @@ class GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances(_messag
   instances = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaRouterApplianceInstance', 2, repeated=True)
   siteToSiteDataTransfer = _messages.BooleanField(3)
   vpcNetwork = _messages.StringField(4)
+
+
+class GoogleCloudNetworkconnectivityV1betaLinkedSSEGateway(_messages.Message):
+  r"""Apply Secure Services Edge processing
+
+  Fields:
+    sseGatewayUri: Immutable. The URI of a Secure Services Edge Gateway
+  """
+
+  sseGatewayUri = _messages.StringField(1)
 
 
 class GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork(_messages.Message):
@@ -1028,10 +1207,12 @@ class GoogleCloudNetworkconnectivityV1betaLocationMetadata(_messages.Message):
       SITE_TO_CLOUD_SPOKES: Site-to-cloud spokes are supported in this
         location
       SITE_TO_SITE_SPOKES: Site-to-site spokes are supported in this location
+      GATEWAY_SPOKES: Gateway spokes are supported in this location.
     """
     LOCATION_FEATURE_UNSPECIFIED = 0
     SITE_TO_CLOUD_SPOKES = 1
     SITE_TO_SITE_SPOKES = 2
+    GATEWAY_SPOKES = 3
 
   locationFeatures = _messages.EnumField('LocationFeaturesValueListEntryValuesEnum', 1, repeated=True)
 
@@ -1229,6 +1410,78 @@ class GoogleCloudNetworkconnectivityV1betaPolicyBasedRoute(_messages.Message):
   warnings = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaWarnings', 15, repeated=True)
 
 
+class GoogleCloudNetworkconnectivityV1betaPscPropagationStatus(_messages.Message):
+  r"""The PSC propagation status in a hub.
+
+  Enums:
+    CodeValueValuesEnum: The propagation status.
+
+  Fields:
+    code: The propagation status.
+    message: The human-readable summary of the PSC connection propagation
+      status.
+    sourceForwardingRule: The name of the forwarding rule exported to the hub.
+    sourceGroup: The name of the group that the source spoke belongs to.
+    sourceSpoke: The name of the spoke that the source forwarding rule belongs
+      to.
+    targetGroup: The name of the group that the target spoke belongs to.
+    targetSpoke: The name of the spoke that the source forwarding rule
+      propagates to.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""The propagation status.
+
+    Values:
+      CODE_UNSPECIFIED: The code is unspecified.
+      READY: The propagated PSC connection is ready.
+      PROPAGATING: PSC connection is propagating. This is a transient state.
+      ERROR_PRODUCER_PROPAGATED_CONNECTION_LIMIT_EXCEEDED: The PSC connection
+        propagation failed because the VPC network or the project of the
+        target spoke has exceeded the connection limit set by the producer.
+      ERROR_PRODUCER_NAT_IP_SPACE_EXHAUSTED: The PSC connection propagation
+        failed because the NAT IP subnet space has been exhausted. It is
+        equivalent to the `Needs attention` status of the PSC connection. See
+        https://cloud.google.com/vpc/docs/about-accessing-vpc-hosted-services-
+        endpoints#connection-statuses.
+      ERROR_PRODUCER_QUOTA_EXCEEDED: PSC connection propagation failed because
+        the `PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK` quota in
+        the producer VPC network has been exceeded.
+      ERROR_CONSUMER_QUOTA_EXCEEDED: The PSC connection propagation failed
+        because the `PSC_PROPAGATED_CONNECTIONS_PER_VPC_NETWORK` quota in the
+        consumer VPC network has been exceeded.
+    """
+    CODE_UNSPECIFIED = 0
+    READY = 1
+    PROPAGATING = 2
+    ERROR_PRODUCER_PROPAGATED_CONNECTION_LIMIT_EXCEEDED = 3
+    ERROR_PRODUCER_NAT_IP_SPACE_EXHAUSTED = 4
+    ERROR_PRODUCER_QUOTA_EXCEEDED = 5
+    ERROR_CONSUMER_QUOTA_EXCEEDED = 6
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  message = _messages.StringField(2)
+  sourceForwardingRule = _messages.StringField(3)
+  sourceGroup = _messages.StringField(4)
+  sourceSpoke = _messages.StringField(5)
+  targetGroup = _messages.StringField(6)
+  targetSpoke = _messages.StringField(7)
+
+
+class GoogleCloudNetworkconnectivityV1betaQueryHubStatusResponse(_messages.Message):
+  r"""The response for HubService.QueryHubStatus.
+
+  Fields:
+    hubStatusEntries: The list of hub status.
+    nextPageToken: The token for the next page of the response. To see more
+      results, use this value as the page_token for your next request. If this
+      value is empty, there are no more results.
+  """
+
+  hubStatusEntries = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaHubStatusEntry', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudNetworkconnectivityV1betaRegionalEndpoint(_messages.Message):
   r"""The RegionalEndpoint resource.
 
@@ -1422,6 +1675,8 @@ class GoogleCloudNetworkconnectivityV1betaRoute(_messages.Message):
       CREATING: The resource's create operation is in progress.
       ACTIVE: The resource is active
       DELETING: The resource's delete operation is in progress.
+      ACTIVATING: The resource's activate operation is in progress.
+      DEACTIVATING: The resource's deactivate operation is in progress.
       ACCEPTING: The resource's accept operation is in progress.
       REJECTING: The resource's reject operation is in progress.
       UPDATING: The resource's update operation is in progress.
@@ -1433,11 +1688,13 @@ class GoogleCloudNetworkconnectivityV1betaRoute(_messages.Message):
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
-    ACCEPTING = 4
-    REJECTING = 5
-    UPDATING = 6
-    INACTIVE = 7
-    OBSOLETE = 8
+    ACTIVATING = 4
+    DEACTIVATING = 5
+    ACCEPTING = 6
+    REJECTING = 7
+    UPDATING = 8
+    INACTIVE = 9
+    OBSOLETE = 10
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Output only. The route's type. Its type is determined by the
@@ -1541,6 +1798,8 @@ class GoogleCloudNetworkconnectivityV1betaRouteTable(_messages.Message):
       CREATING: The resource's create operation is in progress.
       ACTIVE: The resource is active
       DELETING: The resource's delete operation is in progress.
+      ACTIVATING: The resource's activate operation is in progress.
+      DEACTIVATING: The resource's deactivate operation is in progress.
       ACCEPTING: The resource's accept operation is in progress.
       REJECTING: The resource's reject operation is in progress.
       UPDATING: The resource's update operation is in progress.
@@ -1552,11 +1811,13 @@ class GoogleCloudNetworkconnectivityV1betaRouteTable(_messages.Message):
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
-    ACCEPTING = 4
-    REJECTING = 5
-    UPDATING = 6
-    INACTIVE = 7
-    OBSOLETE = 8
+    ACTIVATING = 4
+    DEACTIVATING = 5
+    ACCEPTING = 6
+    REJECTING = 7
+    UPDATING = 8
+    INACTIVE = 9
+    OBSOLETE = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1648,6 +1909,8 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
   Fields:
     createTime: Output only. The time the spoke was created.
     description: An optional description of the spoke.
+    gateway: Optional. This is a gateway that can apply specialized processing
+      to traffic going through it.
     group: Optional. The name of the group that this spoke is associated with.
     hub: Immutable. The name of the hub that this spoke is attached to.
     labels: Optional labels in key-value pair format. For more information
@@ -1665,8 +1928,7 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
     name: Immutable. The name of the spoke. Spoke names must be unique. They
       use the following form:
       `projects/{project_number}/locations/{region}/spokes/{spoke_id}`
-    reasons: Output only. The reasons for current state of the spoke. Only
-      present when the spoke is in the `INACTIVE` state.
+    reasons: Output only. The reasons for current state of the spoke.
     spokeType: Output only. The type of resource associated with the spoke.
     state: Output only. The current lifecycle state of this spoke.
     uniqueId: Output only. The Google-generated UUID for the spoke. This value
@@ -1685,6 +1947,7 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
       INTERCONNECT_ATTACHMENT: Spokes associated with VLAN attachments.
       ROUTER_APPLIANCE: Spokes associated with router appliance instances.
       VPC_NETWORK: Spokes associated with VPC networks.
+      GATEWAY: Spokes that are NCC gateways.
       PRODUCER_VPC_NETWORK: Spokes that are backed by a producer VPC network.
     """
     SPOKE_TYPE_UNSPECIFIED = 0
@@ -1692,7 +1955,8 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
     INTERCONNECT_ATTACHMENT = 2
     ROUTER_APPLIANCE = 3
     VPC_NETWORK = 4
-    PRODUCER_VPC_NETWORK = 5
+    GATEWAY = 5
+    PRODUCER_VPC_NETWORK = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current lifecycle state of this spoke.
@@ -1702,6 +1966,8 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
       CREATING: The resource's create operation is in progress.
       ACTIVE: The resource is active
       DELETING: The resource's delete operation is in progress.
+      ACTIVATING: The resource's activate operation is in progress.
+      DEACTIVATING: The resource's deactivate operation is in progress.
       ACCEPTING: The resource's accept operation is in progress.
       REJECTING: The resource's reject operation is in progress.
       UPDATING: The resource's update operation is in progress.
@@ -1713,11 +1979,13 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
-    ACCEPTING = 4
-    REJECTING = 5
-    UPDATING = 6
-    INACTIVE = 7
-    OBSOLETE = 8
+    ACTIVATING = 4
+    DEACTIVATING = 5
+    ACCEPTING = 6
+    REJECTING = 7
+    UPDATING = 8
+    INACTIVE = 9
+    OBSOLETE = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1747,20 +2015,21 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  group = _messages.StringField(3)
-  hub = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  linkedInterconnectAttachments = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments', 6)
-  linkedProducerVpcNetwork = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedProducerVpcNetwork', 7)
-  linkedRouterApplianceInstances = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances', 8)
-  linkedVpcNetwork = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork', 9)
-  linkedVpnTunnels = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels', 10)
-  name = _messages.StringField(11)
-  reasons = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaStateReason', 12, repeated=True)
-  spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  uniqueId = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  gateway = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaGateway', 3)
+  group = _messages.StringField(4)
+  hub = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  linkedInterconnectAttachments = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments', 7)
+  linkedProducerVpcNetwork = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedProducerVpcNetwork', 8)
+  linkedRouterApplianceInstances = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances', 9)
+  linkedVpcNetwork = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork', 10)
+  linkedVpnTunnels = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels', 11)
+  name = _messages.StringField(12)
+  reasons = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaStateReason', 13, repeated=True)
+  spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  uniqueId = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class GoogleCloudNetworkconnectivityV1betaSpokeStateCount(_messages.Message):
@@ -1784,6 +2053,8 @@ class GoogleCloudNetworkconnectivityV1betaSpokeStateCount(_messages.Message):
       CREATING: The resource's create operation is in progress.
       ACTIVE: The resource is active
       DELETING: The resource's delete operation is in progress.
+      ACTIVATING: The resource's activate operation is in progress.
+      DEACTIVATING: The resource's deactivate operation is in progress.
       ACCEPTING: The resource's accept operation is in progress.
       REJECTING: The resource's reject operation is in progress.
       UPDATING: The resource's update operation is in progress.
@@ -1795,11 +2066,13 @@ class GoogleCloudNetworkconnectivityV1betaSpokeStateCount(_messages.Message):
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
-    ACCEPTING = 4
-    REJECTING = 5
-    UPDATING = 6
-    INACTIVE = 7
-    OBSOLETE = 8
+    ACTIVATING = 4
+    DEACTIVATING = 5
+    ACCEPTING = 6
+    REJECTING = 7
+    UPDATING = 8
+    INACTIVE = 9
+    OBSOLETE = 10
 
   count = _messages.IntegerField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
@@ -1828,12 +2101,20 @@ class GoogleCloudNetworkconnectivityV1betaSpokeStateReasonCount(_messages.Messag
       PAUSED: The spoke has been deactivated internally.
       FAILED: Network Connectivity Center encountered errors while accepting
         the spoke.
+      UPDATE_PENDING_REVIEW: The proposed spoke update is pending review.
+      UPDATE_REJECTED: The proposed spoke update has been rejected by the hub
+        administrator.
+      UPDATE_FAILED: Network Connectivity Center encountered errors while
+        accepting the spoke update.
     """
     CODE_UNSPECIFIED = 0
     PENDING_REVIEW = 1
     REJECTED = 2
     PAUSED = 3
     FAILED = 4
+    UPDATE_PENDING_REVIEW = 5
+    UPDATE_REJECTED = 6
+    UPDATE_FAILED = 7
 
   count = _messages.IntegerField(1)
   stateReasonCode = _messages.EnumField('StateReasonCodeValueValuesEnum', 2)
@@ -1881,6 +2162,7 @@ class GoogleCloudNetworkconnectivityV1betaSpokeTypeCount(_messages.Message):
       INTERCONNECT_ATTACHMENT: Spokes associated with VLAN attachments.
       ROUTER_APPLIANCE: Spokes associated with router appliance instances.
       VPC_NETWORK: Spokes associated with VPC networks.
+      GATEWAY: Spokes that are NCC gateways.
       PRODUCER_VPC_NETWORK: Spokes that are backed by a producer VPC network.
     """
     SPOKE_TYPE_UNSPECIFIED = 0
@@ -1888,7 +2170,8 @@ class GoogleCloudNetworkconnectivityV1betaSpokeTypeCount(_messages.Message):
     INTERCONNECT_ATTACHMENT = 2
     ROUTER_APPLIANCE = 3
     VPC_NETWORK = 4
-    PRODUCER_VPC_NETWORK = 5
+    GATEWAY = 5
+    PRODUCER_VPC_NETWORK = 6
 
   count = _messages.IntegerField(1)
   spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 2)
@@ -1917,12 +2200,20 @@ class GoogleCloudNetworkconnectivityV1betaStateReason(_messages.Message):
       PAUSED: The spoke has been deactivated internally.
       FAILED: Network Connectivity Center encountered errors while accepting
         the spoke.
+      UPDATE_PENDING_REVIEW: The proposed spoke update is pending review.
+      UPDATE_REJECTED: The proposed spoke update has been rejected by the hub
+        administrator.
+      UPDATE_FAILED: Network Connectivity Center encountered errors while
+        accepting the spoke update.
     """
     CODE_UNSPECIFIED = 0
     PENDING_REVIEW = 1
     REJECTED = 2
     PAUSED = 3
     FAILED = 4
+    UPDATE_PENDING_REVIEW = 5
+    UPDATE_REJECTED = 6
+    UPDATE_FAILED = 7
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
@@ -3424,6 +3715,47 @@ class NetworkconnectivityProjectsLocationsGlobalHubsPatchRequest(_messages.Messa
   updateMask = _messages.StringField(4)
 
 
+class NetworkconnectivityProjectsLocationsGlobalHubsQueryStatusRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsQueryStatusRequest
+  object.
+
+  Fields:
+    filter: Optional. An expression that filters the list of results. The
+      filter can be used to filter the results by the following fields: *
+      psc_propagation_status.source_spoke *
+      psc_propagation_status.source_group *
+      psc_propagation_status.source_forwarding_rule *
+      psc_propagation_status.target_spoke *
+      psc_propagation_status.target_group * psc_propagation_status.code *
+      psc_propagation_status.message
+    groupBy: Optional. A field that counts are grouped by. A comma-separated
+      list of any of these fields: * psc_propagation_status.source_spoke *
+      psc_propagation_status.source_group *
+      psc_propagation_status.source_forwarding_rule *
+      psc_propagation_status.target_spoke *
+      psc_propagation_status.target_group * psc_propagation_status.code
+    name: Required. The name of the hub.
+    orderBy: Optional. Sort the results in the ascending order by specific
+      fields returned in the response. A comma-separated list of any of these
+      fields: * psc_propagation_status.source_spoke *
+      psc_propagation_status.source_group *
+      psc_propagation_status.source_forwarding_rule *
+      psc_propagation_status.target_spoke *
+      psc_propagation_status.target_group * psc_propagation_status.code If
+      `group_by` is set, the value of the `order_by` field must be the same as
+      or a subset of the `group_by` field.
+    pageSize: Optional. The maximum number of results to return per page.
+    pageToken: Optional. The page token.
+  """
+
+  filter = _messages.StringField(1)
+  groupBy = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  orderBy = _messages.StringField(4)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
+
+
 class NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeRequest
   object.
@@ -3842,6 +4174,20 @@ class NetworkconnectivityProjectsLocationsRegionalEndpointsListRequest(_messages
   parent = _messages.StringField(5, required=True)
 
 
+class NetworkconnectivityProjectsLocationsSpokesActivateRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsSpokesActivateRequest object.
+
+  Fields:
+    googleCloudNetworkconnectivityV1betaActivateSpokeRequest: A
+      GoogleCloudNetworkconnectivityV1betaActivateSpokeRequest resource to be
+      passed as the request body.
+    name: Required. The name of the spoke to activate.
+  """
+
+  googleCloudNetworkconnectivityV1betaActivateSpokeRequest = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaActivateSpokeRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class NetworkconnectivityProjectsLocationsSpokesCreateRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsSpokesCreateRequest object.
 
@@ -3869,6 +4215,20 @@ class NetworkconnectivityProjectsLocationsSpokesCreateRequest(_messages.Message)
   parent = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   spokeId = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsSpokesDeactivateRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsSpokesDeactivateRequest object.
+
+  Fields:
+    googleCloudNetworkconnectivityV1betaDeactivateSpokeRequest: A
+      GoogleCloudNetworkconnectivityV1betaDeactivateSpokeRequest resource to
+      be passed as the request body.
+    name: Required. The name of the spoke to deactivate.
+  """
+
+  googleCloudNetworkconnectivityV1betaDeactivateSpokeRequest = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaDeactivateSpokeRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class NetworkconnectivityProjectsLocationsSpokesDeleteRequest(_messages.Message):

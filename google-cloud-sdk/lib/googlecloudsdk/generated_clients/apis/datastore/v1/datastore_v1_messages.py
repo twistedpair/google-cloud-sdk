@@ -764,8 +764,9 @@ class FindNearest(_messages.Message):
       less similar documents will be returned. The behavior of the specified
       `distance_measure` will affect the meaning of the distance threshold.
       Since DOT_PRODUCT distances increase when the vectors are more similar,
-      the comparison is inverted. For EUCLIDEAN, COSINE: WHERE distance <=
-      distance_threshold For DOT_PRODUCT: WHERE distance >= distance_threshold
+      the comparison is inverted. * For EUCLIDEAN, COSINE: WHERE distance <=
+      distance_threshold * For DOT_PRODUCT: WHERE distance >=
+      distance_threshold
     limit: Required. The number of nearest neighbors to return. Must be a
       positive integer of no more than 100.
     queryVector: Required. The query vector that we are searching on. Must be

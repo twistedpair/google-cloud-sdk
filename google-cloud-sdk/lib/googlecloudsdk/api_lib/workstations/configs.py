@@ -239,6 +239,11 @@ class Configs:
     if args.enable_audit_agent:
       config.enableAuditAgent = args.enable_audit_agent
 
+    if args.grant_workstation_admin_role_on_create:
+      config.grantWorkstationAdminRoleOnCreate = (
+          args.grant_workstation_admin_role_on_create
+      )
+
     if args.replica_zones:
       config.replicaZones = args.replica_zones
 
@@ -399,6 +404,12 @@ class Configs:
     if args.IsSpecified('enable_audit_agent'):
       config.enableAuditAgent = args.enable_audit_agent
       update_mask.append('enable_audit_agent')
+
+    if args.IsSpecified('grant_workstation_admin_role_on_create'):
+      config.grantWorkstationAdminRoleOnCreate = (
+          args.grant_workstation_admin_role_on_create
+      )
+      update_mask.append('grant_workstation_admin_role_on_create')
 
     if args.IsSpecified('disable_tcp_connections'):
       config.disableTcpConnections = args.disable_tcp_connections

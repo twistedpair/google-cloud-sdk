@@ -622,6 +622,10 @@ class MultiNodeParams(_messages.Message):
   must be populated in case of multi-node requests instead of node_id. It's an
   error to specify both node_id and multi_node_params.
 
+  Enums:
+    WorkloadTypeValueValuesEnum: Optional. The workload type for the multi-
+      node request.
+
   Fields:
     nodeCount: Required. Number of nodes with this spec. The system will
       attempt to provison "node_count" nodes as part of the request. This
@@ -631,10 +635,26 @@ class MultiNodeParams(_messages.Message):
       node_id_prefix = "np", node ids of nodes created will be "np-0", "np-1",
       "np-2". If this field is not provided we use queued_resource_id as the
       node_id_prefix.
+    workloadType: Optional. The workload type for the multi-node request.
   """
+
+  class WorkloadTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The workload type for the multi-node request.
+
+    Values:
+      WORKLOAD_TYPE_UNSPECIFIED: Not specified.
+      THROUGHPUT_OPTIMIZED: All of the nodes are available most of the time.
+        Recommended for training workloads.
+      AVAILABILITY_OPTIMIZED: Most of the nodes are available all of the time.
+        Recommended for serving workloads.
+    """
+    WORKLOAD_TYPE_UNSPECIFIED = 0
+    THROUGHPUT_OPTIMIZED = 1
+    AVAILABILITY_OPTIMIZED = 2
 
   nodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   nodeIdPrefix = _messages.StringField(2)
+  workloadType = _messages.EnumField('WorkloadTypeValueValuesEnum', 3)
 
 
 class NToMTraffic(_messages.Message):
@@ -781,6 +801,7 @@ class Node(_messages.Message):
     symptoms: Output only. The Symptoms that have occurred to the TPU Node.
     tags: Tags to apply to the TPU Node. Tags are used to identify valid
       sources or targets for network firewalls.
+    upcomingMaintenance: Output only. Upcoming maintenance on this TPU node.
   """
 
   class ApiVersionValueValuesEnum(_messages.Enum):
@@ -932,6 +953,7 @@ class Node(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 25)
   symptoms = _messages.MessageField('Symptom', 26, repeated=True)
   tags = _messages.StringField(27, repeated=True)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 28)
 
 
 class NodeSpec(_messages.Message):
@@ -1097,6 +1119,20 @@ class PeakTraffic(_messages.Message):
   """
 
   peakTrafficGbps = _messages.FloatField(1)
+
+
+class PerformMaintenanceQueuedResourceRequest(_messages.Message):
+  r"""Request for PerformMaintenanceQueuedResource.
+
+  Fields:
+    nodeNames: The names of the nodes to perform maintenance on.
+  """
+
+  nodeNames = _messages.StringField(1, repeated=True)
+
+
+class PerformMaintenanceRequest(_messages.Message):
+  r"""Request for PerformMaintenance."""
 
 
 class ProvisioningData(_messages.Message):
@@ -1846,6 +1882,19 @@ class TpuProjectsLocationsNodesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class TpuProjectsLocationsNodesPerformMaintenanceRequest(_messages.Message):
+  r"""A TpuProjectsLocationsNodesPerformMaintenanceRequest object.
+
+  Fields:
+    name: Required. The resource name.
+    performMaintenanceRequest: A PerformMaintenanceRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  performMaintenanceRequest = _messages.MessageField('PerformMaintenanceRequest', 2)
+
+
 class TpuProjectsLocationsNodesSimulateMaintenanceEventRequest(_messages.Message):
   r"""A TpuProjectsLocationsNodesSimulateMaintenanceEventRequest object.
 
@@ -1992,6 +2041,23 @@ class TpuProjectsLocationsQueuedResourcesListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class TpuProjectsLocationsQueuedResourcesPerformMaintenanceQueuedResourceRequest(_messages.Message):
+  r"""A
+  TpuProjectsLocationsQueuedResourcesPerformMaintenanceQueuedResourceRequest
+  object.
+
+  Fields:
+    name: Required. The name of the QueuedResource which holds the nodes to
+      perform maintenance on.
+    performMaintenanceQueuedResourceRequest: A
+      PerformMaintenanceQueuedResourceRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  performMaintenanceQueuedResourceRequest = _messages.MessageField('PerformMaintenanceQueuedResourceRequest', 2)
+
+
 class TpuProjectsLocationsQueuedResourcesResetRequest(_messages.Message):
   r"""A TpuProjectsLocationsQueuedResourcesResetRequest object.
 
@@ -2067,6 +2133,59 @@ class TrafficConfig(_messages.Message):
   """
 
   anticipatedTrafficMatrix = _messages.MessageField('LogicalTrafficMatrix', 1)
+
+
+class UpcomingMaintenance(_messages.Message):
+  r"""Upcoming Maintenance notification information.
+
+  Enums:
+    MaintenanceStatusValueValuesEnum: The status of the maintenance.
+    TypeValueValuesEnum: Defines the type of maintenance.
+
+  Fields:
+    canReschedule: Indicates if the maintenance can be customer triggered.
+    latestWindowStartTime: The latest time for the planned maintenance window
+      to start. This timestamp value is in RFC3339 text format.
+    maintenanceStatus: The status of the maintenance.
+    type: Defines the type of maintenance.
+    windowEndTime: The time by which the maintenance disruption will be
+      completed. This timestamp value is in RFC3339 text format.
+    windowStartTime: The current start time of the maintenance window. This
+      timestamp value is in RFC3339 text format.
+  """
+
+  class MaintenanceStatusValueValuesEnum(_messages.Enum):
+    r"""The status of the maintenance.
+
+    Values:
+      UNKNOWN: Unknown maintenance status. Do not use this value.
+      PENDING: There is pending maintenance.
+      ONGOING: There is ongoing maintenance on this VM.
+    """
+    UNKNOWN = 0
+    PENDING = 1
+    ONGOING = 2
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Defines the type of maintenance.
+
+    Values:
+      UNKNOWN_TYPE: No type specified. Do not use this value.
+      SCHEDULED: Scheduled maintenance (e.g. maintenance after uptime
+        guarantee is complete).
+      UNSCHEDULED: Unscheduled maintenance (e.g. emergency maintenance during
+        uptime guarantee).
+    """
+    UNKNOWN_TYPE = 0
+    SCHEDULED = 1
+    UNSCHEDULED = 2
+
+  canReschedule = _messages.BooleanField(1)
+  latestWindowStartTime = _messages.StringField(2)
+  maintenanceStatus = _messages.EnumField('MaintenanceStatusValueValuesEnum', 3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  windowEndTime = _messages.StringField(5)
+  windowStartTime = _messages.StringField(6)
 
 
 class Usage(_messages.Message):

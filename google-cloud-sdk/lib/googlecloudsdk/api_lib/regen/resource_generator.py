@@ -88,9 +88,26 @@ class DiscoveryDoc(object):
 
     Returns:
       list(resource_util.CollectionInfo).
+
+    Raises:
+      UnsupportedDiscoveryDoc: if collections have different base URLs.
     """
     collections = self._ExtractResources(
         api_version, self._discovery_doc_dict)
+    if collections:
+      url_api_version = resource_util.SplitEndpointUrl(
+          collections[0].base_url)[1]
+      for c in collections:
+        if url_api_version != resource_util.SplitEndpointUrl(c.base_url)[1]:
+          raise UnsupportedDiscoveryDoc(
+              'In client {0}/{1}, collection {2} is using url {3}, but '
+              'collection {4} is using url {5}'.format(
+                  c.api_name,
+                  api_version,
+                  collections[0].name,
+                  collections[0].base_url,
+                  c.name,
+                  c.base_url))
     collections.extend(
         self._GenerateMissingParentCollections(
             collections, custom_resources, api_version))

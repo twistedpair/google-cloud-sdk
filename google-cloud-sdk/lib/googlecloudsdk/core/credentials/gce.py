@@ -218,8 +218,11 @@ class _GCEMetadata(object):
     # projects/123456789123/zones/us-central1-f
     # and we want to return only the last component.
     zone_path = _ReadNoProxyWithCleanFailures(
-        gce_read.GOOGLE_GCE_METADATA_ZONE_URI)
-    return zone_path.split('/')[-1]
+        gce_read.GOOGLE_GCE_METADATA_ZONE_URI,
+        http_errors_to_ignore=(404,))
+    if zone_path:
+      return zone_path.split('/')[-1]
+    return None
 
   def Region(self):
     """Get the name of the region containing the current GCE instance.

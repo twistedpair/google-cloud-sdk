@@ -5,6 +5,104 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 499.0.0 (2024-10-29)
+
+### Breaking Changes
+
+*   **(Colab)** Deprecated `gcloud beta colab runtimes assign` command.
+    Use `gcloud beta colab runtimes create` instead.
+
+
+### Access Approval
+
+* Added `--preferred-request-expiration-days` flag to `gcloud access-approval settings update`
+  to set the default expiration time for approval requests.
+* Added `--prefer-no-broad-approval-requests` flag to `gcloud access-approval settings update`
+  to communicate the preference to Google personnel to request access with as targeted a resource scope as possible.
+* Added `--notification-pubsub-topic` flag to `gcloud access-approval settings update`
+  for publishing notifications to the specified topic when approval requests are made.
+* Added `--request-scope-max-width-preference` flag to `gcloud access-approval settings update`
+  to configure the broadest scope of access for access requests without a specific method.
+* Added `--require-customer-visible-justification` flag to `gcloud access-approval settings update`
+  to configure if a customer visible justification (i.e. Vector Case) is required for a Googler to create an Access Ticket to send to the customer when attempting to access customer resources.
+
+### AlloyDB
+
+* Promoted `--tags` flag of `gcloud alloydb clusters create` and `gcloud alloydb backups create` to GA.
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.31 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.31>.
+
+### Artifact Registry
+
+* Added `--canary-reads` flag for `gcloud artifacts docker upgrade migrate`.
+
+### Cloud Dataproc
+
+* Added `--master-boot-disk-provisioned-iops`, `--master-boot-disk-provisioned-throughput`, `--worker-boot-disk-provisioned-iops`, `--worker-boot-disk-provisioned-throughput` to configure [IOPS](https://cloud.google.com/compute/docs/disks/hyperdisks#iops) and [throughput](https://cloud.google.com/compute/docs/disks/hyperdisks#throughput) for [hyperdisk-balanced](https://cloud.google.com/compute/docs/disks/hyperdisks) bootdisk for master and primary workers.
+
+### Cloud Memorystore
+
+* Add `databases` as supported `redis_config` for Redis instance creation.
+* Added `gcloud redis clusters add-cluster-endpoints` which appends more cluster endpoints to a redis cluster.
+* Added `gcloud redis clusters remove-cluster-endpoints` which removes cluster endpoints for a redis cluster.
+
+### Cloud Workstations
+
+*   Added `--grant-workstation-admin-role-on-create` flag to
+    `gcloud workstations configs` to support workstations port sharing.
+
+### Colab
+
+* Added `gcloud beta colab runtimes create`.
+
+### Compute Engine
+
+* Promoted flags related to custom-metrics to beta:
+    - `--custom-metrics` of `gcloud compute backend-service create`.
+    - `--custom-metrics-file` of `gcloud compute backend-service create`.
+    - `--custom-metrics` of `gcloud compute backend-service update`.
+    - `--custom-metrics-file` of `gcloud compute backend-service update`.
+    - `--clear-custom-metrics` of `gcloud compute backend-service update`.
+    - `--custom-metrics` of `gcloud compute backend-service add-backend`.
+    - `--custom-metrics-file` of `gcloud compute backend-service add-backend`.
+    - `--custom-metrics` of `gcloud compute backend-service update-backend`.
+    - `--custom-metrics-file` of `gcloud compute backend-service update-backend`.
+    - `--clear-custom-metrics` of `gcloud compute backend-service update-backend`.
+* Promoted `ipv6` flag of `gcloud compute network-endpoint-group update <neg-name> --add-endpoint` to GA.
+* Promoted `network-attachment` flag of `gcloud compute instance create <instance-name> --network-interface` to GA.
+* Promoted `network-attachment` flag of `gcloud compute instance create <instance-name> --network-interface` to beta.
+* Promoted `network-attachment` flag of `gcloud compute instance-templates create <name> --network-interface` to GA.
+* Promoted `network-attachment` flag of `gcloud compute instance-templates create <name> --network-interface` to beta.
+
+### Eventarc
+
+* Added `gcloud beta eventarc message-buses` command group for Eventarc Advanced.
+* Added `gcloud beta eventarc google-api-sources` command group for Eventarc Advanced.
+* Added `gcloud beta eventarc pipelines` command group for Eventarc Advanced.
+* Added `gcloud beta eventarc enrollments` command group for Eventarc Advanced.
+
+### GKE Hub
+
+* Fixed issue where re-registering a GKE cluster with `gcloud container fleet memberships register --enable-workload-identity` did not enable Workload Identity.
+* Updated `gcloud container fleet identity-service apply` to accept configurations containing a Diagnostic Interface section.
+
+### Kubernetes Engine
+
+*   Added flag option `--ParallelstoreCsiDriver` to
+    add support for enabling the Parallelstore CSI Driver.
+* Added `--auto-monitoring-scope` flag to `gcloud beta container clusters create`, `gcloud beta container clusters create-auto`, and `gcloud beta container clusters update` for standard or autopilot clusters.
+
+### Network Connectivity
+
+* Added `--producer-instance-location` and `--allowed-google-producers-resource-hierarchy-level` to `gcloud network-connectvity service-connection-policies create`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 498.0.0 (2024-10-22)
 
 ### Breaking Changes

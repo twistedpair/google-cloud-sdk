@@ -556,22 +556,21 @@ If you want to enable all scopes use the 'cloud-platform' scope.
   )
 
   boot_disk_provisioned_iops_detailed_help = """\
-      Indicates how many IOPS to provision for the disk. This sets the number
-      of I/O operations per second that the disk can handle. Note that, this is
-      only supported if the bootdisk type is hyperdisk-balanced.
+      Indicates the [IOPS](https://cloud.google.com/compute/docs/disks/hyperdisks#iops)
+      to provision for the disk. This sets the limit for disk I/O operations per
+      second. This is only supported if the bootdisk type is
+      [hyperdisk-balanced](https://cloud.google.com/compute/docs/disks/hyperdisks).
       """
 
   parser.add_argument(
       '--master-boot-disk-provisioned-iops',
       help=boot_disk_provisioned_iops_detailed_help,
       type=int,
-      hidden=True,
   )
   parser.add_argument(
       '--worker-boot-disk-provisioned-iops',
       help=boot_disk_provisioned_iops_detailed_help,
       type=int,
-      hidden=True,
   )
   parser.add_argument(
       '--secondary-worker-boot-disk-provisioned-iops',
@@ -581,22 +580,21 @@ If you want to enable all scopes use the 'cloud-platform' scope.
   )
 
   boot_disk_provisioned_throughput_detailed_help = """\
-      Indicates how much throughput to provision for the disk. This sets the
-      number of throughput mb per second that the disk can handle. Note that,
-      this is only supported if the bootdisk type is hyperdisk-balanced.
+      Indicates the [throughput](https://cloud.google.com/compute/docs/disks/hyperdisks#throughput)
+      to provision for the disk. This sets the limit for throughput in MiB per
+      second. This is only supported if the bootdisk type is
+      [hyperdisk-balanced](https://cloud.google.com/compute/docs/disks/hyperdisks).
       """
 
   parser.add_argument(
       '--master-boot-disk-provisioned-throughput',
       help=boot_disk_provisioned_throughput_detailed_help,
       type=int,
-      hidden=True,
   )
   parser.add_argument(
       '--worker-boot-disk-provisioned-throughput',
       help=boot_disk_provisioned_throughput_detailed_help,
       type=int,
-      hidden=True,
   )
   parser.add_argument(
       '--secondary-worker-boot-disk-provisioned-throughput',

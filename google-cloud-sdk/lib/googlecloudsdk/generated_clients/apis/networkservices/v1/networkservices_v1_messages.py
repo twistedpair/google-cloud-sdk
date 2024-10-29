@@ -7618,9 +7618,17 @@ class RouteAction(_messages.Message):
   r"""The actions (such as rewrites, redirects, CORS header injection, and
   header modification) to take for a given route match.
 
+  Enums:
+    CompressionModeValueValuesEnum: Optional. Select the compression mode to
+      use for responses. If not specified, the CDN will not compress
+      uncompressed responses received from the origin.
+
   Fields:
     cdnPolicy: Optional. The policy to use for defining caching and signed
       request behavior for requests that match this route.
+    compressionMode: Optional. Select the compression mode to use for
+      responses. If not specified, the CDN will not compress uncompressed
+      responses received from the origin.
     corsPolicy: Optional. The Cross-Origin Resource Sharing (CORS) policy for
       requests that match this route.
     urlRewrite: Optional. The URL rewrite configuration for requests that
@@ -7629,10 +7637,29 @@ class RouteAction(_messages.Message):
       `projects/{project}/locations/{location}/wasmActions/{wasm_action}`
   """
 
+  class CompressionModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Select the compression mode to use for responses. If not
+    specified, the CDN will not compress uncompressed responses received from
+    the origin.
+
+    Values:
+      COMPRESSION_MODE_UNSPECIFIED: Unspecified value. Will default to
+        DISABLED
+      DISABLED: Disable compression.
+      AUTOMATIC: Automatically use the best compression mode. Compression
+        requires an appropriate Accept-Encoding header to be sent by the
+        client and will be enabled based on content type, content size, and
+        other factors.
+    """
+    COMPRESSION_MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    AUTOMATIC = 2
+
   cdnPolicy = _messages.MessageField('CDNPolicy', 1)
-  corsPolicy = _messages.MessageField('CORSPolicy', 2)
-  urlRewrite = _messages.MessageField('UrlRewrite', 3)
-  wasmAction = _messages.StringField(4)
+  compressionMode = _messages.EnumField('CompressionModeValueValuesEnum', 2)
+  corsPolicy = _messages.MessageField('CORSPolicy', 3)
+  urlRewrite = _messages.MessageField('UrlRewrite', 4)
+  wasmAction = _messages.StringField(5)
 
 
 class RouteRule(_messages.Message):

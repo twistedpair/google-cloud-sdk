@@ -123,6 +123,16 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  POLICIES = (
+      'policies',
+      '{+name}',
+      {
+          '':
+              'policies/{policiesId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

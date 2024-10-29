@@ -255,6 +255,30 @@ def AddAllowedPSCProjects(parser):
   )
 
 
+def AddPSCNetworkAttachmentUrl(parser):
+  """Adds the `--psc-network-attachment-url` flag to the parser."""
+  parser.add_argument(
+      '--psc-network-attachment-url',
+      required=False,
+      type=str,
+      help=(
+          'Full URL of the network attachment that is configured to '
+          'support outbound connectivity from an AlloyDB instance which '
+          'uses Private Service Connect (PSC). '
+          'For example, this would be of the form:'
+          '`psc-network-attachment-url=projects/test-project/regions/us-central1/networkAttachments/my-na`'
+      ),
+  )
+
+
+def ClearPSCNetworkAttachmentUrl(parser):
+  parser.add_argument(
+      '--clear-psc-network-attachment-url',
+      action='store_true',
+      help="""Disable outbound connectivity from an AlloyDB instance which uses Private Service Connect (PSC).""",
+  )
+
+
 def AddNetwork(parser):
   """Adds the `--network` flag to the parser."""
   parser.add_argument(
@@ -1820,22 +1844,6 @@ def AddExportOptions(parser):
       ),
   )
 
-
-def GetTagsArg(parser):
-  """Makes the base.Argument for --tags flag."""
-  help_parts = [
-      'List of tags KEY=VALUE pairs to bind.',
-      'Each item must be expressed as',
-      '`<tag-key-namespaced-name>=<tag-value-short-name>`.\n',
-      'Example: `123/environment=production,123/costCenter=marketing`\n',
-  ]
-  parser.add_argument(
-      '--tags', metavar='KEY=VALUE',
-      type=arg_parsers.ArgDict(),
-      action=arg_parsers.UpdateAction,
-      help='\n'.join(help_parts),
-      hidden=True,
-  )
 
 
 

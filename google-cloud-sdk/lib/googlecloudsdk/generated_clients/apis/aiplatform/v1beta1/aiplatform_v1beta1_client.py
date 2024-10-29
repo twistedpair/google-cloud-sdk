@@ -13580,6 +13580,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Stop(self, request, global_params=None):
+      r"""Stops a NotebookRuntime.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookRuntimesStopRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Stop')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Stop.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/notebookRuntimes/{notebookRuntimesId}:stop',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.notebookRuntimes.stop',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:stop',
+        request_field='googleCloudAiplatformV1beta1StopNotebookRuntimeRequest',
+        request_type_name='AiplatformProjectsLocationsNotebookRuntimesStopRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Upgrade(self, request, global_params=None):
       r"""Upgrades a NotebookRuntime.
 

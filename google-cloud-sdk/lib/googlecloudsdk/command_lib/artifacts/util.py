@@ -720,19 +720,20 @@ def AddEncryptionLogToRepositoryInfo(response, unused_args):
 
 def AddRegistryBaseToRepositoryInfo(response, unused_args):
   """Adds the base URL of the repo for registry operations to repository info."""
-  repo_name = resources.REGISTRY.ParseRelativeName(
-      response.name,
-      collection="artifactregistry.projects.locations.repositories",
-  )
-  log.status.Print(
-      "Registry URL: {}-{}.pkg.dev/{}/{}".format(
-          repo_name.locationsId,
-          str(response.format).lower(),
-          repo_name.projectsId.replace(":", "/"),
-          repo_name.repositoriesId,
-      )
-  )
-  return response
+  if not response.registryUri:
+    repo_name = resources.REGISTRY.ParseRelativeName(
+        response.name,
+        collection="artifactregistry.projects.locations.repositories",
+    )
+    log.status.Print(
+        "Registry URL: {}-{}.pkg.dev/{}/{}".format(
+            repo_name.locationsId,
+            str(response.format).lower(),
+            repo_name.projectsId.replace(":", "/"),
+            repo_name.repositoriesId,
+        )
+    )
+    return response
 
 
 def ConvertBytesToMB(response, unused_args):

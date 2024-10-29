@@ -76,6 +76,15 @@ def AddProjectOrFolderFlags(parser, help_text, required=True):
   group.add_argument('--folder', help='Folder Id {}'.format(help_text))
 
 
+def AddProjectOrFolderOrOrganizationFlags(parser, help_text, required=True):
+  group = parser.add_mutually_exclusive_group(required=required)
+  group.add_argument('--project', help='Project Id {}'.format(help_text))
+  group.add_argument('--folder', help='Folder Id {}'.format(help_text))
+  group.add_argument(
+      '--organization', help='Organization Id {}'.format(help_text)
+  )
+
+
 def AddLocationFlag(parser, help_text, required=True):
   parser.add_argument(
       '--location',

@@ -393,32 +393,6 @@ class BackupDisasterRecovery(_messages.Message):
   storagePool = _messages.StringField(10)
 
 
-class CelPolicySpec(_messages.Message):
-  r"""YAML-based rule that uses CEL, which supports the declaration of
-  variables and a filtering predicate. A vulnerable resource is emitted if the
-  evaluation is false. Given: 1) the resource types as: - resource_types:
-  "compute.googleapis.com/Instance" - resource_types:
-  "compute.googleapis.com/Firewall" 2) the CEL policy spec as: name:
-  bad_instance resource_filters: - name: instance resource_type:
-  compute.googleapis.com/Instance filter: > instance.status == 'RUNNING' &&
-  'public' in instance.tags.items - name: firewall resource_type:
-  compute.googleapis.com/Firewall filter: > firewall.direction == 'INGRESS' &&
-  !firewall.disabled && firewall.allowed.exists(rule,
-  rule.IPProtocol.upperAscii() in ['TCP', 'ALL'] && rule.ports.exists(port,
-  network.portsInRange(port, '11-256'))) rule: match: - predicate: >
-  instance.networkInterfaces.exists(net, firewall.network == net.network)
-  output: > {'message': 'Compute instance with publicly accessible ports',
-  'instance': instance.name} Users are able to join resource types together
-  using the exact format as Kubernetes Validating Admission policies.
-
-  Fields:
-    spec: The CEL policy to evaluate to produce findings. A finding is
-      generated when the policy validation evaluates to false.
-  """
-
-  spec = _messages.StringField(1)
-
-
 class CloudArmor(_messages.Message):
   r"""Fields related to Google Cloud Armor findings.
 
@@ -2032,7 +2006,6 @@ class GoogleCloudSecuritycenterV1CustomConfig(_messages.Message):
       the module.
 
   Fields:
-    celPolicy: The CEL policy spec attached to the custom module.
     customOutput: Custom output properties.
     description: Text that describes the vulnerability or misconfiguration
       that the custom module detects. This explanation is returned with each
@@ -2065,13 +2038,12 @@ class GoogleCloudSecuritycenterV1CustomConfig(_messages.Message):
     MEDIUM = 3
     LOW = 4
 
-  celPolicy = _messages.MessageField('CelPolicySpec', 1)
-  customOutput = _messages.MessageField('GoogleCloudSecuritycenterV1CustomOutputSpec', 2)
-  description = _messages.StringField(3)
-  predicate = _messages.MessageField('Expr', 4)
-  recommendation = _messages.StringField(5)
-  resourceSelector = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceSelector', 6)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 7)
+  customOutput = _messages.MessageField('GoogleCloudSecuritycenterV1CustomOutputSpec', 1)
+  description = _messages.StringField(2)
+  predicate = _messages.MessageField('Expr', 3)
+  recommendation = _messages.StringField(4)
+  resourceSelector = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceSelector', 5)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 6)
 
 
 class GoogleCloudSecuritycenterV1CustomOutputSpec(_messages.Message):
@@ -4970,6 +4942,7 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
       ACCOUNT_ACCESS_REMOVAL: T1531
       STEAL_WEB_SESSION_COOKIE: T1539
       CREATE_OR_MODIFY_SYSTEM_PROCESS: T1543
+      EVENT_TRIGGERED_EXECUTION: T1546
       ABUSE_ELEVATION_CONTROL_MECHANISM: T1548
       UNSECURED_CREDENTIALS: T1552
       MODIFY_AUTHENTICATION_PROCESS: T1556
@@ -4986,6 +4959,7 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
       ACTIVE_SCANNING: T1595
       SCANNING_IP_BLOCKS: T1595.001
       CONTAINER_ADMINISTRATION_COMMAND: T1609
+      DEPLOY_CONTAINER: T1610
       ESCAPE_TO_HOST: T1611
       CONTAINER_AND_RESOURCE_DISCOVERY: T1613
       STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES: T1649
@@ -5036,25 +5010,27 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
     ACCOUNT_ACCESS_REMOVAL = 43
     STEAL_WEB_SESSION_COOKIE = 44
     CREATE_OR_MODIFY_SYSTEM_PROCESS = 45
-    ABUSE_ELEVATION_CONTROL_MECHANISM = 46
-    UNSECURED_CREDENTIALS = 47
-    MODIFY_AUTHENTICATION_PROCESS = 48
-    IMPAIR_DEFENSES = 49
-    DISABLE_OR_MODIFY_TOOLS = 50
-    EXFILTRATION_OVER_WEB_SERVICE = 51
-    EXFILTRATION_TO_CLOUD_STORAGE = 52
-    DYNAMIC_RESOLUTION = 53
-    LATERAL_TOOL_TRANSFER = 54
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 55
-    CREATE_SNAPSHOT = 56
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 57
-    OBTAIN_CAPABILITIES = 58
-    ACTIVE_SCANNING = 59
-    SCANNING_IP_BLOCKS = 60
-    CONTAINER_ADMINISTRATION_COMMAND = 61
-    ESCAPE_TO_HOST = 62
-    CONTAINER_AND_RESOURCE_DISCOVERY = 63
-    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 64
+    EVENT_TRIGGERED_EXECUTION = 46
+    ABUSE_ELEVATION_CONTROL_MECHANISM = 47
+    UNSECURED_CREDENTIALS = 48
+    MODIFY_AUTHENTICATION_PROCESS = 49
+    IMPAIR_DEFENSES = 50
+    DISABLE_OR_MODIFY_TOOLS = 51
+    EXFILTRATION_OVER_WEB_SERVICE = 52
+    EXFILTRATION_TO_CLOUD_STORAGE = 53
+    DYNAMIC_RESOLUTION = 54
+    LATERAL_TOOL_TRANSFER = 55
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 56
+    CREATE_SNAPSHOT = 57
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 58
+    OBTAIN_CAPABILITIES = 59
+    ACTIVE_SCANNING = 60
+    SCANNING_IP_BLOCKS = 61
+    CONTAINER_ADMINISTRATION_COMMAND = 62
+    DEPLOY_CONTAINER = 63
+    ESCAPE_TO_HOST = 64
+    CONTAINER_AND_RESOURCE_DISCOVERY = 65
+    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 66
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -5143,6 +5119,7 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
       ACCOUNT_ACCESS_REMOVAL: T1531
       STEAL_WEB_SESSION_COOKIE: T1539
       CREATE_OR_MODIFY_SYSTEM_PROCESS: T1543
+      EVENT_TRIGGERED_EXECUTION: T1546
       ABUSE_ELEVATION_CONTROL_MECHANISM: T1548
       UNSECURED_CREDENTIALS: T1552
       MODIFY_AUTHENTICATION_PROCESS: T1556
@@ -5159,6 +5136,7 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
       ACTIVE_SCANNING: T1595
       SCANNING_IP_BLOCKS: T1595.001
       CONTAINER_ADMINISTRATION_COMMAND: T1609
+      DEPLOY_CONTAINER: T1610
       ESCAPE_TO_HOST: T1611
       CONTAINER_AND_RESOURCE_DISCOVERY: T1613
       STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES: T1649
@@ -5209,25 +5187,27 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
     ACCOUNT_ACCESS_REMOVAL = 43
     STEAL_WEB_SESSION_COOKIE = 44
     CREATE_OR_MODIFY_SYSTEM_PROCESS = 45
-    ABUSE_ELEVATION_CONTROL_MECHANISM = 46
-    UNSECURED_CREDENTIALS = 47
-    MODIFY_AUTHENTICATION_PROCESS = 48
-    IMPAIR_DEFENSES = 49
-    DISABLE_OR_MODIFY_TOOLS = 50
-    EXFILTRATION_OVER_WEB_SERVICE = 51
-    EXFILTRATION_TO_CLOUD_STORAGE = 52
-    DYNAMIC_RESOLUTION = 53
-    LATERAL_TOOL_TRANSFER = 54
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 55
-    CREATE_SNAPSHOT = 56
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 57
-    OBTAIN_CAPABILITIES = 58
-    ACTIVE_SCANNING = 59
-    SCANNING_IP_BLOCKS = 60
-    CONTAINER_ADMINISTRATION_COMMAND = 61
-    ESCAPE_TO_HOST = 62
-    CONTAINER_AND_RESOURCE_DISCOVERY = 63
-    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 64
+    EVENT_TRIGGERED_EXECUTION = 46
+    ABUSE_ELEVATION_CONTROL_MECHANISM = 47
+    UNSECURED_CREDENTIALS = 48
+    MODIFY_AUTHENTICATION_PROCESS = 49
+    IMPAIR_DEFENSES = 50
+    DISABLE_OR_MODIFY_TOOLS = 51
+    EXFILTRATION_OVER_WEB_SERVICE = 52
+    EXFILTRATION_TO_CLOUD_STORAGE = 53
+    DYNAMIC_RESOLUTION = 54
+    LATERAL_TOOL_TRANSFER = 55
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 56
+    CREATE_SNAPSHOT = 57
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 58
+    OBTAIN_CAPABILITIES = 59
+    ACTIVE_SCANNING = 60
+    SCANNING_IP_BLOCKS = 61
+    CONTAINER_ADMINISTRATION_COMMAND = 62
+    DEPLOY_CONTAINER = 63
+    ESCAPE_TO_HOST = 64
+    CONTAINER_AND_RESOURCE_DISCOVERY = 65
+    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 66
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)
@@ -6506,6 +6486,7 @@ class MitreAttack(_messages.Message):
       ACCOUNT_ACCESS_REMOVAL: T1531
       STEAL_WEB_SESSION_COOKIE: T1539
       CREATE_OR_MODIFY_SYSTEM_PROCESS: T1543
+      EVENT_TRIGGERED_EXECUTION: T1546
       ABUSE_ELEVATION_CONTROL_MECHANISM: T1548
       UNSECURED_CREDENTIALS: T1552
       MODIFY_AUTHENTICATION_PROCESS: T1556
@@ -6522,6 +6503,7 @@ class MitreAttack(_messages.Message):
       ACTIVE_SCANNING: T1595
       SCANNING_IP_BLOCKS: T1595.001
       CONTAINER_ADMINISTRATION_COMMAND: T1609
+      DEPLOY_CONTAINER: T1610
       ESCAPE_TO_HOST: T1611
       CONTAINER_AND_RESOURCE_DISCOVERY: T1613
       STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES: T1649
@@ -6572,25 +6554,27 @@ class MitreAttack(_messages.Message):
     ACCOUNT_ACCESS_REMOVAL = 43
     STEAL_WEB_SESSION_COOKIE = 44
     CREATE_OR_MODIFY_SYSTEM_PROCESS = 45
-    ABUSE_ELEVATION_CONTROL_MECHANISM = 46
-    UNSECURED_CREDENTIALS = 47
-    MODIFY_AUTHENTICATION_PROCESS = 48
-    IMPAIR_DEFENSES = 49
-    DISABLE_OR_MODIFY_TOOLS = 50
-    EXFILTRATION_OVER_WEB_SERVICE = 51
-    EXFILTRATION_TO_CLOUD_STORAGE = 52
-    DYNAMIC_RESOLUTION = 53
-    LATERAL_TOOL_TRANSFER = 54
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 55
-    CREATE_SNAPSHOT = 56
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 57
-    OBTAIN_CAPABILITIES = 58
-    ACTIVE_SCANNING = 59
-    SCANNING_IP_BLOCKS = 60
-    CONTAINER_ADMINISTRATION_COMMAND = 61
-    ESCAPE_TO_HOST = 62
-    CONTAINER_AND_RESOURCE_DISCOVERY = 63
-    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 64
+    EVENT_TRIGGERED_EXECUTION = 46
+    ABUSE_ELEVATION_CONTROL_MECHANISM = 47
+    UNSECURED_CREDENTIALS = 48
+    MODIFY_AUTHENTICATION_PROCESS = 49
+    IMPAIR_DEFENSES = 50
+    DISABLE_OR_MODIFY_TOOLS = 51
+    EXFILTRATION_OVER_WEB_SERVICE = 52
+    EXFILTRATION_TO_CLOUD_STORAGE = 53
+    DYNAMIC_RESOLUTION = 54
+    LATERAL_TOOL_TRANSFER = 55
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 56
+    CREATE_SNAPSHOT = 57
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 58
+    OBTAIN_CAPABILITIES = 59
+    ACTIVE_SCANNING = 60
+    SCANNING_IP_BLOCKS = 61
+    CONTAINER_ADMINISTRATION_COMMAND = 62
+    DEPLOY_CONTAINER = 63
+    ESCAPE_TO_HOST = 64
+    CONTAINER_AND_RESOURCE_DISCOVERY = 65
+    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 66
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -6679,6 +6663,7 @@ class MitreAttack(_messages.Message):
       ACCOUNT_ACCESS_REMOVAL: T1531
       STEAL_WEB_SESSION_COOKIE: T1539
       CREATE_OR_MODIFY_SYSTEM_PROCESS: T1543
+      EVENT_TRIGGERED_EXECUTION: T1546
       ABUSE_ELEVATION_CONTROL_MECHANISM: T1548
       UNSECURED_CREDENTIALS: T1552
       MODIFY_AUTHENTICATION_PROCESS: T1556
@@ -6695,6 +6680,7 @@ class MitreAttack(_messages.Message):
       ACTIVE_SCANNING: T1595
       SCANNING_IP_BLOCKS: T1595.001
       CONTAINER_ADMINISTRATION_COMMAND: T1609
+      DEPLOY_CONTAINER: T1610
       ESCAPE_TO_HOST: T1611
       CONTAINER_AND_RESOURCE_DISCOVERY: T1613
       STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES: T1649
@@ -6745,25 +6731,27 @@ class MitreAttack(_messages.Message):
     ACCOUNT_ACCESS_REMOVAL = 43
     STEAL_WEB_SESSION_COOKIE = 44
     CREATE_OR_MODIFY_SYSTEM_PROCESS = 45
-    ABUSE_ELEVATION_CONTROL_MECHANISM = 46
-    UNSECURED_CREDENTIALS = 47
-    MODIFY_AUTHENTICATION_PROCESS = 48
-    IMPAIR_DEFENSES = 49
-    DISABLE_OR_MODIFY_TOOLS = 50
-    EXFILTRATION_OVER_WEB_SERVICE = 51
-    EXFILTRATION_TO_CLOUD_STORAGE = 52
-    DYNAMIC_RESOLUTION = 53
-    LATERAL_TOOL_TRANSFER = 54
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 55
-    CREATE_SNAPSHOT = 56
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 57
-    OBTAIN_CAPABILITIES = 58
-    ACTIVE_SCANNING = 59
-    SCANNING_IP_BLOCKS = 60
-    CONTAINER_ADMINISTRATION_COMMAND = 61
-    ESCAPE_TO_HOST = 62
-    CONTAINER_AND_RESOURCE_DISCOVERY = 63
-    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 64
+    EVENT_TRIGGERED_EXECUTION = 46
+    ABUSE_ELEVATION_CONTROL_MECHANISM = 47
+    UNSECURED_CREDENTIALS = 48
+    MODIFY_AUTHENTICATION_PROCESS = 49
+    IMPAIR_DEFENSES = 50
+    DISABLE_OR_MODIFY_TOOLS = 51
+    EXFILTRATION_OVER_WEB_SERVICE = 52
+    EXFILTRATION_TO_CLOUD_STORAGE = 53
+    DYNAMIC_RESOLUTION = 54
+    LATERAL_TOOL_TRANSFER = 55
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 56
+    CREATE_SNAPSHOT = 57
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 58
+    OBTAIN_CAPABILITIES = 59
+    ACTIVE_SCANNING = 60
+    SCANNING_IP_BLOCKS = 61
+    CONTAINER_ADMINISTRATION_COMMAND = 62
+    DEPLOY_CONTAINER = 63
+    ESCAPE_TO_HOST = 64
+    CONTAINER_AND_RESOURCE_DISCOVERY = 65
+    STEAL_OR_FORGE_AUTHENTICATION_CERTIFICATES = 66
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)

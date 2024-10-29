@@ -480,7 +480,7 @@ class CommandCommon(object):
     flags = self.ai.flag_args
     if include_hidden:
       return flags
-    return [f for f in flags if not f.hidden]
+    return [f for f in flags if not f.is_hidden]
 
   def GetExistingAlternativeReleaseTracks(self, value=None):
     """Gets the names for the command in other release tracks.

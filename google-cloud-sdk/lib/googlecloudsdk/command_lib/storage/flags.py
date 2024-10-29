@@ -767,7 +767,9 @@ def add_management_hub_filter_flags(parser):
       help=(
           'Comma separated list of [locations]'
           '(https://cloud.google.com/storage/docs/locations#available-locations)'
-          ' to exclude in Management Hub filter.'
+          'to exclude in Management Hub filter. To clear'
+          ' excluded locations, provide flag with empty list. e.g'
+          ' `--exclude-locations=""` or `--exclude-locations=` .'
       ),
       type=arg_parsers.ArgList(),
       metavar='EXCLUDE_LOCATIONS',
@@ -775,8 +777,11 @@ def add_management_hub_filter_flags(parser):
   management_hub_localtion_filter_group.add_argument(
       '--include-locations',
       help=(
-          'Comma separated list of locations to include in management hub'
-          ' filter.'
+          'Comma separated list of [locations]'
+          '(https://cloud.google.com/storage/docs/locations#available-locations)'
+          ' to include in management hub filter. To clear included locations,'
+          ' provide flag with empty list. e.g `--include-locations=""` or'
+          ' `--include-locations=` .'
       ),
       type=arg_parsers.ArgList(),
       metavar='INCLUDE_LOCATIONS',
@@ -786,46 +791,70 @@ def add_management_hub_filter_flags(parser):
       category='BUCKET_FILTER', mutex=True
   )
 
-  management_hub_include_bucket_filter_group = (
-      management_hub_bucket_filter_group.add_group(
-          category='BUCKET_INCLUDE_FILTER'
-      )
+  management_hub_include_bucket_filter_group = management_hub_bucket_filter_group.add_group(
+      category='BUCKET_INCLUDE_FILTER',
+      help=(
+          'Sets the cloud storage buckets inclusion filter. '
+          'Full filters should be specified using available flags in this '
+          'group, gcloud CLI infers missing flags of this group as empty which '
+          'will result in clearing of the individual filters.'
+      ),
   )
   management_hub_include_bucket_filter_group.add_argument(
       '--include-bucket-ids',
       help=(
-          'Comma separated list of bucket ids to include in management hub'
-          ' filter.'
+          'Comma separated list of bucket ids to include in the management hub'
+          ' filter. To clear bucket id list, provide flag with empty list. e.g'
+          ' `--include-bucket-ids=""` or `--include-bucket-ids=` .'
       ),
       type=arg_parsers.ArgList(),
       metavar='INCLUDE_BUCKET_IDS',
   )
   management_hub_include_bucket_filter_group.add_argument(
       '--include-bucket-id-regexes',
-      help='Provides filter for bucket regexes to include.'
-      'Accepts list of bucket regexes in comma separated format.',
+      help=(
+          'Sets filter for bucket id regexes to include. Accepts list of bucket'
+          ' id regexes in comma separated format. If the regex contains special'
+          ' characters that may have a specific meaning in the shell (like $,'
+          ' &, *, etc.), escape them using backslashes(\\). To clear'
+          ' bucket id regexes list, provide flag with empty list. e.g'
+          ' `--include-bucket-id-regexes=""` or'
+          ' `--include-bucket-id-regexes=` .'
+      ),
       type=arg_parsers.ArgList(),
       metavar='INCLUDE_BUCKET_ID_REGEXES',
   )
 
-  management_hub_exclude_bucket_filter_group = (
-      management_hub_bucket_filter_group.add_group(
-          category='BUCKET_EXCLUDE_FILTER'
-      )
+  management_hub_exclude_bucket_filter_group = management_hub_bucket_filter_group.add_group(
+      category='BUCKET_EXCLUDE_FILTER',
+      help=(
+          'Sets the cloud storage buckets exclusion filter. '
+          'Full filters should be specified using available flags in this '
+          'group, gcloud CLI infers missing flags of this group as empty which '
+          'will result in clearing of the individual filters.'
+      ),
   )
   management_hub_exclude_bucket_filter_group.add_argument(
       '--exclude-bucket-ids',
       help=(
-          'Comma separated list of bucket ids to exclude in management hub'
-          ' filter.'
+          'Comma separated list of bucket ids to exclude in the management hub'
+          ' filter. To clear bucket id list, provide flag with an empty list.'
+          ' e.g `--exclude-bucket-ids=""` or `--exclude-bucket-ids=` .'
       ),
       type=arg_parsers.ArgList(),
       metavar='EXCLUDE_BUCKET_IDS',
   )
   management_hub_exclude_bucket_filter_group.add_argument(
       '--exclude-bucket-id-regexes',
-      help='Provides filter for bucket regexes to exclude.'
-      'Accepts list of bucket regexes in comma separated format.',
+      help=(
+          'Sets filter for bucket id regexes to exclude. Accepts list of bucket'
+          ' id regexes in comma separated format. If the regex contains special'
+          ' characters that may have a specific meaning in the shell (like $,'
+          ' &, *, etc.), escape them using backslashes(\\). To clear bucket id'
+          ' regexes list, provide flag with an empty list. e.g'
+          ' `--exclude-bucket-id-regexes=""` or'
+          ' `--exclude-bucket-id-regexes=` .'
+      ),
       type=arg_parsers.ArgList(),
       metavar='EXCLUDE_BUCKET_ID_REGEXES',
   )

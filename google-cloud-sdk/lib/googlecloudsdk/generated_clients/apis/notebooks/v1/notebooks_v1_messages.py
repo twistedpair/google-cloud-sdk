@@ -203,7 +203,7 @@ class DiagnoseInstanceRequest(_messages.Message):
   Fields:
     diagnosticConfig: Required. Defines flags that are used to run the
       diagnostic tool
-    timeoutMinutes: Optional. Maxmium amount of time in minutes before the
+    timeoutMinutes: Optional. Maximum amount of time in minutes before the
       operation times out.
   """
 
@@ -217,7 +217,7 @@ class DiagnoseRuntimeRequest(_messages.Message):
   Fields:
     diagnosticConfig: Required. Defines flags that are used to run the
       diagnostic tool
-    timeoutMinutes: Optional. Maxmium amount of time in minutes before the
+    timeoutMinutes: Optional. Maximum amount of time in minutes before the
       operation times out.
   """
 

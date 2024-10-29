@@ -51,6 +51,7 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
     self.inboundSsoAssignments = self.InboundSsoAssignmentsService(self)
     self.orgUnits_memberships = self.OrgUnitsMembershipsService(self)
     self.orgUnits = self.OrgUnitsService(self)
+    self.policies = self.PoliciesService(self)
 
   class CustomersUserinvitationsService(base_api.BaseApiService):
     """Service class for the customers_userinvitations resource."""
@@ -1700,3 +1701,66 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
       super(CloudidentityV1beta1.OrgUnitsService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class PoliciesService(base_api.BaseApiService):
+    """Service class for the policies resource."""
+
+    _NAME = 'policies'
+
+    def __init__(self, client):
+      super(CloudidentityV1beta1.PoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get a Policy.
+
+      Args:
+        request: (CloudidentityPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/policies/{policiesId}',
+        http_method='GET',
+        method_id='cloudidentity.policies.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='CloudidentityPoliciesGetRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List Policies.
+
+      Args:
+        request: (CloudidentityPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='cloudidentity.policies.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/policies',
+        request_field='',
+        request_type_name='CloudidentityPoliciesListRequest',
+        response_type_name='ListPoliciesResponse',
+        supports_download=False,
+    )

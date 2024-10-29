@@ -171,7 +171,8 @@ def _ConstructInstanceFromArgs(client, alloydb_messages, args):
 
   if args.allowed_psc_projects:
     instance_resource.pscInstanceConfig = PscInstanceConfig(
-        alloydb_messages, args.allowed_psc_projects
+        alloydb_messages=alloydb_messages,
+        allowed_psc_projects=args.allowed_psc_projects,
     )
 
   return instance_resource
@@ -217,6 +218,13 @@ def _ConstructInstanceFromArgsAlpha(client, alloydb_messages, args):
   instance_resource = _ConstructInstanceFromArgsBeta(
       client, alloydb_messages, args
   )
+
+  if args.allowed_psc_projects or args.psc_network_attachment_url is not None:
+    instance_resource.pscInstanceConfig = PscInstanceConfig(
+        alloydb_messages=alloydb_messages,
+        allowed_psc_projects=args.allowed_psc_projects,
+        psc_network_attachment_url=args.psc_network_attachment_url,
+    )
   return instance_resource
 
 
@@ -249,7 +257,8 @@ def _ConstructSecondaryInstanceFromArgs(client, alloydb_messages, args):
   )
   if args.allowed_psc_projects:
     instance_resource.pscInstanceConfig = PscInstanceConfig(
-        alloydb_messages, args.allowed_psc_projects
+        alloydb_messages=alloydb_messages,
+        allowed_psc_projects=args.allowed_psc_projects,
     )
   return instance_resource
 
@@ -431,10 +440,10 @@ def ConstructInstanceAndUpdatePathsFromArgs(
   # Empty lists are allowed for consumers to remove all PSC allowed projects.
   if args.allowed_psc_projects is not None:
     instance_resource.pscInstanceConfig = PscInstanceConfig(
-        alloydb_messages, args.allowed_psc_projects
+        alloydb_messages=alloydb_messages,
+        allowed_psc_projects=args.allowed_psc_projects,
     )
     paths.append('pscInstanceConfig.allowedConsumerProjects')
-
   return instance_resource, paths
 
 
@@ -679,11 +688,38 @@ def NetworkConfig(**kwargs):
   return instance_network_config
 
 
-def PscInstanceConfig(alloydb_messages, allowed_consumer_projects=None):
+def PscInstanceConfig(**kwargs):
   """Generates the PSC instance config for the instance."""
+  alloydb_messages = kwargs.get('alloydb_messages')
+  allowed_psc_projects = kwargs.get('allowed_psc_projects')
+  psc_network_attachment_url = kwargs.get('psc_network_attachment_url')
+  clear_psc_network_attachment_url = kwargs.get(
+      'clear_psc_network_attachment_url'
+  )
+
   psc_instance_config = alloydb_messages.PscInstanceConfig()
-  psc_instance_config.allowedConsumerProjects = allowed_consumer_projects
+  if allowed_psc_projects:
+    psc_instance_config.allowedConsumerProjects = allowed_psc_projects
+  if clear_psc_network_attachment_url:
+    psc_instance_config.pscInterfaceConfigs = []
+  elif psc_network_attachment_url is not None:
+    psc_instance_config.pscInterfaceConfigs.append(
+        _PscInterfaceConfig(
+            alloydb_messages=alloydb_messages,
+            psc_network_attachment_url=psc_network_attachment_url,
+        )
+    )
   return psc_instance_config
+
+
+def _PscInterfaceConfig(
+    alloydb_messages,
+    psc_network_attachment_url=None,
+):
+  """Generates the PSC interface config for the instance."""
+  psc_interface_config = alloydb_messages.PscInterfaceConfig()
+  psc_interface_config.networkAttachmentResource = psc_network_attachment_url
+  return psc_interface_config
 
 
 def _ParseAssignInboundPublicIp(assign_inbound_public_ip):
@@ -845,6 +881,22 @@ def ConstructInstanceAndUpdatePathsFromArgsAlpha(
   instance_resource, paths = ConstructInstanceAndUpdatePathsFromArgsBeta(
       alloydb_messages, instance_ref, args
   )
+  if (
+      args.allowed_psc_projects is not None
+      or args.psc_network_attachment_url is not None
+      or args.clear_psc_network_attachment_url
+  ):
+    instance_resource.pscInstanceConfig = PscInstanceConfig(
+        alloydb_messages=alloydb_messages,
+        allowed_psc_projects=args.allowed_psc_projects,
+        psc_network_attachment_url=args.psc_network_attachment_url,
+        clear_psc_network_attachment_url=args.clear_psc_network_attachment_url,
+    )
+  if (
+      args.psc_network_attachment_url is not None
+      or args.clear_psc_network_attachment_url
+  ):
+    paths.append('pscInstanceConfig.pscInterfaceConfigs')
   return instance_resource, paths
 
 

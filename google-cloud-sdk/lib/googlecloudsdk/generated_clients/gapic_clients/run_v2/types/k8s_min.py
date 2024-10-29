@@ -648,6 +648,10 @@ class GCSVolumeSource(proto.Message):
         read_only (bool):
             If true, the volume will be mounted as read
             only for all mounts.
+        mount_options (MutableSequence[str]):
+            A list of additional flags to pass to the
+            gcsfuse CLI. Options should be specified without
+            the leading "--".
     """
 
     bucket: str = proto.Field(
@@ -657,6 +661,10 @@ class GCSVolumeSource(proto.Message):
     read_only: bool = proto.Field(
         proto.BOOL,
         number=2,
+    )
+    mount_options: MutableSequence[str] = proto.RepeatedField(
+        proto.STRING,
+        number=3,
     )
 
 

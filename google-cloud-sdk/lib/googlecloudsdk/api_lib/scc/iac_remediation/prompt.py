@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import json
-import re
 from typing import Dict, List
 
 from googlecloudsdk.api_lib.scc.iac_remediation import prompt_format
@@ -123,31 +122,23 @@ def llm_response_parser(
   Returns:
     Dict of file path and file content.
   """
-  block_pattern = re.compile(r"```(.*?)```", re.DOTALL)
-  diff_pattern = re.compile(
-      r"(?P<filepath>.+?)\n"
-      r"<<<<<<< SEARCH\n(?P<search>.*?)"
-      r"=======\n(?P<replace>.*?)"
-      r">>>>>>> REPLACE",
-      re.DOTALL,
-  )
-  file_contents = {}
-  for block in block_pattern.findall(response):
-    match = diff_pattern.search(block)
-    if match:
-      filepath = match.group("filepath").strip()
-      search_content = match.group("search").strip()
-      replace_content = match.group("replace").strip()
-      if filepath not in file_contents:
-        file_contents[filepath] = read_file(filepath)
-      if not search_content and replace_content:
-        file_contents[filepath] += "\n" + replace_content + "\n"
-      elif search_content and not replace_content:
-        file_contents[filepath] = file_contents[filepath].replace(
-            search_content, ""
-        )
-      elif search_content and replace_content:
-        file_contents[filepath] = file_contents[filepath].replace(
-            search_content, replace_content
-        )
-  return file_contents
+  response_dict = {}
+  file_path = ""
+  file_content = ""
+  for line in response.splitlines():
+    if line.startswith("FilePath"):
+      if file_path:
+        file_content = file_content.replace("```\n", "")
+        file_content = file_content.replace("\n```", "")
+        file_content = file_content.replace("```", "")
+        response_dict[file_path] = file_content
+      file_path = line.split("=")[1].strip()
+      file_content = ""
+    else:
+      file_content += line + "\n"
+  if file_path:
+    file_content = file_content.replace("```\n", "")
+    file_content = file_content.replace("\n```", "")
+    file_content = file_content.replace("```", "")
+    response_dict[file_path] = file_content
+  return response_dict

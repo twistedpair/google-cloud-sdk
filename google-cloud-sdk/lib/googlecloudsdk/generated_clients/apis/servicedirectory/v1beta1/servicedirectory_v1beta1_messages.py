@@ -2167,7 +2167,8 @@ class TestIamPermissionsResponse(_messages.Message):
 class Workload(_messages.Message):
   r"""An individual Workload. A logical collection of assets that provide the
   same functionality, with a common set of core attributes, that power
-  services in Service Directory and to which policies can be applied.
+  services in Service Directory and to which policies can be applied. Next id:
+  22
 
   Enums:
     CriticalityValueValuesEnum: Optional. Criticality of this workload.

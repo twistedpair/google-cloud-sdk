@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
@@ -42,21 +43,6 @@ def InterconnectGroupArgument(required=True, plural=False):
   )
 
 
-def InterconnectGroupArgumentForOtherResource(
-    short_help, required=True, detailed_help=None
-):
-  return compute_flags.ResourceArgument(
-      name='--group',
-      resource_name='interconnectGroup',
-      completer=InterconnectGroupsCompleter,
-      plural=False,
-      required=required,
-      global_collection='compute.interconnectGroups',
-      short_help=short_help,
-      detailed_help=detailed_help,
-  )
-
-
 def AddDescription(parser):
   """Adds description flag to the argparse.ArgumentParser."""
   parser.add_argument(
@@ -65,11 +51,23 @@ def AddDescription(parser):
   )
 
 
-def AddIntendedTopologyCapabilityForAddOrUpdateGroup(parser):
+def AddIntendedTopologyCapabilityForCreate(parser):
   """Adds IntendedAvailabilitySla flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--intended-topology-capability',
       required=True,
+      help="""\
+      The reliability the user intends this group to be capable of, in terms of
+      the Interconnect product SLAs.
+      """,
+  )
+
+
+def AddIntendedTopologyCapabilityForUpdate(parser):
+  """Adds IntendedAvailabilitySla flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--intended-topology-capability',
+      required=False,
       help="""\
       The reliability the user intends this group to be capable of, in terms of
       the Interconnect product SLAs.
@@ -93,3 +91,45 @@ def GetTopologyCapability(messages, intended_topology_capability):
     return messages.InterconnectGroupIntent.TopologyCapabilityValueValuesEnum(
         intended_topology_capability
     )
+
+
+def GetMemberInterconnects(parser):
+  """Adds interconnects flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--interconnects',
+      type=arg_parsers.ArgList(max_length=16),
+      required=True,
+      default=[],
+      metavar='INTERCONNECT',
+      help="""\
+      Member interconnects to add to or remove from the interconnect group.
+      """,
+  )
+
+
+def GetMemberInterconnectsForCreate(parser):
+  """Adds interconnects flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--interconnects',
+      type=arg_parsers.ArgList(max_length=16),
+      required=False,
+      default=[],
+      metavar='INTERCONNECT',
+      help="""\
+      Member interconnects to add to the interconnect group initially.
+      """,
+  )
+
+
+def GetMemberInterconnectsForUpdate(parser):
+  """Adds interconnects flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--interconnects',
+      type=arg_parsers.ArgList(max_length=16),
+      required=False,
+      default=[],
+      metavar='INTERCONNECT',
+      help="""\
+      Member interconnects to set the interconnect group to contain.
+      """,
+  )

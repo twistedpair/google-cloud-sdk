@@ -206,6 +206,17 @@ def GetGovernanceRuleResourceSpec():
   )
 
 
+def GetGlossaryResourceSpec():
+  """Gets Glossary resource spec."""
+  return concepts.ResourceSpec(
+      'dataplex.projects.locations.glossaries',
+      resource_name='glossary',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      glossariesId=GlossaryAttributeConfig(),
+  )
+
+
 def EntryTypeProjectAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='entry-type-project',
@@ -311,6 +322,12 @@ def EntryTypeConfig():
 def GovernanceRuleAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='governance_rule', help_text='The name of {resource} to use.'
+  )
+
+
+def GlossaryAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='glossary', help_text='The name of {resource} to use.'
   )
 
 
@@ -516,6 +533,18 @@ def AddGovernanceRuleResourceArg(parser, verb, positional=True):
       name,
       GetGovernanceRuleResourceSpec(),
       'Arguments and flags that define the Dataplex governance rule you want {}'
+      .format(verb),
+      required=True,
+  ).AddToParser(parser)
+
+
+def AddGlossaryResourceArg(parser, verb, positional=True):
+  """Adds a resource argument for a Dataplex Glossary."""
+  name = 'glossary' if positional else '--glossary'
+  return concept_parsers.ConceptParser.ForResource(
+      name,
+      GetGlossaryResourceSpec(),
+      'Arguments and flags that define the Dataplex glossary you want {}'
       .format(verb),
       required=True,
   ).AddToParser(parser)

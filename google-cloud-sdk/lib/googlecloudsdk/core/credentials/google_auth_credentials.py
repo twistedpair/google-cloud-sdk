@@ -42,7 +42,7 @@ import six
 from six.moves import http_client
 from six.moves import urllib
 
-GOOGLE_REVOKE_URI = 'https://accounts.google.com/o/oauth2/revoke'
+GOOGLE_REVOKE_URI = 'https://oauth2.googleapis.com/revoke'
 
 
 class Error(exceptions.Error):
@@ -201,7 +201,7 @@ class Credentials(credentials.Credentials):
     headers = {
         'content-type': google_auth_client._URLENCODED_CONTENT_TYPE,  # pylint: disable=protected-access
     }
-    response = request(token_revoke_uri, headers=headers)
+    response = request(token_revoke_uri, headers=headers, method='POST')
     if response.status != http_client.OK:
       response_data = six.ensure_text(response.data)
       response_json = json.loads(response_data)

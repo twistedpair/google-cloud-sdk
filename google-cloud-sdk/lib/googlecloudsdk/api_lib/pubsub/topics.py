@@ -102,15 +102,22 @@ class TopicsClient(object):
       cloud_storage_ingestion_text_delimiter=None,
       cloud_storage_ingestion_minimum_object_create_time=None,
       cloud_storage_ingestion_match_glob=None,
+      azure_event_hubs_ingestion_resource_group=None,
       azure_event_hubs_ingestion_namespace=None,
       azure_event_hubs_ingestion_event_hub=None,
       azure_event_hubs_ingestion_client_id=None,
       azure_event_hubs_ingestion_tenant_id=None,
+      azure_event_hubs_ingestion_subscription_id=None,
       azure_event_hubs_ingestion_service_account=None,
       aws_msk_ingestion_cluster_arn=None,
       aws_msk_ingestion_topic=None,
       aws_msk_ingestion_aws_role_arn=None,
       aws_msk_ingestion_service_account=None,
+      confluent_cloud_ingestion_bootstrap_server=None,
+      confluent_cloud_ingestion_cluster_id=None,
+      confluent_cloud_ingestion_topic=None,
+      confluent_cloud_ingestion_identity_pool_id=None,
+      confluent_cloud_ingestion_service_account=None,
       ingestion_log_severity=None,
   ):
     """Returns an IngestionDataSourceSettings message from the provided args."""
@@ -132,10 +139,12 @@ class TopicsClient(object):
     )
 
     is_azure_event_hubs = (
-        (azure_event_hubs_ingestion_namespace is not None)
+        (azure_event_hubs_ingestion_resource_group is not None)
+        and (azure_event_hubs_ingestion_namespace is not None)
         and (azure_event_hubs_ingestion_event_hub is not None)
         and (azure_event_hubs_ingestion_client_id is not None)
         and (azure_event_hubs_ingestion_tenant_id is not None)
+        and (azure_event_hubs_ingestion_subscription_id is not None)
         and (azure_event_hubs_ingestion_service_account is not None)
     )
 
@@ -144,6 +153,14 @@ class TopicsClient(object):
         and (aws_msk_ingestion_topic is not None)
         and (aws_msk_ingestion_aws_role_arn is not None)
         and (aws_msk_ingestion_service_account is not None)
+    )
+
+    is_confluent_cloud = (
+        (confluent_cloud_ingestion_bootstrap_server is not None)
+        and (confluent_cloud_ingestion_cluster_id is not None)
+        and (confluent_cloud_ingestion_topic is not None)
+        and (confluent_cloud_ingestion_identity_pool_id is not None)
+        and (confluent_cloud_ingestion_service_account is not None)
     )
 
     if is_kinesis:
@@ -182,10 +199,12 @@ class TopicsClient(object):
       )
     elif is_azure_event_hubs:
       azure_event_hubs_source = self.messages.AzureEventHubs(
+          resourceGroup=azure_event_hubs_ingestion_resource_group,
           namespace=azure_event_hubs_ingestion_namespace,
           eventHub=azure_event_hubs_ingestion_event_hub,
           clientId=azure_event_hubs_ingestion_client_id,
           tenantId=azure_event_hubs_ingestion_tenant_id,
+          subscriptionId=azure_event_hubs_ingestion_subscription_id,
           gcpServiceAccount=azure_event_hubs_ingestion_service_account,
       )
 
@@ -205,6 +224,21 @@ class TopicsClient(object):
 
       return self.messages.IngestionDataSourceSettings(
           awsMsk=msk_source,
+          platformLogsSettings=self._ParseIngestionPlatformLogsSettings(
+              ingestion_log_severity
+          ),
+      )
+    elif is_confluent_cloud:
+      confluent_cloud_source = self.messages.ConfluentCloud(
+          bootstrapServer=confluent_cloud_ingestion_bootstrap_server,
+          clusterId=confluent_cloud_ingestion_cluster_id,
+          topic=confluent_cloud_ingestion_topic,
+          identityPoolId=confluent_cloud_ingestion_identity_pool_id,
+          gcpServiceAccount=confluent_cloud_ingestion_service_account,
+      )
+
+      return self.messages.IngestionDataSourceSettings(
+          confluentCloud=confluent_cloud_source,
           platformLogsSettings=self._ParseIngestionPlatformLogsSettings(
               ingestion_log_severity
           ),
@@ -237,15 +271,22 @@ class TopicsClient(object):
       cloud_storage_ingestion_text_delimiter=None,
       cloud_storage_ingestion_minimum_object_create_time=None,
       cloud_storage_ingestion_match_glob=None,
+      azure_event_hubs_ingestion_resource_group=None,
       azure_event_hubs_ingestion_namespace=None,
       azure_event_hubs_ingestion_event_hub=None,
       azure_event_hubs_ingestion_client_id=None,
       azure_event_hubs_ingestion_tenant_id=None,
+      azure_event_hubs_ingestion_subscription_id=None,
       azure_event_hubs_ingestion_service_account=None,
       aws_msk_ingestion_cluster_arn=None,
       aws_msk_ingestion_topic=None,
       aws_msk_ingestion_aws_role_arn=None,
       aws_msk_ingestion_service_account=None,
+      confluent_cloud_ingestion_bootstrap_server=None,
+      confluent_cloud_ingestion_cluster_id=None,
+      confluent_cloud_ingestion_topic=None,
+      confluent_cloud_ingestion_identity_pool_id=None,
+      confluent_cloud_ingestion_service_account=None,
       ingestion_log_severity=None,
   ):
     """Creates a Topic.
@@ -288,6 +329,8 @@ class TopicsClient(object):
       cloud_storage_ingestion_match_glob (optional[str]): glob pattern used to
         match Cloud Storage objects that will be ingested. If unset, all objects
         will be ingested.
+      azure_event_hubs_ingestion_resource_group (str): The name of the resource
+        group within an Azure subscription.
       azure_event_hubs_ingestion_namespace (str): The name of the Azure Event
         Hubs namespace.
       azure_event_hubs_ingestion_event_hub (str): The name of the Azure event
@@ -296,6 +339,8 @@ class TopicsClient(object):
         Event Hubs application used to authenticate Pub/Sub.
       azure_event_hubs_ingestion_tenant_id (str): The tenant id of the Azure
         Event Hubs application used to authenticate Pub/Sub.
+      azure_event_hubs_ingestion_subscription_id (str): The id of the Azure
+        Event Hubs subscription.
       azure_event_hubs_ingestion_service_account (str): The GCP service account
         to be used for Federated Identity authentication with Azure Event Hubs.
       aws_msk_ingestion_cluster_arn (str): The ARN that uniquely identifies the
@@ -306,6 +351,17 @@ class TopicsClient(object):
         Federated Identity authentication with MSK.
       aws_msk_ingestion_service_account (str): The GCP service account to be
         used for Federated Identity authentication with MSK.
+      confluent_cloud_ingestion_bootstrap_server (str): The address of the
+        Confluent Cloud bootstrap server. The format is url:port.
+      confluent_cloud_ingestion_cluster_id (str): The id of the Confluent Cloud
+        cluster.
+      confluent_cloud_ingestion_topic (str): The name of the Confluent Cloud
+        topic that Pub/Sub will import from.
+      confluent_cloud_ingestion_identity_pool_id (str): The id of the identity
+        pool to be used for Federated Identity authentication with Confluent
+        Cloud.
+      confluent_cloud_ingestion_service_account (str): The GCP service account
+        to be used for Federated Identity authentication with Confluent Cloud.
       ingestion_log_severity (optional[str]): The log severity to use for
         ingestion.
 
@@ -352,15 +408,22 @@ class TopicsClient(object):
         cloud_storage_ingestion_text_delimiter=cloud_storage_ingestion_text_delimiter,
         cloud_storage_ingestion_minimum_object_create_time=cloud_storage_ingestion_minimum_object_create_time,
         cloud_storage_ingestion_match_glob=cloud_storage_ingestion_match_glob,
+        azure_event_hubs_ingestion_resource_group=azure_event_hubs_ingestion_resource_group,
         azure_event_hubs_ingestion_namespace=azure_event_hubs_ingestion_namespace,
         azure_event_hubs_ingestion_event_hub=azure_event_hubs_ingestion_event_hub,
         azure_event_hubs_ingestion_client_id=azure_event_hubs_ingestion_client_id,
         azure_event_hubs_ingestion_tenant_id=azure_event_hubs_ingestion_tenant_id,
+        azure_event_hubs_ingestion_subscription_id=azure_event_hubs_ingestion_subscription_id,
         azure_event_hubs_ingestion_service_account=azure_event_hubs_ingestion_service_account,
         aws_msk_ingestion_cluster_arn=aws_msk_ingestion_cluster_arn,
         aws_msk_ingestion_topic=aws_msk_ingestion_topic,
         aws_msk_ingestion_aws_role_arn=aws_msk_ingestion_aws_role_arn,
         aws_msk_ingestion_service_account=aws_msk_ingestion_service_account,
+        confluent_cloud_ingestion_bootstrap_server=confluent_cloud_ingestion_bootstrap_server,
+        confluent_cloud_ingestion_cluster_id=confluent_cloud_ingestion_cluster_id,
+        confluent_cloud_ingestion_topic=confluent_cloud_ingestion_topic,
+        confluent_cloud_ingestion_identity_pool_id=confluent_cloud_ingestion_identity_pool_id,
+        confluent_cloud_ingestion_service_account=confluent_cloud_ingestion_service_account,
         ingestion_log_severity=ingestion_log_severity,
     )
     return self._service.Create(topic)
@@ -613,15 +676,22 @@ class TopicsClient(object):
       cloud_storage_ingestion_text_delimiter=None,
       cloud_storage_ingestion_minimum_object_create_time=None,
       cloud_storage_ingestion_match_glob=None,
+      azure_event_hubs_ingestion_resource_group=None,
       azure_event_hubs_ingestion_namespace=None,
       azure_event_hubs_ingestion_event_hub=None,
       azure_event_hubs_ingestion_client_id=None,
       azure_event_hubs_ingestion_tenant_id=None,
+      azure_event_hubs_ingestion_subscription_id=None,
       azure_event_hubs_ingestion_service_account=None,
       aws_msk_ingestion_cluster_arn=None,
       aws_msk_ingestion_topic=None,
       aws_msk_ingestion_aws_role_arn=None,
       aws_msk_ingestion_service_account=None,
+      confluent_cloud_ingestion_bootstrap_server=None,
+      confluent_cloud_ingestion_cluster_id=None,
+      confluent_cloud_ingestion_topic=None,
+      confluent_cloud_ingestion_identity_pool_id=None,
+      confluent_cloud_ingestion_service_account=None,
       ingestion_log_severity=None,
   ):
     """Updates a Topic.
@@ -672,6 +742,8 @@ class TopicsClient(object):
       cloud_storage_ingestion_match_glob (optional[str]): glob pattern used to
         match Cloud Storage objects that will be ingested. If unset, all objects
         will be ingested.
+      azure_event_hubs_ingestion_resource_group (str): The name of the resource
+        group within an Azure subscription.
       azure_event_hubs_ingestion_namespace (str): The name of the Azure Event
         Hubs namespace.
       azure_event_hubs_ingestion_event_hub (str): The name of the Azure event
@@ -680,6 +752,8 @@ class TopicsClient(object):
         Event Hubs application used to authenticate Pub/Sub.
       azure_event_hubs_ingestion_tenant_id (str): The tenant id of the Azure
         Event Hubs application used to authenticate Pub/Sub.
+      azure_event_hubs_ingestion_subscription_id (str): The id of the Azure
+        Event Hubs subscription.
       azure_event_hubs_ingestion_service_account (str): The GCP service account
         to be used for Federated Identity authentication with Azure Event Hubs.
       aws_msk_ingestion_cluster_arn (str): The ARN that uniquely identifies the
@@ -690,6 +764,17 @@ class TopicsClient(object):
         Federated Identity authentication with MSK.
       aws_msk_ingestion_service_account (str): The GCP service account to be
         used for Federated Identity authentication with MSK.
+      confluent_cloud_ingestion_bootstrap_server (str): The address of the
+        Confluent Cloud bootstrap server. The format is url:port.
+      confluent_cloud_ingestion_cluster_id (str): The id of the Confluent Cloud
+        cluster.
+      confluent_cloud_ingestion_topic (str): The name of the Confluent Cloud
+        topic that Pub/Sub will import from.
+      confluent_cloud_ingestion_identity_pool_id (str): The id of the identity
+        pool to be used for Federated Identity authentication with Confluent
+        Cloud.
+      confluent_cloud_ingestion_service_account (str): The GCP service account
+        to be used for Federated Identity authentication with Confluent Cloud.
       ingestion_log_severity (optional[str]): The log severity to use for
         ingestion.
 
@@ -766,15 +851,22 @@ class TopicsClient(object):
           cloud_storage_ingestion_text_delimiter=cloud_storage_ingestion_text_delimiter,
           cloud_storage_ingestion_minimum_object_create_time=cloud_storage_ingestion_minimum_object_create_time,
           cloud_storage_ingestion_match_glob=cloud_storage_ingestion_match_glob,
+          azure_event_hubs_ingestion_resource_group=azure_event_hubs_ingestion_resource_group,
           azure_event_hubs_ingestion_namespace=azure_event_hubs_ingestion_namespace,
           azure_event_hubs_ingestion_event_hub=azure_event_hubs_ingestion_event_hub,
           azure_event_hubs_ingestion_client_id=azure_event_hubs_ingestion_client_id,
           azure_event_hubs_ingestion_tenant_id=azure_event_hubs_ingestion_tenant_id,
+          azure_event_hubs_ingestion_subscription_id=azure_event_hubs_ingestion_subscription_id,
           azure_event_hubs_ingestion_service_account=azure_event_hubs_ingestion_service_account,
           aws_msk_ingestion_cluster_arn=aws_msk_ingestion_cluster_arn,
           aws_msk_ingestion_topic=aws_msk_ingestion_topic,
           aws_msk_ingestion_aws_role_arn=aws_msk_ingestion_aws_role_arn,
           aws_msk_ingestion_service_account=aws_msk_ingestion_service_account,
+          confluent_cloud_ingestion_bootstrap_server=confluent_cloud_ingestion_bootstrap_server,
+          confluent_cloud_ingestion_cluster_id=confluent_cloud_ingestion_cluster_id,
+          confluent_cloud_ingestion_topic=confluent_cloud_ingestion_topic,
+          confluent_cloud_ingestion_identity_pool_id=confluent_cloud_ingestion_identity_pool_id,
+          confluent_cloud_ingestion_service_account=confluent_cloud_ingestion_service_account,
           ingestion_log_severity=ingestion_log_severity,
       )
       if new_settings is not None:

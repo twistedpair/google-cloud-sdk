@@ -431,7 +431,7 @@ class LogScope(proto.Message):
 
             -  ``projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]``
 
-            A log scope can include a maximum of 50 projects and a
+            A log scope can include a maximum of 5 projects and a
             maximum of 100 resources in total.
         description (str):
             Optional. Describes this log scope.

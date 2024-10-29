@@ -204,9 +204,7 @@ def AddAllowUnauthenticatedFlag(parser):
   )
 
 
-def AddAsyncFlag(
-    parser, default_async_for_cluster=False
-):
+def AddAsyncFlag(parser, default_async_for_cluster=False):
   """Add an async flag."""
   help_text = """\
     Return immediately, without waiting for the operation in progress to
@@ -4393,8 +4391,8 @@ def PromptForDefaultSource(container_name=None):
     source = console_io.PromptWithDefault(message=message, default=cwd)
 
     log.status.Print(
-        'Next time, use `gcloud run deploy --source .` '
-        'to deploy the current directory.\n'
+        'Next time, you can use `--source .` argument to deploy the current'
+        ' directory.\n'
     )
     return source
 

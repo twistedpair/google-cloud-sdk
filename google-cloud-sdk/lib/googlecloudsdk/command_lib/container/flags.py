@@ -1396,7 +1396,7 @@ def AddManagedPrometheusFlags(parser, for_create=False):
     )
 
 
-def AddAutoMonitoringScopeFlags(parser, hidden=True):
+def AddAutoMonitoringScopeFlags(parser, hidden):
   """Adds --auto-monitoring-scope flags to parser."""
   help_text = """
   Enables Auto-Monitoring for a specific scope within the cluster.
@@ -3585,8 +3585,6 @@ def AddAddonsFlagsWithOptions(parser, addon_options):
       not in [
           api_adapter.APPLICATIONMANAGER,
           api_adapter.STATEFULHA,
-          # TODO(b/314808639): Remove at AGA time
-          api_adapter.PARALLELSTORECSIDRIVER,
           api_adapter.HIGHSCALECHECKPOINTING,
       ]
   ]
@@ -5205,6 +5203,9 @@ net.core.somaxconn                         | Must be [128, 2147483647]
 net.ipv4.tcp_rmem                          | Any positive integer tuple
 net.ipv4.tcp_wmem                          | Any positive integer tuple
 net.ipv4.tcp_tw_reuse                      | Must be {0, 1}
+kernel.shmmni                              | Must be [4096, 32768]
+kernel.shmmax                              | Must be [0, 18446744073692774399]
+kernel.shmall                              | Must be [0, 18446744073692774399]
 
 List of supported hugepage size in 'hugepageConfig'.
 

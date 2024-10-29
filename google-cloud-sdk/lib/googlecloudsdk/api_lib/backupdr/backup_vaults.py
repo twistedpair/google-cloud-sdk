@@ -18,9 +18,18 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import enum
+
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.backupdr import util
 from googlecloudsdk.command_lib.backupdr import util as command_util
+
+
+class AccessRestriction(enum.Enum):
+  WITHIN_PROJECT = 'within-project'
+  WITHIN_ORGANIZATION = 'within-org'
+  UNRESTRICTED = 'unrestricted'
+  WITHIN_ORG_BUT_UNRESTRICTED_FOR_BA = 'within-org-but-unrestricted-for-ba'
 
 
 class BackupVaultsClient(util.BackupDrClientBase):
@@ -37,6 +46,7 @@ class BackupVaultsClient(util.BackupDrClientBase):
       description,
       labels,
       effective_time,
+      access_restriction,
   ):
 
     parent = resource.Parent().RelativeName()
@@ -46,6 +56,7 @@ class BackupVaultsClient(util.BackupDrClientBase):
         description=description,
         labels=labels,
         effectiveTime=effective_time,
+        accessRestriction=self.ParseAccessRestrictionEnum(access_restriction),
     )
     request_id = command_util.GenerateRequestId()
 
@@ -57,11 +68,48 @@ class BackupVaultsClient(util.BackupDrClientBase):
     )
     return self.service.Create(request)
 
-  def Delete(self, resource, force_delete, allow_missing):
+  def ParseAccessRestrictionEnum(self, access_restriction_str):
+    if access_restriction_str is None:
+      return (
+          self.messages.BackupVault.AccessRestrictionValueValuesEnum.WITHIN_ORGANIZATION
+      )
+
+    access_restriction = AccessRestriction(access_restriction_str)
+
+    if access_restriction == AccessRestriction.WITHIN_PROJECT:
+      return (
+          self.messages.BackupVault.AccessRestrictionValueValuesEnum.WITHIN_PROJECT
+      )
+    elif access_restriction == AccessRestriction.WITHIN_ORGANIZATION:
+      return (
+          self.messages.BackupVault.AccessRestrictionValueValuesEnum.WITHIN_ORGANIZATION
+      )
+    elif access_restriction == AccessRestriction.UNRESTRICTED:
+      return (
+          self.messages.BackupVault.AccessRestrictionValueValuesEnum.UNRESTRICTED
+      )
+    elif (
+        access_restriction
+        == AccessRestriction.WITHIN_ORG_BUT_UNRESTRICTED_FOR_BA
+    ):
+      return (
+          self.messages.BackupVault.AccessRestrictionValueValuesEnum.WITHIN_ORG_BUT_UNRESTRICTED_FOR_BA
+      )
+    else:
+      raise ValueError(f'Invalid access restriction: {access_restriction_str}')
+
+  def Delete(
+      self,
+      resource,
+      ignore_inactive_datasources,
+      ignore_backup_plan_references,
+      allow_missing,
+  ):
     request_id = command_util.GenerateRequestId()
     request = self.messages.BackupdrProjectsLocationsBackupVaultsDeleteRequest(
         name=resource.RelativeName(),
-        force=force_delete,
+        force=ignore_inactive_datasources,
+        ignoreBackupPlanReferences=ignore_backup_plan_references,
         allowMissing=allow_missing,
         requestId=request_id,
     )

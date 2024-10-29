@@ -1008,7 +1008,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement(_messages.Messag
   associated with the same billing account as the order, for all
   products/services procured in the order. Users can enable/disable
   Entitlements to allow/disallow using the product/service in a project. Next
-  Id: 26
+  Id: 27
 
   Enums:
     StateValueValuesEnum: Output only. The state of the entitlement.

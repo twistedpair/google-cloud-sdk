@@ -311,6 +311,11 @@ def dict_like(item):
   return isinstance(item, collections_abc.MutableMapping)
 
 
+def scalar_like(item):
+  """Return True if the item is like a scalar: a ScalarString."""
+  return isinstance(item, yaml.scalarstring.ScalarString)
+
+
 def strip_locations(obj):
   if list_like(obj):
     return [strip_locations(item) for item in obj]

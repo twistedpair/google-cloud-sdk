@@ -3034,6 +3034,16 @@ MAP = {
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
+        'v2beta':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.osconfig.v2beta',
+                    client_classpath='osconfig_v2beta_client.OsconfigV2beta',
+                    base_url='https://osconfig.googleapis.com/',
+                    messages_modulepath='osconfig_v2beta_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
     },
     'oslogin': {
         'v1':

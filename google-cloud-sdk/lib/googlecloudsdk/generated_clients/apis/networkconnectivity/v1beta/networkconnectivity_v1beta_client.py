@@ -1258,6 +1258,33 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def QueryStatus(self, request, global_params=None):
+      r"""Query PSC propagation status the status of a Network Connectivity Center hub.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalHubsQueryStatusRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudNetworkconnectivityV1betaQueryHubStatusResponse) The response message.
+      """
+      config = self.GetMethodConfig('QueryStatus')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryStatus.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/global/hubs/{hubsId}:queryStatus',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.global.hubs.queryStatus',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'groupBy', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta/{+name}:queryStatus',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsQueryStatusRequest',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaQueryHubStatusResponse',
+        supports_download=False,
+    )
+
     def RejectSpoke(self, request, global_params=None):
       r"""Rejects a Network Connectivity Center spoke from being attached to a hub. If the spoke was previously in the `ACTIVE` state, it transitions to the `INACTIVE` state and is no longer able to connect to other spokes that are attached to the hub.
 
@@ -1794,6 +1821,33 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Activate(self, request, global_params=None):
+      r"""Activates a Network Connectivity Center spoke. By activating a spoke, you permit connectivity between it and other spokes that are attached to the same hub.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsSpokesActivateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Activate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Activate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/spokes/{spokesId}:activate',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.spokes.activate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}:activate',
+        request_field='googleCloudNetworkconnectivityV1betaActivateSpokeRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsSpokesActivateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a Network Connectivity Center spoke.
 
@@ -1817,6 +1871,33 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         relative_path='v1beta/{+parent}/spokes',
         request_field='googleCloudNetworkconnectivityV1betaSpoke',
         request_type_name='NetworkconnectivityProjectsLocationsSpokesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Deactivate(self, request, global_params=None):
+      r"""Deactivates a Network Connectivity Center spoke. When you deactivate a spoke, it can't connect to other spokes that are attached to the same hub.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsSpokesDeactivateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Deactivate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Deactivate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/spokes/{spokesId}:deactivate',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.spokes.deactivate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}:deactivate',
+        request_field='googleCloudNetworkconnectivityV1betaDeactivateSpokeRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsSpokesDeactivateRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )

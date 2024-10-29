@@ -2187,8 +2187,8 @@ class AuditConfig(_messages.Message):
   "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
   sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -3614,7 +3614,8 @@ class BackendBucketCdnPolicy(_messages.Message):
       common image formats, media (video and audio), and web assets
       (JavaScript and CSS). Requests and responses that are marked as
       uncacheable, as well as dynamic content (including HTML), will not be
-      cached.
+      cached. If no value is provided for cdnPolicy.cacheMode, it defaults to
+      CACHE_ALL_STATIC.
 
   Fields:
     bypassCacheOnRequestHeaders: Bypass the cache when the specified request
@@ -3634,7 +3635,8 @@ class BackendBucketCdnPolicy(_messages.Message):
       Automatically cache static content, including common image formats,
       media (video and audio), and web assets (JavaScript and CSS). Requests
       and responses that are marked as uncacheable, as well as dynamic content
-      (including HTML), will not be cached.
+      (including HTML), will not be cached. If no value is provided for
+      cdnPolicy.cacheMode, it defaults to CACHE_ALL_STATIC.
     clientTtl: Specifies a separate client (e.g. browser client) maximum TTL.
       This is used to clamp the max-age (or Expires) value sent to the client.
       With FORCE_CACHE_ALL, the lesser of client_ttl and default_ttl is used
@@ -3720,7 +3722,8 @@ class BackendBucketCdnPolicy(_messages.Message):
     content, including common image formats, media (video and audio), and web
     assets (JavaScript and CSS). Requests and responses that are marked as
     uncacheable, as well as dynamic content (including HTML), will not be
-    cached.
+    cached. If no value is provided for cdnPolicy.cacheMode, it defaults to
+    CACHE_ALL_STATIC.
 
     Values:
       CACHE_ALL_STATIC: Automatically cache static content, including common
@@ -4801,7 +4804,8 @@ class BackendServiceCdnPolicy(_messages.Message):
       common image formats, media (video and audio), and web assets
       (JavaScript and CSS). Requests and responses that are marked as
       uncacheable, as well as dynamic content (including HTML), will not be
-      cached.
+      cached. If no value is provided for cdnPolicy.cacheMode, it defaults to
+      CACHE_ALL_STATIC.
 
   Fields:
     bypassCacheOnRequestHeaders: Bypass the cache when the specified request
@@ -4821,7 +4825,8 @@ class BackendServiceCdnPolicy(_messages.Message):
       Automatically cache static content, including common image formats,
       media (video and audio), and web assets (JavaScript and CSS). Requests
       and responses that are marked as uncacheable, as well as dynamic content
-      (including HTML), will not be cached.
+      (including HTML), will not be cached. If no value is provided for
+      cdnPolicy.cacheMode, it defaults to CACHE_ALL_STATIC.
     clientTtl: Specifies a separate client (e.g. browser client) maximum TTL.
       This is used to clamp the max-age (or Expires) value sent to the client.
       With FORCE_CACHE_ALL, the lesser of client_ttl and default_ttl is used
@@ -4907,7 +4912,8 @@ class BackendServiceCdnPolicy(_messages.Message):
     content, including common image formats, media (video and audio), and web
     assets (JavaScript and CSS). Requests and responses that are marked as
     uncacheable, as well as dynamic content (including HTML), will not be
-    cached.
+    cached. If no value is provided for cdnPolicy.cacheMode, it defaults to
+    CACHE_ALL_STATIC.
 
     Values:
       CACHE_ALL_STATIC: Automatically cache static content, including common
@@ -6142,7 +6148,6 @@ class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
   Fields:
-    bindingId: This is deprecated and has no effect. Do not use.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -6221,10 +6226,9 @@ class Binding(_messages.Message):
       [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class BulkInsertDiskResource(_messages.Message):
@@ -14440,6 +14444,8 @@ class ComputeInstancesGetSerialPortOutputRequest(_messages.Message):
       You can also provide a negative start position, which translates to the
       most recent number of bytes written to the serial port. For example, -3
       is interpreted as the most recent 3 bytes written to the serial console.
+      Note that the negative start is bounded by the retained buffer size, and
+      the returned serial console output will not exceed the max buffer size.
     zone: The name of the zone for this request.
   """
 
@@ -32872,85 +32878,6 @@ class ComputeZonesListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(6)
 
 
-class Condition(_messages.Message):
-  r"""This is deprecated and has no effect. Do not use.
-
-  Enums:
-    IamValueValuesEnum: This is deprecated and has no effect. Do not use.
-    OpValueValuesEnum: This is deprecated and has no effect. Do not use.
-    SysValueValuesEnum: This is deprecated and has no effect. Do not use.
-
-  Fields:
-    iam: This is deprecated and has no effect. Do not use.
-    op: This is deprecated and has no effect. Do not use.
-    svc: This is deprecated and has no effect. Do not use.
-    sys: This is deprecated and has no effect. Do not use.
-    values: This is deprecated and has no effect. Do not use.
-  """
-
-  class IamValueValuesEnum(_messages.Enum):
-    r"""This is deprecated and has no effect. Do not use.
-
-    Values:
-      APPROVER: This is deprecated and has no effect. Do not use.
-      ATTRIBUTION: This is deprecated and has no effect. Do not use.
-      AUTHORITY: This is deprecated and has no effect. Do not use.
-      CREDENTIALS_TYPE: This is deprecated and has no effect. Do not use.
-      CREDS_ASSERTION: This is deprecated and has no effect. Do not use.
-      JUSTIFICATION_TYPE: This is deprecated and has no effect. Do not use.
-      NO_ATTR: This is deprecated and has no effect. Do not use.
-      SECURITY_REALM: This is deprecated and has no effect. Do not use.
-    """
-    APPROVER = 0
-    ATTRIBUTION = 1
-    AUTHORITY = 2
-    CREDENTIALS_TYPE = 3
-    CREDS_ASSERTION = 4
-    JUSTIFICATION_TYPE = 5
-    NO_ATTR = 6
-    SECURITY_REALM = 7
-
-  class OpValueValuesEnum(_messages.Enum):
-    r"""This is deprecated and has no effect. Do not use.
-
-    Values:
-      DISCHARGED: This is deprecated and has no effect. Do not use.
-      EQUALS: This is deprecated and has no effect. Do not use.
-      IN: This is deprecated and has no effect. Do not use.
-      NOT_EQUALS: This is deprecated and has no effect. Do not use.
-      NOT_IN: This is deprecated and has no effect. Do not use.
-      NO_OP: This is deprecated and has no effect. Do not use.
-    """
-    DISCHARGED = 0
-    EQUALS = 1
-    IN = 2
-    NOT_EQUALS = 3
-    NOT_IN = 4
-    NO_OP = 5
-
-  class SysValueValuesEnum(_messages.Enum):
-    r"""This is deprecated and has no effect. Do not use.
-
-    Values:
-      IP: This is deprecated and has no effect. Do not use.
-      NAME: This is deprecated and has no effect. Do not use.
-      NO_ATTR: This is deprecated and has no effect. Do not use.
-      REGION: This is deprecated and has no effect. Do not use.
-      SERVICE: This is deprecated and has no effect. Do not use.
-    """
-    IP = 0
-    NAME = 1
-    NO_ATTR = 2
-    REGION = 3
-    SERVICE = 4
-
-  iam = _messages.EnumField('IamValueValuesEnum', 1)
-  op = _messages.EnumField('OpValueValuesEnum', 2)
-  svc = _messages.StringField(3)
-  sys = _messages.EnumField('SysValueValuesEnum', 4)
-  values = _messages.StringField(5, repeated=True)
-
-
 class ConfidentialInstanceConfig(_messages.Message):
   r"""A set of Confidential Instance options.
 
@@ -41899,6 +41826,9 @@ class InstanceGroupManager(_messages.Message):
       a get() request to retrieve an InstanceGroupManager.
     id: [Output Only] A unique identifier for this resource type. The server
       generates this identifier.
+    instanceFlexibilityPolicy: Instance flexibility allowing MIG to create VMs
+      from multiple types of machines. Instance flexibility configuration on
+      MIG overrides instance template configuration.
     instanceGroup: [Output Only] The URL of the Instance Group resource.
     instanceLifecyclePolicy: The repair policy for this managed instance
       group.
@@ -41968,24 +41898,25 @@ class InstanceGroupManager(_messages.Message):
   distributionPolicy = _messages.MessageField('DistributionPolicy', 7)
   fingerprint = _messages.BytesField(8)
   id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  instanceGroup = _messages.StringField(10)
-  instanceLifecyclePolicy = _messages.MessageField('InstanceGroupManagerInstanceLifecyclePolicy', 11)
-  instanceTemplate = _messages.StringField(12)
-  kind = _messages.StringField(13, default='compute#instanceGroupManager')
-  listManagedInstancesResults = _messages.EnumField('ListManagedInstancesResultsValueValuesEnum', 14)
-  name = _messages.StringField(15)
-  namedPorts = _messages.MessageField('NamedPort', 16, repeated=True)
-  region = _messages.StringField(17)
-  satisfiesPzi = _messages.BooleanField(18)
-  satisfiesPzs = _messages.BooleanField(19)
-  selfLink = _messages.StringField(20)
-  statefulPolicy = _messages.MessageField('StatefulPolicy', 21)
-  status = _messages.MessageField('InstanceGroupManagerStatus', 22)
-  targetPools = _messages.StringField(23, repeated=True)
-  targetSize = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 25)
-  versions = _messages.MessageField('InstanceGroupManagerVersion', 26, repeated=True)
-  zone = _messages.StringField(27)
+  instanceFlexibilityPolicy = _messages.MessageField('InstanceGroupManagerInstanceFlexibilityPolicy', 10)
+  instanceGroup = _messages.StringField(11)
+  instanceLifecyclePolicy = _messages.MessageField('InstanceGroupManagerInstanceLifecyclePolicy', 12)
+  instanceTemplate = _messages.StringField(13)
+  kind = _messages.StringField(14, default='compute#instanceGroupManager')
+  listManagedInstancesResults = _messages.EnumField('ListManagedInstancesResultsValueValuesEnum', 15)
+  name = _messages.StringField(16)
+  namedPorts = _messages.MessageField('NamedPort', 17, repeated=True)
+  region = _messages.StringField(18)
+  satisfiesPzi = _messages.BooleanField(19)
+  satisfiesPzs = _messages.BooleanField(20)
+  selfLink = _messages.StringField(21)
+  statefulPolicy = _messages.MessageField('StatefulPolicy', 22)
+  status = _messages.MessageField('InstanceGroupManagerStatus', 23)
+  targetPools = _messages.StringField(24, repeated=True)
+  targetSize = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 26)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 27, repeated=True)
+  zone = _messages.StringField(28)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -42275,6 +42206,66 @@ class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
 
   healthCheck = _messages.StringField(1)
   initialDelaySec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class InstanceGroupManagerInstanceFlexibilityPolicy(_messages.Message):
+  r"""A InstanceGroupManagerInstanceFlexibilityPolicy object.
+
+  Messages:
+    InstanceSelectionsValue: Named instance selections configuring properties
+      that the group will use when creating new VMs.
+
+  Fields:
+    instanceSelections: Named instance selections configuring properties that
+      the group will use when creating new VMs.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InstanceSelectionsValue(_messages.Message):
+    r"""Named instance selections configuring properties that the group will
+    use when creating new VMs.
+
+    Messages:
+      AdditionalProperty: An additional property for a InstanceSelectionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        InstanceSelectionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InstanceSelectionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A
+          InstanceGroupManagerInstanceFlexibilityPolicyInstanceSelection
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('InstanceGroupManagerInstanceFlexibilityPolicyInstanceSelection', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  instanceSelections = _messages.MessageField('InstanceSelectionsValue', 1)
+
+
+class InstanceGroupManagerInstanceFlexibilityPolicyInstanceSelection(_messages.Message):
+  r"""A InstanceGroupManagerInstanceFlexibilityPolicyInstanceSelection object.
+
+  Fields:
+    machineTypes: Full machine-type names, e.g. "n1-standard-16".
+    rank: Preference of this instance selection. Lower number means higher
+      preference. MIG will first try to create a VM based on the machine-type
+      with lowest rank and fallback to next rank based on availability.
+      Machine types and instance selections with the same rank have the same
+      preference.
+  """
+
+  machineTypes = _messages.StringField(1, repeated=True)
+  rank = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class InstanceGroupManagerInstanceLifecyclePolicy(_messages.Message):
@@ -49922,94 +49913,6 @@ class LocationPolicyLocationConstraints(_messages.Message):
   maxCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
-class LogConfig(_messages.Message):
-  r"""This is deprecated and has no effect. Do not use.
-
-  Fields:
-    cloudAudit: This is deprecated and has no effect. Do not use.
-    counter: This is deprecated and has no effect. Do not use.
-    dataAccess: This is deprecated and has no effect. Do not use.
-  """
-
-  cloudAudit = _messages.MessageField('LogConfigCloudAuditOptions', 1)
-  counter = _messages.MessageField('LogConfigCounterOptions', 2)
-  dataAccess = _messages.MessageField('LogConfigDataAccessOptions', 3)
-
-
-class LogConfigCloudAuditOptions(_messages.Message):
-  r"""This is deprecated and has no effect. Do not use.
-
-  Enums:
-    LogNameValueValuesEnum: This is deprecated and has no effect. Do not use.
-
-  Fields:
-    logName: This is deprecated and has no effect. Do not use.
-  """
-
-  class LogNameValueValuesEnum(_messages.Enum):
-    r"""This is deprecated and has no effect. Do not use.
-
-    Values:
-      ADMIN_ACTIVITY: This is deprecated and has no effect. Do not use.
-      DATA_ACCESS: This is deprecated and has no effect. Do not use.
-      UNSPECIFIED_LOG_NAME: This is deprecated and has no effect. Do not use.
-    """
-    ADMIN_ACTIVITY = 0
-    DATA_ACCESS = 1
-    UNSPECIFIED_LOG_NAME = 2
-
-  logName = _messages.EnumField('LogNameValueValuesEnum', 1)
-
-
-class LogConfigCounterOptions(_messages.Message):
-  r"""This is deprecated and has no effect. Do not use.
-
-  Fields:
-    customFields: This is deprecated and has no effect. Do not use.
-    field: This is deprecated and has no effect. Do not use.
-    metric: This is deprecated and has no effect. Do not use.
-  """
-
-  customFields = _messages.MessageField('LogConfigCounterOptionsCustomField', 1, repeated=True)
-  field = _messages.StringField(2)
-  metric = _messages.StringField(3)
-
-
-class LogConfigCounterOptionsCustomField(_messages.Message):
-  r"""This is deprecated and has no effect. Do not use.
-
-  Fields:
-    name: This is deprecated and has no effect. Do not use.
-    value: This is deprecated and has no effect. Do not use.
-  """
-
-  name = _messages.StringField(1)
-  value = _messages.StringField(2)
-
-
-class LogConfigDataAccessOptions(_messages.Message):
-  r"""This is deprecated and has no effect. Do not use.
-
-  Enums:
-    LogModeValueValuesEnum: This is deprecated and has no effect. Do not use.
-
-  Fields:
-    logMode: This is deprecated and has no effect. Do not use.
-  """
-
-  class LogModeValueValuesEnum(_messages.Enum):
-    r"""This is deprecated and has no effect. Do not use.
-
-    Values:
-      LOG_FAIL_CLOSED: This is deprecated and has no effect. Do not use.
-      LOG_MODE_UNSPECIFIED: This is deprecated and has no effect. Do not use.
-    """
-    LOG_FAIL_CLOSED = 0
-    LOG_MODE_UNSPECIFIED = 1
-
-  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
-
-
 class MachineImage(_messages.Message):
   r"""Represents a machine image resource. A machine image is a Compute Engine
   resource that stores all the configuration, metadata, permissions, and data
@@ -50945,6 +50848,8 @@ class ManagedInstance(_messages.Message):
       instance config for this instance.
     preservedStateFromPolicy: [Output Only] Preserved state generated based on
       stateful policy for this instance.
+    propertiesFromFlexibilityPolicy: [Output Only] Instance properties
+      selected for this instance resulting from InstanceFlexibilityPolicy.
     version: [Output Only] Intended version of this instance.
   """
 
@@ -51056,7 +50961,8 @@ class ManagedInstance(_messages.Message):
   name = _messages.StringField(7)
   preservedStateFromConfig = _messages.MessageField('PreservedState', 8)
   preservedStateFromPolicy = _messages.MessageField('PreservedState', 9)
-  version = _messages.MessageField('ManagedInstanceVersion', 10)
+  propertiesFromFlexibilityPolicy = _messages.MessageField('ManagedInstancePropertiesFromFlexibilityPolicy', 10)
+  version = _messages.MessageField('ManagedInstanceVersion', 11)
 
 
 class ManagedInstanceInstanceHealth(_messages.Message):
@@ -51165,6 +51071,16 @@ class ManagedInstanceLastAttempt(_messages.Message):
     errors = _messages.MessageField('ErrorsValueListEntry', 1, repeated=True)
 
   errors = _messages.MessageField('ErrorsValue', 1)
+
+
+class ManagedInstancePropertiesFromFlexibilityPolicy(_messages.Message):
+  r"""A ManagedInstancePropertiesFromFlexibilityPolicy object.
+
+  Fields:
+    machineType: The machine type to be used for this instance.
+  """
+
+  machineType = _messages.StringField(1)
 
 
 class ManagedInstanceVersion(_messages.Message):
@@ -54018,6 +53934,13 @@ class NetworkRoutingConfig(_messages.Message):
   indicating the type of routing behavior to enforce network-wide.
 
   Enums:
+    BgpBestPathSelectionModeValueValuesEnum: The BGP best path selection
+      algorithm to be employed within this network for dynamic routes learned
+      by Cloud Routers. Can be LEGACY (default) or STANDARD.
+    BgpInterRegionCostValueValuesEnum: Allows to define a preferred approach
+      for handling inter-region cost in the selection process when using the
+      STANDARD BGP best path selection algorithm. Can be DEFAULT or
+      ADD_COST_TO_MED.
     RoutingModeValueValuesEnum: The network-wide routing mode to use. If set
       to REGIONAL, this network's Cloud Routers will only advertise routes
       with subnets of this network in the same region as the router. If set to
@@ -54025,12 +53948,45 @@ class NetworkRoutingConfig(_messages.Message):
       subnets of this network, across regions.
 
   Fields:
+    bgpAlwaysCompareMed: Enable comparison of Multi-Exit Discriminators (MED)
+      across routes with different neighbor ASNs when using the STANDARD BGP
+      best path selection algorithm.
+    bgpBestPathSelectionMode: The BGP best path selection algorithm to be
+      employed within this network for dynamic routes learned by Cloud
+      Routers. Can be LEGACY (default) or STANDARD.
+    bgpInterRegionCost: Allows to define a preferred approach for handling
+      inter-region cost in the selection process when using the STANDARD BGP
+      best path selection algorithm. Can be DEFAULT or ADD_COST_TO_MED.
     routingMode: The network-wide routing mode to use. If set to REGIONAL,
       this network's Cloud Routers will only advertise routes with subnets of
       this network in the same region as the router. If set to GLOBAL, this
       network's Cloud Routers will advertise routes with all subnets of this
       network, across regions.
   """
+
+  class BgpBestPathSelectionModeValueValuesEnum(_messages.Enum):
+    r"""The BGP best path selection algorithm to be employed within this
+    network for dynamic routes learned by Cloud Routers. Can be LEGACY
+    (default) or STANDARD.
+
+    Values:
+      LEGACY: <no description>
+      STANDARD: <no description>
+    """
+    LEGACY = 0
+    STANDARD = 1
+
+  class BgpInterRegionCostValueValuesEnum(_messages.Enum):
+    r"""Allows to define a preferred approach for handling inter-region cost
+    in the selection process when using the STANDARD BGP best path selection
+    algorithm. Can be DEFAULT or ADD_COST_TO_MED.
+
+    Values:
+      ADD_COST_TO_MED: <no description>
+      DEFAULT: <no description>
+    """
+    ADD_COST_TO_MED = 0
+    DEFAULT = 1
 
   class RoutingModeValueValuesEnum(_messages.Enum):
     r"""The network-wide routing mode to use. If set to REGIONAL, this
@@ -54046,7 +54002,10 @@ class NetworkRoutingConfig(_messages.Message):
     GLOBAL = 0
     REGIONAL = 1
 
-  routingMode = _messages.EnumField('RoutingModeValueValuesEnum', 1)
+  bgpAlwaysCompareMed = _messages.BooleanField(1)
+  bgpBestPathSelectionMode = _messages.EnumField('BgpBestPathSelectionModeValueValuesEnum', 2)
+  bgpInterRegionCost = _messages.EnumField('BgpInterRegionCostValueValuesEnum', 3)
+  routingMode = _messages.EnumField('RoutingModeValueValuesEnum', 4)
 
 
 class NetworksAddPeeringRequest(_messages.Message):
@@ -58482,7 +58441,6 @@ class Policy(_messages.Message):
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
-    rules: This is deprecated and has no effect. Do not use.
     version: Specifies the format of the policy. Valid values are `0`, `1`,
       and `3`. Requests that specify an invalid value are rejected. Any
       operation that affects conditional role bindings must specify version
@@ -58505,8 +58463,7 @@ class Policy(_messages.Message):
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
-  rules = _messages.MessageField('Rule', 4, repeated=True)
-  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class PreconfiguredWafSet(_messages.Message):
@@ -63989,6 +63946,9 @@ class Route(_messages.Message):
   outside the VPC network. For more information, read the Routes overview.
 
   Enums:
+    NextHopOriginValueValuesEnum: [Output Only] Indicates the origin of the
+      route. Can be IGP (Interior Gateway Protocol), EGP (Exterior Gateway
+      Protocol), or INCOMPLETE.
     RouteStatusValueValuesEnum: [Output only] The status of the route.
     RouteTypeValueValuesEnum: [Output Only] The type of this route, which can
       be one of the following values: - 'TRANSIT' for a transit route that
@@ -64045,6 +64005,9 @@ class Route(_messages.Message):
       packets. You can specify this as a full or partial URL. For example: htt
       ps://www.googleapis.com/compute/v1/projects/project/zones/zone/instances
       /
+    nextHopInterRegionCost: [Output only] Internal fixed region-to-region cost
+      that Google Cloud calculates based on factors such as network
+      performance, distance, and available bandwidth between regions.
     nextHopIp: The network IP address of an instance that should handle
       matching packets. Both IPv6 address and IPv4 addresses are supported.
       Must specify an IPv4 address in dot-decimal notation (e.g. 192.0.2.99)
@@ -64052,8 +64015,13 @@ class Route(_messages.Message):
       2001:db8:0:0:2d9:51:0:0). IPv6 addresses will be displayed using RFC
       5952 compressed format (e.g. 2001:db8::2d9:51:0:0). Should never be an
       IPv4-mapped IPv6 address.
+    nextHopMed: [Output Only] Multi-Exit Discriminator, a BGP route metric
+      that indicates the desirability of a particular route in a network.
     nextHopNetwork: The URL of the local network if it should handle matching
       packets.
+    nextHopOrigin: [Output Only] Indicates the origin of the route. Can be IGP
+      (Interior Gateway Protocol), EGP (Exterior Gateway Protocol), or
+      INCOMPLETE.
     nextHopPeering: [Output Only] The network peering name that should handle
       matching packets, which should conform to RFC1035.
     nextHopVpnTunnel: The URL to a VpnTunnel that should handle matching
@@ -64076,6 +64044,19 @@ class Route(_messages.Message):
     warnings: [Output Only] If potential misconfigurations are detected for
       this route, this field will be populated with warning messages.
   """
+
+  class NextHopOriginValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Indicates the origin of the route. Can be IGP (Interior
+    Gateway Protocol), EGP (Exterior Gateway Protocol), or INCOMPLETE.
+
+    Values:
+      EGP: <no description>
+      IGP: <no description>
+      INCOMPLETE: <no description>
+    """
+    EGP = 0
+    IGP = 1
+    INCOMPLETE = 2
 
   class RouteStatusValueValuesEnum(_messages.Enum):
     r"""[Output only] The status of the route.
@@ -64259,16 +64240,19 @@ class Route(_messages.Message):
   nextHopHub = _messages.StringField(10)
   nextHopIlb = _messages.StringField(11)
   nextHopInstance = _messages.StringField(12)
-  nextHopIp = _messages.StringField(13)
-  nextHopNetwork = _messages.StringField(14)
-  nextHopPeering = _messages.StringField(15)
-  nextHopVpnTunnel = _messages.StringField(16)
-  priority = _messages.IntegerField(17, variant=_messages.Variant.UINT32)
-  routeStatus = _messages.EnumField('RouteStatusValueValuesEnum', 18)
-  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 19)
-  selfLink = _messages.StringField(20)
-  tags = _messages.StringField(21, repeated=True)
-  warnings = _messages.MessageField('WarningsValueListEntry', 22, repeated=True)
+  nextHopInterRegionCost = _messages.IntegerField(13, variant=_messages.Variant.UINT32)
+  nextHopIp = _messages.StringField(14)
+  nextHopMed = _messages.IntegerField(15, variant=_messages.Variant.UINT32)
+  nextHopNetwork = _messages.StringField(16)
+  nextHopOrigin = _messages.EnumField('NextHopOriginValueValuesEnum', 17)
+  nextHopPeering = _messages.StringField(18)
+  nextHopVpnTunnel = _messages.StringField(19)
+  priority = _messages.IntegerField(20, variant=_messages.Variant.UINT32)
+  routeStatus = _messages.EnumField('RouteStatusValueValuesEnum', 21)
+  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 22)
+  selfLink = _messages.StringField(23)
+  tags = _messages.StringField(24, repeated=True)
+  warnings = _messages.MessageField('WarningsValueListEntry', 25, repeated=True)
 
 
 class RouteAsPath(_messages.Message):
@@ -66031,49 +66015,6 @@ class RoutersScopedList(_messages.Message):
 
   routers = _messages.MessageField('Router', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
-
-
-class Rule(_messages.Message):
-  r"""This is deprecated and has no effect. Do not use.
-
-  Enums:
-    ActionValueValuesEnum: This is deprecated and has no effect. Do not use.
-
-  Fields:
-    action: This is deprecated and has no effect. Do not use.
-    conditions: This is deprecated and has no effect. Do not use.
-    description: This is deprecated and has no effect. Do not use.
-    ins: This is deprecated and has no effect. Do not use.
-    logConfigs: This is deprecated and has no effect. Do not use.
-    notIns: This is deprecated and has no effect. Do not use.
-    permissions: This is deprecated and has no effect. Do not use.
-  """
-
-  class ActionValueValuesEnum(_messages.Enum):
-    r"""This is deprecated and has no effect. Do not use.
-
-    Values:
-      ALLOW: This is deprecated and has no effect. Do not use.
-      ALLOW_WITH_LOG: This is deprecated and has no effect. Do not use.
-      DENY: This is deprecated and has no effect. Do not use.
-      DENY_WITH_LOG: This is deprecated and has no effect. Do not use.
-      LOG: This is deprecated and has no effect. Do not use.
-      NO_ACTION: This is deprecated and has no effect. Do not use.
-    """
-    ALLOW = 0
-    ALLOW_WITH_LOG = 1
-    DENY = 2
-    DENY_WITH_LOG = 3
-    LOG = 4
-    NO_ACTION = 5
-
-  action = _messages.EnumField('ActionValueValuesEnum', 1)
-  conditions = _messages.MessageField('Condition', 2, repeated=True)
-  description = _messages.StringField(3)
-  ins = _messages.StringField(4, repeated=True)
-  logConfigs = _messages.MessageField('LogConfig', 5, repeated=True)
-  notIns = _messages.StringField(6, repeated=True)
-  permissions = _messages.StringField(7, repeated=True)
 
 
 class SSLHealthCheck(_messages.Message):
@@ -73183,10 +73124,10 @@ class Subnetwork(_messages.Message):
       This field can be both set at resource creation time and updated using
       patch.
     PurposeValueValuesEnum: The purpose of the resource. This field can be
-      either PRIVATE, GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY,
-      PRIVATE_SERVICE_CONNECT, or PRIVATE is the default purpose for user-
-      created subnets or subnets that are automatically created in auto mode
-      networks. Subnets with purpose set to GLOBAL_MANAGED_PROXY or
+      either PRIVATE, GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, or
+      PRIVATE_SERVICE_CONNECT. PRIVATE is the default purpose for user-created
+      subnets or subnets that are automatically created in auto mode networks.
+      Subnets with purpose set to GLOBAL_MANAGED_PROXY or
       REGIONAL_MANAGED_PROXY are user-created subnetworks that are reserved
       for Envoy-based load balancers. A subnet with purpose set to
       PRIVATE_SERVICE_CONNECT is used to publish services using Private
@@ -73270,16 +73211,16 @@ class Subnetwork(_messages.Message):
     privateIpv6GoogleAccess: This field is for internal use. This field can be
       both set at resource creation time and updated using patch.
     purpose: The purpose of the resource. This field can be either PRIVATE,
-      GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT,
-      or PRIVATE is the default purpose for user-created subnets or subnets
-      that are automatically created in auto mode networks. Subnets with
-      purpose set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY are user-
-      created subnetworks that are reserved for Envoy-based load balancers. A
-      subnet with purpose set to PRIVATE_SERVICE_CONNECT is used to publish
-      services using Private Service Connect. If unspecified, the subnet
-      purpose defaults to PRIVATE. The enableFlowLogs field isn't supported if
-      the subnet purpose field is set to GLOBAL_MANAGED_PROXY or
-      REGIONAL_MANAGED_PROXY.
+      GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, or
+      PRIVATE_SERVICE_CONNECT. PRIVATE is the default purpose for user-created
+      subnets or subnets that are automatically created in auto mode networks.
+      Subnets with purpose set to GLOBAL_MANAGED_PROXY or
+      REGIONAL_MANAGED_PROXY are user-created subnetworks that are reserved
+      for Envoy-based load balancers. A subnet with purpose set to
+      PRIVATE_SERVICE_CONNECT is used to publish services using Private
+      Service Connect. If unspecified, the subnet purpose defaults to PRIVATE.
+      The enableFlowLogs field isn't supported if the subnet purpose field is
+      set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
     region: URL of the region where the Subnetwork resides. This field can be
       set only at resource creation time.
     reservedInternalRange: The URL of the reserved internal range.
@@ -73340,7 +73281,7 @@ class Subnetwork(_messages.Message):
 
   class PurposeValueValuesEnum(_messages.Enum):
     r"""The purpose of the resource. This field can be either PRIVATE,
-    GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
+    GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, or PRIVATE_SERVICE_CONNECT.
     PRIVATE is the default purpose for user-created subnets or subnets that
     are automatically created in auto mode networks. Subnets with purpose set
     to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY are user-created
@@ -79460,10 +79401,10 @@ class UsableSubnetwork(_messages.Message):
       holds. It's immutable and can only be specified during creation or the
       first time the subnet is updated into IPV4_IPV6 dual stack.
     PurposeValueValuesEnum: The purpose of the resource. This field can be
-      either PRIVATE, GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY,
-      PRIVATE_SERVICE_CONNECT, or PRIVATE is the default purpose for user-
-      created subnets or subnets that are automatically created in auto mode
-      networks. Subnets with purpose set to GLOBAL_MANAGED_PROXY or
+      either PRIVATE, GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, or
+      PRIVATE_SERVICE_CONNECT. PRIVATE is the default purpose for user-created
+      subnets or subnets that are automatically created in auto mode networks.
+      Subnets with purpose set to GLOBAL_MANAGED_PROXY or
       REGIONAL_MANAGED_PROXY are user-created subnetworks that are reserved
       for Envoy-based load balancers. A subnet with purpose set to
       PRIVATE_SERVICE_CONNECT is used to publish services using Private
@@ -79495,16 +79436,16 @@ class UsableSubnetwork(_messages.Message):
       the subnet is updated into IPV4_IPV6 dual stack.
     network: Network URL.
     purpose: The purpose of the resource. This field can be either PRIVATE,
-      GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT,
-      or PRIVATE is the default purpose for user-created subnets or subnets
-      that are automatically created in auto mode networks. Subnets with
-      purpose set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY are user-
-      created subnetworks that are reserved for Envoy-based load balancers. A
-      subnet with purpose set to PRIVATE_SERVICE_CONNECT is used to publish
-      services using Private Service Connect. If unspecified, the subnet
-      purpose defaults to PRIVATE. The enableFlowLogs field isn't supported if
-      the subnet purpose field is set to GLOBAL_MANAGED_PROXY or
-      REGIONAL_MANAGED_PROXY.
+      GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, or
+      PRIVATE_SERVICE_CONNECT. PRIVATE is the default purpose for user-created
+      subnets or subnets that are automatically created in auto mode networks.
+      Subnets with purpose set to GLOBAL_MANAGED_PROXY or
+      REGIONAL_MANAGED_PROXY are user-created subnetworks that are reserved
+      for Envoy-based load balancers. A subnet with purpose set to
+      PRIVATE_SERVICE_CONNECT is used to publish services using Private
+      Service Connect. If unspecified, the subnet purpose defaults to PRIVATE.
+      The enableFlowLogs field isn't supported if the subnet purpose field is
+      set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
     role: The role of subnetwork. Currently, this field is only used when
       purpose is set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY. The
       value can be set to ACTIVE or BACKUP. An ACTIVE subnetwork is one that
@@ -79536,7 +79477,7 @@ class UsableSubnetwork(_messages.Message):
 
   class PurposeValueValuesEnum(_messages.Enum):
     r"""The purpose of the resource. This field can be either PRIVATE,
-    GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
+    GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, or PRIVATE_SERVICE_CONNECT.
     PRIVATE is the default purpose for user-created subnets or subnets that
     are automatically created in auto mode networks. Subnets with purpose set
     to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY are user-created

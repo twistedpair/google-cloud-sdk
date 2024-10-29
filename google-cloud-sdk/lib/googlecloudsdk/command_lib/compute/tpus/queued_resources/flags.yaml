@@ -37,6 +37,11 @@ node_prefix:
 
     Must also specify `--node-count`.
 
+workload_type:
+  arg_name: workload-type
+  help_text: |
+    Specifies the workload type for the multi-node TPUs.
+
 accelerator_type:
   arg_name: accelerator-type
   type: googlecloudsdk.command_lib.util.hooks.types:LowerCaseType

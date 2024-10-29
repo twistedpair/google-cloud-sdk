@@ -164,7 +164,7 @@ class Backup(_messages.Message):
     encryptionInformation: Output only. The encryption information for the
       backup, whether it is protected by one or more KMS keys. The information
       includes all Cloud KMS key versions used to encrypt the backup. The
-      `encryption_status' field inside of each `EncryptionInfo` is not
+      `encryption_status` field inside of each `EncryptionInfo` is not
       populated. At least one of the key versions must be available for the
       backup to be restored. If a key version is revoked in the middle of a
       restore, the restore behavior is undefined.
@@ -703,17 +703,17 @@ class CopyBackupEncryptionConfig(_messages.Message):
       `projects//locations//keyRings//cryptoKeys/`.
     kmsKeyNames: Optional. Specifies the KMS configuration for the one or more
       keys used to protect the backup. Values are of the form
-      `projects//locations//keyRings//cryptoKeys/`. Kms keys specified can be
-      in any order. The keys referenced by kms_key_names must fully cover all
-      regions of the backup's instance configuration. Some examples: * For
-      single region instance configs, specify a single regional location KMS
-      key. * For multi-regional instance configs of type GOOGLE_MANAGED,
-      either specify a multi-regional location KMS key or multiple regional
-      location KMS keys that cover all regions in the instance config. * For
-      an instance config of type USER_MANAGED, please specify only regional
-      location KMS keys to cover each region in the instance config. Multi-
-      regional location KMS keys are not supported for USER_MANAGED instance
-      configs.
+      `projects//locations//keyRings//cryptoKeys/`. KMS keys specified can be
+      in any order. The keys referenced by `kms_key_names` must fully cover
+      all regions of the backup's instance configuration. Some examples: * For
+      regional (single-region) instance configurations, specify a regional
+      location KMS key. * For multi-region instance configurations of type
+      `GOOGLE_MANAGED`, either specify a multi-region location KMS key or
+      multiple regional location KMS keys that cover all regions in the
+      instance configuration. * For an instance configuration of type
+      `USER_MANAGED`, specify only regional location KMS keys to cover each
+      region in the instance configuration. Multi-region location KMS keys
+      aren't supported for `USER_MANAGED` type instance configurations.
   """
 
   class EncryptionTypeValueValuesEnum(_messages.Enum):
@@ -811,15 +811,16 @@ class CreateBackupEncryptionConfig(_messages.Message):
     kmsKeyNames: Optional. Specifies the KMS configuration for the one or more
       keys used to protect the backup. Values are of the form
       `projects//locations//keyRings//cryptoKeys/`. The keys referenced by
-      kms_key_names must fully cover all regions of the backup's instance
-      configuration. Some examples: * For single region instance configs,
-      specify a single regional location KMS key. * For multi-regional
-      instance configs of type GOOGLE_MANAGED, either specify a multi-regional
-      location KMS key or multiple regional location KMS keys that cover all
-      regions in the instance config. * For an instance config of type
-      USER_MANAGED, please specify only regional location KMS keys to cover
-      each region in the instance config. Multi-regional location KMS keys are
-      not supported for USER_MANAGED instance configs.
+      `kms_key_names` must fully cover all regions of the backup's instance
+      configuration. Some examples: * For regional (single-region) instance
+      configurations, specify a regional location KMS key. * For multi-region
+      instance configurations of type `GOOGLE_MANAGED`, either specify a
+      multi-region location KMS key or multiple regional location KMS keys
+      that cover all regions in the instance configuration. * For an instance
+      configuration of type `USER_MANAGED`, specify only regional location KMS
+      keys to cover each region in the instance configuration. Multi-region
+      location KMS keys aren't supported for `USER_MANAGED` type instance
+      configurations.
   """
 
   class EncryptionTypeValueValuesEnum(_messages.Enum):
@@ -1136,7 +1137,7 @@ class Database(_messages.Message):
     encryptionInfo: Output only. For databases that are using customer managed
       encryption, this field contains the encryption information for the
       database, such as all Cloud KMS key versions that are in use. The
-      `encryption_status' field inside of each `EncryptionInfo` is not
+      `encryption_status` field inside of each `EncryptionInfo` is not
       populated. For databases that are using Google default or other types of
       encryption, this field is empty. This field is propagated lazily from
       the backend. There might be a delay from when a key version is being
@@ -1355,19 +1356,19 @@ class EncryptionConfig(_messages.Message):
     kmsKeyName: The Cloud KMS key to be used for encrypting and decrypting the
       database. Values are of the form
       `projects//locations//keyRings//cryptoKeys/`.
-    kmsKeyNames: Specifies the KMS configuration for the one or more keys used
-      to encrypt the database. Values are of the form
+    kmsKeyNames: Specifies the KMS configuration for one or more keys used to
+      encrypt the database. Values are of the form
       `projects//locations//keyRings//cryptoKeys/`. The keys referenced by
-      kms_key_names must fully cover all regions of the database instance
-      configuration. Some examples: * For single region database instance
-      configs, specify a single regional location KMS key. * For multi-
-      regional database instance configs of type GOOGLE_MANAGED, either
-      specify a multi-regional location KMS key or multiple regional location
-      KMS keys that cover all regions in the instance config. * For a database
-      instance config of type USER_MANAGED, please specify only regional
-      location KMS keys to cover each region in the instance config. Multi-
-      regional location KMS keys are not supported for USER_MANAGED instance
-      configs.
+      `kms_key_names` must fully cover all regions of the database's instance
+      configuration. Some examples: * For regional (single-region) instance
+      configurations, specify a regional location KMS key. * For multi-region
+      instance configurations of type `GOOGLE_MANAGED`, either specify a
+      multi-region location KMS key or multiple regional location KMS keys
+      that cover all regions in the instance configuration. * For an instance
+      configuration of type `USER_MANAGED`, specify only regional location KMS
+      keys to cover each region in the instance configuration. Multi-region
+      location KMS keys aren't supported for `USER_MANAGED` type instance
+      configurations.
   """
 
   kmsKeyName = _messages.StringField(1)
@@ -2050,11 +2051,8 @@ class Instance(_messages.Message):
       number of nodes allocated to the instance. If autoscaling is enabled,
       `node_count` is treated as an `OUTPUT_ONLY` field and reflects the
       current number of nodes allocated to the instance. This might be zero in
-      API responses for instances that are not yet in the `READY` state. If
-      the instance has varying node count across replicas (achieved by setting
-      asymmetric_autoscaling_options in autoscaling config), the node_count
-      here is the maximum node count across all replicas. For more
-      information, see [Compute capacity, nodes, and processing
+      API responses for instances that are not yet in the `READY` state. For
+      more information, see [Compute capacity, nodes, and processing
       units](https://cloud.google.com/spanner/docs/compute-capacity).
     processingUnits: The number of processing units allocated to this
       instance. At most, one of either `processing_units` or `node_count`
@@ -2063,13 +2061,9 @@ class Instance(_messages.Message):
       instance. If autoscaling is enabled, `processing_units` is treated as an
       `OUTPUT_ONLY` field and reflects the current number of processing units
       allocated to the instance. This might be zero in API responses for
-      instances that are not yet in the `READY` state. If the instance has
-      varying processing units per replica (achieved by setting
-      asymmetric_autoscaling_options in autoscaling config), the
-      processing_units here is the maximum processing units across all
-      replicas. For more information, see [Compute capacity, nodes and
-      processing units](https://cloud.google.com/spanner/docs/compute-
-      capacity).
+      instances that are not yet in the `READY` state. For more information,
+      see [Compute capacity, nodes and processing
+      units](https://cloud.google.com/spanner/docs/compute-capacity).
     replicaComputeCapacity: Output only. Lists the compute capacity per
       ReplicaSelection. A replica selection identifies a set of replicas with
       common properties. Replicas identified by a ReplicaSelection are scaled
@@ -4342,19 +4336,19 @@ class RestoreDatabaseEncryptionConfig(_messages.Message):
       encrypt/decrypt the restored database. This field should be set only
       when encryption_type is `CUSTOMER_MANAGED_ENCRYPTION`. Values are of the
       form `projects//locations//keyRings//cryptoKeys/`.
-    kmsKeyNames: Optional. Specifies the KMS configuration for the one or more
+    kmsKeyNames: Optional. Specifies the KMS configuration for one or more
       keys used to encrypt the database. Values have the form
       `projects//locations//keyRings//cryptoKeys/`. The keys referenced by
-      kms_key_names must fully cover all regions of the database instance
-      configuration. Some examples: * For single region database instance
-      configurations, specify a single regional location KMS key. * For multi-
-      regional database instance configurations of type `GOOGLE_MANAGED`,
-      either specify a multi-regional location KMS key or multiple regional
-      location KMS keys that cover all regions in the instance configuration.
-      * For a database instance configuration of type `USER_MANAGED`, please
-      specify only regional location KMS keys to cover each region in the
-      instance configuration. Multi-regional location KMS keys are not
-      supported for USER_MANAGED instance configurations.
+      `kms_key_names` must fully cover all regions of the database's instance
+      configuration. Some examples: * For regional (single-region) instance
+      configurations, specify a regional location KMS key. * For multi-region
+      instance configurations of type `GOOGLE_MANAGED`, either specify a
+      multi-region location KMS key or multiple regional location KMS keys
+      that cover all regions in the instance configuration. * For an instance
+      configuration of type `USER_MANAGED`, specify only regional location KMS
+      keys to cover each region in the instance configuration. Multi-region
+      location KMS keys aren't supported for `USER_MANAGED` type instance
+      configurations.
   """
 
   class EncryptionTypeValueValuesEnum(_messages.Enum):
@@ -5188,15 +5182,16 @@ class SpannerProjectsInstancesBackupsCreateRequest(_messages.Message):
     encryptionConfig_kmsKeyNames: Optional. Specifies the KMS configuration
       for the one or more keys used to protect the backup. Values are of the
       form `projects//locations//keyRings//cryptoKeys/`. The keys referenced
-      by kms_key_names must fully cover all regions of the backup's instance
-      configuration. Some examples: * For single region instance configs,
-      specify a single regional location KMS key. * For multi-regional
-      instance configs of type GOOGLE_MANAGED, either specify a multi-regional
-      location KMS key or multiple regional location KMS keys that cover all
-      regions in the instance config. * For an instance config of type
-      USER_MANAGED, please specify only regional location KMS keys to cover
-      each region in the instance config. Multi-regional location KMS keys are
-      not supported for USER_MANAGED instance configs.
+      by `kms_key_names` must fully cover all regions of the backup's instance
+      configuration. Some examples: * For regional (single-region) instance
+      configurations, specify a regional location KMS key. * For multi-region
+      instance configurations of type `GOOGLE_MANAGED`, either specify a
+      multi-region location KMS key or multiple regional location KMS keys
+      that cover all regions in the instance configuration. * For an instance
+      configuration of type `USER_MANAGED`, specify only regional location KMS
+      keys to cover each region in the instance configuration. Multi-region
+      location KMS keys aren't supported for `USER_MANAGED` type instance
+      configurations.
     parent: Required. The name of the instance in which the backup will be
       created. This must be the same instance that contains the database the
       backup will be created from. The backup will be stored in the

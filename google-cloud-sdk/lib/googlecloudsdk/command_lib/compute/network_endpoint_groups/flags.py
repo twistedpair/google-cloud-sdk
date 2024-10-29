@@ -431,9 +431,7 @@ def AddCreateNegArgsToParser(
   _AddL7pscRoutingInfo(parser)
 
 
-def _AddAddEndpoint(
-    endpoint_group, endpoint_spec, support_ipv6, support_port_mapping_neg
-):
+def _AddAddEndpoint(endpoint_group, endpoint_spec, support_port_mapping_neg):
   """Adds add endpoint argument for updating network endpoint groups."""
   help_text = """\
           The network endpoint to add to the network endpoint group. Keys used
@@ -455,18 +453,10 @@ def _AddAddEndpoint(
               specified, then the primary IP address for the VM instance in
               the network that the network endpoint group belongs to is
               used.
-              """
-
-  if support_ipv6:
-    help_text += """\
 
               *ipv6* - Optional IPv6 address of the network endpoint. The IPv6
               address must belong to a VM in compute engine (either the internal
               or external IPv6 address).
-
-              At least one of the ip and ipv6 must be specified.
-                 """
-  help_text += """\
 
               *port* - Required endpoint port unless NEG default port is set.
                """
@@ -480,27 +470,9 @@ def _AddAddEndpoint(
   help_text += """\
 
           `internet-ip-port`
-               """
-
-  if support_ipv6:
-    help_text += """\
-
-              *ip* - Optional IPv4 address of the endpoint to attach. Must be
-              publicly routable.
-
-              *ipv6* - Optional IPv6 address of the endpoint to attach. Must be
-              publicly routable.
-
-              At least one of the ip and ipv6 must be specified.
-            """
-  else:
-    help_text += """\
 
               *ip* - Required IPv4 address of the endpoint to attach. Must be
               publicly routable.
-            """
-
-  help_text += """\
 
               *port* - Optional port of the endpoint to attach. If unspecified,
               the NEG default port is set. If no default port is set, the
@@ -522,32 +494,10 @@ def _AddAddEndpoint(
 
           `non-gcp-private-ip-port`
 
-    """
-  if support_ipv6:
-    help_text += """\
-
-              *ip* - Optional IPv4 address of the network endpoint to attach.
-              The IP address must belong to a VM not in Compute Engine and must
-              be routable using a Cloud Router over VPN or an Interconnect
-              connection.
-
-              *ipv6* - Optional IPv6 address of the network endpoint to attach.
-              The IP address must belong to a VM not in Compute Engine and must
-              be routable using a Cloud Router over VPN or an Interconnect
-              connection.
-
-              At least one of the ip and ipv6 must be specified.
-      """
-  else:
-    help_text += """\
-
               *ip* - Required IPv4 address of the network endpoint to attach.
               The IP address must belong to a VM not in Compute Engine and must
               be routable using a Cloud Router over VPN or an Interconnect
               connection.
-      """
-
-  help_text += """\
 
               *port* - Required port of the network endpoint to attach unless
               the NEG default port is set.
@@ -575,9 +525,7 @@ def _AddAddEndpoint(
   )
 
 
-def _AddRemoveEndpoint(
-    endpoint_group, endpoint_spec, support_ipv6, support_port_mapping_neg
-):
+def _AddRemoveEndpoint(endpoint_group, endpoint_spec, support_port_mapping_neg):
   """Adds remove endpoint argument for updating network endpoint groups."""
   help_text = """\
           The network endpoint to detach from the network endpoint group. Keys
@@ -591,14 +539,9 @@ def _AddRemoveEndpoint(
 
               *ip* - Optional IPv4 address of the network endpoint to detach.
               If specified port must be provided as well.
-  """
-  if support_ipv6:
-    help_text += """\
 
               *ipv6* - Optional IPv6 address of the network endpoint to detach.
               If specified port must be provided as well.
-    """
-  help_text += """\
 
               *port* - Optional port of the network endpoint to detach.
     """
@@ -614,17 +557,6 @@ def _AddRemoveEndpoint(
           `internet-ip-port`
 
               *ip* - Required IPv4 address of the network endpoint to detach.
-  """
-
-  if support_ipv6:
-    help_text += """\
-
-              *ipv6* - Required IPv6 address of the network endpoint to detach.
-
-              At least one of the ip and ipv6 must be specified.
-    """
-
-  help_text += """\
 
               *port* - Optional port of the network endpoint to detach if the
               endpoint has a port specified.
@@ -640,17 +572,6 @@ def _AddRemoveEndpoint(
           `non-gcp-private-ip-port`
 
               *ip* - Required IPv4 address of the network endpoint to detach.
-    """
-
-  if support_ipv6:
-    help_text += """\
-
-              *ipv6* - Required IPv6 address of the network endpoint to detach.
-
-              At least one of the ip and ipv6 must be specified.
-      """
-
-  help_text += """\
 
               *port* - Required port of the network endpoint to detach unless
               NEG default port is set.
@@ -674,9 +595,7 @@ def _AddRemoveEndpoint(
   )
 
 
-def AddUpdateNegArgsToParser(
-    parser, support_ipv6=False, support_port_mapping_neg=False
-):
+def AddUpdateNegArgsToParser(parser, support_port_mapping_neg=False):
   """Adds flags for updating a network endpoint group to the parser."""
   endpoint_group = parser.add_group(
       mutex=True,
@@ -687,14 +606,14 @@ def AddUpdateNegArgsToParser(
       ),
   )
 
-  endpoint_spec = {'instance': str, 'ip': str, 'port': int, 'fqdn': str}
-  if support_ipv6:
-    endpoint_spec['ipv6'] = str
+  endpoint_spec = {
+      'instance': str,
+      'ip': str,
+      'ipv6': str,
+      'port': int,
+      'fqdn': str,
+  }
   if support_port_mapping_neg:
     endpoint_spec['client-destination-port'] = int
-  _AddAddEndpoint(
-      endpoint_group, endpoint_spec, support_ipv6, support_port_mapping_neg
-  )
-  _AddRemoveEndpoint(
-      endpoint_group, endpoint_spec, support_ipv6, support_port_mapping_neg
-  )
+  _AddAddEndpoint(endpoint_group, endpoint_spec, support_port_mapping_neg)
+  _AddRemoveEndpoint(endpoint_group, endpoint_spec, support_port_mapping_neg)

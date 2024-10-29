@@ -34,6 +34,7 @@ class EnrollmentsClient(object):
       scope: str,
       eligible_gcs_buckets: str,
       is_parent_folder: bool,
+      is_parent_organization: bool,
   ):
     """Enrolls a resource to Audit Manager.
 
@@ -42,26 +43,32 @@ class EnrollmentsClient(object):
       eligible_gcs_buckets: List of destination among which customer can choose
         to upload their reports during the audit process.
       is_parent_folder: Whether the parent is folder and not project.
+      is_parent_organization: Whether the parent is organization and not
+        project.
 
     Returns:
       Described audit operation resource.
     """
-    service = (
-        self.client.folders_locations
-        if is_parent_folder
-        else self.client.projects_locations
-    )
+    if is_parent_folder:
+      service = self.client.folders_locations
+    elif is_parent_organization:
+      service = self.client.organizations_locations
+    else:
+      service = self.client.projects_locations
 
     inner_req = self.messages.EnrollResourceRequest()
     inner_req.destinations = list(
         map(self.Gcs_uri_to_eligible_destination, eligible_gcs_buckets)
     )
 
-    req = (
-        self.messages.AuditmanagerFoldersLocationsEnrollResourceRequest()
-        if is_parent_folder
-        else self.messages.AuditmanagerProjectsLocationsEnrollResourceRequest()
-    )
+    if is_parent_folder:
+      req = self.messages.AuditmanagerFoldersLocationsEnrollResourceRequest()
+    elif is_parent_organization:
+      req = (
+          self.messages.AuditmanagerOrganizationsLocationsEnrollResourceRequest()
+      )
+    else:
+      req = self.messages.AuditmanagerProjectsLocationsEnrollResourceRequest()
 
     req.scope = scope
     req.enrollResourceRequest = inner_req

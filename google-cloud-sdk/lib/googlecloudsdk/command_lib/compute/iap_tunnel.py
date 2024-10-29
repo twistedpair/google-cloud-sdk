@@ -308,18 +308,20 @@ def _CloseLocalConnectionCallback(local_conn):
       pass
 
 
-def _GetAccessTokenCallback(credentials):
+def _GetAccessTokenCallback(credentials, lock):
   """Callback function to refresh credentials and return access token."""
   if not credentials:
     return None
   log.debug('credentials type for _GetAccessTokenCallback is [%s].',
             six.text_type(credentials))
-  store.RefreshIfAlmostExpire(credentials)
 
-  if creds.IsGoogleAuthCredentials(credentials):
-    return credentials.token
-  else:
-    return credentials.access_token
+  with lock:
+    store.RefreshIfAlmostExpire(credentials)
+
+    if creds.IsGoogleAuthCredentials(credentials):
+      return credentials.token
+    else:
+      return credentials.access_token
 
 
 def _SendLocalDataCallback(local_conn, data):
@@ -371,8 +373,8 @@ class _StdinSocket(object):
   class _StdinSocketMessage(object):
     """A class to wrap messages coming to the stdin socket for windows systems."""
 
-    def __init__(self, messageType, data):
-      self._type = messageType
+    def __init__(self, message_type, data):
+      self._type = message_type
       self._data = data
 
     def GetData(self):
@@ -626,6 +628,9 @@ class SecurityGatewayTunnelHelper(object):
 
     self._shutdown = False
 
+    self._credential = store.LoadIfEnabled(use_google_auth=True)
+    self._credential_lock = threading.Lock()
+
   def _InitiateConnection(self, local_conn,
                           get_access_token_callback, user_agent):
     del user_agent  # Unused.
@@ -670,9 +675,11 @@ class SecurityGatewayTunnelHelper(object):
     try:
       sg_conn = self._InitiateConnection(
           local_conn,
-          functools.partial(_GetAccessTokenCallback,
-                            store.LoadIfEnabled(use_google_auth=True)),
-          user_agent)
+          functools.partial(
+              _GetAccessTokenCallback, self._credential, self._credential_lock
+          ),
+          user_agent,
+      )
       while not (self._shutdown or sg_conn.ShouldStop()):
         data = local_conn.recv(utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE)
         if not data:
@@ -719,6 +726,9 @@ class IAPWebsocketTunnelHelper(object):
 
     self._shutdown = False
 
+    self._credential = store.LoadIfEnabled(use_google_auth=True)
+    self._credential_lock = threading.Lock()
+
   def Close(self):
     self._shutdown = True
 
@@ -764,9 +774,12 @@ class IAPWebsocketTunnelHelper(object):
     try:
       websocket_conn = self._InitiateConnection(
           conn,
-          functools.partial(_GetAccessTokenCallback,
-                            store.LoadIfEnabled(use_google_auth=True)),
-          user_agent, conn_id=conn_id)
+          functools.partial(
+              _GetAccessTokenCallback, self._credential, self._credential_lock
+          ),
+          user_agent,
+          conn_id=conn_id,
+      )
       while not self._shutdown:
         data = conn.recv(utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE)
         if not data:
@@ -845,14 +858,19 @@ class IapTunnelProxyServerHelper():
     log.status.Print('Server shutdown complete.')
 
   def _TestConnection(self):
+    """Test if a connection can be made to the requested endpoint."""
     log.status.Print('Testing if tunnel connection works.')
     user_agent = transport.MakeUserAgentString()
     # pylint: disable=protected-access
     conn = self._tunneler._InitiateConnection(
         None,
-        functools.partial(_GetAccessTokenCallback,
-                          store.LoadIfEnabled(use_google_auth=True)),
-        user_agent)
+        functools.partial(
+            _GetAccessTokenCallback,
+            self._tunneler._credential,
+            threading.Lock(),
+        ),
+        user_agent,
+    )
     # pylint: enable=protected-access
     conn.Close()
 

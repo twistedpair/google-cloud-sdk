@@ -72,8 +72,6 @@ def AddNetworkInterfaceArg(parser, required=True):
       'address': str,
       'external-ipv6-address': str,
       'external-ipv6-prefix-length': int,
-      'public-ptr-domain': str,
-      'ipv6-public-ptr-domain': str,
       'network-tier': network_tier_validator,
       'aliases': str,
       'stack-type': stack_type_validator,
@@ -93,7 +91,7 @@ def AddNetworkInterfaceArg(parser, required=True):
           ' allowed: network, subnet, private-network-ip,'
           ' internal-ipv6-address, internal-ipv6-prefix-length, address,'
           ' external-ipv6-address, external-ipv6-prefix-length,'
-          ' public-ptr-domain, ipv6-public-ptr-domain, network-tier, aliases,'
+          ' network-tier, aliases,'
           ' stack-type, queue-count, nic-type, network-attachment'
       ),
   )

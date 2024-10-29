@@ -284,6 +284,33 @@ class TpuV2alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def PerformMaintenance(self, request, global_params=None):
+      r"""Perform manual maintenance on a node.
+
+      Args:
+        request: (TpuProjectsLocationsNodesPerformMaintenanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PerformMaintenance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PerformMaintenance.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:performMaintenance',
+        http_method='POST',
+        method_id='tpu.projects.locations.nodes.performMaintenance',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha1/{+name}:performMaintenance',
+        request_field='performMaintenanceRequest',
+        request_type_name='TpuProjectsLocationsNodesPerformMaintenanceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SimulateMaintenanceEvent(self, request, global_params=None):
       r"""Simulates a maintenance event.
 
@@ -598,6 +625,33 @@ class TpuV2alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='TpuProjectsLocationsQueuedResourcesListRequest',
         response_type_name='ListQueuedResourcesResponse',
+        supports_download=False,
+    )
+
+    def PerformMaintenanceQueuedResource(self, request, global_params=None):
+      r"""Perform manual maintenance on specific nodes of a QueuedResource.
+
+      Args:
+        request: (TpuProjectsLocationsQueuedResourcesPerformMaintenanceQueuedResourceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PerformMaintenanceQueuedResource')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PerformMaintenanceQueuedResource.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/queuedResources/{queuedResourcesId}:performMaintenanceQueuedResource',
+        http_method='POST',
+        method_id='tpu.projects.locations.queuedResources.performMaintenanceQueuedResource',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha1/{+name}:performMaintenanceQueuedResource',
+        request_field='performMaintenanceQueuedResourceRequest',
+        request_type_name='TpuProjectsLocationsQueuedResourcesPerformMaintenanceQueuedResourceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

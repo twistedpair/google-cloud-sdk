@@ -1131,23 +1131,6 @@ class PrivilegedaccessmanagerFoldersLocationsOperationsListRequest(_messages.Mes
   pageToken = _messages.StringField(4)
 
 
-class PrivilegedaccessmanagerFoldersLocationsSetupServiceRequest(_messages.Message):
-  r"""A PrivilegedaccessmanagerFoldersLocationsSetupServiceRequest object.
-
-  Fields:
-    parent: Required. The parent resource for which this service needs to be
-      set up. Should be in one of the following formats: * `projects/{project-
-      number|project-id}/locations/{region}` * `folders/{folder-
-      number}/locations/{region}` * `organizations/{organization-
-      number}/locations/{region}`
-    setupServiceRequest: A SetupServiceRequest resource to be passed as the
-      request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  setupServiceRequest = _messages.MessageField('SetupServiceRequest', 2)
-
-
 class PrivilegedaccessmanagerOrganizationsLocationsCheckOnboardingStatusRequest(_messages.Message):
   r"""A
   PrivilegedaccessmanagerOrganizationsLocationsCheckOnboardingStatusRequest
@@ -1549,24 +1532,6 @@ class PrivilegedaccessmanagerOrganizationsLocationsOperationsListRequest(_messag
   pageToken = _messages.StringField(4)
 
 
-class PrivilegedaccessmanagerOrganizationsLocationsSetupServiceRequest(_messages.Message):
-  r"""A PrivilegedaccessmanagerOrganizationsLocationsSetupServiceRequest
-  object.
-
-  Fields:
-    parent: Required. The parent resource for which this service needs to be
-      set up. Should be in one of the following formats: * `projects/{project-
-      number|project-id}/locations/{region}` * `folders/{folder-
-      number}/locations/{region}` * `organizations/{organization-
-      number}/locations/{region}`
-    setupServiceRequest: A SetupServiceRequest resource to be passed as the
-      request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  setupServiceRequest = _messages.MessageField('SetupServiceRequest', 2)
-
-
 class PrivilegedaccessmanagerProjectsLocationsCheckOnboardingStatusRequest(_messages.Message):
   r"""A PrivilegedaccessmanagerProjectsLocationsCheckOnboardingStatusRequest
   object.
@@ -1962,23 +1927,6 @@ class PrivilegedaccessmanagerProjectsLocationsOperationsListRequest(_messages.Me
   pageToken = _messages.StringField(4)
 
 
-class PrivilegedaccessmanagerProjectsLocationsSetupServiceRequest(_messages.Message):
-  r"""A PrivilegedaccessmanagerProjectsLocationsSetupServiceRequest object.
-
-  Fields:
-    parent: Required. The parent resource for which this service needs to be
-      set up. Should be in one of the following formats: * `projects/{project-
-      number|project-id}/locations/{region}` * `folders/{folder-
-      number}/locations/{region}` * `organizations/{organization-
-      number}/locations/{region}`
-    setupServiceRequest: A SetupServiceRequest resource to be passed as the
-      request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  setupServiceRequest = _messages.MessageField('SetupServiceRequest', 2)
-
-
 class Requested(_messages.Message):
   r"""An event representing that a grant was requested.
 
@@ -2083,21 +2031,6 @@ class SearchGrantsResponse(_messages.Message):
 
   grants = _messages.MessageField('Grant', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-
-
-class SetupServiceRequest(_messages.Message):
-  r"""Request message for `SetupService` method."""
-
-
-class SetupServiceResponse(_messages.Message):
-  r"""Response message for `SetupService` method.
-
-  Fields:
-    serviceAccount: The service account that the service uses to act on
-      resources.
-  """
-
-  serviceAccount = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):

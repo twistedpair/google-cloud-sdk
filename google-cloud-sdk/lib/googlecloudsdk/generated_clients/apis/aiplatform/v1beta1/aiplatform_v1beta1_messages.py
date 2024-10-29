@@ -3336,7 +3336,8 @@ class AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsPatchRequest(_me
       Updatable fields: * `labels` * `service_agent_type` * `big_query_source`
       * `big_query_source.uri` * `big_query_source.entity_id_columns` *
       `feature_registry_source` * `feature_registry_source.feature_groups` *
-      `sync_config` * `sync_config.cron`
+      `sync_config` * `sync_config.cron` *
+      `optimized_config.automatic_resources`
   """
 
   googleCloudAiplatformV1beta1FeatureView = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureView', 1)
@@ -7890,6 +7891,23 @@ class AiplatformProjectsLocationsNotebookRuntimesStartRequest(_messages.Message)
   """
 
   googleCloudAiplatformV1beta1StartNotebookRuntimeRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1StartNotebookRuntimeRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsNotebookRuntimesStopRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNotebookRuntimesStopRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1StopNotebookRuntimeRequest: A
+      GoogleCloudAiplatformV1beta1StopNotebookRuntimeRequest resource to be
+      passed as the request body.
+    name: Required. The name of the NotebookRuntime resource to be stopped.
+      Instead of checking whether the name is in valid NotebookRuntime
+      resource name format, directly throw NotFound exception if there is no
+      such NotebookRuntime in spanner.
+  """
+
+  googleCloudAiplatformV1beta1StopNotebookRuntimeRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1StopNotebookRuntimeRequest', 1)
   name = _messages.StringField(2, required=True)
 
 
@@ -26811,6 +26829,10 @@ class GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfig(_messages.Message):
       pipelines built using Kubeflow Pipelines SDK 1.8 or lower.
 
   Fields:
+    defaultRuntime: Optional. The default runtime for the PipelineJob. If not
+      provided, Vertex Custom Job(on demand) is used as the runtime. For
+      Vertex Custom Job, please refer to https://cloud.google.com/vertex-
+      ai/docs/training/overview.
     failurePolicy: Represents the failure policy of a pipeline. Currently, the
       default of a pipeline is that the pipeline will continue to run until no
       more tasks can be executed, also known as
@@ -26946,11 +26968,22 @@ class GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  failurePolicy = _messages.EnumField('FailurePolicyValueValuesEnum', 1)
-  gcsOutputDirectory = _messages.StringField(2)
-  inputArtifacts = _messages.MessageField('InputArtifactsValue', 3)
-  parameterValues = _messages.MessageField('ParameterValuesValue', 4)
-  parameters = _messages.MessageField('ParametersValue', 5)
+  defaultRuntime = _messages.MessageField('GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfigDefaultRuntime', 1)
+  failurePolicy = _messages.EnumField('FailurePolicyValueValuesEnum', 2)
+  gcsOutputDirectory = _messages.StringField(3)
+  inputArtifacts = _messages.MessageField('InputArtifactsValue', 4)
+  parameterValues = _messages.MessageField('ParameterValuesValue', 5)
+  parameters = _messages.MessageField('ParametersValue', 6)
+
+
+class GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfigDefaultRuntime(_messages.Message):
+  r"""The default runtime for the PipelineJob.
+
+  Fields:
+    persistentResourceRuntimeDetail: Persistent resource based runtime detail.
+  """
+
+  persistentResourceRuntimeDetail = _messages.MessageField('GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfigPersistentResourceRuntimeDetail', 1)
 
 
 class GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfigInputArtifact(_messages.Message):
@@ -26965,6 +26998,44 @@ class GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfigInputArtifact(_message
   """
 
   artifactId = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfigPersistentResourceRuntimeDetail(_messages.Message):
+  r"""Persistent resource based runtime detail. For more information, refer to
+  https://cloud.google.com/vertex-ai/docs/training/persistent-resource-
+  overview
+
+  Enums:
+    TaskResourceUnavailableTimeoutBehaviorValueValuesEnum: Specifies the
+      behavior to take if the timeout is reached.
+
+  Fields:
+    persistentResourceName: Persistent resource name. Format: `projects/{proje
+      ct}/locations/{location}/persistentResources/{persistent_resource}`
+    taskResourceUnavailableTimeoutBehavior: Specifies the behavior to take if
+      the timeout is reached.
+    taskResourceUnavailableWaitTimeMs: The max time a pipeline task waits for
+      the required CPU, memory, or accelerator resource to become available
+      from the specified persistent resource. Default wait time is 0.
+  """
+
+  class TaskResourceUnavailableTimeoutBehaviorValueValuesEnum(_messages.Enum):
+    r"""Specifies the behavior to take if the timeout is reached.
+
+    Values:
+      TASK_RESOURCE_UNAVAILABLE_TIMEOUT_BEHAVIOR_UNSPECIFIED: Unspecified.
+        Behavior is same as `FAIL`.
+      FAIL: Fail the task if the timeout is reached.
+      FALL_BACK_TO_ON_DEMAND: Fall back to on-demand execution if the timeout
+        is reached.
+    """
+    TASK_RESOURCE_UNAVAILABLE_TIMEOUT_BEHAVIOR_UNSPECIFIED = 0
+    FAIL = 1
+    FALL_BACK_TO_ON_DEMAND = 2
+
+  persistentResourceName = _messages.StringField(1)
+  taskResourceUnavailableTimeoutBehavior = _messages.EnumField('TaskResourceUnavailableTimeoutBehaviorValueValuesEnum', 2)
+  taskResourceUnavailableWaitTimeMs = _messages.IntegerField(3)
 
 
 class GoogleCloudAiplatformV1beta1PipelineTaskDetail(_messages.Message):
@@ -27738,16 +27809,13 @@ class GoogleCloudAiplatformV1beta1PscInterfaceConfig(_messages.Message):
   r"""Configuration for PSC-I.
 
   Fields:
-    networkAttachment: Optional. The full name of the Compute Engine [network
+    networkAttachment: Optional. The name of the Compute Engine [network
       attachment](https://cloud.google.com/vpc/docs/about-network-attachments)
-      to attach to the resource. For example, `projects/12345/regions/us-
-      central1/networkAttachments/myNA`. is of the form `projects/{project}/re
-      gions/{region}/networkAttachments/{networkAttachment}`. Where {project}
-      is a project number, as in `12345`, and {networkAttachment} is a network
-      attachment name. To specify this field, you must have already [created a
-      network attachment] (https://cloud.google.com/vpc/docs/create-manage-
-      network-attachments#create-network-attachments). This field is only used
-      for resources using PSC-I.
+      to attach to the resource within the region and user project. To specify
+      this field, you must have already [created a network attachment]
+      (https://cloud.google.com/vpc/docs/create-manage-network-
+      attachments#create-network-attachments). This field is only used for
+      resources using PSC-I.
   """
 
   networkAttachment = _messages.StringField(1)
@@ -29275,7 +29343,8 @@ class GoogleCloudAiplatformV1beta1ReasoningEngineSpec(_messages.Message):
     ClassMethodsValueListEntry: A ClassMethodsValueListEntry object.
 
   Fields:
-    classMethods: Optional. Declarations for object class methods.
+    classMethods: Optional. Declarations for object class methods in OpenAPI
+      specification format.
     packageSpec: Required. User provided package spec of the ReasoningEngine.
   """
 
@@ -32350,16 +32419,26 @@ class GoogleCloudAiplatformV1beta1SchemaPromptSpecStructuredPrompt(_messages.Mes
   Fields:
     context: Preamble: The context of the prompt.
     examples: Preamble: A set of examples for expected model response.
+    infillPrefix: Preamble: For infill prompt, the prefix before expected
+      model response.
+    infillSuffix: Preamble: For infill prompt, the suffix after expected model
+      response.
     inputPrefixes: Preamble: The input prefixes before each example input.
     outputPrefixes: Preamble: The output prefixes before each example output.
+    predictionInputs: Preamble: The input test data for prediction. Each
+      PartList in this field represents one text-only input set for a single
+      model request.
     promptMessage: The prompt message.
   """
 
   context = _messages.MessageField('GoogleCloudAiplatformV1beta1Content', 1)
   examples = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPromptSpecPartList', 2, repeated=True)
-  inputPrefixes = _messages.StringField(3, repeated=True)
-  outputPrefixes = _messages.StringField(4, repeated=True)
-  promptMessage = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPromptSpecPromptMessage', 5)
+  infillPrefix = _messages.StringField(3)
+  infillSuffix = _messages.StringField(4)
+  inputPrefixes = _messages.StringField(5, repeated=True)
+  outputPrefixes = _messages.StringField(6, repeated=True)
+  predictionInputs = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPromptSpecPartList', 7, repeated=True)
+  promptMessage = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPromptSpecPromptMessage', 8)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTablesDatasetMetadata(_messages.Message):
@@ -35185,6 +35264,10 @@ class GoogleCloudAiplatformV1beta1StartNotebookRuntimeOperationMetadata(_message
 
 class GoogleCloudAiplatformV1beta1StartNotebookRuntimeRequest(_messages.Message):
   r"""Request message for NotebookService.StartNotebookRuntime."""
+
+
+class GoogleCloudAiplatformV1beta1StopNotebookRuntimeRequest(_messages.Message):
+  r"""Request message for NotebookService.StopNotebookRuntime."""
 
 
 class GoogleCloudAiplatformV1beta1StopTrialRequest(_messages.Message):

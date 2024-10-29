@@ -474,6 +474,21 @@ def AddEnableAuditAgent(parser, use_default=True):
   )
 
 
+def AddGrantWorkstationAdminRoleOnCreate(parser, use_default=True):
+  """Adds a --grant-workstation-admin-role-on-create flag to the given parser."""
+  help_text = """\
+  Default value is false.
+  If set, creator of a workstation will get `roles/workstations.policyAdmin`
+  role along with `roles/workstations.user` role on the workstation created by
+  them."""
+  parser.add_argument(
+      '--grant-workstation-admin-role-on-create',
+      action='store_true',
+      default=False if use_default else None,
+      help=help_text,
+  )
+
+
 def AddEnableConfidentialCompute(parser, use_default=True):
   """Adds an --enable-confidential-compute flag to the given parser."""
   help_text = """\

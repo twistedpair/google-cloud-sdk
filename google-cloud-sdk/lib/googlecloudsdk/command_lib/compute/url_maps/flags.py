@@ -66,6 +66,29 @@ def UrlMapArgument(required=True, plural=False):
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
+def GlobalUrlMapArgument():
+  """Flag for commands that only support global URL maps.
+
+  Returns:
+    compute_flags.ResourceArgument with `--region` hidden from documentation
+    and completion. Generates `--global` and `--region` flags for consistency;
+    commands should check if the URL map is regional and raise an appropriate
+    error.
+  """
+  return compute_flags.ResourceArgument(
+      name='url_map',
+      resource_name='URL map',
+      completer=GlobalUrlMapsCompleter,
+      global_collection='compute.urlMaps',
+      global_help_text=(
+          '(Default) The URL map is global. Regional URL maps are not'
+          ' supported.'
+      ),
+      regional_collection='compute.regionUrlMaps',
+      region_hidden=True,
+  )
+
+
 def UrlMapArgumentForTargetProxy(required=True, proxy_type='HTTP'):
   return compute_flags.ResourceArgument(
       name='--url-map',

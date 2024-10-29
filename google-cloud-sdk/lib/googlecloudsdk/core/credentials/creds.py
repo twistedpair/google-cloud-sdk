@@ -51,7 +51,7 @@ import six
 
 ADC_QUOTA_PROJECT_FIELD_NAME = 'quota_project_id'
 
-_REVOKE_URI = 'https://accounts.google.com/o/oauth2/revoke'
+_REVOKE_URI = 'https://oauth2.googleapis.com/revoke'
 
 UNKNOWN_CREDS_NAME = 'unknown'
 USER_ACCOUNT_CREDS_NAME = 'authorized_user'
@@ -1713,7 +1713,7 @@ def _ConvertOauth2ClientCredentialsToADC(credentials):
   return credentials.serialization_data
 
 
-IMPERSONATION_TOKEN_URL = 'https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/{}:generateAccessToken'
+IMPERSONATION_TOKEN_URL = 'https://iamcredentials.{}/v1/projects/-/serviceAccounts/{}:generateAccessToken'
 
 
 def _ConvertCredentialsToADC(credentials, impersonated_service_account,
@@ -1726,16 +1726,25 @@ def _ConvertCredentialsToADC(credentials, impersonated_service_account,
 
   if not impersonated_service_account:
     return creds_dict
+
+  if hasattr(credentials, 'universe_domain'):
+    universe_domain = credentials.universe_domain
+  else:
+    universe_domain = properties.VALUES.core.universe_domain.default
+
   impersonated_creds_dict = {
       'source_credentials':
           creds_dict,
       'service_account_impersonation_url':
-          IMPERSONATION_TOKEN_URL.format(impersonated_service_account),
+          IMPERSONATION_TOKEN_URL.format(
+              universe_domain,
+              impersonated_service_account),
       'delegates':
           delegates or [],
       'type':
           'impersonated_service_account'
   }
+
   return impersonated_creds_dict
 
 

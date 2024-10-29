@@ -2141,8 +2141,8 @@ class TestIamPermissionsResponse(_messages.Message):
 
 class UpgradeInfo(_messages.Message):
   r"""Information related to: * A function's eligibility for 1st Gen to 2nd
-  Gen migration * Current state of migration for function undergoing
-  migration.
+  Gen migration and 2nd Gen to CRf detach. * Current state of migration for
+  function undergoing migration/detach.
 
   Enums:
     UpgradeStateValueValuesEnum: UpgradeState of the function
@@ -2183,6 +2183,8 @@ class UpgradeInfo(_messages.Message):
         API was un-successful.
       COMMIT_FUNCTION_UPGRADE_ERROR: CommitFunctionUpgrade API was un-
         successful.
+      DETACH_IN_PROGRESS: Function is requested to be detached from 2nd Gen to
+        CRf.
     """
     UPGRADE_STATE_UNSPECIFIED = 0
     ELIGIBLE_FOR_2ND_GEN_UPGRADE = 1
@@ -2194,6 +2196,7 @@ class UpgradeInfo(_messages.Message):
     REDIRECT_FUNCTION_UPGRADE_TRAFFIC_ERROR = 7
     ROLLBACK_FUNCTION_UPGRADE_TRAFFIC_ERROR = 8
     COMMIT_FUNCTION_UPGRADE_ERROR = 9
+    DETACH_IN_PROGRESS = 10
 
   buildConfig = _messages.MessageField('BuildConfig', 1)
   eventTrigger = _messages.MessageField('EventTrigger', 2)

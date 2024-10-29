@@ -2418,7 +2418,7 @@ class LogScope(_messages.Message):
     resourceNames: Required. Names of one or more parent resources:
       projects/[PROJECT_ID]May alternatively be one or more views: projects/[P
       ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]A
-      log scope can include a maximum of 50 projects and a maximum of 100
+      log scope can include a maximum of 5 projects and a maximum of 100
       resources in total.
     updateTime: Output only. The last update timestamp of the log scope.
   """

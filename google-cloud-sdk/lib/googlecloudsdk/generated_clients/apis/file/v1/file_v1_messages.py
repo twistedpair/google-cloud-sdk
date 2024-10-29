@@ -675,10 +675,13 @@ class FixedIOPS(_messages.Message):
   r"""Fixed IOPS (input/output operations per second) parameters.
 
   Fields:
-    maxReadIops: Required. Maximum raw read IOPS.
+    maxIops: Required. Maximum IOPS.
+    maxReadIops: Optional. Deprecated: `max_iops` should be used instead of
+      this parameter. Maximum read IOPS.
   """
 
-  maxReadIops = _messages.IntegerField(1)
+  maxIops = _messages.IntegerField(1)
+  maxReadIops = _messages.IntegerField(2)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message):
@@ -1249,10 +1252,13 @@ class IOPSPerTB(_messages.Message):
   r"""IOPS per TB. Filestore defines TB as 1024^4 bytes (TiB).
 
   Fields:
-    maxReadIopsPerTb: Required. Maximum read IOPS per TiB.
+    maxIopsPerTb: Required. Maximum IOPS per TiB.
+    maxReadIopsPerTb: Optional. Deprecated: `max_iops_per_tb` should be used
+      instead of this parameter. Maximum read IOPS per TiB.
   """
 
-  maxReadIopsPerTb = _messages.IntegerField(1)
+  maxIopsPerTb = _messages.IntegerField(1)
+  maxReadIopsPerTb = _messages.IntegerField(2)
 
 
 class Instance(_messages.Message):

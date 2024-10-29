@@ -1867,6 +1867,10 @@ class GoogleCloudDatacatalogV1Tag(_messages.Message):
   IAM](https://cloud.google.com/data-catalog/docs/concepts/iam) for
   information on the permissions needed to create or view tags.
 
+  Enums:
+    DataplexTransferStatusValueValuesEnum: Output only. Denotes the transfer
+      status of the Tag Template.
+
   Messages:
     FieldsValue: Required. Maps the ID of a tag field to its value and
       additional information about that field. Tag template defines valid
@@ -1877,6 +1881,8 @@ class GoogleCloudDatacatalogV1Tag(_messages.Message):
       scope allows you to attach tags to an individual column based on that
       schema. To attach a tag to a nested column, separate column names with a
       dot (`.`). Example: `column.nested_column`.
+    dataplexTransferStatus: Output only. Denotes the transfer status of the
+      Tag Template.
     fields: Required. Maps the ID of a tag field to its value and additional
       information about that field. Tag template defines valid field IDs. A
       tag must have at least 1 field and at most 500 fields.
@@ -1888,6 +1894,24 @@ class GoogleCloudDatacatalogV1Tag(_messages.Message):
       EMPLATE_ID}` This field cannot be modified after creation.
     templateDisplayName: Output only. The display name of the tag template.
   """
+
+  class DataplexTransferStatusValueValuesEnum(_messages.Enum):
+    r"""Output only. Denotes the transfer status of the Tag Template.
+
+    Values:
+      DATAPLEX_TRANSFER_STATUS_UNSPECIFIED: Default value. TagTemplate and its
+        tags are only visible and editable in DataCatalog.
+      MIGRATED: TagTemplate and its tags are auto-copied to Dataplex service.
+        Visible in both services. Editable in DataCatalog, read-only in
+        Dataplex. Deprecated: Individual TagTemplate migration is deprecated
+        in favor of organization or project wide TagTemplate migration opt-in.
+      TRANSFERRED: TagTemplate and its tags are auto-copied to Dataplex
+        service. Visible in both services. Editable in Dataplex, read-only in
+        DataCatalog.
+    """
+    DATAPLEX_TRANSFER_STATUS_UNSPECIFIED = 0
+    MIGRATED = 1
+    TRANSFERRED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FieldsValue(_messages.Message):
@@ -1916,10 +1940,11 @@ class GoogleCloudDatacatalogV1Tag(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   column = _messages.StringField(1)
-  fields = _messages.MessageField('FieldsValue', 2)
-  name = _messages.StringField(3)
-  template = _messages.StringField(4)
-  templateDisplayName = _messages.StringField(5)
+  dataplexTransferStatus = _messages.EnumField('DataplexTransferStatusValueValuesEnum', 2)
+  fields = _messages.MessageField('FieldsValue', 3)
+  name = _messages.StringField(4)
+  template = _messages.StringField(5)
+  templateDisplayName = _messages.StringField(6)
 
 
 class GoogleCloudDatacatalogV1TagField(_messages.Message):

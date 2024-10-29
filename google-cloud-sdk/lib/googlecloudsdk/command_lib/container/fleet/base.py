@@ -120,9 +120,6 @@ class HubCommand(object):
     return util.ScopeResourceName(
         HubCommand.Project(use_number), name, location=location)
 
-  # TODO(b/177098463): All Hub LROs _should_ watch for warnings, but they don't.
-  # Once all tests are updated to handle the extra "Expect Get Op", remove the
-  # option for warnings=False.
   def WaitForHubOp(self, poller, op, message=None, warnings=True, **kwargs):
     """Helper wrapping waiter.WaitFor() with additional warning handling."""
     op_ref = self.hubclient.OperationRef(op)

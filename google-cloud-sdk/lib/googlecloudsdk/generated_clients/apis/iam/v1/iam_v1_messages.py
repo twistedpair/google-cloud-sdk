@@ -745,17 +745,18 @@ class GoogleIamAdminV1WorkforcePoolProviderOidc(_messages.Message):
   Fields:
     clientId: Required. The client ID. Must match the audience claim of the
       JWT issued by the identity provider.
-    clientSecret: The optional client secret. Required to enable Authorization
-      Code flow for web sign-in.
+    clientSecret: Optional. The optional client secret. Required to enable
+      Authorization Code flow for web sign-in.
     issuerUri: Required. The OIDC issuer URI. Must be a valid URI using the
       `https` scheme.
-    jwksJson: OIDC JWKs in JSON String format. For details on the definition
-      of a JWK, see https://tools.ietf.org/html/rfc7517. If not set, the
-      `jwks_uri` from the discovery document(fetched from the .well-known path
-      of the `issuer_uri`) will be used. Currently, RSA and EC asymmetric keys
-      are supported. The JWK must use following format and include only the
-      following fields: { "keys": [ { "kty": "RSA/EC", "alg": "", "use":
-      "sig", "kid": "", "n": "", "e": "", "x": "", "y": "", "crv": "" } ] }
+    jwksJson: Optional. OIDC JWKs in JSON String format. For details on the
+      definition of a JWK, see https://tools.ietf.org/html/rfc7517. If not
+      set, the `jwks_uri` from the discovery document(fetched from the .well-
+      known path of the `issuer_uri`) will be used. Currently, RSA and EC
+      asymmetric keys are supported. The JWK must use following format and
+      include only the following fields: { "keys": [ { "kty": "RSA/EC", "alg":
+      "", "use": "sig", "kid": "", "n": "", "e": "", "x": "", "y": "", "crv":
+      "" } ] }
     webSsoConfig: Required. Configuration for web single sign-on for the OIDC
       provider. Here, web sign-in refers to console sign-in and gcloud sign-in
       through the browser.
@@ -782,9 +783,9 @@ class GoogleIamAdminV1WorkforcePoolProviderOidcClientSecretValue(_messages.Messa
   r"""Representation of the value of the client secret.
 
   Fields:
-    plainText: Input only. The plain text of the client secret value. For
-      security reasons, this field is only used for input and will never be
-      populated in any response.
+    plainText: Optional. Input only. The plain text of the client secret
+      value. For security reasons, this field is only used for input and will
+      never be populated in any response.
     thumbprint: Output only. A thumbprint to represent the current client
       secret value.
   """
@@ -805,7 +806,7 @@ class GoogleIamAdminV1WorkforcePoolProviderOidcWebSsoConfig(_messages.Message):
       is recommended to avoid the Implicit Flow, for security reasons.
 
   Fields:
-    additionalScopes: Additional scopes to request for in the OIDC
+    additionalScopes: Optional. Additional scopes to request for in the OIDC
       authentication request on top of scopes requested by default. By
       default, the `openid`, `profile` and `email` scopes that are supported
       by the identity provider are requested. Each additional scope may be at
@@ -917,14 +918,14 @@ class IamLocationsWorkforcePoolsCreateRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsCreateRequest object.
 
   Fields:
-    location: The location of the pool to create. Format:
+    location: Optional. The location of the pool to create. Format:
       `locations/{location}`.
     workforcePool: A WorkforcePool resource to be passed as the request body.
-    workforcePoolId: The ID to use for the pool, which becomes the final
-      component of the resource name. The IDs must be a globally unique string
-      of 6 to 63 lowercase letters, digits, or hyphens. It must start with a
-      letter, and cannot have a trailing hyphen. The prefix `gcp-` is reserved
-      for use by Google, and may not be specified.
+    workforcePoolId: Optional. The ID to use for the pool, which becomes the
+      final component of the resource name. The IDs must be a globally unique
+      string of 6 to 63 lowercase letters, digits, or hyphens. It must start
+      with a letter, and cannot have a trailing hyphen. The prefix `gcp-` is
+      reserved for use by Google, and may not be specified.
   """
 
   location = _messages.StringField(1, required=True)
@@ -5575,22 +5576,22 @@ class WorkforcePool(_messages.Message):
       workforce pool users. This is an optional field. If specified web sign-
       in can be restricted to given set of services or programmatic sign-in
       can be disabled for pool users.
-    description: A user-specified description of the pool. Cannot exceed 256
-      characters.
-    disabled: Disables the workforce pool. You cannot use a disabled pool to
-      exchange tokens, or use existing tokens to access resources. If the pool
-      is re-enabled, existing tokens grant access again.
-    displayName: A user-specified display name of the pool in Google Cloud
-      Console. Cannot exceed 32 characters.
+    description: Optional. A user-specified description of the pool. Cannot
+      exceed 256 characters.
+    disabled: Optional. Disables the workforce pool. You cannot use a disabled
+      pool to exchange tokens, or use existing tokens to access resources. If
+      the pool is re-enabled, existing tokens grant access again.
+    displayName: Optional. A user-specified display name of the pool in Google
+      Cloud Console. Cannot exceed 32 characters.
     expireTime: Output only. Time after which the workforce pool will be
       permanently purged and cannot be recovered.
     name: Output only. The resource name of the pool. Format:
       `locations/{location}/workforcePools/{workforce_pool_id}`
     parent: Immutable. The resource name of the parent. Format:
       `organizations/{org-id}`.
-    sessionDuration: Duration that the Google Cloud access tokens, console
-      sign-in sessions, and `gcloud` sign-in sessions from this pool are
-      valid. Must be greater than 15 minutes (900s) and less than 12 hours
+    sessionDuration: Optional. Duration that the Google Cloud access tokens,
+      console sign-in sessions, and `gcloud` sign-in sessions from this pool
+      are valid. Must be greater than 15 minutes (900s) and less than 12 hours
       (43200s). If `session_duration` is not configured, minted credentials
       have a default duration of one hour (3600s). For SAML providers, the
       lifetime of the token is the minimum of the `session_duration` and the
@@ -5738,7 +5739,7 @@ class WorkforcePoolProvider(_messages.Message):
       {"google.subject": "assertion.sub"} ```
 
   Fields:
-    attributeCondition: A [Common Expression
+    attributeCondition: Optional. A [Common Expression
       Language](https://opensource.google/projects/cel) expression, in plain
       text, to restrict what otherwise valid authentication credentials issued
       by the provider should not be accepted. The expression must output a
@@ -5799,17 +5800,17 @@ class WorkforcePoolProvider(_messages.Message):
       For example, the following maps the `sub` claim of the incoming
       credential to the `subject` attribute on a Google token: ```
       {"google.subject": "assertion.sub"} ```
-    description: A user-specified description of the provider. Cannot exceed
-      256 characters.
+    description: Optional. A user-specified description of the provider.
+      Cannot exceed 256 characters.
     detailedAuditLogging: Optional. If true, populates additional debug
       information in Cloud Audit Logs for this provider. Logged attribute
       mappings and values can be found in `sts.googleapis.com` data access
       logs. Default value is false.
-    disabled: Disables the workforce pool provider. You cannot use a disabled
-      provider to exchange tokens. However, existing tokens still grant
-      access.
-    displayName: A user-specified display name for the provider. Cannot exceed
-      32 characters.
+    disabled: Optional. Disables the workforce pool provider. You cannot use a
+      disabled provider to exchange tokens. However, existing tokens still
+      grant access.
+    displayName: Optional. A user-specified display name for the provider.
+      Cannot exceed 32 characters.
     expireTime: Output only. Time after which the workload pool provider will
       be permanently purged and cannot be recovered.
     extraAttributesOauth2Client: Optional. The configuration for OAuth 2.0

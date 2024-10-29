@@ -1522,7 +1522,6 @@ def AddAddressArgs(parser,
                    instance_create=False,
                    containers=False,
                    support_network_queue_count=False,
-                   support_network_attachments=False,
                    support_vlan_nic=False,
                    support_ipv6_only=False,
                    support_igmp_query=False):
@@ -1539,8 +1538,6 @@ def AddAddressArgs(parser,
       to true, for create command otherwise.
     support_network_queue_count: indicates flexible networking queue count is
       supported or not.
-    support_network_attachments: indicates whether network attachments are
-      supported.
     support_vlan_nic: indicates whether VLAN network interfaces are supported.
     support_ipv6_only: indicates whether IPV6_ONLY stack type is supported.
     support_igmp_query: indicates whether setting igmp query on network
@@ -1747,12 +1744,10 @@ def AddAddressArgs(parser,
       netmask and allocate it to this network interface.
       """)
 
-  if support_network_attachments:
-    # TODO(b/265153883): Add a link to the user guide.
-    network_interface_help_texts.append("""
+  network_interface_help_texts.append("""
       *network-attachment*::: Specifies the network attachment that this
-      interface should connect to. Mutually exclusive with *--network* and
-      *--subnet* flags.
+        interface should connect to. Mutually exclusive with *--network* and
+        *--subnet* flags.
       """)
 
   if support_vlan_nic:

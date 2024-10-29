@@ -384,18 +384,14 @@ class CloudRunRevisionInfo(_messages.Message):
   Fields:
     displayName: Name of a Cloud Run revision.
     location: Location in which this revision is deployed.
-    serviceName: ID of Cloud Run Service this revision belongs to. Was never
-      set, is not exported to v1 proto and public protos. Do not export to
-      v1beta1 public proto.
     serviceUri: URI of Cloud Run service this revision belongs to.
     uri: URI of a Cloud Run revision.
   """
 
   displayName = _messages.StringField(1)
   location = _messages.StringField(2)
-  serviceName = _messages.StringField(3)
-  serviceUri = _messages.StringField(4)
-  uri = _messages.StringField(5)
+  serviceUri = _messages.StringField(3)
+  uri = _messages.StringField(4)
 
 
 class CloudSQLInstanceInfo(_messages.Message):

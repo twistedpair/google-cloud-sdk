@@ -244,6 +244,60 @@ class DeveloperconnectV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ProcessGitLabEnterpriseWebhook(self, request, global_params=None):
+      r"""ProcessGitLabEnterpriseWebhook is called by the external GitLab Enterprise instances for notifying events.
+
+      Args:
+        request: (DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessGitLabEnterpriseWebhookRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('ProcessGitLabEnterpriseWebhook')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ProcessGitLabEnterpriseWebhook.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/gitRepositoryLinks/{gitRepositoryLinksId}:processGitLabEnterpriseWebhook',
+        http_method='POST',
+        method_id='developerconnect.projects.locations.connections.gitRepositoryLinks.processGitLabEnterpriseWebhook',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:processGitLabEnterpriseWebhook',
+        request_field='processGitLabEnterpriseWebhookRequest',
+        request_type_name='DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessGitLabEnterpriseWebhookRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def ProcessGitLabWebhook(self, request, global_params=None):
+      r"""ProcessGitLabWebhook is called by the GitLab.com for notifying events.
+
+      Args:
+        request: (DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessGitLabWebhookRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('ProcessGitLabWebhook')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ProcessGitLabWebhook.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/gitRepositoryLinks/{gitRepositoryLinksId}:processGitLabWebhook',
+        http_method='POST',
+        method_id='developerconnect.projects.locations.connections.gitRepositoryLinks.processGitLabWebhook',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:processGitLabWebhook',
+        request_field='processGitLabWebhookRequest',
+        request_type_name='DeveloperconnectProjectsLocationsConnectionsGitRepositoryLinksProcessGitLabWebhookRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
   class ProjectsLocationsConnectionsService(base_api.BaseApiService):
     """Service class for the projects_locations_connections resource."""
 
@@ -440,6 +494,33 @@ class DeveloperconnectV1(base_api.BaseApiClient):
         request_field='connection',
         request_type_name='DeveloperconnectProjectsLocationsConnectionsPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def ProcessGitHubEnterpriseWebhook(self, request, global_params=None):
+      r"""ProcessGitHubEnterpriseWebhook is called by the external GitHub Enterprise instances for notifying events.
+
+      Args:
+        request: (DeveloperconnectProjectsLocationsConnectionsProcessGitHubEnterpriseWebhookRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('ProcessGitHubEnterpriseWebhook')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ProcessGitHubEnterpriseWebhook.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/connections:processGitHubEnterpriseWebhook',
+        http_method='POST',
+        method_id='developerconnect.projects.locations.connections.processGitHubEnterpriseWebhook',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/connections:processGitHubEnterpriseWebhook',
+        request_field='processGitHubEnterpriseWebhookRequest',
+        request_type_name='DeveloperconnectProjectsLocationsConnectionsProcessGitHubEnterpriseWebhookRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 

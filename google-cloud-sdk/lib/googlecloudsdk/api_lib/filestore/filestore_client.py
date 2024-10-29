@@ -538,22 +538,22 @@ class FilestoreClient(object):
     if performance_config is None:
       return None
 
-    if 'max-read-iops' in performance_config:
+    if 'max-iops' in performance_config:
       return messages.PerformanceConfig(
           fixedIops=messages.FixedIOPS(
-              maxReadIops=performance_config.get('max-read-iops')
+              maxIops=performance_config.get('max-iops')
           )
       )
-    elif 'max-read-iops-per-tb' in performance_config:
+    elif 'max-iops-per-tb' in performance_config:
       return messages.PerformanceConfig(
           iopsPerTb=messages.IOPSPerTB(
-              maxReadIopsPerTb=performance_config.get('max-read-iops-per-tb')
+              maxIopsPerTb=performance_config.get('max-iops-per-tb')
           )
       )
     else:
       raise InvalidArgumentError(
-          'Invalid performance configuration. Must be one of max-read-iops, '
-          'max-read-iops-per-gb or iops-by-capacity.'
+          'Invalid performance configuration. Must be one of max-iops or '
+          'max-iops-per-gb.'
       )
 
 

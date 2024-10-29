@@ -263,7 +263,8 @@ def remove_toleration(current, key_value, effect):
         and (toleration.effect == effect)
     )
 
-  # TODO(b/290215626) If empty, set cleared_fields value, ensure it's updated.
+  # n.b. If no matches are found, this sets an empty list but does not remove
+  # the field.
   current.podTolerations = [t for t in current_tolerations if not match(t)]
   return current
 

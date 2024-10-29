@@ -25,7 +25,6 @@ import os
 from apitools.gen import gen_client
 from googlecloudsdk.api_lib.regen import api_def
 from googlecloudsdk.api_lib.regen import resource_generator
-from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core.util import files
 from mako import runtime
 from mako import template
@@ -57,10 +56,6 @@ class NoDefaultApiError(Exception):
 
 class WrongDiscoveryDocError(Exception):
   """Unexpected discovery doc."""
-
-
-class UnsupportedDiscoveryDocError(Exception):
-  """Raised when some unsupported feature is detected."""
 
 
 def GenerateApitoolsApi(
@@ -250,7 +245,6 @@ def GenerateApitoolsResourceModule(
       custom_resources: dict, dictionary of custom resource collections.
   Raises:
     WrongDiscoveryDocError: if discovery doc api name/version does not match.
-    UnsupportedDiscoveryDocError: if collections have different base URLs.
   """
 
   discovery_doc = resource_generator.DiscoveryDoc.FromJson(discovery_doc)
@@ -304,19 +298,6 @@ def GenerateApitoolsResourceModule(
     logging.debug('Generating resource module at %s', resource_file_name)
     tpl = template.Template(filename=os.path.join(os.path.dirname(__file__),
                                                   'resources.tpl'))
-    url_api_version = resource_util.SplitEndpointUrl(
-        resource_collections[0].base_url)[1]
-    for c in resource_collections:
-      if url_api_version != resource_util.SplitEndpointUrl(c.base_url)[1]:
-        raise UnsupportedDiscoveryDocError(
-            'In client {0}/{1}, collection {2} is using url {3}, but '
-            'collection {4} is using url {5}'.format(
-                api_name,
-                api_version,
-                resource_collections[0].name,
-                resource_collections[0].base_url,
-                c.name,
-                c.base_url))
     with files.FileWriter(resource_file_name) as output_file:
       ctx = runtime.Context(output_file,
                             collections=sorted(resource_collections),

@@ -286,3 +286,17 @@ governance_rule:
     attribute_name: governance_rule
     help: |
       Identifier of the Dataplex Governance Rule resource.
+
+glossary:
+  name: glossary
+  collection: dataplex.projects.locations.glossaries
+  request_id_field: glossaryId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - &glossary
+    parameter_name: glossariesId
+    attribute_name: glossary
+    help: |
+      Identifier of the Dataplex Glossary resource.

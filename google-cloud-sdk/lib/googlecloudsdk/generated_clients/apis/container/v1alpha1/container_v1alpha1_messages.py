@@ -4120,6 +4120,7 @@ class LoggingComponentConfig(_messages.Message):
       ADDON_MANAGER: kube-addon-manager
       KCP_SSHD: kcp-sshd
       KCP_CONNECTION: kcp connection logs
+      KCP_HPA: horizontal pod autoscaler decision logs
     """
     COMPONENT_UNSPECIFIED = 0
     SYSTEM_COMPONENTS = 1
@@ -4130,6 +4131,7 @@ class LoggingComponentConfig(_messages.Message):
     ADDON_MANAGER = 6
     KCP_SSHD = 7
     KCP_CONNECTION = 8
+    KCP_HPA = 9
 
   enableComponents = _messages.EnumField('EnableComponentsValueListEntryValuesEnum', 1, repeated=True)
 
@@ -5225,6 +5227,16 @@ class NodeKubeletConfig(_messages.Message):
   r"""Node kubelet configs. NOTE: This is an Alpha only API.
 
   Fields:
+    containerLogMaxFiles: Optional. Defines the maximum number of container
+      log files that can be present for a container. See
+      https://kubernetes.io/docs/concepts/cluster-administration/logging/#log-
+      rotation The default value is 5 if unspecified.
+    containerLogMaxSize: Optional. Defines the maximum size of the container
+      log file before it is rotated. See
+      https://kubernetes.io/docs/concepts/cluster-administration/logging/#log-
+      rotation Format: positive number + unit, e.g. 100Ki, 10Mi, 5Gi. Or -1
+      which means the log rotation is disabled. Valid units are Ki, Mi, Gi.
+      The default value is 10Mi if unspecified.
     cpuCfsQuota: Enable CPU CFS quota enforcement for containers that specify
       CPU limits. This option is enabled by default which makes kubelet use
       CFS quota (https://www.kernel.org/doc/Documentation/scheduler/sched-
@@ -5279,17 +5291,19 @@ class NodeKubeletConfig(_messages.Message):
       https://kubernetes.io/docs/tasks/administer-cluster/topology-manager/
   """
 
-  cpuCfsQuota = _messages.BooleanField(1)
-  cpuCfsQuotaPeriod = _messages.StringField(2)
-  cpuManagerPolicy = _messages.StringField(3)
-  imageGcHighThresholdPercent = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  imageGcLowThresholdPercent = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  imageMaximumGcAge = _messages.StringField(6)
-  imageMinimumGcAge = _messages.StringField(7)
-  insecureKubeletReadonlyPortEnabled = _messages.BooleanField(8)
-  memoryManager = _messages.MessageField('MemoryManager', 9)
-  podPidsLimit = _messages.IntegerField(10)
-  topologyManager = _messages.MessageField('TopologyManager', 11)
+  containerLogMaxFiles = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  containerLogMaxSize = _messages.StringField(2)
+  cpuCfsQuota = _messages.BooleanField(3)
+  cpuCfsQuotaPeriod = _messages.StringField(4)
+  cpuManagerPolicy = _messages.StringField(5)
+  imageGcHighThresholdPercent = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  imageGcLowThresholdPercent = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  imageMaximumGcAge = _messages.StringField(8)
+  imageMinimumGcAge = _messages.StringField(9)
+  insecureKubeletReadonlyPortEnabled = _messages.BooleanField(10)
+  memoryManager = _messages.MessageField('MemoryManager', 11)
+  podPidsLimit = _messages.IntegerField(12)
+  topologyManager = _messages.MessageField('TopologyManager', 13)
 
 
 class NodeLabels(_messages.Message):
@@ -5585,18 +5599,20 @@ class NodePoolAutoscaling(_messages.Message):
     autoprovisioned: Can this node pool be deleted automatically.
     enabled: Is autoscaling enabled for this node pool.
     locationPolicy: Location policy used when scaling up a nodepool.
-    maxNodeCount: Maximum number of nodes for one location in the NodePool.
+    maxNodeCount: Maximum number of nodes for one location in the node pool.
       Must be >= min_node_count. There has to be enough quota to scale up the
       cluster.
-    minNodeCount: Minimum number of nodes for one location in the NodePool.
-      Must be >= 1 and <= max_node_count.
+    minNodeCount: Minimum number of nodes for one location in the node pool.
+      Must be greater than or equal to 0 and less than or equal to
+      max_node_count.
     totalMaxNodeCount: Maximum number of nodes in the node pool. Must be
-      greater than total_min_node_count. There has to be enough quota to scale
-      up the cluster. The total_*_node_count fields are mutually exclusive
-      with the *_node_count fields.
+      greater than or equal to total_min_node_count. There has to be enough
+      quota to scale up the cluster. The total_*_node_count fields are
+      mutually exclusive with the *_node_count fields.
     totalMinNodeCount: Minimum number of nodes in the node pool. Must be
-      greater than 1 less than total_max_node_count. The total_*_node_count
-      fields are mutually exclusive with the *_node_count fields.
+      greater than or equal to 0 and less than or equal to
+      total_max_node_count. The total_*_node_count fields are mutually
+      exclusive with the *_node_count fields.
   """
 
   class LocationPolicyValueValuesEnum(_messages.Enum):

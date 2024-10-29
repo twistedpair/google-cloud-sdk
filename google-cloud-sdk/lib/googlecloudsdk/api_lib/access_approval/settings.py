@@ -28,15 +28,18 @@ def Delete(name):
 
   if 'organizations/' in name:
     req = msgs.AccessapprovalOrganizationsDeleteAccessApprovalSettingsRequest(
-        name=name)
+        name=name
+    )
     return client.organizations.DeleteAccessApprovalSettings(req)
   if 'folders/' in name:
     req = msgs.AccessapprovalFoldersDeleteAccessApprovalSettingsRequest(
-        name=name)
+        name=name
+    )
     return client.folders.DeleteAccessApprovalSettings(req)
 
   req = msgs.AccessapprovalProjectsDeleteAccessApprovalSettingsRequest(
-      name=name)
+      name=name
+  )
   return client.projects.DeleteAccessApprovalSettings(req)
 
 
@@ -47,63 +50,84 @@ def Get(name):
 
   if 'organizations/' in name:
     req = msgs.AccessapprovalOrganizationsGetAccessApprovalSettingsRequest(
-        name=name)
+        name=name
+    )
     return client.organizations.GetAccessApprovalSettings(req)
   if 'folders/' in name:
-    req = msgs.AccessapprovalFoldersGetAccessApprovalSettingsRequest(
-        name=name)
+    req = msgs.AccessapprovalFoldersGetAccessApprovalSettingsRequest(name=name)
     return client.folders.GetAccessApprovalSettings(req)
 
-  req = msgs.AccessapprovalProjectsGetAccessApprovalSettingsRequest(
-      name=name)
+  req = msgs.AccessapprovalProjectsGetAccessApprovalSettingsRequest(name=name)
   return client.projects.GetAccessApprovalSettings(req)
 
 
-def Update(name, notification_emails, enrolled_services, active_key_version,
-           update_mask):
-  """Get the access approval settings for a resource.
+def Update(
+    name,
+    notification_emails,
+    enrolled_services,
+    active_key_version,
+    preferred_request_expiration_days,
+    prefer_no_broad_approval_requests,
+    notification_pubsub_topic,
+    request_scope_max_width_preference,
+    require_customer_visible_justification,
+    update_mask,
+):
+  """Update the access approval settings for a resource.
 
   Args:
     name: the settings resource name (e.g. projects/123/accessApprovalSettings)
     notification_emails: list of email addresses
     enrolled_services: list of services
     active_key_version: KMS signing key version resource name
+    preferred_request_expiration_days: the default expiration time for approval
+      requests
+    prefer_no_broad_approval_requests: communicates the preference to Google
+      personnel to request access with as targeted a resource scope as possible
+    notification_pubsub_topic: A pubsub topic to which notifications relating to
+      approval requests should be sent
+    request_scope_max_width_preference: specifies broadest scope of access for
+      access requests without a specific method
+    require_customer_visible_justification: to configure if a customer visible
+      justification (i.e. Vector Case) is required for a Googler to create an
+      Access Ticket to send to the customer when attempting to access customer
+      resources.
     update_mask: which fields to update
 
-  Returns: updated settings
+  Returns:
+    updated settings
   """
   client = apis.GetClientInstance('accessapproval', 'v1')
   msgs = apis.GetMessagesModule('accessapproval', 'v1')
 
   settings = None
-  services_protos = [msgs.EnrolledService(cloudProduct=s) for s in enrolled_services]
-  if len(services_protos) > 0:
-    settings = msgs.AccessApprovalSettings(
-        name=name,
-        enrolledServices=services_protos,
-        notificationEmails=notification_emails,
-        activeKeyVersion=active_key_version)
-  else:
-    settings = msgs.AccessApprovalSettings(
-        name=name,
-        notificationEmails=notification_emails,
-        activeKeyVersion=active_key_version)
+  services_protos = [
+      msgs.EnrolledService(cloudProduct=s) for s in enrolled_services
+  ]
+  settings = msgs.AccessApprovalSettings(
+      name=name,
+      enrolledServices=services_protos,
+      notificationEmails=notification_emails,
+      activeKeyVersion=active_key_version,
+      preferredRequestExpirationDays=preferred_request_expiration_days,
+      preferNoBroadApprovalRequests=prefer_no_broad_approval_requests,
+      notificationPubsubTopic=notification_pubsub_topic,
+      requestScopeMaxWidthPreference=request_scope_max_width_preference,
+      requireCustomerVisibleJustification=require_customer_visible_justification,
+  )
 
   if 'organizations/' in name:
     req = msgs.AccessapprovalOrganizationsUpdateAccessApprovalSettingsRequest(
-        name=name,
-        accessApprovalSettings=settings,
-        updateMask=update_mask)
+        name=name, accessApprovalSettings=settings, updateMask=update_mask
+    )
     return client.organizations.UpdateAccessApprovalSettings(req)
   if 'folders/' in name:
     req = msgs.AccessapprovalFoldersUpdateAccessApprovalSettingsRequest(
-        name=name,
-        accessApprovalSettings=settings,
-        updateMask=update_mask)
+        name=name, accessApprovalSettings=settings, updateMask=update_mask
+    )
     return client.folders.UpdateAccessApprovalSettings(req)
 
   req = msgs.AccessapprovalProjectsUpdateAccessApprovalSettingsRequest(
-      name=name,
-      accessApprovalSettings=settings,
-      updateMask=update_mask)
+      name=name, accessApprovalSettings=settings, updateMask=update_mask
+  )
   return client.projects.UpdateAccessApprovalSettings(req)

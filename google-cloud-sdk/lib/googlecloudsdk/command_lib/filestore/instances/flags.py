@@ -31,19 +31,23 @@ from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 import six
 
+# TODO(b/374712342): MAX_IOPS should present performanceLimits.maxIops (and not
+# performanceLimits.maxReadIops).
 INSTANCES_LIST_FORMAT = """\
     table(
       name.basename():label=INSTANCE_NAME:sort=1,
       name.segment(3):label=LOCATION,
       tier,
       fileShares[0].capacityGb:label=CAPACITY_GB,
-      performanceLimits.maxReadIops:label=MAX_READ_IOPS,
+      performanceLimits.maxReadIops:label=MAX_IOPS,
       fileShares[0].name.yesno(no="N/A"):label=FILE_SHARE_NAME,
       networks[0].ipAddresses[0]:label=IP_ADDRESS,
       state,
       createTime.date()
     )"""
 
+# TODO(b/374712342): MAX_IOPS should present performanceLimits.maxIops (and not
+# performanceLimits.maxReadIops).
 INSTANCES_LIST_FORMAT_BETA = """\
     table(
       name.basename():label=INSTANCE_NAME:sort=1,
@@ -51,7 +55,7 @@ INSTANCES_LIST_FORMAT_BETA = """\
       tier,
       protocol,
       capacityGb:label=CAPACITY_GB,
-      performanceLimits.maxReadIops:label=MAX_READ_IOPS,
+      performanceLimits.maxReadIops:label=MAX_IOPS,
       fileShares[0].name.yesno(no="N/A"):label=FILE_SHARE_NAME,
       networks[0].ipAddresses[0]:label=IP_ADDRESS,
       state,
@@ -598,38 +602,38 @@ def AddPerformanceArg(parser, hidden=False):
         limits and default performance see: https://cloud.google.com/filestore/docs/performance.
         Must be one of:
 
-          max-read-iops
+          max-iops
             The number of IOPS to provision for the instance.
-            MAX-READ-IOPS must be in multiple of 1000 and in the supported IOPS
+            MAX-IOPS must be in multiple of 1000 and in the supported IOPS
             range for the current capacity of the instance.
             For more details, see: https://cloud.google.com/filestore/docs/performance.
 
-          max-read-iops-per-tb
+          max-iops-per-tb
             Is used for setting the max IOPS of the instance by
             specifying the IOPS per TB. When this parameter is used, the
             max IOPS are derived from the instance capacity:
             The instance max IOPS will be calculated by multiplying the
-            capacity of the instance (TB) by MAX-READ-IOPS-PER-TB, and rounding
+            capacity of the instance (TB) by MAX-IOPS-PER-TB, and rounding
             to the nearest 1000. The max IOPS will be changed
             dynamically based on the instance capacity.
-            MAX-READ-IOPS-PER-TB must be in the supported range of the instance.
+            MAX-IOPS-PER-TB must be in the supported range of the instance.
             For more details, see: https://cloud.google.com/filestore/docs/performance.
 
 
         Examples:
 
-        Configure an instance with `max-read-iops` performance:
+        Configure an instance with `max-iops` performance:
 
-          $ {command} example-cluster --performance=max-read-iops=17000
+          $ {command} example-cluster --performance=max-iops=17000
 
-        Configure an instance with `max-read-iops-per-tb` performance:
+        Configure an instance with `max-iops-per-tb` performance:
 
-          $ {command} example-cluster --performance=max-read-iops-per-tb=17000
+          $ {command} example-cluster --performance=max-iops-per-tb=17000
   """
 
   performance_arg_spec = {
-      'max-read-iops': arg_parsers.BoundedInt(1),
-      'max-read-iops-per-tb': arg_parsers.BoundedInt(1),
+      'max-iops': arg_parsers.BoundedInt(1),
+      'max-iops-per-tb': arg_parsers.BoundedInt(1),
   }
 
   parser.add_argument(

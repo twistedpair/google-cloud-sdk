@@ -1066,6 +1066,13 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
       a DNS subdomain. Name must be 63 characters or less, begin and end with
       alphanumerics, with dashes (-), underscores (_), dots (.), and
       alphanumerics between.
+    TagsValue: Optional. Input only. Tag keys/values directly bound to this
+      resource. The short name of a tag key or value can have a maximum length
+      of 256 characters. The permitted character set for the short name
+      includes UTF-8 encoded Unicode characters except single quotes ('),
+      double quotes ("), backslashes (\), and forward slashes (/). See
+      [Tags](http://cloud/resource-manager/docs/tags/tags-overview) for more
+      details on Google Cloud Platform tags.
 
   Fields:
     annotations: Optional. Annotations on the cluster. This field has the same
@@ -1109,6 +1116,13 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
     securityPostureConfig: Optional. Security Posture configuration for this
       cluster.
     state: Output only. The current state of the cluster.
+    tags: Optional. Input only. Tag keys/values directly bound to this
+      resource. The short name of a tag key or value can have a maximum length
+      of 256 characters. The permitted character set for the short name
+      includes UTF-8 encoded Unicode characters except single quotes ('),
+      double quotes ("), backslashes (\), and forward slashes (/). See
+      [Tags](http://cloud/resource-manager/docs/tags/tags-overview) for more
+      details on Google Cloud Platform tags.
     uid: Output only. A globally unique identifier for the cluster.
     updateTime: Output only. The time at which this cluster was last updated.
     workloadIdentityConfig: Output only. Workload Identity settings.
@@ -1171,6 +1185,36 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Tag keys/values directly bound to this resource.
+    The short name of a tag key or value can have a maximum length of 256
+    characters. The permitted character set for the short name includes UTF-8
+    encoded Unicode characters except single quotes ('), double quotes ("),
+    backslashes (\), and forward slashes (/). See
+    [Tags](http://cloud/resource-manager/docs/tags/tags-overview) for more
+    details on Google Cloud Platform tags.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   authorization = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClustersAuthorization', 2)
   binaryAuthorization = _messages.MessageField('GoogleCloudGkemulticloudV1BinaryAuthorization', 3)
@@ -1191,9 +1235,10 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
   reconciling = _messages.BooleanField(18)
   securityPostureConfig = _messages.MessageField('GoogleCloudGkemulticloudV1SecurityPostureConfig', 19)
   state = _messages.EnumField('StateValueValuesEnum', 20)
-  uid = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 23)
+  tags = _messages.MessageField('TagsValue', 21)
+  uid = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 24)
 
 
 class GoogleCloudGkemulticloudV1AttachedClusterError(_messages.Message):

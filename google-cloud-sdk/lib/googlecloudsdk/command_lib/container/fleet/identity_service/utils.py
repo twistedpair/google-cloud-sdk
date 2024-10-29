@@ -18,8 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import datetime
+
 from googlecloudsdk.core import exceptions
 import urllib3
+
 
 # The max number of auth methods allowed per config.
 MAX_AUTH_PROVIDERS = 20
@@ -100,7 +103,10 @@ def validate_and_construct_identity_service_options_proto(
   """
   if identity_service_options_config is None:
     return None
-  supported_options = {'sessionDuration': parse_session_duration}
+  supported_options = {
+      'sessionDuration': parse_session_duration,
+      'diagnosticInterface': parse_diagnostic_interface,
+  }
   identity_service_options_proto = msg.IdentityServiceIdentityServiceOptions()
   for option in identity_service_options_config:
     if option not in supported_options:
@@ -111,12 +117,12 @@ def validate_and_construct_identity_service_options_proto(
     setattr(
         identity_service_options_proto,
         option,
-        supported_options[option](identity_service_options_config),
+        supported_options[option](msg, identity_service_options_config),
     )
   return identity_service_options_proto
 
 
-def parse_session_duration(identity_service_options_config):
+def parse_session_duration(_, identity_service_options_config):
   session_duration = identity_service_options_config['sessionDuration']
   if not isinstance(session_duration, int) or (
       session_duration < SESSION_DURATION_MIN
@@ -127,6 +133,64 @@ def parse_session_duration(identity_service_options_config):
         ' between {} and {}.'.format(SESSION_DURATION_MIN, SESSION_DURATION_MAX)
     )
   return str(session_duration * 60) + 's'
+
+
+def parse_diagnostic_interface(msg, identity_service_options_config):
+  """Constructs an IdentityServiceDiagnosticInterface instance from the provided config `identity_service_options_config`.
+
+  Args:
+    msg: The gkehub message package
+    identity_service_options_config: a map of non-protocol-related configuration
+      options from the applied configuration.
+
+  Returns:
+    an instance of IdentityServiceDiagnosticInterface
+
+  Raises:
+     ValueError: if the value provided in `diagnosticInterface.expirationTime`
+     is not RFC3339-compliant.
+  """
+  diagnostic_interface_config = identity_service_options_config[
+      'diagnosticInterface'
+  ]
+  if (
+      not isinstance(diagnostic_interface_config, dict)
+      or 'enabled' not in diagnostic_interface_config
+      or 'expirationTime' not in diagnostic_interface_config
+  ):
+    raise exceptions.Error(
+        "Required fields 'diagnosticInterface.enabled' and"
+        " 'diagnosticInterface.expirationTime' must be provided."
+    )
+  diagnostic_interface_proto = msg.IdentityServiceDiagnosticInterface()
+  for key in diagnostic_interface_config:
+    if key == 'enabled':
+      diagnostic_interface_proto.enabled = diagnostic_interface_config[
+          'enabled'
+      ]
+    elif key == 'expirationTime':
+      try:
+        _ = datetime.datetime.strptime(
+            diagnostic_interface_config['expirationTime'].__str__(),
+            '%Y-%m-%dT%H:%M:%S%z',
+        )
+        diagnostic_interface_proto.expirationTime = diagnostic_interface_config[
+            'expirationTime'
+        ]
+      except ValueError:
+        raise ValueError(
+            "'{}' is invalid for the field"
+            " 'diagnosticInterface.expirationTime'. Please, provide a valid"
+            " date in the '%Y-%m-%dT%H:%M:%S%z' format.".format(
+                diagnostic_interface_config['expirationTime']
+            )
+        )
+    else:
+      raise exceptions.Error(
+          "Unknown field '{}' found under"
+          " 'spec.identityServiceOptions.diagnosticInterface'".format(key)
+      )
+  return diagnostic_interface_proto
 
 
 def get_auth_methods(clientconfig):

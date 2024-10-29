@@ -26,6 +26,7 @@ from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core.console import console_io
 import six
 
+# Note that updating config "databases" is not currently supported.
 VALID_REDIS_3_2_CONFIG_KEYS = ('maxmemory-policy',
                                'notify-keyspace-events',
                                'timeout')
@@ -147,4 +148,3 @@ def WarnOnAuthEnabled(auth_enabled):
 def UpdateGetCertificateAuthorityRequestPath(unused_ref, unused_args, req):
   req.name = req.name + '/certificateAuthority'
   return req
-

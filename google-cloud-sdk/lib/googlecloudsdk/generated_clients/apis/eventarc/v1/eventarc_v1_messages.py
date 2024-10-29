@@ -1890,61 +1890,6 @@ class GoogleCloudEventarcV1PipelineDestination(_messages.Message):
       peering zone to the consumer VPC and forward DNS requests to the VPC
       specified by network config to resolve the service endpoint. See:
       https://cloud.google.com/dns/docs/zones/zones-overview#peering_zones
-    messageBindingHttpTemplate: Optional. The CEL expression used to construct
-      a new HTTP request to be sent to the final destination. The result of
-      the CEL expression must be a map of key/value pairs such that: - If a
-      map named `headers` exists on the result of the expression, then its
-      key/value pairs are directly mapped to the HTTP request headers. The
-      headers values are constructed from the corresponding value type's
-      canonical representation. If the `headers` field doesn't exist then the
-      resulting HTTP request will be without headers. - If a field named
-      `body` exists on the result of the expression then its value is directly
-      mapped to the body of the request. If the value of the `body` field is
-      of type bytes or string then it is used for the HTTP request body as-is,
-      with no conversion. If the body field is of any other type then it is
-      converted to a JSON string. If the body field doesn't exist then the
-      resulting HTTP request will be without a body. - Any other fields in the
-      resulting expression will be ignored. The CEL expression may access the
-      incoming CloudEvent message in its definition, as follows: - The `data`
-      field of the incoming CloudEvent message can be accessed using the
-      `message.data` value. - Each attribute of the incoming CloudEvent
-      message can be accessed using the `message.` value, where is replaced
-      with the name of the attribute. Headers added to the request by previous
-      filters in the chain can be accessed in the CEL expression using the
-      `headers` variable. The `headers` variable defines a map of key/value
-      pairs corresponding to the HTTP headers added by previous mediation
-      steps and not the headers present on the original incoming request. For
-      example, the following CEL expression can be used to construct a
-      Headers-only HTTP request by adding an additional header to the headers
-      added by previous mediations in the Pipeline: ``` {"headers":
-      headers.merge({"new-header-key": "new-header-value"})} ``` Additionally,
-      the following CEL extension functions are provided for use in this CEL
-      expression: - toBase64Url: map.toBase64Url() -> string - Converts a
-      CelValue to a base64url encoded string - toJsonString:
-      map.toJsonString() -> string - Converts a CelValue to a JSON string -
-      merge: map1.merge(map2) -> map3 - Merges the passed CEL map with the
-      existing CEL map the function is applied to. - If the same key exists in
-      both maps, if the key's value is type map both maps are merged else the
-      value from the passed map is used. - toMap: list(map).toMap() -> map -
-      Converts a CEL list of CEL maps to a single CEL map -
-      toDestinationPayloadFormat(): message.data.toDestinationPayloadFormat()
-      -> string or bytes - Converts the message data to the destination
-      payload format specified in Pipeline.Destination.output_payload_format -
-      This function is meant to be applied to the message.data field. - If the
-      destination payload format is not set, the function will return the
-      message data unchanged. - toCloudEventJsonWithPayloadFormat:
-      message.toCloudEventJsonWithPayloadFormat() -> map - Converts a message
-      to the corresponding structure of JSON format for CloudEvents - This
-      function applies toDestinationPayloadFormat() to the message data. It
-      also sets the corresponding datacontenttype of the CloudEvent, as
-      indicated by Pipeline.Destination.output_payload_format. If no
-      output_payload_format is set it will use the existing datacontenttype on
-      the CloudEvent if present, else leave datacontenttype absent. - This
-      function expects that the content of the message will adhere to the
-      standard CloudEvent format. If it doesn't then this function will fail.
-      - The result is a CEL map that corresponds to the JSON representation of
-      the CloudEvent. To convert that data to a JSON string it can be chained
-      with the toJsonString function.
     messageBus: Optional. The resource name of the Message Bus to which events
       should be published. The Message Bus resource should exist in the same
       project as the Pipeline. Format:
@@ -1966,12 +1911,11 @@ class GoogleCloudEventarcV1PipelineDestination(_messages.Message):
 
   authenticationConfig = _messages.MessageField('GoogleCloudEventarcV1PipelineDestinationAuthenticationConfig', 1)
   httpEndpoint = _messages.MessageField('GoogleCloudEventarcV1PipelineDestinationHttpEndpoint', 2)
-  messageBindingHttpTemplate = _messages.StringField(3)
-  messageBus = _messages.StringField(4)
-  networkConfig = _messages.MessageField('GoogleCloudEventarcV1PipelineDestinationNetworkConfig', 5)
-  outputPayloadFormat = _messages.MessageField('GoogleCloudEventarcV1PipelineMessagePayloadFormat', 6)
-  topic = _messages.StringField(7)
-  workflow = _messages.StringField(8)
+  messageBus = _messages.StringField(3)
+  networkConfig = _messages.MessageField('GoogleCloudEventarcV1PipelineDestinationNetworkConfig', 4)
+  outputPayloadFormat = _messages.MessageField('GoogleCloudEventarcV1PipelineMessagePayloadFormat', 5)
+  topic = _messages.StringField(6)
+  workflow = _messages.StringField(7)
 
 
 class GoogleCloudEventarcV1PipelineDestinationAuthenticationConfig(_messages.Message):
@@ -2111,7 +2055,6 @@ class GoogleCloudEventarcV1PipelineDestinationHttpEndpoint(_messages.Message):
       stream` MIME type otherwise. The Pipeline expects that the content of
       the message will adhere to the standard CloudEvent format. If it doesn't
       then the outgoing message request may fail with a persistent error.
-    method: Optional.
     uri: Required. The URI of the HTTP enpdoint. The value must be a RFC2396
       URI string. Examples: `http://10.10.10.8:80/route`, `http://svc.us-
       central1.p.local:8080/`. Only HTTP and HTTPS protocols are supported.
@@ -2121,8 +2064,7 @@ class GoogleCloudEventarcV1PipelineDestinationHttpEndpoint(_messages.Message):
   """
 
   messageBindingTemplate = _messages.StringField(1)
-  method = _messages.StringField(2)
-  uri = _messages.StringField(3)
+  uri = _messages.StringField(2)
 
 
 class GoogleCloudEventarcV1PipelineDestinationNetworkConfig(_messages.Message):

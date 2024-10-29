@@ -57,7 +57,7 @@ class ManagedflinkV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Deployment in a given project and location.
+      r"""Creates a new deployment in the specified project and location.
 
       Args:
         request: (ManagedflinkProjectsLocationsDeploymentsCreateRequest) input message
@@ -84,7 +84,7 @@ class ManagedflinkV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Deployment.
+      r"""Deletes a single deployment.
 
       Args:
         request: (ManagedflinkProjectsLocationsDeploymentsDeleteRequest) input message
@@ -111,7 +111,7 @@ class ManagedflinkV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Deployment.
+      r"""Gets details about a single deployment.
 
       Args:
         request: (ManagedflinkProjectsLocationsDeploymentsGetRequest) input message
@@ -138,7 +138,7 @@ class ManagedflinkV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Deployments in a given project and location.
+      r"""Lists deployments in the specified project and location.
 
       Args:
         request: (ManagedflinkProjectsLocationsDeploymentsListRequest) input message
@@ -165,7 +165,7 @@ class ManagedflinkV1alpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Deployment.
+      r"""Updates the parameters of a single deployment.
 
       Args:
         request: (ManagedflinkProjectsLocationsDeploymentsPatchRequest) input message
@@ -202,7 +202,7 @@ class ManagedflinkV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Job in a given project and location.
+      r"""Creates a new job in the specified project and location.
 
       Args:
         request: (ManagedflinkProjectsLocationsJobsCreateRequest) input message
@@ -229,7 +229,7 @@ class ManagedflinkV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Job.
+      r"""Deletes a single job.
 
       Args:
         request: (ManagedflinkProjectsLocationsJobsDeleteRequest) input message
@@ -256,7 +256,7 @@ class ManagedflinkV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Job.
+      r"""Gets details of a single job.
 
       Args:
         request: (ManagedflinkProjectsLocationsJobsGetRequest) input message
@@ -283,7 +283,7 @@ class ManagedflinkV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Jobs in a given project and location.
+      r"""Lists jobs in the specified project and location.
 
       Args:
         request: (ManagedflinkProjectsLocationsJobsListRequest) input message
@@ -310,7 +310,7 @@ class ManagedflinkV1alpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Job.
+      r"""Updates the parameters of a single job.
 
       Args:
         request: (ManagedflinkProjectsLocationsJobsPatchRequest) input message
@@ -465,7 +465,7 @@ class ManagedflinkV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Session in a given project and location.
+      r"""Creates a new session in the specified project and location.
 
       Args:
         request: (ManagedflinkProjectsLocationsSessionsCreateRequest) input message
@@ -492,7 +492,7 @@ class ManagedflinkV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Session.
+      r"""Deletes a single session.
 
       Args:
         request: (ManagedflinkProjectsLocationsSessionsDeleteRequest) input message
@@ -519,7 +519,7 @@ class ManagedflinkV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Session.
+      r"""Gets details of a single session.
 
       Args:
         request: (ManagedflinkProjectsLocationsSessionsGetRequest) input message
@@ -546,7 +546,7 @@ class ManagedflinkV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Sessions in a given project and location.
+      r"""Lists sessions in the specified project and location.
 
       Args:
         request: (ManagedflinkProjectsLocationsSessionsListRequest) input message
@@ -573,7 +573,7 @@ class ManagedflinkV1alpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Session.
+      r"""Updates the parameters of a single session.
 
       Args:
         request: (ManagedflinkProjectsLocationsSessionsPatchRequest) input message

@@ -83,24 +83,50 @@ class Interconnect(object):
                     remoteLocation=remote_location,
                     requestedFeatures=requested_features)))
 
-  def _MakePatchRequestTuple(self,
-                             description,
-                             location,
-                             interconnect_type,
-                             requested_link_count,
-                             link_type,
-                             admin_enabled,
-                             noc_contact_email,
-                             labels,
-                             label_fingerprint,
-                             macsec_enabled,
-                             macsec):
+  def _MakePatchRequestTuple(
+      self,
+      description,
+      location,
+      interconnect_type,
+      requested_link_count,
+      link_type,
+      admin_enabled,
+      noc_contact_email,
+      labels,
+      label_fingerprint,
+      macsec_enabled,
+      macsec,
+      groups,
+  ):
     """Make a tuple for interconnect patch request."""
     kwargs = {}
     if labels is not None:
       kwargs['labels'] = labels
     if label_fingerprint is not None:
       kwargs['labelFingerprint'] = label_fingerprint
+    if groups:
+      return (
+          self._client.interconnects,
+          'Patch',
+          self._messages.ComputeInterconnectsPatchRequest(
+              interconnect=self.ref.Name(),
+              interconnectResource=self._messages.Interconnect(
+                  name=None,
+                  description=description,
+                  interconnectType=interconnect_type,
+                  linkType=link_type,
+                  nocContactEmail=noc_contact_email,
+                  requestedLinkCount=requested_link_count,
+                  location=location,
+                  adminEnabled=admin_enabled,
+                  macsecEnabled=macsec_enabled,
+                  macsec=macsec,
+                  interconnectGroups=groups,
+                  **kwargs
+              ),
+              project=self.ref.project,
+          ),
+      )
     return (self._client.interconnects, 'Patch',
             self._messages.ComputeInterconnectsPatchRequest(
                 interconnect=self.ref.Name(),
@@ -203,32 +229,38 @@ class Interconnect(object):
       return resources[0]
     return requests
 
-  def Patch(self,
-            description='',
-            location=None,
-            interconnect_type=None,
-            requested_link_count=None,
-            link_type=None,
-            admin_enabled=False,
-            noc_contact_email=None,
-            only_generate_request=False,
-            labels=None,
-            label_fingerprint=None,
-            macsec_enabled=None,
-            macsec=None):
+  def Patch(
+      self,
+      description='',
+      location=None,
+      interconnect_type=None,
+      requested_link_count=None,
+      link_type=None,
+      admin_enabled=False,
+      noc_contact_email=None,
+      only_generate_request=False,
+      labels=None,
+      label_fingerprint=None,
+      macsec_enabled=None,
+      macsec=None,
+      groups=None,
+  ):
     """Patch an interconnect."""
     requests = [
-        self._MakePatchRequestTuple(description,
-                                    location,
-                                    interconnect_type,
-                                    requested_link_count,
-                                    link_type,
-                                    admin_enabled,
-                                    noc_contact_email,
-                                    labels,
-                                    label_fingerprint,
-                                    macsec_enabled,
-                                    macsec)
+        self._MakePatchRequestTuple(
+            description,
+            location,
+            interconnect_type,
+            requested_link_count,
+            link_type,
+            admin_enabled,
+            noc_contact_email,
+            labels,
+            label_fingerprint,
+            macsec_enabled,
+            macsec,
+            groups,
+        )
     ]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)

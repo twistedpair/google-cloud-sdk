@@ -984,9 +984,9 @@ class Repository(_messages.Message):
     instance: Optional. The name of the instance in which the repository is
       hosted, formatted as `projects/{project_number}/locations/{location_id}/
       instances/{instance_id}` When creating repository via
-      *.sourcemanager.dev (Data Plane API), this field is output only. When
-      creating repository via securesourcemanager.googleapis.com (Control
-      Plane API), this field is used as input.
+      securesourcemanager.googleapis.com (Control Plane API), this field is
+      used as input. When creating repository via *.sourcemanager.dev (Data
+      Plane API), this field is output only.
     name: Optional. A unique identifier for a repository. The name should be
       of the format: `projects/{project}/locations/{location_id}/repositories/
       {repository_id}`
@@ -1429,9 +1429,9 @@ class SecuresourcemanagerProjectsLocationsRepositoriesListRequest(_messages.Mess
     instance: Optional. The name of the instance in which the repository is
       hosted, formatted as `projects/{project_number}/locations/{location_id}/
       instances/{instance_id}`. When listing repositories via
-      *.sourcemanager.dev (Data Plane API), this field is ignored. When
-      listing repositories via securesourcemanager.googleapis.com (Control
-      Plane API), this field is required.
+      securesourcemanager.googleapis.com (Control Plane API), this field is
+      required. When listing repositories via *.sourcemanager.dev (Data Plane
+      API), this field is ignored.
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results the server should return.

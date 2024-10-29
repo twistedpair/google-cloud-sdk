@@ -41,6 +41,13 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  FOLDERS_LOCATIONS_GLOBAL = (
+      'folders.locations.global',
+      'folders/{foldersId}/locations/global',
+      {},
+      ['foldersId'],
+      True
+  )
   FOLDERS_LOCATIONS_GLOBAL_POLICYORCHESTRATORS = (
       'folders.locations.global.policyOrchestrators',
       '{+name}',
@@ -78,6 +85,13 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/locations/{locationsId}',
       },
       ['name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_GLOBAL = (
+      'organizations.locations.global',
+      'organizations/{organizationsId}/locations/global',
+      {},
+      ['organizationsId'],
       True
   )
   ORGANIZATIONS_LOCATIONS_GLOBAL_POLICYORCHESTRATORS = (
@@ -128,6 +142,13 @@ class Collections(enum.Enum):
               'agentPolicyAssignments/{agentPolicyAssignmentsId}',
       },
       ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_GLOBAL = (
+      'projects.locations.global',
+      'projects/{projectsId}/locations/global',
+      {},
+      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS_GLOBAL_POLICYORCHESTRATORS = (

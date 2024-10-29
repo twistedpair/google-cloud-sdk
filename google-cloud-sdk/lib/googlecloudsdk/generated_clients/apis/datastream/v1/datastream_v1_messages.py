@@ -137,6 +137,10 @@ class BigQueryProfile(_messages.Message):
   r"""BigQuery warehouse profile."""
 
 
+class BinaryLogPosition(_messages.Message):
+  r"""Use Binary log position based replication."""
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -1043,6 +1047,10 @@ class GcsProfile(_messages.Message):
   rootPath = _messages.StringField(2)
 
 
+class Gtid(_messages.Message):
+  r"""Use GTID based replication."""
+
+
 class JsonFileFormat(_messages.Message):
   r"""JSON file format configuration.
 
@@ -1386,7 +1394,9 @@ class MysqlSourceConfig(_messages.Message):
   r"""MySQL source configuration
 
   Fields:
+    binaryLogPosition: Use Binary log position based replication.
     excludeObjects: MySQL objects to exclude from the stream.
+    gtid: Use GTID based replication.
     includeObjects: MySQL objects to retrieve from the source.
     maxConcurrentBackfillTasks: Maximum number of concurrent backfill tasks.
       The number should be non negative. If not set (or set to 0), the
@@ -1396,10 +1406,12 @@ class MysqlSourceConfig(_messages.Message):
       value will be used.
   """
 
-  excludeObjects = _messages.MessageField('MysqlRdbms', 1)
-  includeObjects = _messages.MessageField('MysqlRdbms', 2)
-  maxConcurrentBackfillTasks = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  maxConcurrentCdcTasks = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  binaryLogPosition = _messages.MessageField('BinaryLogPosition', 1)
+  excludeObjects = _messages.MessageField('MysqlRdbms', 2)
+  gtid = _messages.MessageField('Gtid', 3)
+  includeObjects = _messages.MessageField('MysqlRdbms', 4)
+  maxConcurrentBackfillTasks = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxConcurrentCdcTasks = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class MysqlSslConfig(_messages.Message):
@@ -1798,7 +1810,7 @@ class PostgresqlObjectIdentifier(_messages.Message):
 
 
 class PostgresqlProfile(_messages.Message):
-  r"""PostgreSQL database profile. Next ID: 7.
+  r"""PostgreSQL database profile.
 
   Fields:
     database: Required. Database for the PostgreSQL connection.

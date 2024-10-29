@@ -117,6 +117,14 @@ class Poller(waiter.OperationPoller):
     return self.resource_service.Get(request_type(**target_ref.AsDict()))
 
 
+class DeletePoller(Poller):
+  def GetResult(self, operation):
+    """Overrides."""
+    # For delete operations, once the operation status is DONE, there is
+    # nothing further to fetch.
+    return None
+
+
 class OperationBatch(object):
   """Wrapper class for a set of batched operations."""
 

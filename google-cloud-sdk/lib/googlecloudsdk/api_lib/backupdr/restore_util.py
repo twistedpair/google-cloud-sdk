@@ -35,18 +35,11 @@ class ComputeUtil(object):
 
   @staticmethod
   def _HasIpV6AccessConfig(network_interface: Dict[str, Any]) -> bool:
-    if ("external-ipv6-address" in network_interface) or (
-        "ipv6-public-ptr-domain" in network_interface
-    ):
-      return True
-    return False
+    return "external-ipv6-address" in network_interface
 
   @staticmethod
   def _HasIpV4AccessConfig(network_interface: Dict[str, Any]) -> bool:
-    return (
-        "address" in network_interface
-        or "public-ptr-domain" in network_interface
-    )
+    return "address" in network_interface
 
   @staticmethod
   def ParserNetworkInterface(
@@ -105,16 +98,6 @@ class ComputeUtil(object):
               "Prefix length of the provided IPv6 address is expected but not"
               " found",
           )
-      if "public-ptr-domain" in network_interface:
-        access_config.setPublicPtr = True
-        access_config.publicPtrDomainName = network_interface[
-            "public-ptr-domain"
-        ]
-      if "ipv6-public-ptr-domain" in network_interface:
-        access_config_ipv6.setPublicPtr = True
-        access_config_ipv6.publicPtrDomainName = network_interface[
-            "ipv6-public-ptr-domain"
-        ]
       if "network-tier" in network_interface:
         access_config.networkTier = (
             client_messages.AccessConfig.NetworkTierValueValuesEnum(

@@ -4010,6 +4010,7 @@ class LoggingComponentConfig(_messages.Message):
       ADDON_MANAGER: kube-addon-manager
       KCP_SSHD: kcp-sshd
       KCP_CONNECTION: kcp connection logs
+      KCP_HPA: horizontal pod autoscaler decision logs
     """
     COMPONENT_UNSPECIFIED = 0
     SYSTEM_COMPONENTS = 1
@@ -4020,6 +4021,7 @@ class LoggingComponentConfig(_messages.Message):
     ADDON_MANAGER = 6
     KCP_SSHD = 7
     KCP_CONNECTION = 8
+    KCP_HPA = 9
 
   enableComponents = _messages.EnumField('EnableComponentsValueListEntryValuesEnum', 1, repeated=True)
 
@@ -5093,6 +5095,16 @@ class NodeKubeletConfig(_messages.Message):
   r"""Node kubelet configs.
 
   Fields:
+    containerLogMaxFiles: Optional. Defines the maximum number of container
+      log files that can be present for a container. See
+      https://kubernetes.io/docs/concepts/cluster-administration/logging/#log-
+      rotation The default value is 5 if unspecified.
+    containerLogMaxSize: Optional. Defines the maximum size of the container
+      log file before it is rotated. See
+      https://kubernetes.io/docs/concepts/cluster-administration/logging/#log-
+      rotation Format: positive number + unit, e.g. 100Ki, 10Mi, 5Gi. Or -1
+      which means the log rotation is disabled. Valid units are Ki, Mi, Gi.
+      The default value is 10Mi if unspecified.
     cpuCfsQuota: Enable CPU CFS quota enforcement for containers that specify
       CPU limits. This option is enabled by default which makes kubelet use
       CFS quota (https://www.kernel.org/doc/Documentation/scheduler/sched-
@@ -5147,17 +5159,19 @@ class NodeKubeletConfig(_messages.Message):
       https://kubernetes.io/docs/tasks/administer-cluster/topology-manager/
   """
 
-  cpuCfsQuota = _messages.BooleanField(1)
-  cpuCfsQuotaPeriod = _messages.StringField(2)
-  cpuManagerPolicy = _messages.StringField(3)
-  imageGcHighThresholdPercent = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  imageGcLowThresholdPercent = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  imageMaximumGcAge = _messages.StringField(6)
-  imageMinimumGcAge = _messages.StringField(7)
-  insecureKubeletReadonlyPortEnabled = _messages.BooleanField(8)
-  memoryManager = _messages.MessageField('MemoryManager', 9)
-  podPidsLimit = _messages.IntegerField(10)
-  topologyManager = _messages.MessageField('TopologyManager', 11)
+  containerLogMaxFiles = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  containerLogMaxSize = _messages.StringField(2)
+  cpuCfsQuota = _messages.BooleanField(3)
+  cpuCfsQuotaPeriod = _messages.StringField(4)
+  cpuManagerPolicy = _messages.StringField(5)
+  imageGcHighThresholdPercent = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  imageGcLowThresholdPercent = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  imageMaximumGcAge = _messages.StringField(8)
+  imageMinimumGcAge = _messages.StringField(9)
+  insecureKubeletReadonlyPortEnabled = _messages.BooleanField(10)
+  memoryManager = _messages.MessageField('MemoryManager', 11)
+  podPidsLimit = _messages.IntegerField(12)
+  topologyManager = _messages.MessageField('TopologyManager', 13)
 
 
 class NodeLabels(_messages.Message):
@@ -5451,18 +5465,20 @@ class NodePoolAutoscaling(_messages.Message):
     autoprovisioned: Can this node pool be deleted automatically.
     enabled: Is autoscaling enabled for this node pool.
     locationPolicy: Location policy used when scaling up a nodepool.
-    maxNodeCount: Maximum number of nodes for one location in the NodePool.
+    maxNodeCount: Maximum number of nodes for one location in the node pool.
       Must be >= min_node_count. There has to be enough quota to scale up the
       cluster.
-    minNodeCount: Minimum number of nodes for one location in the NodePool.
-      Must be >= 1 and <= max_node_count.
+    minNodeCount: Minimum number of nodes for one location in the node pool.
+      Must be greater than or equal to 0 and less than or equal to
+      max_node_count.
     totalMaxNodeCount: Maximum number of nodes in the node pool. Must be
-      greater than total_min_node_count. There has to be enough quota to scale
-      up the cluster. The total_*_node_count fields are mutually exclusive
-      with the *_node_count fields.
+      greater than or equal to total_min_node_count. There has to be enough
+      quota to scale up the cluster. The total_*_node_count fields are
+      mutually exclusive with the *_node_count fields.
     totalMinNodeCount: Minimum number of nodes in the node pool. Must be
-      greater than 1 less than total_max_node_count. The total_*_node_count
-      fields are mutually exclusive with the *_node_count fields.
+      greater than or equal to 0 and less than or equal to
+      total_max_node_count. The total_*_node_count fields are mutually
+      exclusive with the *_node_count fields.
   """
 
   class LocationPolicyValueValuesEnum(_messages.Enum):
@@ -8086,6 +8102,66 @@ class UpgradeEvent(_messages.Message):
   resource = _messages.StringField(4)
   resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 5)
   targetVersion = _messages.StringField(6)
+
+
+class UpgradeInfoEvent(_messages.Message):
+  r"""UpgradeInfoEvent is a notification sent to customers about the upgrade
+  information of a resource.
+
+  Enums:
+    ResourceTypeValueValuesEnum: The resource type associated with the
+      upgrade.
+    StateValueValuesEnum: Output only. The state of the upgrade.
+
+  Fields:
+    currentVersion: The current version before the upgrade.
+    endTime: The time when the operation ended.
+    operation: The operation associated with this upgrade.
+    resource: Optional relative path to the resource. For example in node pool
+      upgrades, the relative path of the node pool.
+    resourceType: The resource type associated with the upgrade.
+    startTime: The time when the operation was started.
+    state: Output only. The state of the upgrade.
+    targetVersion: The target version for the upgrade.
+  """
+
+  class ResourceTypeValueValuesEnum(_messages.Enum):
+    r"""The resource type associated with the upgrade.
+
+    Values:
+      UPGRADE_RESOURCE_TYPE_UNSPECIFIED: Default value. This shouldn't be
+        used.
+      MASTER: Master / control plane
+      NODE_POOL: Node pool
+    """
+    UPGRADE_RESOURCE_TYPE_UNSPECIFIED = 0
+    MASTER = 1
+    NODE_POOL = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the upgrade.
+
+    Values:
+      STATE_UNSPECIFIED: STATE_UNSPECIFIED indicates the state is unspecified.
+      STARTED: STARTED indicates the upgrade has started.
+      SUCCEEDED: SUCCEEDED indicates the upgrade has completed successfully.
+      FAILED: FAILED indicates the upgrade has failed.
+      CANCELED: CANCELED indicates the upgrade has canceled.
+    """
+    STATE_UNSPECIFIED = 0
+    STARTED = 1
+    SUCCEEDED = 2
+    FAILED = 3
+    CANCELED = 4
+
+  currentVersion = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  operation = _messages.StringField(3)
+  resource = _messages.StringField(4)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 5)
+  startTime = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  targetVersion = _messages.StringField(8)
 
 
 class UpgradeSettings(_messages.Message):

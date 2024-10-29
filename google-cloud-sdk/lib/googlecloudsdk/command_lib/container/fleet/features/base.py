@@ -83,7 +83,6 @@ class EnableCommandMixin(FeatureCommand):
     try:
       # Retry if we still get "API not activated"; it can take a few minutes
       # for Chemist to catch up. See b/28800908.
-      # TODO(b/177098463): Add a spinner here?
       retryer = retry.Retryer(max_retrials=4, exponential_sleep_multiplier=1.75)
       op = retryer.RetryOnException(
           self.hubclient.CreateFeature,
@@ -99,8 +98,6 @@ class EnableCommandMixin(FeatureCommand):
       error = core_api_exceptions.HttpErrorPayload(e)
       if error.status_description != 'ALREADY_EXISTS':
         raise
-      # TODO(b/177098463): Decide if this should be a hard error if a spec was
-      # set, but not applied, because the Feature already existed.
       log.status.Print('{} Feature for project [{}] is already enabled'.format(
           self.feature.display_name, project))
       return
@@ -175,7 +172,6 @@ class UpdateCommandMixin(FeatureCommand):
 
     msg = 'Waiting for Feature {} to be updated'.format(
         self.feature.display_name)
-    # TODO(b/177098463): Update all downstream tests to handle warnings.
     return self.WaitForHubOp(
         self.hubclient.feature_waiter, op, message=msg, warnings=False
     )

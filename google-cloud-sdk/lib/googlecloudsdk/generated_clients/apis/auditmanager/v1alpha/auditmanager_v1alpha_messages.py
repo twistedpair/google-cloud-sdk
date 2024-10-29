@@ -782,6 +782,8 @@ class GenerateAuditReportRequest(_messages.Message):
       report should be created.
 
   Fields:
+    complianceFramework: Required. Compliance framework against which the
+      Report must be generated.
     complianceStandard: Required. Compliance Standard against which the Scope
       Report must be generated. Eg: FEDRAMP_MODERATE
     gcsUri: Destination Cloud storage bucket where report and evidence must be
@@ -801,9 +803,10 @@ class GenerateAuditReportRequest(_messages.Message):
     AUDIT_REPORT_FORMAT_UNSPECIFIED = 0
     AUDIT_REPORT_FORMAT_ODF = 1
 
-  complianceStandard = _messages.StringField(1)
-  gcsUri = _messages.StringField(2)
-  reportFormat = _messages.EnumField('ReportFormatValueValuesEnum', 3)
+  complianceFramework = _messages.StringField(1)
+  complianceStandard = _messages.StringField(2)
+  gcsUri = _messages.StringField(3)
+  reportFormat = _messages.EnumField('ReportFormatValueValuesEnum', 4)
 
 
 class GenerateAuditScopeReportRequest(_messages.Message):
@@ -814,6 +817,8 @@ class GenerateAuditScopeReportRequest(_messages.Message):
       report bytes should be returned.
 
   Fields:
+    complianceFramework: Required. Compliance framework against which the
+      Scope Report must be generated.
     complianceStandard: Required. Compliance Standard against which the Scope
       Report must be generated. Eg: FEDRAMP_MODERATE
     reportFormat: Required. The format in which the Scope report bytes should
@@ -832,8 +837,9 @@ class GenerateAuditScopeReportRequest(_messages.Message):
     AUDIT_SCOPE_REPORT_FORMAT_UNSPECIFIED = 0
     AUDIT_SCOPE_REPORT_FORMAT_ODF = 1
 
-  complianceStandard = _messages.StringField(1)
-  reportFormat = _messages.EnumField('ReportFormatValueValuesEnum', 2)
+  complianceFramework = _messages.StringField(1)
+  complianceStandard = _messages.StringField(2)
+  reportFormat = _messages.EnumField('ReportFormatValueValuesEnum', 3)
 
 
 class ListAuditReportsResponse(_messages.Message):

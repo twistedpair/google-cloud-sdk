@@ -621,6 +621,20 @@ class _BaseInstances(object):
           settings.ipConfiguration = sql_messages.IpConfiguration()
         settings.ipConfiguration.allocatedIpRange = args.allocated_ip_range_name
 
+      # MCP settings.
+      mcp_config = reducers.ConnectionPoolConfig(
+          sql_messages,
+          enable_connection_pooling=args.enable_connection_pooling,
+          connection_pooling_pool_mode=args.connection_pooling_pool_mode,
+          connection_pooling_pool_size=args.connection_pooling_pool_size,
+          connection_pooling_max_client_connections=args.connection_pooling_max_client_connections,
+          connection_pooling_client_idle_timeout=args.connection_pooling_client_idle_timeout,
+          connection_pooling_server_idle_timeout=args.connection_pooling_server_idle_timeout,
+          connection_pooling_query_wait_timeout=args.connection_pooling_query_wait_timeout,
+      )
+      if mcp_config is not None:
+        settings.connectionPoolConfig = mcp_config
+
     # ALPHA args.
     if _IsAlpha(release_track):
       pass
@@ -775,6 +789,20 @@ class _BaseInstances(object):
         if not settings.ipConfiguration.pscConfig:
           settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
         settings.ipConfiguration.pscConfig.pscAutoConnections = []
+
+      # MCP settings.
+      updated_config = reducers.ConnectionPoolConfig(
+          sql_messages,
+          enable_connection_pooling=args.enable_connection_pooling,
+          connection_pooling_pool_mode=args.connection_pooling_pool_mode,
+          connection_pooling_pool_size=args.connection_pooling_pool_size,
+          connection_pooling_max_client_connections=args.connection_pooling_max_client_connections,
+          connection_pooling_client_idle_timeout=args.connection_pooling_client_idle_timeout,
+          connection_pooling_server_idle_timeout=args.connection_pooling_server_idle_timeout,
+          connection_pooling_query_wait_timeout=args.connection_pooling_query_wait_timeout,
+      )
+      if updated_config is not None:
+        settings.connectionPoolConfig = updated_config
 
     return settings
 

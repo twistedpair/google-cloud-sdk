@@ -145,6 +145,10 @@ def CreateNodeSpec(api_version):
         node_spec.multiNodeParams.nodeCount = args.node_count
         if args.node_prefix:
           node_spec.multiNodeParams.nodeIdPrefix = args.node_prefix
+        if args.workload_type == 'AVAILABILITY_OPTIMIZED':
+          node_spec.multiNodeParams.workloadType = (
+              tpu_messages.MultiNodeParams.WorkloadTypeValueValuesEnum.AVAILABILITY_OPTIMIZED
+          )
       else:  # For v2 API, MultiNodeParams was renamed to MultisliceParams
         node_spec.multisliceParams = tpu_messages.MultisliceParams()
         node_spec.multisliceParams.nodeCount = args.node_count

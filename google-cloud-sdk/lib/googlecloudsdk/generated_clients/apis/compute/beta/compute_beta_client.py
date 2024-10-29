@@ -10609,7 +10609,8 @@ class ComputeBeta(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(ComputeBeta.NetworkProfilesService, self).__init__(client)
-      self._upload_configs = {}
+      self._upload_configs = {
+          }
 
     def Get(self, request, global_params=None):
       r"""Returns the specified network profile.
@@ -10617,12 +10618,12 @@ class ComputeBeta(base_api.BaseApiClient):
       Args:
         request: (ComputeNetworkProfilesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (NetworkProfile) The response message.
       """
       config = self.GetMethodConfig('Get')
-      return self._RunMethod(config, request, global_params=global_params)
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
         http_method='GET',
@@ -16099,7 +16100,6 @@ class ComputeBeta(base_api.BaseApiClient):
       Args:
         request: (ComputeRegionMultiMigsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (MultiMig) The response message.
       """
@@ -18519,7 +18519,8 @@ class ComputeBeta(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(ComputeBeta.ReservationBlocksService, self).__init__(client)
-      self._upload_configs = {}
+      self._upload_configs = {
+          }
 
     def Get(self, request, global_params=None):
       r"""Retrieves information about the specified reservation block.
@@ -18527,12 +18528,12 @@ class ComputeBeta(base_api.BaseApiClient):
       Args:
         request: (ComputeReservationBlocksGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (ReservationBlocksGetResponse) The response message.
       """
       config = self.GetMethodConfig('Get')
-      return self._RunMethod(config, request, global_params=global_params)
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
         http_method='GET',

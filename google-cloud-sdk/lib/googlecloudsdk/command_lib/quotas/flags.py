@@ -76,6 +76,15 @@ def Service():
   )
 
 
+def Enablement():
+  return base.Argument(
+      '--enablement',
+      required=True,
+      help='Enablement state of the QuotaAdjusterSettings.',
+      choices=['enabled', 'disabled'],
+  )
+
+
 def PreferredValue():
   return base.Argument(
       '--preferred-value',

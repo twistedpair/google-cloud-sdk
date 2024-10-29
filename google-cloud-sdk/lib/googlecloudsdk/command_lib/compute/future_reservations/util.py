@@ -83,11 +83,6 @@ def MakeFutureReservationMessageFromArgs(messages, resources, args,
                                          getattr(args, 'deployment_type', None))
 
   commitment_info = MakeCommitmentInfo(messages, args)
-  instance_termination_action = None
-  if args.IsKnownAndSpecified('instance_termination_action'):
-    instance_termination_action = MakeInstanceTerminationAction(
-        messages, getattr(args, 'instance_termination_action', None)
-    )
   scheduling_type = None
   if args.IsKnownAndSpecified('scheduling_type'):
     scheduling_type = MakeSchedulingType(
@@ -113,7 +108,6 @@ def MakeFutureReservationMessageFromArgs(messages, resources, args,
       reservation_name,
       deployment_type,
       commitment_info,
-      instance_termination_action,
       scheduling_type,
       enable_opportunistic_maintenance,
   )
@@ -261,18 +255,6 @@ def MakePreviousCommitmentTerms(messages, previous_commitment_terms):
   return None
 
 
-def MakeInstanceTerminationAction(messages, instance_termination_action):
-  """Constructs the instance_termination_action enum value."""
-  if instance_termination_action:
-    if instance_termination_action == 'DELETE':
-      return (messages.FutureReservation
-              .InstanceTerminationActionValueValuesEnum.DELETE)
-    if instance_termination_action == 'STOP':
-      return (messages.FutureReservation
-              .InstanceTerminationActionValueValuesEnum.STOP)
-  return None
-
-
 def MakeSchedulingType(messages, scheduling_type):
   """Constructs the scheduling type enum value."""
   if scheduling_type:
@@ -298,7 +280,6 @@ def MakeFutureReservationMessage(
     reservation_name=None,
     deployment_type=None,
     commitment_info=None,
-    instance_termination_action=None,
     scheduling_type=None,
     enable_opportunistic_maintenance=None,
 ):
@@ -335,10 +316,6 @@ def MakeFutureReservationMessage(
     future_reservation_message.deploymentType = deployment_type
   if commitment_info is not None:
     future_reservation_message.commitmentInfo = commitment_info
-  if instance_termination_action is not None:
-    future_reservation_message.instanceTerminationAction = (
-        instance_termination_action
-    )
   if scheduling_type is not None:
     future_reservation_message.schedulingType = scheduling_type
   if enable_opportunistic_maintenance is not None:

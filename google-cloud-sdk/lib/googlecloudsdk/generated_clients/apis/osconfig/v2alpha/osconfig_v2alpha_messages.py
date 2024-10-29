@@ -417,15 +417,12 @@ class GoogleCloudOsconfigV2alphaOrchestrationScopeResourceHierarchySelector(_mes
   Fields:
     includedFolders: Optional. Names of the folders in scope. Format:
       `folders/{folder_id}`
-    includedOrganizations: Optional. Names of the orgs in scope. Format:
-      `organizations/{organization_id}`
     includedProjects: Optional. Names of the projects in scope. Format:
       `projects/{project_number}`
   """
 
   includedFolders = _messages.StringField(1, repeated=True)
-  includedOrganizations = _messages.StringField(2, repeated=True)
-  includedProjects = _messages.StringField(3, repeated=True)
+  includedProjects = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudOsconfigV2alphaOrchestrationScopeSelector(_messages.Message):
@@ -1699,6 +1696,7 @@ class OsconfigFoldersLocationsGlobalPolicyOrchestratorsCreateRequest(_messages.M
     parent: Required. The parent resource name in the form of:
       `organizations/{organization_id}/locations/global`
       `folders/{folder_id}/locations/global`
+      'projects/{project_id_or_number}/locations/global'
     policyOrchestratorId: Required. The logical identifier of the policy
       orchestrator, with the following restrictions: * Must contain only
       lowercase letters, numbers, and hyphens. * Must start with a letter. *
@@ -1892,6 +1890,7 @@ class OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsCreateRequest(_mess
     parent: Required. The parent resource name in the form of:
       `organizations/{organization_id}/locations/global`
       `folders/{folder_id}/locations/global`
+      'projects/{project_id_or_number}/locations/global'
     policyOrchestratorId: Required. The logical identifier of the policy
       orchestrator, with the following restrictions: * Must contain only
       lowercase letters, numbers, and hyphens. * Must start with a letter. *
@@ -2209,6 +2208,7 @@ class OsconfigProjectsLocationsGlobalPolicyOrchestratorsCreateRequest(_messages.
     parent: Required. The parent resource name in the form of:
       `organizations/{organization_id}/locations/global`
       `folders/{folder_id}/locations/global`
+      'projects/{project_id_or_number}/locations/global'
     policyOrchestratorId: Required. The logical identifier of the policy
       orchestrator, with the following restrictions: * Must contain only
       lowercase letters, numbers, and hyphens. * Must start with a letter. *

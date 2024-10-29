@@ -1637,16 +1637,12 @@ class GkebackupProjectsLocationsRestoreChannelsDeleteRequest(_messages.Message):
   Fields:
     etag: Optional. If provided, this value must match the current value of
       the target RestoreChannel's etag field or the request is rejected.
-    force: Optional. If set to true, any RestorePlanAssociations below this
-      RestoreChannel will also be deleted. Otherwise, the request will only
-      succeed if the RestoreChannel has no RestorePlanAssociations.
     name: Required. Fully qualified RestoreChannel name. Format:
       `projects/*/locations/*/restoreChannels/*`
   """
 
   etag = _messages.StringField(1)
-  force = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
+  name = _messages.StringField(2, required=True)
 
 
 class GkebackupProjectsLocationsRestoreChannelsGetRequest(_messages.Message):
@@ -3494,6 +3490,9 @@ class RestorePlanBinding(_messages.Message):
   need to be displayed in the current project.
 
   Fields:
+    backupPlan: Output only. The fully qualified name of the BackupPlan bound
+      to the specified RestorePlan.
+      `projects/*/locations/*/backukpPlans/{backup_plan}`
     createTime: Output only. The timestamp when this binding was created.
     etag: Output only. `etag` is used for optimistic concurrency control as a
       way to help prevent simultaneous updates of a RestorePlanBinding from
@@ -3507,19 +3506,20 @@ class RestorePlanBinding(_messages.Message):
     name: Identifier. The fully qualified name of the RestorePlanBinding.
       `projects/*/locations/*/restoreChannels/*/restorePlanBindings/*`
     restorePlan: Output only. The fully qualified name of the RestorePlan
-      binded with this RestoreChannel.
+      bound to this RestoreChannel.
       `projects/*/locations/*/restorePlans/{restore_plan}`
     uid: Output only. Server generated global unique identifier of
       [UUID4](https://en.wikipedia.org/wiki/Universally_unique_identifier)
     updateTime: Output only. The timestamp when this binding was created.
   """
 
-  createTime = _messages.StringField(1)
-  etag = _messages.StringField(2)
-  name = _messages.StringField(3)
-  restorePlan = _messages.StringField(4)
-  uid = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  backupPlan = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  name = _messages.StringField(4)
+  restorePlan = _messages.StringField(5)
+  uid = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class RetentionPolicy(_messages.Message):

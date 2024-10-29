@@ -3047,6 +3047,8 @@ class Repository(_messages.Message):
       names must be unique.
     networkConfig: Optional. Config for the routing/network configuration of
       the repository.
+    registryUri: Output only. The repository endpoint, for example: `us-
+      docker.pkg.dev/my-proj/my-repo`.
     remoteRepositoryConfig: Configuration specific for a Remote Repository.
     satisfiesPzi: Output only. If set, the repository satisfies physical zone
       isolation.
@@ -3182,14 +3184,15 @@ class Repository(_messages.Message):
   mode = _messages.EnumField('ModeValueValuesEnum', 11)
   name = _messages.StringField(12)
   networkConfig = _messages.MessageField('NetworkConfig', 13)
-  remoteRepositoryConfig = _messages.MessageField('RemoteRepositoryConfig', 14)
-  satisfiesPzi = _messages.BooleanField(15)
-  satisfiesPzs = _messages.BooleanField(16)
-  sbomConfig = _messages.MessageField('SbomConfig', 17)
-  sizeBytes = _messages.IntegerField(18)
-  updateTime = _messages.StringField(19)
-  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 20)
-  vulnerabilityScanningConfig = _messages.MessageField('VulnerabilityScanningConfig', 21)
+  registryUri = _messages.StringField(14)
+  remoteRepositoryConfig = _messages.MessageField('RemoteRepositoryConfig', 15)
+  satisfiesPzi = _messages.BooleanField(16)
+  satisfiesPzs = _messages.BooleanField(17)
+  sbomConfig = _messages.MessageField('SbomConfig', 18)
+  sizeBytes = _messages.IntegerField(19)
+  updateTime = _messages.StringField(20)
+  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 21)
+  vulnerabilityScanningConfig = _messages.MessageField('VulnerabilityScanningConfig', 22)
 
 
 class RubyRepository(_messages.Message):

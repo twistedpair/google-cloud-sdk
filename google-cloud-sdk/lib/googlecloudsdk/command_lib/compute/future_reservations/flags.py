@@ -300,19 +300,6 @@ def GetPreviousCommitmentTermsHelpText():
   return help_text
 
 
-def GetInstanceTerminationActionFlag():
-  """--instance-termination-action flag."""
-  help_text = """\
-  Specific termination action for running instances at the end of reservation
-  duration, it can be DELETE or STOP.
-  """
-  return base.Argument(
-      '--instance-termination-action',
-      choices=['DELETE', 'STOP'],
-      help=help_text,
-  )
-
-
 def GetSchedulingTypeFlag():
   """--scheduling-type flag."""
   help_text = """\
@@ -423,7 +410,6 @@ def AddCreateFlags(
     GetReservationNameFlag().AddToParser(parser)
     GetDeploymentTypeFlag().AddToParser(parser)
     AddCommitmentInfoFlags(parser)
-    GetInstanceTerminationActionFlag().AddToParser(parser)
     GetSchedulingTypeFlag().AddToParser(parser)
     GetEnableOpportunisticMaintenanceFlag().AddToParser(parser)
 
@@ -516,7 +502,6 @@ def AddUpdateFlags(
     GetReservationNameFlag().AddToParser(parser)
     GetDeploymentTypeFlag().AddToParser(parser)
     AddCommitmentInfoFlags(parser)
-    GetInstanceTerminationActionFlag().AddToParser(parser)
     GetSchedulingTypeFlag().AddToParser(parser)
     GetEnableOpportunisticMaintenanceFlag().AddToParser(parser)
 

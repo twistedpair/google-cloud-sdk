@@ -85,6 +85,20 @@ class CertificateAuthority(_messages.Message):
   name = _messages.StringField(2)
 
 
+class ConnectionDetail(_messages.Message):
+  r"""Information of each PSC connection.
+
+  Fields:
+    pscAutoConnection: Detailed information of a PSC connection that is
+      created through service connectivity automation.
+    pscConnection: Detailed information of a PSC connection that is created by
+      the user.
+  """
+
+  pscAutoConnection = _messages.MessageField('PscAutoConnection', 1)
+  pscConnection = _messages.MessageField('PscConnection', 2)
+
+
 class DiscoveryEndpoint(_messages.Message):
   r"""Represents an endpoint for clients to connect to the instance.
 
@@ -108,7 +122,6 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
 
 
 class Exemplar(_messages.Message):
@@ -1061,6 +1074,7 @@ class Instance(_messages.Message):
   Enums:
     AuthorizationModeValueValuesEnum: Optional. Immutable. Authorization mode
       of the instance.
+    ModeValueValuesEnum: Optional. The mode config for the instance.
     NodeTypeValueValuesEnum: Optional. Immutable. Machine type for individual
       nodes of the instance.
     StateValueValuesEnum: Output only. Current state of the instance.
@@ -1080,10 +1094,12 @@ class Instance(_messages.Message):
       instance will fail.
     discoveryEndpoints: Output only. Endpoints clients can connect to the
       instance through. Currently only one discovery endpoint is supported.
+    endpoints: Optional. Endpoints for the instance.
     engineConfigs: Optional. User-provided engine configurations for the
       instance.
     engineVersion: Optional. Immutable. Engine version of the instance.
     labels: Optional. Labels to represent user-provided metadata.
+    mode: Optional. The mode config for the instance.
     name: Identifier. Unique name of the instance. Format:
       projects/{project}/locations/{location}/instances/{instance}
     nodeConfig: Output only. Configuration of individual nodes of the
@@ -1095,7 +1111,7 @@ class Instance(_messages.Message):
       of the auto-created PSC connections.
     replicaCount: Optional. Number of replica nodes per shard. If omitted the
       default is 0 replicas.
-    shardCount: Required. Number of shards for the instance.
+    shardCount: Optional. Number of shards for the instance.
     state: Output only. Current state of the instance.
     stateInfo: Output only. Additional information about the state of the
       instance.
@@ -1118,6 +1134,19 @@ class Instance(_messages.Message):
     AUTHORIZATION_MODE_UNSPECIFIED = 0
     AUTH_DISABLED = 1
     IAM_AUTH = 2
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The mode config for the instance.
+
+    Values:
+      MODE_UNSPECIFIED: Mode is not specified.
+      STANDALONE: Instance is in standalone mode.
+      CLUSTER: Instance is in cluster mode.
+    """
+
+    MODE_UNSPECIFIED = 0
+    STANDALONE = 1
+    CLUSTER = 2
 
   class NodeTypeValueValuesEnum(_messages.Enum):
     r"""Optional. Immutable. Machine type for individual nodes of the
@@ -1218,22 +1247,42 @@ class Instance(_messages.Message):
   createTime = _messages.StringField(2)
   deletionProtectionEnabled = _messages.BooleanField(3)
   discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 4, repeated=True)
-  engineConfigs = _messages.MessageField('EngineConfigsValue', 5)
-  engineVersion = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  nodeConfig = _messages.MessageField('NodeConfig', 9)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 10)
-  persistenceConfig = _messages.MessageField('PersistenceConfig', 11)
-  pscAutoConnections = _messages.MessageField('PscAutoConnection', 12, repeated=True)
-  replicaCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  stateInfo = _messages.MessageField('StateInfo', 16)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 20)
+  endpoints = _messages.MessageField('InstanceEndpoint', 5, repeated=True)
+  engineConfigs = _messages.MessageField('EngineConfigsValue', 6)
+  engineVersion = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  mode = _messages.EnumField('ModeValueValuesEnum', 9)
+  name = _messages.StringField(10)
+  nodeConfig = _messages.MessageField('NodeConfig', 11)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 12)
+  persistenceConfig = _messages.MessageField('PersistenceConfig', 13)
+  pscAutoConnections = _messages.MessageField(
+      'PscAutoConnection', 14, repeated=True
+  )
+  replicaCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  stateInfo = _messages.MessageField('StateInfo', 18)
+  transitEncryptionMode = _messages.EnumField(
+      'TransitEncryptionModeValueValuesEnum', 19
+  )
+  uid = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 22)
+
+
+class InstanceEndpoint(_messages.Message):
+  r"""InstanceEndpoint consists of PSC connections that are created as a group
+
+  in each VPC network for accessing the instance. In each group, there shall
+  be one connection for each service attachment in the cluster.
+
+  Fields:
+    connections: Optional. A group of PSC connections. They are created in the
+      same VPC network, one for each service attachment in the cluster.
+  """
+
+  connections = _messages.MessageField('ConnectionDetail', 1, repeated=True)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -1778,7 +1827,15 @@ class PersistenceConfig(_messages.Message):
 class PscAutoConnection(_messages.Message):
   r"""Details of consumer resources in a PSC connection.
 
+  Enums:
+    ConnectionTypeValueValuesEnum: Output only. Type of the PSC connection.
+    PscConnectionStatusValueValuesEnum: Output only. The status of the PSC
+      connection: whether a connection exists and ACTIVE or it no longer
+      exists. Please note that this value is updated periodically. Please use
+      Private Service Connect APIs for the latest status.
+
   Fields:
+    connectionType: Output only. Type of the PSC connection.
     forwardingRule: Output only. The URI of the consumer side forwarding rule.
       Format:
       projects/{project}/regions/{region}/forwardingRules/{forwarding_rule}
@@ -1786,17 +1843,146 @@ class PscAutoConnection(_messages.Message):
       PSC forwarding rule.
     network: Required. The consumer network where the IP address resides, in
       the form of projects/{project_id}/global/networks/{network_id}.
+    port: Optional. Output only. port will only be set for Primary/Reader or
+      Discovery endpoint.
     projectId: Required. The consumer project_id where the forwarding rule is
       created from.
     pscConnectionId: Output only. The PSC connection id of the forwarding rule
       connected to the service attachment.
+    pscConnectionStatus: Output only. The status of the PSC connection:
+      whether a connection exists and ACTIVE or it no longer exists. Please
+      note that this value is updated periodically. Please use Private Service
+      Connect APIs for the latest status.
+    serviceAttachment: Output only. The service attachment which is the target
+      of the PSC connection, in the form of projects/{project-
+      id}/regions/{region}/serviceAttachments/{service-attachment-id}.
   """
 
-  forwardingRule = _messages.StringField(1)
-  ipAddress = _messages.StringField(2)
-  network = _messages.StringField(3)
-  projectId = _messages.StringField(4)
-  pscConnectionId = _messages.StringField(5)
+  class ConnectionTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of the PSC connection.
+
+    Values:
+      CONNECTION_TYPE_UNSPECIFIED: Connection Type is not set
+      CONNECTION_TYPE_DISCOVERY: Connection that will be used for topology
+        discovery.
+      CONNECTION_TYPE_PRIMARY: Connection that will be used as primary
+        endpoint to access primary.
+      CONNECTION_TYPE_READER: Connection that will be used as reader endpoint
+        to access replicas.
+    """
+
+    CONNECTION_TYPE_UNSPECIFIED = 0
+    CONNECTION_TYPE_DISCOVERY = 1
+    CONNECTION_TYPE_PRIMARY = 2
+    CONNECTION_TYPE_READER = 3
+
+  class PscConnectionStatusValueValuesEnum(_messages.Enum):
+    r"""Output only.
+
+    The status of the PSC connection: whether a connection exists and ACTIVE or
+    it no longer exists. Please note that this value is updated periodically.
+    Please use Private Service Connect APIs for the latest status.
+
+    Values:
+      PSC_CONNECTION_STATUS_UNSPECIFIED: PSC connection status is not
+        specified.
+      ACTIVE: The connection is active
+      NOT_FOUND: Connection not found
+    """
+
+    PSC_CONNECTION_STATUS_UNSPECIFIED = 0
+    ACTIVE = 1
+    NOT_FOUND = 2
+
+  connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 1)
+  forwardingRule = _messages.StringField(2)
+  ipAddress = _messages.StringField(3)
+  network = _messages.StringField(4)
+  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  projectId = _messages.StringField(6)
+  pscConnectionId = _messages.StringField(7)
+  pscConnectionStatus = _messages.EnumField(
+      'PscConnectionStatusValueValuesEnum', 8
+  )
+  serviceAttachment = _messages.StringField(9)
+
+
+class PscConnection(_messages.Message):
+  r"""User created Psc connection configuration.
+
+  Enums:
+    ConnectionTypeValueValuesEnum: Output only. Type of the PSC connection.
+    PscConnectionStatusValueValuesEnum: Output only. The status of the PSC
+      connection: whether a connection exists and ACTIVE or it no longer
+      exists. Please note that this value is updated periodically. Please use
+      Private Service Connect APIs for the latest status.
+
+  Fields:
+    connectionType: Output only. Type of the PSC connection.
+    forwardingRule: Required. The URI of the consumer side forwarding rule.
+      Format:
+      projects/{project}/regions/{region}/forwardingRules/{forwarding_rule}
+    ipAddress: Required. The IP allocated on the consumer network for the PSC
+      forwarding rule.
+    network: Required. The consumer network where the IP address resides, in
+      the form of projects/{project_id}/global/networks/{network_id}.
+    projectId: Output only. The consumer project_id where the forwarding rule
+      is created from.
+    pscConnectionId: Output only. The PSC connection id of the forwarding rule
+      connected to the service attachment.
+    pscConnectionStatus: Output only. The status of the PSC connection:
+      whether a connection exists and ACTIVE or it no longer exists. Please
+      note that this value is updated periodically. Please use Private Service
+      Connect APIs for the latest status.
+    serviceAttachment: Required. The service attachment which is the target of
+      the PSC connection, in the form of projects/{project-
+      id}/regions/{region}/serviceAttachments/{service-attachment-id}.
+  """
+
+  class ConnectionTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of the PSC connection.
+
+    Values:
+      CONNECTION_TYPE_UNSPECIFIED: Connection Type is not set
+      CONNECTION_TYPE_DISCOVERY: Connection that will be used for topology
+        discovery.
+      CONNECTION_TYPE_PRIMARY: Connection that will be used as primary
+        endpoint to access primary.
+      CONNECTION_TYPE_READER: Connection that will be used as reader endpoint
+        to access replicas.
+    """
+
+    CONNECTION_TYPE_UNSPECIFIED = 0
+    CONNECTION_TYPE_DISCOVERY = 1
+    CONNECTION_TYPE_PRIMARY = 2
+    CONNECTION_TYPE_READER = 3
+
+  class PscConnectionStatusValueValuesEnum(_messages.Enum):
+    r"""Output only.
+
+    The status of the PSC connection: whether a connection exists and ACTIVE or
+    it no longer exists. Please note that this value is updated periodically.
+    Please use Private Service Connect APIs for the latest status.
+
+    Values:
+      PSC_CONNECTION_STATUS_UNSPECIFIED: PSC connection status is not
+        specified.
+      ACTIVE: The connection is active
+      NOT_FOUND: Connection not found
+    """
+
+    PSC_CONNECTION_STATUS_UNSPECIFIED = 0
+    ACTIVE = 1
+    NOT_FOUND = 2
+
+  connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 1)
+  forwardingRule = _messages.StringField(2)
+  ipAddress = _messages.StringField(3)
+  network = _messages.StringField(4)
+  projectId = _messages.StringField(5)
+  pscConnectionId = _messages.StringField(6)
+  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 7)
+  serviceAttachment = _messages.StringField(8)
 
 
 class RDBConfig(_messages.Message):

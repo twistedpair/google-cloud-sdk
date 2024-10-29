@@ -608,33 +608,6 @@ class PrivilegedaccessmanagerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def SetupService(self, request, global_params=None):
-      r"""SetupService sets up PAM service for a Google Cloud project/folder/organization. This needs to be done before entitlements parented under the project/folder/organization can be created.
-
-      Args:
-        request: (PrivilegedaccessmanagerFoldersLocationsSetupServiceRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (SetupServiceResponse) The response message.
-      """
-      config = self.GetMethodConfig('SetupService')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetupService.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}:setupService',
-        http_method='POST',
-        method_id='privilegedaccessmanager.folders.locations.setupService',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1alpha/{+parent}:setupService',
-        request_field='setupServiceRequest',
-        request_type_name='PrivilegedaccessmanagerFoldersLocationsSetupServiceRequest',
-        response_type_name='SetupServiceResponse',
-        supports_download=False,
-    )
-
   class FoldersService(base_api.BaseApiService):
     """Service class for the folders resource."""
 
@@ -1198,33 +1171,6 @@ class PrivilegedaccessmanagerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def SetupService(self, request, global_params=None):
-      r"""SetupService sets up PAM service for a Google Cloud project/folder/organization. This needs to be done before entitlements parented under the project/folder/organization can be created.
-
-      Args:
-        request: (PrivilegedaccessmanagerOrganizationsLocationsSetupServiceRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (SetupServiceResponse) The response message.
-      """
-      config = self.GetMethodConfig('SetupService')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetupService.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}:setupService',
-        http_method='POST',
-        method_id='privilegedaccessmanager.organizations.locations.setupService',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1alpha/{+parent}:setupService',
-        request_field='setupServiceRequest',
-        request_type_name='PrivilegedaccessmanagerOrganizationsLocationsSetupServiceRequest',
-        response_type_name='SetupServiceResponse',
-        supports_download=False,
-    )
-
   class OrganizationsService(base_api.BaseApiService):
     """Service class for the organizations resource."""
 
@@ -1785,33 +1731,6 @@ class PrivilegedaccessmanagerV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='PrivilegedaccessmanagerProjectsLocationsListRequest',
         response_type_name='ListLocationsResponse',
-        supports_download=False,
-    )
-
-    def SetupService(self, request, global_params=None):
-      r"""SetupService sets up PAM service for a Google Cloud project/folder/organization. This needs to be done before entitlements parented under the project/folder/organization can be created.
-
-      Args:
-        request: (PrivilegedaccessmanagerProjectsLocationsSetupServiceRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (SetupServiceResponse) The response message.
-      """
-      config = self.GetMethodConfig('SetupService')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetupService.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}:setupService',
-        http_method='POST',
-        method_id='privilegedaccessmanager.projects.locations.setupService',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1alpha/{+parent}:setupService',
-        request_field='setupServiceRequest',
-        request_type_name='PrivilegedaccessmanagerProjectsLocationsSetupServiceRequest',
-        response_type_name='SetupServiceResponse',
         supports_download=False,
     )
 

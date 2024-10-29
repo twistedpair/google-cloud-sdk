@@ -990,6 +990,7 @@ def AddIngestionDatasourceFlags(
     is_update=False,
     include_ingestion_from_azure_event_hubs_flags=False,
     include_ingestion_from_aws_msk_flags=False,
+    include_ingestion_from_confluent_cloud_flags=False,
 ):
   """Adds the flags for Datasource Ingestion.
 
@@ -1001,6 +1002,8 @@ def AddIngestionDatasourceFlags(
       from Azure Event Hubs flags.
     include_ingestion_from_aws_msk_flags: whether to include ingestion from AWS
       MSK flags.
+    include_ingestion_from_confluent_cloud_flags: whether to include ingestion
+      from Confluent Cloud flags.
   """
   current_group = parser
 
@@ -1157,6 +1160,14 @@ def AddIngestionDatasourceFlags(
         hidden=True,
     )
     azure_event_hubs_group.add_argument(
+        '--azure-event-hubs-ingestion-resource-group',
+        default=None,
+        help=(
+            'Azure event hub resource group from within an Azure subscription.'
+        ),
+        required=True,
+    )
+    azure_event_hubs_group.add_argument(
         '--azure-event-hubs-ingestion-namespace',
         default=None,
         help='Azure event hub namespace from which to ingest data.',
@@ -1181,6 +1192,12 @@ def AddIngestionDatasourceFlags(
         required=True,
     )
     azure_event_hubs_group.add_argument(
+        '--azure-event-hubs-ingestion-subscription-id',
+        default=None,
+        help='Azure event hub subscription ID to use for ingestion.',
+        required=True,
+    )
+    azure_event_hubs_group.add_argument(
         '--azure-event-hubs-ingestion-service-account',
         default=None,
         help=(
@@ -1201,19 +1218,19 @@ def AddIngestionDatasourceFlags(
         hidden=True,
     )
     aws_msk_group.add_argument(
-        '--aws_msk-ingestion-cluster-arn',
+        '--aws-msk-ingestion-cluster-arn',
         default=None,
         help='ARN that uniquely identifies the MSK cluster.',
         required=True,
     )
     aws_msk_group.add_argument(
-        '--aws_msk-ingestion-topic',
+        '--aws-msk-ingestion-topic',
         default=None,
         help='Name of the MSK topic that Pub/Sub will import from.',
         required=True,
     )
     aws_msk_group.add_argument(
-        '--aws_msk-ingestion-aws-role-arn',
+        '--aws-msk-ingestion-aws-role-arn',
         default=None,
         help=(
             'AWS role ARN to be used for Federated Identity authentication with'
@@ -1222,11 +1239,59 @@ def AddIngestionDatasourceFlags(
         required=True,
     )
     aws_msk_group.add_argument(
-        '--aws_msk-ingestion-service-account',
+        '--aws-msk-ingestion-service-account',
         default=None,
         help=(
             'Service account to be used for Federated Identity authentication'
             ' with Kinesis.'
+        ),
+        required=True,
+    )
+  if include_ingestion_from_confluent_cloud_flags:
+    confluent_cloud_group = ingestion_data_source_group.add_argument_group(
+        help=arg_parsers.UniverseHelpText(
+            default=(
+                'Flags that specify settings for an import topic from'
+                ' Confluent Cloud'
+            )
+            + MustSpecifyAllHelpText('ConfluentCloud Source', is_update),
+            universe_help=INGESTION_NOT_SUPPORTED_IN_TPC,
+        ),
+        hidden=True,
+    )
+    confluent_cloud_group.add_argument(
+        '--confluent-cloud-ingestion-bootstrap-server',
+        default=None,
+        help='Confluent Cloud bootstrap server. The format is url:port.',
+        required=True,
+    )
+    confluent_cloud_group.add_argument(
+        '--confluent-cloud-ingestion-cluster-id',
+        default=None,
+        help='Confluent Cloud cluster ID.',
+        required=True,
+    )
+    confluent_cloud_group.add_argument(
+        '--confluent-cloud-ingestion-topic',
+        default=None,
+        help='Name of the Confluent Cloud topic that Pub/Sub will import from.',
+        required=True,
+    )
+    confluent_cloud_group.add_argument(
+        '--confluent-cloud-ingestion-identity-pool-id',
+        default=None,
+        help=(
+            'Identity pool ID to be used for Federated Identity'
+            ' authentication with Confluent Cloud.'
+        ),
+        required=True,
+    )
+    confluent_cloud_group.add_argument(
+        '--confluent-cloud-ingestion-service-account',
+        default=None,
+        help=(
+            'Service account to be used for Federated Identity authentication'
+            ' with Confluent Cloud.'
         ),
         required=True,
     )

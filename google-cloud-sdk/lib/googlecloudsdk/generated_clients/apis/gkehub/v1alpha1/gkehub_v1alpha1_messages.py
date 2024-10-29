@@ -1015,6 +1015,8 @@ class ConfigSyncState(_messages.Message):
   Fields:
     clusterLevelStopSyncingState: Whether syncing resources to the cluster is
       stopped at the cluster level.
+    crCount: Output only. The number of RootSync and RepoSync CRs in the
+      cluster.
     deploymentState: Information about the deployment of ConfigSync, including
       the version of the various Pods deployed
     errors: Errors pertaining to the installation of Config Sync.
@@ -1097,13 +1099,14 @@ class ConfigSyncState(_messages.Message):
     CONFIG_SYNC_PENDING = 4
 
   clusterLevelStopSyncingState = _messages.EnumField('ClusterLevelStopSyncingStateValueValuesEnum', 1)
-  deploymentState = _messages.MessageField('ConfigSyncDeploymentState', 2)
-  errors = _messages.MessageField('ConfigSyncError', 3, repeated=True)
-  reposyncCrd = _messages.EnumField('ReposyncCrdValueValuesEnum', 4)
-  rootsyncCrd = _messages.EnumField('RootsyncCrdValueValuesEnum', 5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  syncState = _messages.MessageField('SyncState', 7)
-  version = _messages.MessageField('ConfigSyncVersion', 8)
+  crCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  deploymentState = _messages.MessageField('ConfigSyncDeploymentState', 3)
+  errors = _messages.MessageField('ConfigSyncError', 4, repeated=True)
+  reposyncCrd = _messages.EnumField('ReposyncCrdValueValuesEnum', 5)
+  rootsyncCrd = _messages.EnumField('RootsyncCrdValueValuesEnum', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  syncState = _messages.MessageField('SyncState', 8)
+  version = _messages.MessageField('ConfigSyncVersion', 9)
 
 
 class ConfigSyncVersion(_messages.Message):

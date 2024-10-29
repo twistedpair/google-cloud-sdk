@@ -2930,3 +2930,114 @@ def AddRetainBackupsOnDelete(parser):
       ),
       action=arg_parsers.StoreTrueFalseAction,
   )
+
+
+def AddEnableConnectionPooling(parser):
+  """Adds --enable-connection-pooling flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--enable-connection-pooling',
+      required=False,
+      hidden=True,
+      help='Enable connection pooling for the instance.',
+      action=arg_parsers.StoreTrueFalseAction,
+  )
+
+
+def AddConnectionPoolingPoolMode(parser):
+  """Adds --connection-pooling-pool-mode flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--connection-pooling-pool-mode',
+      choices={
+          'SESSION': 'Session mode for managed connection pooling.',
+          'TRANSACTION': 'Transaction mode for managed connection pooling.',
+      },
+      required=False,
+      default=None,
+      help='The pool mode for managed connection pooling.',
+      hidden=True,
+  )
+
+
+def AddConnectionPoolingPoolSize(parser):
+  """Adds --connection-pooling-pool-size flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--connection-pooling-pool-size',
+      type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=262042),
+      required=False,
+      default=None,
+      help='The pool size for managed connection pooling.',
+      hidden=True,
+  )
+
+
+def AddConnectionPoolingMaxClientConnections(parser):
+  """Adds --connection-pooling-max-client-connections flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--connection-pooling-max-client-connections',
+      type=arg_parsers.BoundedInt(lower_bound=1, upper_bound=262042),
+      required=False,
+      default=None,
+      help='The max client connections for managed connection pooling.',
+      hidden=True,
+  )
+
+
+def AddConnectionPoolingClientIdleTimeout(parser):
+  """Adds --connection-pooling-client-idle-timeout flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--connection-pooling-client-idle-timeout',
+      required=False,
+      default=None,
+      help='The client idle timeout for managed connection pooling.',
+      hidden=True,
+  )
+
+
+def AddConnectionPoolingServerIdleTimeout(parser):
+  """Adds --connection-pooling-server-idle-timeout flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--connection-pooling-server-idle-timeout',
+      required=False,
+      default=None,
+      help='The server idle timeout for managed connection pooling.',
+      hidden=True,
+  )
+
+
+def AddConnectionPoolingQueryWaitTimeout(parser):
+  """Adds --connection-pooling-query-wait-timeout flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--connection-pooling-query-wait-timeout',
+      required=False,
+      default=None,
+      help='The query wait timeout for managed connection pooling.',
+      hidden=True,
+  )

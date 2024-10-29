@@ -1129,10 +1129,14 @@ class ExperienceContext(_messages.Message):
   code generation ("/appsheet/generate").
 
   Fields:
+    agent: Optional. The Backend Agent to route this request to (if known).
     experience: Required. The Duet experience that this request belongs to.
+    task: Optional. The backend Task(s) this request maps to (if known).
   """
 
-  experience = _messages.StringField(1)
+  agent = _messages.StringField(1)
+  experience = _messages.StringField(2)
+  task = _messages.StringField(3)
 
 
 class Expr(_messages.Message):
