@@ -572,7 +572,10 @@ class JsonClient(cloud_api.CloudApi):
     )
 
   def list_buckets(
-      self, fields_scope=cloud_api.FieldsScope.NO_ACL, soft_deleted=False
+      self,
+      fields_scope=cloud_api.FieldsScope.NO_ACL,
+      soft_deleted=False,
+      prefix=None,
   ):
     """See super class."""
     projection = self._get_projection(
@@ -583,6 +586,7 @@ class JsonClient(cloud_api.CloudApi):
         projection=projection,
         # Avoid needlessly appending "&softDeleted=False" to URL.
         softDeleted=True if soft_deleted else None,
+        prefix=prefix,
     )
 
     global_params = None

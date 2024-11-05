@@ -1260,3 +1260,38 @@ Indicates whether the node pool rollback should respect pod disruption budget.
 
 def GetRespectPodDisruptionBudget(args):
   return getattr(args, 'respect_pdb', None)
+
+
+def AddTagBindings(parser):
+  """Adds --tag-bindings flag to parser.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+  help_text = """\
+Tag keys/values directly bound to this resource.
+
+The short name of a tag key or value can have a maximum length of 256
+characters. The permitted character set for the short name includes UTF-8
+encoded Unicode characters except single quotes, double quotes,
+backslashes, and forward slashes.
+"""
+  parser.add_argument(
+      '--tag-bindings',
+      type=arg_parsers.ArgDict(min_length=1),
+      metavar='TAG_BINDING',
+      hidden=True,
+      help=help_text,
+  )
+
+
+def GetTagBindings(args):
+  """Parses and validates the value of the --tag-bindings flag.
+
+  Args:
+    args: Arguments parsed from the command.
+
+  Returns:
+    The tags object as a dictionary.
+  """
+  return getattr(args, 'tag_bindings', None) or {}

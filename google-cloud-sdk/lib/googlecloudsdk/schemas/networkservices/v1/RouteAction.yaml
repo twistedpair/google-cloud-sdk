@@ -30,6 +30,15 @@ properties:
       The policy to use for defining caching and signed request behavior for
       requests that match this route.
     $ref: CDNPolicy.yaml
+  compressionMode:
+    description: |-
+      The compression mode to use for responses. If not specified, Media CDN
+      doesn't compress uncompressed responses received from the origin.
+    type: string
+    enum:
+    - AUTOMATIC
+    - COMPRESSION_MODE_UNSPECIFIED
+    - DISABLED
   corsPolicy:
     description: |-
       The Cross-Origin Resource Sharing (CORS) policy for requests that match

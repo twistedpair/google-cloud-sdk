@@ -22,18 +22,18 @@ from __future__ import unicode_literals
 import os
 
 from googlecloudsdk.api_lib.app import env
+from googlecloudsdk.appengine.api import appinfo
+from googlecloudsdk.appengine.api import appinfo_errors
+from googlecloudsdk.appengine.api import appinfo_includes
+from googlecloudsdk.appengine.api import croninfo
+from googlecloudsdk.appengine.api import dispatchinfo
+from googlecloudsdk.appengine.api import queueinfo
+from googlecloudsdk.appengine.api import validation
+from googlecloudsdk.appengine.api import yaml_errors
+from googlecloudsdk.appengine.datastore import datastore_index
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
-from googlecloudsdk.third_party.appengine.api import appinfo
-from googlecloudsdk.third_party.appengine.api import appinfo_errors
-from googlecloudsdk.third_party.appengine.api import appinfo_includes
-from googlecloudsdk.third_party.appengine.api import croninfo
-from googlecloudsdk.third_party.appengine.api import dispatchinfo
-from googlecloudsdk.third_party.appengine.api import queueinfo
-from googlecloudsdk.third_party.appengine.api import validation
-from googlecloudsdk.third_party.appengine.api import yaml_errors
-from googlecloudsdk.third_party.appengine.datastore import datastore_index
 
 
 HINT_PROJECT = ('This field is not used by gcloud and must be removed. '

@@ -24,11 +24,11 @@ from typing import Sequence, Set, Tuple
 from googlecloudsdk.api_lib.datastore import util
 from googlecloudsdk.api_lib.firestore import api_utils as firestore_utils
 from googlecloudsdk.api_lib.firestore import indexes as firestore_indexes
+from googlecloudsdk.appengine.datastore import datastore_index
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.generated_clients.apis.datastore.v1 import datastore_v1_client
 from googlecloudsdk.generated_clients.apis.datastore.v1 import datastore_v1_messages
 from googlecloudsdk.generated_clients.apis.firestore.v1 import firestore_v1_messages
-from googlecloudsdk.third_party.appengine.datastore import datastore_index
 
 
 def GetIndexesService() -> (

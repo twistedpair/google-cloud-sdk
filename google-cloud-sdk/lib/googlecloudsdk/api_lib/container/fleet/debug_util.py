@@ -18,6 +18,7 @@ import re
 
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib import network_services
+from googlecloudsdk.api_lib.container import kubeconfig as kconfig
 from googlecloudsdk.api_lib.container import util as container_util
 from googlecloudsdk.api_lib.container.fleet import util as fleet_util
 from googlecloudsdk.command_lib.container.fleet import api_util as hubapi_util
@@ -27,6 +28,7 @@ from googlecloudsdk.core import properties
 
 
 location = None
+CONNECT_GATEWAY_KUBECONTEXT_FORMAT = 'connectgateway_{project}_{location}_{membership}'
 
 
 def ContextGenerator(args):
@@ -85,6 +87,22 @@ def ContextGenerator(args):
   cluster_context = container_util.ClusterConfig.KubeContext(
       cluster_name, cluster_location, cluster_project_id
   )
+  kubeconfig = (
+      kconfig.Kubeconfig.Default()
+  )  # istioctl uses the default kubeconfig location so it's safe.
+  if cluster_context not in kubeconfig.contexts:
+    print('GKE cluster context not found in kubeconfig')
+    cluster_context = CONNECT_GATEWAY_KUBECONTEXT_FORMAT.format(
+        project=project_id, location=location, membership=membership_id
+    )
+  if cluster_context not in kubeconfig.contexts:
+    # TODO(b/376311669): add a link to the doc about how to generate kube
+    # context.
+    raise exceptions.Error(
+        'Failed to find kube context of your cluster in your local'
+        ' kubeconfig file. Please make sure the kube context is generated.'
+        ' kube_context={}'.format(cluster_context)
+    )
   print('Using kube context=' + cluster_context)
   return cluster_context
 

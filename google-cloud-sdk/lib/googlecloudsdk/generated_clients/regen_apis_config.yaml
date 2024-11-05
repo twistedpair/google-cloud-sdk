@@ -1204,6 +1204,15 @@ apis:
           path: projects/{projectsId}/regions/{regionsId}/addresses/{addressesId}
         projects.serviceAccounts:
           path: projects/{projectsId}/serviceAccounts/{serviceAccountsId}
+    v1:
+      discovery_doc: parallelstore_v1.json
+      resources:
+        projects.networks:
+          path: projects/{projectsId}/global/networks/{networksId}
+        projects.regions.addresses:
+          path: projects/{projectsId}/regions/{regionsId}/addresses/{addressesId}
+        projects.serviceAccounts:
+          path: projects/{projectsId}/serviceAccounts/{serviceAccountsId}
   policytroubleshooter:
     v1beta:
       enable_mtls: false
@@ -1471,6 +1480,11 @@ apis:
   cloudquotas:
     v1:
       discovery_doc: cloudquotas_v1.json
+      default: true
+    v1alpha:
+      discovery_doc: cloudquotas_v1alpha.json
+    v1beta:
+      discovery_doc: cloudquotas_v1beta.json
   source:
     v1:
       discovery_doc: source_v1.json

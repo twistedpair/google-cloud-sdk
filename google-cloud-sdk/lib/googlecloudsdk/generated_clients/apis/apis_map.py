@@ -1094,6 +1094,26 @@ MAP = {
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.cloudquotas.v1alpha',
+                    client_classpath='cloudquotas_v1alpha_client.CloudquotasV1alpha',
+                    base_url='https://cloudquotas.googleapis.com/',
+                    messages_modulepath='cloudquotas_v1alpha_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v1beta':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.cloudquotas.v1beta',
+                    client_classpath='cloudquotas_v1beta_client.CloudquotasV1beta',
+                    base_url='https://cloudquotas.googleapis.com/',
+                    messages_modulepath='cloudquotas_v1beta_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
     },
     'cloudresourcemanager': {
         'v1':
@@ -3078,6 +3098,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'parallelstore': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.parallelstore.v1',
+                    client_classpath='parallelstore_v1_client.ParallelstoreV1',
+                    base_url='',
+                    messages_modulepath='parallelstore_v1_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(

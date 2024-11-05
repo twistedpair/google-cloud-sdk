@@ -19,14 +19,19 @@ from googlecloudsdk.api_lib.notebook_executor import schedules as schedules_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
+from googlecloudsdk.core import properties
 
 
 def GetRegionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='region',
       help_text='Cloud region for the {resource}.',
+      fallthroughs=[
+          deps.PropertyFallthrough(properties.VALUES.colab.region)
+      ],
   )
 
 

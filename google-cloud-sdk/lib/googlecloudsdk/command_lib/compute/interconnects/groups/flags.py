@@ -52,7 +52,7 @@ def AddDescription(parser):
 
 
 def AddIntendedTopologyCapabilityForCreate(parser):
-  """Adds IntendedAvailabilitySla flag to the argparse.ArgumentParser."""
+  """Adds IntendedTopologyCapability flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--intended-topology-capability',
       required=True,
@@ -64,7 +64,7 @@ def AddIntendedTopologyCapabilityForCreate(parser):
 
 
 def AddIntendedTopologyCapabilityForUpdate(parser):
-  """Adds IntendedAvailabilitySla flag to the argparse.ArgumentParser."""
+  """Adds IntendedTopologyCapability flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--intended-topology-capability',
       required=False,
@@ -80,7 +80,7 @@ def GetTopologyCapability(messages, intended_topology_capability):
 
   Args:
     messages: The API messages holder.
-    intended_topology_capability: The intended availability sla flag value.
+    intended_topology_capability: The intended topology capability flag value.
 
   Returns:
     An TopologyCapabilityValueValuesEnum of the flag value, or None if absent.

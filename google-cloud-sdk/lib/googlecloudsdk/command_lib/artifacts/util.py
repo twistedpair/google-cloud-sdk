@@ -733,7 +733,7 @@ def AddRegistryBaseToRepositoryInfo(response, unused_args):
             repo_name.repositoriesId,
         )
     )
-    return response
+  return response
 
 
 def ConvertBytesToMB(response, unused_args):

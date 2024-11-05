@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import json
+from typing import List
 
 from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import revision
@@ -37,12 +38,17 @@ INGRESS_INTERNAL = 'internal'
 INGRESS_INTERNAL_AND_CLOUD_LOAD_BALANCING = 'internal-and-cloud-load-balancing'
 SERVICE_MIN_SCALE_ANNOTATION = 'run.googleapis.com/minScale'
 SERVICE_MAX_SCALE_ANNOTATION = 'run.googleapis.com/maxScale'
+MANUAL_INSTANCE_COUNT_ANNOTATION = 'run.googleapis.com/manualInstanceCount'
 SERVICE_MAX_SURGE_ANNOTATION = 'run.googleapis.com/max-surge'
 SERVICE_MAX_UNAVAILABLE_ANNOTATION = 'run.googleapis.com/max-unavailable'
 SERVICE_SCALING_MODE_ANNOTATION = 'run.googleapis.com/scalingMode'
 OPERATION_ID_ANNOTATION = 'run.googleapis.com/operation-id'
-RUN_FUNCTIONS_BUILD_SOURCE_LOCATION_ANNOTATION = 'run.googleapis.com/build-source-location'
-RUN_FUNCTIONS_BUILD_FUNCTION_TARGET_ANNOTATION = 'run.googleapis.com/build-function-target'
+RUN_FUNCTIONS_BUILD_SOURCE_LOCATION_ANNOTATION = (
+    'run.googleapis.com/build-source-location'
+)
+RUN_FUNCTIONS_BUILD_FUNCTION_TARGET_ANNOTATION = (
+    'run.googleapis.com/build-function-target'
+)
 RUN_FUNCTIONS_BUILD_IMAGE_URI_ANNOTATION = 'run.googleapis.com/build-image-uri'
 RUN_FUNCTIONS_BUILD_ID_ANNOTATION = 'run.googleapis.com/build-id'
 RUN_FUNCTIONS_BUILD_ENV_VARS_ANNOTATION = (
@@ -63,8 +69,12 @@ RUN_FUNCTIONS_BUILD_ENABLE_AUTOMATIC_UPDATES = (
     'run.googleapis.com/build-enable-automatic-updates'
 )
 # TODO(b/365567914): Remove these annotations once the new ones are in use.
-RUN_FUNCTIONS_SOURCE_LOCATION_ANNOTATION_DEPRECATED = 'run.googleapis.com/source-location'
-RUN_FUNCTIONS_FUNCTION_TARGET_ANNOTATION_DEPRECATED = 'run.googleapis.com/function-target'
+RUN_FUNCTIONS_SOURCE_LOCATION_ANNOTATION_DEPRECATED = (
+    'run.googleapis.com/source-location'
+)
+RUN_FUNCTIONS_FUNCTION_TARGET_ANNOTATION_DEPRECATED = (
+    'run.googleapis.com/function-target'
+)
 RUN_FUNCTIONS_IMAGE_URI_ANNOTATION_DEPRECATED = 'run.googleapis.com/image-uri'
 RUN_FUNCTIONS_ENABLE_AUTOMATIC_UPDATES_DEPRECATED = (
     'run.googleapis.com/enable-automatic-updates'
@@ -153,7 +163,7 @@ class Service(k8s_object.KubernetesObject):
     return None
 
   @property
-  def urls(self) -> list[str]:
+  def urls(self) -> List[str]:
     """List of the Service's URLs.
 
     Returns:

@@ -5137,7 +5137,7 @@ https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets.
 """,
       required=False,
       type=arg_parsers.RegexpValidator(
-          r'^projects/[^/]+/locations/[^/]+/keyRings/[^/]+/cryptoKeys/[^/]+$',
+          r'^projects/[^/]+/locations/[^/]+/keyRings/[^/]+/cryptoKeys/[^/]+(\/grants\/[^/]+)?$',
           'Must be in format of'
           " 'projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]/cryptoKeys/[KEY_NAME]'",
       ),
@@ -6917,14 +6917,13 @@ Autopilot cluster:
   )
 
 
-def AddClusterTierFlag(parser, hidden=True):
+def AddClusterTierFlag(parser):
   """Adds a --tier flag to the given cluster parser."""
-  help_text = ' '
+  help_text = 'Set the desired tier for the cluster.'
   parser.add_argument(
       '--tier',
-      metavar='tier=TIER',
+      metavar='TIER',
       help=help_text,
-      hidden=hidden,
       choices=['standard', 'enterprise'],
   )
 

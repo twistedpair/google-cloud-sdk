@@ -75,8 +75,7 @@ properties:
   routeMethods:
     description: |-
       Allow overriding the set of methods that are allowed for this route.
-      When not set, Media CDN only allows safe methods (GET, HEAD, and
-      OPTIONS).
+      When not set, Media CDN allows only `GET`, `HEAD`, and `OPTIONS`.
     $ref: RouteRuleRouteMethods.yaml
   urlRedirect:
     description: |-

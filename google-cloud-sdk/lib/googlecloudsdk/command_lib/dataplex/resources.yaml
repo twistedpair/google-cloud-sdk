@@ -300,3 +300,18 @@ glossary:
     attribute_name: glossary
     help: |
       Identifier of the Dataplex Glossary resource.
+
+glossary_category:
+  name: glossary category
+  collection: dataplex.projects.locations.glossaries.categories
+  request_id_field: categoryId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - *glossary
+  - &glossary_category
+    parameter_name: categoriesId
+    attribute_name: glossary_category
+    help: |
+      Identifier of the Dataplex Glossary Category resource.

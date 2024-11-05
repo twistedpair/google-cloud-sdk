@@ -24,8 +24,8 @@ from googlecloudsdk.api_lib.app import exceptions
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.services import exceptions as s_exceptions
+from googlecloudsdk.appengine.admin.tools.conversion import convert_yaml
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.appengine.admin.tools.conversion import convert_yaml
 import six
 
 

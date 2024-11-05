@@ -37,7 +37,7 @@ def AddAllowMissing(
 
 def AddInstance(
     parser,
-    help_text="Secure Source Manager instance used to create the repo",
+    help_text="A Secure Source Manager instance ID.",
 ):
   parser.add_argument(
       "--instance", dest="instance", required=True, help=help_text
@@ -115,6 +115,7 @@ def AddMaxWait(
       type=arg_parsers.Duration(),
   )
 
+
 def AddIsPrivate(parser, help_text="Bool indicator for private instance."):
   parser.add_argument(
       "--is-private",
@@ -124,20 +125,8 @@ def AddIsPrivate(parser, help_text="Bool indicator for private instance."):
       help=help_text,
   )
 
+
 def AddCAPool(parser, help_text="CA Pool path for private instance."):
   parser.add_argument(
       "--ca-pool", dest="ca_pool", required=False, help=help_text
-  )
-
-
-def AddPageToken(
-    parser,
-    help_text="Token identifying a page of results the server should return.",
-):
-  parser.add_argument(
-      "--page-token",
-      dest="page_token",
-      required=False,
-      default=None,
-      help=help_text,
   )

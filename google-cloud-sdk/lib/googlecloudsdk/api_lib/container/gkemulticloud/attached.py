@@ -43,6 +43,7 @@ class _AttachedClientBase(client.ClientBase):
         'monitoringConfig': flags.GetMonitoringConfig(args),
         'proxyConfig': self._ProxyConfig(args),
         'securityPostureConfig': self._SecurityPosture(args),
+        'tags': self._TagBindings(args, cluster_type),
     }
     return (
         self._messages.GoogleCloudGkemulticloudV1AttachedCluster(**kwargs)

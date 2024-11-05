@@ -17,16 +17,32 @@
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.quotas import message_util
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 
 PAGE_SIZE = 10
 _CONSUMER_LOCATION_SERVICE_RESOURCE = '%s/locations/global/services/%s'
 
 
-def _GetClientInstance(no_http=False):
-  return apis.GetClientInstance('cloudquotas', 'v1', no_http=no_http)
+VERSION_MAP = {
+    base.ReleaseTrack.ALPHA: 'v1alpha',
+    base.ReleaseTrack.BETA: 'v1beta',
+    base.ReleaseTrack.GA: 'v1',
+}
 
 
-def GetQuotaInfo(project, folder, organization, service, quota_id):
+def _GetClientInstance(release_track, no_http=False):
+  api_version = VERSION_MAP.get(release_track)
+  return apis.GetClientInstance('cloudquotas', api_version, no_http=no_http)
+
+
+def GetQuotaInfo(
+    project,
+    folder,
+    organization,
+    service,
+    quota_id,
+    release_track=base.ReleaseTrack.GA,
+):
   """Retrieve the QuotaInfo of a quota for a project, folder or organization.
 
   Args:
@@ -35,12 +51,13 @@ def GetQuotaInfo(project, folder, organization, service, quota_id):
     organization: str, The organization ID.
     service: str, The service name.
     quota_id: str, The quota ID.
+    release_track: str, The release track.
 
   Returns:
     The request QuotaInfo
   """
   consumer = message_util.CreateConsumer(project, folder, organization)
-  client = _GetClientInstance()
+  client = _GetClientInstance(release_track)
   messages = client.MESSAGES_MODULE
   name = (
       _CONSUMER_LOCATION_SERVICE_RESOURCE % (consumer, service)
@@ -68,11 +85,12 @@ def GetQuotaInfo(project, folder, organization, service, quota_id):
     return client.organizations_locations_services_quotaInfos.Get(request)
 
 
-def ListQuotaInfo(args):
+def ListQuotaInfo(args, release_track=base.ReleaseTrack.GA):
   """Lists info for all quotas for a given project, folder or organization.
 
   Args:
     args: argparse.Namespace, The arguments that this command was invoked with.
+    release_track: str, The release track.
 
   Returns:
     List of QuotaInfo
@@ -80,7 +98,7 @@ def ListQuotaInfo(args):
   consumer = message_util.CreateConsumer(
       args.project, args.folder, args.organization
   )
-  client = _GetClientInstance()
+  client = _GetClientInstance(release_track)
   messages = client.MESSAGES_MODULE
   parent = _CONSUMER_LOCATION_SERVICE_RESOURCE % (consumer, args.service)
 
@@ -98,6 +116,7 @@ def ListQuotaInfo(args):
         batch_size_attribute='pageSize',
         batch_size=args.page_size if args.page_size is not None else PAGE_SIZE,
         field='quotaInfos',
+        limit=args.limit,
     )
 
   if args.folder:
@@ -112,6 +131,7 @@ def ListQuotaInfo(args):
         batch_size_attribute='pageSize',
         batch_size=args.page_size if args.page_size is not None else PAGE_SIZE,
         field='quotaInfos',
+        limit=args.limit,
     )
 
   if args.organization:
@@ -128,4 +148,5 @@ def ListQuotaInfo(args):
         batch_size_attribute='pageSize',
         batch_size=args.page_size if args.page_size is not None else PAGE_SIZE,
         field='quotaInfos',
+        limit=args.limit,
     )

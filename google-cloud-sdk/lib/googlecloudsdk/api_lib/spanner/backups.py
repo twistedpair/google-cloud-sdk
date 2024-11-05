@@ -206,17 +206,39 @@ def _FormatBackup(backup_ref):
       _ExtractScheduleNameFromScheduleUri(schedule_uri)
       for schedule_uri in backup_ref.backupSchedules
   ]
+  formatted_backup_ref.instancePartitions = [
+      _ExtractInstancePartitionNameFromInstancePartitionUri(
+          instance_partition.instancePartition
+      )
+      for instance_partition in backup_ref.instancePartitions
+  ]
   return formatted_backup_ref
 
 
 def _ExtractScheduleNameFromScheduleUri(schedule_uri):
-  """Converts a schedule URI to schedule names.
+  """Converts a schedule URI to an schedule name.
 
   Args:
       schedule_uri: The URI of the schedule, e.g.,
       "projects/test-project/instances/test-instance/databases/test-database/backupSchedules/test-backup-schedule".
 
   Returns:
-      The names of the schedules ("test-backup-schedule" in the example above).
+      The name of the schedule ("test-backup-schedule" in the example above).
   """
   return schedule_uri.split('/')[-1]
+
+
+def _ExtractInstancePartitionNameFromInstancePartitionUri(
+    instance_partition_uri,
+):
+  """Converts an instance partition URI to an instance partition name.
+
+  Args:
+      instance_partition_uri: The URI of an instance partition, e.g.,
+        "projects/test-project/instances/test-instance/instancePartitions/test-instance-partition".
+
+  Returns:
+      The name of the instance partition ("test-instance-partition" in the
+      example above).
+  """
+  return {'instancePartition': instance_partition_uri.split('/')[-1]}

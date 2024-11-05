@@ -33,7 +33,7 @@ _INSTALLATION_GUIDE = textwrap.dedent("""\
     <INSERT_LINK_HERE>""")
 _DOCKER = files.FindExecutableOnPath('docker')
 _PACK = files.FindExecutableOnPath('pack')
-_APPENGINE_BUILDER = 'gcr.io/gae-runtimes/buildpacks/google-gae-{}/{}/builder'
+_APPENGINE_BUILDER = 'gcr.io/serverless-runtimes/google-{}-full/builder/{}'
 _V1_BUILDER = 'gcr.io/buildpacks/builder:v1'
 _GOOGLE_22_BUILDER = 'gcr.io/buildpacks/builder:google-22'
 _RUNTIME_MINVERSION_UBUNTU_22 = {'python': 310, 'nodejs': 18, 'go': 116,

@@ -1206,7 +1206,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class EndpointMatcher(_messages.Message):
   r"""A definition of a matcher that selects endpoints to which the policies
   should be applied.
@@ -1405,12 +1404,13 @@ class ExtensionChainExtension(_messages.Message):
       following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
       qualified resource name. This field is not supported for plugin
-      extensions and must not be set.
+      extensions. Setting it results in a validation error.
 
   Fields:
     authority: Optional. The `:authority` header in the gRPC request sent from
       Envoy to the extension service. Required for Callout extensions. This
-      field is not supported for plugin extensions and must not be set.
+      field is not supported for plugin extensions. Setting it results in a
+      validation error.
     failOpen: Optional. Determines how the proxy behaves if the call to the
       extension fails or times out. When set to `TRUE`, request or response
       processing continues without error. Any subsequent extensions in the
@@ -1432,7 +1432,7 @@ class ExtensionChainExtension(_messages.Message):
       following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
       qualified resource name. This field is not supported for plugin
-      extensions and must not be set.
+      extensions. Setting it results in a validation error.
     name: Required. The name for this extension. The name is logged as part of
       the HTTP request logs. The name must conform with RFC-1034, is
       restricted to lower-cased letters, numbers and hyphens, and can have a
@@ -1445,8 +1445,9 @@ class ExtensionChainExtension(_messages.Message):
       1/backendServices) in the format: `https://www.googleapis.com/compute/v1
       /projects/{project}/regions/{region}/backendServices/{backendService}`
       or `https://www.googleapis.com/compute/v1/projects/{project}/global/back
-      endServices/{backendService}`. To configure a plugin extension, this
-      must be a reference to a [wasm plugin](https://cloud.google.com/service-
+      endServices/{backendService}`. To configure a plugin extension,
+      `service` must be a reference to a [`WasmPlugin`
+      resource](https://cloud.google.com/service-
       extensions/docs/reference/rest/v1beta1/projects.locations.wasmPlugins)
       in the format:
       `projects/{project}/locations/{location}/wasmPlugins/{plugin}` or `//net
@@ -1455,11 +1456,11 @@ class ExtensionChainExtension(_messages.Message):
     supportedEvents: Optional. A set of events during request or response
       processing for which this extension is called. This field is required
       for the `LbTrafficExtension` resource. It must not be set for the
-      `LbRouteExtension` resource.
+      `LbRouteExtension` resource, otherwise a validation error is returned.
     timeout: Optional. Specifies the timeout for each individual message on
-      the stream. The timeout must be between 10-1000 milliseconds. Required
-      for callout extensions. This field is not supported for plugin
-      extensions and must not be set.
+      the stream. The timeout must be between `10`-`1000` milliseconds.
+      Required for callout extensions. This field is not supported for plugin
+      extensions. Setting it results in a validation error.
   """
 
   class SupportedEventsValueListEntryValuesEnum(_messages.Enum):
@@ -1490,14 +1491,17 @@ class ExtensionChainExtension(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Optional. The metadata provided here is included as part of the
-    `metadata_context` (of type `google.protobuf.Struct`) in the
-    `ProcessingRequest` message sent to the extension server. The metadata is
-    available under the namespace `com.google....`. For example:
+    r"""Optional.
+
+    The metadata provided here is included as part of the `metadata_context` (of
+    type `google.protobuf.Struct`) in the `ProcessingRequest` message sent to
+    the extension server. The metadata is available under the namespace
+    `com.google....`. For example:
     `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
-    following variables are supported in the metadata: `{forwarding_rule_id}`
-    - substituted with the forwarding rule's fully qualified resource name.
-    This field is not supported for plugin extensions and must not be set.
+    following variables are supported in the metadata: `{forwarding_rule_id}` -
+    substituted with the forwarding rule's fully qualified resource name. This
+    field is not supported for plugin extensions. Setting it results in a
+    validation error.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -2946,6 +2950,7 @@ class InvalidateCacheResponse(_messages.Message):
 
 class LbObservabilityExtension(_messages.Message):
   r"""`LbObservabilityExtension` is a resource that allows to forward traffic
+
   to a callout backend designed to scan the traffic for security purposes.
 
   Enums:
@@ -2986,8 +2991,8 @@ class LbObservabilityExtension(_messages.Message):
       extension (from the client or backend). If omitted, all headers are
       sent. Each element is a string indicating the header name.
     forwardingRules: Required. A list of references to the forwarding rules to
-      which this service extension is attached to. At least one forwarding
-      rule is required.
+      which this service extension is attached. At least one forwarding rule
+      is required.
     labels: Optional. Set of labels associated with the
       `LbObservabilityExtension` resource. The format must comply with [the
       requirements for labels](https://cloud.google.com/compute/docs/labeling-
@@ -3138,6 +3143,7 @@ class LbObservabilityExtension(_messages.Message):
 
 class LbRouteExtension(_messages.Message):
   r"""`LbRouteExtension` is a resource that lets you control where traffic is
+
   routed to for a given request.
 
   Enums:
@@ -3159,7 +3165,7 @@ class LbRouteExtension(_messages.Message):
       following variables are supported in the metadata Struct:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
       qualified resource name. This field is not supported for plugin
-      extensions and must not be set.
+      extensions. Setting it results in a validation error.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -3171,8 +3177,8 @@ class LbRouteExtension(_messages.Message):
       executed. Any subsequent extension chains do not execute. Limited to 5
       extension chains per resource.
     forwardingRules: Required. A list of references to the forwarding rules to
-      which this service extension is attached to. At least one forwarding
-      rule is required. There can be only one `LbRouteExtension` resource per
+      which this service extension is attached. At least one forwarding rule
+      is required. There can be only one `LbRouteExtension` resource per
       forwarding rule.
     labels: Optional. Set of labels associated with the `LbRouteExtension`
       resource. The format must comply with [the requirements for
@@ -3190,7 +3196,7 @@ class LbRouteExtension(_messages.Message):
       following variables are supported in the metadata Struct:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
       qualified resource name. This field is not supported for plugin
-      extensions and must not be set.
+      extensions. Setting it results in a validation error.
     name: Required. Identifier. Name of the `LbRouteExtension` resource in the
       following format: `projects/{project}/locations/{location}/lbRouteExtens
       ions/{lb_route_extension}`.
@@ -3244,14 +3250,15 @@ class LbRouteExtension(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Optional. The metadata provided here is included as part of the
-    `metadata_context` (of type `google.protobuf.Struct`) in the
-    `ProcessingRequest` message sent to the extension server. The metadata is
-    available under the namespace `com.google.lb_route_extension.`. The
-    following variables are supported in the metadata Struct:
-    `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-    qualified resource name. This field is not supported for plugin extensions
-    and must not be set.
+    r"""Optional.
+
+    The metadata provided here is included as part of the `metadata_context` (of
+    type `google.protobuf.Struct`) in the `ProcessingRequest` message sent to
+    the extension server. The metadata is available under the namespace
+    `com.google.lb_route_extension.`. The following variables are supported in
+    the metadata Struct: `{forwarding_rule_id}` - substituted with the
+    forwarding rule's fully qualified resource name. This field is not supported
+    for plugin extensions. Setting it results in a validation error.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -3286,6 +3293,7 @@ class LbRouteExtension(_messages.Message):
 
 class LbTrafficExtension(_messages.Message):
   r"""`LbTrafficExtension` is a resource that lets the extension service
+
   modify the headers and payloads of both requests and responses without
   impacting the choice of backend services or any other security policies
   associated with the backend service.
@@ -3308,7 +3316,7 @@ class LbTrafficExtension(_messages.Message):
       The following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
       qualified resource name. This field is not supported for plugin
-      extensions and must not be set.
+      extensions. Setting it results in a validation error.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -3320,9 +3328,9 @@ class LbTrafficExtension(_messages.Message):
       executed. Any subsequent extension chains do not execute. Limited to 5
       extension chains per resource.
     forwardingRules: Required. A list of references to the forwarding rules to
-      which this service extension is attached to. At least one forwarding
-      rule is required. There can be only one `LBTrafficExtension` resource
-      per forwarding rule.
+      which this service extension is attached. At least one forwarding rule
+      is required. There can be only one `LBTrafficExtension` resource per
+      forwarding rule.
     labels: Optional. Set of labels associated with the `LbTrafficExtension`
       resource. The format must comply with [the requirements for
       labels](https://cloud.google.com/compute/docs/labeling-
@@ -3338,7 +3346,7 @@ class LbTrafficExtension(_messages.Message):
       The following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
       qualified resource name. This field is not supported for plugin
-      extensions and must not be set.
+      extensions. Setting it results in a validation error.
     name: Required. Identifier. Name of the `LbTrafficExtension` resource in
       the following format: `projects/{project}/locations/{location}/lbTraffic
       Extensions/{lb_traffic_extension}`.
@@ -3392,13 +3400,15 @@ class LbTrafficExtension(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Optional. The metadata provided here is included in the
-    `ProcessingRequest.metadata_context.filter_metadata` map field. The
-    metadata is available under the key `com.google.lb_traffic_extension.`.
-    The following variables are supported in the metadata:
-    `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-    qualified resource name. This field is not supported for plugin extensions
-    and must not be set.
+    r"""Optional.
+
+    The metadata provided here is included in the
+    `ProcessingRequest.metadata_context.filter_metadata` map field. The metadata
+    is available under the key `com.google.lb_traffic_extension.`. The following
+    variables are supported in the metadata: `{forwarding_rule_id}` -
+    substituted with the forwarding rule's fully qualified resource name. This
+    field is not supported for plugin extensions. Setting it results in a
+    validation error.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -8143,8 +8153,8 @@ class NetworkservicesProjectsLocationsWasmActionsListRequest(_messages.Message):
 
   Fields:
     pageSize: Maximum number of `WasmAction` resources to return per call. If
-      not specified, at most 50 `WasmAction`s are returned. The maximum value
-      is 1000; values above 1000 are coerced to 1000.
+      not specified, at most 50 `WasmAction` resources are returned. The
+      maximum value is 1000; values above 1000 are coerced to 1000.
     pageToken: The value returned by the last `ListWasmActionsResponse` call.
       Indicates that this is a continuation of a prior `ListWasmActions` call,
       and that the next page of data is to be returned.
@@ -8190,26 +8200,29 @@ class NetworkservicesProjectsLocationsWasmPluginsGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsWasmPluginsGetRequest object.
 
   Enums:
-    ViewValueValuesEnum: Determine how much data should be returned by the
-      API. See [AIP-157](https://google.aip.dev/157).
+    ViewValueValuesEnum: Determines how much data must be returned in the
+      response. See [AIP-157](https://google.aip.dev/157).
 
   Fields:
     name: Required. A name of the `WasmPlugin` resource to get. Must be in the
       format `projects/{project}/locations/global/wasmPlugins/{wasm_plugin}`.
-    view: Determine how much data should be returned by the API. See
+    view: Determines how much data must be returned in the response. See
       [AIP-157](https://google.aip.dev/157).
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Determine how much data should be returned by the API. See
-    [AIP-157](https://google.aip.dev/157).
+    r"""Determines how much data must be returned in the response.
+
+    See [AIP-157](https://google.aip.dev/157).
 
     Values:
-      WASM_PLUGIN_VIEW_UNSPECIFIED: The default / unset value. The API will
-        default to the BASIC view.
-      WASM_PLUGIN_VIEW_BASIC: Include just WasmPlugin record.
-      WASM_PLUGIN_VIEW_FULL: Include WasmPlugin record and all its
-        WasmPluginVersions.
+      WASM_PLUGIN_VIEW_UNSPECIFIED: Unspecified value. Do not use.
+      WASM_PLUGIN_VIEW_BASIC: If specified in the `GET` request for a
+        `WasmPlugin` resource, the server's response includes just the
+        `WasmPlugin` resource.
+      WASM_PLUGIN_VIEW_FULL: If specified in the `GET` request for a
+        `WasmPlugin` resource, the server's response includes the `WasmPlugin`
+        resource with all its versions.
     """
     WASM_PLUGIN_VIEW_UNSPECIFIED = 0
     WASM_PLUGIN_VIEW_BASIC = 1
@@ -8224,8 +8237,8 @@ class NetworkservicesProjectsLocationsWasmPluginsListRequest(_messages.Message):
 
   Fields:
     pageSize: Maximum number of `WasmPlugin` resources to return per call. If
-      not specified, at most 50 `WasmPlugin`s are returned. The maximum value
-      is 1000; values above 1000 are coerced to 1000.
+      not specified, at most 50 `WasmPlugin` resources are returned. The
+      maximum value is 1000; values above 1000 are coerced to 1000.
     pageToken: The value returned by the last `ListWasmPluginsResponse` call.
       Indicates that this is a continuation of a prior `ListWasmPlugins` call,
       and that the next page of data is to be returned.
@@ -8311,8 +8324,9 @@ class NetworkservicesProjectsLocationsWasmPluginsVersionsListRequest(_messages.M
 
   Fields:
     pageSize: Maximum number of `WasmPluginVersion` resources to return per
-      call. If not specified, at most 50 `WasmPluginVersion`s are returned.
-      The maximum value is 1000; values above 1000 are coerced to 1000.
+      call. If not specified, at most 50 `WasmPluginVersion` resources are
+      returned. The maximum value is 1000; values above 1000 are coerced to
+      1000.
     pageToken: The value returned by the last `ListWasmPluginVersionsResponse`
       call. Indicates that this is a continuation of a prior
       `ListWasmPluginVersions` call, and that the next page of data is to be
@@ -8786,19 +8800,20 @@ class RetryFilterPerRouteConfig(_messages.Message):
 
 class RouteAction(_messages.Message):
   r"""The actions (such as rewrites, redirects, CORS header injection, and
+
   header modification) to take for a given route match.
 
   Enums:
-    CompressionModeValueValuesEnum: Optional. Select the compression mode to
-      use for responses. If not specified, the CDN will not compress
-      uncompressed responses received from the origin.
+    CompressionModeValueValuesEnum: Optional. The compression mode to use for
+      responses. If not specified, Media CDN doesn't compress uncompressed
+      responses received from the origin.
 
   Fields:
     cdnPolicy: Optional. The policy to use for defining caching and signed
       request behavior for requests that match this route.
-    compressionMode: Optional. Select the compression mode to use for
-      responses. If not specified, the CDN will not compress uncompressed
-      responses received from the origin.
+    compressionMode: Optional. The compression mode to use for responses. If
+      not specified, Media CDN doesn't compress uncompressed responses
+      received from the origin.
     corsPolicy: Optional. The Cross-Origin Resource Sharing (CORS) policy for
       requests that match this route.
     urlRewrite: Optional. The URL rewrite configuration for requests that
@@ -8808,18 +8823,18 @@ class RouteAction(_messages.Message):
   """
 
   class CompressionModeValueValuesEnum(_messages.Enum):
-    r"""Optional. Select the compression mode to use for responses. If not
-    specified, the CDN will not compress uncompressed responses received from
-    the origin.
+    r"""Optional. The compression mode to use for responses.
+
+    If not specified, Media CDN doesn't compress uncompressed responses received
+    from the origin.
 
     Values:
-      COMPRESSION_MODE_UNSPECIFIED: Unspecified value. Will default to
-        DISABLED
-      DISABLED: Disable compression.
-      AUTOMATIC: Automatically use the best compression mode. Compression
-        requires an appropriate Accept-Encoding header to be sent by the
-        client and will be enabled based on content type, content size, and
-        other factors.
+      COMPRESSION_MODE_UNSPECIFIED: Unspecified value. Defaults to DISABLED.
+      DISABLED: Disables compression.
+      AUTOMATIC: Automatically uses the best compression mode. Compression
+        requires an appropriate `Accept-Encoding` header to be sent by the
+        client and is enabled based on content type, content size, and other
+        factors.
     """
     COMPRESSION_MODE_UNSPECIFIED = 0
     DISABLED = 1
@@ -8893,6 +8908,7 @@ class RouteRuleRouteMethods(_messages.Message):
 
 class Routing(_messages.Message):
   r"""Defines how requests are routed, modified, cached, and which origin the
+
   content is filled from.
 
   Fields:
@@ -8903,7 +8919,7 @@ class Routing(_messages.Message):
     pathMatchers: Required. A list of PathMatcher values referenced by name by
       HostRule values. `PathMatcher` is used to match the path portion of the
       URL when a`HostRule` value matches the URL's host portion. You can
-      specify up to 10 path matchers.
+      specify up to 50 path matchers.
   """
 
   hostRules = _messages.MessageField('HostRule', 1, repeated=True)
@@ -9859,23 +9875,25 @@ class WasmAction(_messages.Message):
 
 class WasmPlugin(_messages.Message):
   r"""`WasmPlugin` is a resource representing a service executing a customer-
+
   provided Wasm module.
 
   Messages:
     LabelsValue: Optional. Set of labels associated with the `WasmPlugin`
       resource. The format must comply with [the following
       requirements](/compute/docs/labeling-resources#requirements).
-    VersionsValue: Optional. All versions of this `WasmPlugin` in the key-
-      value format. The key is the resource ID, the value is the
-      `VersionDetails`. Allows to create or update `WasmPlugin` and its
-      WasmPluginVersions in a single request. When the `main_version_id` field
-      is not empty it must point to one of the VersionDetails in the map. If
-      provided in the update request, the new versions replace the previous
-      set. Any version omitted from the `versions` will be removed. Since the
-      `WasmPluginVersion` resource is immutable, if the WasmPluginVersion with
-      the same name already exists and differs the Update request will fail.
-      Note: In the GET request, this field is populated only if the
-      GetWasmPluginRequest.view is set to WASM_PLUGIN_VIEW_FULL.
+    VersionsValue: Optional. All versions of this `WasmPlugin` resource in the
+      key-value format. The key is the resource ID, and the value is the
+      `VersionDetails` object. Lets you create or update a `WasmPlugin`
+      resource and its versions in a single request. When the
+      `main_version_id` field is not empty, it must point to one of the
+      `VersionDetails` objects in the map. If provided in a `PATCH` request,
+      the new versions replace the previous set. Any version omitted from the
+      `versions` field is removed. Because the `WasmPluginVersion` resource is
+      immutable, if a `WasmPluginVersion` resource with the same name already
+      exists and differs, the request fails. Note: In a `GET` request, this
+      field is populated only if the field `GetWasmPluginRequest.view` is set
+      to `WASM_PLUGIN_VIEW_FULL`.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -9884,7 +9902,7 @@ class WasmPlugin(_messages.Message):
       The format must comply with [the following
       requirements](/compute/docs/labeling-resources#requirements).
     logConfig: Optional. Specifies the logging options for the activity
-      performed by this `WasmPlugin`. If logging is enabled, plugin logs are
+      performed by this plugin. If logging is enabled, plugin logs are
       exported to Cloud Logging. Note that the settings relate to the logs
       generated by using logging statements in your Wasm code.
     mainVersionId: Optional. The ID of the `WasmPluginVersion` resource that
@@ -9894,20 +9912,21 @@ class WasmPlugin(_messages.Message):
       format:
       `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}`.
     updateTime: Output only. The timestamp when the resource was updated.
-    usedBy: Output only. List of all [Service
-      Extensions](https://cloud.google.com/service-extensions/docs/overview)
-      that use this `WasmPlugin`.
-    versions: Optional. All versions of this `WasmPlugin` in the key-value
-      format. The key is the resource ID, the value is the `VersionDetails`.
-      Allows to create or update `WasmPlugin` and its WasmPluginVersions in a
-      single request. When the `main_version_id` field is not empty it must
-      point to one of the VersionDetails in the map. If provided in the update
-      request, the new versions replace the previous set. Any version omitted
-      from the `versions` will be removed. Since the `WasmPluginVersion`
-      resource is immutable, if the WasmPluginVersion with the same name
-      already exists and differs the Update request will fail. Note: In the
-      GET request, this field is populated only if the
-      GetWasmPluginRequest.view is set to WASM_PLUGIN_VIEW_FULL.
+    usedBy: Output only. List of all
+      [extensions](https://cloud.google.com/service-extensions/docs/overview)
+      that use this `WasmPlugin` resource.
+    versions: Optional. All versions of this `WasmPlugin` resource in the key-
+      value format. The key is the resource ID, and the value is the
+      `VersionDetails` object. Lets you create or update a `WasmPlugin`
+      resource and its versions in a single request. When the
+      `main_version_id` field is not empty, it must point to one of the
+      `VersionDetails` objects in the map. If provided in a `PATCH` request,
+      the new versions replace the previous set. Any version omitted from the
+      `versions` field is removed. Because the `WasmPluginVersion` resource is
+      immutable, if a `WasmPluginVersion` resource with the same name already
+      exists and differs, the request fails. Note: In a `GET` request, this
+      field is populated only if the field `GetWasmPluginRequest.view` is set
+      to `WASM_PLUGIN_VIEW_FULL`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -9938,17 +9957,19 @@ class WasmPlugin(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class VersionsValue(_messages.Message):
-    r"""Optional. All versions of this `WasmPlugin` in the key-value format.
-    The key is the resource ID, the value is the `VersionDetails`. Allows to
-    create or update `WasmPlugin` and its WasmPluginVersions in a single
-    request. When the `main_version_id` field is not empty it must point to
-    one of the VersionDetails in the map. If provided in the update request,
-    the new versions replace the previous set. Any version omitted from the
-    `versions` will be removed. Since the `WasmPluginVersion` resource is
-    immutable, if the WasmPluginVersion with the same name already exists and
-    differs the Update request will fail. Note: In the GET request, this field
-    is populated only if the GetWasmPluginRequest.view is set to
-    WASM_PLUGIN_VIEW_FULL.
+    r"""Optional.
+
+    All versions of this `WasmPlugin` resource in the key-value format. The key
+    is the resource ID, and the value is the `VersionDetails` object. Lets you
+    create or update a `WasmPlugin` resource and its versions in a single
+    request. When the `main_version_id` field is not empty, it must point to one
+    of the `VersionDetails` objects in the map. If provided in a `PATCH`
+    request, the new versions replace the previous set. Any version omitted from
+    the `versions` field is removed. Because the `WasmPluginVersion` resource is
+    immutable, if a `WasmPluginVersion` resource with the same name already
+    exists and differs, the request fails. Note: In a `GET` request, this field
+    is populated only if the field `GetWasmPluginRequest.view` is set to
+    `WASM_PLUGIN_VIEW_FULL`.
 
     Messages:
       AdditionalProperty: An additional property for a VersionsValue object.
@@ -9982,46 +10003,46 @@ class WasmPlugin(_messages.Message):
 
 
 class WasmPluginLogConfig(_messages.Message):
-  r"""Specifies the logging options for the activity performed by this
-  `WasmPlugin`. If logging is enabled, plugin logs are exported to Cloud
-  Logging.
+  r"""Specifies the logging options for the activity performed by this plugin.
+
+  If logging is enabled, plugin logs are exported to Cloud Logging.
 
   Enums:
     MinLogLevelValueValuesEnum: Non-empty default. Specificies the lowest
       level of the plugin logs that are exported to Cloud Logging. This
       setting relates to the logs generated by using logging statements in
       your Wasm code. This field is can be set only if logging is enabled for
-      the `WasmPlugin` resource. If the field is not provided when logging is
-      enabled, it is set to `INFO` by default.
+      the plugin. If the field is not provided when logging is enabled, it is
+      set to `INFO` by default.
 
   Fields:
     enable: Optional. Specifies whether to enable logging for activity by this
-      `WasmPlugin`. Defaults to `false`.
+      plugin. Defaults to `false`.
     minLogLevel: Non-empty default. Specificies the lowest level of the plugin
       logs that are exported to Cloud Logging. This setting relates to the
       logs generated by using logging statements in your Wasm code. This field
-      is can be set only if logging is enabled for the `WasmPlugin` resource.
-      If the field is not provided when logging is enabled, it is set to
-      `INFO` by default.
+      is can be set only if logging is enabled for the plugin. If the field is
+      not provided when logging is enabled, it is set to `INFO` by default.
     sampleRate: Non-empty default. Configures the sampling rate of activity
       logs, where `1.0` means all logged activity is reported and `0.0` means
       no activity is reported. A floating point value between `0.0` and `1.0`
       indicates that a percentage of log messages is stored. The default value
       when logging is enabled is `1.0`. The value of the field must be between
-      `0` and `1` (inclusive). This field can only be specified if logging is
-      enabled for this `WasmPlugin`.
+      `0` and `1` (inclusive). This field can be specified only if logging is
+      enabled for this plugin.
   """
 
   class MinLogLevelValueValuesEnum(_messages.Enum):
-    r"""Non-empty default. Specificies the lowest level of the plugin logs
-    that are exported to Cloud Logging. This setting relates to the logs
-    generated by using logging statements in your Wasm code. This field is can
-    be set only if logging is enabled for the `WasmPlugin` resource. If the
-    field is not provided when logging is enabled, it is set to `INFO` by
-    default.
+    r"""Non-empty default.
+
+    Specificies the lowest level of the plugin logs that are exported to Cloud
+    Logging. This setting relates to the logs generated by using logging
+    statements in your Wasm code. This field is can be set only if logging is
+    enabled for the plugin. If the field is not provided when logging is
+    enabled, it is set to `INFO` by default.
 
     Values:
-      LOG_LEVEL_UNSPECIFIED: Unspecified value.
+      LOG_LEVEL_UNSPECIFIED: Unspecified value. Defaults to `LogLevel.INFO`.
       TRACE: Report logs with TRACE level and above.
       DEBUG: Report logs with DEBUG level and above.
       INFO: Report logs with INFO level and above.
@@ -10043,21 +10064,22 @@ class WasmPluginLogConfig(_messages.Message):
 
 
 class WasmPluginUsedBy(_messages.Message):
-  r"""Defines a resource that uses the `WasmPlugin`.
+  r"""Defines a resource that uses the `WasmPlugin` resource.
 
   Fields:
     name: Output only. Full name of the resource
-      https://google.aip.dev/122#full-resource-names, e.g. `//networkservices.
-      googleapis.com/projects/{project}/locations/{location}/lbRouteExtensions
-      /{extension}`
+      https://google.aip.dev/122#full-resource-names, for example `//networkse
+      rvices.googleapis.com/projects/{project}/locations/{location}/lbRouteExt
+      ensions/{extension}`
   """
 
   name = _messages.StringField(1)
 
 
 class WasmPluginVersion(_messages.Message):
-  r"""A single immutable version of a `WasmPlugin`. Defines the Wasm module
-  used and optionally its runtime config.
+  r"""A single immutable version of a `WasmPlugin` resource.
+
+  Defines the Wasm module used and optionally its runtime config.
 
   Messages:
     LabelsValue: Optional. Set of labels associated with the
@@ -10067,11 +10089,11 @@ class WasmPluginVersion(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
     imageDigest: Output only. The resolved digest for the image specified in
-      `image`. The digest is resolved during the creation of
-      `WasmPluginVersion` resource. This field holds the digest value
+      the `image` field. The digest is resolved during the creation of
+      `WasmPluginVersion` resource. This field holds the digest value,
       regardless of whether a tag or digest was originally specified in the
       `image` field.
-    imageUri: Optional. URI of the container image containing the Wasm plugin,
+    imageUri: Optional. URI of the container image containing the plugin,
       stored in the Artifact Registry. When a new `WasmPluginVersion` resource
       is created, the digest of the container image is saved in the
       `image_digest` field. When downloading an image, the digest value is
@@ -10082,18 +10104,18 @@ class WasmPluginVersion(_messages.Message):
       following format:
       `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}/
       versions/{wasm_plugin_version}`.
-    pluginConfigData: Configuration for the Wasm plugin. The configuration is
-      provided to the Wasm plugin at runtime through the `ON_CONFIGURE`
-      callback. When a new `WasmPluginVersion` resource is created, the digest
-      of the contents is saved in the `plugin_config_digest` field.
+    pluginConfigData: Configuration for the plugin. The configuration is
+      provided to the plugin at runtime through the `ON_CONFIGURE` callback.
+      When a new `WasmPluginVersion` resource is created, the digest of the
+      contents is saved in the `plugin_config_digest` field.
     pluginConfigDigest: Output only. This field holds the digest (usually
       checksum) value for the plugin configuration. The value is calculated
-      based on the contents of the `plugin_config_data` or the container image
+      based on the contents of `plugin_config_data` or the container image
       defined by the `plugin_config_uri` field.
-    pluginConfigUri: URI of the Wasm plugin configuration stored in the
-      Artifact Registry. The configuration is provided to the plugin at
-      runtime through the `ON_CONFIGURE` callback. The container image must
-      contain only a single file with the name `plugin.config`. When a new
+    pluginConfigUri: URI of the plugin configuration stored in the Artifact
+      Registry. The configuration is provided to the plugin at runtime through
+      the `ON_CONFIGURE` callback. The container image must contain only a
+      single file with the name `plugin.config`. When a new
       `WasmPluginVersion` resource is created, the digest of the container
       image is saved in the `plugin_config_digest` field.
     updateTime: Output only. The timestamp when the resource was updated.
@@ -10138,6 +10160,7 @@ class WasmPluginVersion(_messages.Message):
 
 class WasmPluginVersionDetails(_messages.Message):
   r"""Details of a `WasmPluginVersion` resource to be inlined in the
+
   `WasmPlugin` resource.
 
   Messages:
@@ -10159,18 +10182,18 @@ class WasmPluginVersionDetails(_messages.Message):
       in the `image_digest` field.
     labels: Optional. Set of labels associated with the `WasmPluginVersion`
       resource.
-    pluginConfigData: Configuration for the Wasm plugin. The configuration is
-      provided to the Wasm plugin at runtime through the `ON_CONFIGURE`
-      callback. When a new `WasmPluginVersion` version is created, the digest
-      of the contents is saved in the `plugin_config_digest` field.
+    pluginConfigData: Configuration for the plugin. The configuration is
+      provided to the plugin at runtime through the `ON_CONFIGURE` callback.
+      When a new `WasmPluginVersion` version is created, the digest of the
+      contents is saved in the `plugin_config_digest` field.
     pluginConfigDigest: Output only. This field holds the digest (usually
       checksum) value for the plugin configuration. The value is calculated
-      based on the contents of the `plugin_config_data` or the container image
-      defined by the `plugin_config_uri` field.
-    pluginConfigUri: URI of the WasmPlugin configuration stored in the
-      Artifact Registry. The configuration is provided to the Wasm plugin at
-      runtime through the `ON_CONFIGURE` callback. The container image must
-      contain only a single file with the name `plugin.config`. When a new
+      based on the contents of the `plugin_config_data` field or the container
+      image defined by the `plugin_config_uri` field.
+    pluginConfigUri: URI of the plugin configuration stored in the Artifact
+      Registry. The configuration is provided to the plugin at runtime through
+      the `ON_CONFIGURE` callback. The container image must contain only a
+      single file with the name `plugin.config`. When a new
       `WasmPluginVersion` resource is created, the digest of the container
       image is saved in the `plugin_config_digest` field.
     updateTime: Output only. The timestamp when the resource was updated.

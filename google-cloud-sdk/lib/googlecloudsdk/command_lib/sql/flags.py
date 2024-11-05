@@ -2627,6 +2627,31 @@ def AddClearPscAutoConnections(parser, hidden=False):
   )
 
 
+def AddCustomSubjectAlternativeNames(parser, hidden=False):
+  parser.add_argument(
+      '--custom-subject-alternative-names',
+      type=arg_parsers.ArgList(min_length=1, max_length=3),
+      metavar='DNS',
+      required=False,
+      help=(
+          'A comma-separated list of customer specified DNS names.'
+      ),
+      hidden=hidden,
+      action=arg_parsers.FlattenAction(),
+  )
+
+
+def AddClearCustomSubjectAlternativeNames(parser, hidden=False):
+  parser.add_argument(
+      '--clear-custom-subject-alternative-names',
+      required=False,
+      help=(
+          'This will clear the customer specified DNS names.'
+      ),
+      hidden=hidden,
+  )
+
+
 def AddRecreateReplicasOnPrimaryCrash(parser, hidden=False):
   """Adds --recreate-replicas-on-primary-crash flag."""
   parser.add_argument(

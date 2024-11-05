@@ -135,6 +135,19 @@ _INSTANCE_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
              'They come with stricter usage limits and limited support.')),
     })
 
+_DEFAULT_STORAGE_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
+    '--default-storage-type',
+    apis.GetMessagesModule(
+        'spanner', 'v1'
+    ).Instance.DefaultStorageTypeValueValuesEnum,
+    help_str='Specifies the default storage type for this instance.',
+    required=False,
+    hidden=True,
+    custom_mappings={
+        'SSD': ('ssd', 'Use ssd as default storage type for this instance'),
+        'HDD': ('hdd', 'Use hdd as default storage type for this instance'),
+    },
+)
 
 _EXPIRE_BEHAVIOR_MAPPER = arg_utils.ChoiceEnumMapper(
     '--expire-behavior',
@@ -592,6 +605,16 @@ def AddInstanceTypeArg(parser):
 
 def GetInstanceType(args):
   return _INSTANCE_TYPE_MAPPER.GetEnumForChoice(args.instance_type)
+
+
+def AddDefaultStorageTypeArg(parser):
+  return _DEFAULT_STORAGE_TYPE_MAPPER.choice_arg.AddToParser(parser)
+
+
+def GetDefaultStorageTypeArg(args):
+  return _DEFAULT_STORAGE_TYPE_MAPPER.GetEnumForChoice(
+      args.default_storage_type
+  )
 
 
 def AddExpireBehaviorArg(parser):

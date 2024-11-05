@@ -42,7 +42,7 @@ properties:
       A list of PathMatcher values referenced by name by HostRule values.
       `PathMatcher` is used to match the path portion of the URL when
       a`HostRule` value matches the URL's host portion. You can specify up
-      to 10 path matchers.
+      to 50 path matchers.
     type: array
     items:
       $ref: PathMatcher.yaml

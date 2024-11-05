@@ -15,12 +15,14 @@
 """Library for generating argument specifications for current implementations."""
 
 from typing import Any, Dict
+import uuid
 
 from googlecloudsdk.calliope import cli_tree
 
 MUTEX = 'mutex'
 HIDDEN = 'hidden'
 NAME = 'name'
+NODE_ID = 'node_id'
 ARGUMENTS = 'arguments'
 REQUIRED = 'required'
 GROUP = 'group'
@@ -73,6 +75,7 @@ def _AddArgsToGroup(arguments):
         child_args_group_spec[REQUIRED] = True
       if arg.is_hidden:
         child_args_group_spec[HIDDEN] = True
+      child_args_group_spec[NODE_ID] = str(uuid.uuid4())
       child_args_group_spec[ARGUMENTS] = _AddArgsToGroup(arg)
       # Only retain non-empty arg groups.
       if child_args_group_spec[ARGUMENTS]:
@@ -111,6 +114,7 @@ def _GetFlagSpec(flag):
     flag_spec[GLOBAL] = True
   if flag.choices:
     flag_spec[CHOICES] = flag.choices
+  flag_spec[NODE_ID] = str(uuid.uuid4())
   return flag_spec
 
 
@@ -130,4 +134,5 @@ def _GetPositionalSpec(positional):
   positional_required = positional.nargs not in OPTIONAL_NARGS
   if positional_required:
     positional_spec[REQUIRED] = positional_required
+  positional_spec[NODE_ID] = str(uuid.uuid4())
   return positional_spec

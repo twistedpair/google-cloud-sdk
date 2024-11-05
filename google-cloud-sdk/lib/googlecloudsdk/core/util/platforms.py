@@ -482,7 +482,7 @@ class PythonVersion(object):
       if encoding.GetEncodedValue(
           os.environ, 'ENABLE_MAX_GCLOUD_PYTHON_VERSION_OVERRIDE'
       )
-      else (3, 12)
+      else (3, 13)
   )
   UPCOMING_SUNSET_PY3_VERSION = None
   UPCOMING_PY3_MIN_SUPPORTED_VERSION = None

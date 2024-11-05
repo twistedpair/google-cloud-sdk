@@ -37,11 +37,11 @@ from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base
 from googlecloudsdk.api_lib.cloudbuild import logs as cloudbuild_logs
+from googlecloudsdk.appengine.admin.tools.conversion import convert_yaml
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.third_party.appengine.admin.tools.conversion import convert_yaml
 import six
 from six.moves import filter  # pylint: disable=redefined-builtin
 from six.moves import map  # pylint: disable=redefined-builtin

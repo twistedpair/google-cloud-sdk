@@ -162,3 +162,35 @@ class UnknownSourceError(exceptions.Error):
 class NotSupportedPy3Exception(exceptions.Error):
   """Commands that do not support python3."""
 
+
+class UnsupportedRuntimeError(exceptions.Error):
+  """The runtime in app.yaml is not a valid Gen 1 runtime."""
+
+  def __init__(self, file_path, supported_runtimes):
+    super().__init__(
+        'Migration is not supported for runtime present in [{file_path}].'
+        ' Currently supported runtimes are: {runtimes}'.format(
+            file_path=file_path, runtimes=supported_runtimes
+        )
+    )
+
+
+class InvalidOutputDirectoryError(exceptions.Error):
+  """The output directory given for migration is not empty."""
+
+  def __init__(self, dir_path):
+    super().__init__(
+        'Unable to write to output directory [{dir_path}]. The directory is not'
+        ' empty. Please provide an empty directory to start a new migration.'
+        .format(dir_path=dir_path)
+    )
+
+
+class MissingGen1ApplicationError(exceptions.Error):
+  """The project does not contain an AppEngine version with a Gen1 runtime."""
+
+  def __init__(self, project):
+    super().__init__(
+        'The provided project {0} does not contain an AppEngine version with a'
+        ' Gen1 runtime.'.format(project)
+    )

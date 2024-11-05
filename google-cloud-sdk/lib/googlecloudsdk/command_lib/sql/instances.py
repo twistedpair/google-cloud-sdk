@@ -498,6 +498,18 @@ class _BaseInstances(object):
             sql_messages, args.server_ca_mode
         )
 
+      if args.IsKnownAndSpecified('custom_subject_alternative_names'):
+        if not settings.ipConfiguration:
+          settings.ipConfiguration = sql_messages.IpConfiguration()
+        settings.ipConfiguration.customSubjectAlternativeNames = (
+            args.custom_subject_alternative_names
+        )
+
+      if args.IsKnownAndSpecified('clear_custom_subject_alternative_names'):
+        if not settings.ipConfiguration:
+          settings.ipConfiguration = sql_messages.IpConfiguration()
+        settings.ipConfiguration.customSubjectAlternativeNames = []
+
       if args.retain_backups_on_delete is not None:
         settings.retainBackupsOnDelete = args.retain_backups_on_delete
 

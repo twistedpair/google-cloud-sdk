@@ -16,6 +16,7 @@
 
 
 from googlecloudsdk.api_lib.dataplex import util as dataplex_api
+from googlecloudsdk.command_lib.iam import iam_util
 
 
 def GenerateGlossaryForCreateRequest(args):
@@ -31,8 +32,123 @@ def GenerateGlossaryForCreateRequest(args):
   return request
 
 
+def GenerateGlossaryForUpdateRequest(args):
+  """Update Glossary Request."""
+  module = dataplex_api.GetMessageModule()
+  return module.GoogleCloudDataplexV1Glossary(
+      description=args.description,
+      displayName=args.display_name,
+      etag=args.etag,
+      labels=dataplex_api.CreateLabels(
+          module.GoogleCloudDataplexV1Glossary, args
+      ),
+  )
+
+
+def GenerateGlossaryCategoryForCreateRequest(args):
+  """Create Glossary Category Requests."""
+  module = dataplex_api.GetMessageModule()
+  request = module.GoogleCloudDataplexV1GlossaryCategory(
+      description=args.description,
+      displayName=args.display_name,
+      # parent represents the immediate parent of the category in glossary
+      # hierarchy.
+      parent=args.parent,
+      labels=dataplex_api.CreateLabels(
+          module.GoogleCloudDataplexV1GlossaryCategory, args
+      ),
+  )
+  return request
+
+
+def GenerateUpdateMask(args):
+  """Creates Update Mask for Glossary."""
+  update_mask = []
+  if args.IsSpecified('description'):
+    update_mask.append('description')
+  if args.IsSpecified('display_name'):
+    update_mask.append('displayName')
+  if args.IsSpecified('labels'):
+    update_mask.append('labels')
+  return update_mask
+
+
+def GenerateGlossaryCategoryForUpdateRequest(args):
+  """Update Glossary Category Requests."""
+  module = dataplex_api.GetMessageModule()
+  return module.GoogleCloudDataplexV1GlossaryCategory(
+      description=args.description,
+      displayName=args.display_name,
+      parent=args.parent,
+      labels=dataplex_api.CreateLabels(
+          module.GoogleCloudDataplexV1GlossaryCategory, args
+      ),
+  )
+
+
+def GenerateCategoryUpdateMask(args):
+  """Create Update Mask for Glossary Category."""
+  update_mask = []
+  if args.IsSpecified('description'):
+    update_mask.append('description')
+  if args.IsSpecified('display_name'):
+    update_mask.append('displayName')
+  if args.IsSpecified('labels'):
+    update_mask.append('labels')
+  if args.IsSpecified('parent'):
+    update_mask.append('parent')
+  return update_mask
+
+
 def WaitForOperation(operation):
   """Waits for the given google.longrunning.Operation to complete."""
   return dataplex_api.WaitForOperation(
       operation, dataplex_api.GetClientInstance().projects_locations_glossaries
   )
+
+
+def GlossarySetIamPolicy(glossary_ref, policy):
+  """Set Iam Policy request."""
+  set_iam_policy_req = dataplex_api.GetMessageModule().DataplexProjectsLocationsGlossariesSetIamPolicyRequest(
+      resource=glossary_ref.RelativeName(),
+      googleIamV1SetIamPolicyRequest=dataplex_api.GetMessageModule().GoogleIamV1SetIamPolicyRequest(
+          policy=policy
+      ),
+  )
+  return dataplex_api.GetClientInstance().projects_locations_glossaries.SetIamPolicy(
+      set_iam_policy_req
+  )
+
+
+def GlossaryGetIamPolicy(glossary_ref):
+  """Get Iam Policy request."""
+  get_iam_policy_req = dataplex_api.GetMessageModule().DataplexProjectsLocationsGlossariesGetIamPolicyRequest(
+      resource=glossary_ref.RelativeName()
+  )
+  return dataplex_api.GetClientInstance().projects_locations_glossaries.GetIamPolicy(
+      get_iam_policy_req
+  )
+
+
+def GlossaryAddIamPolicyBinding(glossary_ref, member, role):
+  """Add IAM policy binding request."""
+  policy = GlossaryGetIamPolicy(glossary_ref)
+  iam_util.AddBindingToIamPolicy(
+      dataplex_api.GetMessageModule().GoogleIamV1Binding, policy, member, role
+  )
+  return GlossarySetIamPolicy(glossary_ref, policy)
+
+
+def GlossaryRemoveIamPolicyBinding(glossary_ref, member, role):
+  """Remove IAM policy binding request."""
+  policy = GlossaryGetIamPolicy(glossary_ref)
+  iam_util.RemoveBindingFromIamPolicy(policy, member, role)
+  return GlossarySetIamPolicy(glossary_ref, policy)
+
+
+def GlossarySetIamPolicyFromFile(glossary_ref, policy_file):
+  """Set IAM policy binding request from file."""
+  policy = iam_util.ParsePolicyFile(
+      policy_file, dataplex_api.GetMessageModule().GoogleIamV1Policy
+  )
+  return GlossarySetIamPolicy(glossary_ref, policy)

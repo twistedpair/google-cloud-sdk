@@ -354,23 +354,29 @@ def AddDescription(parser, required=False):
   )
 
 
-def AddSrcSecureTags(parser, required=False):
+def AddSrcSecureTags(parser, required=False, support_network_scopes=False):
   """Adds a  source secure tag to this rule."""
+  help_text = (
+      'A list of instance secure tags indicating the set of instances on the'
+      ' network to which the rule applies if all other fields match. Either'
+      ' --src-ip-ranges or --src-secure-tags must be specified for ingress'
+      ' traffic. If both --src-ip-ranges and --src-secure-tags are specified,'
+      ' an inbound connection is allowed if either the range of the source'
+      ' matches --src-ip-ranges or the tag of the source matches'
+      ' --src-secure-tags. Secure Tags can be assigned to instances during'
+      ' instance creation.'
+  )
+  if support_network_scopes:
+    help_text += (
+        ' Secure tags cannot be specified if source network scope is INTERNET.'
+    )
+
   parser.add_argument(
       '--src-secure-tags',
       type=arg_parsers.ArgList(),
       metavar='SOURCE_SECURE_TAGS',
       required=required,
-      help=(
-          'A list of instance secure tags indicating the set of instances on '
-          'the network to which the rule applies if all other fields match. '
-          'Either --src-ip-ranges or --src-secure-tags must be specified for '
-          'ingress traffic. If both --src-ip-ranges and --src-secure-tags are '
-          'specified, an inbound connection is allowed if either the range of '
-          'the source matches --src-ip-ranges or the tag of the source matches '
-          '--src-secure-tags. Secure Tags can be assigned to instances during '
-          'instance creation.'
-      ),
+      help=help_text,
   )
 
 
@@ -465,63 +471,94 @@ def AddDestFqdns(parser):
   )
 
 
-def AddSrcRegionCodes(parser):
+def AddSrcRegionCodes(parser, support_network_scopes=False):
   """Adds a source region code to this rule."""
+  help_text = (
+      'Source Region Code to match for this rule. Can only be specified if'
+      ' DIRECTION is `ingress`.'
+  )
+  if support_network_scopes:
+    help_text += (
+        ' Cannot be specified when the source network'
+        ' scope is NON_INTERNET, VPC_NETWORK or INTRA_VPC.'
+    )
   parser.add_argument(
       '--src-region-codes',
       type=arg_parsers.ArgList(),
       metavar='SOURCE_REGION_CODES',
       required=False,
-      help=(
-          'Source Region Code to match for this rule. '
-          'Can only be specified if DIRECTION is `ingress`.'
-      ),
+      help=help_text,
   )
 
 
-def AddDestRegionCodes(parser):
+def AddDestRegionCodes(parser, support_network_scopes=False):
   """Adds a destination region code to this rule."""
+  help_text = (
+      'Destination Region Code to match for this rule. Can only be specified if'
+      ' DIRECTION is `egress`.'
+  )
+  if support_network_scopes:
+    help_text += (
+        ' Cannot be specified when the source network scope is NON_INTERNET.'
+    )
   parser.add_argument(
       '--dest-region-codes',
       type=arg_parsers.ArgList(),
       metavar='DEST_REGION_CODES',
       required=False,
-      help=(
-          'Destination Region Code to match for this rule. '
-          'Can only be specified if DIRECTION is `egress`.'
-      ),
+      help=help_text,
   )
 
 
-def AddSrcThreatIntelligence(parser):
+def AddSrcThreatIntelligence(parser, support_network_scopes=False):
   """Adds source threat intelligence list names to this rule."""
+  help_text = (
+      'Source Threat Intelligence lists to match for this rule. '
+      'Can only be specified if DIRECTION is `ingress`. '
+      'The available lists can be found here: '
+      'https://cloud.google.com/vpc/docs/firewall-policies-rule-details#threat-intelligence-fw-policy.'
+  )
+  if support_network_scopes:
+    help_text = (
+        'Source Threat Intelligence lists to match for this rule. '
+        'Can only be specified if DIRECTION is `ingress`. Cannot be specified'
+        ' when the source network scope is NON_INTERNET, VPC_NETWORK or'
+        ' INTRA_VPC. '
+        'The available lists can be found here: '
+        'https://cloud.google.com/vpc/docs/firewall-policies-rule-details#threat-intelligence-fw-policy.'
+    )
+
   parser.add_argument(
       '--src-threat-intelligence',
       type=arg_parsers.ArgList(),
       metavar='SOURCE_THREAT_INTELLIGENCE_LISTS',
       required=False,
-      help=(
-          'Source Threat Intelligence lists to match for this rule. '
-          'Can only be specified if DIRECTION is `ingress`. '
-          'The available lists can be found here: '
-          'https://cloud.google.com/vpc/docs/firewall-policies-rule-details#threat-intelligence-fw-policy.'
-      ),
+      help=help_text,
   )
 
 
-def AddDestThreatIntelligence(parser):
+def AddDestThreatIntelligence(parser, support_network_scopes=False):
   """Adds destination threat intelligence list names to this rule."""
+  help_text = (
+      'Destination Threat Intelligence lists to match for this rule. '
+      'Can only be specified if DIRECTION is `egress`. '
+      'The available lists can be found here: '
+      'https://cloud.google.com/vpc/docs/firewall-policies-rule-details#threat-intelligence-fw-policy.'
+  )
+  if support_network_scopes:
+    help_text = (
+        'Destination Threat Intelligence lists to match for this rule. '
+        'Can only be specified if DIRECTION is `egress`. Cannot be specified'
+        ' when source network scope is NON_INTERNET.'
+        ' The available lists can be found here: '
+        'https://cloud.google.com/vpc/docs/firewall-policies-rule-details#threat-intelligence-fw-policy.'
+    )
   parser.add_argument(
       '--dest-threat-intelligence',
       type=arg_parsers.ArgList(),
       metavar='DEST_THREAT_INTELLIGENCE_LISTS',
       required=False,
-      help=(
-          'Destination Threat Intelligence lists to match for this rule. '
-          'Can only be specified if DIRECTION is `egress`. '
-          'The available lists can be found here: '
-          'https://cloud.google.com/vpc/docs/firewall-policies-rule-details#threat-intelligence-fw-policy.'
-      ),
+      help=help_text,
   )
 
 
@@ -544,10 +581,7 @@ def AddMirroringSecurityProfileGroup(parser):
       '--security-profile-group',
       metavar='SECURITY_PROFILE_GROUP',
       required=False,
-      help=(
-          'A security profile group to be used with'
-          ' mirror action.'
-      ),
+      help='A security profile group to be used with mirror action.',
   )
 
 

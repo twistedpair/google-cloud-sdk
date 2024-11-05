@@ -24,11 +24,12 @@ import os
 import posixpath
 import sys
 import time
+
+from googlecloudsdk.appengine.api import client_deployinfo
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
-from googlecloudsdk.third_party.appengine.api import client_deployinfo
 import six
 from six.moves import urllib
 

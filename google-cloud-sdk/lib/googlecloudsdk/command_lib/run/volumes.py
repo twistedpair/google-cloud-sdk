@@ -20,7 +20,6 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 
-
 _supported_volume_types = {}
 
 
@@ -324,12 +323,14 @@ class _GcsVolume(_VolumeType):
             'A boolean. If true, this volume will be read-only from all mounts.'
         )
     }
-    if release_track == base.ReleaseTrack.ALPHA:
+    if release_track in [base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA]:
       fields['mount-options'] = (
           'A list of flags to pass to GCSFuse. Flags '
           + 'should be specified without leading dashes and separated by '
           + 'semicolons.'
       )
+
+    if release_track == base.ReleaseTrack.ALPHA:
       fields['bucket'] = (
           'the name of the bucket to use as the source of this volume.'
       )

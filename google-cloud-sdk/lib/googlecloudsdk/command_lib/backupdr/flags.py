@@ -195,7 +195,7 @@ def AddTriggerBackupFlags(parser):
   )
 
 
-def AddNetwork(parser, required=True):
+def AddNetwork(parser, required=False):
   """Adds a positional network argument to parser.
 
   Args:
@@ -474,7 +474,7 @@ def AddBackupVaultAccessRestrictionEnumFlag(parser):
       '--access-restriction',
       choices=choices,
       default='within-org',
-      hidden=True,
+      hidden=False,
       help=(
           'Authorize certain sources and destinations for data being sent into,'
           ' or restored from, the backup vault being created. This choice is'

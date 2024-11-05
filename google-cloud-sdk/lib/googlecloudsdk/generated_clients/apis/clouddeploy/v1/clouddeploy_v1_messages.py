@@ -512,9 +512,9 @@ class AutomationRun(_messages.Message):
     state: Output only. Current state of the `AutomationRun`.
     stateDescription: Output only. Explains the current state of the
       `AutomationRun`. Present only when an explanation is needed.
-    targetId: Output only. The ID of the target that represents the promotion
-      stage that initiates the `AutomationRun`. The value of this field is the
-      last segment of a target name.
+    targetId: Output only. The ID of the source target that initiates the
+      `AutomationRun`. The value of this field is the last segment of a target
+      name.
     timedPromoteReleaseOperation: Output only. Promotes a release to a
       specified 'Target' as defined in a Timed Promote Release rule.
     updateTime: Output only. Time at which the automationRun was updated.
@@ -3278,7 +3278,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class ExecutionConfig(_messages.Message):
   r"""Configuration of the environment to use when calling Skaffold.
 
@@ -3413,6 +3412,9 @@ class GkeCluster(_messages.Message):
   Fields:
     cluster: Optional. Information specifying a GKE Cluster. Format is
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`.
+    dnsEndpoint: Optional. If set, the cluster will be accessed using the DNS
+      endpoint. Note that both `dns_endpoint` and `internal_ip` cannot be set
+      to true.
     internalIp: Optional. If true, `cluster` is accessed using the private IP
       address of the control plane endpoint. Otherwise, the default IP address
       of the control plane endpoint is used. The default IP address is the
@@ -3426,8 +3428,9 @@ class GkeCluster(_messages.Message):
   """
 
   cluster = _messages.StringField(1)
-  internalIp = _messages.BooleanField(2)
-  proxyUrl = _messages.StringField(3)
+  dnsEndpoint = _messages.BooleanField(2)
+  internalIp = _messages.BooleanField(3)
+  proxyUrl = _messages.StringField(4)
 
 
 class IgnoreJobRequest(_messages.Message):

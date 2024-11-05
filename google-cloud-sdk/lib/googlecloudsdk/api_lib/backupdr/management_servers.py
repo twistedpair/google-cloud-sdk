@@ -28,14 +28,20 @@ class ManagementServersClient(util.BackupDrClientBase):
     super(ManagementServersClient, self).__init__()
     self.service = self.client.projects_locations_managementServers
 
-  def Create(self, resource, network):
-    networks = [self.messages.NetworkConfig(network=network)]
+  def Create(self, resource, network=None):
     parent = resource.Parent().RelativeName()
     management_server_id = resource.Name()
-    management_server = self.messages.ManagementServer(
-        networks=networks,
-        type=self.messages.ManagementServer.TypeValueValuesEnum.BACKUP_RESTORE,
-    )
+    if network is not None:
+      networks = [self.messages.NetworkConfig(network=network)]
+      management_server = self.messages.ManagementServer(
+          networks=networks,
+          type=self.messages.ManagementServer.TypeValueValuesEnum.BACKUP_RESTORE,
+      )
+    else:
+      management_server = self.messages.ManagementServer(
+          type=self.messages.ManagementServer.TypeValueValuesEnum.BACKUP_RESTORE,
+      )
+
     request = (
         self.messages.BackupdrProjectsLocationsManagementServersCreateRequest(
             parent=parent,

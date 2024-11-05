@@ -25,7 +25,6 @@ import re
 
 from apitools.base.py import exceptions as apitools_exceptions
 from gae_ext_runtime import ext_runtime
-
 from googlecloudsdk.api_lib.app import appengine_api_client
 from googlecloudsdk.api_lib.app import build as app_build
 from googlecloudsdk.api_lib.app import cloud_build
@@ -41,6 +40,8 @@ from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.services import exceptions as s_exceptions
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
+from googlecloudsdk.appengine.api import appinfo
+from googlecloudsdk.appengine.tools import context_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -50,8 +51,6 @@ from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
-from googlecloudsdk.third_party.appengine.api import appinfo
-from googlecloudsdk.third_party.appengine.tools import context_util
 import six
 from six.moves import filter  # pylint: disable=redefined-builtin
 from six.moves import zip  # pylint: disable=redefined-builtin

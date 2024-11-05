@@ -16,20 +16,29 @@
 
 from googlecloudsdk.api_lib.quotas import message_util
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 
 
 _CONSUMER_LOCATION_RESOURCE = '%s/locations/global'
 
+VERSION_MAP = {
+    base.ReleaseTrack.ALPHA: 'v1alpha',
+    base.ReleaseTrack.BETA: 'v1beta',
+    base.ReleaseTrack.GA: 'v1',
+}
 
-def _GetClientInstance(no_http=False):
-  return apis.GetClientInstance('cloudquotas', 'v1', no_http=no_http)
+
+def _GetClientInstance(release_track, no_http=False):
+  api_version = VERSION_MAP.get(release_track)
+  return apis.GetClientInstance('cloudquotas', api_version, no_http=no_http)
 
 
-def GetQuotaAdjusterSettings(args):
+def GetQuotaAdjusterSettings(args, release_track=base.ReleaseTrack.ALPHA):
   """Retrieve the QuotaAdjusterSettings for a project, folder or organization.
 
   Args:
     args: argparse.Namespace, The arguments that this command was invoked with.
+    release_track: base.ReleaseTrack, The release track to use.
 
   Returns:
     The requested QuotaAdjusterSettings.
@@ -37,7 +46,7 @@ def GetQuotaAdjusterSettings(args):
   consumer = message_util.CreateConsumer(
       args.project, args.folder, args.organization
   )
-  client = _GetClientInstance()
+  client = _GetClientInstance(release_track)
   messages = client.MESSAGES_MODULE
   name = _CONSUMER_LOCATION_RESOURCE % (consumer) + '/quotaAdjusterSettings'
 
@@ -64,11 +73,12 @@ def GetQuotaAdjusterSettings(args):
     return client.organizations_locations.GetQuotaAdjusterSettings(request)
 
 
-def UpdateQuotaAdjusterSettings(args):
+def UpdateQuotaAdjusterSettings(args, release_track=base.ReleaseTrack.ALPHA):
   """Updates the parameters of the QuotaAdjusterSettings.
 
   Args:
     args: argparse.Namespace, The arguments that this command was invoked with.
+    release_track: base.ReleaseTrack, The release track to use.
 
   Returns:
     The updated QuotaAdjusterSettings.
@@ -76,7 +86,7 @@ def UpdateQuotaAdjusterSettings(args):
   consumer = message_util.CreateConsumer(
       args.project, args.folder, args.organization
   )
-  client = _GetClientInstance()
+  client = _GetClientInstance(release_track)
   messages = client.MESSAGES_MODULE
   name = _CONSUMER_LOCATION_RESOURCE % (consumer) + '/quotaAdjusterSettings'
 

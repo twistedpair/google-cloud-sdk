@@ -142,31 +142,6 @@ class AddressGroup(_messages.Message):
   updateTime = _messages.StringField(10)
 
 
-class AttachAppNetworkRequest(_messages.Message):
-  r"""Request used by the AttachAppNetwork method.
-
-  Fields:
-    peerNetwork: Required. URL of the peer network to attach. It can be either
-      full URL or partial URL. The peer network may belong to a different
-      project. If the partial URL does not contain project, it is assumed that
-      the peer network is in the same project as the current network.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  peerNetwork = _messages.StringField(1)
-  requestId = _messages.StringField(2)
-
-
 class AuthorizationPolicy(_messages.Message):
   r"""AuthorizationPolicy is a resource that specifies how a server should
   authorize incoming connections. This resource in itself does not change the
@@ -796,31 +771,6 @@ class Destination(_messages.Message):
   httpHeaderMatch = _messages.MessageField('HttpHeaderMatch', 2)
   methods = _messages.StringField(3, repeated=True)
   ports = _messages.IntegerField(4, repeated=True, variant=_messages.Variant.UINT32)
-
-
-class DetachAppNetworkRequest(_messages.Message):
-  r"""Request used by the DetachAppNetwork method.
-
-  Fields:
-    peerNetwork: Required. URL of the peer network to detach. It can be either
-      full URL or partial URL. The peer network may belong to a different
-      project. If the partial URL does not contain project, it is assumed that
-      the peer network is in the same project as the current network.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  peerNetwork = _messages.StringField(1)
-  requestId = _messages.StringField(2)
 
 
 class DomainFilter(_messages.Message):
@@ -2233,36 +2183,6 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class ListMarketCaptureCollectorsResponse(_messages.Message):
-  r"""Message for response to listing MarketCaptureCollectors
-
-  Fields:
-    marketCaptureCollectors: The list of MarketCaptureCollector
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    unreachable: Locations that could not be reached.
-  """
-
-  marketCaptureCollectors = _messages.MessageField('MarketCaptureCollector', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListMarketCaptureEnginesResponse(_messages.Message):
-  r"""Message for response to listing MarketCaptureEngines
-
-  Fields:
-    marketCaptureEngines: The list of MarketCaptureEngine
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    unreachable: Locations that could not be reached.
-  """
-
-  marketCaptureEngines = _messages.MessageField('MarketCaptureEngine', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
 class ListMirroringDeploymentGroupsResponse(_messages.Message):
   r"""Message for response to listing MirroringDeploymentGroups
 
@@ -2421,36 +2341,6 @@ class ListSSEGatewayReferencesResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
-class ListSSEGatewaysResponse(_messages.Message):
-  r"""Message for response to listing SSEGateways
-
-  Fields:
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    sseGateways: The list of SSEGateway
-    unreachable: Locations that could not be reached.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  sseGateways = _messages.MessageField('SSEGateway', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListSSERealmsResponse(_messages.Message):
-  r"""Message for response to listing SSERealms
-
-  Fields:
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    sseRealms: The list of SSERealm
-    unreachable: Locations that could not be reached.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  sseRealms = _messages.MessageField('SSERealm', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
 class ListSecurityProfileGroupsResponse(_messages.Message):
   r"""Response returned by the ListSecurityProfileGroups method.
 
@@ -2510,6 +2400,36 @@ class ListTlsInspectionPoliciesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   tlsInspectionPolicies = _messages.MessageField('TlsInspectionPolicy', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListUllMirroringCollectorsResponse(_messages.Message):
+  r"""Message for response to listing UllMirroringCollectors
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    ullMirroringCollectors: The list of UllMirroringCollector
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  ullMirroringCollectors = _messages.MessageField('UllMirroringCollector', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListUllMirroringEnginesResponse(_messages.Message):
+  r"""Message for response to listing UllMirroringEngines
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    ullMirroringEngines: The list of UllMirroringEngine
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  ullMirroringEngines = _messages.MessageField('UllMirroringEngine', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -2664,125 +2584,6 @@ class MTLSPolicy(_messages.Message):
   clientValidationCa = _messages.MessageField('ValidationCA', 1, repeated=True)
   clientValidationMode = _messages.EnumField('ClientValidationModeValueValuesEnum', 2)
   clientValidationTrustConfig = _messages.StringField(3)
-
-
-class MarketCaptureCollector(_messages.Message):
-  r"""Message describing MarketCaptureCollector object
-
-  Enums:
-    StateValueValuesEnum: Output only. Current state of the collector.
-
-  Messages:
-    LabelsValue: Optional. Labels as key value pairs
-
-  Fields:
-    createTime: Output only. [Output only] Create time stamp
-    forwardingRule: Required. Immutable. The regional load balancer which the
-      mirrored traffic should be forwarded to. Format is:
-      projects/{project}/regions/{region}/forwardingRules/{forwardingRule}
-    labels: Optional. Labels as key value pairs
-    name: Immutable. Identifier. The name of the MarketCaptureCollector.
-    reconciling: Output only. Whether reconciling is in progress, recommended
-      per https://google.aip.dev/128.
-    state: Output only. Current state of the collector.
-    subnet: Required. Immutable. Subnet to be used by the PSC Service
-      Attachment.
-    updateTime: Output only. [Output only] Update time stamp
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. Current state of the collector.
-
-    Values:
-      STATE_UNSPECIFIED: Not set.
-      ACTIVE: Ready.
-      CREATING: Being created.
-      DELETING: Being deleted.
-    """
-    STATE_UNSPECIFIED = 0
-    ACTIVE = 1
-    CREATING = 2
-    DELETING = 3
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  forwardingRule = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  reconciling = _messages.BooleanField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  subnet = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
-
-
-class MarketCaptureEngine(_messages.Message):
-  r"""MarketCaptureEngine is a resource that represents the Market Capture
-  engine in a given location.
-
-  Messages:
-    LabelsValue: Optional. Labels as key value pairs
-
-  Fields:
-    createTime: Output only. [Output only] Create time stamp
-    labels: Optional. Labels as key value pairs
-    name: Identifier. The name of the resource.
-    reconciling: Output only. Whether reconciling is in progress, recommended
-      per https://google.aip.dev/128.
-    updateTime: Output only. [Output only] Update time stamp
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  reconciling = _messages.BooleanField(4)
-  updateTime = _messages.StringField(5)
 
 
 class MirroringDeployment(_messages.Message):
@@ -5312,223 +5113,6 @@ class NetworksecurityProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class NetworksecurityProjectsLocationsMarketCaptureCollectorsCreateRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsMarketCaptureCollectorsCreateRequest
-  object.
-
-  Fields:
-    marketCaptureCollector: A MarketCaptureCollector resource to be passed as
-      the request body.
-    marketCaptureCollectorId: Required. Id of the requesting object If auto-
-      generating Id server-side, remove this field and
-      market_capture_collector_id from the method_signature of Create RPC
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  marketCaptureCollector = _messages.MessageField('MarketCaptureCollector', 1)
-  marketCaptureCollectorId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class NetworksecurityProjectsLocationsMarketCaptureCollectorsDeleteRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsMarketCaptureCollectorsDeleteRequest
-  object.
-
-  Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class NetworksecurityProjectsLocationsMarketCaptureCollectorsGetRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsMarketCaptureCollectorsGetRequest
-  object.
-
-  Fields:
-    name: Required. Name of the resource
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworksecurityProjectsLocationsMarketCaptureCollectorsListRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsMarketCaptureCollectorsListRequest
-  object.
-
-  Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListMarketCaptureCollectorsRequest
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class NetworksecurityProjectsLocationsMarketCaptureCollectorsPatchRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsMarketCaptureCollectorsPatchRequest
-  object.
-
-  Fields:
-    marketCaptureCollector: A MarketCaptureCollector resource to be passed as
-      the request body.
-    name: Immutable. Identifier. The name of the MarketCaptureCollector.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the MarketCaptureCollector resource by the update. The
-      fields specified in the update_mask are relative to the resource, not
-      the full request. A field will be overwritten if it is in the mask. If
-      the user does not provide a mask then all fields will be overwritten.
-  """
-
-  marketCaptureCollector = _messages.MessageField('MarketCaptureCollector', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
-
-
-class NetworksecurityProjectsLocationsMarketCaptureEnginesCreateRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsMarketCaptureEnginesCreateRequest
-  object.
-
-  Fields:
-    marketCaptureEngine: A MarketCaptureEngine resource to be passed as the
-      request body.
-    marketCaptureEngineId: Required. Id of the requesting object If auto-
-      generating Id server-side, remove this field and
-      market_capture_engine_id from the method_signature of Create RPC
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  marketCaptureEngine = _messages.MessageField('MarketCaptureEngine', 1)
-  marketCaptureEngineId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class NetworksecurityProjectsLocationsMarketCaptureEnginesDeleteRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsMarketCaptureEnginesDeleteRequest
-  object.
-
-  Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class NetworksecurityProjectsLocationsMarketCaptureEnginesGetRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsMarketCaptureEnginesGetRequest object.
-
-  Fields:
-    name: Required. The resource name of the MarketCaptureEngine.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworksecurityProjectsLocationsMarketCaptureEnginesListRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsMarketCaptureEnginesListRequest
-  object.
-
-  Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListMarketCaptureEnginesRequest
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class NetworksecurityProjectsLocationsMarketCaptureEnginesPatchRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsMarketCaptureEnginesPatchRequest
-  object.
-
-  Fields:
-    marketCaptureEngine: A MarketCaptureEngine resource to be passed as the
-      request body.
-    name: Identifier. The name of the resource.
-    updateMask: Optional. The list of fields to update.
-  """
-
-  marketCaptureEngine = _messages.MessageField('MarketCaptureEngine', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-
-
 class NetworksecurityProjectsLocationsMirroringDeploymentGroupsCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsMirroringDeploymentGroupsCreateRequest
   object.
@@ -6861,195 +6445,6 @@ class NetworksecurityProjectsLocationsSseGatewayReferencesListRequest(_messages.
   parent = _messages.StringField(5, required=True)
 
 
-class NetworksecurityProjectsLocationsSseGatewaysAttachAppNetworkRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSseGatewaysAttachAppNetworkRequest
-  object.
-
-  Fields:
-    attachAppNetworkRequest: A AttachAppNetworkRequest resource to be passed
-      as the request body.
-    name: Required. Name of the SSEGateway which will hold the attached
-      network. Must be in the format
-      `projects/*/locations/{location}/sseGateways/*`.
-  """
-
-  attachAppNetworkRequest = _messages.MessageField('AttachAppNetworkRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class NetworksecurityProjectsLocationsSseGatewaysCreateRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSseGatewaysCreateRequest object.
-
-  Fields:
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    sSEGateway: A SSEGateway resource to be passed as the request body.
-    sseGatewayId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and sse_gateway_id from the
-      method_signature of Create RPC
-  """
-
-  parent = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  sSEGateway = _messages.MessageField('SSEGateway', 3)
-  sseGatewayId = _messages.StringField(4)
-
-
-class NetworksecurityProjectsLocationsSseGatewaysDeleteRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSseGatewaysDeleteRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class NetworksecurityProjectsLocationsSseGatewaysDetachAppNetworkRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSseGatewaysDetachAppNetworkRequest
-  object.
-
-  Fields:
-    detachAppNetworkRequest: A DetachAppNetworkRequest resource to be passed
-      as the request body.
-    name: Required. Name of the SSEGateway which holds the detached network.
-      Must be in the format `projects/*/locations/{location}/sseGateways/*`.
-  """
-
-  detachAppNetworkRequest = _messages.MessageField('DetachAppNetworkRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class NetworksecurityProjectsLocationsSseGatewaysGetRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSseGatewaysGetRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworksecurityProjectsLocationsSseGatewaysListRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSseGatewaysListRequest object.
-
-  Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results the server should return.
-    parent: Required. Parent value for ListSSEGatewaysRequest
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class NetworksecurityProjectsLocationsSseRealmsCreateRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSseRealmsCreateRequest object.
-
-  Fields:
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    sSERealm: A SSERealm resource to be passed as the request body.
-    sseRealmId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and sse_realm_id from the
-      method_signature of Create RPC
-  """
-
-  parent = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  sSERealm = _messages.MessageField('SSERealm', 3)
-  sseRealmId = _messages.StringField(4)
-
-
-class NetworksecurityProjectsLocationsSseRealmsDeleteRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSseRealmsDeleteRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class NetworksecurityProjectsLocationsSseRealmsGetRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSseRealmsGetRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworksecurityProjectsLocationsSseRealmsListRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSseRealmsListRequest object.
-
-  Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results the server should return.
-    parent: Required. Parent value for ListSSERealmsRequest
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
 class NetworksecurityProjectsLocationsTlsInspectionPoliciesCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsTlsInspectionPoliciesCreateRequest
   object.
@@ -7140,6 +6535,222 @@ class NetworksecurityProjectsLocationsTlsInspectionPoliciesPatchRequest(_message
 
   name = _messages.StringField(1, required=True)
   tlsInspectionPolicy = _messages.MessageField('TlsInspectionPolicy', 2)
+  updateMask = _messages.StringField(3)
+
+
+class NetworksecurityProjectsLocationsUllMirroringCollectorsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUllMirroringCollectorsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    ullMirroringCollector: A UllMirroringCollector resource to be passed as
+      the request body.
+    ullMirroringCollectorId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and
+      ull_mirroring_collector_id from the method_signature of Create RPC
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  ullMirroringCollector = _messages.MessageField('UllMirroringCollector', 3)
+  ullMirroringCollectorId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsUllMirroringCollectorsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUllMirroringCollectorsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsUllMirroringCollectorsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUllMirroringCollectorsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsUllMirroringCollectorsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUllMirroringCollectorsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListUllMirroringCollectorsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsUllMirroringCollectorsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUllMirroringCollectorsPatchRequest
+  object.
+
+  Fields:
+    name: Immutable. Identifier. The name of the UllMirroringCollector.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    ullMirroringCollector: A UllMirroringCollector resource to be passed as
+      the request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the UllMirroringCollector resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  ullMirroringCollector = _messages.MessageField('UllMirroringCollector', 3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsUllMirroringEnginesCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUllMirroringEnginesCreateRequest
+  object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    ullMirroringEngine: A UllMirroringEngine resource to be passed as the
+      request body.
+    ullMirroringEngineId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and ull_mirroring_engine_id
+      from the method_signature of Create RPC
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  ullMirroringEngine = _messages.MessageField('UllMirroringEngine', 3)
+  ullMirroringEngineId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsUllMirroringEnginesDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUllMirroringEnginesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsUllMirroringEnginesGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUllMirroringEnginesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the UllMirroringEngine.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsUllMirroringEnginesListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUllMirroringEnginesListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListUllMirroringEnginesRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsUllMirroringEnginesPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUllMirroringEnginesPatchRequest
+  object.
+
+  Fields:
+    name: Identifier. The name of the resource.
+    ullMirroringEngine: A UllMirroringEngine resource to be passed as the
+      request body.
+    updateMask: Optional. The list of fields to update.
+  """
+
+  name = _messages.StringField(1, required=True)
+  ullMirroringEngine = _messages.MessageField('UllMirroringEngine', 2)
   updateMask = _messages.StringField(3)
 
 
@@ -8024,97 +7635,6 @@ class SACRealmSACRealmSymantecOptions(_messages.Message):
   secretId = _messages.StringField(3)
 
 
-class SSEGateway(_messages.Message):
-  r"""Message describing SSEGateway object
-
-  Messages:
-    LabelsValue: Optional. Labels as key value pairs
-
-  Fields:
-    appFacingNetwork: Output only. [Output only] SSE-owned network which the
-      app network should peer with.
-    appFacingSubnetRange: Optional. Subnet range of the SSE-owned subnet where
-      app traffic is routed. Defaults to "100.64.1.0/24" if unspecified. The
-      CIDR suffix should be less than or equal to 24.
-    appFacingTargetIp: Optional. Target IP where app traffic is routed.
-      Defaults to "100.64.1.253" if unspecified.
-    appNetworks: Optional. List of app networks which are attached to this
-      gateway.
-    country: Optional. ISO-3166 alpha 2 country code used for localization.
-      Only used for Symantec's API today, and is optional even for gateways
-      connected to Symantec, since Symantec applies a default if we don't
-      specify it. Not case-sensitive, since it will be upper-cased when
-      sending to Symantec API.
-    createTime: Output only. [Output only] Create time stamp
-    labels: Optional. Labels as key value pairs
-    maxBandwidthMbps: Optional. Not an enforced cap. Used only for Symantec's
-      API today.
-    name: Immutable. name of resource
-    sseProject: Output only. [Output Only] The project owning
-      app_facing_network and untrusted_facing_network
-    sseRealm: Required. ID of SSERealm owning the SSEGateway
-    symantecOptions: Optional. Required iff the associated realm is of type
-      SYMANTEC_CLOUD_SWG.
-    timezone: Optional. tzinfo identifier used for localization. Only used for
-      Symantec's API today, and is optional even for gateways connected to
-      Symantec, since Symantec applies a default if we don't specify it. Case
-      sensitive.
-    untrustedFacingNetwork: Output only. [Output only] SSE-owned network which
-      the untrusted network should peer with.
-    untrustedFacingSubnetRange: Optional. Subnet range of the SSE-owned subnet
-      where untrusted traffic is routed. Defaults to "100.64.2.0/24" if
-      unspecified. The CIDR suffix should be less than or equal to 24.
-    untrustedFacingTargetIp: Optional. Target IP where untrusted traffic is
-      routed. Default value is set to "100.64.2.253".
-    untrustedNetwork: Optional. Customer-owned network where untrusted users
-      land.
-    updateTime: Output only. [Output only] Update time stamp
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  appFacingNetwork = _messages.StringField(1)
-  appFacingSubnetRange = _messages.StringField(2)
-  appFacingTargetIp = _messages.StringField(3)
-  appNetworks = _messages.StringField(4, repeated=True)
-  country = _messages.StringField(5)
-  createTime = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  maxBandwidthMbps = _messages.IntegerField(8)
-  name = _messages.StringField(9)
-  sseProject = _messages.StringField(10)
-  sseRealm = _messages.StringField(11)
-  symantecOptions = _messages.MessageField('SSEGatewaySSEGatewaySymantecOptions', 12)
-  timezone = _messages.StringField(13)
-  untrustedFacingNetwork = _messages.StringField(14)
-  untrustedFacingSubnetRange = _messages.StringField(15)
-  untrustedFacingTargetIp = _messages.StringField(16)
-  untrustedNetwork = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
-
-
 class SSEGatewayReference(_messages.Message):
   r"""Message describing SSEGatewayReference object
 
@@ -8161,151 +7681,6 @@ class SSEGatewayReference(_messages.Message):
   partnerSseRealm = _messages.StringField(4)
   proberSubnetRanges = _messages.StringField(5, repeated=True)
   updateTime = _messages.StringField(6)
-
-
-class SSEGatewaySSEGatewaySymantecOptions(_messages.Message):
-  r"""Fields specific to SSEGWs connecting to Symantec Cloud SWG.
-
-  Fields:
-    symantecLocationName: Immutable. Name to be used for when creating a
-      Location on the customer's behalf in Symantec's Location API. Required
-      iff sse_realm uses SYMANTEC_CLOUD_SWG. Not to be confused with GCP
-      locations.
-    symantecSite: Immutable. Symantec data center identifier that this SSEGW
-      will connect to. Required iff sse_realm uses SYMANTEC_CLOUD_SWG.
-  """
-
-  symantecLocationName = _messages.StringField(1)
-  symantecSite = _messages.StringField(2)
-
-
-class SSERealm(_messages.Message):
-  r"""Message describing SSERealm object
-
-  Enums:
-    SseServiceValueValuesEnum: Immutable. SSE service provider
-    StateValueValuesEnum: Output only. [Output only] State of the realm
-
-  Messages:
-    LabelsValue: Optional. Labels as key value pairs
-
-  Fields:
-    createTime: Output only. [Output only] Create time stamp
-    labels: Optional. Labels as key value pairs
-    name: Immutable. name of resource. It matches pattern
-      `projects/{project}/locations/global/sseRealms/{sseRealm}`
-    pairingKey: Output only. [Output only] Key to be shared with SSE service
-      provider to establish global handshake
-    partnerSseEnvironment: Optional. Full URI of environment that this Realm
-      is using. Only used in Symantec Realms today.
-    sseService: Immutable. SSE service provider
-    state: Output only. [Output only] State of the realm
-    symantecOptions: Optional. Required only if using SYMANTEC_CLOUD_SWG.
-    updateTime: Output only. [Output only] Update time stamp
-  """
-
-  class SseServiceValueValuesEnum(_messages.Enum):
-    r"""Immutable. SSE service provider
-
-    Values:
-      SSE_SERVICE_UNSPECIFIED: The default value. This value is used if the
-        state is omitted.
-      PALO_ALTO_PRISMA_ACCESS: [Palo Alto Networks Prisma
-        Access](https://www.paloaltonetworks.com/sase/access).
-      SYMANTEC_CLOUD_SWG: Symantec Cloud SWG is not fully supported yet - see
-        b/323856877.
-    """
-    SSE_SERVICE_UNSPECIFIED = 0
-    PALO_ALTO_PRISMA_ACCESS = 1
-    SYMANTEC_CLOUD_SWG = 2
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. [Output only] State of the realm
-
-    Values:
-      STATE_UNSPECIFIED: The default value. This value is used if the state is
-        omitted.
-      ATTACHED: This SSERealm is attached to a PartnerSSERealm, used only for
-        Prisma Access.
-      UNATTACHED: This SSERealm is not attached to a PartnerSSERealm, used
-        only for Prisma Access.
-      KEY_EXPIRED: This SSERealm is not attached to a PartnerSSERealm, and its
-        pairing key has expired and needs key regeneration, used only for
-        Prisma Access.
-      KEY_VALIDATION_PENDING: API key is pending validation for Symantec.
-      KEY_VALIDATED: API key validation succeeded for Symantec, and customers
-        can proceed to further steps.
-      KEY_INVALID: API key validation failed for Symantec, please use a new
-        API key.
-    """
-    STATE_UNSPECIFIED = 0
-    ATTACHED = 1
-    UNATTACHED = 2
-    KEY_EXPIRED = 3
-    KEY_VALIDATION_PENDING = 4
-    KEY_VALIDATED = 5
-    KEY_INVALID = 6
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  pairingKey = _messages.MessageField('SSERealmPairingKey', 4)
-  partnerSseEnvironment = _messages.StringField(5)
-  sseService = _messages.EnumField('SseServiceValueValuesEnum', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  symantecOptions = _messages.MessageField('SSERealmSSERealmSymantecOptions', 8)
-  updateTime = _messages.StringField(9)
-
-
-class SSERealmPairingKey(_messages.Message):
-  r"""Key to be shared with SSE service provider to establish global handshake
-
-  Fields:
-    expireTime: Output only. Timestamp in UTC of when this resource is
-      considered expired.
-    key: Output only. The name of the key. It expires 7 days after creation.
-  """
-
-  expireTime = _messages.StringField(1)
-  key = _messages.StringField(2)
-
-
-class SSERealmSSERealmSymantecOptions(_messages.Message):
-  r"""Fields specific to realms using SYMANTEC_CLOUD_SWG.
-
-  Fields:
-    apiKey: Optional. API Key used to call Symantec APIs on the user's behalf.
-      Required if using SYMANTEC_CLOUD_SWG.
-    availableSymantecSites: Output only. Symantec site IDs that the user can
-      choose to connect to.
-  """
-
-  apiKey = _messages.StringField(1)
-  availableSymantecSites = _messages.StringField(2, repeated=True)
 
 
 class SecurityProfile(_messages.Message):
@@ -8977,6 +8352,125 @@ class TlsInspectionPolicy(_messages.Message):
   tlsFeatureProfile = _messages.EnumField('TlsFeatureProfileValueValuesEnum', 8)
   trustConfig = _messages.StringField(9)
   updateTime = _messages.StringField(10)
+
+
+class UllMirroringCollector(_messages.Message):
+  r"""Message describing UllMirroringCollector object
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the collector.
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    forwardingRule: Required. Immutable. The regional load balancer which the
+      mirrored traffic should be forwarded to. Format is:
+      projects/{project}/regions/{region}/forwardingRules/{forwardingRule}
+    labels: Optional. Labels as key value pairs
+    name: Immutable. Identifier. The name of the UllMirroringCollector.
+    reconciling: Output only. Whether reconciling is in progress, recommended
+      per https://google.aip.dev/128.
+    state: Output only. Current state of the collector.
+    subnet: Required. Immutable. Subnet to be used by the PSC Service
+      Attachment.
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the collector.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: Ready.
+      CREATING: Being created.
+      DELETING: Being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  forwardingRule = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  reconciling = _messages.BooleanField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  subnet = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class UllMirroringEngine(_messages.Message):
+  r"""UllMirroringEngine is a resource that represents the Market Capture
+  engine in a given location.
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Optional. Labels as key value pairs
+    name: Identifier. The name of the resource.
+    reconciling: Output only. Whether reconciling is in progress, recommended
+      per https://google.aip.dev/128.
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  reconciling = _messages.BooleanField(4)
+  updateTime = _messages.StringField(5)
 
 
 class UrlList(_messages.Message):

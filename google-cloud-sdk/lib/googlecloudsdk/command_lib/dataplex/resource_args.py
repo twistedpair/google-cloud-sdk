@@ -217,6 +217,18 @@ def GetGlossaryResourceSpec():
   )
 
 
+def GetGlossaryCategoryResourceSpec():
+  """Gets Glossary Category resource spec."""
+  return concepts.ResourceSpec(
+      'dataplex.projects.locations.glossaries.categories',
+      resource_name='glossary category',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      glossariesId=GlossaryAttributeConfig(),
+      categoriesId=GlossaryCategoryAttributeConfig(),
+  )
+
+
 def EntryTypeProjectAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='entry-type-project',
@@ -328,6 +340,12 @@ def GovernanceRuleAttributeConfig():
 def GlossaryAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='glossary', help_text='The name of {resource} to use.'
+  )
+
+
+def GlossaryCategoryAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='glossary_category', help_text='The name of {resource} to use.'
   )
 
 
@@ -544,8 +562,20 @@ def AddGlossaryResourceArg(parser, verb, positional=True):
   return concept_parsers.ConceptParser.ForResource(
       name,
       GetGlossaryResourceSpec(),
-      'Arguments and flags that define the Dataplex glossary you want {}'
+      'Arguments and flags that define the Dataplex Glossary you want {}'
       .format(verb),
+      required=True,
+  ).AddToParser(parser)
+
+
+def AddGlossaryCategoryResourceArg(parser, verb, positional=True):
+  """Adds a resource argument for a Dataplex Glossary Category."""
+  name = 'glossary_category' if positional else '--glossary_category'
+  return concept_parsers.ConceptParser.ForResource(
+      name,
+      GetGlossaryCategoryResourceSpec(),
+      'Arguments and flags that define the Dataplex Glossary Category you'
+      ' want {}'.format(verb),
       required=True,
   ).AddToParser(parser)
 

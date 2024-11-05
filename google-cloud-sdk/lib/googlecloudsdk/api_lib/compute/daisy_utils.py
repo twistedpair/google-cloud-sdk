@@ -707,13 +707,18 @@ def _GetSafeBucketName(bucket_name, add_random_suffix=False):
 
 
 def CreateDaisyBucketInProject(
-    bucket_location, storage_client, enable_uniform_level_access=None):
+    bucket_location,
+    storage_client,
+    enable_uniform_level_access=None,
+    soft_delete_duration=None,
+):
   """Creates Daisy bucket in current project.
 
   Args:
     bucket_location: str, specified bucket location.
     storage_client: storage client
     enable_uniform_level_access: bool, to enable uniform bucket level access.
+    soft_delete_duration: int, the soft delete duration in seconds.
 
   Returns:
     str, Daisy bucket.
@@ -726,7 +731,9 @@ def CreateDaisyBucketInProject(
     storage_client.CreateBucketIfNotExists(
         bucket_name,
         location=bucket_location,
-        enable_uniform_level_access=enable_uniform_level_access)
+        enable_uniform_level_access=enable_uniform_level_access,
+        soft_delete_duration=soft_delete_duration,
+    )
   except storage_api.BucketInWrongProjectError:
     # A bucket already exists under the same name but in a different project.
     # Concatenate a random 8 character suffix to the bucket name and try a
@@ -739,7 +746,9 @@ def CreateDaisyBucketInProject(
         storage_client.CreateBucketIfNotExists(
             randomized_bucket_name,
             location=bucket_location,
-            enable_uniform_level_access=enable_uniform_level_access)
+            enable_uniform_level_access=enable_uniform_level_access,
+            soft_delete_duration=soft_delete_duration,
+        )
       except apitools_exceptions.HttpError as err:
         raise DaisyBucketCreationException(
             'Unable to create a temporary bucket [{bucket_name}]: {e}'.format(

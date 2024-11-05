@@ -250,22 +250,24 @@ def AddIapResourceArgs(parser, use_region_arg=False):
     )
 
 
-def AddIapSettingArg(parser, is_alpha=False, is_beta=False):
+def AddIapSettingArg(
+    parser, support_forwarding_rule=False, support_cloud_run=False
+):
   """Adds flags for an IAP settings resource.
 
   Args:
     parser: An argparse.ArgumentParser-like object. It is mocked out in order to
       capture some information, but behaves like an ArgumentParser.
-    is_alpha: bool, provide support to forwarding-rule and cloud-run
+    support_forwarding_rule: bool, provide support to forwarding-rule
       resource-type.
-    is_beta: bool, provide support to forwarding-rule resource-type.
+    support_cloud_run: bool, provide support to cloud-run resource-type.
   """
   group = parser.add_group()
   group.add_argument('--organization', help='Organization ID.')
   group.add_argument('--folder', help='Folder ID.')
   group.add_argument('--project', help='Project ID.')
 
-  if is_alpha:
+  if support_forwarding_rule and support_cloud_run:
     group.add_argument(
         '--resource-type',
         choices=SETTING_RESOURCE_TYPE_ENUM_ALPHA,
@@ -275,7 +277,7 @@ def AddIapSettingArg(parser, is_alpha=False, is_beta=False):
             ' want to test it.'
         ),
     )
-  elif is_beta:
+  elif support_forwarding_rule:
     group.add_argument(
         '--resource-type',
         choices=SETTING_RESOURCE_TYPE_ENUM_BETA,
@@ -295,7 +297,7 @@ def AddIapSettingArg(parser, is_alpha=False, is_beta=False):
           ' `app-engine`.'
       ),
   )
-  if is_alpha:
+  if support_cloud_run:
     group.add_argument(
         '--region',
         help=(
@@ -579,13 +581,23 @@ def ParseIapResource(release_track, args, support_region_arg=False):
   raise iap_exc.InvalidIapIamResourceError('Could not parse IAP resource.')
 
 
-def ParseIapSettingsResource(release_track, args):
+def ParseIapSettingsResource(
+    release_track,
+    args,
+    support_forwarding_rule=False,
+    support_cloud_run=False,
+    is_missing_resource_type=False,
+):
   """Parse an IAP setting resource from the input arguments.
 
   Args:
     release_track: base.ReleaseTrack, release track of command.
     args: an argparse namespace. All the arguments that were provided to this
       command invocation.
+    support_forwarding_rule: bool, whether to support forwarding rule.
+    support_cloud_run: bool, whether to support cloud run.
+    is_missing_resource_type: bool, throw invalid arguement exception if flags
+      are specified without resource type.
 
   Raises:
     calliope_exc.InvalidArgumentException: if `--version` was specified with
@@ -622,6 +634,20 @@ def ParseIapSettingsResource(release_track, args):
         release_track, 'folders/{0}'.format(args.folder)
     )
   if args.project:
+    if is_missing_resource_type:
+      if args.service and not args.resource_type:
+        raise calliope_exc.InvalidArgumentException(
+            '--service',
+            '`--service` cannot be specified without `--resource-type`.')
+      if args.region and not args.resource_type:
+        raise calliope_exc.InvalidArgumentException(
+            '--region',
+            '`--region` cannot be specified without `--resource-type`.')
+      if args.version and not args.resource_type:
+        raise calliope_exc.InvalidArgumentException(
+            '--version',
+            '`--version` cannot be specified without `--resource-type`.')
+
     if not args.resource_type:
       return iap_api.IapSettingsResource(
           release_track, 'projects/{0}'.format(args.project)
@@ -662,10 +688,9 @@ def ParseIapSettingsResource(release_track, args):
         if args.service:
           path.extend(['services', args.service])
         return iap_api.IapSettingsResource(release_track, '/'.join(path))
-      elif (
-          release_track == base.ReleaseTrack.ALPHA
-          or release_track == base.ReleaseTrack.BETA
-      ) and (args.resource_type == FORWARDING_RULE_RESOURCE_TYPE):
+      elif (support_forwarding_rule) and (
+          args.resource_type == FORWARDING_RULE_RESOURCE_TYPE
+      ):
         path = ['projects', args.project, 'iap_web']
         if args.version:
           raise calliope_exc.InvalidArgumentException(
@@ -680,7 +705,7 @@ def ParseIapSettingsResource(release_track, args):
         if args.service:
           path.extend(['services', args.service])
         return iap_api.IapSettingsResource(release_track, '/'.join(path))
-      elif (release_track == base.ReleaseTrack.ALPHA and
+      elif (support_cloud_run and
             args.resource_type == CLOUD_RUN_RESOURCE_TYPE):
         path = ['projects', args.project, 'iap_web']
         if args.version:

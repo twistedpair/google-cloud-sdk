@@ -164,6 +164,8 @@ def GetApiVersionV2(args):
 
   if release_track == base.ReleaseTrack.ALPHA:
     return 'v2alpha'
+  elif release_track == base.ReleaseTrack.BETA:
+    return 'v2beta'
   elif release_track == base.ReleaseTrack.GA:
     return 'v2'
   else:
@@ -315,13 +317,16 @@ def ParseOSConfigAssignmentFile(ref, args, req):
   return req
 
 
-def ModifyOrchestratorPolicySetSelectors(args, req, messages, use_clear=False):
+def ModifyOrchestratorPolicySetSelectors(
+    args, req, messages, api_version, use_clear=False
+):
   """Sets selectors inside policy orchestrator.
 
   Args:
     args: args to the command
     req: request
     messages: messages for selected v2 API version
+    api_version: api version
     use_clear: if true, clear_projects flag is used to clear selectors
 
   Returns:
@@ -337,18 +342,43 @@ def ModifyOrchestratorPolicySetSelectors(args, req, messages, use_clear=False):
     for project_id in args.include_projects.split(','):
       included_projects.append('projects/' + project_id)
 
-  selector = messages.GoogleCloudOsconfigV2alphaOrchestrationScopeSelector()
-  selector.resourceHierarchySelector = (
-      messages.GoogleCloudOsconfigV2alphaOrchestrationScopeResourceHierarchySelector()
-  )
-  selector.resourceHierarchySelector.includedProjects = included_projects
+  if api_version == 'v2alpha':
+    selector = messages.GoogleCloudOsconfigV2alphaOrchestrationScopeSelector()
+    selector.resourceHierarchySelector = (
+        messages.GoogleCloudOsconfigV2alphaOrchestrationScopeResourceHierarchySelector()
+    )
+    selector.resourceHierarchySelector.includedProjects = included_projects
+    req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestrationScope = (
+        messages.GoogleCloudOsconfigV2alphaOrchestrationScope()
+    )
+    req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestrationScope.selectors = [
+        selector
+    ]
+  elif api_version == 'v2beta':
+    selector = messages.GoogleCloudOsconfigV2betaOrchestrationScopeSelector()
+    selector.resourceHierarchySelector = (
+        messages.GoogleCloudOsconfigV2betaOrchestrationScopeResourceHierarchySelector()
+    )
+    selector.resourceHierarchySelector.includedProjects = included_projects
+    req.googleCloudOsconfigV2betaPolicyOrchestrator.orchestrationScope = (
+        messages.GoogleCloudOsconfigV2betaOrchestrationScope()
+    )
+    req.googleCloudOsconfigV2betaPolicyOrchestrator.orchestrationScope.selectors = [
+        selector
+    ]
+  elif api_version == 'v2':
+    selector = messages.GoogleCloudOsconfigV2OrchestrationScopeSelector()
+    selector.resourceHierarchySelector = (
+        messages.GoogleCloudOsconfigV2OrchestrationScopeResourceHierarchySelector()
+    )
+    selector.resourceHierarchySelector.includedProjects = included_projects
+    req.googleCloudOsconfigV2PolicyOrchestrator.orchestrationScope = (
+        messages.GoogleCloudOsconfigV2OrchestrationScope()
+    )
+    req.googleCloudOsconfigV2PolicyOrchestrator.orchestrationScope.selectors = [
+        selector
+    ]
 
-  req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestrationScope = (
-      messages.GoogleCloudOsconfigV2alphaOrchestrationScope()
-  )
-  req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestrationScope.selectors = [
-      selector
-  ]
   return req, True
 
 
@@ -365,24 +395,39 @@ def ModifyOrchestrorPolicyCreateRequest(ref, args, req):
     (policy_assignment_config, _) = GetResourceAndUpdateFieldsFromFile(
         args.policy_file, messages.OSPolicyAssignment
     )
-  req.googleCloudOsconfigV2alphaPolicyOrchestrator = (
-      messages.GoogleCloudOsconfigV2alphaPolicyOrchestrator()
-  )
-  req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestratedResource = (
-      messages.GoogleCloudOsconfigV2alphaOrchestratedResource()
-  )
-  req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestratedResource.osPolicyAssignmentV1Payload = (
+
+  req_orchestrator = None
+  if api_version == 'v2alpha':
+    req_orchestrator = messages.GoogleCloudOsconfigV2alphaPolicyOrchestrator()
+    req_orchestrator.orchestratedResource = (
+        messages.GoogleCloudOsconfigV2alphaOrchestratedResource()
+    )
+    req.googleCloudOsconfigV2alphaPolicyOrchestrator = req_orchestrator
+  elif api_version == 'v2beta':
+    req_orchestrator = messages.GoogleCloudOsconfigV2betaPolicyOrchestrator()
+    req_orchestrator.orchestratedResource = (
+        messages.GoogleCloudOsconfigV2betaOrchestratedResource()
+    )
+    req.googleCloudOsconfigV2betaPolicyOrchestrator = req_orchestrator
+  elif api_version == 'v2':
+    req_orchestrator = messages.GoogleCloudOsconfigV2PolicyOrchestrator()
+    req_orchestrator.orchestratedResource = (
+        messages.GoogleCloudOsconfigV2OrchestratedResource()
+    )
+    req.googleCloudOsconfigV2PolicyOrchestrator = req_orchestrator
+
+  req_orchestrator.orchestratedResource.osPolicyAssignmentV1Payload = (
       policy_assignment_config
   )
 
   if args.policy_id:
-    req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestratedResource.id = (
-        args.policy_id
-    )
+    req_orchestrator.orchestratedResource.id = args.policy_id
 
-  req.googleCloudOsconfigV2alphaPolicyOrchestrator.action = args.action.upper()
-  req.googleCloudOsconfigV2alphaPolicyOrchestrator.state = args.state.upper()
-  req, _ = ModifyOrchestratorPolicySetSelectors(args, req, messages)
+  req_orchestrator.action = args.action.upper()
+  req_orchestrator.state = args.state.upper()
+  req, _ = ModifyOrchestratorPolicySetSelectors(
+      args, req, messages, api_version
+  )
 
   # Setting request-level fields.
   req.policyOrchestratorId = ref.Name()
@@ -397,27 +442,38 @@ def ModifyOrchestrorPolicyUpdateRequest(unused_ref, args, req):
   # Settings PolicyOrchestrator payload.
   api_version = GetApiVersionV2(args)
   messages = GetApiMessage(api_version)
+  req_orchestrator = None
 
-  req.googleCloudOsconfigV2alphaPolicyOrchestrator = (
-      messages.GoogleCloudOsconfigV2alphaPolicyOrchestrator()
-  )
-  req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestratedResource = (
-      messages.GoogleCloudOsconfigV2alphaOrchestratedResource()
-  )
+  if api_version == 'v2alpha':
+    req_orchestrator = messages.GoogleCloudOsconfigV2alphaPolicyOrchestrator()
+    req_orchestrator.orchestratedResource = (
+        messages.GoogleCloudOsconfigV2alphaOrchestratedResource()
+    )
+    req.googleCloudOsconfigV2alphaPolicyOrchestrator = req_orchestrator
+  elif api_version == 'v2beta':
+    req_orchestrator = messages.GoogleCloudOsconfigV2betaPolicyOrchestrator()
+    req_orchestrator.orchestratedResource = (
+        messages.GoogleCloudOsconfigV2betaOrchestratedResource()
+    )
+    req.googleCloudOsconfigV2betaPolicyOrchestrator = req_orchestrator
+  elif api_version == 'v2':
+    req_orchestrator = messages.GoogleCloudOsconfigV2PolicyOrchestrator()
+    req_orchestrator.orchestratedResource = (
+        messages.GoogleCloudOsconfigV2OrchestratedResource()
+    )
+    req.googleCloudOsconfigV2PolicyOrchestrator = req_orchestrator
 
   update_mask = []
 
   if args.action:
-    req.googleCloudOsconfigV2alphaPolicyOrchestrator.action = (
-        args.action.upper()
-    )
+    req_orchestrator.action = args.action.upper()
     update_mask.append('action')
 
   if args.policy_file:
     (policy_assignment_config, _) = GetResourceAndUpdateFieldsFromFile(
         args.policy_file, messages.OSPolicyAssignment
     )
-    req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestratedResource.osPolicyAssignmentV1Payload = (
+    req_orchestrator.orchestratedResource.osPolicyAssignmentV1Payload = (
         policy_assignment_config
     )
     update_mask.append(
@@ -425,17 +481,15 @@ def ModifyOrchestrorPolicyUpdateRequest(unused_ref, args, req):
     )
 
   if args.policy_id:
-    req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestratedResource.id = (
-        args.policy_id
-    )
+    req_orchestrator.orchestratedResource.id = args.policy_id
     update_mask.append('orchestrated_resource.id')
 
   if args.state:
-    req.googleCloudOsconfigV2alphaPolicyOrchestrator.state = args.state.upper()
+    req_orchestrator.state = args.state.upper()
     update_mask.append('state')
 
   req, modified = ModifyOrchestratorPolicySetSelectors(
-      args, req, messages, use_clear=True
+      args, req, messages, api_version, use_clear=True
   )
   if modified:
     update_mask.append('orchestration_scope.selectors')

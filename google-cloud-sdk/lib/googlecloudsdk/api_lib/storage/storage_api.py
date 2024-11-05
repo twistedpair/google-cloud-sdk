@@ -349,6 +349,7 @@ class StorageClient(object):
       location=None,
       check_ownership=True,
       enable_uniform_level_access=None,
+      soft_delete_duration=None,
       cors=None,
   ):
     """Create a bucket if it does not already exist.
@@ -368,6 +369,7 @@ class StorageClient(object):
       enable_uniform_level_access: bool, to enable uniform bucket level access.
         If None, the iamConfiguration object will not be created in the bucket
         creation request, which means that it will use the default values.
+      soft_delete_duration: int, the soft delete duration in seconds.
       cors: list, A list of CorsValueListEntry objects. The bucket's
         Cross-Origin Resource Sharing (CORS) configuration. If None, no CORS
         configuration will be set.
@@ -406,6 +408,12 @@ class StorageClient(object):
                         enabled=enable_uniform_level_access))))
       if cors is not None:
         storage_buckets_insert_request.bucket.cors = cors
+      if soft_delete_duration is not None:
+        storage_buckets_insert_request.bucket.softDeletePolicy = (
+            self.messages.Bucket.SoftDeletePolicyValue(
+                retentionDurationSeconds=soft_delete_duration
+            )
+        )
       try:
         self.client.buckets.Insert(storage_buckets_insert_request)
       except api_exceptions.HttpConflictError:

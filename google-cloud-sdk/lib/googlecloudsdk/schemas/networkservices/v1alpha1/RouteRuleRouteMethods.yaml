@@ -28,7 +28,8 @@ properties:
     items:
       type: string
   allowedMethods:
-    description: The non-empty set of HTTP methods we allow for this route.
+    description: |-
+      The non-empty set of HTTP methods that are allowed for this route.
     type: array
     items:
       type: string

@@ -171,6 +171,7 @@ def Create(
     asymmetric_autoscaling_options=None,
     instance_type=None,
     expire_behavior=None,
+    default_storage_type=None,
     ssd_cache=None,
     edition=None,
     default_backup_schedule_type=None,
@@ -195,6 +196,7 @@ def Create(
       representing the asymmetric autoscaling options.
     instance_type: The instance type to use.
     expire_behavior: The expire behavior to use.
+    default_storage_type: The default storage type to use.
     ssd_cache: The ssd cache to use.
     edition: The edition to use.
     default_backup_schedule_type: The type of default backup schedule to use.
@@ -246,6 +248,8 @@ def Create(
     instance_obj.freeInstanceMetadata = msgs.FreeInstanceMetadata(
         expireBehavior=expire_behavior
     )
+  if default_storage_type is not None:
+    instance_obj.defaultStorageType = default_storage_type
   if ssd_cache and ssd_cache.strip():
     instance_obj.ssdCache = (
         config_ref.RelativeName() + '/ssdCaches/' + ssd_cache.strip()

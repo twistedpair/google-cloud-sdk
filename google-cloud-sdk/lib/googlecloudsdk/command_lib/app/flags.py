@@ -23,13 +23,13 @@ import argparse
 
 from googlecloudsdk.api_lib.app import logs_util
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.appengine.api import appinfo
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.app import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.docker import docker
-from googlecloudsdk.third_party.appengine.api import appinfo
 
 DOMAIN_FLAG = base.Argument(
     'domain',

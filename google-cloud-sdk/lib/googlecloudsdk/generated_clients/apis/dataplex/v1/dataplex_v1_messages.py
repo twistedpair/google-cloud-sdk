@@ -4954,6 +4954,141 @@ class GoogleCloudDataplexV1DataAttributeBindingPath(_messages.Message):
   name = _messages.StringField(2)
 
 
+class GoogleCloudDataplexV1DataDiscoveryResult(_messages.Message):
+  r"""The output of a data discovery scan.
+
+  Fields:
+    bigqueryPublishing: Output only. Configuration for metadata publishing.
+  """
+
+  bigqueryPublishing = _messages.MessageField('GoogleCloudDataplexV1DataDiscoveryResultBigQueryPublishing', 1)
+
+
+class GoogleCloudDataplexV1DataDiscoveryResultBigQueryPublishing(_messages.Message):
+  r"""Describes BigQuery publishing configurations.
+
+  Fields:
+    dataset: Output only. The BigQuery dataset to publish to. It takes the
+      form projects/{project_id}/datasets/{dataset_id}. If not set, the
+      service creates a default publishing dataset.
+  """
+
+  dataset = _messages.StringField(1)
+
+
+class GoogleCloudDataplexV1DataDiscoverySpec(_messages.Message):
+  r"""Spec for a data discovery scan.
+
+  Fields:
+    bigqueryPublishingConfig: Optional. Configuration for metadata publishing.
+    storageConfig: Cloud Storage related configurations.
+  """
+
+  bigqueryPublishingConfig = _messages.MessageField('GoogleCloudDataplexV1DataDiscoverySpecBigQueryPublishingConfig', 1)
+  storageConfig = _messages.MessageField('GoogleCloudDataplexV1DataDiscoverySpecStorageConfig', 2)
+
+
+class GoogleCloudDataplexV1DataDiscoverySpecBigQueryPublishingConfig(_messages.Message):
+  r"""Describes BigQuery publishing configurations.
+
+  Enums:
+    TableTypeValueValuesEnum: Optional. Determines whether to publish
+      discovered tables as BigLake external tables or non-BigLake external
+      tables.
+
+  Fields:
+    connection: Optional. The BigQuery connection used to create BigLake
+      tables. Must be in the form projects/{project_id}/locations/{location_id
+      }/connections/{connection_id}
+    tableType: Optional. Determines whether to publish discovered tables as
+      BigLake external tables or non-BigLake external tables.
+  """
+
+  class TableTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Determines whether to publish discovered tables as BigLake
+    external tables or non-BigLake external tables.
+
+    Values:
+      TABLE_TYPE_UNSPECIFIED: Table type unspecified.
+      EXTERNAL: Default. Discovered tables are published as BigQuery external
+        tables whose data is accessed using the credentials of the user
+        querying the table.
+      BIGLAKE: Discovered tables are published as BigLake external tables
+        whose data is accessed using the credentials of the associated
+        BigQuery connection.
+    """
+    TABLE_TYPE_UNSPECIFIED = 0
+    EXTERNAL = 1
+    BIGLAKE = 2
+
+  connection = _messages.StringField(1)
+  tableType = _messages.EnumField('TableTypeValueValuesEnum', 2)
+
+
+class GoogleCloudDataplexV1DataDiscoverySpecStorageConfig(_messages.Message):
+  r"""Configurations related to Cloud Storage as the data source.
+
+  Fields:
+    csvOptions: Optional. Configuration for CSV data.
+    excludePatterns: Optional. Defines the data to exclude during discovery.
+      Provide a list of patterns that identify the data to exclude. For Cloud
+      Storage bucket assets, these patterns are interpreted as glob patterns
+      used to match object names. For BigQuery dataset assets, these patterns
+      are interpreted as patterns to match table names.
+    includePatterns: Optional. Defines the data to include during discovery
+      when only a subset of the data should be considered. Provide a list of
+      patterns that identify the data to include. For Cloud Storage bucket
+      assets, these patterns are interpreted as glob patterns used to match
+      object names. For BigQuery dataset assets, these patterns are
+      interpreted as patterns to match table names.
+    jsonOptions: Optional. Configuration for JSON data.
+  """
+
+  csvOptions = _messages.MessageField('GoogleCloudDataplexV1DataDiscoverySpecStorageConfigCsvOptions', 1)
+  excludePatterns = _messages.StringField(2, repeated=True)
+  includePatterns = _messages.StringField(3, repeated=True)
+  jsonOptions = _messages.MessageField('GoogleCloudDataplexV1DataDiscoverySpecStorageConfigJsonOptions', 4)
+
+
+class GoogleCloudDataplexV1DataDiscoverySpecStorageConfigCsvOptions(_messages.Message):
+  r"""Describes CSV and similar semi-structured data formats.
+
+  Fields:
+    delimiter: Optional. The delimiter that is used to separate values. The
+      default is , (comma).
+    encoding: Optional. The character encoding of the data. The default is
+      UTF-8.
+    headerRows: Optional. The number of rows to interpret as header rows that
+      should be skipped when reading data rows.
+    quote: Optional. The character used to quote column values. Accepts "
+      (double quotation mark) or ' (single quotation mark). If unspecified,
+      defaults to " (double quotation mark).
+    typeInferenceDisabled: Optional. Whether to disable the inference of data
+      types for CSV data. If true, all columns are registered as strings.
+  """
+
+  delimiter = _messages.StringField(1)
+  encoding = _messages.StringField(2)
+  headerRows = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  quote = _messages.StringField(4)
+  typeInferenceDisabled = _messages.BooleanField(5)
+
+
+class GoogleCloudDataplexV1DataDiscoverySpecStorageConfigJsonOptions(_messages.Message):
+  r"""Describes JSON data format.
+
+  Fields:
+    encoding: Optional. The character encoding of the data. The default is
+      UTF-8.
+    typeInferenceDisabled: Optional. Whether to disable the inference of data
+      types for JSON data. If true, all columns are registered as their
+      primitive types (strings, number, or boolean).
+  """
+
+  encoding = _messages.StringField(1)
+  typeInferenceDisabled = _messages.BooleanField(2)
+
+
 class GoogleCloudDataplexV1DataProfileResult(_messages.Message):
   r"""DataProfileResult defines the output of DataProfileScan. Each field of
   the table will have field type specific profile result.
@@ -5804,6 +5939,8 @@ class GoogleCloudDataplexV1DataScan(_messages.Message):
   Fields:
     createTime: Output only. The time when the scan was created.
     data: Required. The data source for DataScan.
+    dataDiscoveryResult: Output only. The result of a data discovery scan.
+    dataDiscoverySpec: Settings for a data discovery scan.
     dataProfileResult: Output only. The result of a data profile scan.
     dataProfileSpec: Settings for a data profile scan.
     dataQualityResult: Output only. The result of a data quality scan.
@@ -5851,10 +5988,12 @@ class GoogleCloudDataplexV1DataScan(_messages.Message):
       DATA_SCAN_TYPE_UNSPECIFIED: The data scan type is unspecified.
       DATA_QUALITY: Data quality scan.
       DATA_PROFILE: Data profile scan.
+      DATA_DISCOVERY: Data discovery scan.
     """
     DATA_SCAN_TYPE_UNSPECIFIED = 0
     DATA_QUALITY = 1
     DATA_PROFILE = 2
+    DATA_DISCOVERY = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -5882,25 +6021,27 @@ class GoogleCloudDataplexV1DataScan(_messages.Message):
 
   createTime = _messages.StringField(1)
   data = _messages.MessageField('GoogleCloudDataplexV1DataSource', 2)
-  dataProfileResult = _messages.MessageField('GoogleCloudDataplexV1DataProfileResult', 3)
-  dataProfileSpec = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpec', 4)
-  dataQualityResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResult', 5)
-  dataQualitySpec = _messages.MessageField('GoogleCloudDataplexV1DataQualitySpec', 6)
-  description = _messages.StringField(7)
-  displayName = _messages.StringField(8)
-  executionSpec = _messages.MessageField('GoogleCloudDataplexV1DataScanExecutionSpec', 9)
-  executionStatus = _messages.MessageField('GoogleCloudDataplexV1DataScanExecutionStatus', 10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  name = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  type = _messages.EnumField('TypeValueValuesEnum', 14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  dataDiscoveryResult = _messages.MessageField('GoogleCloudDataplexV1DataDiscoveryResult', 3)
+  dataDiscoverySpec = _messages.MessageField('GoogleCloudDataplexV1DataDiscoverySpec', 4)
+  dataProfileResult = _messages.MessageField('GoogleCloudDataplexV1DataProfileResult', 5)
+  dataProfileSpec = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpec', 6)
+  dataQualityResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResult', 7)
+  dataQualitySpec = _messages.MessageField('GoogleCloudDataplexV1DataQualitySpec', 8)
+  description = _messages.StringField(9)
+  displayName = _messages.StringField(10)
+  executionSpec = _messages.MessageField('GoogleCloudDataplexV1DataScanExecutionSpec', 11)
+  executionStatus = _messages.MessageField('GoogleCloudDataplexV1DataScanExecutionStatus', 12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  name = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  type = _messages.EnumField('TypeValueValuesEnum', 16)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
 
 
 class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
   r"""These messages contain information about the execution of a datascan.
-  The monitored resource is 'DataScan' Next ID: 13
+  The monitored resource is 'DataScan'
 
   Enums:
     ScopeValueValuesEnum: The scope of the data scan (e.g. full, incremental).
@@ -5977,10 +6118,12 @@ class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
       SCAN_TYPE_UNSPECIFIED: An unspecified data scan type.
       DATA_PROFILE: Data scan for data profile.
       DATA_QUALITY: Data scan for data quality.
+      DATA_DISCOVERY: Data scan for data discovery.
     """
     SCAN_TYPE_UNSPECIFIED = 0
     DATA_PROFILE = 1
     DATA_QUALITY = 2
+    DATA_DISCOVERY = 3
 
   createTime = _messages.StringField(1)
   dataProfile = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataProfileResult', 2)
@@ -6246,6 +6389,8 @@ class GoogleCloudDataplexV1DataScanJob(_messages.Message):
 
   Fields:
     createTime: Output only. The time when the DataScanJob was created.
+    dataDiscoveryResult: Output only. The result of a data discovery scan.
+    dataDiscoverySpec: Output only. Settings for a data discovery scan.
     dataProfileResult: Output only. The result of a data profile scan.
     dataProfileSpec: Output only. Settings for a data profile scan.
     dataQualityResult: Output only. The result of a data quality scan.
@@ -6289,23 +6434,27 @@ class GoogleCloudDataplexV1DataScanJob(_messages.Message):
       DATA_SCAN_TYPE_UNSPECIFIED: The data scan type is unspecified.
       DATA_QUALITY: Data quality scan.
       DATA_PROFILE: Data profile scan.
+      DATA_DISCOVERY: Data discovery scan.
     """
     DATA_SCAN_TYPE_UNSPECIFIED = 0
     DATA_QUALITY = 1
     DATA_PROFILE = 2
+    DATA_DISCOVERY = 3
 
   createTime = _messages.StringField(1)
-  dataProfileResult = _messages.MessageField('GoogleCloudDataplexV1DataProfileResult', 2)
-  dataProfileSpec = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpec', 3)
-  dataQualityResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResult', 4)
-  dataQualitySpec = _messages.MessageField('GoogleCloudDataplexV1DataQualitySpec', 5)
-  endTime = _messages.StringField(6)
-  message = _messages.StringField(7)
-  name = _messages.StringField(8)
-  startTime = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  type = _messages.EnumField('TypeValueValuesEnum', 11)
-  uid = _messages.StringField(12)
+  dataDiscoveryResult = _messages.MessageField('GoogleCloudDataplexV1DataDiscoveryResult', 2)
+  dataDiscoverySpec = _messages.MessageField('GoogleCloudDataplexV1DataDiscoverySpec', 3)
+  dataProfileResult = _messages.MessageField('GoogleCloudDataplexV1DataProfileResult', 4)
+  dataProfileSpec = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpec', 5)
+  dataQualityResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResult', 6)
+  dataQualitySpec = _messages.MessageField('GoogleCloudDataplexV1DataQualitySpec', 7)
+  endTime = _messages.StringField(8)
+  message = _messages.StringField(9)
+  name = _messages.StringField(10)
+  startTime = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  type = _messages.EnumField('TypeValueValuesEnum', 13)
+  uid = _messages.StringField(14)
 
 
 class GoogleCloudDataplexV1DataSource(_messages.Message):
@@ -6424,6 +6573,11 @@ class GoogleCloudDataplexV1DiscoveryEvent(_messages.Message):
       PARTITION_CREATED: An event representing a partition being created.
       PARTITION_UPDATED: An event representing a partition being updated.
       PARTITION_DELETED: An event representing a partition being deleted.
+      TABLE_PUBLISHED: An event representing a table being published.
+      TABLE_UPDATED: An event representing a table being updated.
+      TABLE_IGNORED: An event representing a table being skipped in
+        publishing.
+      TABLE_DELETED: An event representing a table being deleted.
     """
     EVENT_TYPE_UNSPECIFIED = 0
     CONFIG = 1
@@ -6433,6 +6587,10 @@ class GoogleCloudDataplexV1DiscoveryEvent(_messages.Message):
     PARTITION_CREATED = 5
     PARTITION_UPDATED = 6
     PARTITION_DELETED = 7
+    TABLE_PUBLISHED = 8
+    TABLE_UPDATED = 9
+    TABLE_IGNORED = 10
+    TABLE_DELETED = 11
 
   action = _messages.MessageField('GoogleCloudDataplexV1DiscoveryEventActionDetails', 1)
   assetId = _messages.StringField(2)

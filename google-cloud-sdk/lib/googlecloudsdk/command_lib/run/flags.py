@@ -115,13 +115,9 @@ _CONTAINER_NAME_TYPE = arg_parsers.RegexpValidator(
     ' less than 64 characters.',
 )
 
-_SCALING_MODES = {
-    'automatic': (
-        'The number of instances is scaled automatically based on the usage'
-        ' metrics.'
-    ),
-    'manual': 'The number of instances is fixed to a provided config value.',
-}
+_SCALING_MODE_AUTOMATIC = 'automatic'
+
+_SCALING_MODE_MANUAL = 'manual'
 
 
 def _StripKeys(d):
@@ -1361,6 +1357,31 @@ class _ScaleValue:
         )
 
 
+class _ScalingValue:
+  """Type for --scaling flag values.
+
+  Input values could be either 'auto' for automatic scaling or integer to
+  support manual scaling mode with the integer value as instance count.
+  """
+
+  def __init__(self, value):
+    self.auto_scaling = value == 'auto'
+    if not self.auto_scaling:
+      try:
+        self.instance_count = int(value)
+      except (TypeError, ValueError):
+        raise serverless_exceptions.ArgumentError(
+            "Input value '%s' for --scaling flag is not an integer nor 'auto'."
+            % value
+        )
+
+      if self.instance_count < 0:
+        raise serverless_exceptions.ArgumentError(
+            "Input value '%s' for --scaling flag should be a positive integer"
+            " or 'auto'." % value
+        )
+
+
 def AddMinInstancesFlag(parser, resource_kind='service'):
   """Add min scaling flag."""
   help_text = (
@@ -1502,12 +1523,17 @@ def AddMaxUnavailableFlag(parser, resource_kind='service'):
   )
 
 
-def AddScalingModeFlag(parser):
-  """Add scaling mode flag."""
+def AddScalingFlag(parser):
+  """Add scaling flag."""
   parser.add_argument(
       '--scaling',
-      choices=_SCALING_MODES,
-      help='The scaling mode to use for this resource.',
+      type=_ScalingValue,
+      help=(
+          'The scaling mode to use for this resource. Flag value could be'
+          ' either "auto" for automatic scaling, or a positive integer to'
+          ' configure manual scaling with the given integer as a fixed instance'
+          ' count.'
+      ),
   )
 
 
@@ -2218,6 +2244,16 @@ def _GetServiceScalingChanges(args):
           )
       )
   if 'service_max_instances' in args and args.service_max_instances is not None:
+    if (
+        'scaling' in args
+        and args.scaling is not None
+        and not args.scaling.auto_scaling
+    ):
+      # TODO(b/373873152): this validation should expand to service min instance
+      # once we enforce the use of manual instance count for manual scaling.
+      raise serverless_exceptions.ConfigurationError(
+          'Cannot set service max instances when scaling mode is manual.'
+      )
     result.append(
         config_changes.SetAnnotationChange(
             service.SERVICE_MAX_SCALE_ANNOTATION,
@@ -2255,12 +2291,48 @@ def _GetServiceScalingChanges(args):
           )
       )
   if 'scaling' in args and args.scaling is not None:
-    result.append(
-        config_changes.SetAnnotationChange(
-            service.SERVICE_SCALING_MODE_ANNOTATION,
-            args.scaling,
-        )
-    )
+    scaling_val = args.scaling
+    # Automatic scaling mode
+    if scaling_val.auto_scaling:
+      # Remove manual instance count annotation
+      result.append(
+          config_changes.DeleteAnnotationChange(
+              service.MANUAL_INSTANCE_COUNT_ANNOTATION
+          )
+      )
+      result.append(
+          config_changes.SetAnnotationChange(
+              service.SERVICE_SCALING_MODE_ANNOTATION,
+              _SCALING_MODE_AUTOMATIC,
+          )
+      )
+    # Manual scaling mode with flag value as an instance count.
+    else:
+      # Remove service min annotation
+      result.append(
+          config_changes.DeleteAnnotationChange(
+              service.SERVICE_MIN_SCALE_ANNOTATION
+          )
+      )
+      # Remove service max annotation
+      result.append(
+          config_changes.DeleteAnnotationChange(
+              service.SERVICE_MAX_SCALE_ANNOTATION
+          )
+      )
+      # Add scaling mode 'manual' and manual instance count annotation
+      result.append(
+          config_changes.SetAnnotationChange(
+              service.SERVICE_SCALING_MODE_ANNOTATION,
+              _SCALING_MODE_MANUAL,
+          )
+      )
+      result.append(
+          config_changes.SetAnnotationChange(
+              service.MANUAL_INSTANCE_COUNT_ANNOTATION,
+              str(scaling_val.instance_count),
+          )
+      )
   return result
 
 
@@ -2285,6 +2357,16 @@ def _GetWorkerScalingChanges(args):
           )
       )
   if 'max_instances' in args and args.max_instances is not None:
+    if (
+        'scaling' in args
+        and args.scaling is not None
+        and not args.scaling.auto_scaling
+    ):
+      # TODO(b/373873152): this validation should expand to service min instance
+      # once we enforce the use of manual instance count for manual scaling.
+      raise serverless_exceptions.ConfigurationError(
+          'Cannot set max instances when scaling mode is manual.'
+      )
     scale_value = args.max_instances
     if scale_value.restore_default:
       result.append(
@@ -2315,12 +2397,48 @@ def _GetWorkerScalingChanges(args):
           )
       )
   if 'scaling' in args and args.scaling is not None:
-    result.append(
-        config_changes.SetAnnotationChange(
-            service.SERVICE_SCALING_MODE_ANNOTATION,
-            args.scaling,
-        )
-    )
+    scaling_val = args.scaling
+    # Automatic scaling mode
+    if scaling_val.auto_scaling:
+      # Remove manual instance count annotation
+      result.append(
+          config_changes.DeleteAnnotationChange(
+              service.MANUAL_INSTANCE_COUNT_ANNOTATION
+          )
+      )
+      result.append(
+          config_changes.SetAnnotationChange(
+              service.SERVICE_SCALING_MODE_ANNOTATION,
+              _SCALING_MODE_AUTOMATIC,
+          )
+      )
+    # Manual scaling mode with flag value as an instance count.
+    else:
+      # Remove service min annotation
+      result.append(
+          config_changes.DeleteAnnotationChange(
+              service.SERVICE_MIN_SCALE_ANNOTATION
+          )
+      )
+      # Remove service max annotation
+      result.append(
+          config_changes.DeleteAnnotationChange(
+              service.SERVICE_MAX_SCALE_ANNOTATION
+          )
+      )
+      # Add scaling mode 'manual' and manual instance count annotation
+      result.append(
+          config_changes.SetAnnotationChange(
+              service.SERVICE_SCALING_MODE_ANNOTATION,
+              _SCALING_MODE_MANUAL,
+          )
+      )
+      result.append(
+          config_changes.SetAnnotationChange(
+              service.MANUAL_INSTANCE_COUNT_ANNOTATION,
+              str(scaling_val.instance_count),
+          )
+      )
   return result
 
 

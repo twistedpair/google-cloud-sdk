@@ -348,12 +348,17 @@ class Workstations:
     t.start()
 
   def _ForwardClientToServer(self, client, server):
+    """Forwards data from the client to the server."""
     def Forward():
       while True:
         data = client.recv(4096)
         if not data:
           break
-        server.send(data)
+        try:
+          server.send(data)
+        except websocket_exceptions.WebSocketConnectionClosedException:
+          log.error('Connection to Cloud Workstation lost.')
+          break
 
     t = threading.Thread(target=Forward)
     t.daemon = True

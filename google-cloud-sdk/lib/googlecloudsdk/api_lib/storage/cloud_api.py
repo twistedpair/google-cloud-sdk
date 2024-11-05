@@ -333,13 +333,15 @@ class CloudApi(object):
     """
     raise NotImplementedError('get_bucket_iam_policy must be overridden.')
 
-  def list_buckets(self, fields_scope=None, soft_deleted=False):
+  def list_buckets(self, fields_scope=None, soft_deleted=False, prefix=None):
     """Lists bucket metadata for the given project.
 
     Args:
       fields_scope (FieldsScope): Determines the fields and projection
         parameters of API call.
       soft_deleted (bool): If true, only soft-deleted bucket versions will be
+        returned.
+      prefix (str): If provided, only buckets with the given prefix will be
         returned.
 
     Yields:

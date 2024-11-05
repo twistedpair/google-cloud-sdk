@@ -5,6 +5,68 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 500.0.0 (2024-11-05)
+
+### Breaking Changes
+
+*   **(Notebook Executor)** Removed `gcloud beta notebook-executor` command group. Use `gcloud beta colab` to manage Colab Enterprise executions and schedules instead.
+
+
+### Google Cloud CLI
+
+* Updated `gcloud` CLI to support Python v3.13.
+
+### Audit Manager
+
+* Promoted the following commands to GA:
+    * `gcloud audit-manager audit-reports generate`
+    * `gcloud audit-manager audit-scopes generate`
+    * `gcloud audit-manager enrollments add`
+    * `gcloud audit-manager operations  describe`
+
+### Cloud Backup DR
+
+*   Marked `--network` flag of `gcloud backup-dr management-servers create` as optional.
+
+### Cloud Run
+
+* Added `mount-options` key when using `--add-volume` with `type=cloud-storage` in `gcloud beta run deploy`,
+`gcloud beta run services update`, `gcloud beta run jobs deploy`, `gcloud beta run jobs update`,
+or `gcloud beta run jobs create` to allow passing configuration flags to `gcsfuse`.
+
+### Colab
+
+* Added `gcloud beta colab executions` command group to replace `gcloud beta notebook-executor executions`.
+* Added `gcloud beta colab schedules` command group to replace `gcloud beta notebook-executor schedules`.
+* Add support for `colab/region` property in `gcloud beta colab executions` and `gcloud beta colab schedules`.
+
+### Compute Engine
+
+* Promoted `gcloud compute instances list` output format with IPv6 addresses to GA.
+
+### Compute OS Config
+
+* Promoted `gcloud os-config policy-orchestrators` to beta.
+
+### Kubernetes Engine
+
+* Added flag option `--tier` to
+  `gcloud container clusters create`, `gcloud container clusters create-auto` and `gcloud container clusters update` commands.
+   This flag enables clusters to be upgraded to GKE Enterprise.
+*   Update validation for flag `--database-encryption-key`.
+
+### Network Connectivity
+
+* Updated `gcloud network-connectivity internal-ranges update` to allow editability of description.
+
+### Security Command Center
+
+* Made `filter` a required flag for `gcloud scc bulk-mute` command.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 499.0.0 (2024-10-29)
 
 ### Breaking Changes

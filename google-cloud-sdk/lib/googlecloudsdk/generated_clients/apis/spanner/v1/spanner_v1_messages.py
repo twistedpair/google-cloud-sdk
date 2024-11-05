@@ -194,6 +194,9 @@ class Backup(_messages.Message):
       determine which backups are part of the same incremental backup chain.
       The ordering of backups in the chain can be determined by ordering the
       backup `version_time`.
+    instancePartitions: Output only. The instance partition(s) storing the
+      backup. This is the same as the list of the instance partition(s) that
+      the database had footprint in at the backup's `version_time`.
     maxExpireTime: Output only. The max allowed expiration time of the backup,
       with microseconds granularity. A backup's expiration time can be
       configured in multiple APIs: CreateBackup, UpdateBackup, CopyBackup.
@@ -272,14 +275,15 @@ class Backup(_messages.Message):
   expireTime = _messages.StringField(8)
   freeableSizeBytes = _messages.IntegerField(9)
   incrementalBackupChainId = _messages.StringField(10)
-  maxExpireTime = _messages.StringField(11)
-  name = _messages.StringField(12)
-  oldestVersionTime = _messages.StringField(13)
-  referencingBackups = _messages.StringField(14, repeated=True)
-  referencingDatabases = _messages.StringField(15, repeated=True)
-  sizeBytes = _messages.IntegerField(16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  versionTime = _messages.StringField(18)
+  instancePartitions = _messages.MessageField('BackupInstancePartition', 11, repeated=True)
+  maxExpireTime = _messages.StringField(12)
+  name = _messages.StringField(13)
+  oldestVersionTime = _messages.StringField(14)
+  referencingBackups = _messages.StringField(15, repeated=True)
+  referencingDatabases = _messages.StringField(16, repeated=True)
+  sizeBytes = _messages.IntegerField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  versionTime = _messages.StringField(19)
 
 
 class BackupInfo(_messages.Message):
@@ -299,6 +303,17 @@ class BackupInfo(_messages.Message):
   createTime = _messages.StringField(2)
   sourceDatabase = _messages.StringField(3)
   versionTime = _messages.StringField(4)
+
+
+class BackupInstancePartition(_messages.Message):
+  r"""Instance partition information for the backup.
+
+  Fields:
+    instancePartition: A unique identifier for the instance partition. Values
+      are of the form `projects//instances//instancePartitions/`
+  """
+
+  instancePartition = _messages.StringField(1)
 
 
 class BackupSchedule(_messages.Message):
@@ -1956,14 +1971,12 @@ class Instance(_messages.Message):
 
   Enums:
     DefaultBackupScheduleTypeValueValuesEnum: Optional. Controls the default
-      backup behavior for new databases within the instance. If
-      default_backup_schedule_type is not specified in the
-      `CreateInstanceRequest`, it defaults to `AUTOMATIC`, except for free
-      instances. Note that `AUTOMATIC` is not permitted for free instances, as
-      backups and backup schedules are not allowed for free instances. In the
-      `GetInstance` or `ListInstances` response, if the value of
-      default_backup_schedule_type is unset or NONE, no default backup
-      schedule will be created for new databases within the instance.
+      backup behavior for new databases within the instance. Note that
+      `AUTOMATIC` is not permitted for free instances, as backups and backup
+      schedules are not allowed for free instances. In the `GetInstance` or
+      `ListInstances` response, if the value of default_backup_schedule_type
+      is unset or NONE, no default backup schedule will be created for new
+      databases within the instance.
     DefaultStorageTypeValueValuesEnum: The `StorageType` of the current
       instance. If unspecified, it will default to the first StorageType in
       the list of allowed_storage_types in the `InstanceConfig` for this
@@ -2004,9 +2017,7 @@ class Instance(_messages.Message):
       ListInstanceConfigs.
     createTime: Output only. The time at which the instance was created.
     defaultBackupScheduleType: Optional. Controls the default backup behavior
-      for new databases within the instance. If default_backup_schedule_type
-      is not specified in the `CreateInstanceRequest`, it defaults to
-      `AUTOMATIC`, except for free instances. Note that `AUTOMATIC` is not
+      for new databases within the instance. Note that `AUTOMATIC` is not
       permitted for free instances, as backups and backup schedules are not
       allowed for free instances. In the `GetInstance` or `ListInstances`
       response, if the value of default_backup_schedule_type is unset or NONE,
@@ -2083,13 +2094,11 @@ class Instance(_messages.Message):
 
   class DefaultBackupScheduleTypeValueValuesEnum(_messages.Enum):
     r"""Optional. Controls the default backup behavior for new databases
-    within the instance. If default_backup_schedule_type is not specified in
-    the `CreateInstanceRequest`, it defaults to `AUTOMATIC`, except for free
-    instances. Note that `AUTOMATIC` is not permitted for free instances, as
-    backups and backup schedules are not allowed for free instances. In the
-    `GetInstance` or `ListInstances` response, if the value of
-    default_backup_schedule_type is unset or NONE, no default backup schedule
-    will be created for new databases within the instance.
+    within the instance. Note that `AUTOMATIC` is not permitted for free
+    instances, as backups and backup schedules are not allowed for free
+    instances. In the `GetInstance` or `ListInstances` response, if the value
+    of default_backup_schedule_type is unset or NONE, no default backup
+    schedule will be created for new databases within the instance.
 
     Values:
       DEFAULT_BACKUP_SCHEDULE_TYPE_UNSPECIFIED: Not specified.

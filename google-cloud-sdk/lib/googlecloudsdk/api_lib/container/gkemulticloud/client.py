@@ -92,6 +92,26 @@ class ClientBase(object):
         ]
     )
 
+  def _TagBindings(self, args, parent_type):
+    """Parses the tag bindings from the args.
+
+    Args:
+      args: Arguments to be parsed.
+      parent_type: Type of the parent object.
+
+    Returns:
+      Returns the parsed tag bindings.
+    """
+    tag_bindings = flags.GetTagBindings(args)
+    if not tag_bindings:
+      return None
+    tag_binding_type = parent_type.TagsValue.AdditionalProperty
+    return parent_type.TagsValue(
+        additionalProperties=[
+            tag_binding_type(key=k, value=v) for k, v in tag_bindings.items()
+        ]
+    )
+
   def _BinaryAuthorization(self, args):
     evaluation_mode = flags.GetBinauthzEvaluationMode(args)
     if not evaluation_mode:

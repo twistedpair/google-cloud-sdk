@@ -494,9 +494,6 @@ class GoogleCloudNetworkconnectivityV1betaGateway(_messages.Message):
       this gateway's internal intfrastructure.
     landingNetwork: Optional. This field will be deprecated and replaced
       before gateway spokes reach General Availability.
-    services: Optional. A list of services that can process traffic sent to
-      this gateway. Only a single service is supported and that service will
-      process all traffic sent to the gateway.
   """
 
   class CapacityValueValuesEnum(_messages.Enum):
@@ -526,18 +523,6 @@ class GoogleCloudNetworkconnectivityV1betaGateway(_messages.Message):
   capacity = _messages.EnumField('CapacityValueValuesEnum', 1)
   ipRangeReservations = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaIpRangeReservation', 2, repeated=True)
   landingNetwork = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLandingNetwork', 3)
-  services = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaGatewayService', 4, repeated=True)
-
-
-class GoogleCloudNetworkconnectivityV1betaGatewayService(_messages.Message):
-  r"""Exactly one field must be populated. For multiple services, add
-  additional entries to `HubGateway.services`.
-
-  Fields:
-    linkedSseGateway: Optional. Apply Secure Services Edge processing
-  """
-
-  linkedSseGateway = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedSSEGateway', 1)
 
 
 class GoogleCloudNetworkconnectivityV1betaGroup(_messages.Message):
@@ -954,16 +939,6 @@ class GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances(_messag
   instances = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaRouterApplianceInstance', 2, repeated=True)
   siteToSiteDataTransfer = _messages.BooleanField(3)
   vpcNetwork = _messages.StringField(4)
-
-
-class GoogleCloudNetworkconnectivityV1betaLinkedSSEGateway(_messages.Message):
-  r"""Apply Secure Services Edge processing
-
-  Fields:
-    sseGatewayUri: Immutable. The URI of a Secure Services Edge Gateway
-  """
-
-  sseGatewayUri = _messages.StringField(1)
 
 
 class GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork(_messages.Message):
@@ -1947,7 +1922,6 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
       INTERCONNECT_ATTACHMENT: Spokes associated with VLAN attachments.
       ROUTER_APPLIANCE: Spokes associated with router appliance instances.
       VPC_NETWORK: Spokes associated with VPC networks.
-      GATEWAY: Spokes that are NCC gateways.
       PRODUCER_VPC_NETWORK: Spokes that are backed by a producer VPC network.
     """
     SPOKE_TYPE_UNSPECIFIED = 0
@@ -1955,8 +1929,7 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
     INTERCONNECT_ATTACHMENT = 2
     ROUTER_APPLIANCE = 3
     VPC_NETWORK = 4
-    GATEWAY = 5
-    PRODUCER_VPC_NETWORK = 6
+    PRODUCER_VPC_NETWORK = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current lifecycle state of this spoke.
@@ -2162,7 +2135,6 @@ class GoogleCloudNetworkconnectivityV1betaSpokeTypeCount(_messages.Message):
       INTERCONNECT_ATTACHMENT: Spokes associated with VLAN attachments.
       ROUTER_APPLIANCE: Spokes associated with router appliance instances.
       VPC_NETWORK: Spokes associated with VPC networks.
-      GATEWAY: Spokes that are NCC gateways.
       PRODUCER_VPC_NETWORK: Spokes that are backed by a producer VPC network.
     """
     SPOKE_TYPE_UNSPECIFIED = 0
@@ -2170,8 +2142,7 @@ class GoogleCloudNetworkconnectivityV1betaSpokeTypeCount(_messages.Message):
     INTERCONNECT_ATTACHMENT = 2
     ROUTER_APPLIANCE = 3
     VPC_NETWORK = 4
-    GATEWAY = 5
-    PRODUCER_VPC_NETWORK = 6
+    PRODUCER_VPC_NETWORK = 5
 
   count = _messages.IntegerField(1)
   spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 2)

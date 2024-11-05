@@ -244,28 +244,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_MARKETCAPTURECOLLECTORS = (
-      'projects.locations.marketCaptureCollectors',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'marketCaptureCollectors/{marketCaptureCollectorsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_MARKETCAPTUREENGINES = (
-      'projects.locations.marketCaptureEngines',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'marketCaptureEngines/{marketCaptureEnginesId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_MIRRORINGDEPLOYMENTGROUPS = (
       'projects.locations.mirroringDeploymentGroups',
       '{+name}',
@@ -421,28 +399,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_SSEGATEWAYS = (
-      'projects.locations.sseGateways',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/sseGateways/'
-              '{sseGatewaysId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_SSEREALMS = (
-      'projects.locations.sseRealms',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/sseRealms/'
-              '{sseRealmsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_TLSINSPECTIONPOLICIES = (
       'projects.locations.tlsInspectionPolicies',
       '{+name}',
@@ -450,6 +406,28 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/'
               'tlsInspectionPolicies/{tlsInspectionPoliciesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_ULLMIRRORINGCOLLECTORS = (
+      'projects.locations.ullMirroringCollectors',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'ullMirroringCollectors/{ullMirroringCollectorsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_ULLMIRRORINGENGINES = (
+      'projects.locations.ullMirroringEngines',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'ullMirroringEngines/{ullMirroringEnginesId}',
       },
       ['name'],
       True
