@@ -415,7 +415,7 @@ def AddFinalbackupDescription(parser):
       '--final-backup-description',
       required=False,
       hidden=True,
-      help='Provides description for the final backup going to be taken.'
+      help='Provides description for the final backup going to be taken.',
   )
 
 
@@ -1827,9 +1827,7 @@ def AddBakImportKeepEncryptedArgument(parser):
       required=False,
       default=False,
       hidden=True,
-      help=(
-          'Whether or not to decrypt the imported encrypted BAK file.'
-      ),
+      help='Whether or not to decrypt the imported encrypted BAK file.',
   )
 
 
@@ -2321,6 +2319,7 @@ def GetInstanceListFormatForNetworkArchitectureUpgrade():
 
   return table_format
 
+
 INSTANCES_FORMAT_COLUMNS_WITH_TRANSACTIONAL_LOG_STORAGE_STATE = [
     'name',
     'databaseVersion',
@@ -2446,10 +2445,7 @@ def AddShowEdition(parser):
   """Show the instance or tier edition."""
   kwargs = _GetKwargsForBoolFlag(False)
   parser.add_argument(
-      '--show-edition',
-      required=False,
-      help='Show the edition field.',
-      **kwargs
+      '--show-edition', required=False, help='Show the edition field.', **kwargs
   )
 
 
@@ -2642,6 +2638,7 @@ def AddCustomSubjectAlternativeNames(parser, hidden=False):
 
 
 def AddClearCustomSubjectAlternativeNames(parser, hidden=False):
+  kwargs = _GetKwargsForBoolFlag(False)
   parser.add_argument(
       '--clear-custom-subject-alternative-names',
       required=False,
@@ -2649,6 +2646,7 @@ def AddClearCustomSubjectAlternativeNames(parser, hidden=False):
           'This will clear the customer specified DNS names.'
       ),
       hidden=hidden,
+      **kwargs
   )
 
 
@@ -2732,7 +2730,9 @@ def AddReplicationLagMaxSecondsForRecreate(parser):
           'Set a maximum replication lag for a MySQL read replica in '
           'seconds. If the replica lag exceeds the specified value, the read'
           'replica(s) will be recreated. Min value=300 seconds,'
-          'Max value=31536000 seconds, default value=31536000 seconds.'))
+          'Max value=31536000 seconds, default value=31536000 seconds.'
+      ),
+  )
 
 
 def AddSslMode(parser, hidden=False):
@@ -2837,10 +2837,10 @@ def AddSwitchoverDbTimeout(parser):
       type=arg_parsers.Duration(lower_bound='1s', upper_bound='1d'),
       required=False,
       help=(
-          '(MySQL only) Cloud SQL instance operations timeout, which is the sum'
-          ' of all database operations. Default value is 10 minutes and can be'
-          ' modified to a maximum value of 24h.'
-      )
+          '(MySQL and PostgreSQL only) Cloud SQL instance operations timeout,'
+          ' which is the sum of all database operations. Default value is 10'
+          ' minutes and can be modified to a maximum value of 24h.'
+      ),
   )
 
 
@@ -2858,8 +2858,12 @@ def AddServerCaMode(parser):
               'Google-managed self-signed internal CA.'
           ),
           'GOOGLE_MANAGED_CAS_CA': (
-              "Google-managed regional CA part of root CA hierarchy hosted on"
+              'Google-managed regional CA part of root CA hierarchy hosted on'
               " Google Cloud's Certificate Authority Service (CAS)."
+          ),
+          'CUSTOMER_MANAGED_CAS_CA': (
+              "Customer-managed CA hosted on Google Cloud's Certificate"
+              " Authority Service (CAS)."
           ),
       },
       required=False,
@@ -2903,9 +2907,7 @@ def AddTdeFlags(parser):
   enc_group.add_argument(
       '--certificate',
       required=True,
-      help=(
-          'Name of the encryption certificate.'
-      ),
+      help='Name of the encryption certificate.',
   )
   enc_group.add_argument(
       '--cert-path',
@@ -3064,5 +3066,21 @@ def AddConnectionPoolingQueryWaitTimeout(parser):
       required=False,
       default=None,
       help='The query wait timeout for managed connection pooling.',
+      hidden=True,
+  )
+
+
+def AddServerCaPool(parser):
+  """Adds the '--server-ca-pool' flag to the parser.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  help_text = 'Set the server CA pool of the instance.'
+  parser.add_argument(
+      '--server-ca-pool',
+      required=False,
+      default=None,
+      help=help_text,
       hidden=True,
   )

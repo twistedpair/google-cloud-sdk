@@ -381,6 +381,7 @@ CONTROLLER_MANAGER = 'CONTROLLER_MANAGER'
 ADDON_MANAGER = 'ADDON_MANAGER'
 KCP_SSHD = 'KCP_SSHD'
 KCP_CONNECTION = 'KCP_CONNECTION'
+KCP_HPA = 'KCP_HPA'
 STORAGE = 'STORAGE'
 HPA_COMPONENT = 'HPA'
 POD = 'POD'
@@ -400,6 +401,7 @@ LOGGING_OPTIONS = [
     ADDON_MANAGER,
     KCP_SSHD,
     KCP_CONNECTION,
+    KCP_HPA,
 ]
 MONITORING_OPTIONS = [
     NONE,
@@ -772,6 +774,7 @@ class CreateClusterOptions(object):
       enable_secret_manager=None,
       enable_cilium_clusterwide_network_policy=None,
       storage_pools=None,
+      local_ssd_encryption_mode=None,
       enable_ray_cluster_logging=None,
       enable_ray_cluster_monitoring=None,
       enable_insecure_binding_system_authenticated=None,
@@ -951,6 +954,7 @@ class CreateClusterOptions(object):
     self.enable_confidential_nodes = enable_confidential_nodes
     self.enable_confidential_storage = enable_confidential_storage
     self.storage_pools = storage_pools
+    self.local_ssd_encryption_mode = local_ssd_encryption_mode
     self.cluster_dns = cluster_dns
     self.cluster_dns_scope = cluster_dns_scope
     self.cluster_dns_domain = cluster_dns_domain
@@ -1513,6 +1517,7 @@ class CreateNodePoolOptions(object):
       containerd_config_from_file=None,
       secondary_boot_disks=None,
       storage_pools=None,
+      local_ssd_encryption_mode=None,
   ):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
@@ -1602,6 +1607,7 @@ class CreateNodePoolOptions(object):
     self.containerd_config_from_file = containerd_config_from_file
     self.secondary_boot_disks = secondary_boot_disks
     self.storage_pools = storage_pools
+    self.local_ssd_encryption_mode = local_ssd_encryption_mode
 
 
 class UpdateNodePoolOptions(object):
@@ -2813,6 +2819,7 @@ class APIAdapter(object):
     self._AddLocalNvmeSsdBlockToNodeConfig(node_config, options)
     self._AddEnableConfidentialStorageToNodeConfig(node_config, options)
     self._AddStoragePoolsToNodeConfig(node_config, options)
+    self._AddLocalSsdEncryptionModeToNodeConfig(node_config, options)
 
     if options.tags:
       node_config.tags = options.tags
@@ -4688,6 +4695,18 @@ class APIAdapter(object):
       return
     node_config.storagePools = options.storage_pools
 
+  def _AddLocalSsdEncryptionModeToNodeConfig(self, node_config, options):
+    """Add localSsdEncryptionMode to nodeConfig."""
+    if options.local_ssd_encryption_mode is not None:
+      if options.local_ssd_encryption_mode == 'EPHEMERAL_KEY_ENCRYPTION':
+        node_config.localSsdEncryptionMode = (
+            node_config.LocalSsdEncryptionModeValueValuesEnum.EPHEMERAL_KEY_ENCRYPTION
+        )
+      elif options.local_ssd_encryption_mode == 'STANDARD_ENCRYPTION':
+        node_config.localSsdEncryptionMode = (
+            node_config.LocalSsdEncryptionModeValueValuesEnum.STANDARD_ENCRYPTION
+        )
+
   def _AddNodeTaintsToNodeConfig(self, node_config, options):
     """Add nodeTaints to nodeConfig."""
     if options.node_taints is None:
@@ -4924,6 +4943,7 @@ class APIAdapter(object):
     self._AddEphemeralStorageLocalSsdToNodeConfig(node_config, options)
     self._AddLocalNvmeSsdBlockToNodeConfig(node_config, options)
     self._AddStoragePoolsToNodeConfig(node_config, options)
+    self._AddLocalSsdEncryptionModeToNodeConfig(node_config, options)
     if options.enable_confidential_storage:
       node_config.enableConfidentialStorage = (
           options.enable_confidential_storage
@@ -7825,6 +7845,10 @@ def _GetLoggingConfig(options, messages):
     config.enableComponents.append(
         messages.LoggingComponentConfig.EnableComponentsValueListEntryValuesEnum
         .KCP_CONNECTION)
+  if KCP_HPA in options.logging:
+    config.enableComponents.append(
+        messages.LoggingComponentConfig.EnableComponentsValueListEntryValuesEnum
+        .KCP_HPA)
 
   return messages.LoggingConfig(componentConfig=config)
 

@@ -1996,9 +1996,11 @@ class VpcProject(_messages.Message):
   Fields:
     projectId: The project of the VPC to connect to. If not specified, it is
       the same as the cluster project.
+    serviceAccount: Optional. Deprecated: do not use.
   """
 
   projectId = _messages.StringField(1)
+  serviceAccount = _messages.StringField(2)
 
 
 class VpnConnection(_messages.Message):

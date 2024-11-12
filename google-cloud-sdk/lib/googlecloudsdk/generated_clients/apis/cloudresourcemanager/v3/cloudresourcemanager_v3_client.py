@@ -40,10 +40,16 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.effectiveTags = self.EffectiveTagsService(self)
+    self.folders_effectiveSettings = self.FoldersEffectiveSettingsService(self)
+    self.folders_settings = self.FoldersSettingsService(self)
     self.folders = self.FoldersService(self)
     self.liens = self.LiensService(self)
     self.operations = self.OperationsService(self)
+    self.organizations_effectiveSettings = self.OrganizationsEffectiveSettingsService(self)
+    self.organizations_settings = self.OrganizationsSettingsService(self)
     self.organizations = self.OrganizationsService(self)
+    self.projects_effectiveSettings = self.ProjectsEffectiveSettingsService(self)
+    self.projects_settings = self.ProjectsSettingsService(self)
     self.projects = self.ProjectsService(self)
     self.tagBindings = self.TagBindingsService(self)
     self.tagKeys = self.TagKeysService(self)
@@ -83,6 +89,161 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudresourcemanagerEffectiveTagsListRequest',
         response_type_name='ListEffectiveTagsResponse',
+        supports_download=False,
+    )
+
+  class FoldersEffectiveSettingsService(base_api.BaseApiService):
+    """Service class for the folders_effectiveSettings resource."""
+
+    _NAME = 'folders_effectiveSettings'
+
+    def __init__(self, client):
+      super(CloudresourcemanagerV3.FoldersEffectiveSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns a specified effective setting. This method is eventually consistent with setting mutations; this means that recent updates to a setting may not be reflected in the response.
+
+      Args:
+        request: (CloudresourcemanagerFoldersEffectiveSettingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EffectiveSetting) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/folders/{foldersId}/effectiveSettings/{effectiveSettingsId}',
+        http_method='GET',
+        method_id='cloudresourcemanager.folders.effectiveSettings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='CloudresourcemanagerFoldersEffectiveSettingsGetRequest',
+        response_type_name='EffectiveSetting',
+        supports_download=False,
+    )
+
+  class FoldersSettingsService(base_api.BaseApiService):
+    """Service class for the folders_settings resource."""
+
+    _NAME = 'folders_settings'
+
+    def __init__(self, client):
+      super(CloudresourcemanagerV3.FoldersSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Clear(self, request, global_params=None):
+      r"""Clears the setting. This method is equivalent to updating the setting with an empty value.
+
+      Args:
+        request: (CloudresourcemanagerFoldersSettingsClearRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Clear')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Clear.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/folders/{foldersId}/settings/{settingsId}:clear',
+        http_method='POST',
+        method_id='cloudresourcemanager.folders.settings.clear',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}:clear',
+        request_field='clearSettingRequest',
+        request_type_name='CloudresourcemanagerFoldersSettingsClearRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns a specified setting.
+
+      Args:
+        request: (CloudresourcemanagerFoldersSettingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Setting) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/folders/{foldersId}/settings/{settingsId}',
+        http_method='GET',
+        method_id='cloudresourcemanager.folders.settings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='CloudresourcemanagerFoldersSettingsGetRequest',
+        response_type_name='Setting',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the settings that are available on the project / folder / organization resource in the request.
+
+      Args:
+        request: (CloudresourcemanagerFoldersSettingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSettingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/folders/{foldersId}/settings',
+        http_method='GET',
+        method_id='cloudresourcemanager.folders.settings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v3/{+parent}/settings',
+        request_field='',
+        request_type_name='CloudresourcemanagerFoldersSettingsListRequest',
+        response_type_name='ListSettingsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a specified setting.
+
+      Args:
+        request: (CloudresourcemanagerFoldersSettingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Setting) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/folders/{foldersId}/settings/{settingsId}',
+        http_method='PATCH',
+        method_id='cloudresourcemanager.folders.settings.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v3/{+name}',
+        request_field='setting',
+        request_type_name='CloudresourcemanagerFoldersSettingsPatchRequest',
+        response_type_name='Setting',
         supports_download=False,
     )
 
@@ -543,6 +704,161 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsEffectiveSettingsService(base_api.BaseApiService):
+    """Service class for the organizations_effectiveSettings resource."""
+
+    _NAME = 'organizations_effectiveSettings'
+
+    def __init__(self, client):
+      super(CloudresourcemanagerV3.OrganizationsEffectiveSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns a specified effective setting. This method is eventually consistent with setting mutations; this means that recent updates to a setting may not be reflected in the response.
+
+      Args:
+        request: (CloudresourcemanagerOrganizationsEffectiveSettingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EffectiveSetting) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/organizations/{organizationsId}/effectiveSettings/{effectiveSettingsId}',
+        http_method='GET',
+        method_id='cloudresourcemanager.organizations.effectiveSettings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='CloudresourcemanagerOrganizationsEffectiveSettingsGetRequest',
+        response_type_name='EffectiveSetting',
+        supports_download=False,
+    )
+
+  class OrganizationsSettingsService(base_api.BaseApiService):
+    """Service class for the organizations_settings resource."""
+
+    _NAME = 'organizations_settings'
+
+    def __init__(self, client):
+      super(CloudresourcemanagerV3.OrganizationsSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Clear(self, request, global_params=None):
+      r"""Clears the setting. This method is equivalent to updating the setting with an empty value.
+
+      Args:
+        request: (CloudresourcemanagerOrganizationsSettingsClearRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Clear')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Clear.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/organizations/{organizationsId}/settings/{settingsId}:clear',
+        http_method='POST',
+        method_id='cloudresourcemanager.organizations.settings.clear',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}:clear',
+        request_field='clearSettingRequest',
+        request_type_name='CloudresourcemanagerOrganizationsSettingsClearRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns a specified setting.
+
+      Args:
+        request: (CloudresourcemanagerOrganizationsSettingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Setting) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/organizations/{organizationsId}/settings/{settingsId}',
+        http_method='GET',
+        method_id='cloudresourcemanager.organizations.settings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='CloudresourcemanagerOrganizationsSettingsGetRequest',
+        response_type_name='Setting',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the settings that are available on the project / folder / organization resource in the request.
+
+      Args:
+        request: (CloudresourcemanagerOrganizationsSettingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSettingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/organizations/{organizationsId}/settings',
+        http_method='GET',
+        method_id='cloudresourcemanager.organizations.settings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v3/{+parent}/settings',
+        request_field='',
+        request_type_name='CloudresourcemanagerOrganizationsSettingsListRequest',
+        response_type_name='ListSettingsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a specified setting.
+
+      Args:
+        request: (CloudresourcemanagerOrganizationsSettingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Setting) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/organizations/{organizationsId}/settings/{settingsId}',
+        http_method='PATCH',
+        method_id='cloudresourcemanager.organizations.settings.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v3/{+name}',
+        request_field='setting',
+        request_type_name='CloudresourcemanagerOrganizationsSettingsPatchRequest',
+        response_type_name='Setting',
+        supports_download=False,
+    )
+
   class OrganizationsService(base_api.BaseApiService):
     """Service class for the organizations resource."""
 
@@ -684,6 +1000,161 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='CloudresourcemanagerOrganizationsTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsEffectiveSettingsService(base_api.BaseApiService):
+    """Service class for the projects_effectiveSettings resource."""
+
+    _NAME = 'projects_effectiveSettings'
+
+    def __init__(self, client):
+      super(CloudresourcemanagerV3.ProjectsEffectiveSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns a specified effective setting. This method is eventually consistent with setting mutations; this means that recent updates to a setting may not be reflected in the response.
+
+      Args:
+        request: (CloudresourcemanagerProjectsEffectiveSettingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EffectiveSetting) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/effectiveSettings/{effectiveSettingsId}',
+        http_method='GET',
+        method_id='cloudresourcemanager.projects.effectiveSettings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='CloudresourcemanagerProjectsEffectiveSettingsGetRequest',
+        response_type_name='EffectiveSetting',
+        supports_download=False,
+    )
+
+  class ProjectsSettingsService(base_api.BaseApiService):
+    """Service class for the projects_settings resource."""
+
+    _NAME = 'projects_settings'
+
+    def __init__(self, client):
+      super(CloudresourcemanagerV3.ProjectsSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Clear(self, request, global_params=None):
+      r"""Clears the setting. This method is equivalent to updating the setting with an empty value.
+
+      Args:
+        request: (CloudresourcemanagerProjectsSettingsClearRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Clear')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Clear.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/settings/{settingsId}:clear',
+        http_method='POST',
+        method_id='cloudresourcemanager.projects.settings.clear',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}:clear',
+        request_field='clearSettingRequest',
+        request_type_name='CloudresourcemanagerProjectsSettingsClearRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns a specified setting.
+
+      Args:
+        request: (CloudresourcemanagerProjectsSettingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Setting) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/settings/{settingsId}',
+        http_method='GET',
+        method_id='cloudresourcemanager.projects.settings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='CloudresourcemanagerProjectsSettingsGetRequest',
+        response_type_name='Setting',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the settings that are available on the project / folder / organization resource in the request.
+
+      Args:
+        request: (CloudresourcemanagerProjectsSettingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSettingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/settings',
+        http_method='GET',
+        method_id='cloudresourcemanager.projects.settings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v3/{+parent}/settings',
+        request_field='',
+        request_type_name='CloudresourcemanagerProjectsSettingsListRequest',
+        response_type_name='ListSettingsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a specified setting.
+
+      Args:
+        request: (CloudresourcemanagerProjectsSettingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Setting) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/settings/{settingsId}',
+        http_method='PATCH',
+        method_id='cloudresourcemanager.projects.settings.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v3/{+name}',
+        request_field='setting',
+        request_type_name='CloudresourcemanagerProjectsSettingsPatchRequest',
+        response_type_name='Setting',
         supports_download=False,
     )
 

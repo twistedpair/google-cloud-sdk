@@ -815,6 +815,9 @@ class DropInfo(_messages.Message):
       NO_KNOWN_ROUTE_FROM_PEERED_NETWORK_TO_DESTINATION: Packet from the
         unknown peered network is dropped due to no known route from the
         source network to the destination IP address.
+      PRIVATE_NAT_TO_PSC_ENDPOINT_UNSUPPORTED: Sending packets processed by
+        the Private NAT Gateways to the Private Service Connect endpoints is
+        not supported.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -899,6 +902,7 @@ class DropInfo(_messages.Message):
     NO_ADVERTISED_ROUTE_TO_GCP_DESTINATION = 80
     NO_TRAFFIC_SELECTOR_TO_GCP_DESTINATION = 81
     NO_KNOWN_ROUTE_FROM_PEERED_NETWORK_TO_DESTINATION = 82
+    PRIVATE_NAT_TO_PSC_ENDPOINT_UNSUPPORTED = 83
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationIp = _messages.StringField(2)
@@ -958,8 +962,13 @@ class Endpoint(_messages.Message):
       projects/{project}/regions/{region}/forwardingRules/{id}
     forwardingRuleTarget: Output only. Specifies the type of the target of the
       forwarding rule.
-    gkeMasterCluster: A cluster URI for [Google Kubernetes Engine
-      master](https://cloud.google.com/kubernetes-
+    fqdn: DNS endpoint of [Google Kubernetes Engine cluster control
+      plane](https://cloud.google.com/kubernetes-engine/docs/concepts/cluster-
+      architecture). Requires gke_master_cluster to be set, can't be used
+      simultaneoulsly with ip_address or network. Applicable only to
+      destination endpoint.
+    gkeMasterCluster: A cluster URI for [Google Kubernetes Engine cluster
+      control plane](https://cloud.google.com/kubernetes-
       engine/docs/concepts/cluster-architecture).
     instance: A Compute Engine instance URI.
     ipAddress: The IP address of the endpoint, which can be an external or
@@ -1058,17 +1067,18 @@ class Endpoint(_messages.Message):
   cloudSqlInstance = _messages.StringField(4)
   forwardingRule = _messages.StringField(5)
   forwardingRuleTarget = _messages.EnumField('ForwardingRuleTargetValueValuesEnum', 6)
-  gkeMasterCluster = _messages.StringField(7)
-  instance = _messages.StringField(8)
-  ipAddress = _messages.StringField(9)
-  loadBalancerId = _messages.StringField(10)
-  loadBalancerType = _messages.EnumField('LoadBalancerTypeValueValuesEnum', 11)
-  network = _messages.StringField(12)
-  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 13)
-  port = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  projectId = _messages.StringField(15)
-  redisCluster = _messages.StringField(16)
-  redisInstance = _messages.StringField(17)
+  fqdn = _messages.StringField(7)
+  gkeMasterCluster = _messages.StringField(8)
+  instance = _messages.StringField(9)
+  ipAddress = _messages.StringField(10)
+  loadBalancerId = _messages.StringField(11)
+  loadBalancerType = _messages.EnumField('LoadBalancerTypeValueValuesEnum', 12)
+  network = _messages.StringField(13)
+  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 14)
+  port = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  projectId = _messages.StringField(16)
+  redisCluster = _messages.StringField(17)
+  redisInstance = _messages.StringField(18)
 
 
 class EndpointInfo(_messages.Message):
@@ -1316,14 +1326,16 @@ class GKEMasterInfo(_messages.Message):
   Fields:
     clusterNetworkUri: URI of a GKE cluster network.
     clusterUri: URI of a GKE cluster.
-    externalIp: External IP address of a GKE cluster master.
-    internalIp: Internal IP address of a GKE cluster master.
+    dnsEndpoint: DNS endpoint of a GKE cluster control plane.
+    externalIp: External IP address of a GKE cluster control plane.
+    internalIp: Internal IP address of a GKE cluster control plane.
   """
 
   clusterNetworkUri = _messages.StringField(1)
   clusterUri = _messages.StringField(2)
-  externalIp = _messages.StringField(3)
-  internalIp = _messages.StringField(4)
+  dnsEndpoint = _messages.StringField(3)
+  externalIp = _messages.StringField(4)
+  internalIp = _messages.StringField(5)
 
 
 class GoogleServiceInfo(_messages.Message):

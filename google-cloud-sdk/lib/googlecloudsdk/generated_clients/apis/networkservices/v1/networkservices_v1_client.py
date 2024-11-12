@@ -39,15 +39,18 @@ class NetworkservicesV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_authzExtensions = self.ProjectsLocationsAuthzExtensionsService(self)
     self.projects_locations_edgeCacheKeysets = self.ProjectsLocationsEdgeCacheKeysetsService(self)
     self.projects_locations_edgeCacheOrigins = self.ProjectsLocationsEdgeCacheOriginsService(self)
     self.projects_locations_edgeCacheServices = self.ProjectsLocationsEdgeCacheServicesService(self)
     self.projects_locations_endpointPolicies = self.ProjectsLocationsEndpointPoliciesService(self)
+    self.projects_locations_gateways_routeViews = self.ProjectsLocationsGatewaysRouteViewsService(self)
     self.projects_locations_gateways = self.ProjectsLocationsGatewaysService(self)
     self.projects_locations_grpcRoutes = self.ProjectsLocationsGrpcRoutesService(self)
     self.projects_locations_httpRoutes = self.ProjectsLocationsHttpRoutesService(self)
     self.projects_locations_lbRouteExtensions = self.ProjectsLocationsLbRouteExtensionsService(self)
     self.projects_locations_lbTrafficExtensions = self.ProjectsLocationsLbTrafficExtensionsService(self)
+    self.projects_locations_meshes_routeViews = self.ProjectsLocationsMeshesRouteViewsService(self)
     self.projects_locations_meshes = self.ProjectsLocationsMeshesService(self)
     self.projects_locations_multicastConsumerAssociations = self.ProjectsLocationsMulticastConsumerAssociationsService(self)
     self.projects_locations_multicastDomainActivations = self.ProjectsLocationsMulticastDomainActivationsService(self)
@@ -68,6 +71,151 @@ class NetworkservicesV1(base_api.BaseApiClient):
     self.projects_locations_wasmPlugins = self.ProjectsLocationsWasmPluginsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsAuthzExtensionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_authzExtensions resource."""
+
+    _NAME = 'projects_locations_authzExtensions'
+
+    def __init__(self, client):
+      super(NetworkservicesV1.ProjectsLocationsAuthzExtensionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new `AuthzExtension` resource in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsAuthzExtensionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/authzExtensions',
+        http_method='POST',
+        method_id='networkservices.projects.locations.authzExtensions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['authzExtensionId', 'requestId'],
+        relative_path='v1/{+parent}/authzExtensions',
+        request_field='authzExtension',
+        request_type_name='NetworkservicesProjectsLocationsAuthzExtensionsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified `AuthzExtension` resource.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsAuthzExtensionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/authzExtensions/{authzExtensionsId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.authzExtensions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsAuthzExtensionsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of the specified `AuthzExtension` resource.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsAuthzExtensionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AuthzExtension) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/authzExtensions/{authzExtensionsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.authzExtensions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsAuthzExtensionsGetRequest',
+        response_type_name='AuthzExtension',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists `AuthzExtension` resources in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsAuthzExtensionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAuthzExtensionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/authzExtensions',
+        http_method='GET',
+        method_id='networkservices.projects.locations.authzExtensions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/authzExtensions',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsAuthzExtensionsListRequest',
+        response_type_name='ListAuthzExtensionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of the specified `AuthzExtension` resource.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsAuthzExtensionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/authzExtensions/{authzExtensionsId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.authzExtensions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='authzExtension',
+        request_type_name='NetworkservicesProjectsLocationsAuthzExtensionsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsEdgeCacheKeysetsService(base_api.BaseApiService):
     """Service class for the projects_locations_edgeCacheKeysets resource."""
@@ -919,6 +1067,70 @@ class NetworkservicesV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsGatewaysRouteViewsService(base_api.BaseApiService):
+    """Service class for the projects_locations_gateways_routeViews resource."""
+
+    _NAME = 'projects_locations_gateways_routeViews'
+
+    def __init__(self, client):
+      super(NetworkservicesV1.ProjectsLocationsGatewaysRouteViewsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get a single RouteView of a Gateway.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsGatewaysRouteViewsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GatewayRouteView) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}/routeViews/{routeViewsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.gateways.routeViews.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsGatewaysRouteViewsGetRequest',
+        response_type_name='GatewayRouteView',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists RouteViews.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsGatewaysRouteViewsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListGatewayRouteViewsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}/routeViews',
+        http_method='GET',
+        method_id='networkservices.projects.locations.gateways.routeViews.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/routeViews',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsGatewaysRouteViewsListRequest',
+        response_type_name='ListGatewayRouteViewsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsGatewaysService(base_api.BaseApiService):
     """Service class for the projects_locations_gateways resource."""
 
@@ -1641,6 +1853,70 @@ class NetworkservicesV1(base_api.BaseApiClient):
         request_field='lbTrafficExtension',
         request_type_name='NetworkservicesProjectsLocationsLbTrafficExtensionsPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsMeshesRouteViewsService(base_api.BaseApiService):
+    """Service class for the projects_locations_meshes_routeViews resource."""
+
+    _NAME = 'projects_locations_meshes_routeViews'
+
+    def __init__(self, client):
+      super(NetworkservicesV1.ProjectsLocationsMeshesRouteViewsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get a single RouteView of a Mesh.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMeshesRouteViewsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MeshRouteView) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/meshes/{meshesId}/routeViews/{routeViewsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.meshes.routeViews.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsMeshesRouteViewsGetRequest',
+        response_type_name='MeshRouteView',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists RouteViews.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMeshesRouteViewsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMeshRouteViewsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/meshes/{meshesId}/routeViews',
+        http_method='GET',
+        method_id='networkservices.projects.locations.meshes.routeViews.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/routeViews',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsMeshesRouteViewsListRequest',
+        response_type_name='ListMeshRouteViewsResponse',
         supports_download=False,
     )
 

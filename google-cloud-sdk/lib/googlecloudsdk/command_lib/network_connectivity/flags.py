@@ -62,6 +62,25 @@ def AddIncludeExportRangesFlag(parser, hide_include_export_ranges_flag):
   )
 
 
+def AddUpdateIncludeExportRangesFlag(
+    parser, hide_include_export_ranges_flag
+):
+  """Adds the --include-export-ranges argument to the update operation parser."""
+
+  parser.add_argument(
+      '--include-export-ranges',
+      required=False,
+      type=arg_parsers.ArgList(),
+      default=None,
+      metavar='CIDR_RANGE',
+      hidden=hide_include_export_ranges_flag,
+      help="""\
+      Only allows adding `ALL_IPV6_RANGES` to include export ranges or removing
+      `ALL_IPV6_RANGES` from include export ranges.
+      """,
+  )
+
+
 def GetCapacityArg(messages):
   return arg_utils.ChoiceEnumMapper(
       arg_name='--capacity',

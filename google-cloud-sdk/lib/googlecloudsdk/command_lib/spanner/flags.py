@@ -441,17 +441,16 @@ def Edition(
   )
 
 
-# TODO(b/370068996): Unhide the flag.
 def DefaultBackupScheduleType(
+    choices=None,
     required=False,
-    hidden=True,
-    text='The type of the default backup schedule to use for the instance.',
+    text='The default backup schedule type that is used in the instance.',
 ):
   return base.Argument(
       '--default-backup-schedule-type',
       required=required,
-      hidden=hidden,
       help=text,
+      choices=choices,
   )
 
 

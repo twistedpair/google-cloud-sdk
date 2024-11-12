@@ -1609,7 +1609,9 @@ class JsonClient(cloud_api.CloudApi):
   def advance_relocate_bucket(self, bucket_name, operation_id, ttl=None):
     """See CloudApi class."""
     advance_relocate_bucket_operation_request = (
-        self.messages.AdvanceRelocateBucketOperationRequest(ttl=ttl)
+        self.messages.AdvanceRelocateBucketOperationRequest(
+            ttl=str(ttl) + 's' if ttl is not None else None
+        )
     )
     request = self.messages.StorageBucketsOperationsAdvanceRelocateBucketRequest(
         advanceRelocateBucketOperationRequest=advance_relocate_bucket_operation_request,

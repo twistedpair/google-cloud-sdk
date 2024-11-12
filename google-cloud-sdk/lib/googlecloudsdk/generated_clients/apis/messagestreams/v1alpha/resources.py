@@ -59,6 +59,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_RETRYPOLICIES = (
+      'projects.locations.retryPolicies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/retryPolicies/'
+              '{retryPoliciesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SERVICES = (
       'projects.locations.services',
       'projects/{projectsId}/locations/{locationsId}/services/{servicesId}',

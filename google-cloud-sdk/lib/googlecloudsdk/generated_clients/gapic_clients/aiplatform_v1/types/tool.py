@@ -31,8 +31,10 @@ __protobuf__ = proto.module(
         'FunctionCall',
         'FunctionResponse',
         'Retrieval',
+        'VertexRagStore',
         'VertexAISearch',
         'GoogleSearchRetrieval',
+        'DynamicRetrievalConfig',
         'ToolConfig',
         'FunctionCallingConfig',
     },
@@ -59,7 +61,7 @@ class Tool(proto.Message):
             [FunctionResponse][content.part.function_response] for each
             function call in the next turn. Based on the function
             responses, Model will generate the final response back to
-            the user. Maximum 64 function declarations can be provided.
+            the user. Maximum 128 function declarations can be provided.
         retrieval (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.Retrieval):
             Optional. Retrieval tool type.
             System will always execute the provided
@@ -93,9 +95,10 @@ class FunctionDeclaration(proto.Message):
     r"""Structured representation of a function declaration as defined by
     the `OpenAPI 3.0
     specification <https://spec.openapis.org/oas/v3.0.3>`__. Included in
-    this declaration are the function name and parameters. This
-    FunctionDeclaration is a representation of a block of code that can
-    be used as a ``Tool`` by the model and executed by the client.
+    this declaration are the function name, description, parameters and
+    response type. This FunctionDeclaration is a representation of a
+    block of code that can be used as a ``Tool`` by the model and
+    executed by the client.
 
     Attributes:
         name (str):
@@ -130,6 +133,12 @@ class FunctionDeclaration(proto.Message):
             required:
 
              - param1
+        response (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.Schema):
+            Optional. Describes the output from this
+            function in JSON Schema format. Reflects the
+            Open API 3.03 Response Object. The Schema
+            defines the type used for the response value of
+            the function.
     """
 
     name: str = proto.Field(
@@ -143,6 +152,11 @@ class FunctionDeclaration(proto.Message):
     parameters: openapi.Schema = proto.Field(
         proto.MESSAGE,
         number=3,
+        message=openapi.Schema,
+    )
+    response: openapi.Schema = proto.Field(
+        proto.MESSAGE,
+        number=4,
         message=openapi.Schema,
     )
 
@@ -186,7 +200,11 @@ class FunctionResponse(proto.Message):
             [FunctionDeclaration.name] and [FunctionCall.name].
         response (google.protobuf.struct_pb2.Struct):
             Required. The function response in JSON
-            object format.
+            object format. Use "output" key to specify
+            function output and "error" key to specify error
+            details (if any). If "output" and "error" keys
+            are not specified, then whole "response" is
+            treated as function output.
     """
 
     name: str = proto.Field(
@@ -204,6 +222,10 @@ class Retrieval(proto.Message):
     r"""Defines a retrieval tool that model can call to access
     external knowledge.
 
+    This message has `oneof`_ fields (mutually exclusive fields).
+    For each oneof, at most one member field can be set at the same time.
+    Setting any member of the oneof automatically clears all other
+    members.
 
     .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
@@ -211,6 +233,12 @@ class Retrieval(proto.Message):
         vertex_ai_search (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.VertexAISearch):
             Set to use data source powered by Vertex AI
             Search.
+
+            This field is a member of `oneof`_ ``source``.
+        vertex_rag_store (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.VertexRagStore):
+            Set to use data source powered by Vertex RAG
+            store. User data is uploaded via the
+            VertexRagDataService.
 
             This field is a member of `oneof`_ ``source``.
         disable_attribution (bool):
@@ -224,19 +252,93 @@ class Retrieval(proto.Message):
         oneof='source',
         message='VertexAISearch',
     )
+    vertex_rag_store: 'VertexRagStore' = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        oneof='source',
+        message='VertexRagStore',
+    )
     disable_attribution: bool = proto.Field(
         proto.BOOL,
         number=3,
     )
 
 
+class VertexRagStore(proto.Message):
+    r"""Retrieve from Vertex RAG Store for grounding.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        rag_corpora (MutableSequence[str]):
+            Optional. Deprecated. Please use rag_resources instead.
+        rag_resources (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.VertexRagStore.RagResource]):
+            Optional. The representation of the rag
+            source. It can be used to specify corpus only or
+            ragfiles. Currently only support one corpus or
+            multiple files from one corpus. In the future we
+            may open up multiple corpora support.
+        similarity_top_k (int):
+            Optional. Number of top k results to return
+            from the selected corpora.
+
+            This field is a member of `oneof`_ ``_similarity_top_k``.
+        vector_distance_threshold (float):
+            Optional. Only return results with vector
+            distance smaller than the threshold.
+
+            This field is a member of `oneof`_ ``_vector_distance_threshold``.
+    """
+
+    class RagResource(proto.Message):
+        r"""The definition of the Rag resource.
+
+        Attributes:
+            rag_corpus (str):
+                Optional. RagCorpora resource name. Format:
+                ``projects/{project}/locations/{location}/ragCorpora/{rag_corpus}``
+            rag_file_ids (MutableSequence[str]):
+                Optional. rag_file_id. The files should be in the same
+                rag_corpus set in rag_corpus field.
+        """
+
+        rag_corpus: str = proto.Field(
+            proto.STRING,
+            number=1,
+        )
+        rag_file_ids: MutableSequence[str] = proto.RepeatedField(
+            proto.STRING,
+            number=2,
+        )
+
+    rag_corpora: MutableSequence[str] = proto.RepeatedField(
+        proto.STRING,
+        number=1,
+    )
+    rag_resources: MutableSequence[RagResource] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=4,
+        message=RagResource,
+    )
+    similarity_top_k: int = proto.Field(
+        proto.INT32,
+        number=2,
+        optional=True,
+    )
+    vector_distance_threshold: float = proto.Field(
+        proto.DOUBLE,
+        number=3,
+        optional=True,
+    )
+
+
 class VertexAISearch(proto.Message):
     r"""Retrieve from Vertex AI Search datastore for grounding.
-    See https://cloud.google.com/vertex-ai-search-and-conversation
+    See https://cloud.google.com/products/agent-builder
 
     Attributes:
         datastore (str):
-            Required. Fully-qualified Vertex AI Search's datastore
+            Required. Fully-qualified Vertex AI Search data store
             resource ID. Format:
             ``projects/{project}/locations/{location}/collections/{collection}/dataStores/{dataStore}``
     """
@@ -251,7 +353,58 @@ class GoogleSearchRetrieval(proto.Message):
     r"""Tool to retrieve public web data for grounding, powered by
     Google.
 
+    Attributes:
+        dynamic_retrieval_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.DynamicRetrievalConfig):
+            Specifies the dynamic retrieval configuration
+            for the given source.
     """
+
+    dynamic_retrieval_config: 'DynamicRetrievalConfig' = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message='DynamicRetrievalConfig',
+    )
+
+
+class DynamicRetrievalConfig(proto.Message):
+    r"""Describes the options to customize dynamic retrieval.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        mode (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.DynamicRetrievalConfig.Mode):
+            The mode of the predictor to be used in
+            dynamic retrieval.
+        dynamic_threshold (float):
+            Optional. The threshold to be used in dynamic
+            retrieval. If not set, a system default value is
+            used.
+
+            This field is a member of `oneof`_ ``_dynamic_threshold``.
+    """
+    class Mode(proto.Enum):
+        r"""The mode of the predictor to be used in dynamic retrieval.
+
+        Values:
+            MODE_UNSPECIFIED (0):
+                Always trigger retrieval.
+            MODE_DYNAMIC (1):
+                Run retrieval only when system decides it is
+                necessary.
+        """
+        MODE_UNSPECIFIED = 0
+        MODE_DYNAMIC = 1
+
+    mode: Mode = proto.Field(
+        proto.ENUM,
+        number=1,
+        enum=Mode,
+    )
+    dynamic_threshold: float = proto.Field(
+        proto.FLOAT,
+        number=2,
+        optional=True,
+    )
 
 
 class ToolConfig(proto.Message):
@@ -291,16 +444,16 @@ class FunctionCallingConfig(proto.Message):
                 should not be used.
             AUTO (1):
                 Default model behavior, model decides to
-                predict either a function call or a natural
-                language repspose.
+                predict either function calls or natural
+                language response.
             ANY (2):
-                Model is constrained to always predicting a function call
+                Model is constrained to always predicting function calls
                 only. If "allowed_function_names" are set, the predicted
-                function call will be limited to any one of
-                "allowed_function_names", else the predicted function call
+                function calls will be limited to any one of
+                "allowed_function_names", else the predicted function calls
                 will be any one of the provided "function_declarations".
             NONE (3):
-                Model will not predict any function call.
+                Model will not predict any function calls.
                 Model behavior is same as when not passing any
                 function declarations.
         """

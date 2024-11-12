@@ -1463,6 +1463,130 @@ class CloudaicompanionProjectsLocationsLoggingSettingsPatchRequest(_messages.Mes
   updateMask = _messages.StringField(4)
 
 
+class CloudaicompanionProjectsLocationsLoggingSettingsSettingBindingsCreateRequest(_messages.Message):
+  r"""A
+  CloudaicompanionProjectsLocationsLoggingSettingsSettingBindingsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    settingBinding: A SettingBinding resource to be passed as the request
+      body.
+    settingBindingId: Required. Id of the requesting object. If auto-
+      generating Id server-side, remove this field and setting_id from the
+      method_signature of Create RPC.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  settingBinding = _messages.MessageField('SettingBinding', 3)
+  settingBindingId = _messages.StringField(4)
+
+
+class CloudaicompanionProjectsLocationsLoggingSettingsSettingBindingsDeleteRequest(_messages.Message):
+  r"""A
+  CloudaicompanionProjectsLocationsLoggingSettingsSettingBindingsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class CloudaicompanionProjectsLocationsLoggingSettingsSettingBindingsGetRequest(_messages.Message):
+  r"""A
+  CloudaicompanionProjectsLocationsLoggingSettingsSettingBindingsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudaicompanionProjectsLocationsLoggingSettingsSettingBindingsListRequest(_messages.Message):
+  r"""A
+  CloudaicompanionProjectsLocationsLoggingSettingsSettingBindingsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListSettingBindingsRequest.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class CloudaicompanionProjectsLocationsLoggingSettingsSettingBindingsPatchRequest(_messages.Message):
+  r"""A
+  CloudaicompanionProjectsLocationsLoggingSettingsSettingBindingsPatchRequest
+  object.
+
+  Fields:
+    name: Identifier. Name of the resource. Format:projects/{project}/location
+      s/{location}/{settingType}/{setting}/settingBindings/{setting_binding}
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    settingBinding: A SettingBinding resource to be passed as the request
+      body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the SettingBinding resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields present in the request will be
+      overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  settingBinding = _messages.MessageField('SettingBinding', 3)
+  updateMask = _messages.StringField(4)
+
+
 class CloudaicompanionProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A CloudaicompanionProjectsLocationsOperationsCancelRequest object.
 
@@ -1510,6 +1634,125 @@ class CloudaicompanionProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class CloudaicompanionProjectsLocationsReleaseChannelSettingsSettingBindingsCreateRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsReleaseChannelSettingsSettingBindings
+  CreateRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    settingBinding: A SettingBinding resource to be passed as the request
+      body.
+    settingBindingId: Required. Id of the requesting object. If auto-
+      generating Id server-side, remove this field and setting_id from the
+      method_signature of Create RPC.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  settingBinding = _messages.MessageField('SettingBinding', 3)
+  settingBindingId = _messages.StringField(4)
+
+
+class CloudaicompanionProjectsLocationsReleaseChannelSettingsSettingBindingsDeleteRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsReleaseChannelSettingsSettingBindings
+  DeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class CloudaicompanionProjectsLocationsReleaseChannelSettingsSettingBindingsGetRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsReleaseChannelSettingsSettingBindings
+  GetRequest object.
+
+  Fields:
+    name: Required. Name of the resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudaicompanionProjectsLocationsReleaseChannelSettingsSettingBindingsListRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsReleaseChannelSettingsSettingBindings
+  ListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListSettingBindingsRequest.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class CloudaicompanionProjectsLocationsReleaseChannelSettingsSettingBindingsPatchRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsReleaseChannelSettingsSettingBindings
+  PatchRequest object.
+
+  Fields:
+    name: Identifier. Name of the resource. Format:projects/{project}/location
+      s/{location}/{settingType}/{setting}/settingBindings/{setting_binding}
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    settingBinding: A SettingBinding resource to be passed as the request
+      body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the SettingBinding resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields present in the request will be
+      overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  settingBinding = _messages.MessageField('SettingBinding', 3)
+  updateMask = _messages.StringField(4)
 
 
 class CloudaicompanionProjectsLocationsTopicsCreateRequest(_messages.Message):
@@ -3089,6 +3332,65 @@ class IntegrationVersion(_messages.Message):
   triggerConfigs = _messages.MessageField('TriggerConfig', 6, repeated=True)
 
 
+class InvestigationInputDataContext(_messages.Message):
+  r"""This message should be used by all Investigation UI Titan clients and
+  will map to the InputDataContext.additional_context Any field.
+
+  Fields:
+    investigationRevision: The name of the investigation revision to retrieve.
+      Format: projects/{project}/locations/global/investigations/{investigatio
+      n}/revisions/{revision}
+    runInvestigation: If true, this request was triggered by the Run
+      investigation revision method.
+    runParameters: User parameters for running an investigation.
+  """
+
+  investigationRevision = _messages.StringField(1)
+  runInvestigation = _messages.BooleanField(2)
+  runParameters = _messages.MessageField('InvestigationRunParameters', 3)
+
+
+class InvestigationRunParameters(_messages.Message):
+  r"""Represents user parameters for running an investigation.
+
+  Messages:
+    AccessTokensValue: If populated, map of project to access token for TSE-
+      triggered investigations.
+
+  Fields:
+    accessTokens: If populated, map of project to access token for TSE-
+      triggered investigations.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AccessTokensValue(_messages.Message):
+    r"""If populated, map of project to access token for TSE-triggered
+    investigations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AccessTokensValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AccessTokensValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AccessTokensValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  accessTokens = _messages.MessageField('AccessTokensValue', 1)
+
+
 class JavascriptRecommendation(_messages.Message):
   r"""Individual Javascript recommendation containing the task config with the
   new code, integration parameters and the explanation.
@@ -3227,6 +3529,21 @@ class ListRepositoryGroupsResponse(_messages.Message):
   repositoryGroups = _messages.MessageField('RepositoryGroup', 2, repeated=True)
 
 
+class ListSettingBindingsResponse(_messages.Message):
+  r"""Message for response to listing SettingBindings
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    settingBindings: The list of SettingBindings.
+    unreachable: Unordered list. Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  settingBindings = _messages.MessageField('SettingBinding', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListTopicsResponse(_messages.Message):
   r"""Message for response to listing Topics
 
@@ -3325,16 +3642,32 @@ class Location(_messages.Message):
 class LoggingSetting(_messages.Message):
   r"""Message describing LoggingSetting object
 
+  Enums:
+    ActivityLogLevelValueValuesEnum: Required. Activity log level.
+
   Messages:
     LabelsValue: Optional. Labels as key value pairs.
 
   Fields:
+    activityLogLevel: Required. Activity log level.
     createTime: Output only. [Output only] Create time stamp.
     labels: Optional. Labels as key value pairs.
     name: Identifier. Name of the resource. Format:projects/{project}/location
       s/{location}/loggingsettings/{loggingsetting}
     updateTime: Output only. [Output only] Update time stamp.
   """
+
+  class ActivityLogLevelValueValuesEnum(_messages.Enum):
+    r"""Required. Activity log level.
+
+    Values:
+      ACTIVITY_LOG_LEVEL_UNSPECIFIED: Default value. This value is unused.
+      METADATA: Metadata
+      VERBOSE: Verbose
+    """
+    ACTIVITY_LOG_LEVEL_UNSPECIFIED = 0
+    METADATA = 1
+    VERBOSE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3360,10 +3693,11 @@ class LoggingSetting(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  activityLogLevel = _messages.EnumField('ActivityLogLevelValueValuesEnum', 1)
+  createTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class LongColumn(_messages.Message):
@@ -4066,6 +4400,52 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
+
+
+class SettingBinding(_messages.Message):
+  r"""Message describing SettingBinding object
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs.
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp.
+    labels: Optional. Labels as key value pairs.
+    name: Identifier. Name of the resource. Format:projects/{project}/location
+      s/{location}/{settingType}/{setting}/settingBindings/{setting_binding}
+    target: Required. Target of the binding.
+    updateTime: Output only. [Output only] Update time stamp.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  target = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class SqlGenCitation(_messages.Message):
@@ -4820,42 +5200,19 @@ class TextGenerationResponse(_messages.Message):
 class Topic(_messages.Message):
   r"""Message describing Topic object
 
-  Messages:
-    LabelsValue: Optional. Labels as key value pairs
-
   Fields:
+    clientContext: Required. Immutable. The client id that was used by the
+      user to create this Topic. This enables the client UI to load all recent
+      Topics on reload. The `ClientContext` message is included in all
+      dataplane API (e.g. TaskCompletionService) requests. NOTE: All messages
+      under this topic must be from the same client context.
     createTime: Output only. [Output only] Create time stamp
-    labels: Optional. Labels as key value pairs
     name: Identifier. name of resource
     updateTime: Output only. [Output only] Update time stamp
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
+  clientContext = _messages.MessageField('ClientContext', 1)
+  createTime = _messages.StringField(2)
   name = _messages.StringField(3)
   updateTime = _messages.StringField(4)
 

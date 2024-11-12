@@ -1299,8 +1299,8 @@ class ListCaPoolsResponse(_messages.Message):
   Fields:
     caPools: The list of CaPools.
     nextPageToken: A token to retrieve next page of results. Pass this value
-      in ListCertificateAuthoritiesRequest.next_page_token to retrieve the
-      next page of results.
+      in ListCertificateAuthoritiesRequest.page_token to retrieve the next
+      page of results.
     unreachable: A list of locations (e.g. "us-west1") that could not be
       reached.
   """
@@ -1317,8 +1317,8 @@ class ListCertificateAuthoritiesResponse(_messages.Message):
   Fields:
     certificateAuthorities: The list of CertificateAuthorities.
     nextPageToken: A token to retrieve next page of results. Pass this value
-      in ListCertificateAuthoritiesRequest.next_page_token to retrieve the
-      next page of results.
+      in ListCertificateAuthoritiesRequest.page_token to retrieve the next
+      page of results.
     unreachable: A list of locations (e.g. "us-west1") that could not be
       reached.
   """
@@ -1335,8 +1335,8 @@ class ListCertificateRevocationListsResponse(_messages.Message):
   Fields:
     certificateRevocationLists: The list of CertificateRevocationLists.
     nextPageToken: A token to retrieve next page of results. Pass this value
-      in ListCertificateRevocationListsRequest.next_page_token to retrieve the
-      next page of results.
+      in ListCertificateRevocationListsRequest.page_token to retrieve the next
+      page of results.
     unreachable: A list of locations (e.g. "us-west1") that could not be
       reached.
   """
@@ -1353,8 +1353,8 @@ class ListCertificateTemplatesResponse(_messages.Message):
   Fields:
     certificateTemplates: The list of CertificateTemplates.
     nextPageToken: A token to retrieve next page of results. Pass this value
-      in ListCertificateTemplatesRequest.next_page_token to retrieve the next
-      page of results.
+      in ListCertificateTemplatesRequest.page_token to retrieve the next page
+      of results.
     unreachable: A list of locations (e.g. "us-west1") that could not be
       reached.
   """
@@ -1370,7 +1370,7 @@ class ListCertificatesResponse(_messages.Message):
   Fields:
     certificates: The list of Certificates.
     nextPageToken: A token to retrieve next page of results. Pass this value
-      in ListCertificatesRequest.next_page_token to retrieve the next page of
+      in ListCertificatesRequest.page_token to retrieve the next page of
       results.
     unreachable: A list of locations (e.g. "us-west1") that could not be
       reached.
@@ -1668,8 +1668,9 @@ class OperationMetadata(_messages.Message):
     endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      successfully been cancelled have google.longrunning.Operation.error
+      value with a google.rpc.Status.code of 1, corresponding to
+      `Code.CANCELLED`.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
     target: Output only. Server-defined resource path for the target of the
@@ -2111,7 +2112,7 @@ class PrivatecaProjectsLocationsCaPoolsCertificatesCreateRequest(_messages.Messa
     certificateId: Optional. It must be unique within a location and match the
       regular expression `[a-zA-Z0-9_-]{1,63}`. This field is required when
       using a CertificateAuthority in the Enterprise
-      CertificateAuthority.Tier, but is optional and its value is ignored
+      CertificateAuthority.tier, but is optional and its value is ignored
       otherwise.
     issuingCertificateAuthorityId: Optional. The resource ID of the
       CertificateAuthority that should issue the certificate. This optional

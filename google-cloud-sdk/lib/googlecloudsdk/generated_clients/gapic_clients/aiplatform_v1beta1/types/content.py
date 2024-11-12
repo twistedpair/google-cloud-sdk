@@ -826,8 +826,8 @@ class Candidate(proto.Message):
                 [content][google.cloud.aiplatform.v1beta1.Candidate.content]
                 is empty if content filters blocks the output.
             RECITATION (4):
-                Token generation stopped because the content
-                potentially contains copyright violations.
+                The token generation stopped because of
+                potential recitation.
             OTHER (5):
                 All other reasons that stopped the token
                 generation.

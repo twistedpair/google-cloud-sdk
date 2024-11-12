@@ -112,8 +112,7 @@ def AddReplicationDestinationVolumeParametersArg(parser):
   )
 
 
-# TODO(b/367361219): Remove hidden arg for cluster-location flag after GA
-def AddReplicationClusterLocationArg(parser, hidden=True):
+def AddReplicationClusterLocationArg(parser, hidden=False):
   """Adds the Cluster Location (--cluster-location) arg to the given parser.
 
   Args:

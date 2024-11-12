@@ -1033,6 +1033,10 @@ apis:
     v2beta:
       discovery_doc: lifesciences_v2beta.json
       default: true
+  lustre:
+    v1alpha:
+      discovery_doc: lustre_v1alpha.json
+      default: true
   managedflink:
     v1alpha:
       discovery_doc: managedflink_v1alpha.json
@@ -1907,6 +1911,7 @@ canonical_surfaces:
     hidden: true
   beyondcorp:
     name: beyondcorp
+    command: beyondcorp
     hidden: true
   bigquery:
     name: bigquery
@@ -1979,6 +1984,7 @@ canonical_surfaces:
     command: composer
   compute:
     name: compute
+    command: compute
     help_text: |-
       'Overrides API endpoint for `gcloud compute` command group. '
       'For Private Service Connect usage, see '
@@ -2025,6 +2031,7 @@ canonical_surfaces:
     command: dataproc
   dataprocgdc:
     name: dataprocgdc
+    command: dataproc-gdc
     hidden: true
   datastore:
     name: datastore

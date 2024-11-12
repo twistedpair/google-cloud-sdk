@@ -132,6 +132,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_AUTHZPOLICIES = (
+      'projects.locations.authzPolicies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/authzPolicies/'
+              '{authzPoliciesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_CLIENTTLSPOLICIES = (
       'projects.locations.clientTlsPolicies',
       '{+name}',

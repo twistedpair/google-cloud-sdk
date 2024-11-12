@@ -15,6 +15,18 @@ from apitools.base.py import extra_types
 package = 'vmwareengine'
 
 
+class AcceleratePrivateCloudDeletionRequest(_messages.Message):
+  r"""Request message for VmwareEngine.AcceleratePrivateCloudDeletion
+
+  Fields:
+    requestId: Optional. The request ID must be a valid UUID with the
+      exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  requestId = _messages.StringField(1)
+
+
 class Announcement(_messages.Message):
   r"""Announcement for the resources of Vmware Engine.
 
@@ -4449,6 +4461,24 @@ class VmwareengineProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsAcceleratePrivateCloudDeletionRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsAcceleratePrivateCloudDeleti
+  onRequest object.
+
+  Fields:
+    acceleratePrivateCloudDeletionRequest: A
+      AcceleratePrivateCloudDeletionRequest resource to be passed as the
+      request body.
+    name: Required. The resource name of the private cloud in softdeletion.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
+  """
+
+  acceleratePrivateCloudDeletionRequest = _messages.MessageField('AcceleratePrivateCloudDeletionRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsClustersCreateRequest(_messages.Message):

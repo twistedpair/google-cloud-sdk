@@ -129,6 +129,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_VOLUMES_QUOTARULES = (
+      'projects.locations.volumes.quotaRules',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/volumes/'
+              '{volumesId}/quotaRules/{quotaRulesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_VOLUMES_REPLICATIONS = (
       'projects.locations.volumes.replications',
       '{+name}',

@@ -25,6 +25,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.universe_descriptor import universe_descriptor
 from googlecloudsdk.core.util import files as file_utils
 
 FAMILY_PREFIX = 'family/'
@@ -128,7 +129,11 @@ class ImageExpander(object):
     if properties.IsDefaultUniverse():
       return project_name
     else:
-      prefix = properties.VALUES.core.project.GetOrFail().split(':')[0]
+      prefix = (
+          universe_descriptor.UniverseDescriptor()
+          .Get(properties.GetUniverseDomain())
+          .project_prefix
+      )
       return prefix + ':' + project_name
 
   def ExpandImageFlag(self,

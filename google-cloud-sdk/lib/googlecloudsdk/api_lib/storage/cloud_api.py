@@ -1173,9 +1173,10 @@ class CloudApi(object):
     Args:
       bucket_name (str): Name of the bucket to advance the relocate for.
       operation_id (str): ID of the operation resource.
-      ttl (str | None): Specifies the duration after which the relocation will
-        revert to the sync stage if the relocation hasn't succeeded. Optional,
-        if not supplied, a default value of 12h will be used.
+      ttl (int | None): Specifies the duration in int seconds, after which the
+        relocation will revert to the sync stage if the relocation hasn't
+        succeeded. Optional, if not supplied, a default value of 12h will be
+        used.
 
     Raises:
       CloudApiError: API returned an error.

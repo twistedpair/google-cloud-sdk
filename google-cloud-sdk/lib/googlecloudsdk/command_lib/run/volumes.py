@@ -201,7 +201,7 @@ class _InMemoryVolume(_VolumeType):
 
   @classmethod
   def release_tracks(cls):
-    return [base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA]
+    return base.ReleaseTrack.AllValues()
 
   @classmethod
   def required_fields(cls, release_track):

@@ -5339,7 +5339,7 @@ class DataplexV1(base_api.BaseApiClient):
         method_id='dataplex.projects.locations.metadataJobs.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['metadataJobId'],
+        query_params=['metadataJobId', 'validateOnly'],
         relative_path='v1/{+parent}/metadataJobs',
         request_field='googleCloudDataplexV1MetadataJob',
         request_type_name='DataplexProjectsLocationsMetadataJobsCreateRequest',

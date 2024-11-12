@@ -72,6 +72,25 @@ from ruamel import yaml
 # for the list of these files.
 
 
+class VectorFlatIndex(validation.Validated):
+  """Represents the configuration for a vector FlatIndex.
+
+  Currently there are not options for a Vector FlatIndex, but it exists to
+  distinguish itself from future index types.
+  """
+
+  ATTRIBUTES = {}
+
+
+class VectorConfig(validation.Validated):
+  """Represents the configuration for a vector indexed property as it appears in YAML."""
+
+  ATTRIBUTES = {
+      'dimension': validation.Type(int, convert=False),
+      'flat': validation.Type(VectorFlatIndex, convert=False),
+  }
+
+
 class Property(validation.Validated):
   """Representation for a property of an index as it appears in YAML.
 
@@ -80,13 +99,20 @@ class Property(validation.Validated):
     direction: Direction of sort.
     mode: How the property is indexed. Either 'geospatial'
         or None (unspecified).
+    vectorConfig: Indicates that the property is part of a Vector Index
+        configuration.
   """
 
   ATTRIBUTES = {
       'name': validation.Type(str, convert=False),
-      'direction': validation.Optional([('asc', ('ascending',)),
-                                        ('desc', ('descending',))]),
-      'mode': validation.Optional(['geospatial'])
+      'direction': validation.Optional([
+          ('asc', ('ascending',)),
+          ('desc', ('descending',)),
+      ]),
+      'mode': validation.Optional(['geospatial']),
+      'vectorConfig': validation.Optional(
+          validation.Type(VectorConfig, convert=False)
+      ),
   }
 
   def IsAscending(self):
@@ -99,9 +125,17 @@ class Property(validation.Validated):
     return self.direction != 'desc'
 
   def CheckInitialized(self):
-    if self.direction is not None and self.mode is not None:
+    field_count = 0
+    if self.direction is not None:
+      field_count += 1
+    if self.mode is not None:
+      field_count += 1
+    if self.vectorConfig is not None:
+      field_count += 1
+    if field_count > 1:
       raise validation.ValidationError(
-          'direction and mode are mutually exclusive')
+          'direction, mode, and vectorConfig are mutually exclusive'
+      )
     super(Property, self).CheckInitialized()
 
 
@@ -128,6 +162,9 @@ def PropertyPresenter(dumper, prop):
 
   if prop.direction is None:
     del prop_copy.direction
+
+  if prop.vectorConfig is None:
+    del prop_copy.vectorConfig
 
   return dumper.represent_object(prop_copy)
 
@@ -157,11 +194,20 @@ class Index(validation.Validated):
     if self.properties is None:
       return
     is_geo = any(x.mode == 'geospatial' for x in self.properties)
+    vector_property = None
     for prop in self.properties:
+      is_vector = prop.vectorConfig is not None
       if is_geo:
         if prop.direction is not None:
           raise validation.ValidationError(
-              'direction not supported in a geospatial index')
+              'direction not supported in a geospatial index'
+          )
+      elif is_vector:
+        if vector_property is not None:
+          raise validation.ValidationError(
+              'only one vector property is allowed'
+          )
+        vector_property = prop
       else:
         # Normalize the property object by making direction explicit
         if prop.IsAscending():

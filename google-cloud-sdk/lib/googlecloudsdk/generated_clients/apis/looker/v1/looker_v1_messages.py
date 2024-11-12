@@ -470,7 +470,7 @@ class Instance(_messages.Message):
     state: Output only. The state of the instance.
     updateTime: Output only. The time when the Looker instance was last
       updated.
-    userMetadata: User metadata.
+    userMetadata: Optional. User metadata.
   """
 
   class PlatformEditionValueValuesEnum(_messages.Enum):

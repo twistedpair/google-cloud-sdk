@@ -26,7 +26,7 @@ from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
-DEFAULT_ACTIONS = ["DEFAULT", "ALLOW", "ALERT", "DENY"]
+DEFAULT_ACTIONS = ["DEFAULT_ACTION", "ALLOW", "ALERT", "DENY"]
 DEFAULT_PROFILE_TYPES = ["THREAT_PREVENTION"]
 
 

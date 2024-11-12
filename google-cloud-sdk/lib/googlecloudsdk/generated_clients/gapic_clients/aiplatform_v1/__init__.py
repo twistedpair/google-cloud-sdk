@@ -31,7 +31,9 @@ from .types.content import GenerationConfig
 from .types.content import GroundingChunk
 from .types.content import GroundingMetadata
 from .types.content import GroundingSupport
+from .types.content import LogprobsResult
 from .types.content import Part
+from .types.content import RetrievalMetadata
 from .types.content import SafetyRating
 from .types.content import SafetySetting
 from .types.content import SearchEntryPoint
@@ -68,6 +70,7 @@ from .types.io import GcsSource
 from .types.io import TFRecordDestination
 from .types.openapi import Schema
 from .types.openapi import Type
+from .types.prediction_service import ChatCompletionsRequest
 from .types.prediction_service import CountTokensRequest
 from .types.prediction_service import CountTokensResponse
 from .types.prediction_service import DirectPredictRequest
@@ -76,8 +79,10 @@ from .types.prediction_service import DirectRawPredictRequest
 from .types.prediction_service import DirectRawPredictResponse
 from .types.prediction_service import ExplainRequest
 from .types.prediction_service import ExplainResponse
+from .types.prediction_service import FetchPredictOperationRequest
 from .types.prediction_service import GenerateContentRequest
 from .types.prediction_service import GenerateContentResponse
+from .types.prediction_service import PredictLongRunningRequest
 from .types.prediction_service import PredictRequest
 from .types.prediction_service import PredictResponse
 from .types.prediction_service import RawPredictRequest
@@ -90,6 +95,7 @@ from .types.prediction_service import StreamingPredictResponse
 from .types.prediction_service import StreamingRawPredictRequest
 from .types.prediction_service import StreamingRawPredictResponse
 from .types.prediction_service import StreamRawPredictRequest
+from .types.tool import DynamicRetrievalConfig
 from .types.tool import FunctionCall
 from .types.tool import FunctionCallingConfig
 from .types.tool import FunctionDeclaration
@@ -99,6 +105,7 @@ from .types.tool import Retrieval
 from .types.tool import Tool
 from .types.tool import ToolConfig
 from .types.tool import VertexAISearch
+from .types.tool import VertexRagStore
 from .types.types import BoolArray
 from .types.types import DoubleArray
 from .types.types import Int64Array
@@ -115,6 +122,7 @@ __all__ = (
 'BlurBaselineConfig',
 'BoolArray',
 'Candidate',
+'ChatCompletionsRequest',
 'Citation',
 'CitationMetadata',
 'ContainerRegistryDestination',
@@ -128,6 +136,7 @@ __all__ = (
 'DirectRawPredictRequest',
 'DirectRawPredictResponse',
 'DoubleArray',
+'DynamicRetrievalConfig',
 'Examples',
 'ExamplesOverride',
 'ExamplesRestrictionsNamespace',
@@ -140,6 +149,7 @@ __all__ = (
 'ExplanationSpec',
 'ExplanationSpecOverride',
 'FeatureNoiseSigma',
+'FetchPredictOperationRequest',
 'FileData',
 'FunctionCall',
 'FunctionCallingConfig',
@@ -157,15 +167,18 @@ __all__ = (
 'HarmCategory',
 'Int64Array',
 'IntegratedGradientsAttribution',
+'LogprobsResult',
 'ModelExplanation',
 'Neighbor',
 'Part',
+'PredictLongRunningRequest',
 'PredictRequest',
 'PredictResponse',
 'PredictionServiceClient',
 'Presets',
 'RawPredictRequest',
 'Retrieval',
+'RetrievalMetadata',
 'SafetyRating',
 'SafetySetting',
 'SampledShapleyAttribution',
@@ -189,6 +202,7 @@ __all__ = (
 'ToolConfig',
 'Type',
 'VertexAISearch',
+'VertexRagStore',
 'VideoMetadata',
 'XraiAttribution',
 )

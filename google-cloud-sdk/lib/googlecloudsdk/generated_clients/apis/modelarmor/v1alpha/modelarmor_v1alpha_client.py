@@ -279,6 +279,33 @@ class ModelarmorV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetFloorSetting(self, request, global_params=None):
+      r"""Gets details of a single floor setting of a project.
+
+      Args:
+        request: (ModelarmorProjectsLocationsGetFloorSettingRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FloorSetting) The response message.
+      """
+      config = self.GetMethodConfig('GetFloorSetting')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetFloorSetting.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/floorSetting',
+        http_method='GET',
+        method_id='modelarmor.projects.locations.getFloorSetting',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ModelarmorProjectsLocationsGetFloorSettingRequest',
+        response_type_name='FloorSetting',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists information about the supported locations for this service.
 
@@ -303,6 +330,33 @@ class ModelarmorV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ModelarmorProjectsLocationsListRequest',
         response_type_name='ListLocationsResponse',
+        supports_download=False,
+    )
+
+    def UpdateFloorSetting(self, request, global_params=None):
+      r"""Updates the parameters of a single floor setting of a project.
+
+      Args:
+        request: (ModelarmorProjectsLocationsUpdateFloorSettingRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FloorSetting) The response message.
+      """
+      config = self.GetMethodConfig('UpdateFloorSetting')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateFloorSetting.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/floorSetting',
+        http_method='PATCH',
+        method_id='modelarmor.projects.locations.updateFloorSetting',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='floorSetting',
+        request_type_name='ModelarmorProjectsLocationsUpdateFloorSettingRequest',
+        response_type_name='FloorSetting',
         supports_download=False,
     )
 

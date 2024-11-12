@@ -35,6 +35,11 @@
                 "explain"
               ]
             },
+            "FetchPredictOperation": {
+              "methods": [
+                "fetch_predict_operation"
+              ]
+            },
             "GenerateContent": {
               "methods": [
                 "generate_content"
@@ -43,6 +48,11 @@
             "Predict": {
               "methods": [
                 "predict"
+              ]
+            },
+            "PredictLongRunning": {
+              "methods": [
+                "predict_long_running"
               ]
             },
             "RawPredict": {
@@ -115,6 +125,11 @@
                 "explain"
               ]
             },
+            "FetchPredictOperation": {
+              "methods": [
+                "fetch_predict_operation"
+              ]
+            },
             "GenerateContent": {
               "methods": [
                 "generate_content"
@@ -123,6 +138,11 @@
             "Predict": {
               "methods": [
                 "predict"
+              ]
+            },
+            "PredictLongRunning": {
+              "methods": [
+                "predict_long_running"
               ]
             },
             "RawPredict": {
@@ -195,6 +215,11 @@
                 "explain"
               ]
             },
+            "FetchPredictOperation": {
+              "methods": [
+                "fetch_predict_operation"
+              ]
+            },
             "GenerateContent": {
               "methods": [
                 "generate_content"
@@ -203,6 +228,11 @@
             "Predict": {
               "methods": [
                 "predict"
+              ]
+            },
+            "PredictLongRunning": {
+              "methods": [
+                "predict_long_running"
               ]
             },
             "RawPredict": {

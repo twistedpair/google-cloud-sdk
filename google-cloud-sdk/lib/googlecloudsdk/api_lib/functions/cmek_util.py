@@ -20,10 +20,13 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import re
+from typing import Any, Optional
 
+from apitools.base.py import exceptions as http_exceptions
 from googlecloudsdk.api_lib.functions.v1 import exceptions
 from googlecloudsdk.calliope import exceptions as base_exceptions
 from six.moves import http_client
+
 
 _KMS_KEY_RE = re.compile(
     r'^projects/[^/]+/locations/(?P<location>[^/]+)/keyRings/[a-zA-Z0-9_-]+'
@@ -37,8 +40,12 @@ _DOCKER_REPOSITORY_DOCKER_FORMAT_RE = re.compile(
     r'^(?P<location>.*)-docker.pkg.dev\/(?P<project>[^\/]+)\/(?P<repo>[^\/]+)'
 )
 
+# TODO: b/349194056 - Switch to alias annotations once allowed.
+_HttpError = http_exceptions.HttpError
 
-def ValidateKMSKeyForFunction(kms_key, function_ref):
+
+# TODO: b/349194056 - Define and use dedicated aliases for the common types.
+def ValidateKMSKeyForFunction(kms_key: str, function_ref: Any) -> None:
   """Checks that the KMS key is compatible with the function.
 
   Args:
@@ -63,7 +70,60 @@ def ValidateKMSKeyForFunction(kms_key, function_ref):
       )
 
 
-def NormalizeDockerRepositoryFormat(docker_repository):
+def ValidateDockerRepositoryForFunction(
+    docker_repository: str, function_ref: Any
+) -> None:
+  """Checks that the Docker repository is compatible with the function.
+
+  Args:
+    docker_repository: Fully qualified Docker repository resource name.
+    function_ref: Function resource reference.
+
+  Raises:
+    InvalidArgumentException: If the specified Docker repository is not
+      compatible with the function.
+  """
+  if docker_repository is None:
+    return
+
+  function_project = function_ref.projectsId
+  function_location = function_ref.locationsId
+
+  repo_match = _DOCKER_REPOSITORY_RE.search(docker_repository)
+  if repo_match:
+    repo_project = repo_match.group('project')
+    repo_location = repo_match.group('location')
+  else:
+    repo_match_docker_format = _DOCKER_REPOSITORY_DOCKER_FORMAT_RE.search(
+        docker_repository
+    )
+    if repo_match_docker_format:
+      repo_project = repo_match_docker_format.group('project')
+      repo_location = repo_match_docker_format.group('location')
+    else:
+      repo_location = None
+      repo_project = None
+
+  if (
+      repo_project
+      and function_project != repo_project
+      and function_project.isdigit() == repo_project.isdigit()
+  ):
+    raise base_exceptions.InvalidArgumentException(
+        '--docker-repository',
+        'Cross-project repositories are not supported: the repository should be'
+        f' in `${function_project}`.',
+    )
+
+  if repo_location and function_location != repo_location:
+    raise base_exceptions.InvalidArgumentException(
+        '--docker-repository',
+        'Cross-location repositories are not supported: the repository should'
+        f' be in `${function_location}`.',
+    )
+
+
+def NormalizeDockerRepositoryFormat(docker_repository: str) -> None:
   """Normalizes the docker repository name to the standard resource format.
 
   Args:
@@ -89,7 +149,9 @@ def NormalizeDockerRepositoryFormat(docker_repository):
   return docker_repository
 
 
-def ProcessException(http_exception, kms_key=None):
+def ProcessException(
+    http_exception: _HttpError, kms_key: Optional[str]
+) -> None:
   if (
       kms_key
       and http_exception.status_code == http_client.INTERNAL_SERVER_ERROR

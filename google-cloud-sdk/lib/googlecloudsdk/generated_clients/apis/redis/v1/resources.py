@@ -41,6 +41,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_BACKUPCOLLECTIONS = (
+      'projects.locations.backupCollections',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'backupCollections/{backupCollectionsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_BACKUPCOLLECTIONS_BACKUPS = (
+      'projects.locations.backupCollections.backups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'backupCollections/{backupCollectionsId}/backups/{backupsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_CLUSTERS = (
       'projects.locations.clusters',
       '{+name}',

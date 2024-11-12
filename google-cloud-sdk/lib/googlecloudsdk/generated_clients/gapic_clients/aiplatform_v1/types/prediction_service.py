@@ -46,12 +46,15 @@ __protobuf__ = proto.module(
         'StreamingPredictResponse',
         'StreamingRawPredictRequest',
         'StreamingRawPredictResponse',
+        'PredictLongRunningRequest',
+        'FetchPredictOperationRequest',
         'ExplainRequest',
         'ExplainResponse',
         'CountTokensRequest',
         'CountTokensResponse',
         'GenerateContentRequest',
         'GenerateContentResponse',
+        'ChatCompletionsRequest',
     },
 )
 
@@ -569,6 +572,80 @@ class StreamingRawPredictResponse(proto.Message):
     )
 
 
+class PredictLongRunningRequest(proto.Message):
+    r"""Request message for
+    [PredictionService.PredictLongRunning][google.cloud.aiplatform.v1.PredictionService.PredictLongRunning].
+
+    Attributes:
+        endpoint (str):
+            Required. The name of the Endpoint requested to serve the
+            prediction. Format:
+            ``projects/{project}/locations/{location}/endpoints/{endpoint}``
+            or
+            ``projects/{project}/locations/{location}/publishers/{publisher}/models/{model}``
+        instances (MutableSequence[google.protobuf.struct_pb2.Value]):
+            Required. The instances that are the input to the prediction
+            call. A DeployedModel may have an upper limit on the number
+            of instances it supports per request, and when it is
+            exceeded the prediction call errors in case of AutoML
+            Models, or, in case of customer created Models, the
+            behaviour is as documented by that Model. The schema of any
+            single instance may be specified via Endpoint's
+            DeployedModels'
+            [Model's][google.cloud.aiplatform.v1.DeployedModel.model]
+            [PredictSchemata's][google.cloud.aiplatform.v1.Model.predict_schemata]
+            [instance_schema_uri][google.cloud.aiplatform.v1.PredictSchemata.instance_schema_uri].
+        parameters (google.protobuf.struct_pb2.Value):
+            Optional. The parameters that govern the prediction. The
+            schema of the parameters may be specified via Endpoint's
+            DeployedModels' [Model's
+            ][google.cloud.aiplatform.v1.DeployedModel.model]
+            [PredictSchemata's][google.cloud.aiplatform.v1.Model.predict_schemata]
+            [parameters_schema_uri][google.cloud.aiplatform.v1.PredictSchemata.parameters_schema_uri].
+    """
+
+    endpoint: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    instances: MutableSequence[struct_pb2.Value] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=2,
+        message=struct_pb2.Value,
+    )
+    parameters: struct_pb2.Value = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        message=struct_pb2.Value,
+    )
+
+
+class FetchPredictOperationRequest(proto.Message):
+    r"""Request message for
+    [PredictionService.FetchPredictOperation][google.cloud.aiplatform.v1.PredictionService.FetchPredictOperation].
+
+    Attributes:
+        endpoint (str):
+            Required. The name of the Endpoint requested to serve the
+            prediction. Format:
+            ``projects/{project}/locations/{location}/endpoints/{endpoint}``
+            or
+            ``projects/{project}/locations/{location}/publishers/{publisher}/models/{model}``
+        operation_name (str):
+            Required. The server-assigned name for the
+            operation.
+    """
+
+    endpoint: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    operation_name: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+
+
 class ExplainRequest(proto.Message):
     r"""Request message for
     [PredictionService.Explain][google.cloud.aiplatform.v1.PredictionService.Explain].
@@ -709,6 +786,11 @@ class CountTokensRequest(proto.Message):
             A ``Tool`` is a piece of code that enables the system to
             interact with external systems to perform an action, or set
             of actions, outside of knowledge and scope of the model.
+        generation_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.GenerationConfig):
+            Optional. Generation config that the model
+            will use to generate the response.
+
+            This field is a member of `oneof`_ ``_generation_config``.
     """
 
     endpoint: str = proto.Field(
@@ -739,6 +821,12 @@ class CountTokensRequest(proto.Message):
         proto.MESSAGE,
         number=6,
         message=tool.Tool,
+    )
+    generation_config: content.GenerationConfig = proto.Field(
+        proto.MESSAGE,
+        number=7,
+        optional=True,
+        message=content.GenerationConfig,
     )
 
 
@@ -771,9 +859,14 @@ class GenerateContentRequest(proto.Message):
 
     Attributes:
         model (str):
-            Required. The name of the publisher model requested to serve
-            the prediction. Format:
+            Required. The fully qualified name of the publisher model or
+            tuned model endpoint to use.
+
+            Publisher model format:
             ``projects/{project}/locations/{location}/publishers/*/models/*``
+
+            Tuned model endpoint format:
+            ``projects/{project}/locations/{location}/endpoints/{endpoint}``
         contents (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.Content]):
             Required. The content of the current
             conversation with the model.
@@ -798,6 +891,17 @@ class GenerateContentRequest(proto.Message):
         tool_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.ToolConfig):
             Optional. Tool config. This config is shared
             for all tools provided in the request.
+        labels (MutableMapping[str, str]):
+            Optional. The labels with user-defined
+            metadata for the request. It is used for billing
+            and reporting only.
+
+            Label keys and values can be no longer than 63
+            characters (Unicode codepoints) and can only
+            contain lowercase letters, numeric characters,
+            underscores, and dashes. International
+            characters are allowed. Label values are
+            optional. Label keys must start with a letter.
         safety_settings (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.SafetySetting]):
             Optional. Per request settings for blocking
             unsafe content. Enforced on
@@ -831,6 +935,11 @@ class GenerateContentRequest(proto.Message):
         number=7,
         message=tool.ToolConfig,
     )
+    labels: MutableMapping[str, str] = proto.MapField(
+        proto.STRING,
+        proto.STRING,
+        number=10,
+    )
     safety_settings: MutableSequence[content.SafetySetting] = proto.RepeatedField(
         proto.MESSAGE,
         number=3,
@@ -849,6 +958,9 @@ class GenerateContentResponse(proto.Message):
     Attributes:
         candidates (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.Candidate]):
             Output only. Generated candidates.
+        model_version (str):
+            Output only. The model version used to
+            generate the response.
         prompt_feedback (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.GenerateContentResponse.PromptFeedback):
             Output only. Content filter results for a
             prompt sent in the request. Note: Sent only in
@@ -918,7 +1030,8 @@ class GenerateContentResponse(proto.Message):
             candidates_token_count (int):
                 Number of tokens in the response(s).
             total_token_count (int):
-
+                Total token count for prompt and response
+                candidates.
         """
 
         prompt_token_count: int = proto.Field(
@@ -939,6 +1052,10 @@ class GenerateContentResponse(proto.Message):
         number=2,
         message=content.Candidate,
     )
+    model_version: str = proto.Field(
+        proto.STRING,
+        number=11,
+    )
     prompt_feedback: PromptFeedback = proto.Field(
         proto.MESSAGE,
         number=3,
@@ -948,6 +1065,30 @@ class GenerateContentResponse(proto.Message):
         proto.MESSAGE,
         number=4,
         message=UsageMetadata,
+    )
+
+
+class ChatCompletionsRequest(proto.Message):
+    r"""Request message for [PredictionService.ChatCompletions]
+
+    Attributes:
+        endpoint (str):
+            Required. The name of the endpoint requested to serve the
+            prediction. Format:
+            ``projects/{project}/locations/{location}/endpoints/{endpoint}``
+        http_body (google.api.httpbody_pb2.HttpBody):
+            Optional. The prediction input. Supports HTTP
+            headers and arbitrary data payload.
+    """
+
+    endpoint: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    http_body: httpbody_pb2.HttpBody = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message=httpbody_pb2.HttpBody,
     )
 
 

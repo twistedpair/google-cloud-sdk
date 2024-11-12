@@ -1941,26 +1941,36 @@ def AddPreemptibleVmArgs(parser, is_update=False):
         '--preemptible', action='store_true', default=False, help=help_text)
 
 
-def AddProvisioningModelVmArgs(parser):
+def AddProvisioningModelVmArgs(parser, support_reservation_bound=False):
   """Set arguments for specifing provisioning model for instances."""
+  choices = {
+      'SPOT': (
+          'Spot VMs are spare capacity; Spot VMs are discounted '
+          'to have much lower prices than standard VMs '
+          'but have no guaranteed runtime. Spot VMs are the new version '
+          'of preemptible VM instances, except Spot VMs do not have '
+          'a 24-hour maximum runtime.'
+      ),
+      'STANDARD': (
+          'Default. Standard provisioning model for VM instances, '
+          'which has user-controlled runtime '
+          'but no Spot discounts.'
+      ),
+  }
+  if support_reservation_bound:
+    choices['RESERVATION_BOUND'] = (
+        'Reservation-bound provisioning model for VM instances which are bound'
+        ' to the lifecycle of the reservation in which it is provisioned.'
+    )
   parser.add_argument(
       '--provisioning-model',
-      choices={
-          'SPOT':
-              ('Spot VMs are spare capacity; Spot VMs are discounted '
-               'to have much lower prices than standard VMs '
-               'but have no guaranteed runtime. Spot VMs are the new version '
-               'of preemptible VM instances, except Spot VMs do not have '
-               'a 24-hour maximum runtime.'),
-          'STANDARD': ('Default. Standard provisioning model for VM instances, '
-                       'which has user-controlled runtime '
-                       'but no Spot discounts.')
-      },
+      choices=choices,
       type=arg_utils.ChoiceToEnumName,
       help="""\
       Specifies provisioning model, which determines price, obtainability,
       and runtime for the VM instance.
-      """)
+      """,
+  )
 
 
 def AddMaxRunDurationVmArgs(parser, is_update=False):

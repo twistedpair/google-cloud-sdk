@@ -961,7 +961,7 @@ class Web(_messages.Message):
 
 
 class Workbench(_messages.Message):
-  r"""Message describing Workbench object. Next ID: 10
+  r"""Message describing Workbench object.
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs.

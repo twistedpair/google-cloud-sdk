@@ -88,11 +88,6 @@ def MakeFutureReservationMessageFromArgs(messages, resources, args,
     scheduling_type = MakeSchedulingType(
         messages, getattr(args, 'scheduling_type', None)
     )
-  enable_opportunistic_maintenance = None
-  if args.IsKnownAndSpecified('enable_opportunistic_maintenance'):
-    enable_opportunistic_maintenance = getattr(
-        args, 'enable_opportunistic_maintenance'
-    )
 
   return MakeFutureReservationMessage(
       messages,
@@ -109,7 +104,6 @@ def MakeFutureReservationMessageFromArgs(messages, resources, args,
       deployment_type,
       commitment_info,
       scheduling_type,
-      enable_opportunistic_maintenance,
   )
 
 
@@ -281,7 +275,6 @@ def MakeFutureReservationMessage(
     deployment_type=None,
     commitment_info=None,
     scheduling_type=None,
-    enable_opportunistic_maintenance=None,
 ):
   """Constructs a future reservation message object."""
   future_reservation_message = messages.FutureReservation(
@@ -318,8 +311,4 @@ def MakeFutureReservationMessage(
     future_reservation_message.commitmentInfo = commitment_info
   if scheduling_type is not None:
     future_reservation_message.schedulingType = scheduling_type
-  if enable_opportunistic_maintenance is not None:
-    future_reservation_message.enableOpportunisticMaintenance = (
-        enable_opportunistic_maintenance
-    )
   return future_reservation_message

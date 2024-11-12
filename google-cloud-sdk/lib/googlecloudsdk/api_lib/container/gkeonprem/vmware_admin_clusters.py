@@ -114,38 +114,56 @@ class AdminClustersClient(client.ClientBase):
     )
 
   def Update(
-      self, args: parser_extensions.Namespace, cluster_ref=None
+      self,
+      args: parser_extensions.Namespace,
+      cluster_ref=None,
+      is_user_cluster_upgrade=False,
   ) -> messages.Operation:
     """Updates an admin cluster to Anthos on VMware."""
+
+    mask = update_mask.get_update_mask(
+        args, update_mask.VMWARE_ADMIN_CLUSTER_ARGS_TO_UPDATE_MASKS
+    )
+    if is_user_cluster_upgrade:
+      mask = ''
+
     kwargs = {
         'name': (
             cluster_ref.RelativeName()
             if cluster_ref
             else self._admin_cluster_name(args)
         ),
-        'updateMask': update_mask.get_update_mask(
-            args, update_mask.VMWARE_ADMIN_CLUSTER_ARGS_TO_UPDATE_MASKS
+        'updateMask': mask,
+        'vmwareAdminCluster': self._vmware_admin_cluster(
+            args, is_user_cluster_upgrade
         ),
-        'vmwareAdminCluster': self._vmware_admin_cluster(args),
     }
     req = messages.GkeonpremProjectsLocationsVmwareAdminClustersPatchRequest(
         **kwargs
     )
     return self._service.Patch(req)
 
-  def _vmware_admin_cluster(self, args: parser_extensions.Namespace):
+  def _vmware_admin_cluster(
+      self, args: parser_extensions.Namespace, is_user_cluster_upgrade=False
+  ):
     """Constructs proto message VmwareAdminCluster."""
-    kwargs = {
-        'platformConfig': self._platform_config(args),
-    }
+    kwargs = {}
+    if is_user_cluster_upgrade:
+      kwargs['platformConfig'] = self._platform_config(args, True)
+    else:
+      kwargs['platformConfig'] = self._platform_config(args, False)
+      kwargs['onPremVersion'] = flags.Get(args, 'version')
+
     if any(kwargs.values()):
       return messages.VmwareAdminCluster(**kwargs)
     return None
 
-  def _platform_config(self, args: parser_extensions.Namespace):
+  def _platform_config(
+      self, args: parser_extensions.Namespace, is_user_cluster_upgrade=False
+  ):
     """Constructs proto message field platform_config."""
     required_platform_version = flags.Get(args, 'required_platform_version')
-    if required_platform_version is None:
+    if required_platform_version is None and is_user_cluster_upgrade:
       required_platform_version = flags.Get(args, 'version')
 
     kwargs = {

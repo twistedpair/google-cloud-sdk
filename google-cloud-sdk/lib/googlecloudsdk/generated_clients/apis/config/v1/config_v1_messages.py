@@ -918,7 +918,7 @@ class Deployment(_messages.Message):
     quotaValidation: Optional. Input to control quota checks for resources in
       terraform configuration files. There are limited resources on which
       quota validation applies.
-    serviceAccount: Optional. User-specified Service Account (SA) credentials
+    serviceAccount: Required. User-specified Service Account (SA) credentials
       to be used when actuating resources. Format:
       `projects/{projectID}/serviceAccounts/{serviceAccount}`
     state: Output only. Current state of the deployment.
@@ -1752,7 +1752,7 @@ class Preview(_messages.Message):
       `projects/{project}/locations/{location}/previews/{preview}`
     previewArtifacts: Output only. Artifacts from preview.
     previewMode: Optional. Current mode of preview.
-    serviceAccount: Optional. User-specified Service Account (SA) credentials
+    serviceAccount: Required. User-specified Service Account (SA) credentials
       to be used when previewing resources. Format:
       `projects/{projectID}/serviceAccounts/{serviceAccount}`
     state: Output only. Current state of the preview.

@@ -20,14 +20,14 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.dataplex import util as dataplex_api
 from googlecloudsdk.api_lib.util import messages as messages_util
+from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.command_lib.iam import iam_util
 
 
-def GenerateData(args):
+def GenerateData(args: parser_extensions.Namespace):
   """Generate Data From Arguments."""
   module = dataplex_api.GetMessageModule()
-
-  if args.IsSpecified('data_source_entity'):
+  if args.IsKnownAndSpecified('data_source_entity'):
     data = module.GoogleCloudDataplexV1DataSource(
         entity=args.data_source_entity
     )
@@ -54,7 +54,7 @@ def GenerateDataQualitySpec(args):
   return dataqualityspec
 
 
-def GenerateDataProfileSpec(args):
+def GenerateDataProfileSpec(args: parser_extensions.Namespace):
   """Generate DataProfileSpec From Arguments."""
   module = dataplex_api.GetMessageModule()
 
@@ -67,9 +67,7 @@ def GenerateDataProfileSpec(args):
       )
   else:
     exclude_fields, include_fields, sampling_percent, row_filter = [None] * 4
-    if hasattr(args, 'exclude_field_names') and args.IsSpecified(
-        'exclude_field_names'
-    ):
+    if args.IsKnownAndSpecified('exclude_field_names'):
       exclude_fields = (
           module.GoogleCloudDataplexV1DataProfileSpecSelectedFields(
               fieldNames=list(
@@ -77,9 +75,7 @@ def GenerateDataProfileSpec(args):
               )
           )
       )
-    if hasattr(args, 'include_field_names') and args.IsSpecified(
-        'include_field_names'
-    ):
+    if args.IsKnownAndSpecified('include_field_names'):
       include_fields = (
           module.GoogleCloudDataplexV1DataProfileSpecSelectedFields(
               fieldNames=list(
@@ -87,11 +83,9 @@ def GenerateDataProfileSpec(args):
               )
           )
       )
-    if hasattr(args, 'sampling_percent') and args.IsSpecified(
-        'sampling_percent'
-    ):
+    if args.IsKnownAndSpecified('sampling_percent'):
       sampling_percent = float(args.sampling_percent)
-    if hasattr(args, 'row_filter') and args.IsSpecified('row_filter'):
+    if args.IsKnownAndSpecified('row_filter'):
       row_filter = args.row_filter
     dataprofilespec = module.GoogleCloudDataplexV1DataProfileSpec(
         excludeFields=exclude_fields,
@@ -99,15 +93,30 @@ def GenerateDataProfileSpec(args):
         samplingPercent=sampling_percent,
         rowFilter=row_filter,
     )
-    if hasattr(args, 'export_results_table') and args.IsSpecified(
-        'export_results_table'
-    ):
+    if args.IsKnownAndSpecified('export_results_table'):
       dataprofilespec.postScanActions = module.GoogleCloudDataplexV1DataProfileSpecPostScanActions(
           bigqueryExport=module.GoogleCloudDataplexV1DataProfileSpecPostScanActionsBigQueryExport(
               resultsTable=args.export_results_table
           )
       )
   return dataprofilespec
+
+
+def GenerateDataDiscoverySpec(args: parser_extensions.Namespace):
+  """Generate DataDiscoverySpec From Arguments."""
+  module = dataplex_api.GetMessageModule()
+
+  datadiscoveryspec = module.GoogleCloudDataplexV1DataDiscoverySpec()
+  datadiscoveryspec.bigqueryPublishingConfig = (
+      module.GoogleCloudDataplexV1DataDiscoverySpecBigQueryPublishingConfig(
+          connection=args.bigquery_publishing_connection
+      )
+  )
+  if args.IsKnownAndSpecified('bigquery_publishing_table_type'):
+    datadiscoveryspec.bigqueryPublishingConfig.tableType = module.GoogleCloudDataplexV1DataDiscoverySpecBigQueryPublishingConfig.TableTypeValueValuesEnum(
+        args.bigquery_publishing_table_type
+    )
+  return datadiscoveryspec
 
 
 def GenerateSchedule(args):
@@ -131,8 +140,14 @@ def GenerateTrigger(args):
 def GenerateExecutionSpecForCreateRequest(args):
   """Generate ExecutionSpec From Arguments."""
   module = dataplex_api.GetMessageModule()
+  if hasattr(args, 'field'):
+    field = args.field
+  else:
+    field = (
+        args.incremental_field if hasattr(args, 'incremental_field') else None
+    )
   executionspec = module.GoogleCloudDataplexV1DataScanExecutionSpec(
-      field=args.field if hasattr(args, 'field') else args.incremental_field,
+      field=field,
       trigger=GenerateTrigger(args),
   )
   return executionspec
@@ -147,7 +162,7 @@ def GenerateExecutionSpecForUpdateRequest(args):
   return executionspec
 
 
-def GenerateUpdateMask(args):
+def GenerateUpdateMask(args: parser_extensions.Namespace):
   """Create Update Mask for Datascan."""
   update_mask = []
   args_to_mask = {
@@ -164,6 +179,12 @@ def GenerateUpdateMask(args):
       'sampling_percent': 'dataProfileSpec.samplingPercent',
       'include_field_names': 'dataProfileSpec.includeFields',
       'exclude_field_names': 'dataProfileSpec.excludeFields',
+      'bigquery_publishing_table_type': (
+          'dataDiscoverySpec.bigqueryPublishingConfig.tableType'
+      ),
+      'bigquery_publishing_connection': (
+          'dataDiscoverySpec.bigqueryPublishingConfig.connection'
+      ),
   }
 
   for arg, val in args_to_mask.items():
@@ -171,12 +192,12 @@ def GenerateUpdateMask(args):
       update_mask.append(val)
 
   for arg, val in args_to_mask_attr.items():
-    if hasattr(args, arg) and args.IsSpecified(arg):
+    if args.IsKnownAndSpecified(arg):
       update_mask.append(val)
   return update_mask
 
 
-def GenerateDatascanForCreateRequest(args):
+def GenerateDatascanForCreateRequest(args: parser_extensions.Namespace):
   """Create Datascan for Message Create Requests."""
   module = dataplex_api.GetMessageModule()
   request = module.GoogleCloudDataplexV1DataScan(
@@ -189,18 +210,14 @@ def GenerateDatascanForCreateRequest(args):
       executionSpec=GenerateExecutionSpecForCreateRequest(args),
   )
   if args.scan_type == 'PROFILE':
-    if hasattr(args, 'data_quality_spec_file') and args.IsSpecified(
-        'data_quality_spec_file'
-    ):
+    if args.IsKnownAndSpecified('data_quality_spec_file'):
       raise ValueError(
           'Data quality spec file specified for data profile scan.'
       )
     else:
       request.dataProfileSpec = GenerateDataProfileSpec(args)
   elif args.scan_type == 'QUALITY':
-    if hasattr(args, 'data_profile_spec_file') and args.IsSpecified(
-        'data_profile_spec_file'
-    ):
+    if args.IsKnownAndSpecified('data_profile_spec_file'):
       raise ValueError(
           'Data profile spec file specified for data quality scan.'
       )
@@ -211,10 +228,12 @@ def GenerateDatascanForCreateRequest(args):
           'If scan-type="QUALITY" , data-quality-spec-file is a required'
           ' argument.'
       )
+  elif args.scan_type == 'DISCOVERY':
+    request.dataDiscoverySpec = GenerateDataDiscoverySpec(args)
   return request
 
 
-def GenerateDatascanForUpdateRequest(args):
+def GenerateDatascanForUpdateRequest(args: parser_extensions.Namespace):
   """Create Datascan for Message Update Requests."""
   module = dataplex_api.GetMessageModule()
   request = module.GoogleCloudDataplexV1DataScan(
@@ -226,17 +245,13 @@ def GenerateDatascanForUpdateRequest(args):
       executionSpec=GenerateExecutionSpecForUpdateRequest(args),
   )
   if args.scan_type == 'PROFILE':
-    if hasattr(args, 'data_quality_spec_file') and args.IsSpecified(
-        'data_quality_spec_file'
-    ):
+    if args.IsKnownAndSpecified('data_quality_spec_file'):
       raise ValueError(
           'Data quality spec file specified for data profile scan.'
       )
     request.dataProfileSpec = GenerateDataProfileSpec(args)
   elif args.scan_type == 'QUALITY':
-    if hasattr(args, 'data_profile_spec_file') and args.IsSpecified(
-        'data_profile_spec_file'
-    ):
+    if args.IsKnownAndSpecified('data_profile_spec_file'):
       raise ValueError(
           'Data profile spec file specified for data quality scan.'
       )
@@ -244,6 +259,8 @@ def GenerateDatascanForUpdateRequest(args):
       request.dataQualitySpec = GenerateDataQualitySpec(args)
     else:
       request.dataQualitySpec = module.GoogleCloudDataplexV1DataQualitySpec()
+  elif args.scan_type == 'DISCOVERY':
+    request.dataDiscoverySpec = GenerateDataDiscoverySpec(args)
   return request
 
 

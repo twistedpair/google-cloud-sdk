@@ -107,7 +107,6 @@ def ListQuotaInfo(args, release_track=base.ReleaseTrack.GA):
         messages.CloudquotasProjectsLocationsServicesQuotaInfosListRequest(
             parent=parent,
             pageSize=args.page_size,
-            pageToken=args.page_token,
         )
     )
     return list_pager.YieldFromList(
@@ -123,7 +122,6 @@ def ListQuotaInfo(args, release_track=base.ReleaseTrack.GA):
     request = messages.CloudquotasFoldersLocationsServicesQuotaInfosListRequest(
         parent=parent,
         pageSize=args.page_size,
-        pageToken=args.page_token,
     )
     return list_pager.YieldFromList(
         client.folders_locations_services_quotaInfos,
@@ -139,7 +137,6 @@ def ListQuotaInfo(args, release_track=base.ReleaseTrack.GA):
         messages.CloudquotasOrganizationsLocationsServicesQuotaInfosListRequest(
             parent=parent,
             pageSize=args.page_size,
-            pageToken=args.page_token,
         )
     )
     return list_pager.YieldFromList(

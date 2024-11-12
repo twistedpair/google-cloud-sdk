@@ -838,27 +838,39 @@ def AddTargetSizePolicyModeFlag(parser):
 class ArgMultiValueDict:
   """Converts argument values into multi-valued mappings.
 
-  Values for the repeated keys are collected in a list.
+  Values for repeated keys are collected in a list. Ensures all values are
+  key-value pairs and handles invalid cases.
   """
 
   def __init__(self):
     ops = '='
-    key_op_value_pattern = '([^{ops}]+)([{ops}]?)(.*)'.format(ops=ops)
+    key_op_value_pattern = r'([^\s{ops}]+)\s*{ops}\s*(.*)'.format(ops=ops)
     self._key_op_value = re.compile(key_op_value_pattern, re.DOTALL)
 
   def __call__(self, arg_value):
     arg_list = [item.strip() for item in arg_value.split(',')]
     arg_dict = collections.OrderedDict()
     for arg in arg_list:
+      # Enforce key-value pair structure
+      if '=' not in arg:
+        raise arg_parsers.ArgumentTypeError(
+            'Invalid flag value [{0}]'.format(arg)
+        )
       match = self._key_op_value.match(arg)
       if not match:
         raise arg_parsers.ArgumentTypeError(
             'Invalid flag value [{0}]'.format(arg)
         )
-      key, _, value = (
-          match.group(1).strip(),
-          match.group(2),
-          match.group(3).strip(),
-      )
+      key, value = match.group(1).strip(), match.group(2).strip()
+      if not key or not value:
+        raise arg_parsers.ArgumentTypeError(
+            'Invalid flag value [{0}]'.format(arg)
+        )
+      # Prevent values from containing '='
+      if '=' in value:
+        raise arg_parsers.ArgumentTypeError(
+            'Invalid flag value [{0}]'.format(arg)
+        )
       arg_dict.setdefault(key, []).append(value)
+
     return arg_dict

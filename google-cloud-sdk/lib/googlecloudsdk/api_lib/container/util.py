@@ -415,6 +415,9 @@ class ClusterConfig(object):
     self.client_cert_data = kwargs.get('client_cert_data')
     self.client_key_data = kwargs.get('client_key_data')
     self.dns_endpoint = kwargs.get('dns_endpoint')
+    self.impersonate_service_account = kwargs.get(
+        'impersonate_service_account'
+    )
 
   def __str__(self):
     return 'ClusterConfig{project:%s, cluster:%s, zone:%s}' % (
@@ -454,6 +457,10 @@ class ClusterConfig(object):
   def has_dns_endpoint(self):
     return self.dns_endpoint
 
+  @property
+  def has_impersonate_service_account(self):
+    return self.impersonate_service_account
+
   @staticmethod
   def UseGCPAuthProvider():
     return not properties.VALUES.container.use_client_certificate.GetBool()
@@ -489,6 +496,10 @@ class ClusterConfig(object):
     if self.has_dns_endpoint:
       user_kwargs['dns_endpoint'] = self.dns_endpoint
       cluster_kwargs['has_dns_endpoint'] = True
+    if self.has_impersonate_service_account:
+      user_kwargs['impersonate_service_account'] = (
+          self.impersonate_service_account
+      )
     # Use same key for context, cluster, and user
     kubeconfig.contexts[context] = kconfig.Context(context, context, context)
     kubeconfig.users[context] = kconfig.User(context, **user_kwargs)
@@ -513,6 +524,7 @@ class ClusterConfig(object):
       cross_connect_subnetwork=None,
       use_private_fqdn=None,
       use_dns_endpoint=None,
+      impersonate_service_account=None,
   ):
     """Saves config data for the given cluster.
 
@@ -528,6 +540,8 @@ class ClusterConfig(object):
         endpoint to persist (optional)
       use_private_fqdn: whether to persist the private fqdn.
       use_dns_endpoint: whether to generate dns endpoint address.
+      impersonate_service_account: the service account to impersonate when
+        connecting to the cluster.
 
     Returns:
       ClusterConfig of the persisted data.
@@ -569,6 +583,8 @@ class ClusterConfig(object):
       if auth.clientCertificate and auth.clientKey:
         kwargs['client_key_data'] = auth.clientKey
         kwargs['client_cert_data'] = auth.clientCertificate
+    if impersonate_service_account:
+      kwargs['impersonate_service_account'] = impersonate_service_account
 
     c_config = cls(**kwargs)
     c_config.GenKubeconfig()

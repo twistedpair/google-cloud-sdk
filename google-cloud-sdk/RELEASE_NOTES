@@ -5,6 +5,116 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 501.0.0 (2024-11-12)
+
+### Anthos On-Prem
+
+* Added `--version` flag to `gcloud container vmware admin-clusters update` to support admin cluster version upgrade.
+
+### Artifact Registry
+
+* Added an argument group of two flags `allow-vulnerability-scanning` and `disable-vulnerability-scanning` to `gcloud artifacts repositories create`, to set the vulnerability scanning config for the repository.
+* Added an argument group of two flags `allow-vulnerability-scanning` and `disable-vulnerability-scanning` to `gcloud artifacts repositories update`, to set the vulnerability scanning config for the repository.
+
+### Cloud Access Context Manager
+
+*   Updated `gcloud access-context-manager cloud-bindings create` to create
+    bindings with global session settings. Use `--session-length` and
+    `--session-reauth-method` to specify these settings.
+*   Updated `gcloud access-context-manager cloud-bindings create --binding-file`
+    to support creating scoped access settings that include session settings.
+*   Updated `gcloud access-context-manager cloud-bindings update` to update
+    bindings with global session settings. Use `--session-length` and
+    `--session-reauth-method` to specify these settings.
+*   Updated `gcloud access-context-manager cloud-bindings update --binding-file`
+    to support updating scoped access settings that include session settings.
+*   Updated `gcloud access-context-manager cloud-bindings list` to display
+    session settings on listed bindings.
+*   Updated `gcloud access-context-manager cloud-bindings describe` to display
+    session settings on returned bindings.
+
+### Cloud Managed Kafka
+
+* Promoted `gcloud managed-kafka` to GA.
+
+### Cloud NetApp
+
+* Unhiding hybrid replication commands and fields for OnPrem migration GA.
+
+### Cloud Run
+
+* Promoted volume type `in-memory` to GA in `gcloud run deploy`, `gcloud run jobs deploy`,
+`gcloud run jobs update` `gcloud run jobs create`, and `gcloud run services update`.
+* Added `--startup-probe` and `--liveness-probe` flags to `gcloud beta run deploy`
+and `gcloud beta run services update` to allow configuring health check probes for
+a Cloud Run Service.
+
+### Cloud SQL
+
+* Promoted `gcloud sql instances switchover` to the GA track for PostgreSQL.
+
+### Cloud Spanner
+
+* Added `--default-backup-schedule-type` flag to `gcloud spanner instances create` and `gcloud spanner instances update` commands to allow specifying the default backup schedule type while creating or updating instances.
+
+### Colab
+
+* Promote `gcloud beta colab` to GA.
+
+### Colab Enterprise
+
+* Deleted the deprecated `gcloud beta colab_enterprise` surface.
+
+### Compute Engine
+
+* Changed the default value of `--image-family` flag to debian-12 for `gcloud compute instances create`, `gcloud compute instances bulk create`, and `gcloud compute instance-templates create` commands.
+* Promoted `--instance-selection` and other corresponding flags of `gcloud compute instance-groups managed <create | update>` to GA.
+
+### Compute Firewall Policy Rules
+
+*   Promote `gcloud compute firewall-policies export-rules` to beta.
+*   Promote `gcloud compute firewall-policies import-rules`  to beta.
+*   Promote `gcloud compute network-firewall-policies export-rules` to beta.
+*   Promote `gcloud compute network-firewall-policies import-rules` to beta.
+
+### Compute OS Config
+
+* Added `--include-locations` flag to `gcloud compute os-config policy-orchestrators create`.
+* Added `--include-locations` and `--clear-locations` flags to
+  `gcloud compute os-config policy-orchestrators update`.
+
+### Kubernetes Engine
+
+* Added `--autoprovisioning-cgroup-mode` flag to migrate cgroup mode in auto-provisioned node pools.
+* Added flag option `--hpa-profile=performance|none` to
+  `gcloud container clusters create`, `gcloud container clusters create-auto` and `gcloud container clusters update` commands.
+  This flag allows specifying a Horizontal Pod Autoscaling profile for a cluster.
+* Updated default kubectl from 1.30.5 to 1.30.6
+* Additional kubectl versions:
+  * kubectl.1.27 (1.27.16)
+  * kubectl.1.28 (1.28.15)
+  * kubectl.1.29 (1.29.10)
+  * kubectl.1.30 (1.30.6)
+  * kubectl.1.30 (1.31.2)
+
+### Network Connectivity
+
+* Added `gcloud network-connectivity hubs query-status` command to allow querying the status of a hub's Private Service Connect propagation.
+* Added `--include-export-ranges` flag to VPC spoke and producer VPC spoke update
+  CLI to enable/disable exporting IPv6 subnets.
+
+### Network Security
+
+* Bug fix to change `DEFAULT` option for flag `--action` to `DEFAULT_ACTION` for Threat Prevention `add-override` and `update-override` commands.
+
+### Transfer
+
+* Fix a bug related to `--id-prefix` flag in `transfer agents install` command.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 500.0.0 (2024-11-05)
 
 ### Breaking Changes

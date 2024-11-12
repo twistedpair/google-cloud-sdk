@@ -85,10 +85,12 @@ from .types.prediction_service import DirectRawPredictRequest
 from .types.prediction_service import DirectRawPredictResponse
 from .types.prediction_service import ExplainRequest
 from .types.prediction_service import ExplainResponse
+from .types.prediction_service import FetchPredictOperationRequest
 from .types.prediction_service import GenerateContentRequest
 from .types.prediction_service import GenerateContentResponse
 from .types.prediction_service import GenerateVideoResponse
 from .types.prediction_service import PredictLongRunningMetadata
+from .types.prediction_service import PredictLongRunningRequest
 from .types.prediction_service import PredictLongRunningResponse
 from .types.prediction_service import PredictRequest
 from .types.prediction_service import PredictResponse
@@ -163,6 +165,7 @@ __all__ = (
 'ExplanationSpec',
 'ExplanationSpecOverride',
 'FeatureNoiseSigma',
+'FetchPredictOperationRequest',
 'FileData',
 'FunctionCall',
 'FunctionCallingConfig',
@@ -188,6 +191,7 @@ __all__ = (
 'Neighbor',
 'Part',
 'PredictLongRunningMetadata',
+'PredictLongRunningRequest',
 'PredictLongRunningResponse',
 'PredictRequest',
 'PredictResponse',

@@ -79,6 +79,8 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     self.projects_locations_extensionControllers = self.ProjectsLocationsExtensionControllersService(self)
     self.projects_locations_extensions_operations = self.ProjectsLocationsExtensionsOperationsService(self)
     self.projects_locations_extensions = self.ProjectsLocationsExtensionsService(self)
+    self.projects_locations_featureGroups_featureMonitors_featureMonitorJobs = self.ProjectsLocationsFeatureGroupsFeatureMonitorsFeatureMonitorJobsService(self)
+    self.projects_locations_featureGroups_featureMonitors = self.ProjectsLocationsFeatureGroupsFeatureMonitorsService(self)
     self.projects_locations_featureGroups_features_operations = self.ProjectsLocationsFeatureGroupsFeaturesOperationsService(self)
     self.projects_locations_featureGroups_features = self.ProjectsLocationsFeatureGroupsFeaturesService(self)
     self.projects_locations_featureGroups_operations = self.ProjectsLocationsFeatureGroupsOperationsService(self)
@@ -4009,6 +4011,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def FetchPredictOperation(self, request, global_params=None):
+      r"""Fetch an asynchronous online prediction operation.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsFetchPredictOperationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('FetchPredictOperation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchPredictOperation.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:fetchPredictOperation',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.fetchPredictOperation',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:fetchPredictOperation',
+        request_field='googleCloudAiplatformV1beta1FetchPredictOperationRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsFetchPredictOperationRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def GenerateContent(self, request, global_params=None):
       r"""Generate content with multimodal inputs.
 
@@ -4195,6 +4224,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1beta1PredictRequest',
         request_type_name='AiplatformProjectsLocationsEndpointsPredictRequest',
         response_type_name='GoogleCloudAiplatformV1beta1PredictResponse',
+        supports_download=False,
+    )
+
+    def PredictLongRunning(self, request, global_params=None):
+      r"""PredictLongRunning method for the projects_locations_endpoints service.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsPredictLongRunningRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('PredictLongRunning')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PredictLongRunning.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:predictLongRunning',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.predictLongRunning',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:predictLongRunning',
+        request_field='googleCloudAiplatformV1beta1PredictLongRunningRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsPredictLongRunningRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -5196,6 +5252,215 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsFeatureGroupsFeatureMonitorsFeatureMonitorJobsService(base_api.BaseApiService):
+    """Service class for the projects_locations_featureGroups_featureMonitors_featureMonitorJobs resource."""
+
+    _NAME = 'projects_locations_featureGroups_featureMonitors_featureMonitorJobs'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectsLocationsFeatureGroupsFeatureMonitorsFeatureMonitorJobsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new feature monitor job.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsFeatureMonitorJobsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1FeatureMonitorJob) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/featureGroups/{featureGroupsId}/featureMonitors/{featureMonitorsId}/featureMonitorJobs',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.featureGroups.featureMonitors.featureMonitorJobs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['featureMonitorJobId'],
+        relative_path='v1beta1/{+parent}/featureMonitorJobs',
+        request_field='googleCloudAiplatformV1beta1FeatureMonitorJob',
+        request_type_name='AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsFeatureMonitorJobsCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1FeatureMonitorJob',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a feature monitor job.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsFeatureMonitorJobsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1FeatureMonitorJob) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/featureGroups/{featureGroupsId}/featureMonitors/{featureMonitorsId}/featureMonitorJobs/{featureMonitorJobsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.featureGroups.featureMonitors.featureMonitorJobs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsFeatureMonitorJobsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1FeatureMonitorJob',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List feature monitor jobs.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsFeatureMonitorJobsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListFeatureMonitorJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/featureGroups/{featureGroupsId}/featureMonitors/{featureMonitorsId}/featureMonitorJobs',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.featureGroups.featureMonitors.featureMonitorJobs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/featureMonitorJobs',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsFeatureMonitorJobsListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListFeatureMonitorJobsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsFeatureGroupsFeatureMonitorsService(base_api.BaseApiService):
+    """Service class for the projects_locations_featureGroups_featureMonitors resource."""
+
+    _NAME = 'projects_locations_featureGroups_featureMonitors'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectsLocationsFeatureGroupsFeatureMonitorsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new FeatureMonitor in a given project, location and FeatureGroup.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/featureGroups/{featureGroupsId}/featureMonitors',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.featureGroups.featureMonitors.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['featureMonitorId'],
+        relative_path='v1beta1/{+parent}/featureMonitors',
+        request_field='googleCloudAiplatformV1beta1FeatureMonitor',
+        request_type_name='AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single FeatureMonitor.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/featureGroups/{featureGroupsId}/featureMonitors/{featureMonitorsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.featureGroups.featureMonitors.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single FeatureMonitor.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1FeatureMonitor) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/featureGroups/{featureGroupsId}/featureMonitors/{featureMonitorsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.featureGroups.featureMonitors.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1FeatureMonitor',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists FeatureGroups in a given project and location.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListFeatureMonitorsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/featureGroups/{featureGroupsId}/featureMonitors',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.featureGroups.featureMonitors.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/featureMonitors',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListFeatureMonitorsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsFeatureGroupsFeaturesOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_featureGroups_features_operations resource."""
 
@@ -5424,7 +5689,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.featureGroups.features.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['featureStatsAndAnomalySpec_latestStatsCount', 'featureStatsAndAnomalySpec_statsTimeRange_endTime', 'featureStatsAndAnomalySpec_statsTimeRange_startTime'],
         relative_path='v1beta1/{+name}',
         request_field='',
         request_type_name='AiplatformProjectsLocationsFeatureGroupsFeaturesGetRequest',
@@ -6864,7 +7129,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.featurestores.entityTypes.features.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['featureStatsAndAnomalySpec_latestStatsCount', 'featureStatsAndAnomalySpec_statsTimeRange_endTime', 'featureStatsAndAnomalySpec_statsTimeRange_startTime'],
         relative_path='v1beta1/{+name}',
         request_field='',
         request_type_name='AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesGetRequest',
@@ -14504,6 +14769,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def FetchPredictOperation(self, request, global_params=None):
+      r"""Fetch an asynchronous online prediction operation.
+
+      Args:
+        request: (AiplatformProjectsLocationsPublishersModelsFetchPredictOperationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('FetchPredictOperation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchPredictOperation.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:fetchPredictOperation',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.publishers.models.fetchPredictOperation',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:fetchPredictOperation',
+        request_field='googleCloudAiplatformV1beta1FetchPredictOperationRequest',
+        request_type_name='AiplatformProjectsLocationsPublishersModelsFetchPredictOperationRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def GenerateContent(self, request, global_params=None):
       r"""Generate content with multimodal inputs.
 
@@ -14582,6 +14874,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1beta1PredictRequest',
         request_type_name='AiplatformProjectsLocationsPublishersModelsPredictRequest',
         response_type_name='GoogleCloudAiplatformV1beta1PredictResponse',
+        supports_download=False,
+    )
+
+    def PredictLongRunning(self, request, global_params=None):
+      r"""PredictLongRunning method for the projects_locations_publishers_models service.
+
+      Args:
+        request: (AiplatformProjectsLocationsPublishersModelsPredictLongRunningRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('PredictLongRunning')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PredictLongRunning.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:predictLongRunning',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.publishers.models.predictLongRunning',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:predictLongRunning',
+        request_field='googleCloudAiplatformV1beta1PredictLongRunningRequest',
+        request_type_name='AiplatformProjectsLocationsPublishersModelsPredictLongRunningRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

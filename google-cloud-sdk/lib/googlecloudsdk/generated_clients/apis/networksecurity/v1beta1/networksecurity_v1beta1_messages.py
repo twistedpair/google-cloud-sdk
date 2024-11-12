@@ -1980,7 +1980,7 @@ class MirroringDeploymentGroupConnectedEndpointGroup(_messages.Message):
 
 
 class MirroringEndpointGroup(_messages.Message):
-  r"""Message describing MirroringEndpointGroup object. Next ID: 10
+  r"""Message describing MirroringEndpointGroup object.
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the endpoint group.
@@ -1994,7 +1994,8 @@ class MirroringEndpointGroup(_messages.Message):
     mirroringDeploymentGroup: Required. Immutable. The Mirroring Deployment
       Group that this resource is connected to. Format is: `projects/{project}
       /locations/global/mirroringDeploymentGroups/{mirroringDeploymentGroup}`
-    name: Immutable. Identifier. The name of the MirroringEndpointGroup.
+    name: Immutable. Identifier. Next ID: 11 The name of the
+      MirroringEndpointGroup.
     reconciling: Output only. Whether reconciling is in progress, recommended
       per https://google.aip.dev/128.
     state: Output only. Current state of the endpoint group.
@@ -4204,7 +4205,8 @@ class NetworksecurityProjectsLocationsMirroringEndpointGroupsPatchRequest(_messa
   Fields:
     mirroringEndpointGroup: A MirroringEndpointGroup resource to be passed as
       the request body.
-    name: Immutable. Identifier. The name of the MirroringEndpointGroup.
+    name: Immutable. Identifier. Next ID: 11 The name of the
+      MirroringEndpointGroup.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The

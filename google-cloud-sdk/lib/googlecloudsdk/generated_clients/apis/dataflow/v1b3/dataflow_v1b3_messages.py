@@ -3384,6 +3384,29 @@ class FloatingPointMean(_messages.Message):
   sum = _messages.FloatField(2)
 
 
+class GPUUsage(_messages.Message):
+  r"""Information about the GPU usage on the worker.
+
+  Fields:
+    timestamp: Required. Timestamp of the measurement.
+    utilization: Required. Utilization info about the GPU.
+  """
+
+  timestamp = _messages.StringField(1)
+  utilization = _messages.MessageField('GPUUtilization', 2)
+
+
+class GPUUtilization(_messages.Message):
+  r"""Utilization details about the GPU.
+
+  Fields:
+    rate: Required. GPU utilization rate of any kernel over the last sample
+      period in the range of [0, 1].
+  """
+
+  rate = _messages.FloatField(1)
+
+
 class GetDebugConfigRequest(_messages.Message):
   r"""Request to get updated debug configuration for component.
 
@@ -5851,6 +5874,7 @@ class ResourceUtilizationReport(_messages.Message):
   Fields:
     containers: Per container information. Key: container name.
     cpuTime: CPU utilization samples.
+    gpuUsage: Optional. GPU usage samples.
     memoryInfo: Memory utilization samples.
   """
 
@@ -5880,7 +5904,8 @@ class ResourceUtilizationReport(_messages.Message):
 
   containers = _messages.MessageField('ContainersValue', 1)
   cpuTime = _messages.MessageField('CPUTime', 2, repeated=True)
-  memoryInfo = _messages.MessageField('MemInfo', 3, repeated=True)
+  gpuUsage = _messages.MessageField('GPUUsage', 3, repeated=True)
+  memoryInfo = _messages.MessageField('MemInfo', 4, repeated=True)
 
 
 class ResourceUtilizationReportResponse(_messages.Message):

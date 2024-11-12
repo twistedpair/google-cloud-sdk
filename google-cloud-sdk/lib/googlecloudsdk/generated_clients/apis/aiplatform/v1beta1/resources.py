@@ -434,6 +434,29 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_FEATUREGROUPS_FEATUREMONITORS = (
+      'projects.locations.featureGroups.featureMonitors',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/featureGroups/'
+              '{featureGroupsId}/featureMonitors/{featureMonitorsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_FEATUREGROUPS_FEATUREMONITORS_FEATUREMONITORJOBS = (
+      'projects.locations.featureGroups.featureMonitors.featureMonitorJobs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/featureGroups/'
+              '{featureGroupsId}/featureMonitors/{featureMonitorsId}/'
+              'featureMonitorJobs/{featureMonitorJobsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_FEATUREGROUPS_FEATURES = (
       'projects.locations.featureGroups.features',
       '{+name}',

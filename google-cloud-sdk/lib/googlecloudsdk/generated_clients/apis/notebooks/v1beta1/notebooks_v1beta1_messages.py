@@ -305,7 +305,7 @@ class Instance(_messages.Message):
     labels: Labels to apply to this instance. These can be later modified by
       the setLabels method.
     machineType: Required. The [Compute Engine machine
-      type](https://cloud.google.com/compute/docs/machine-types) of this
+      type](https://cloud.google.com/compute/docs/machine-resource) of this
       instance.
     metadata: Custom metadata to apply to this instance. For example, to
       specify a Cloud Storage bucket for automatic backup, you can use the
@@ -1483,7 +1483,7 @@ class SetInstanceMachineTypeRequest(_messages.Message):
 
   Fields:
     machineType: Required. The [Compute Engine machine
-      type](https://cloud.google.com/compute/docs/machine-types).
+      type](https://cloud.google.com/compute/docs/machine-resource).
   """
 
   machineType = _messages.StringField(1)

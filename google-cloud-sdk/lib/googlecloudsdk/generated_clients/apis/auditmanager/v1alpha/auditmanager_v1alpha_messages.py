@@ -21,6 +21,7 @@ class AuditReport(_messages.Message):
       Report Generation.
 
   Fields:
+    complianceFramework: Output only. Compliance Framework of Audit Report
     complianceStandard: Output only. Compliance Standard.
     controlDetails: Output only. The overall status of controls
     createTime: Output only. Creation time of the audit report.
@@ -56,15 +57,16 @@ class AuditReport(_messages.Message):
     FAILED = 3
     SUMMARY_UNKNOWN = 4
 
-  complianceStandard = _messages.StringField(1)
-  controlDetails = _messages.MessageField('ControlDetails', 2, repeated=True)
-  createTime = _messages.StringField(3)
-  destinationDetails = _messages.MessageField('DestinationDetails', 4)
-  name = _messages.StringField(5)
-  operationId = _messages.StringField(6)
-  reportGenerationState = _messages.EnumField('ReportGenerationStateValueValuesEnum', 7)
-  reportSummary = _messages.MessageField('ReportSummary', 8)
-  scope = _messages.StringField(9)
+  complianceFramework = _messages.StringField(1)
+  complianceStandard = _messages.StringField(2)
+  controlDetails = _messages.MessageField('ControlDetails', 3, repeated=True)
+  createTime = _messages.StringField(4)
+  destinationDetails = _messages.MessageField('DestinationDetails', 5)
+  name = _messages.StringField(6)
+  operationId = _messages.StringField(7)
+  reportGenerationState = _messages.EnumField('ReportGenerationStateValueValuesEnum', 8)
+  reportSummary = _messages.MessageField('ReportSummary', 9)
+  scope = _messages.StringField(10)
 
 
 class AuditScopeReport(_messages.Message):
@@ -78,29 +80,6 @@ class AuditScopeReport(_messages.Message):
 
   name = _messages.StringField(1)
   scopeReportContents = _messages.BytesField(2)
-
-
-class AuditmanagerFoldersLocationsAuditReportsControlReportsFindingsListRequest(_messages.Message):
-  r"""A
-  AuditmanagerFoldersLocationsAuditReportsControlReportsFindingsListRequest
-  object.
-
-  Fields:
-    filter: Optional. The filters to apply to the findings. See
-      https://google.aip.dev/160 for syntax details.
-    pageSize: Optional. The maximum number of resources to return.
-    pageToken: Optional. The next_page_token value returned from a previous
-      List request, if any.
-    parent: Required. Format projects/{project-id}/locations/{location}/auditR
-      eports/{auditReportName}/controlReports/{controlId}, folders/{folder-id}
-      /locations/{location}/auditReports/{auditReportName}/controlReports/{con
-      trolId}
-  """
-
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
 
 
 class AuditmanagerFoldersLocationsAuditReportsGenerateRequest(_messages.Message):
@@ -278,6 +257,55 @@ class AuditmanagerOrganizationsLocationsEnrollResourceRequest(_messages.Message)
   scope = _messages.StringField(2, required=True)
 
 
+class AuditmanagerOrganizationsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A AuditmanagerOrganizationsLocationsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AuditmanagerOrganizationsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A AuditmanagerOrganizationsLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AuditmanagerOrganizationsLocationsOperationsGetRequest(_messages.Message):
+  r"""A AuditmanagerOrganizationsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AuditmanagerOrganizationsLocationsOperationsListRequest(_messages.Message):
+  r"""A AuditmanagerOrganizationsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class AuditmanagerOrganizationsLocationsResourceEnrollmentStatusesGetRequest(_messages.Message):
   r"""A AuditmanagerOrganizationsLocationsResourceEnrollmentStatusesGetRequest
   object.
@@ -326,29 +354,6 @@ class AuditmanagerOrganizationsLocationsStandardsControlsListRequest(_messages.M
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-
-
-class AuditmanagerProjectsLocationsAuditReportsControlReportsFindingsListRequest(_messages.Message):
-  r"""A
-  AuditmanagerProjectsLocationsAuditReportsControlReportsFindingsListRequest
-  object.
-
-  Fields:
-    filter: Optional. The filters to apply to the findings. See
-      https://google.aip.dev/160 for syntax details.
-    pageSize: Optional. The maximum number of resources to return.
-    pageToken: Optional. The next_page_token value returned from a previous
-      List request, if any.
-    parent: Required. Format projects/{project-id}/locations/{location}/auditR
-      eports/{auditReportName}/controlReports/{controlId}, folders/{folder-id}
-      /locations/{location}/auditReports/{auditReportName}/controlReports/{con
-      trolId}
-  """
-
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
 
 
 class AuditmanagerProjectsLocationsAuditReportsGenerateRequest(_messages.Message):
@@ -739,41 +744,6 @@ class Enrollment(_messages.Message):
   name = _messages.StringField(2)
 
 
-class Finding(_messages.Message):
-  r"""Represents a violation finding for a particular control.
-
-  Enums:
-    ComplianceStateValueValuesEnum: Output only. Status of the finding.
-
-  Fields:
-    complianceState: Output only. Status of the finding.
-    evidencePath: Evidence path of the finding.
-    name: Identifier. The name of this Finding.
-    overview: Overview of the finding.
-  """
-
-  class ComplianceStateValueValuesEnum(_messages.Enum):
-    r"""Output only. Status of the finding.
-
-    Values:
-      COMPLIANCE_STATE_UNSPECIFIED: Unspecified. Invalid state.
-      COMPLIANT: Compliant.
-      VIOLATION: Violation.
-      MANUAL_REVIEW_NEEDED: MANUAL_REVIEW_NEEDED, requires manual review
-      ERROR: Error while computing status.
-    """
-    COMPLIANCE_STATE_UNSPECIFIED = 0
-    COMPLIANT = 1
-    VIOLATION = 2
-    MANUAL_REVIEW_NEEDED = 3
-    ERROR = 4
-
-  complianceState = _messages.EnumField('ComplianceStateValueValuesEnum', 1)
-  evidencePath = _messages.StringField(2)
-  name = _messages.StringField(3)
-  overview = _messages.StringField(4)
-
-
 class GenerateAuditReportRequest(_messages.Message):
   r"""Message for requesting the Audit Report.
 
@@ -865,19 +835,6 @@ class ListControlsResponse(_messages.Message):
   """
 
   controls = _messages.MessageField('Control', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
-class ListFindingsResponse(_messages.Message):
-  r"""Response message with all the findings for a control.
-
-  Fields:
-    findings: Output only. The findings for the control.
-    nextPageToken: Output only. The token to retrieve the next page of
-      results.
-  """
-
-  findings = _messages.MessageField('Finding', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 

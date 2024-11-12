@@ -39,11 +39,195 @@ class RedisV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_backupCollections_backups = self.ProjectsLocationsBackupCollectionsBackupsService(self)
+    self.projects_locations_backupCollections = self.ProjectsLocationsBackupCollectionsService(self)
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsBackupCollectionsBackupsService(base_api.BaseApiService):
+    """Service class for the projects_locations_backupCollections_backups resource."""
+
+    _NAME = 'projects_locations_backupCollections_backups'
+
+    def __init__(self, client):
+      super(RedisV1.ProjectsLocationsBackupCollectionsBackupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a specific backup.
+
+      Args:
+        request: (RedisProjectsLocationsBackupCollectionsBackupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupCollections/{backupCollectionsId}/backups/{backupsId}',
+        http_method='DELETE',
+        method_id='redis.projects.locations.backupCollections.backups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='RedisProjectsLocationsBackupCollectionsBackupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Export(self, request, global_params=None):
+      r"""Exports a specific backup to a customer target Cloud Storage URI.
+
+      Args:
+        request: (RedisProjectsLocationsBackupCollectionsBackupsExportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Export')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupCollections/{backupCollectionsId}/backups/{backupsId}:export',
+        http_method='POST',
+        method_id='redis.projects.locations.backupCollections.backups.export',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:export',
+        request_field='exportBackupRequest',
+        request_type_name='RedisProjectsLocationsBackupCollectionsBackupsExportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the details of a specific backup.
+
+      Args:
+        request: (RedisProjectsLocationsBackupCollectionsBackupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Backup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupCollections/{backupCollectionsId}/backups/{backupsId}',
+        http_method='GET',
+        method_id='redis.projects.locations.backupCollections.backups.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='RedisProjectsLocationsBackupCollectionsBackupsGetRequest',
+        response_type_name='Backup',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all backups owned by a backup collection.
+
+      Args:
+        request: (RedisProjectsLocationsBackupCollectionsBackupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBackupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupCollections/{backupCollectionsId}/backups',
+        http_method='GET',
+        method_id='redis.projects.locations.backupCollections.backups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/backups',
+        request_field='',
+        request_type_name='RedisProjectsLocationsBackupCollectionsBackupsListRequest',
+        response_type_name='ListBackupsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsBackupCollectionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_backupCollections resource."""
+
+    _NAME = 'projects_locations_backupCollections'
+
+    def __init__(self, client):
+      super(RedisV1.ProjectsLocationsBackupCollectionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get a backup collection.
+
+      Args:
+        request: (RedisProjectsLocationsBackupCollectionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackupCollection) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupCollections/{backupCollectionsId}',
+        http_method='GET',
+        method_id='redis.projects.locations.backupCollections.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='RedisProjectsLocationsBackupCollectionsGetRequest',
+        response_type_name='BackupCollection',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all backup collections owned by a consumer project in either the specified location (region) or all locations. If `location_id` is specified as `-` (wildcard), then all regions available to the project are queried, and the results are aggregated.
+
+      Args:
+        request: (RedisProjectsLocationsBackupCollectionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBackupCollectionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupCollections',
+        http_method='GET',
+        method_id='redis.projects.locations.backupCollections.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/backupCollections',
+        request_field='',
+        request_type_name='RedisProjectsLocationsBackupCollectionsListRequest',
+        response_type_name='ListBackupCollectionsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsClustersService(base_api.BaseApiService):
     """Service class for the projects_locations_clusters resource."""
@@ -54,6 +238,33 @@ class RedisV1(base_api.BaseApiClient):
       super(RedisV1.ProjectsLocationsClustersService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Backup(self, request, global_params=None):
+      r"""Backup Redis Cluster. If this is the first time a backup is being created, a backup collection will be created at the backend, and this backup belongs to this collection. Both collection and backup will have a resource name. Backup will be executed for each shard. A replica (primary if nonHA) will be selected to perform the execution. Backup call will be rejected if there is an ongoing backup or update operation.
+
+      Args:
+        request: (RedisProjectsLocationsClustersBackupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Backup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Backup.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:backup',
+        http_method='POST',
+        method_id='redis.projects.locations.clusters.backup',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:backup',
+        request_field='backupClusterRequest',
+        request_type_name='RedisProjectsLocationsClustersBackupRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       r"""Creates a Redis cluster based on the specified properties. The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the Redis cluster will be fully functional. The completed longrunning.Operation will contain the new cluster object in the response field. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation.

@@ -78,7 +78,7 @@ class Argument(_messages.Message):
 
   Fields:
     argumentKind: Optional. Defaults to FIXED_TYPE.
-    dataType: Required unless argument_kind = ANY_TYPE.
+    dataType: Set if argument_kind == FIXED_TYPE.
     isAggregate: Optional. Whether the argument is an aggregate function
       parameter. Must be Unset for routine types other than
       AGGREGATE_FUNCTION. For AGGREGATE_FUNCTION, if set to false, it is
@@ -98,7 +98,7 @@ class Argument(_messages.Message):
       FIXED_TYPE: The argument is a variable with fully specified type, which
         can be a struct or an array, but not a table.
       ANY_TYPE: The argument is any type, including struct or array, but not a
-        table. To be added: FIXED_TABLE, ANY_TABLE
+        table.
     """
     ARGUMENT_KIND_UNSPECIFIED = 0
     FIXED_TYPE = 1
@@ -565,27 +565,27 @@ class BigLakeConfiguration(_messages.Message):
   r"""Configuration for BigLake managed tables.
 
   Enums:
-    FileFormatValueValuesEnum: Required. The file format the table data is
+    FileFormatValueValuesEnum: Optional. The file format the table data is
       stored in.
-    TableFormatValueValuesEnum: Required. The table format the metadata only
+    TableFormatValueValuesEnum: Optional. The table format the metadata only
       snapshots are stored in.
 
   Fields:
-    connectionId: Required. The connection specifying the credentials to be
+    connectionId: Optional. The connection specifying the credentials to be
       used to read and write to external storage, such as Cloud Storage. The
       connection_id can have the form `{project}.{location}.{connection_id}`
       or
       `projects/{project}/locations/{location}/connections/{connection_id}".
-    fileFormat: Required. The file format the table data is stored in.
-    storageUri: Required. The fully qualified location prefix of the external
+    fileFormat: Optional. The file format the table data is stored in.
+    storageUri: Optional. The fully qualified location prefix of the external
       folder where table data is stored. The '*' wildcard character is not
       allowed. The URI should be in the format `gs://bucket/path_to_table/`
-    tableFormat: Required. The table format the metadata only snapshots are
+    tableFormat: Optional. The table format the metadata only snapshots are
       stored in.
   """
 
   class FileFormatValueValuesEnum(_messages.Enum):
-    r"""Required. The file format the table data is stored in.
+    r"""Optional. The file format the table data is stored in.
 
     Values:
       FILE_FORMAT_UNSPECIFIED: Default Value.
@@ -595,7 +595,7 @@ class BigLakeConfiguration(_messages.Message):
     PARQUET = 1
 
   class TableFormatValueValuesEnum(_messages.Enum):
-    r"""Required. The table format the metadata only snapshots are stored in.
+    r"""Optional. The table format the metadata only snapshots are stored in.
 
     Values:
       TABLE_FORMAT_UNSPECIFIED: Default Value.
@@ -7891,6 +7891,8 @@ class Table(_messages.Message):
       this table without an explicit rounding mode specified, then the field
       inherits the table default rounding mode. Changing this field doesn't
       affect existing fields.
+    ManagedTableTypeValueValuesEnum: Optional. If set, overrides the default
+      managed table type configured in the dataset.
 
   Messages:
     LabelsValue: The labels associated with this table. You can use these to
@@ -7960,6 +7962,8 @@ class Table(_messages.Message):
       in milliseconds since the epoch.
     location: Output only. The geographic location where the table resides.
       This value is inherited from the dataset.
+    managedTableType: Optional. If set, overrides the default managed table
+      type configured in the dataset.
     materializedView: Optional. The materialized view definition.
     materializedViewStatus: Output only. The materialized view status.
     maxStaleness: Optional. The maximum staleness of data that could be
@@ -8073,6 +8077,19 @@ class Table(_messages.Message):
     ROUND_HALF_AWAY_FROM_ZERO = 1
     ROUND_HALF_EVEN = 2
 
+  class ManagedTableTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. If set, overrides the default managed table type configured
+    in the dataset.
+
+    Values:
+      MANAGED_TABLE_TYPE_UNSPECIFIED: No managed table type specified.
+      NATIVE: The managed table is a native BigQuery table.
+      ICEEBERG: The managed table is a BigQuery table for Apache Iceberg.
+    """
+    MANAGED_TABLE_TYPE_UNSPECIFIED = 0
+    NATIVE = 1
+    ICEEBERG = 2
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""The labels associated with this table. You can use these to organize
@@ -8151,39 +8168,40 @@ class Table(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 16)
   lastModifiedTime = _messages.IntegerField(17, variant=_messages.Variant.UINT64)
   location = _messages.StringField(18)
-  materializedView = _messages.MessageField('MaterializedViewDefinition', 19)
-  materializedViewStatus = _messages.MessageField('MaterializedViewStatus', 20)
-  maxStaleness = _messages.StringField(21)
-  model = _messages.MessageField('ModelDefinition', 22)
-  numActiveLogicalBytes = _messages.IntegerField(23)
-  numActivePhysicalBytes = _messages.IntegerField(24)
-  numBytes = _messages.IntegerField(25)
-  numCurrentPhysicalBytes = _messages.IntegerField(26)
-  numLongTermBytes = _messages.IntegerField(27)
-  numLongTermLogicalBytes = _messages.IntegerField(28)
-  numLongTermPhysicalBytes = _messages.IntegerField(29)
-  numPartitions = _messages.IntegerField(30)
-  numPhysicalBytes = _messages.IntegerField(31)
-  numRows = _messages.IntegerField(32, variant=_messages.Variant.UINT64)
-  numTimeTravelPhysicalBytes = _messages.IntegerField(33)
-  numTotalLogicalBytes = _messages.IntegerField(34)
-  numTotalPhysicalBytes = _messages.IntegerField(35)
-  partitionDefinition = _messages.MessageField('PartitioningDefinition', 36)
-  rangePartitioning = _messages.MessageField('RangePartitioning', 37)
-  replicas = _messages.MessageField('TableReference', 38, repeated=True)
-  requirePartitionFilter = _messages.BooleanField(39, default=False)
-  resourceTags = _messages.MessageField('ResourceTagsValue', 40)
-  restrictions = _messages.MessageField('RestrictionConfig', 41)
-  schema = _messages.MessageField('TableSchema', 42)
-  selfLink = _messages.StringField(43)
-  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 44)
-  streamingBuffer = _messages.MessageField('Streamingbuffer', 45)
-  tableConstraints = _messages.MessageField('TableConstraints', 46)
-  tableReference = _messages.MessageField('TableReference', 47)
-  tableReplicationInfo = _messages.MessageField('TableReplicationInfo', 48)
-  timePartitioning = _messages.MessageField('TimePartitioning', 49)
-  type = _messages.StringField(50)
-  view = _messages.MessageField('ViewDefinition', 51)
+  managedTableType = _messages.EnumField('ManagedTableTypeValueValuesEnum', 19)
+  materializedView = _messages.MessageField('MaterializedViewDefinition', 20)
+  materializedViewStatus = _messages.MessageField('MaterializedViewStatus', 21)
+  maxStaleness = _messages.StringField(22)
+  model = _messages.MessageField('ModelDefinition', 23)
+  numActiveLogicalBytes = _messages.IntegerField(24)
+  numActivePhysicalBytes = _messages.IntegerField(25)
+  numBytes = _messages.IntegerField(26)
+  numCurrentPhysicalBytes = _messages.IntegerField(27)
+  numLongTermBytes = _messages.IntegerField(28)
+  numLongTermLogicalBytes = _messages.IntegerField(29)
+  numLongTermPhysicalBytes = _messages.IntegerField(30)
+  numPartitions = _messages.IntegerField(31)
+  numPhysicalBytes = _messages.IntegerField(32)
+  numRows = _messages.IntegerField(33, variant=_messages.Variant.UINT64)
+  numTimeTravelPhysicalBytes = _messages.IntegerField(34)
+  numTotalLogicalBytes = _messages.IntegerField(35)
+  numTotalPhysicalBytes = _messages.IntegerField(36)
+  partitionDefinition = _messages.MessageField('PartitioningDefinition', 37)
+  rangePartitioning = _messages.MessageField('RangePartitioning', 38)
+  replicas = _messages.MessageField('TableReference', 39, repeated=True)
+  requirePartitionFilter = _messages.BooleanField(40, default=False)
+  resourceTags = _messages.MessageField('ResourceTagsValue', 41)
+  restrictions = _messages.MessageField('RestrictionConfig', 42)
+  schema = _messages.MessageField('TableSchema', 43)
+  selfLink = _messages.StringField(44)
+  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 45)
+  streamingBuffer = _messages.MessageField('Streamingbuffer', 46)
+  tableConstraints = _messages.MessageField('TableConstraints', 47)
+  tableReference = _messages.MessageField('TableReference', 48)
+  tableReplicationInfo = _messages.MessageField('TableReplicationInfo', 49)
+  timePartitioning = _messages.MessageField('TimePartitioning', 50)
+  type = _messages.StringField(51)
+  view = _messages.MessageField('ViewDefinition', 52)
 
 
 class TableCell(_messages.Message):
@@ -8865,8 +8883,8 @@ class TrainingOptions(_messages.Message):
       for boosted tree models.
     contributionMetric: The contribution metric. Applies to contribution
       analysis models. Allowed formats supported are for summable and summable
-      ratio contribution metrics. These include expressions such as "SUM(x)"
-      or "SUM(x)/SUM(y)", where x and y are column names from the base table.
+      ratio contribution metrics. These include expressions such as `SUM(x)`
+      or `SUM(x)/SUM(y)`, where x and y are column names from the base table.
     dartNormalizeType: Type of normalization algorithm for boosted tree models
       using dart booster.
     dataFrequency: The data frequency of a time series.

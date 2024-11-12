@@ -626,6 +626,126 @@ class ConfigdeliveryProjectsLocationsResourceBundlesReleasesPatchRequest(_messag
   updateMask = _messages.StringField(4)
 
 
+class ConfigdeliveryProjectsLocationsResourceBundlesReleasesVariantsCreateRequest(_messages.Message):
+  r"""A
+  ConfigdeliveryProjectsLocationsResourceBundlesReleasesVariantsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    variant: A Variant resource to be passed as the request body.
+    variantId: Required. Id of the requesting object
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  variant = _messages.MessageField('Variant', 3)
+  variantId = _messages.StringField(4)
+
+
+class ConfigdeliveryProjectsLocationsResourceBundlesReleasesVariantsDeleteRequest(_messages.Message):
+  r"""A
+  ConfigdeliveryProjectsLocationsResourceBundlesReleasesVariantsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class ConfigdeliveryProjectsLocationsResourceBundlesReleasesVariantsGetRequest(_messages.Message):
+  r"""A
+  ConfigdeliveryProjectsLocationsResourceBundlesReleasesVariantsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ConfigdeliveryProjectsLocationsResourceBundlesReleasesVariantsListRequest(_messages.Message):
+  r"""A
+  ConfigdeliveryProjectsLocationsResourceBundlesReleasesVariantsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListVariantsRequest.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ConfigdeliveryProjectsLocationsResourceBundlesReleasesVariantsPatchRequest(_messages.Message):
+  r"""A
+  ConfigdeliveryProjectsLocationsResourceBundlesReleasesVariantsPatchRequest
+  object.
+
+  Fields:
+    name: Identifier. Name follows format of projects/{project}/locations/{loc
+      ation}/resourceBundles/{resource_bundle}/releases/{release}/variants/{va
+      riant}
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Variant resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+    variant: A Variant resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  updateMask = _messages.StringField(3)
+  variant = _messages.MessageField('Variant', 4)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -957,6 +1077,21 @@ class ListRolloutsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListVariantsResponse(_messages.Message):
+  r"""Message for response to listing Variants
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+    variants: The list of Variants
+  """
+
+  nextPageToken = _messages.StringField(1)
+  unreachable = _messages.StringField(2, repeated=True)
+  variants = _messages.MessageField('Variant', 3, repeated=True)
+
+
 class Location(_messages.Message):
   r"""A resource that represents a Google Cloud location.
 
@@ -1278,12 +1413,46 @@ class ReleaseInfo(_messages.Message):
   r"""ReleaseInfo contains extra information about the `ResourceBundle`
   release e.g., link to an artifact registry OCI image.
 
+  Messages:
+    VariantOciImagePathsValue: Output only. per-variant paths to the oci
+      images the service uploads on package release creation
+
   Fields:
     ociImagePath: Output only. path to the oci image the service uploads to on
       a `Release` creation.
+    variantOciImagePaths: Output only. per-variant paths to the oci images the
+      service uploads on package release creation
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class VariantOciImagePathsValue(_messages.Message):
+    r"""Output only. per-variant paths to the oci images the service uploads
+    on package release creation
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        VariantOciImagePathsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        VariantOciImagePathsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a VariantOciImagePathsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   ociImagePath = _messages.StringField(1)
+  variantOciImagePaths = _messages.MessageField('VariantOciImagePathsValue', 2)
 
 
 class ResourceBundle(_messages.Message):
@@ -1706,17 +1875,25 @@ class Variant(_messages.Message):
   r"""Variant represents the content of a `ResourceBundle` variant.
 
   Messages:
-    LabelsValue: labels to represent any metadata associated with the variant.
+    LabelsValue: Optional. labels to represent any metadata associated with
+      the variant.
 
   Fields:
-    labels: labels to represent any metadata associated with the variant.
-    resources: resources contain the kubernetes manifests (YAMLs) for this
+    createTime: Output only. [Output only] Create time stamp
+    labels: Optional. labels to represent any metadata associated with the
       variant.
+    name: Identifier. Name follows format of projects/{project}/locations/{loc
+      ation}/resourceBundles/{resource_bundle}/releases/{release}/variants/{va
+      riant}
+    resources: Required. resources contain the kubernetes manifests (YAMLs)
+      for this variant.
+    updateTime: Output only. [Output only] Update time stamp
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""labels to represent any metadata associated with the variant.
+    r"""Optional. labels to represent any metadata associated with the
+    variant.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1738,8 +1915,11 @@ class Variant(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  labels = _messages.MessageField('LabelsValue', 1)
-  resources = _messages.StringField(2, repeated=True)
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  resources = _messages.StringField(4, repeated=True)
+  updateTime = _messages.StringField(5)
 
 
 class VariantSelector(_messages.Message):

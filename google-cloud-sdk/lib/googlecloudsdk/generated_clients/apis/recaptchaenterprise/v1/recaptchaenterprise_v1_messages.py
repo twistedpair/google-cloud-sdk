@@ -1016,7 +1016,7 @@ class GoogleCloudRecaptchaenterpriseV1RelatedAccountGroupMembership(_messages.Me
 
 
 class GoogleCloudRecaptchaenterpriseV1RemoveIpOverrideRequest(_messages.Message):
-  r"""The removeIpOverride request message.
+  r"""The RemoveIpOverride request message.
 
   Fields:
     ipOverrideData: Required. IP override to be removed from the key.
@@ -1064,11 +1064,12 @@ class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
 
   Enums:
     ChallengeValueValuesEnum: Output only. Challenge information for
-      SCORE_AND_CHALLENGE keys
+      SCORE_AND_CHALLENGE and INVISIBLE keys
     ReasonsValueListEntryValuesEnum:
 
   Fields:
-    challenge: Output only. Challenge information for SCORE_AND_CHALLENGE keys
+    challenge: Output only. Challenge information for SCORE_AND_CHALLENGE and
+      INVISIBLE keys
     extendedVerdictReasons: Output only. Extended verdict reasons to be used
       for experimentation only. The set of possible reasons is subject to
       change.
@@ -1079,7 +1080,8 @@ class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
   """
 
   class ChallengeValueValuesEnum(_messages.Enum):
-    r"""Output only. Challenge information for SCORE_AND_CHALLENGE keys
+    r"""Output only. Challenge information for SCORE_AND_CHALLENGE and
+    INVISIBLE keys
 
     Values:
       CHALLENGE_UNSPECIFIED: Default unspecified type.

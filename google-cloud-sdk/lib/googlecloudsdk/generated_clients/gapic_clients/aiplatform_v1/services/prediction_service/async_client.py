@@ -34,8 +34,10 @@ except AttributeError:  # pragma: NO COVER
     OptionalRetry = Union[retries.AsyncRetry, object, None]  # type: ignore
 
 from google.api import httpbody_pb2  # type: ignore
+from google.longrunning import operations_pb2  # type: ignore
 from cloudsdk.google.protobuf import any_pb2  # type: ignore
 from cloudsdk.google.protobuf import struct_pb2  # type: ignore
+from google.rpc import status_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types import content
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types import explanation
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types import prediction_service
@@ -1337,6 +1339,268 @@ class PredictionServiceAsyncClient:
         # Done; return the response.
         return response
 
+    async def predict_long_running(self,
+            request: Optional[Union[prediction_service.PredictLongRunningRequest, dict]] = None,
+            *,
+            endpoint: Optional[str] = None,
+            instances: Optional[MutableSequence[struct_pb2.Value]] = None,
+            parameters: Optional[struct_pb2.Value] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> operations_pb2.Operation:
+        r"""
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import aiplatform_v1
+
+            async def sample_predict_long_running():
+                # Create a client
+                client = aiplatform_v1.PredictionServiceAsyncClient()
+
+                # Initialize request argument(s)
+                instances = aiplatform_v1.Value()
+                instances.null_value = "NULL_VALUE"
+
+                request = aiplatform_v1.PredictLongRunningRequest(
+                    endpoint="endpoint_value",
+                    instances=instances,
+                )
+
+                # Make the request
+                response = await client.predict_long_running(request=request)
+
+                # Handle the response
+                print(response)
+
+        Args:
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.PredictLongRunningRequest, dict]]):
+                The request object. Request message for
+                [PredictionService.PredictLongRunning][google.cloud.aiplatform.v1.PredictionService.PredictLongRunning].
+            endpoint (:class:`str`):
+                Required. The name of the Endpoint requested to serve
+                the prediction. Format:
+                ``projects/{project}/locations/{location}/endpoints/{endpoint}``
+                or
+                ``projects/{project}/locations/{location}/publishers/{publisher}/models/{model}``
+
+                This corresponds to the ``endpoint`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            instances (:class:`MutableSequence[google.protobuf.struct_pb2.Value]`):
+                Required. The instances that are the input to the
+                prediction call. A DeployedModel may have an upper limit
+                on the number of instances it supports per request, and
+                when it is exceeded the prediction call errors in case
+                of AutoML Models, or, in case of customer created
+                Models, the behaviour is as documented by that Model.
+                The schema of any single instance may be specified via
+                Endpoint's DeployedModels'
+                [Model's][google.cloud.aiplatform.v1.DeployedModel.model]
+                [PredictSchemata's][google.cloud.aiplatform.v1.Model.predict_schemata]
+                [instance_schema_uri][google.cloud.aiplatform.v1.PredictSchemata.instance_schema_uri].
+
+                This corresponds to the ``instances`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            parameters (:class:`google.protobuf.struct_pb2.Value`):
+                Optional. The parameters that govern the prediction. The
+                schema of the parameters may be specified via Endpoint's
+                DeployedModels' [Model's
+                ][google.cloud.aiplatform.v1.DeployedModel.model]
+                [PredictSchemata's][google.cloud.aiplatform.v1.Model.predict_schemata]
+                [parameters_schema_uri][google.cloud.aiplatform.v1.PredictSchemata.parameters_schema_uri].
+
+                This corresponds to the ``parameters`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            google.longrunning.operations_pb2.Operation:
+                This resource represents a
+                long-running operation that is the
+                result of a network API call.
+
+        """
+        # Create or coerce a protobuf request object.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
+        has_flattened_params = any([endpoint, instances, parameters])
+        if request is not None and has_flattened_params:
+            raise ValueError("If the `request` argument is set, then none of "
+                             "the individual field arguments should be set.")
+
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, prediction_service.PredictLongRunningRequest):
+            request = prediction_service.PredictLongRunningRequest(request)
+
+        # If we have keyword arguments corresponding to fields on the
+        # request, apply these.
+        if endpoint is not None:
+            request.endpoint = endpoint
+        if parameters is not None:
+            request.parameters = parameters
+        if instances:
+            request.instances.extend(instances)
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._client._transport._wrapped_methods[self._client._transport.predict_long_running]
+
+        # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("endpoint", request.endpoint),
+            )),
+        )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
+
+        # Send the request.
+        response = await rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    async def fetch_predict_operation(self,
+            request: Optional[Union[prediction_service.FetchPredictOperationRequest, dict]] = None,
+            *,
+            endpoint: Optional[str] = None,
+            operation_name: Optional[str] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> operations_pb2.Operation:
+        r"""Fetch an asynchronous online prediction operation.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import aiplatform_v1
+
+            async def sample_fetch_predict_operation():
+                # Create a client
+                client = aiplatform_v1.PredictionServiceAsyncClient()
+
+                # Initialize request argument(s)
+                request = aiplatform_v1.FetchPredictOperationRequest(
+                    endpoint="endpoint_value",
+                    operation_name="operation_name_value",
+                )
+
+                # Make the request
+                response = await client.fetch_predict_operation(request=request)
+
+                # Handle the response
+                print(response)
+
+        Args:
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.FetchPredictOperationRequest, dict]]):
+                The request object. Request message for
+                [PredictionService.FetchPredictOperation][google.cloud.aiplatform.v1.PredictionService.FetchPredictOperation].
+            endpoint (:class:`str`):
+                Required. The name of the Endpoint requested to serve
+                the prediction. Format:
+                ``projects/{project}/locations/{location}/endpoints/{endpoint}``
+                or
+                ``projects/{project}/locations/{location}/publishers/{publisher}/models/{model}``
+
+                This corresponds to the ``endpoint`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            operation_name (:class:`str`):
+                Required. The server-assigned name
+                for the operation.
+
+                This corresponds to the ``operation_name`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            google.longrunning.operations_pb2.Operation:
+                This resource represents a
+                long-running operation that is the
+                result of a network API call.
+
+        """
+        # Create or coerce a protobuf request object.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
+        has_flattened_params = any([endpoint, operation_name])
+        if request is not None and has_flattened_params:
+            raise ValueError("If the `request` argument is set, then none of "
+                             "the individual field arguments should be set.")
+
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, prediction_service.FetchPredictOperationRequest):
+            request = prediction_service.FetchPredictOperationRequest(request)
+
+        # If we have keyword arguments corresponding to fields on the
+        # request, apply these.
+        if endpoint is not None:
+            request.endpoint = endpoint
+        if operation_name is not None:
+            request.operation_name = operation_name
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._client._transport._wrapped_methods[self._client._transport.fetch_predict_operation]
+
+        # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("endpoint", request.endpoint),
+            )),
+        )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
+
+        # Send the request.
+        response = await rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
     async def explain(self,
             request: Optional[Union[prediction_service.ExplainRequest, dict]] = None,
             *,
@@ -1544,9 +1808,14 @@ class PredictionServiceAsyncClient:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.GenerateContentRequest, dict]]):
                 The request object. Request message for [PredictionService.GenerateContent].
             model (:class:`str`):
-                Required. The name of the publisher model requested to
-                serve the prediction. Format:
+                Required. The fully qualified name of the publisher
+                model or tuned model endpoint to use.
+
+                Publisher model format:
                 ``projects/{project}/locations/{location}/publishers/*/models/*``
+
+                Tuned model endpoint format:
+                ``projects/{project}/locations/{location}/endpoints/{endpoint}``
 
                 This corresponds to the ``model`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -1667,9 +1936,14 @@ class PredictionServiceAsyncClient:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.GenerateContentRequest, dict]]):
                 The request object. Request message for [PredictionService.GenerateContent].
             model (:class:`str`):
-                Required. The name of the publisher model requested to
-                serve the prediction. Format:
+                Required. The fully qualified name of the publisher
+                model or tuned model endpoint to use.
+
+                Publisher model format:
                 ``projects/{project}/locations/{location}/publishers/*/models/*``
+
+                Tuned model endpoint format:
+                ``projects/{project}/locations/{location}/endpoints/{endpoint}``
 
                 This corresponds to the ``model`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -1726,6 +2000,165 @@ class PredictionServiceAsyncClient:
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
                 ("model", request.model),
+            )),
+        )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
+
+        # Send the request.
+        response = rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    def chat_completions(self,
+            request: Optional[Union[prediction_service.ChatCompletionsRequest, dict]] = None,
+            *,
+            endpoint: Optional[str] = None,
+            http_body: Optional[httpbody_pb2.HttpBody] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> Awaitable[AsyncIterable[httpbody_pb2.HttpBody]]:
+        r"""Exposes an OpenAI-compatible endpoint for chat
+        completions.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import aiplatform_v1
+
+            async def sample_chat_completions():
+                # Create a client
+                client = aiplatform_v1.PredictionServiceAsyncClient()
+
+                # Initialize request argument(s)
+                request = aiplatform_v1.ChatCompletionsRequest(
+                    endpoint="endpoint_value",
+                )
+
+                # Make the request
+                stream = await client.chat_completions(request=request)
+
+                # Handle the response
+                async for response in stream:
+                    print(response)
+
+        Args:
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.ChatCompletionsRequest, dict]]):
+                The request object. Request message for [PredictionService.ChatCompletions]
+            endpoint (:class:`str`):
+                Required. The name of the endpoint requested to serve
+                the prediction. Format:
+                ``projects/{project}/locations/{location}/endpoints/{endpoint}``
+
+                This corresponds to the ``endpoint`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            http_body (:class:`google.api.httpbody_pb2.HttpBody`):
+                Optional. The prediction input.
+                Supports HTTP headers and arbitrary data
+                payload.
+
+                This corresponds to the ``http_body`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            AsyncIterable[google.api.httpbody_pb2.HttpBody]:
+                Message that represents an arbitrary HTTP body. It should only be used for
+                   payload formats that can't be represented as JSON,
+                   such as raw binary or an HTML page.
+
+                   This message can be used both in streaming and
+                   non-streaming API methods in the request as well as
+                   the response.
+
+                   It can be used as a top-level request field, which is
+                   convenient if one wants to extract parameters from
+                   either the URL or HTTP template into the request
+                   fields and also want access to the raw HTTP body.
+
+                   Example:
+
+                      message GetResourceRequest {
+                         // A unique request id. string request_id = 1;
+
+                         // The raw HTTP body is bound to this field.
+                         google.api.HttpBody http_body = 2;
+
+                      }
+
+                      service ResourceService {
+                         rpc GetResource(GetResourceRequest) returns
+                         (google.api.HttpBody); rpc
+                         UpdateResource(google.api.HttpBody) returns
+                         (google.protobuf.Empty);
+
+                      }
+
+                   Example with streaming methods:
+
+                      service CaldavService {
+                         rpc GetCalendar(stream google.api.HttpBody)
+                            returns (stream google.api.HttpBody);
+
+                         rpc UpdateCalendar(stream google.api.HttpBody)
+                            returns (stream google.api.HttpBody);
+
+                      }
+
+                   Use of this type only changes how the request and
+                   response bodies are handled, all other features will
+                   continue to work unchanged.
+
+        """
+        # Create or coerce a protobuf request object.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
+        has_flattened_params = any([endpoint, http_body])
+        if request is not None and has_flattened_params:
+            raise ValueError("If the `request` argument is set, then none of "
+                             "the individual field arguments should be set.")
+
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, prediction_service.ChatCompletionsRequest):
+            request = prediction_service.ChatCompletionsRequest(request)
+
+        # If we have keyword arguments corresponding to fields on the
+        # request, apply these.
+        if endpoint is not None:
+            request.endpoint = endpoint
+        if http_body is not None:
+            request.http_body = http_body
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._client._transport._wrapped_methods[self._client._transport.chat_completions]
+
+        # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("endpoint", request.endpoint),
             )),
         )
 

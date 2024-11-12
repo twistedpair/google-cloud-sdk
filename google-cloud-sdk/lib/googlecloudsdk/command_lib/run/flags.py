@@ -1357,7 +1357,7 @@ class _ScaleValue:
         )
 
 
-class _ScalingValue:
+class ScalingValue:
   """Type for --scaling flag values.
 
   Input values could be either 'auto' for automatic scaling or integer to
@@ -1527,7 +1527,7 @@ def AddScalingFlag(parser):
   """Add scaling flag."""
   parser.add_argument(
       '--scaling',
-      type=_ScalingValue,
+      type=ScalingValue,
       help=(
           'The scaling mode to use for this resource. Flag value could be'
           ' either "auto" for automatic scaling, or a positive integer to'
@@ -2062,7 +2062,7 @@ def AddRuntimeFlag(parser):
   )
 
 
-def _HasChanges(args, flags):
+def HasChanges(args, flags):
   """True iff any of the passed flags are set."""
   return any(FlagIsExplicitlySet(args, flag) for flag in flags)
 
@@ -2076,7 +2076,7 @@ def _HasEnvChanges(args):
       'clear_env_vars',
       'env_vars_file',
   ]
-  return _HasChanges(args, env_flags)
+  return HasChanges(args, env_flags)
 
 
 def _HasCloudSQLChanges(args):
@@ -2087,7 +2087,7 @@ def _HasCloudSQLChanges(args):
       'remove_cloudsql_instances',
       'clear_cloudsql_instances',
   ]
-  return _HasChanges(args, instances_flags)
+  return HasChanges(args, instances_flags)
 
 
 def _EnabledCloudSqlApiRequired(args):
@@ -2096,13 +2096,13 @@ def _EnabledCloudSqlApiRequired(args):
       'add_cloudsql_instances',
       'set_cloudsql_instances',
   )
-  return _HasChanges(args, instances_flags)
+  return HasChanges(args, instances_flags)
 
 
 def _HasLabelChanges(args):
   """True iff any of the label flags are set."""
   label_flags = ['labels', 'update_labels', 'clear_labels', 'remove_labels']
-  return _HasChanges(args, label_flags)
+  return HasChanges(args, label_flags)
 
 
 def _HasSecretsChanges(args):
@@ -2113,7 +2113,7 @@ def _HasSecretsChanges(args):
       'remove_secrets',
       'clear_secrets',
   ]
-  return _HasChanges(args, secret_flags)
+  return HasChanges(args, secret_flags)
 
 
 def _HasConfigMapsChanges(args):
@@ -2124,25 +2124,25 @@ def _HasConfigMapsChanges(args):
       'remove_config_maps',
       'clear_config_maps',
   ]
-  return _HasChanges(args, config_maps_flags)
+  return HasChanges(args, config_maps_flags)
 
 
 def _HasTrafficTagsChanges(args):
   """True iff any of the traffic tags flags are set."""
   tags_flags = ['update_tags', 'set_tags', 'remove_tags', 'clear_tags']
-  return _HasChanges(args, tags_flags)
+  return HasChanges(args, tags_flags)
 
 
 def _HasTrafficChanges(args):
   """True iff any of the traffic flags are set."""
   traffic_flags = ['to_revisions', 'to_tags', 'to_latest']
-  return _HasChanges(args, traffic_flags) or _HasTrafficTagsChanges(args)
+  return HasChanges(args, traffic_flags) or _HasTrafficTagsChanges(args)
 
 
 def _HasInstanceSplitChanges(args):
   """True iff any of the instance split flags are set."""
   traffic_flags = ['to_revisions', 'to_latest']
-  return _HasChanges(args, traffic_flags)
+  return HasChanges(args, traffic_flags)
 
 
 def _HasCustomAudiencesChanges(args):
@@ -2153,7 +2153,7 @@ def _HasCustomAudiencesChanges(args):
       'remove_custom_audiences',
       'clear_custom_audiences',
   ]
-  return _HasChanges(args, instances_flags)
+  return HasChanges(args, instances_flags)
 
 
 def HasExecutionOverrides(args):
@@ -2163,7 +2163,7 @@ def HasExecutionOverrides(args):
       'task_timeout',
       'tasks',
   ]
-  return _HasChanges(args, overrides_flags)
+  return HasChanges(args, overrides_flags)
 
 
 def HasContainerOverrides(args):
@@ -2171,7 +2171,7 @@ def HasContainerOverrides(args):
       'args',
       'update_env_vars',
   ]
-  return _HasChanges(args, overrides_flags)
+  return HasChanges(args, overrides_flags)
 
 
 def _GetEnvChanges(args, **kwargs):
@@ -3285,7 +3285,7 @@ def GetRunJobConfigurationOverrides(args):
 
 # TODO(b/322180968): There exist a few configurations that are "locked" while
 # calling Services API for Workers.
-# These will be done in the server side once Worker API is ready.
+# This method could be cleaned up once experiment launch is over.
 def GetWorkerConfigurationChanges(
     args, release_track=base.ReleaseTrack.ALPHA, for_update=False
 ):

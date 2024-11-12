@@ -40,11 +40,13 @@ __protobuf__ = proto.module(
         'CitationMetadata',
         'Citation',
         'Candidate',
+        'LogprobsResult',
         'Segment',
         'GroundingChunk',
         'GroundingSupport',
         'GroundingMetadata',
         'SearchEntryPoint',
+        'RetrievalMetadata',
     },
 )
 
@@ -64,12 +66,15 @@ class HarmCategory(proto.Enum):
         HARM_CATEGORY_SEXUALLY_EXPLICIT (4):
             The harm category is sexually explicit
             content.
+        HARM_CATEGORY_CIVIC_INTEGRITY (5):
+            The harm category is civic integrity.
     """
     HARM_CATEGORY_UNSPECIFIED = 0
     HARM_CATEGORY_HATE_SPEECH = 1
     HARM_CATEGORY_DANGEROUS_CONTENT = 2
     HARM_CATEGORY_HARASSMENT = 3
     HARM_CATEGORY_SEXUALLY_EXPLICIT = 4
+    HARM_CATEGORY_CIVIC_INTEGRITY = 5
 
 
 class Content(proto.Message):
@@ -294,6 +299,15 @@ class GenerationConfig(proto.Message):
             This field is a member of `oneof`_ ``_max_output_tokens``.
         stop_sequences (MutableSequence[str]):
             Optional. Stop sequences.
+        response_logprobs (bool):
+            Optional. If true, export the logprobs
+            results in response.
+
+            This field is a member of `oneof`_ ``_response_logprobs``.
+        logprobs (int):
+            Optional. Logit probabilities.
+
+            This field is a member of `oneof`_ ``_logprobs``.
         presence_penalty (float):
             Optional. Positive penalties.
 
@@ -302,6 +316,10 @@ class GenerationConfig(proto.Message):
             Optional. Frequency penalties.
 
             This field is a member of `oneof`_ ``_frequency_penalty``.
+        seed (int):
+            Optional. Seed.
+
+            This field is a member of `oneof`_ ``_seed``.
         response_mime_type (str):
             Optional. Output response mimetype of the generated
             candidate text. Supported mimetype:
@@ -326,10 +344,16 @@ class GenerationConfig(proto.Message):
             Optional. Routing configuration.
 
             This field is a member of `oneof`_ ``_routing_config``.
+        audio_timestamp (bool):
+            Optional. If enabled, audio timestamp will be
+            included in the request to the model.
+
+            This field is a member of `oneof`_ ``_audio_timestamp``.
     """
 
     class RoutingConfig(proto.Message):
-        r"""Routing config.
+        r"""The configuration for routing the request to a specific
+        model.
 
         This message has `oneof`_ fields (mutually exclusive fields).
         For each oneof, at most one member field can be set at the same time.
@@ -398,7 +422,7 @@ class GenerationConfig(proto.Message):
             Attributes:
                 model_name (str):
                     The model name to use. Only the public LLM
-                    models are accepted. e.g. gemini-1.5-pro-001.
+                    models are accepted. e.g. 'gemini-1.5-pro-001'.
 
                     This field is a member of `oneof`_ ``_model_name``.
             """
@@ -451,6 +475,16 @@ class GenerationConfig(proto.Message):
         proto.STRING,
         number=6,
     )
+    response_logprobs: bool = proto.Field(
+        proto.BOOL,
+        number=18,
+        optional=True,
+    )
+    logprobs: int = proto.Field(
+        proto.INT32,
+        number=7,
+        optional=True,
+    )
     presence_penalty: float = proto.Field(
         proto.FLOAT,
         number=8,
@@ -459,6 +493,11 @@ class GenerationConfig(proto.Message):
     frequency_penalty: float = proto.Field(
         proto.FLOAT,
         number=9,
+        optional=True,
+    )
+    seed: int = proto.Field(
+        proto.INT32,
+        number=12,
         optional=True,
     )
     response_mime_type: str = proto.Field(
@@ -476,6 +515,11 @@ class GenerationConfig(proto.Message):
         number=17,
         optional=True,
         message=RoutingConfig,
+    )
+    audio_timestamp: bool = proto.Field(
+        proto.BOOL,
+        number=20,
+        optional=True,
     )
 
 
@@ -508,12 +552,15 @@ class SafetySetting(proto.Message):
                 Block only high threshold (i.e. block less).
             BLOCK_NONE (4):
                 Block none.
+            OFF (5):
+                Turn off the safety filter.
         """
         HARM_BLOCK_THRESHOLD_UNSPECIFIED = 0
         BLOCK_LOW_AND_ABOVE = 1
         BLOCK_MEDIUM_AND_ABOVE = 2
         BLOCK_ONLY_HIGH = 3
         BLOCK_NONE = 4
+        OFF = 5
 
     class HarmBlockMethod(proto.Enum):
         r"""Probability vs severity.
@@ -715,6 +762,9 @@ class Candidate(proto.Message):
         avg_logprobs (float):
             Output only. Average log probability score of
             the candidate.
+        logprobs_result (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.LogprobsResult):
+            Output only. Log-likelihood scores for the
+            response tokens and top tokens
         finish_reason (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.Candidate.FinishReason):
             Output only. The reason why the model stopped
             generating tokens. If empty, the model has not
@@ -750,13 +800,13 @@ class Candidate(proto.Message):
                 Token generation reached the configured
                 maximum output tokens.
             SAFETY (3):
-                Token generation stopped because the content
-                potentially contains safety violations. NOTE:
-                When streaming, Candidate.content is empty if
-                content filters blocks the output.
+                Token generation stopped because the content potentially
+                contains safety violations. NOTE: When streaming,
+                [content][google.cloud.aiplatform.v1.Candidate.content] is
+                empty if content filters blocks the output.
             RECITATION (4):
-                Token generation stopped because the content
-                potentially contains copyright violations.
+                The token generation stopped because of
+                potential recitation.
             OTHER (5):
                 All other reasons that stopped the token
                 generation.
@@ -798,6 +848,11 @@ class Candidate(proto.Message):
         proto.DOUBLE,
         number=9,
     )
+    logprobs_result: 'LogprobsResult' = proto.Field(
+        proto.MESSAGE,
+        number=10,
+        message='LogprobsResult',
+    )
     finish_reason: FinishReason = proto.Field(
         proto.ENUM,
         number=3,
@@ -822,6 +877,80 @@ class Candidate(proto.Message):
         proto.MESSAGE,
         number=7,
         message='GroundingMetadata',
+    )
+
+
+class LogprobsResult(proto.Message):
+    r"""Logprobs Result
+
+    Attributes:
+        top_candidates (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.LogprobsResult.TopCandidates]):
+            Length = total number of decoding steps.
+        chosen_candidates (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.LogprobsResult.Candidate]):
+            Length = total number of decoding steps. The chosen
+            candidates may or may not be in top_candidates.
+    """
+
+    class Candidate(proto.Message):
+        r"""Candidate for the logprobs token and score.
+
+        .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+        Attributes:
+            token (str):
+                The candidate's token string value.
+
+                This field is a member of `oneof`_ ``_token``.
+            token_id (int):
+                The candidate's token id value.
+
+                This field is a member of `oneof`_ ``_token_id``.
+            log_probability (float):
+                The candidate's log probability.
+
+                This field is a member of `oneof`_ ``_log_probability``.
+        """
+
+        token: str = proto.Field(
+            proto.STRING,
+            number=1,
+            optional=True,
+        )
+        token_id: int = proto.Field(
+            proto.INT32,
+            number=3,
+            optional=True,
+        )
+        log_probability: float = proto.Field(
+            proto.FLOAT,
+            number=2,
+            optional=True,
+        )
+
+    class TopCandidates(proto.Message):
+        r"""Candidates with top log probabilities at each decoding step.
+
+        Attributes:
+            candidates (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.LogprobsResult.Candidate]):
+                Sorted by log probability in descending
+                order.
+        """
+
+        candidates: MutableSequence['LogprobsResult.Candidate'] = proto.RepeatedField(
+            proto.MESSAGE,
+            number=1,
+            message='LogprobsResult.Candidate',
+        )
+
+    top_candidates: MutableSequence[TopCandidates] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=1,
+        message=TopCandidates,
+    )
+    chosen_candidates: MutableSequence[Candidate] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=2,
+        message=Candidate,
     )
 
 
@@ -926,6 +1055,10 @@ class GroundingChunk(proto.Message):
                 Title of the attribution.
 
                 This field is a member of `oneof`_ ``_title``.
+            text (str):
+                Text of the attribution.
+
+                This field is a member of `oneof`_ ``_text``.
         """
 
         uri: str = proto.Field(
@@ -936,6 +1069,11 @@ class GroundingChunk(proto.Message):
         title: str = proto.Field(
             proto.STRING,
             number=2,
+            optional=True,
+        )
+        text: str = proto.Field(
+            proto.STRING,
+            number=3,
             optional=True,
         )
 
@@ -1011,6 +1149,10 @@ class GroundingMetadata(proto.Message):
             specified grounding source.
         grounding_supports (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.GroundingSupport]):
             Optional. List of grounding support.
+        retrieval_metadata (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.RetrievalMetadata):
+            Optional. Output only. Retrieval metadata.
+
+            This field is a member of `oneof`_ ``_retrieval_metadata``.
     """
 
     web_search_queries: MutableSequence[str] = proto.RepeatedField(
@@ -1033,6 +1175,12 @@ class GroundingMetadata(proto.Message):
         number=6,
         message='GroundingSupport',
     )
+    retrieval_metadata: 'RetrievalMetadata' = proto.Field(
+        proto.MESSAGE,
+        number=7,
+        optional=True,
+        message='RetrievalMetadata',
+    )
 
 
 class SearchEntryPoint(proto.Message):
@@ -1053,6 +1201,26 @@ class SearchEntryPoint(proto.Message):
     )
     sdk_blob: bytes = proto.Field(
         proto.BYTES,
+        number=2,
+    )
+
+
+class RetrievalMetadata(proto.Message):
+    r"""Metadata related to retrieval in the grounding flow.
+
+    Attributes:
+        google_search_dynamic_retrieval_score (float):
+            Optional. Score indicating how likely information from
+            Google Search could help answer the prompt. The score is in
+            the range ``[0, 1]``, where 0 is the least likely and 1 is
+            the most likely. This score is only populated when Google
+            Search grounding and dynamic retrieval is enabled. It will
+            be compared to the threshold to determine whether to trigger
+            Google Search.
+    """
+
+    google_search_dynamic_retrieval_score: float = proto.Field(
+        proto.FLOAT,
         number=2,
     )
 

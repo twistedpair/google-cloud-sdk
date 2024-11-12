@@ -217,6 +217,17 @@ class GoogleOidc(_messages.Message):
   serviceAccount = _messages.StringField(2)
 
 
+class InlineRetryPolicy(_messages.Message):
+  r"""The retry policy.
+
+  Fields:
+    truncatedExpBackoffRetryPolicy: Optional. Configuration for a
+      TruncatedExponentialBackoff retry policy.
+  """
+
+  truncatedExpBackoffRetryPolicy = _messages.MessageField('TruncatedExponentialBackoff', 1)
+
+
 class JsonFormat(_messages.Message):
   r"""The format of a JSON message payload."""
 
@@ -253,18 +264,6 @@ class KafkaSource(_messages.Message):
   initialOffset = _messages.StringField(3)
   kafkaAuthenticationConfig = _messages.MessageField('KafkaAuthenticationConfig', 4)
   topics = _messages.StringField(5, repeated=True)
-
-
-class KeyValue(_messages.Message):
-  r"""KeyValue is used for storing a key-value pair.
-
-  Fields:
-    key: Required. The key.
-    value: Required. The value.
-  """
-
-  key = _messages.StringField(1)
-  value = _messages.MessageField('Value', 2)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -324,6 +323,21 @@ class ListReferencesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   references = _messages.MessageField('Reference', 2, repeated=True)
+
+
+class ListRetryPoliciesResponse(_messages.Message):
+  r"""Response for listing retry policies.
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    retryPolicies: The retry policies id in spanner.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  retryPolicies = _messages.MessageField('RetryPolicy', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListStreamsResponse(_messages.Message):
@@ -442,8 +456,6 @@ class LoggingConfig(_messages.Message):
     logSeverity: Optional. The minimum severity of logs that will be sent to
       Stackdriver/Platform Telemetry. Logs at severitiy \u2265 this value will
       be sent, unless it is NONE.
-    loggingInstrumentation: Optional. LoggingInstrumentation information for
-      this Stream.
   """
 
   class LogSeverityValueValuesEnum(_messages.Enum):
@@ -506,18 +518,6 @@ class LoggingConfig(_messages.Message):
 
   labels = _messages.MessageField('LabelsValue', 1)
   logSeverity = _messages.EnumField('LogSeverityValueValuesEnum', 2)
-  loggingInstrumentation = _messages.MessageField('LoggingInstrumentation', 3)
-
-
-class LoggingInstrumentation(_messages.Message):
-  r"""A LoggingInstrumentation object.
-
-  Fields:
-    entries: Optional. Cloud Logging related opaque key-value pairs that are
-      configured for this Stream.
-  """
-
-  entries = _messages.MessageField('KeyValue', 1, repeated=True)
 
 
 class Mediation(_messages.Message):
@@ -677,6 +677,55 @@ class MessagestreamsProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class MessagestreamsProjectsLocationsRetryPoliciesCreateRequest(_messages.Message):
+  r"""A MessagestreamsProjectsLocationsRetryPoliciesCreateRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    retryPolicy: A RetryPolicy resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  retryPolicy = _messages.MessageField('RetryPolicy', 2)
+
+
+class MessagestreamsProjectsLocationsRetryPoliciesDeleteRequest(_messages.Message):
+  r"""A MessagestreamsProjectsLocationsRetryPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. The retry policy name in spanner. Name is a required field
+      by ccfe.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MessagestreamsProjectsLocationsRetryPoliciesGetRequest(_messages.Message):
+  r"""A MessagestreamsProjectsLocationsRetryPoliciesGetRequest object.
+
+  Fields:
+    name: Required. The retry policy id in spanner.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MessagestreamsProjectsLocationsRetryPoliciesListRequest(_messages.Message):
+  r"""A MessagestreamsProjectsLocationsRetryPoliciesListRequest object.
+
+  Fields:
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Valye for parent.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class MessagestreamsProjectsLocationsStreamsCreateRequest(_messages.Message):
@@ -1043,14 +1092,21 @@ class Reference(_messages.Message):
 
 
 class RetryPolicy(_messages.Message):
-  r"""The retry policy.
+  r"""The representation of the retry policy resource.
 
   Fields:
+    name: Required. Identifier. The name of the retry policy. Format:
+      projects/{project}/locations/{location}/retryPolicies/{retry_policy}
+    stream: Required. The full stream name that this retry policy is
+      associated with. Format:
+      projects/{project}/locations/{location}/streams/{stream}
     truncatedExpBackoffRetryPolicy: Optional. Configuration for a
       TruncatedExponentialBackoff retry policy.
   """
 
-  truncatedExpBackoffRetryPolicy = _messages.MessageField('TruncatedExponentialBackoff', 1)
+  name = _messages.StringField(1)
+  stream = _messages.StringField(2)
+  truncatedExpBackoffRetryPolicy = _messages.MessageField('TruncatedExponentialBackoff', 3)
 
 
 class SaslAuthConfig(_messages.Message):
@@ -1364,7 +1420,7 @@ class Stream(_messages.Message):
   mediations = _messages.MessageField('Mediation', 9, repeated=True)
   name = _messages.StringField(10)
   replyBus = _messages.StringField(11)
-  retryPolicy = _messages.MessageField('RetryPolicy', 12)
+  retryPolicy = _messages.MessageField('InlineRetryPolicy', 12)
   source = _messages.MessageField('Source', 13)
   streamAction = _messages.MessageField('StreamAction', 14)
   streamIdentityOverride = _messages.StringField(15)
@@ -1419,16 +1475,6 @@ class TruncatedExponentialBackoff(_messages.Message):
   maxRetryCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   maxRetryDuration = _messages.StringField(4)
   minBackoffDuration = _messages.StringField(5)
-
-
-class Value(_messages.Message):
-  r"""Value represents a value to be stored with a key.
-
-  Fields:
-    stringValue: Optional. Value of type string.
-  """
-
-  stringValue = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

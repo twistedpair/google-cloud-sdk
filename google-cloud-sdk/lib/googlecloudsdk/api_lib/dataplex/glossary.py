@@ -61,6 +61,22 @@ def GenerateGlossaryCategoryForCreateRequest(args):
   return request
 
 
+def GenerateGlossaryTermForCreateRequest(args):
+  """Create Glossary Term Requests."""
+  module = dataplex_api.GetMessageModule()
+  request = module.GoogleCloudDataplexV1GlossaryTerm(
+      description=args.description,
+      displayName=args.display_name,
+      # parent represents the immediate parent of the term in glossary
+      # hierarchy.
+      parent=args.parent,
+      labels=dataplex_api.CreateLabels(
+          module.GoogleCloudDataplexV1GlossaryTerm, args
+      ),
+  )
+  return request
+
+
 def GenerateUpdateMask(args):
   """Creates Update Mask for Glossary."""
   update_mask = []

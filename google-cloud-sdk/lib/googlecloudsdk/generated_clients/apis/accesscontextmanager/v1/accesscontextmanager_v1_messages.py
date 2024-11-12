@@ -112,15 +112,12 @@ class AccessSettings(_messages.Message):
       access. Only one access level is supported, not multiple. This repeated
       field must have exactly one element. Example:
       "accessPolicies/9522/accessLevels/device_trusted"
-    reauthSettings: Optional. Reauth settings applied to user access on a
-      given AccessScope.
     sessionSettings: Optional. Session settings applied to user access on a
-      given AccessScope. Migrated from ReauthSettings
+      given AccessScope.
   """
 
   accessLevels = _messages.StringField(1, repeated=True)
-  reauthSettings = _messages.MessageField('ReauthSettings', 2)
-  sessionSettings = _messages.MessageField('SessionSettings', 3)
+  sessionSettings = _messages.MessageField('SessionSettings', 2)
 
 
 class AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest(_messages.Message):
@@ -706,7 +703,8 @@ class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messag
     append: Optional. This field controls whether or not certain repeated
       settings in the update request overwrite or append to existing settings
       on the binding. If true, then append. Otherwise overwrite. So far, only
-      scoped_access_settings supports appending. Global access_levels,
+      scoped_access_settings with reauth_settings supports appending. Global
+      access_levels, access_levels in scoped_access_settings,
       dry_run_access_levels, reauth_settings, and session_settings are not
       compatible with append functionality, and the request will return an
       error if append=true when these settings are in the update_mask. The
@@ -1490,25 +1488,22 @@ class GcpUserAccessBinding(_messages.Message):
       2.3](https://tools.ietf.org/html/rfc3986#section-2.3)). Should not be
       specified by the client during creation. Example:
       "organizations/256/gcpUserAccessBindings/b3-BhcX_Ud5N"
-    reauthSettings: Optional. GCSL policy for the group key.
     restrictedClientApplications: Optional. A list of applications that are
       subject to this binding's restrictions. If the list is empty, the
       binding restrictions will universally apply to all applications.
     scopedAccessSettings: Optional. A list of scoped access settings that set
       this binding's restrictions on a subset of applications. This field
       cannot be set if restricted_client_applications is set.
-    sessionSettings: Optional. GCSL policy for the group key. Migrated from
-      ReauthSettings
+    sessionSettings: Optional. GCSL policy for the group key.
   """
 
   accessLevels = _messages.StringField(1, repeated=True)
   dryRunAccessLevels = _messages.StringField(2, repeated=True)
   groupKey = _messages.StringField(3)
   name = _messages.StringField(4)
-  reauthSettings = _messages.MessageField('ReauthSettings', 5)
-  restrictedClientApplications = _messages.MessageField('Application', 6, repeated=True)
-  scopedAccessSettings = _messages.MessageField('ScopedAccessSettings', 7, repeated=True)
-  sessionSettings = _messages.MessageField('SessionSettings', 8)
+  restrictedClientApplications = _messages.MessageField('Application', 5, repeated=True)
+  scopedAccessSettings = _messages.MessageField('ScopedAccessSettings', 6, repeated=True)
+  sessionSettings = _messages.MessageField('SessionSettings', 7)
 
 
 class GcpUserAccessBindingOperationMetadata(_messages.Message):
@@ -2000,60 +1995,6 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-
-
-class ReauthSettings(_messages.Message):
-  r"""Stores settings related to Google Cloud Session Length including session
-  duration, the type of challenge (i.e. method) they should face when their
-  session expires, and other related settings.
-
-  Enums:
-    ReauthMethodValueValuesEnum: Optional. Reauth method when users GCP
-      session is up.
-
-  Fields:
-    maxInactivity: Optional. How long a user is allowed to take between
-      actions before a new access token must be issued. Presently only set for
-      Cloud Apps.
-    reauthMethod: Optional. Reauth method when users GCP session is up.
-    sessionLength: Optional. The session length. Setting this field to zero is
-      equal to disabling. Reauth. Also can set infinite session by flipping
-      the enabled bit to false below. If use_oidc_max_age is true, for OIDC
-      apps, the session length will be the minimum of this field and OIDC
-      max_age param.
-    sessionLengthEnabled: Optional. Big red button to turn off GCSL. When
-      false, all fields set above will be disregarded and the session length
-      is basically infinite.
-    useOidcMaxAge: Optional. Only useful for OIDC apps. When false, the OIDC
-      max_age param, if passed in the authentication request will be ignored.
-      When true, the re-auth period will be the minimum of the session_length
-      field and the max_age OIDC param.
-  """
-
-  class ReauthMethodValueValuesEnum(_messages.Enum):
-    r"""Optional. Reauth method when users GCP session is up.
-
-    Values:
-      REAUTH_METHOD_UNSPECIFIED: If method undefined in API, we will use LOGIN
-        by default.
-      LOGIN: The user will prompted to perform regular login. Users who are
-        enrolled for two-step verification and haven't chosen to "Remember
-        this computer" will be prompted for their second factor.
-      SECURITY_KEY: The user will be prompted to autheticate using their
-        security key. If no security key has been configured, then we will
-        fallback to LOGIN.
-      PASSWORD: The user will be prompted for their password.
-    """
-    REAUTH_METHOD_UNSPECIFIED = 0
-    LOGIN = 1
-    SECURITY_KEY = 2
-    PASSWORD = 3
-
-  maxInactivity = _messages.StringField(1)
-  reauthMethod = _messages.EnumField('ReauthMethodValueValuesEnum', 2)
-  sessionLength = _messages.StringField(3)
-  sessionLengthEnabled = _messages.BooleanField(4)
-  useOidcMaxAge = _messages.BooleanField(5)
 
 
 class ReplaceAccessLevelsRequest(_messages.Message):

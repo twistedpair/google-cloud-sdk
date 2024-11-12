@@ -1261,10 +1261,10 @@ class OsconfigFoldersLocationsGlobalPolicyOrchestratorsCreateRequest(_messages.M
     googleCloudOsconfigV2betaPolicyOrchestrator: A
       GoogleCloudOsconfigV2betaPolicyOrchestrator resource to be passed as the
       request body.
-    parent: Required. The parent resource name in the form of:
-      `organizations/{organization_id}/locations/global`
-      `folders/{folder_id}/locations/global`
-      'projects/{project_id_or_number}/locations/global'
+    parent: Required. The parent resource name in the form of: *
+      `organizations/{organization_id}/locations/global` *
+      `folders/{folder_id}/locations/global` *
+      `projects/{project_id_or_number}/locations/global`
     policyOrchestratorId: Required. The logical identifier of the policy
       orchestrator, with the following restrictions: * Must contain only
       lowercase letters, numbers, and hyphens. * Must start with a letter. *
@@ -1422,10 +1422,10 @@ class OsconfigOrganizationsLocationsGlobalPolicyOrchestratorsCreateRequest(_mess
     googleCloudOsconfigV2betaPolicyOrchestrator: A
       GoogleCloudOsconfigV2betaPolicyOrchestrator resource to be passed as the
       request body.
-    parent: Required. The parent resource name in the form of:
-      `organizations/{organization_id}/locations/global`
-      `folders/{folder_id}/locations/global`
-      'projects/{project_id_or_number}/locations/global'
+    parent: Required. The parent resource name in the form of: *
+      `organizations/{organization_id}/locations/global` *
+      `folders/{folder_id}/locations/global` *
+      `projects/{project_id_or_number}/locations/global`
     policyOrchestratorId: Required. The logical identifier of the policy
       orchestrator, with the following restrictions: * Must contain only
       lowercase letters, numbers, and hyphens. * Must start with a letter. *
@@ -1587,10 +1587,10 @@ class OsconfigProjectsLocationsGlobalPolicyOrchestratorsCreateRequest(_messages.
     googleCloudOsconfigV2betaPolicyOrchestrator: A
       GoogleCloudOsconfigV2betaPolicyOrchestrator resource to be passed as the
       request body.
-    parent: Required. The parent resource name in the form of:
-      `organizations/{organization_id}/locations/global`
-      `folders/{folder_id}/locations/global`
-      'projects/{project_id_or_number}/locations/global'
+    parent: Required. The parent resource name in the form of: *
+      `organizations/{organization_id}/locations/global` *
+      `folders/{folder_id}/locations/global` *
+      `projects/{project_id_or_number}/locations/global`
     policyOrchestratorId: Required. The logical identifier of the policy
       orchestrator, with the following restrictions: * Must contain only
       lowercase letters, numbers, and hyphens. * Must start with a letter. *

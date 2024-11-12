@@ -1829,12 +1829,13 @@ class PscAutoConnection(_messages.Message):
       projects/{project}/regions/{region}/forwardingRules/{forwarding_rule}
     ipAddress: Output only. The IP allocated on the consumer network for the
       PSC forwarding rule.
-    network: Required. The consumer network where the IP address resides, in
-      the form of projects/{project_id}/global/networks/{network_id}.
+    network: Required. The network where the PSC endpoints are created, in the
+      form of projects/{project_id}/global/networks/{network_id}.
     port: Optional. Output only. port will only be set for Primary/Reader or
       Discovery endpoint.
-    projectId: Required. The consumer project_id where the forwarding rule is
-      created from.
+    projectId: Required. The consumer project_id where PSC connections are
+      established. This should be the same project_id that the cluster is
+      being created in.
     pscConnectionId: Output only. The PSC connection id of the forwarding rule
       connected to the service attachment.
     pscConnectionStatus: Output only. The status of the PSC connection:

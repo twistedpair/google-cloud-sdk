@@ -709,6 +709,7 @@ class BuildOptions(_messages.Message):
       [running builds in a private
       pool](https://cloud.google.com/build/docs/private-pools/run-builds-in-
       private-pool) for more information.
+    pubsubTopic: Optional. Option to specify the Pub/Sub topic to receive build status updates.
     requestedVerifyOption: Requested verifiability options.
     secretEnv: A list of global environment variables, which are encrypted
       using a Cloud Key Management Service crypto key. These values must be
@@ -871,12 +872,13 @@ class BuildOptions(_messages.Message):
   logging = _messages.EnumField('LoggingValueValuesEnum', 11)
   machineType = _messages.EnumField('MachineTypeValueValuesEnum', 12)
   pool = _messages.MessageField('PoolOption', 13)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 14)
-  secretEnv = _messages.StringField(15, repeated=True)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 16, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 17)
-  volumes = _messages.MessageField('Volume', 18, repeated=True)
-  workerPool = _messages.StringField(19)
+  pubsubTopic = _messages.StringField(14)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 15)
+  secretEnv = _messages.StringField(16, repeated=True)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 17, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 18)
+  volumes = _messages.MessageField('Volume', 19, repeated=True)
+  workerPool = _messages.StringField(20)
 
 
 class BuildStep(_messages.Message):
@@ -1041,6 +1043,9 @@ class BuildTrigger(_messages.Message):
     cron: CronConfig describes the configuration of a trigger that creates a
       build whenever a Cloud Scheduler event is received.
     description: Human-readable description of this trigger.
+    developerConnectEventConfig: Optional. The configuration of a trigger that
+      creates a build whenever an event from the DeveloperConnect API is
+      received.
     disabled: If true, the trigger will never automatically execute a build.
     eventType: EventType allows the user to explicitly set the type of event
       to which this BuildTrigger should respond. This field will be validated
@@ -1173,27 +1178,28 @@ class BuildTrigger(_messages.Message):
   createTime = _messages.StringField(5)
   cron = _messages.MessageField('CronConfig', 6)
   description = _messages.StringField(7)
-  disabled = _messages.BooleanField(8)
-  eventType = _messages.EnumField('EventTypeValueValuesEnum', 9)
-  filename = _messages.StringField(10)
-  filter = _messages.StringField(11)
-  gitFileSource = _messages.MessageField('GitFileSource', 12)
-  github = _messages.MessageField('GitHubEventsConfig', 13)
-  gitlabEnterpriseEventsConfig = _messages.MessageField('GitLabEventsConfig', 14)
-  id = _messages.StringField(15)
-  ignoredFiles = _messages.StringField(16, repeated=True)
-  includeBuildLogs = _messages.EnumField('IncludeBuildLogsValueValuesEnum', 17)
-  includedFiles = _messages.StringField(18, repeated=True)
-  name = _messages.StringField(19)
-  pubsubConfig = _messages.MessageField('PubsubConfig', 20)
-  repositoryEventConfig = _messages.MessageField('RepositoryEventConfig', 21)
-  resourceName = _messages.StringField(22)
-  serviceAccount = _messages.StringField(23)
-  sourceToBuild = _messages.MessageField('GitRepoSource', 24)
-  substitutions = _messages.MessageField('SubstitutionsValue', 25)
-  tags = _messages.StringField(26, repeated=True)
-  triggerTemplate = _messages.MessageField('RepoSource', 27)
-  webhookConfig = _messages.MessageField('WebhookConfig', 28)
+  developerConnectEventConfig = _messages.MessageField('DeveloperConnectEventConfig', 8)
+  disabled = _messages.BooleanField(9)
+  eventType = _messages.EnumField('EventTypeValueValuesEnum', 10)
+  filename = _messages.StringField(11)
+  filter = _messages.StringField(12)
+  gitFileSource = _messages.MessageField('GitFileSource', 13)
+  github = _messages.MessageField('GitHubEventsConfig', 14)
+  gitlabEnterpriseEventsConfig = _messages.MessageField('GitLabEventsConfig', 15)
+  id = _messages.StringField(16)
+  ignoredFiles = _messages.StringField(17, repeated=True)
+  includeBuildLogs = _messages.EnumField('IncludeBuildLogsValueValuesEnum', 18)
+  includedFiles = _messages.StringField(19, repeated=True)
+  name = _messages.StringField(20)
+  pubsubConfig = _messages.MessageField('PubsubConfig', 21)
+  repositoryEventConfig = _messages.MessageField('RepositoryEventConfig', 22)
+  resourceName = _messages.StringField(23)
+  serviceAccount = _messages.StringField(24)
+  sourceToBuild = _messages.MessageField('GitRepoSource', 25)
+  substitutions = _messages.MessageField('SubstitutionsValue', 26)
+  tags = _messages.StringField(27, repeated=True)
+  triggerTemplate = _messages.MessageField('RepoSource', 28)
+  webhookConfig = _messages.MessageField('WebhookConfig', 29)
 
 
 class BuiltImage(_messages.Message):
@@ -2901,6 +2907,46 @@ class DeveloperConnectConfig(_messages.Message):
   dir = _messages.StringField(1)
   gitRepositoryLink = _messages.StringField(2)
   revision = _messages.StringField(3)
+
+
+class DeveloperConnectEventConfig(_messages.Message):
+  r"""The configuration of a trigger that creates a build whenever an event
+  from the DeveloperConnect API is received.
+
+  Enums:
+    GitRepositoryLinkTypeValueValuesEnum: Output only. The type of
+      DeveloperConnect GitRepositoryLink.
+
+  Fields:
+    gitRepositoryLink: Required. The Developer Connect Git repository link,
+      formatted as `projects/*/locations/*/connections/*/gitRepositoryLink/*`.
+    gitRepositoryLinkType: Output only. The type of DeveloperConnect
+      GitRepositoryLink.
+    pullRequest: Filter to match changes in pull requests.
+    push: Filter to match changes in refs like branches and tags.
+  """
+
+  class GitRepositoryLinkTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of DeveloperConnect GitRepositoryLink.
+
+    Values:
+      GIT_REPOSITORY_LINK_TYPE_UNSPECIFIED: If unspecified,
+        GitRepositoryLinkType defaults to GITHUB.
+      GITHUB: The SCM repo is GITHUB.
+      GITHUB_ENTERPRISE: The SCM repo is GITHUB_ENTERPRISE.
+      GITLAB: The SCM repo is GITLAB.
+      GITLAB_ENTERPRISE: The SCM repo is GITLAB_ENTERPRISE.
+    """
+    GIT_REPOSITORY_LINK_TYPE_UNSPECIFIED = 0
+    GITHUB = 1
+    GITHUB_ENTERPRISE = 2
+    GITLAB = 3
+    GITLAB_ENTERPRISE = 4
+
+  gitRepositoryLink = _messages.StringField(1)
+  gitRepositoryLinkType = _messages.EnumField('GitRepositoryLinkTypeValueValuesEnum', 2)
+  pullRequest = _messages.MessageField('PullRequestFilter', 3)
+  push = _messages.MessageField('PushFilter', 4)
 
 
 class Empty(_messages.Message):

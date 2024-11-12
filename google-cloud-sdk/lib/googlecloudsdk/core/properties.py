@@ -444,6 +444,7 @@ class _Sections(object):
     lifesciences: Section, The section containing lifesciencs properties for the
       Cloud SDK.
     looker: Section, The section containing looker properties for the Cloud SDK.
+    lustre: Section, The section containing lustre properties for the Cloud SDK.
     media_asset: Section, the section containing mediaasset protperties for the
       Cloud SDK.
     memcache: Section, The section containing memcache properties for the Cloud
@@ -551,6 +552,7 @@ class _Sections(object):
     self.interactive = _SectionInteractive()
     self.kuberun = _SectionKubeRun()
     self.lifesciences = _SectionLifeSciences()
+    self.lustre = _SectionLustre()
     self.looker = _SectionLooker()
     self.media_asset = _SectionMediaAsset()
     self.memcache = _SectionMemcache()
@@ -633,6 +635,7 @@ class _Sections(object):
         self.kuberun,
         self.lifesciences,
         self.looker,
+        self.lustre,
         self.media_asset,
         self.memcache,
         self.metastore,
@@ -1314,6 +1317,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.lifesciences = self._Add('lifesciences', command='gcloud lifesciences')
     self.logging = self._Add('logging', command='gcloud logging')
     self.looker = self._Add('looker', command='gcloud looker')
+    self.lustre = self._Add('lustre', command='gcloud lustre', hidden=True)
     self.managedflink = self._Add(
         'managedflink', command='gcloud managedflink', hidden=True
     )
@@ -2998,6 +3002,18 @@ class _SectionLooker(_Section):
         help_text='Default region to use when working with Cloud '
         'Looker resources. When a `region` is required but not '
         'provided by a flag, the command will fall back to this value, if set.')
+
+
+class _SectionLustre(_Section):
+  """Contains the properties for the 'lustre' section."""
+
+  def __init__(self):
+    super(_SectionLustre, self).__init__('lustre')
+    self.location = self._Add(
+        'location',
+        help_text='Default location to use when working with Cloud Lustre'
+                  ' resources. When a `location` value is required but not '
+                  'provided, the command will fall back to this value, if set.')
 
 
 class _SectionMediaAsset(_Section):

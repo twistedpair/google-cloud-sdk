@@ -1,0 +1,152 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: compute beta FirewallPolicyRuleMatcher export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  destAddressGroups:
+    description: |-
+      Address groups which should be matched against the traffic destination.
+      Maximum number of destination address groups is 10.
+    type: array
+    items:
+      type: string
+  destFqdns:
+    description: |-
+      Fully Qualified Domain Name (FQDN) which should be matched against
+      traffic destination. Maximum number of destination fqdn allowed is
+      100.
+    type: array
+    items:
+      type: string
+  destIpRanges:
+    description: |-
+      CIDR IP address range. Maximum number of destination CIDR IP
+      ranges allowed is 5000.
+    type: array
+    items:
+      type: string
+  destNetworkScope:
+    description: Network scope of the traffic destination.
+    type: string
+    enum:
+    - INTERNET
+    - INTRA_VPC
+    - NON_INTERNET
+    - UNSPECIFIED
+    - VPC_NETWORKS
+  destRegionCodes:
+    description: |-
+      Region codes whose IP addresses will be used to match for
+      destination of traffic. Should be specified as 2 letter
+      country code defined as per ISO 3166 alpha-2 country codes.
+      ex."US" Maximum number of dest region codes allowed is 5000.
+    type: array
+    items:
+      type: string
+  destThreatIntelligences:
+    description: |-
+      Names of Network Threat Intelligence lists. The IPs in
+      these lists will be matched against traffic destination.
+    type: array
+    items:
+      type: string
+  layer4Configs:
+    description: |-
+      Pairs of IP protocols and ports that the rule should
+      match.
+    type: array
+    items:
+      $ref: FirewallPolicyRuleMatcherLayer4Config.yaml
+  srcAddressGroups:
+    description: |-
+      Address groups which should be matched against the
+      traffic source. Maximum number of source address
+      groups is 10.
+    type: array
+    items:
+      type: string
+  srcFqdns:
+    description: |-
+      Fully Qualified Domain Name (FQDN) which
+      should be matched against traffic source.
+      Maximum number of source fqdn allowed is 100.
+    type: array
+    items:
+      type: string
+  srcIpRanges:
+    description: |-
+      CIDR IP address range. Maximum number of
+      source CIDR IP ranges allowed is 5000.
+    type: array
+    items:
+      type: string
+  srcNetworkScope:
+    description: |-
+      Network scope of the traffic source.
+    type: string
+    enum:
+    - INTERNET
+    - INTRA_VPC
+    - NON_INTERNET
+    - UNSPECIFIED
+    - VPC_NETWORKS
+  srcNetworks:
+    description: |-
+      Networks of the traffic source. It can
+      be either a full or partial url.
+    type: array
+    items:
+      type: string
+  srcRegionCodes:
+    description: |-
+      Region codes whose IP addresses will be
+      used to match for source of traffic.
+      Should be specified as 2 letter country
+      code defined as per ISO 3166 alpha-2
+      country codes. ex."US" Maximum number of
+      source region codes allowed is 5000.
+    type: array
+    items:
+      type: string
+  srcSecureTags:
+    description: |-
+      List of secure tag values, which should
+      be matched at the source of the traffic.
+      For INGRESS rule, if all the
+      srcSecureTag are INEFFECTIVE, and there
+      is no srcIpRange, this rule will be
+      ignored. Maximum number of source tag
+      values allowed is 256.
+    type: array
+    items:
+      $ref: FirewallPolicyRuleSecureTag.yaml
+  srcThreatIntelligences:
+    description: |-
+      Names of Network Threat Intelligence
+      lists. The IPs in these lists will be
+      matched against traffic source.
+    type: array
+    items:
+      type: string

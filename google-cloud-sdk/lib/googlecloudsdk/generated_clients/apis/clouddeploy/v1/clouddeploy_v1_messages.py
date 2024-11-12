@@ -3278,6 +3278,7 @@ class Empty(_messages.Message):
   """
 
 
+
 class ExecutionConfig(_messages.Message):
   r"""Configuration of the environment to use when calling Skaffold.
 

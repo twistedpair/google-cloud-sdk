@@ -208,7 +208,7 @@ class BoostConfig(_messages.Message):
       **Machine Type**: nested virtualization can only be enabled on boost
       configurations that specify a machine_type in the N1 or N2 machine
       series.
-    id: Optional. Required. The id to be used for the boost configuration.
+    id: Required. The id to be used for the boost configuration.
     machineType: Optional. The type of machine that boosted VM instances will
       use-for example, `e2-standard-4`. For more information about machine
       types that Cloud Workstations supports, see the list of [available

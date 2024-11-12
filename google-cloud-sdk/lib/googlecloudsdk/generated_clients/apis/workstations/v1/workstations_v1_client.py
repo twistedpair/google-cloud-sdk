@@ -229,7 +229,7 @@ class WorkstationsV1(base_api.BaseApiClient):
     )
 
     def GenerateAccessToken(self, request, global_params=None):
-      r"""Returns a short-lived credential that can be used to send authenticated and authorized traffic to a workstation.
+      r"""Returns a short-lived credential that can be used to send authenticated and authorized traffic to a workstation. Once generated this token cannot be revoked and is good for the lifetime of the token.
 
       Args:
         request: (WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstationsGenerateAccessTokenRequest) input message

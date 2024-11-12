@@ -79,6 +79,18 @@ class ArtifactregistryProjectsGetProjectSettingsRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class ArtifactregistryProjectsLocationsGetPlatformLogsConfigRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsGetPlatformLogsConfigRequest object.
+
+  Fields:
+    name: Required. The name of the platform logs config resource:
+      projects/{project}/locations/{location}/platformLogsConfig projects/{pro
+      ject}/locations/{location}/repositories/{repository}/platformLogsConfig
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ArtifactregistryProjectsLocationsGetRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsGetRequest object.
 
@@ -449,6 +461,20 @@ class ArtifactregistryProjectsLocationsRepositoriesGetIamPolicyRequest(_messages
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesGetPlatformLogsConfigRequest(_messages.Message):
+  r"""A
+  ArtifactregistryProjectsLocationsRepositoriesGetPlatformLogsConfigRequest
+  object.
+
+  Fields:
+    name: Required. The name of the platform logs config resource:
+      projects/{project}/locations/{location}/platformLogsConfig projects/{pro
+      ject}/locations/{location}/repositories/{repository}/platformLogsConfig
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesGetRequest(_messages.Message):
@@ -1118,6 +1144,27 @@ class ArtifactregistryProjectsLocationsRepositoriesTestIamPermissionsRequest(_me
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class ArtifactregistryProjectsLocationsRepositoriesUpdatePlatformLogsConfigRequest(_messages.Message):
+  r"""A
+  ArtifactregistryProjectsLocationsRepositoriesUpdatePlatformLogsConfigRequest
+  object.
+
+  Fields:
+    name: Identifier. The name of the project's or repository's platform logs
+      config. Always in one of the forms:
+      projects/{projectID}/locations/{location}/platformLogsConfig projects/{p
+      rojectID}/locations/{location}/repositories/{repository}/platformLogsCon
+      fig
+    platformLogsConfig: A PlatformLogsConfig resource to be passed as the
+      request body.
+    updateMask: Optional. Field mask to support partial updates.
+  """
+
+  name = _messages.StringField(1, required=True)
+  platformLogsConfig = _messages.MessageField('PlatformLogsConfig', 2)
+  updateMask = _messages.StringField(3)
+
+
 class ArtifactregistryProjectsLocationsRepositoriesYumArtifactsImportRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsRepositoriesYumArtifactsImportRequest
   object.
@@ -1146,6 +1193,26 @@ class ArtifactregistryProjectsLocationsRepositoriesYumArtifactsUploadRequest(_me
 
   parent = _messages.StringField(1, required=True)
   uploadYumArtifactRequest = _messages.MessageField('UploadYumArtifactRequest', 2)
+
+
+class ArtifactregistryProjectsLocationsUpdatePlatformLogsConfigRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsUpdatePlatformLogsConfigRequest
+  object.
+
+  Fields:
+    name: Identifier. The name of the project's or repository's platform logs
+      config. Always in one of the forms:
+      projects/{projectID}/locations/{location}/platformLogsConfig projects/{p
+      rojectID}/locations/{location}/repositories/{repository}/platformLogsCon
+      fig
+    platformLogsConfig: A PlatformLogsConfig resource to be passed as the
+      request body.
+    updateMask: Optional. Field mask to support partial updates.
+  """
+
+  name = _messages.StringField(1, required=True)
+  platformLogsConfig = _messages.MessageField('PlatformLogsConfig', 2)
+  updateMask = _messages.StringField(3)
 
 
 class ArtifactregistryProjectsLocationsUpdateVpcscConfigRequest(_messages.Message):
@@ -2751,6 +2818,77 @@ class Package(_messages.Message):
   displayName = _messages.StringField(3)
   name = _messages.StringField(4)
   updateTime = _messages.StringField(5)
+
+
+class PlatformLogsConfig(_messages.Message):
+  r"""The platform logs config for a project or a repository.
+
+  Enums:
+    LoggingStateValueValuesEnum: Optional. The state of the platform logs:
+      enabled or disabled.
+    SeverityLevelValueValuesEnum: Optional. The severity level for the logs.
+      Logs will be generated if their severity level is >= than the value of
+      the severity level mentioned here.
+
+  Fields:
+    loggingState: Optional. The state of the platform logs: enabled or
+      disabled.
+    name: Identifier. The name of the project's or repository's platform logs
+      config. Always in one of the forms:
+      projects/{projectID}/locations/{location}/platformLogsConfig projects/{p
+      rojectID}/locations/{location}/repositories/{repository}/platformLogsCon
+      fig
+    severityLevel: Optional. The severity level for the logs. Logs will be
+      generated if their severity level is >= than the value of the severity
+      level mentioned here.
+  """
+
+  class LoggingStateValueValuesEnum(_messages.Enum):
+    r"""Optional. The state of the platform logs: enabled or disabled.
+
+    Values:
+      LOGGING_STATE_UNSPECIFIED: Platform logs settings for the parent
+        resource haven't been set. This is the default state or when the user
+        clears the settings for the parent.
+      ENABLED: Platform logs are enabled.
+      DISABLED: Platform logs are disabled.
+    """
+    LOGGING_STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  class SeverityLevelValueValuesEnum(_messages.Enum):
+    r"""Optional. The severity level for the logs. Logs will be generated if
+    their severity level is >= than the value of the severity level mentioned
+    here.
+
+    Values:
+      SEVERITY_LEVEL_UNSPECIFIED: No severity level specified, meaning
+        everything is being logged.
+      DEBUG: Debug or trace information.
+      INFO: Routine information, such as ongoing status or performance.
+      NOTICE: Normal but significant events, such as start up, shut down, or a
+        configuration change.
+      WARNING: Warning events that might cause problems.
+      ERROR: Error events that are likely to cause problems.
+      CRITICAL: Critical events that cause more severe problems or outages.
+      ALERT: Alert events that require a person must take an action
+        immediately.
+      EMERGENCY: One or more systems are unusable.
+    """
+    SEVERITY_LEVEL_UNSPECIFIED = 0
+    DEBUG = 1
+    INFO = 2
+    NOTICE = 3
+    WARNING = 4
+    ERROR = 5
+    CRITICAL = 6
+    ALERT = 7
+    EMERGENCY = 8
+
+  loggingState = _messages.EnumField('LoggingStateValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  severityLevel = _messages.EnumField('SeverityLevelValueValuesEnum', 3)
 
 
 class Policy(_messages.Message):

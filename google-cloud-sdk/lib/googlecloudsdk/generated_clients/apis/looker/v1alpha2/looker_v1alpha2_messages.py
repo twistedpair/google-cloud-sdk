@@ -486,7 +486,7 @@ class Instance(_messages.Message):
     tier: Optional. Tier
     updateTime: Output only. The time when the Looker instance was last
       updated.
-    userMetadata: User metadata.
+    userMetadata: Optional. User metadata.
   """
 
   class PlatformEditionValueValuesEnum(_messages.Enum):

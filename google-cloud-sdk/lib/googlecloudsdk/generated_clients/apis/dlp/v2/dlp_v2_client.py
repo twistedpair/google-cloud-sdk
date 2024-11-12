@@ -92,7 +92,7 @@ class DlpV2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Returns a list of the sensitive information types that DLP API supports. See https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference to learn more.
+      r"""Returns a list of the sensitive information types that the DLP API supports. See https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference to learn more.
 
       Args:
         request: (DlpInfoTypesListRequest) input message
@@ -128,7 +128,7 @@ class DlpV2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Returns a list of the sensitive information types that DLP API supports. See https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference to learn more.
+      r"""Returns a list of the sensitive information types that the DLP API supports. See https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference to learn more.
 
       Args:
         request: (DlpLocationsInfoTypesListRequest) input message

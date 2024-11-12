@@ -233,7 +233,8 @@ def User(name,
          cert_data=None,
          key_path=None,
          key_data=None,
-         dns_endpoint=None):
+         dns_endpoint=None,
+         impersonate_service_account=None):
   """Generates and returns a user kubeconfig object.
 
   Args:
@@ -248,6 +249,7 @@ def User(name,
     key_path: str, path to client key file.
     key_data: str, base64 encoded client key data.
     dns_endpoint: str, cluster's DNS endpoint.
+    impersonate_service_account: str, service account to impersonate.
   Returns:
     dict, valid kubeconfig user entry.
 
@@ -275,7 +277,7 @@ def User(name,
           expiry_key=auth_provider_expiry_key,
           token_key=auth_provider_token_key)
     else:
-      user['exec'] = _ExecAuthPlugin(dns_endpoint)
+      user['exec'] = _ExecAuthPlugin(dns_endpoint, impersonate_service_account)
 
   if cert_path and cert_data:
     raise Error('cannot specify both cert_path and cert_data')
@@ -336,7 +338,7 @@ which is needed for continued use of kubectl, was not found or is not executable
 """ + GKE_GCLOUD_AUTH_INSTALL_HINT
 
 
-def _ExecAuthPlugin(dns_endpoint=None):
+def _ExecAuthPlugin(dns_endpoint=None, impersonate_service_account=None):
   """Generate and return an exec auth plugin config.
 
   Constructs an exec auth plugin config entry readable by kubectl.
@@ -352,6 +354,7 @@ def _ExecAuthPlugin(dns_endpoint=None):
 
   Args:
     dns_endpoint: str, DNS endpoint.
+    impersonate_service_account: str, service account to impersonate.
   Returns:
     dict, valid exec auth plugin config entry.
   Raises:
@@ -374,8 +377,15 @@ def _ExecAuthPlugin(dns_endpoint=None):
       'provideClusterInfo': True,
   }
 
+  args = []
   if use_application_default_credentials:
-    exec_cfg['args'] = ['--use_application_default_credentials']
+    args.append('--use_application_default_credentials')
+  if impersonate_service_account:
+    args.append('--impersonate_service_account=' + impersonate_service_account)
+
+  if args:
+    exec_cfg['args'] = args
+
   return exec_cfg
 
 

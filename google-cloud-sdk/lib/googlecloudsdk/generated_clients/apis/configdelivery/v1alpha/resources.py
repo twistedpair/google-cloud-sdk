@@ -96,6 +96,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_RESOURCEBUNDLES_RELEASES_VARIANTS = (
+      'projects.locations.resourceBundles.releases.variants',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/resourceBundles/'
+              '{resourceBundlesId}/releases/{releasesId}/variants/'
+              '{variantsId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

@@ -46,6 +46,8 @@ __protobuf__ = proto.module(
         'StreamingPredictResponse',
         'StreamingRawPredictRequest',
         'StreamingRawPredictResponse',
+        'PredictLongRunningRequest',
+        'FetchPredictOperationRequest',
         'ExplainRequest',
         'ExplainResponse',
         'CountTokensRequest',
@@ -572,6 +574,80 @@ class StreamingRawPredictResponse(proto.Message):
     output: bytes = proto.Field(
         proto.BYTES,
         number=1,
+    )
+
+
+class PredictLongRunningRequest(proto.Message):
+    r"""Request message for
+    [PredictionService.PredictLongRunning][google.cloud.aiplatform.v1beta1.PredictionService.PredictLongRunning].
+
+    Attributes:
+        endpoint (str):
+            Required. The name of the Endpoint requested to serve the
+            prediction. Format:
+            ``projects/{project}/locations/{location}/endpoints/{endpoint}``
+            or
+            ``projects/{project}/locations/{location}/publishers/{publisher}/models/{model}``
+        instances (MutableSequence[google.protobuf.struct_pb2.Value]):
+            Required. The instances that are the input to the prediction
+            call. A DeployedModel may have an upper limit on the number
+            of instances it supports per request, and when it is
+            exceeded the prediction call errors in case of AutoML
+            Models, or, in case of customer created Models, the
+            behaviour is as documented by that Model. The schema of any
+            single instance may be specified via Endpoint's
+            DeployedModels'
+            [Model's][google.cloud.aiplatform.v1beta1.DeployedModel.model]
+            [PredictSchemata's][google.cloud.aiplatform.v1beta1.Model.predict_schemata]
+            [instance_schema_uri][google.cloud.aiplatform.v1beta1.PredictSchemata.instance_schema_uri].
+        parameters (google.protobuf.struct_pb2.Value):
+            Optional. The parameters that govern the prediction. The
+            schema of the parameters may be specified via Endpoint's
+            DeployedModels' [Model's
+            ][google.cloud.aiplatform.v1beta1.DeployedModel.model]
+            [PredictSchemata's][google.cloud.aiplatform.v1beta1.Model.predict_schemata]
+            [parameters_schema_uri][google.cloud.aiplatform.v1beta1.PredictSchemata.parameters_schema_uri].
+    """
+
+    endpoint: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    instances: MutableSequence[struct_pb2.Value] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=2,
+        message=struct_pb2.Value,
+    )
+    parameters: struct_pb2.Value = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        message=struct_pb2.Value,
+    )
+
+
+class FetchPredictOperationRequest(proto.Message):
+    r"""Request message for
+    [PredictionService.FetchPredictOperation][google.cloud.aiplatform.v1beta1.PredictionService.FetchPredictOperation].
+
+    Attributes:
+        endpoint (str):
+            Required. The name of the Endpoint requested to serve the
+            prediction. Format:
+            ``projects/{project}/locations/{location}/endpoints/{endpoint}``
+            or
+            ``projects/{project}/locations/{location}/publishers/{publisher}/models/{model}``
+        operation_name (str):
+            Required. The server-assigned name for the
+            operation.
+    """
+
+    endpoint: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    operation_name: str = proto.Field(
+        proto.STRING,
+        number=2,
     )
 
 

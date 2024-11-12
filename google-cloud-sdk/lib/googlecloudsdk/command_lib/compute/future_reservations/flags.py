@@ -321,19 +321,6 @@ def GetSchedulingTypeFlag():
   )
 
 
-def GetEnableOpportunisticMaintenanceFlag():
-  """--enable-opportunistic-maintenance flag."""
-  help_text = """\
-  Enable or disable opportunistic maintenance. If enabled, maintenance is
-  performed on unused reservations whenever possible.
-  """
-  return base.Argument(
-      '--enable-opportunistic-maintenance',
-      action=arg_parsers.StoreTrueFalseAction,
-      help=help_text,
-  )
-
-
 def AddCreateFlags(
     parser,
     support_location_hint=False,
@@ -411,7 +398,6 @@ def AddCreateFlags(
     GetDeploymentTypeFlag().AddToParser(parser)
     AddCommitmentInfoFlags(parser)
     GetSchedulingTypeFlag().AddToParser(parser)
-    GetEnableOpportunisticMaintenanceFlag().AddToParser(parser)
 
 
 def AddUpdateFlags(
@@ -503,7 +489,6 @@ def AddUpdateFlags(
     GetDeploymentTypeFlag().AddToParser(parser)
     AddCommitmentInfoFlags(parser)
     GetSchedulingTypeFlag().AddToParser(parser)
-    GetEnableOpportunisticMaintenanceFlag().AddToParser(parser)
 
 
 def AddAutoDeleteFlags(parser, is_update=False):

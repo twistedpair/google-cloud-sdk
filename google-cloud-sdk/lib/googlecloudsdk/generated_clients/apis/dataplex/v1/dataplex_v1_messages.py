@@ -3668,11 +3668,14 @@ class DataplexProjectsLocationsMetadataJobsCreateRequest(_messages.Message):
       is generated with the prefix metadata-job-.
     parent: Required. The resource name of the parent location, in the format
       projects/{project_id_or_number}/locations/{location_id}
+    validateOnly: Optional. The service validates the request without
+      performing any mutations. The default is false.
   """
 
   googleCloudDataplexV1MetadataJob = _messages.MessageField('GoogleCloudDataplexV1MetadataJob', 1)
   metadataJobId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
 
 
 class DataplexProjectsLocationsMetadataJobsGetRequest(_messages.Message):

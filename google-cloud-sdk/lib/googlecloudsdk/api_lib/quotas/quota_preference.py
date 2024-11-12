@@ -298,7 +298,6 @@ def ListQuotaPreferences(
     request = messages.CloudquotasProjectsLocationsQuotaPreferencesListRequest(
         parent=parent,
         pageSize=args.page_size,
-        pageToken=args.page_token,
         filter=_GetFilter(args.filter, args.reconciling_only),
         orderBy=common_args.ParseSortByArg(args.sort_by),
     )
@@ -315,7 +314,6 @@ def ListQuotaPreferences(
     request = messages.CloudquotasFoldersLocationsQuotaPreferencesListRequest(
         parent=parent,
         pageSize=args.page_size,
-        pageToken=args.page_token,
         filter=_GetFilter(args.filter, args.reconciling_only),
         orderBy=common_args.ParseSortByArg(args.sort_by),
     )
@@ -333,7 +331,6 @@ def ListQuotaPreferences(
         messages.CloudquotasOrganizationsLocationsQuotaPreferencesListRequest(
             parent=parent,
             pageSize=args.page_size,
-            pageToken=args.page_token,
             filter=_GetFilter(args.filter, args.reconciling_only),
             orderBy=common_args.ParseSortByArg(args.sort_by),
         )

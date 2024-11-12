@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_AUTHZEXTENSIONS = (
+      'projects.locations.authzExtensions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/authzExtensions/'
+              '{authzExtensionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_EDGECACHEKEYSETS = (
       'projects.locations.edgeCacheKeysets',
       '{+name}',
@@ -96,6 +107,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GATEWAYS_ROUTEVIEWS = (
+      'projects.locations.gateways.routeViews',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/gateways/'
+              '{gatewaysId}/routeViews/{routeViewsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_GRPCROUTES = (
       'projects.locations.grpcRoutes',
       '{+name}',
@@ -147,6 +169,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/meshes/'
               '{meshesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MESHES_ROUTEVIEWS = (
+      'projects.locations.meshes.routeViews',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/meshes/'
+              '{meshesId}/routeViews/{routeViewsId}',
       },
       ['name'],
       True

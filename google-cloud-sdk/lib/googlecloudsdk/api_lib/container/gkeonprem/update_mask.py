@@ -62,6 +62,7 @@ VMWARE_NODE_POOL_ARGS_TO_UPDATE_MASKS = {
 
 VMWARE_ADMIN_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'required_platform_version': 'platform_config.required_platform_version',
+    'version': 'on_prem_version',
 }
 
 BARE_METAL_CLUSTER_ARGS_TO_UPDATE_MASKS = {

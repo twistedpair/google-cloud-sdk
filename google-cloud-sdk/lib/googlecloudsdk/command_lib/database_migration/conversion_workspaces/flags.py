@@ -231,3 +231,30 @@ def AddTargetPathFlag(parser):
       '--target-path',
       help=help_text,
   )
+
+
+def AddSourceDialectFlag(parser):
+  """Adds a --source-dialect flag to the given parser."""
+
+  help_text = (
+      'The source dialect of the code to be converted. This can only be ORACLE.'
+  )
+  parser.add_argument(
+      '--source-dialect',
+      help=help_text,
+      required=True,
+  )
+
+
+def AddTargetDialectFlag(parser):
+  """Adds a --target-dialect flag to the given parser."""
+
+  help_text = (
+      'The target dialect of the code to be converted. This can only be'
+      ' POSTGRESQL.'
+  )
+  parser.add_argument(
+      '--target-dialect',
+      help=help_text,
+      required=True,
+  )

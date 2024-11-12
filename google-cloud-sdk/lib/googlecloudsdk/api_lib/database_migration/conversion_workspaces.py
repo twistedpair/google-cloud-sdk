@@ -768,6 +768,20 @@ class ConversionWorkspacesClient(object):
       None.
     """
 
+    if args.target_dialect and args.target_dialect.upper() != 'POSTGRESQL':
+      raise exceptions.BadArgumentException(
+          '--target-dialect',
+          'specified target dialect [{}] is not supported. Only POSTGRESQL is'
+          ' supported'.format(args.target_dialect),
+      )
+
+    if args.source_dialect and args.source_dialect.upper() != 'ORACLE':
+      raise exceptions.BadArgumentException(
+          '--source-dialect',
+          'specified source dialect [{}] is not supported. Only ORACLE is'
+          ' supported'.format(args.source_dialect),
+      )
+
     if args.source_file:
       self.ConvertApplicationCodeSingleFile(
           name, args.source_file, args.target_path

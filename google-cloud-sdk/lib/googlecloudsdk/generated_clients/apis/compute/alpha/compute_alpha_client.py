@@ -10395,6 +10395,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Update(self, request, global_params=None):
+      r"""Updates a License resource in the specified project. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
+
+      Args:
+        request: (ComputeLicensesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.licenses.update',
+        ordered_params=['project', 'license'],
+        path_params=['license', 'project'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/global/licenses/{license}',
+        request_field='licenseResource',
+        request_type_name='ComputeLicensesUpdateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class MachineImagesService(base_api.BaseApiService):
     """Service class for the machineImages resource."""
 
@@ -19085,6 +19111,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeRegionSecurityPoliciesSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionSecurityPolicies.setLabels',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/securityPolicies/{resource}/setLabels',
+        request_field='regionSetLabelsRequest',
+        request_type_name='ComputeRegionSecurityPoliciesSetLabelsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class RegionSnapshotSettingsService(base_api.BaseApiService):
     """Service class for the regionSnapshotSettings resource."""
 
@@ -20625,6 +20677,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def PerformMaintenance(self, request, global_params=None):
+      r"""Allows customers to perform maintenance on a reservation block.
+
+      Args:
+        request: (ComputeReservationBlocksPerformMaintenanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PerformMaintenance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PerformMaintenance.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.reservationBlocks.performMaintenance',
+        ordered_params=['project', 'zone', 'reservation', 'reservationBlock'],
+        path_params=['project', 'reservation', 'reservationBlock', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/reservations/{reservation}/reservationBlocks/{reservationBlock}/performMaintenance',
+        request_field='reservationsBlocksPerformMaintenanceRequest',
+        request_type_name='ComputeReservationBlocksPerformMaintenanceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ReservationsService(base_api.BaseApiService):
     """Service class for the reservations resource."""
 
@@ -20788,6 +20866,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeReservationsListRequest',
         response_type_name='ReservationList',
+        supports_download=False,
+    )
+
+    def PerformMaintenance(self, request, global_params=None):
+      r"""Perform maintenance on an extended reservation.
+
+      Args:
+        request: (ComputeReservationsPerformMaintenanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PerformMaintenance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PerformMaintenance.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.reservations.performMaintenance',
+        ordered_params=['project', 'zone', 'reservation'],
+        path_params=['project', 'reservation', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/reservations/{reservation}/performMaintenance',
+        request_field='reservationsPerformMaintenanceRequest',
+        request_type_name='ComputeReservationsPerformMaintenanceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

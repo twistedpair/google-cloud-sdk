@@ -93,8 +93,174 @@ class GoogleCloudOrgpolicyV2ConstraintBooleanConstraint(_messages.Message):
   r"""A constraint that is either enforced or not. For example, a constraint
   `constraints/compute.disableSerialPortAccess`. If it is enforced on a VM
   instance, serial port connections will not be opened to that instance.
+
+  Fields:
+    customConstraintDefinition: Custom constraint definition. This is set only
+      for Managed Constraints
   """
 
+  customConstraintDefinition = _messages.MessageField('GoogleCloudOrgpolicyV2ConstraintCustomConstraintDefinition', 1)
+
+
+class GoogleCloudOrgpolicyV2ConstraintCustomConstraintDefinition(_messages.Message):
+  r"""Currently used for Managed Constraints. This represents a subset of
+  fields missing from Constraint proto that are required to describe
+  CustomConstraint
+
+  Enums:
+    ActionTypeValueValuesEnum: Allow or deny type.
+    MethodTypesValueListEntryValuesEnum:
+
+  Messages:
+    ParametersValue: Stores Structure of parameters used by Constraint
+      condition. Key of map represents name of the parameter.
+
+  Fields:
+    actionType: Allow or deny type.
+    condition: Org policy condition/expression. For example:
+      `resource.instanceName.matches("[production|test]_.*_(\d)+")` or,
+      `resource.management.auto_upgrade == true` The max length of the
+      condition is 1000 characters.
+    methodTypes: All the operations being applied for this constraint.
+    parameters: Stores Structure of parameters used by Constraint condition.
+      Key of map represents name of the parameter.
+    resourceTypes: The resource instance type on which this policy applies.
+      Format will be of the form : `/` Example: *
+      `compute.googleapis.com/Instance`.
+  """
+
+  class ActionTypeValueValuesEnum(_messages.Enum):
+    r"""Allow or deny type.
+
+    Values:
+      ACTION_TYPE_UNSPECIFIED: Unspecified. Results in an error.
+      ALLOW: Allowed action type.
+      DENY: Deny action type.
+    """
+    ACTION_TYPE_UNSPECIFIED = 0
+    ALLOW = 1
+    DENY = 2
+
+  class MethodTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""MethodTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      METHOD_TYPE_UNSPECIFIED: Unspecified. Results in an error.
+      CREATE: Constraint applied when creating the resource.
+      UPDATE: Constraint applied when updating the resource.
+      DELETE: Constraint applied when deleting the resource. Not supported
+        yet.
+      REMOVE_GRANT: Constraint applied when removing an IAM grant.
+      GOVERN_TAGS: Constraint applied when enforcing forced tagging.
+    """
+    METHOD_TYPE_UNSPECIFIED = 0
+    CREATE = 1
+    UPDATE = 2
+    DELETE = 3
+    REMOVE_GRANT = 4
+    GOVERN_TAGS = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""Stores Structure of parameters used by Constraint condition. Key of
+    map represents name of the parameter.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A
+          GoogleCloudOrgpolicyV2ConstraintCustomConstraintDefinitionParameter
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudOrgpolicyV2ConstraintCustomConstraintDefinitionParameter', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  actionType = _messages.EnumField('ActionTypeValueValuesEnum', 1)
+  condition = _messages.StringField(2)
+  methodTypes = _messages.EnumField('MethodTypesValueListEntryValuesEnum', 3, repeated=True)
+  parameters = _messages.MessageField('ParametersValue', 4)
+  resourceTypes = _messages.StringField(5, repeated=True)
+
+
+class GoogleCloudOrgpolicyV2ConstraintCustomConstraintDefinitionParameter(_messages.Message):
+  r"""Defines a parameter structure.
+
+  Enums:
+    ItemValueValuesEnum: Determines the parameter's value structure. For
+      example, LIST can be specified by defining type : LIST, and item type as
+      : STRING.
+    TypeValueValuesEnum: Type of the parameter.
+
+  Fields:
+    defaultValue: Sets the value of the parameter in an assignment if no value
+      is given.
+    item: Determines the parameter's value structure. For example, LIST can be
+      specified by defining type : LIST, and item type as : STRING.
+    metadata: Defines subproperties primarily used by the UI to display user-
+      friendly information.
+    type: Type of the parameter.
+    validValuesExpr: Provides a CEL expression to specify the acceptable
+      parameter values during assignment. For example, parameterName in
+      ("parameterValue1", "parameterValue2")
+  """
+
+  class ItemValueValuesEnum(_messages.Enum):
+    r"""Determines the parameter's value structure. For example, LIST can be
+    specified by defining type : LIST, and item type as : STRING.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified. Results in an error.
+      LIST: List parameter type.
+      STRING: String parameter type.
+      BOOLEAN: Boolean parameter type.
+    """
+    TYPE_UNSPECIFIED = 0
+    LIST = 1
+    STRING = 2
+    BOOLEAN = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the parameter.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified. Results in an error.
+      LIST: List parameter type.
+      STRING: String parameter type.
+      BOOLEAN: Boolean parameter type.
+    """
+    TYPE_UNSPECIFIED = 0
+    LIST = 1
+    STRING = 2
+    BOOLEAN = 3
+
+  defaultValue = _messages.MessageField('extra_types.JsonValue', 1)
+  item = _messages.EnumField('ItemValueValuesEnum', 2)
+  metadata = _messages.MessageField('GoogleCloudOrgpolicyV2ConstraintCustomConstraintDefinitionParameterMetadata', 3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  validValuesExpr = _messages.StringField(5)
+
+
+class GoogleCloudOrgpolicyV2ConstraintCustomConstraintDefinitionParameterMetadata(_messages.Message):
+  r"""Defines Medata structure.
+
+  Fields:
+    description: Detailed description of what this `parameter` is and use of
+      it. Mutable.
+  """
+
+  description = _messages.StringField(1)
 
 
 class GoogleCloudOrgpolicyV2ConstraintListConstraint(_messages.Message):

@@ -1632,7 +1632,7 @@ class ListLocationsResponse(_messages.Message):
 
 
 class ListPolicyBasedRoutesResponse(_messages.Message):
-  r"""Response for PolicyBasedRouting.ListPolicyBasedRoutes method.
+  r"""Response for PolicyBasedRoutingService.ListPolicyBasedRoutes method.
 
   Fields:
     nextPageToken: The next pagination token in the List response. It should
@@ -3730,8 +3730,8 @@ class OperationMetadata(_messages.Message):
     endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have been
-      cancelled successfully have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      cancelled successfully have google.longrunning.Operation.error value
+      with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
     target: Output only. Server-defined resource path for the target of the

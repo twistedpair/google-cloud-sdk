@@ -1612,18 +1612,22 @@ class TranslateProjectsTranslateTextRequest(_messages.Message):
 
 
 class TranslateTextGlossaryConfig(_messages.Message):
-  r"""Configures which glossary should be used for a specific target language,
-  and defines options for applying that glossary.
+  r"""------------------------------------------------------------------------
+  ----- Configures which glossary should be used for a specific target
+  language, and defines options for applying that glossary.
 
   Fields:
+    contextualTranslationEnabled: Optional. If set to true, the glossary will
+      be used for contextual translation.
     glossary: Required. Specifies the glossary used for this translation. Use
       this format: projects/*/locations/*/glossaries/*
     ignoreCase: Optional. Indicates match is case-insensitive. Default value
       is false if missing.
   """
 
-  glossary = _messages.StringField(1)
-  ignoreCase = _messages.BooleanField(2)
+  contextualTranslationEnabled = _messages.BooleanField(1)
+  glossary = _messages.StringField(2)
+  ignoreCase = _messages.BooleanField(3)
 
 
 class TranslateTextRequest(_messages.Message):

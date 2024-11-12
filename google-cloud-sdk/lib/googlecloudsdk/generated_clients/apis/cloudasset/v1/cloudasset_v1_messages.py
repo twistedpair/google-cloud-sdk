@@ -135,7 +135,7 @@ class AnalyzeIamPolicyResponse(_messages.Message):
     mainAnalysis: The main analysis that matches the original request.
     serviceAccountImpersonationAnalysis: The service account impersonation
       analysis if
-      AnalyzeIamPolicyRequest.analyze_service_account_impersonation is
+      IamPolicyAnalysisQuery.Options.analyze_service_account_impersonation is
       enabled.
   """
 
@@ -2047,8 +2047,8 @@ class EffectiveTagDetails(_messages.Message):
 
   Fields:
     attachedResource: The [full resource name](https://cloud.google.com/asset-
-      inventory/docs/resource-name-format) of the ancestor from which an
-      effective_tag is inherited, according to [tag
+      inventory/docs/resource-name-format) of the ancestor from which
+      effective_tags are inherited, according to [tag
       inheritance](https://cloud.google.com/resource-manager/docs/tags/tags-
       overview#inheritance).
     effectiveTags: The effective tags inherited from the attached_resource.
@@ -2442,10 +2442,10 @@ class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedAsset(_mes
       the AnalyzeOrgPolicyGovernedAssetsRequest.constraint.
     governedResource: A Google Cloud resource governed by the organization
       policies of the AnalyzeOrgPolicyGovernedAssetsRequest.constraint.
-    policyBundle: The ordered list of all organization policies from the Analy
-      zeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resou
-      rce to the scope specified in the request. If the constraint is defined
-      with default policy, it will also appear in the list.
+    policyBundle: The ordered list of all organization policies from the
+      consolidated_policy.attached_resource to the scope specified in the
+      request. If the constraint is defined with default policy, it will also
+      appear in the list.
   """
 
   consolidatedPolicy = _messages.MessageField('AnalyzerOrgPolicy', 1)
@@ -2843,10 +2843,10 @@ class GoogleCloudAssetV1GovernedContainer(_messages.Message):
     parent: The [full resource name] (https://cloud.google.com/asset-
       inventory/docs/resource-name-format) of the parent of AnalyzeOrgPolicyGo
       vernedContainersResponse.GovernedContainer.full_resource_name.
-    policyBundle: The ordered list of all organization policies from the Analy
-      zeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resou
-      rce. to the scope specified in the request. If the constraint is defined
-      with default policy, it will also appear in the list.
+    policyBundle: The ordered list of all organization policies from the
+      consolidated_policy.attached_resource. to the scope specified in the
+      request. If the constraint is defined with default policy, it will also
+      appear in the list.
     project: The project that this resource belongs to, in the format of
       projects/{PROJECT_NUMBER}. This field is available when the resource
       belongs to a project.
@@ -4107,6 +4107,10 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
   Fields:
     description: Description of the `ServicePerimeter` and its use. Does not
       affect behavior.
+    etag: Optional. An opaque identifier for the current version of the
+      `ServicePerimeter`. Clients should not expect this to be in any specific
+      format. If etag is not provided, the operation will be performed as if a
+      valid etag is provided.
     name: Identifier. Resource name for the `ServicePerimeter`. Format:
       `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`.
       The `service_perimeter` component must begin with a letter, followed by
@@ -4155,12 +4159,13 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
     PERIMETER_TYPE_BRIDGE = 1
 
   description = _messages.StringField(1)
-  name = _messages.StringField(2)
-  perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 3)
-  spec = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig', 4)
-  status = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig', 5)
-  title = _messages.StringField(6)
-  useExplicitDryRunSpec = _messages.BooleanField(7)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 4)
+  spec = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig', 5)
+  status = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig', 6)
+  title = _messages.StringField(7)
+  useExplicitDryRunSpec = _messages.BooleanField(8)
 
 
 class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig(_messages.Message):
@@ -5034,10 +5039,9 @@ class OrgPolicyResult(_messages.Message):
   Fields:
     consolidatedPolicy: The consolidated organization policy for the analyzed
       resource. The consolidated organization policy is computed by merging
-      and evaluating AnalyzeOrgPoliciesResponse.policy_bundle. The evaluation
-      will respect the organization policy [hierarchy
-      rules](https://cloud.google.com/resource-manager/docs/organization-
-      policy/understanding-hierarchy).
+      and evaluating policy_bundle. The evaluation will respect the
+      organization policy [hierarchy rules](https://cloud.google.com/resource-
+      manager/docs/organization-policy/understanding-hierarchy).
     folders: The folder(s) that this consolidated policy belongs to, in the
       format of folders/{FOLDER_NUMBER}. This field is available when the
       consolidated policy belongs (directly or cascadingly) to one or more
@@ -5046,10 +5050,10 @@ class OrgPolicyResult(_messages.Message):
       in the format of organizations/{ORGANIZATION_NUMBER}. This field is
       available when the consolidated policy belongs (directly or cascadingly)
       to an organization.
-    policyBundle: The ordered list of all organization policies from the Analy
-      zeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resou
-      rce. to the scope specified in the request. If the constraint is defined
-      with default policy, it will also appear in the list.
+    policyBundle: The ordered list of all organization policies from the
+      consolidated_policy.attached_resource. to the scope specified in the
+      request. If the constraint is defined with default policy, it will also
+      appear in the list.
     project: The project that this consolidated policy belongs to, in the
       format of projects/{PROJECT_NUMBER}. This field is available when the
       consolidated policy belongs to a project.

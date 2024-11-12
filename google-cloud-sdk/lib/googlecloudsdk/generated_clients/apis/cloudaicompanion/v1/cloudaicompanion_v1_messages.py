@@ -1432,6 +1432,65 @@ class IntegrationVersion(_messages.Message):
   triggerConfigs = _messages.MessageField('TriggerConfig', 6, repeated=True)
 
 
+class InvestigationInputDataContext(_messages.Message):
+  r"""This message should be used by all Investigation UI Titan clients and
+  will map to the InputDataContext.additional_context Any field.
+
+  Fields:
+    investigationRevision: The name of the investigation revision to retrieve.
+      Format: projects/{project}/locations/global/investigations/{investigatio
+      n}/revisions/{revision}
+    runInvestigation: If true, this request was triggered by the Run
+      investigation revision method.
+    runParameters: User parameters for running an investigation.
+  """
+
+  investigationRevision = _messages.StringField(1)
+  runInvestigation = _messages.BooleanField(2)
+  runParameters = _messages.MessageField('InvestigationRunParameters', 3)
+
+
+class InvestigationRunParameters(_messages.Message):
+  r"""Represents user parameters for running an investigation.
+
+  Messages:
+    AccessTokensValue: If populated, map of project to access token for TSE-
+      triggered investigations.
+
+  Fields:
+    accessTokens: If populated, map of project to access token for TSE-
+      triggered investigations.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AccessTokensValue(_messages.Message):
+    r"""If populated, map of project to access token for TSE-triggered
+    investigations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AccessTokensValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AccessTokensValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AccessTokensValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  accessTokens = _messages.MessageField('AccessTokensValue', 1)
+
+
 class JavascriptRecommendation(_messages.Message):
   r"""Individual Javascript recommendation containing the task config with the
   new code, integration parameters and the explanation.

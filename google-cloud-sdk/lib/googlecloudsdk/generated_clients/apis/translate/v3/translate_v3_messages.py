@@ -874,6 +874,8 @@ class GlossaryConfig(_messages.Message):
   defines options for applying that glossary.
 
   Fields:
+    contextualTranslationEnabled: Optional. If set to true, the glossary will
+      be used for contextual translation.
     glossary: Required. The `glossary` to be applied for this translation. The
       format depends on the glossary: - User-provided custom glossary:
       `projects/{project-number-or-id}/locations/{location-
@@ -882,8 +884,9 @@ class GlossaryConfig(_messages.Message):
       value is `false` if missing.
   """
 
-  glossary = _messages.StringField(1)
-  ignoreCase = _messages.BooleanField(2)
+  contextualTranslationEnabled = _messages.BooleanField(1)
+  glossary = _messages.StringField(2)
+  ignoreCase = _messages.BooleanField(3)
 
 
 class GlossaryEntry(_messages.Message):
@@ -2647,6 +2650,8 @@ class TranslateTextGlossaryConfig(_messages.Message):
   defines options for applying that glossary.
 
   Fields:
+    contextualTranslationEnabled: Optional. If set to true, the glossary will
+      be used for contextual translation.
     glossary: Required. The `glossary` to be applied for this translation. The
       format depends on the glossary: - User-provided custom glossary:
       `projects/{project-number-or-id}/locations/{location-
@@ -2655,8 +2660,9 @@ class TranslateTextGlossaryConfig(_messages.Message):
       value is `false` if missing.
   """
 
-  glossary = _messages.StringField(1)
-  ignoreCase = _messages.BooleanField(2)
+  contextualTranslationEnabled = _messages.BooleanField(1)
+  glossary = _messages.StringField(2)
+  ignoreCase = _messages.BooleanField(3)
 
 
 class TranslateTextRequest(_messages.Message):

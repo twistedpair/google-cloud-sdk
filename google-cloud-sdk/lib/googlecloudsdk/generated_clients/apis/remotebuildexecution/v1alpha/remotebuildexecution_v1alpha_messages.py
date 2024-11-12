@@ -1712,7 +1712,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Mess
       LINUX_ISOLATION_UNSPECIFIED: Default value. Will be using Linux default
         runtime.
       GVISOR: Use gVisor runsc runtime.
-      OFF: Use stardard Linux runtime. This has the same behaviour as
+      OFF: Use standard Linux runtime. This has the same behaviour as
         unspecified, but it can be used to revert back from gVisor.
     """
     LINUX_ISOLATION_UNSPECIFIED = 0
@@ -2162,6 +2162,12 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
       - "private": Workers can only connect to Google APIs and services. -
       "restricted-private": Workers can only connect to Google APIs that are
       reachable through `restricted.googleapis.com` (`199.36.153.4/30`).
+    networkAllowlist: Optional. Specifies the network allowlist to use for the
+      pool. Possible values: - "": No network filtering takes place. Any
+      action with an allowlist will be rejected since it cannot be enforced.
+      This is the default. - "per_action": Network access will be filtered
+      according to the allowlist provided by the action. If no allowlist is
+      provided, the default is to block all requests.
     reserved: Determines whether the worker is reserved (equivalent to a
       Compute Engine on-demand VM and therefore won't be preempted). See
       [Preemptible VMs](https://cloud.google.com/preemptible-vms/) for more
@@ -2217,11 +2223,12 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
   maxConcurrentActions = _messages.IntegerField(7)
   minCpuPlatform = _messages.StringField(8)
   networkAccess = _messages.StringField(9)
-  reserved = _messages.BooleanField(10)
-  soleTenantNodeType = _messages.StringField(11)
-  userServiceAccounts = _messages.StringField(12, repeated=True)
-  vmImage = _messages.StringField(13)
-  zones = _messages.StringField(14, repeated=True)
+  networkAllowlist = _messages.StringField(10)
+  reserved = _messages.BooleanField(11)
+  soleTenantNodeType = _messages.StringField(12)
+  userServiceAccounts = _messages.StringField(13, repeated=True)
+  vmImage = _messages.StringField(14)
+  zones = _messages.StringField(15, repeated=True)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message):

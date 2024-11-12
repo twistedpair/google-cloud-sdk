@@ -758,8 +758,8 @@ class BackupPlanAssociation(_messages.Message):
       lanAssociations/{backupPlanAssociationId}
     resource: Required. Immutable. Resource name of workload on which
       backupplan is applied
-    resourceType: Optional. Resource type of workload on which backupplan is
-      applied
+    resourceType: Optional. Required. Resource type of workload on which
+      backupplan is applied
     rulesConfigInfo: Output only. The config info related to backup rules.
     state: Output only. The BackupPlanAssociation resource state.
     updateTime: Output only. The time when the instance was updated.
@@ -800,7 +800,12 @@ class BackupRule(_messages.Message):
   Fields:
     backupRetentionDays: Required. Configures the duration for which backup
       data will be kept. It is defined in "days". The value should be greater
-      than or equal to minimum enforced retention of the backup vault.
+      than or equal to minimum enforced retention of the backup vault. Minimum
+      value is 1 and maximum value is 90 for hourly backups. Minimum value is
+      1 and maximum value is 90 for daily backups. Minimum value is 7 and
+      maximum value is 186 for weekly backups. Minimum value is 30 and maximum
+      value is 732 for monthly backups. Minimum value is 30 and maximum value
+      is 36159 for yearly backups.
     ruleId: Required. Immutable. The unique id of this `BackupRule`. The
       `rule_id` is unique per `BackupPlan`.The `rule_id` must start with a
       lowercase letter followed by up to 62 lowercase letters, numbers, or
@@ -3250,8 +3255,9 @@ class ManagementServer(_messages.Message):
       endpoints, used by clients to connect to AGM/RD graphical user interface
       and APIs.
     name: Output only. Identifier. The resource name.
-    networks: Required. VPC networks to which the ManagementServer instance is
-      connected. For this version, only a single network is supported.
+    networks: Optional. VPC networks to which the ManagementServer instance is
+      connected. For this version, only a single network is supported. This
+      field is optional if MS is created without PSA
     oauth2ClientId: Output only. The OAuth 2.0 client id is required to make
       API calls to the BackupDR instance API of this ManagementServer. This is
       the value that should be provided in the 'aud' field of the OIDC ID

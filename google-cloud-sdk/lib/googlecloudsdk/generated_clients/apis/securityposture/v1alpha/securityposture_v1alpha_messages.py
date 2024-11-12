@@ -124,6 +124,20 @@ class CreatePredictionRequest(_messages.Message):
   predictionType = _messages.EnumField('PredictionTypeValueValuesEnum', 3)
 
 
+class CreateRemediationRequest(_messages.Message):
+  r"""Request message for creating a Remediation.
+
+  Fields:
+    remediationData: Required. Files data
+    remediationIntentName: Required. Name of the remediation intent associated
+      with this remediation. Format:
+      organizations//locations/global/remediationIntents/
+  """
+
+  remediationData = _messages.MessageField('RemediationData', 1)
+  remediationIntentName = _messages.StringField(2)
+
+
 class CustomConfig(_messages.Message):
   r"""A custom module configuration for Security Health Analytics. Use
   `CustomConfig` to create custom detectors that generate custom findings for
@@ -143,7 +157,7 @@ class CustomConfig(_messages.Message):
     predicate: Required. The Common Expression Language (CEL) expression to
       evaluate. When the expression evaluates to `true` for a resource, a
       finding is generated.
-    recommendation: Optional. An explanation of the steps that security teams
+    recommendation: Required. An explanation of the steps that security teams
       can take to resolve the detected issue. The explanation appears in each
       finding.
     resourceSelector: Required. The resource types that the custom module
@@ -289,6 +303,18 @@ class ExtractPostureRequest(_messages.Message):
 
   postureId = _messages.StringField(1)
   workload = _messages.StringField(2)
+
+
+class FileData(_messages.Message):
+  r"""Data for a file: path and contents
+
+  Fields:
+    fileContent: Required. File content
+    filePath: Required. File path
+  """
+
+  fileContent = _messages.StringField(1)
+  filePath = _messages.StringField(2)
 
 
 class FindingRemediationExecution(_messages.Message):
@@ -970,12 +996,14 @@ class Posture(_messages.Message):
       AWS: Amazon Web Services (AWS) policies.
       GCP: Google Cloud policies.
       AZURE: Microsoft Azure policies.
+      GEMINI_ASSISTED: Postures created using assistence from Gemini.
     """
     CATEGORY_UNSPECIFIED = 0
     AI = 1
     AWS = 2
     GCP = 3
     AZURE = 4
+    GEMINI_ASSISTED = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Required. The state of the posture at the specified `revision_id`.
@@ -1094,12 +1122,14 @@ class PostureDeployment(_messages.Message):
       AWS: Amazon Web Services (AWS) policies.
       GCP: Google Cloud policies.
       AZURE: Microsoft Azure policies.
+      GEMINI_ASSISTED: Postures created using assistence from Gemini.
     """
     CATEGORY_UNSPECIFIED = 0
     AI = 1
     AWS = 2
     GCP = 3
     AZURE = 4
+    GEMINI_ASSISTED = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the posture deployment.
@@ -1224,12 +1254,14 @@ class PostureTemplate(_messages.Message):
       AWS: Amazon Web Services (AWS) policies.
       GCP: Google Cloud policies.
       AZURE: Microsoft Azure policies.
+      GEMINI_ASSISTED: Postures created using assistence from Gemini.
     """
     CATEGORY_UNSPECIFIED = 0
     AI = 1
     AWS = 2
     GCP = 3
     AZURE = 4
+    GEMINI_ASSISTED = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the posture template at the specified
@@ -1261,7 +1293,7 @@ class Prediction(_messages.Message):
     PredictionTypeValueValuesEnum: The type of prediction.
 
   Fields:
-    createTime: Output only. The timestamp when the report was created.
+    createTime: Output only. The timestamp when the prediction was created.
     environmentOptions: EnvironmentOptions used to generate this prediction.
     name: Required. Identifier. The name of this Prediction resource, in the
       format of organizations/{organization}/locations/global/predictions/{pre
@@ -1340,6 +1372,16 @@ class RegoPolicy(_messages.Message):
   id = _messages.StringField(2)
   nextSteps = _messages.StringField(3)
   severity = _messages.EnumField('SeverityValueValuesEnum', 4)
+
+
+class RemediationData(_messages.Message):
+  r"""Data to be used for a remediation intent.
+
+  Fields:
+    tfData: Input Terraform file information.
+  """
+
+  tfData = _messages.MessageField('TfData', 1)
 
 
 class ResourceSelector(_messages.Message):
@@ -1805,6 +1847,20 @@ class SecuritypostureOrganizationsLocationsPredictionsListRequest(_messages.Mess
   parent = _messages.StringField(4, required=True)
 
 
+class SecuritypostureOrganizationsLocationsRemediationsCreateRequest(_messages.Message):
+  r"""A SecuritypostureOrganizationsLocationsRemediationsCreateRequest object.
+
+  Fields:
+    createRemediationRequest: A CreateRemediationRequest resource to be passed
+      as the request body.
+    parent: Required. The parent resource name. The format of this value is as
+      follows: `organizations/{organization}/locations/{location}`
+  """
+
+  createRemediationRequest = _messages.MessageField('CreateRemediationRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class SecuritypostureOrganizationsLocationsReportsCreateIaCValidationReportRequest(_messages.Message):
   r"""A
   SecuritypostureOrganizationsLocationsReportsCreateIaCValidationReportRequest
@@ -1966,6 +2022,18 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TfData(_messages.Message):
+  r"""Terraform data : tf state information and tf files
+
+  Fields:
+    fileData: Required. Terraform files data
+    tfStateInfo: Optional. Terraform state information
+  """
+
+  fileData = _messages.MessageField('FileData', 1, repeated=True)
+  tfStateInfo = _messages.StringField(2)
 
 
 class ViolatedPolicy(_messages.Message):

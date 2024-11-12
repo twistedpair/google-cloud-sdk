@@ -595,7 +595,7 @@ def AddAutoscalingProfilesFlag(parser, hidden=False):
   )
 
 
-def AddHPAProfilesFlag(parser, hidden=True):
+def AddHPAProfilesFlag(parser, hidden=False):
   """Adds workload autoscaling profiles flag to parser.
 
   HPA profile flag is --hpa-profile.
@@ -609,8 +609,7 @@ def AddHPAProfilesFlag(parser, hidden=True):
       required=False,
       default=None,
       help="""\
-         Setting HPA behavior. Choices are 'performance' and 'none'.
-         Default is 'none'.
+         Setting Horizontal Pod Autoscaler behavior, which is none by default.
       """,
       hidden=hidden,
       choices=['none', 'performance'],
@@ -4325,6 +4324,22 @@ def AddStackTypeFlag(parser, hidden=False):
   )
 
 
+def AddLocalSsdEncryptionModeFlag(
+    parser, for_node_pool=False, hidden=False):
+  """Adds --local-ssd-encryption-mode flag to the given parser."""
+  target = 'node pool' if for_node_pool else 'cluster'
+  help_text = """
+Encryption mode for Local SSDs on the {}.
+""".format(target)
+  parser.add_argument(
+      '--local-ssd-encryption-mode',
+      help=help_text,
+      default=None,
+      choices=['STANDARD_ENCRYPTION', 'EPHEMERAL_KEY_ENCRYPTION'],
+      hidden=hidden,
+  )
+
+
 def AddStoragePoolsFlag(
     parser, for_node_pool=False, for_create=True, hidden=False):
   """Adds a --storage-pools flag to the given parser."""
@@ -6928,7 +6943,7 @@ def AddClusterTierFlag(parser):
   )
 
 
-def AddAutoprovisioningCgroupModeFlag(parser, hidden=True):
+def AddAutoprovisioningCgroupModeFlag(parser, hidden=False):
   """Adds a --autoprovisioning-cgroup-mode to the given cluster parser."""
   help_text = textwrap.dedent("""\
       Sets the cgroup mode for auto-provisioned nodes.

@@ -1798,9 +1798,9 @@ class CsvExportOptions(_messages.Message):
 
   Fields:
     escapeCharacter: Optional. Specifies the character that should appear
-      before a data character that needs to be escaped. The default is double-
-      quote. The value of this argument has to be a character in Hex ASCII
-      Code.
+      before a data character that needs to be escaped. The default is the
+      same as quote character. The value of this argument has to be a
+      character in Hex ASCII Code.
     fieldDelimiter: Optional. Specifies the character that separates columns
       within each row (line) of the file. The default is comma. The value of
       this argument has to be a character in Hex ASCII Code.
@@ -2186,11 +2186,13 @@ class Instance(_messages.Message):
     AnnotationsValue: Annotations to allow client tools to store small amount
       of arbitrary data. This is distinct from labels.
       https://google.aip.dev/128
-    DatabaseFlagsValue: Database flags. Set at instance level. * They are
-      copied from primary instance on read instance creation. * Read instances
-      can set new or override existing flags that are relevant for reads, e.g.
-      for enabling columnar cache on a read instance. Flags set on read
-      instance may or may not be present on primary. This is a list of "key":
+    DatabaseFlagsValue: Database flags. Set at the instance level. They are
+      copied from the primary instance on secondary instance creation. Flags
+      that have restrictions default to the value at primary instance on read
+      instances during creation. Read instances can set new flags or override
+      existing flags that are relevant for reads, for example, for enabling
+      columnar cache on a read instance. Flags set on read instance might or
+      might not be present on the primary instance. This is a list of "key":
       "value" pairs. "key": The name of the flag. These flags are passed at
       instance setup time, so include both server options and system variables
       for Postgres. Flags are specified with underscores, not hyphens.
@@ -2210,16 +2212,19 @@ class Instance(_messages.Message):
     clientConnectionConfig: Optional. Client connection specific
       configurations
     createTime: Output only. Create time stamp
-    databaseFlags: Database flags. Set at instance level. * They are copied
-      from primary instance on read instance creation. * Read instances can
-      set new or override existing flags that are relevant for reads, e.g. for
-      enabling columnar cache on a read instance. Flags set on read instance
-      may or may not be present on primary. This is a list of "key": "value"
-      pairs. "key": The name of the flag. These flags are passed at instance
-      setup time, so include both server options and system variables for
-      Postgres. Flags are specified with underscores, not hyphens. "value":
-      The value of the flag. Booleans are set to **on** for true and **off**
-      for false. This field must be omitted if the flag doesn't take a value.
+    databaseFlags: Database flags. Set at the instance level. They are copied
+      from the primary instance on secondary instance creation. Flags that
+      have restrictions default to the value at primary instance on read
+      instances during creation. Read instances can set new flags or override
+      existing flags that are relevant for reads, for example, for enabling
+      columnar cache on a read instance. Flags set on read instance might or
+      might not be present on the primary instance. This is a list of "key":
+      "value" pairs. "key": The name of the flag. These flags are passed at
+      instance setup time, so include both server options and system variables
+      for Postgres. Flags are specified with underscores, not hyphens.
+      "value": The value of the flag. Booleans are set to **on** for true and
+      **off** for false. This field must be omitted if the flag doesn't take a
+      value.
     deleteTime: Output only. Delete time stamp
     displayName: User-settable and human-readable display name for the
       Instance.
@@ -2377,16 +2382,18 @@ class Instance(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DatabaseFlagsValue(_messages.Message):
-    r"""Database flags. Set at instance level. * They are copied from primary
-    instance on read instance creation. * Read instances can set new or
-    override existing flags that are relevant for reads, e.g. for enabling
-    columnar cache on a read instance. Flags set on read instance may or may
-    not be present on primary. This is a list of "key": "value" pairs. "key":
-    The name of the flag. These flags are passed at instance setup time, so
-    include both server options and system variables for Postgres. Flags are
-    specified with underscores, not hyphens. "value": The value of the flag.
-    Booleans are set to **on** for true and **off** for false. This field must
-    be omitted if the flag doesn't take a value.
+    r"""Database flags. Set at the instance level. They are copied from the
+    primary instance on secondary instance creation. Flags that have
+    restrictions default to the value at primary instance on read instances
+    during creation. Read instances can set new flags or override existing
+    flags that are relevant for reads, for example, for enabling columnar
+    cache on a read instance. Flags set on read instance might or might not be
+    present on the primary instance. This is a list of "key": "value" pairs.
+    "key": The name of the flag. These flags are passed at instance setup
+    time, so include both server options and system variables for Postgres.
+    Flags are specified with underscores, not hyphens. "value": The value of
+    the flag. Booleans are set to **on** for true and **off** for false. This
+    field must be omitted if the flag doesn't take a value.
 
     Messages:
       AdditionalProperty: An additional property for a DatabaseFlagsValue

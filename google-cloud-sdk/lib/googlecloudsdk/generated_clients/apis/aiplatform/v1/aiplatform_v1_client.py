@@ -41,7 +41,6 @@ class AiplatformV1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_batchPredictionJobs = self.ProjectsLocationsBatchPredictionJobsService(self)
     self.projects_locations_customJobs = self.ProjectsLocationsCustomJobsService(self)
-    self.projects_locations_dataLabelingJobs = self.ProjectsLocationsDataLabelingJobsService(self)
     self.projects_locations_datasets_annotationSpecs = self.ProjectsLocationsDatasetsAnnotationSpecsService(self)
     self.projects_locations_datasets_dataItems_annotations = self.ProjectsLocationsDatasetsDataItemsAnnotationsService(self)
     self.projects_locations_datasets_dataItems = self.ProjectsLocationsDatasetsDataItemsService(self)
@@ -386,151 +385,6 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsDataLabelingJobsService(base_api.BaseApiService):
-    """Service class for the projects_locations_dataLabelingJobs resource."""
-
-    _NAME = 'projects_locations_dataLabelingJobs'
-
-    def __init__(self, client):
-      super(AiplatformV1.ProjectsLocationsDataLabelingJobsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Cancel(self, request, global_params=None):
-      r"""Cancels a DataLabelingJob. Success of cancellation is not guaranteed.
-
-      Args:
-        request: (AiplatformProjectsLocationsDataLabelingJobsCancelRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleProtobufEmpty) The response message.
-      """
-      config = self.GetMethodConfig('Cancel')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataLabelingJobs/{dataLabelingJobsId}:cancel',
-        http_method='POST',
-        method_id='aiplatform.projects.locations.dataLabelingJobs.cancel',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:cancel',
-        request_field='googleCloudAiplatformV1CancelDataLabelingJobRequest',
-        request_type_name='AiplatformProjectsLocationsDataLabelingJobsCancelRequest',
-        response_type_name='GoogleProtobufEmpty',
-        supports_download=False,
-    )
-
-    def Create(self, request, global_params=None):
-      r"""Creates a DataLabelingJob.
-
-      Args:
-        request: (AiplatformProjectsLocationsDataLabelingJobsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudAiplatformV1DataLabelingJob) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataLabelingJobs',
-        http_method='POST',
-        method_id='aiplatform.projects.locations.dataLabelingJobs.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1/{+parent}/dataLabelingJobs',
-        request_field='googleCloudAiplatformV1DataLabelingJob',
-        request_type_name='AiplatformProjectsLocationsDataLabelingJobsCreateRequest',
-        response_type_name='GoogleCloudAiplatformV1DataLabelingJob',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a DataLabelingJob.
-
-      Args:
-        request: (AiplatformProjectsLocationsDataLabelingJobsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataLabelingJobs/{dataLabelingJobsId}',
-        http_method='DELETE',
-        method_id='aiplatform.projects.locations.dataLabelingJobs.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='AiplatformProjectsLocationsDataLabelingJobsDeleteRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets a DataLabelingJob.
-
-      Args:
-        request: (AiplatformProjectsLocationsDataLabelingJobsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudAiplatformV1DataLabelingJob) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataLabelingJobs/{dataLabelingJobsId}',
-        http_method='GET',
-        method_id='aiplatform.projects.locations.dataLabelingJobs.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='AiplatformProjectsLocationsDataLabelingJobsGetRequest',
-        response_type_name='GoogleCloudAiplatformV1DataLabelingJob',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists DataLabelingJobs in a Location.
-
-      Args:
-        request: (AiplatformProjectsLocationsDataLabelingJobsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudAiplatformV1ListDataLabelingJobsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataLabelingJobs',
-        http_method='GET',
-        method_id='aiplatform.projects.locations.dataLabelingJobs.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'readMask'],
-        relative_path='v1/{+parent}/dataLabelingJobs',
-        request_field='',
-        request_type_name='AiplatformProjectsLocationsDataLabelingJobsListRequest',
-        response_type_name='GoogleCloudAiplatformV1ListDataLabelingJobsResponse',
-        supports_download=False,
-    )
-
   class ProjectsLocationsDatasetsAnnotationSpecsService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_annotationSpecs resource."""
 
@@ -579,7 +433,7 @@ class AiplatformV1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists Annotations belongs to a dataitem.
+      r"""Lists Annotations belongs to a dataitem This RPC is only available in InternalDatasetService. It is only used for exporting conversation data to CCAI Insights.
 
       Args:
         request: (AiplatformProjectsLocationsDatasetsDataItemsAnnotationsListRequest) input message
@@ -1808,6 +1662,33 @@ class AiplatformV1(base_api.BaseApiClient):
       super(AiplatformV1.ProjectsLocationsFeatureGroupsFeaturesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def BatchCreate(self, request, global_params=None):
+      r"""Creates a batch of Features in a given FeatureGroup.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureGroupsFeaturesBatchCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('BatchCreate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/featureGroups/{featureGroupsId}/features:batchCreate',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.featureGroups.features.batchCreate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/features:batchCreate',
+        request_field='googleCloudAiplatformV1BatchCreateFeaturesRequest',
+        request_type_name='AiplatformProjectsLocationsFeatureGroupsFeaturesBatchCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       r"""Creates a new Feature in a given FeatureGroup.
@@ -6406,6 +6287,33 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Stop(self, request, global_params=None):
+      r"""Stops a NotebookRuntime.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookRuntimesStopRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Stop')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Stop.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notebookRuntimes/{notebookRuntimesId}:stop',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.notebookRuntimes.stop',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:stop',
+        request_field='googleCloudAiplatformV1StopNotebookRuntimeRequest',
+        request_type_name='AiplatformProjectsLocationsNotebookRuntimesStopRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Upgrade(self, request, global_params=None):
       r"""Upgrades a NotebookRuntime.
 
@@ -9067,6 +8975,33 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RebaseTunedModel(self, request, global_params=None):
+      r"""Rebase a TunedModel.
+
+      Args:
+        request: (AiplatformProjectsLocationsTuningJobsRebaseTunedModelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('RebaseTunedModel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RebaseTunedModel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/tuningJobs:rebaseTunedModel',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.tuningJobs.rebaseTunedModel',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/tuningJobs:rebaseTunedModel',
+        request_field='googleCloudAiplatformV1RebaseTunedModelRequest',
+        request_type_name='AiplatformProjectsLocationsTuningJobsRebaseTunedModelRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
@@ -9143,7 +9078,7 @@ class AiplatformV1(base_api.BaseApiClient):
         method_id='aiplatform.publishers.models.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['huggingFaceToken', 'isHuggingFaceModel', 'languageCode', 'view'],
+        query_params=['isHuggingFaceModel', 'languageCode', 'view'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='AiplatformPublishersModelsGetRequest',

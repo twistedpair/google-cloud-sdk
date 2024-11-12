@@ -78,11 +78,14 @@ class ServicePrinter(cp.CustomPrinterBase):
       labels.append(description_label)
     return cp.Section(labels)
 
+  def BuildHeader(self, record):
+    return k8s_util.BuildHeader(record)
+
   def Transform(self, record):
     """Transform a service into the output structure of marker classes."""
     service_settings = self._GetServiceSettings(record)
     fmt = cp.Lines([
-        k8s_util.BuildHeader(record),
+        self.BuildHeader(record),
         k8s_util.GetLabels(record.labels), ' ',
         traffic_printer.TransformRouteFields(record), ' ', service_settings,
         (' ' if service_settings.WillPrintOutput() else ''),
@@ -91,6 +94,13 @@ class ServicePrinter(cp.CustomPrinterBase):
         k8s_util.FormatReadyMessage(record)
     ])
     return fmt
+
+
+class MultiRegionServicePrinter(ServicePrinter):
+  """Prints the run MultiRegionService in a custom human-readable format."""
+
+  def BuildHeader(self, record):
+    return k8s_util.BuildHeader(record, is_multi_region=True)
 
 
 def GetServiceMinInstances(record):

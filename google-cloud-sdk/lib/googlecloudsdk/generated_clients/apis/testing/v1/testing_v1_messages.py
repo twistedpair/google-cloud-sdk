@@ -425,7 +425,8 @@ class ApkManifest(_messages.Message):
     targetSdkVersion: Specifies the API Level on which the application is
       designed to run.
     usesFeature: Feature usage tags defined in the manifest.
-    usesPermission: Permissions declared to be used by the application
+    usesPermission: A string attribute.
+    usesPermissionTags: Permissions declared to be used by the application
     versionCode: Version number used internally by the app.
     versionName: Version number shown to users.
   """
@@ -440,8 +441,9 @@ class ApkManifest(_messages.Message):
   targetSdkVersion = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   usesFeature = _messages.MessageField('UsesFeature', 9, repeated=True)
   usesPermission = _messages.StringField(10, repeated=True)
-  versionCode = _messages.IntegerField(11)
-  versionName = _messages.StringField(12)
+  usesPermissionTags = _messages.MessageField('UsesPermissionTag', 11, repeated=True)
+  versionCode = _messages.IntegerField(12)
+  versionName = _messages.StringField(13)
 
 
 class AppBundle(_messages.Message):
@@ -2408,6 +2410,20 @@ class UsesFeature(_messages.Message):
   """
 
   isRequired = _messages.BooleanField(1)
+  name = _messages.StringField(2)
+
+
+class UsesPermissionTag(_messages.Message):
+  r"""The tag within a manifest.
+  https://developer.android.com/guide/topics/manifest/uses-permission-
+  element.html
+
+  Fields:
+    maxSdkVersion: The android:name value
+    name: The android:name value
+  """
+
+  maxSdkVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   name = _messages.StringField(2)
 
 

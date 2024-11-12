@@ -34,6 +34,26 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  FOLDERS_EFFECTIVESETTINGS = (
+      'folders.effectiveSettings',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/effectiveSettings/{effectiveSettingsId}',
+      },
+      ['name'],
+      True
+  )
+  FOLDERS_SETTINGS = (
+      'folders.settings',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/settings/{settingsId}',
+      },
+      ['name'],
+      True
+  )
   LIENS = (
       'liens',
       '{+name}',
@@ -64,12 +84,53 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_EFFECTIVESETTINGS = (
+      'organizations.effectiveSettings',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/effectiveSettings/'
+              '{effectiveSettingsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_SETTINGS = (
+      'organizations.settings',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/settings/{settingsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS = (
       'projects',
       '{+name}',
       {
           '':
               'projects/{projectsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_EFFECTIVESETTINGS = (
+      'projects.effectiveSettings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/effectiveSettings/{effectiveSettingsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_SETTINGS = (
+      'projects.settings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/settings/{settingsId}',
       },
       ['name'],
       True

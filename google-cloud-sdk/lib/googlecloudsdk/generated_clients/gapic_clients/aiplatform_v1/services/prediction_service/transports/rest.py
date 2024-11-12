@@ -41,6 +41,7 @@ except AttributeError:  # pragma: NO COVER
 
 from google.api import httpbody_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types import prediction_service
+from google.longrunning import operations_pb2  # type: ignore
 
 from .base import PredictionServiceTransport, DEFAULT_CLIENT_INFO as BASE_DEFAULT_CLIENT_INFO
 
@@ -67,6 +68,14 @@ class PredictionServiceRestInterceptor:
 
     .. code-block:: python
         class MyCustomPredictionServiceInterceptor(PredictionServiceRestInterceptor):
+            def pre_chat_completions(self, request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
+
+            def post_chat_completions(self, response):
+                logging.log(f"Received response: {response}")
+                return response
+
             def pre_direct_predict(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
@@ -91,6 +100,14 @@ class PredictionServiceRestInterceptor:
                 logging.log(f"Received response: {response}")
                 return response
 
+            def pre_fetch_predict_operation(self, request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
+
+            def post_fetch_predict_operation(self, response):
+                logging.log(f"Received response: {response}")
+                return response
+
             def pre_generate_content(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
@@ -104,6 +121,14 @@ class PredictionServiceRestInterceptor:
                 return request, metadata
 
             def post_predict(self, response):
+                logging.log(f"Received response: {response}")
+                return response
+
+            def pre_predict_long_running(self, request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
+
+            def post_predict_long_running(self, response):
                 logging.log(f"Received response: {response}")
                 return response
 
@@ -144,6 +169,22 @@ class PredictionServiceRestInterceptor:
 
 
     """
+    def pre_chat_completions(self, request: prediction_service.ChatCompletionsRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[prediction_service.ChatCompletionsRequest, Sequence[Tuple[str, str]]]:
+        """Pre-rpc interceptor for chat_completions
+
+        Override in a subclass to manipulate the request or metadata
+        before they are sent to the PredictionService server.
+        """
+        return request, metadata
+
+    def post_chat_completions(self, response: rest_streaming.ResponseIterator) -> rest_streaming.ResponseIterator:
+        """Post-rpc interceptor for chat_completions
+
+        Override in a subclass to manipulate the response
+        after it is returned by the PredictionService server but before
+        it is returned to user code.
+        """
+        return response
     def pre_direct_predict(self, request: prediction_service.DirectPredictRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[prediction_service.DirectPredictRequest, Sequence[Tuple[str, str]]]:
         """Pre-rpc interceptor for direct_predict
 
@@ -192,6 +233,22 @@ class PredictionServiceRestInterceptor:
         it is returned to user code.
         """
         return response
+    def pre_fetch_predict_operation(self, request: prediction_service.FetchPredictOperationRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[prediction_service.FetchPredictOperationRequest, Sequence[Tuple[str, str]]]:
+        """Pre-rpc interceptor for fetch_predict_operation
+
+        Override in a subclass to manipulate the request or metadata
+        before they are sent to the PredictionService server.
+        """
+        return request, metadata
+
+    def post_fetch_predict_operation(self, response: operations_pb2.Operation) -> operations_pb2.Operation:
+        """Post-rpc interceptor for fetch_predict_operation
+
+        Override in a subclass to manipulate the response
+        after it is returned by the PredictionService server but before
+        it is returned to user code.
+        """
+        return response
     def pre_generate_content(self, request: prediction_service.GenerateContentRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[prediction_service.GenerateContentRequest, Sequence[Tuple[str, str]]]:
         """Pre-rpc interceptor for generate_content
 
@@ -218,6 +275,22 @@ class PredictionServiceRestInterceptor:
 
     def post_predict(self, response: prediction_service.PredictResponse) -> prediction_service.PredictResponse:
         """Post-rpc interceptor for predict
+
+        Override in a subclass to manipulate the response
+        after it is returned by the PredictionService server but before
+        it is returned to user code.
+        """
+        return response
+    def pre_predict_long_running(self, request: prediction_service.PredictLongRunningRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[prediction_service.PredictLongRunningRequest, Sequence[Tuple[str, str]]]:
+        """Pre-rpc interceptor for predict_long_running
+
+        Override in a subclass to manipulate the request or metadata
+        before they are sent to the PredictionService server.
+        """
+        return request, metadata
+
+    def post_predict_long_running(self, response: operations_pb2.Operation) -> operations_pb2.Operation:
+        """Post-rpc interceptor for predict_long_running
 
         Override in a subclass to manipulate the response
         after it is returned by the PredictionService server but before
@@ -388,6 +461,131 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
             self._session.configure_mtls_channel(client_cert_source_for_mtls)
         self._interceptor = interceptor or PredictionServiceRestInterceptor()
         self._prep_wrapped_messages(client_info)
+
+    class _ChatCompletions(PredictionServiceRestStub):
+        def __hash__(self):
+            return hash("ChatCompletions")
+
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
+        }
+
+        @classmethod
+        def _get_unset_required_fields(cls, message_dict):
+            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+
+        def __call__(self,
+                request: prediction_service.ChatCompletionsRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: Optional[float]=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> rest_streaming.ResponseIterator:
+            r"""Call the chat completions method over HTTP.
+
+            Args:
+                request (~.prediction_service.ChatCompletionsRequest):
+                    The request object. Request message for [PredictionService.ChatCompletions]
+                retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                    should be retried.
+                timeout (float): The timeout for this request.
+                metadata (Sequence[Tuple[str, str]]): Strings which should be
+                    sent along with the request as metadata.
+
+            Returns:
+                ~.httpbody_pb2.HttpBody:
+                    Message that represents an arbitrary HTTP body. It
+                should only be used for payload formats that can't be
+                represented as JSON, such as raw binary or an HTML page.
+
+                This message can be used both in streaming and
+                non-streaming API methods in the request as well as the
+                response.
+
+                It can be used as a top-level request field, which is
+                convenient if one wants to extract parameters from
+                either the URL or HTTP template into the request fields
+                and also want access to the raw HTTP body.
+
+                Example:
+
+                ::
+
+                    message GetResourceRequest {
+                      // A unique request id.
+                      string request_id = 1;
+
+                      // The raw HTTP body is bound to this field.
+                      google.api.HttpBody http_body = 2;
+                    }
+
+                    service ResourceService {
+                      rpc GetResource(GetResourceRequest) returns (google.api.HttpBody);
+                      rpc UpdateResource(google.api.HttpBody) returns
+                      (google.protobuf.Empty);
+                    }
+
+                Example with streaming methods:
+
+                ::
+
+                    service CaldavService {
+                      rpc GetCalendar(stream google.api.HttpBody)
+                        returns (stream google.api.HttpBody);
+                      rpc UpdateCalendar(stream google.api.HttpBody)
+                        returns (stream google.api.HttpBody);
+                    }
+
+                Use of this type only changes how the request and
+                response bodies are handled, all other features will
+                continue to work unchanged.
+
+            """
+
+            http_options: List[Dict[str, str]] = [{
+                'method': 'post',
+                'uri': '/v1/{endpoint=projects/*/locations/*/endpoints/*}/chat/completions',
+                'body': 'http_body',
+            },
+            ]
+            request, metadata = self._interceptor.pre_chat_completions(request, metadata)
+            pb_request = prediction_service.ChatCompletionsRequest.pb(request)
+            transcoded_request = path_template.transcode(http_options, pb_request)
+
+            # Jsonify the request body
+
+            body = json_format.MessageToJson(
+                transcoded_request['body'],
+                use_integers_for_enums=False
+            )
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+
+            # Jsonify the query params
+            query_params = json.loads(json_format.MessageToJson(
+                transcoded_request['query_params'],
+                use_integers_for_enums=False,
+            ))
+            query_params.update(self._get_unset_required_fields(query_params))
+
+            # Send the request
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(self._session, method)(
+                "{host}{uri}".format(host=self._host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                data=body,
+                )
+
+            # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
+            # subclass.
+            if response.status_code >= 400:
+                raise core_exceptions.from_http_response(response)
+
+            # Return the response
+            resp = rest_streaming.ResponseIterator(response, httpbody_pb2.HttpBody)
+            resp = self._interceptor.post_chat_completions(resp)
+            return resp
 
     class _DirectPredict(PredictionServiceRestStub):
         def __hash__(self):
@@ -647,6 +845,98 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
             resp = self._interceptor.post_explain(resp)
             return resp
 
+    class _FetchPredictOperation(PredictionServiceRestStub):
+        def __hash__(self):
+            return hash("FetchPredictOperation")
+
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
+        }
+
+        @classmethod
+        def _get_unset_required_fields(cls, message_dict):
+            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+
+        def __call__(self,
+                request: prediction_service.FetchPredictOperationRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: Optional[float]=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> operations_pb2.Operation:
+            r"""Call the fetch predict operation method over HTTP.
+
+            Args:
+                request (~.prediction_service.FetchPredictOperationRequest):
+                    The request object. Request message for
+                [PredictionService.FetchPredictOperation][google.cloud.aiplatform.v1.PredictionService.FetchPredictOperation].
+                retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                    should be retried.
+                timeout (float): The timeout for this request.
+                metadata (Sequence[Tuple[str, str]]): Strings which should be
+                    sent along with the request as metadata.
+
+            Returns:
+                ~.operations_pb2.Operation:
+                    This resource represents a
+                long-running operation that is the
+                result of a network API call.
+
+            """
+
+            http_options: List[Dict[str, str]] = [{
+                'method': 'post',
+                'uri': '/v1/{endpoint=projects/*/locations/*/endpoints/*}:fetchPredictOperation',
+                'body': '*',
+            },
+{
+                'method': 'post',
+                'uri': '/v1/{endpoint=projects/*/locations/*/publishers/*/models/*}:fetchPredictOperation',
+                'body': '*',
+            },
+            ]
+            request, metadata = self._interceptor.pre_fetch_predict_operation(request, metadata)
+            pb_request = prediction_service.FetchPredictOperationRequest.pb(request)
+            transcoded_request = path_template.transcode(http_options, pb_request)
+
+            # Jsonify the request body
+
+            body = json_format.MessageToJson(
+                transcoded_request['body'],
+                use_integers_for_enums=False
+            )
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+
+            # Jsonify the query params
+            query_params = json.loads(json_format.MessageToJson(
+                transcoded_request['query_params'],
+                use_integers_for_enums=False,
+            ))
+            query_params.update(self._get_unset_required_fields(query_params))
+
+            # Send the request
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(self._session, method)(
+                "{host}{uri}".format(host=self._host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                data=body,
+                )
+
+            # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
+            # subclass.
+            if response.status_code >= 400:
+                raise core_exceptions.from_http_response(response)
+
+            # Return the response
+            resp = operations_pb2.Operation()
+            pb_resp = resp
+
+            json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
+            resp = self._interceptor.post_fetch_predict_operation(resp)
+            return resp
+
     class _GenerateContent(PredictionServiceRestStub):
         def __hash__(self):
             return hash("GenerateContent")
@@ -836,6 +1126,98 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
 
             json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
             resp = self._interceptor.post_predict(resp)
+            return resp
+
+    class _PredictLongRunning(PredictionServiceRestStub):
+        def __hash__(self):
+            return hash("PredictLongRunning")
+
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
+        }
+
+        @classmethod
+        def _get_unset_required_fields(cls, message_dict):
+            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+
+        def __call__(self,
+                request: prediction_service.PredictLongRunningRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: Optional[float]=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> operations_pb2.Operation:
+            r"""Call the predict long running method over HTTP.
+
+            Args:
+                request (~.prediction_service.PredictLongRunningRequest):
+                    The request object. Request message for
+                [PredictionService.PredictLongRunning][google.cloud.aiplatform.v1.PredictionService.PredictLongRunning].
+                retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                    should be retried.
+                timeout (float): The timeout for this request.
+                metadata (Sequence[Tuple[str, str]]): Strings which should be
+                    sent along with the request as metadata.
+
+            Returns:
+                ~.operations_pb2.Operation:
+                    This resource represents a
+                long-running operation that is the
+                result of a network API call.
+
+            """
+
+            http_options: List[Dict[str, str]] = [{
+                'method': 'post',
+                'uri': '/v1/{endpoint=projects/*/locations/*/endpoints/*}:predictLongRunning',
+                'body': '*',
+            },
+{
+                'method': 'post',
+                'uri': '/v1/{endpoint=projects/*/locations/*/publishers/*/models/*}:predictLongRunning',
+                'body': '*',
+            },
+            ]
+            request, metadata = self._interceptor.pre_predict_long_running(request, metadata)
+            pb_request = prediction_service.PredictLongRunningRequest.pb(request)
+            transcoded_request = path_template.transcode(http_options, pb_request)
+
+            # Jsonify the request body
+
+            body = json_format.MessageToJson(
+                transcoded_request['body'],
+                use_integers_for_enums=False
+            )
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+
+            # Jsonify the query params
+            query_params = json.loads(json_format.MessageToJson(
+                transcoded_request['query_params'],
+                use_integers_for_enums=False,
+            ))
+            query_params.update(self._get_unset_required_fields(query_params))
+
+            # Send the request
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(self._session, method)(
+                "{host}{uri}".format(host=self._host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                data=body,
+                )
+
+            # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
+            # subclass.
+            if response.status_code >= 400:
+                raise core_exceptions.from_http_response(response)
+
+            # Return the response
+            resp = operations_pb2.Operation()
+            pb_resp = resp
+
+            json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
+            resp = self._interceptor.post_predict_long_running(resp)
             return resp
 
     class _RawPredict(PredictionServiceRestStub):
@@ -1346,6 +1728,14 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
             return resp
 
     @property
+    def chat_completions(self) -> Callable[
+            [prediction_service.ChatCompletionsRequest],
+            httpbody_pb2.HttpBody]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._ChatCompletions(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
     def direct_predict(self) -> Callable[
             [prediction_service.DirectPredictRequest],
             prediction_service.DirectPredictResponse]:
@@ -1370,6 +1760,14 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
         return self._Explain(self._session, self._host, self._interceptor) # type: ignore
 
     @property
+    def fetch_predict_operation(self) -> Callable[
+            [prediction_service.FetchPredictOperationRequest],
+            operations_pb2.Operation]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._FetchPredictOperation(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
     def generate_content(self) -> Callable[
             [prediction_service.GenerateContentRequest],
             prediction_service.GenerateContentResponse]:
@@ -1384,6 +1782,14 @@ class PredictionServiceRestTransport(PredictionServiceTransport):
         # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
         # In C++ this would require a dynamic_cast
         return self._Predict(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
+    def predict_long_running(self) -> Callable[
+            [prediction_service.PredictLongRunningRequest],
+            operations_pb2.Operation]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._PredictLongRunning(self._session, self._host, self._interceptor) # type: ignore
 
     @property
     def raw_predict(self) -> Callable[

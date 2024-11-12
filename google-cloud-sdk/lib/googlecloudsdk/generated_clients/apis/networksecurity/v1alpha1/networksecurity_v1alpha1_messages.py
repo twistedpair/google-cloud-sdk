@@ -142,6 +142,66 @@ class AddressGroup(_messages.Message):
   updateTime = _messages.StringField(10)
 
 
+class AntivirusThreatOverride(_messages.Message):
+  r"""Defines what action to take for VIRUS threats per protocol.
+
+  Enums:
+    ActionValueValuesEnum: Required. Threat action override. For some threat
+      types, only a subset of actions applies.
+    ProtocolValueValuesEnum: Required. Protocol to match.
+
+  Fields:
+    action: Required. Threat action override. For some threat types, only a
+      subset of actions applies.
+    protocol: Required. Protocol to match.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Required. Threat action override. For some threat types, only a subset
+    of actions applies.
+
+    Values:
+      THREAT_ACTION_UNSPECIFIED: Threat action not specified.
+      DEFAULT_ACTION: The default action (as specified by the vendor) is
+        taken.
+      ALLOW: The packet matching this rule will be allowed to transmit.
+      ALERT: The packet matching this rule will be allowed to transmit, but a
+        threat_log entry will be sent to the consumer project.
+      DENY: The packet matching this rule will be dropped, and a threat_log
+        entry will be sent to the consumer project.
+    """
+    THREAT_ACTION_UNSPECIFIED = 0
+    DEFAULT_ACTION = 1
+    ALLOW = 2
+    ALERT = 3
+    DENY = 4
+
+  class ProtocolValueValuesEnum(_messages.Enum):
+    r"""Required. Protocol to match.
+
+    Values:
+      PROTOCOL_UNSPECIFIED: Protocol not specified.
+      SMTP: SMTP prtocol
+      SMB: SMB protocol
+      POP3: POP3 protocol
+      IMAP: IMAP protocol
+      HTTP2: HTTP2 protocol
+      HTTP: HTTP protocol
+      FTP: FTP protocol
+    """
+    PROTOCOL_UNSPECIFIED = 0
+    SMTP = 1
+    SMB = 2
+    POP3 = 3
+    IMAP = 4
+    HTTP2 = 5
+    HTTP = 6
+    FTP = 7
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 2)
+
+
 class AuthorizationPolicy(_messages.Message):
   r"""AuthorizationPolicy is a resource that specifies how a server should
   authorize incoming connections. This resource in itself does not change the
@@ -2750,7 +2810,7 @@ class MirroringDeploymentGroupConnectedEndpointGroup(_messages.Message):
 
 
 class MirroringEndpointGroup(_messages.Message):
-  r"""Message describing MirroringEndpointGroup object. Next ID: 10
+  r"""Message describing MirroringEndpointGroup object.
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the endpoint group.
@@ -2764,7 +2824,8 @@ class MirroringEndpointGroup(_messages.Message):
     mirroringDeploymentGroup: Required. Immutable. The Mirroring Deployment
       Group that this resource is connected to. Format is: `projects/{project}
       /locations/global/mirroringDeploymentGroups/{mirroringDeploymentGroup}`
-    name: Immutable. Identifier. The name of the MirroringEndpointGroup.
+    name: Immutable. Identifier. Next ID: 11 The name of the
+      MirroringEndpointGroup.
     reconciling: Output only. Whether reconciling is in progress, recommended
       per https://google.aip.dev/128.
     state: Output only. Current state of the endpoint group.
@@ -5560,7 +5621,8 @@ class NetworksecurityProjectsLocationsMirroringEndpointGroupsPatchRequest(_messa
   Fields:
     mirroringEndpointGroup: A MirroringEndpointGroup resource to be passed as
       the request body.
-    name: Immutable. Identifier. The name of the MirroringEndpointGroup.
+    name: Immutable. Identifier. Next ID: 11 The name of the
+      MirroringEndpointGroup.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -8200,6 +8262,8 @@ class ThreatPreventionProfile(_messages.Message):
   or severity levels.
 
   Fields:
+    antivirusThreatOverrides: Optional. Configuration for overriding VIRUS
+      threat actions per protocol.
     severityOverrides: Optional. Configuration for overriding threats actions
       by severity match.
     threatOverrides: Optional. Configuration for overriding threats actions by
@@ -8208,8 +8272,9 @@ class ThreatPreventionProfile(_messages.Message):
       is applied.
   """
 
-  severityOverrides = _messages.MessageField('SeverityOverride', 1, repeated=True)
-  threatOverrides = _messages.MessageField('ThreatOverride', 2, repeated=True)
+  antivirusThreatOverrides = _messages.MessageField('AntivirusThreatOverride', 1, repeated=True)
+  severityOverrides = _messages.MessageField('SeverityOverride', 2, repeated=True)
+  threatOverrides = _messages.MessageField('ThreatOverride', 3, repeated=True)
 
 
 class TlsCertificateFiles(_messages.Message):

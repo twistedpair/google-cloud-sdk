@@ -95,6 +95,188 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AuthzExtension(_messages.Message):
+  r"""`AuthzExtension` is a resource that allows traffic forwarding to a
+  callout backend service to make an authorization decision.
+
+  Enums:
+    LoadBalancingSchemeValueValuesEnum: Required. All backend services and
+      forwarding rules referenced by this extension must share the same load
+      balancing scheme. Supported values: `INTERNAL_MANAGED`,
+      `EXTERNAL_MANAGED`. For more information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
+    WireFormatValueValuesEnum: Optional. The format of communication supported
+      by the callout extension. If not specified, the default is
+      `EXT_PROC_GRPC`.
+
+  Messages:
+    LabelsValue: Optional. Set of labels associated with the `AuthzExtension`
+      resource. The format must comply with [the requirements for
+      labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+      resources.
+    MetadataValue: Optional. The metadata provided here is included as part of
+      the `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      is available under the namespace `com.google.authz_extension.`. The
+      following variables are supported in the metadata Struct:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name.
+
+  Fields:
+    authority: Required. The `:authority` header in the gRPC request sent from
+      Envoy to the extension service.
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A human-readable description of the resource.
+    failOpen: Optional. Determines how the proxy behaves if the call to the
+      extension fails or times out. When set to `TRUE`, request or response
+      processing continues without error. Any subsequent extensions in the
+      extension chain are also executed. When set to `FALSE` or the default
+      setting of `FALSE` is used, one of the following happens: * If response
+      headers have not been delivered to the downstream client, a generic 500
+      error is returned to the client. The error response can be tailored by
+      configuring a custom error response in the load balancer. * If response
+      headers have been delivered, then the HTTP stream to the downstream
+      client is reset.
+    forwardHeaders: Optional. List of the HTTP headers to forward to the
+      extension (from the client). If omitted, all headers are sent. Each
+      element is a string indicating the header name.
+    labels: Optional. Set of labels associated with the `AuthzExtension`
+      resource. The format must comply with [the requirements for
+      labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+      resources.
+    loadBalancingScheme: Required. All backend services and forwarding rules
+      referenced by this extension must share the same load balancing scheme.
+      Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
+      information, refer to [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-service).
+    metadata: Optional. The metadata provided here is included as part of the
+      `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      is available under the namespace `com.google.authz_extension.`. The
+      following variables are supported in the metadata Struct:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name.
+    name: Required. Identifier. Name of the `AuthzExtension` resource in the
+      following format: `projects/{project}/locations/{location}/authzExtensio
+      ns/{authz_extension}`.
+    service: Required. The reference to the service that runs the extension.
+      To configure a callout extension, `service` must be a fully-qualified
+      reference to a [backend service](https://cloud.google.com/compute/docs/r
+      eference/rest/v1/backendServices) in the format: `https://www.googleapis
+      .com/compute/v1/projects/{project}/regions/{region}/backendServices/{bac
+      kendService}` or `https://www.googleapis.com/compute/v1/projects/{projec
+      t}/global/backendServices/{backendService}`.
+    timeout: Required. Specifies the timeout for each individual message on
+      the stream. The timeout must be between 10-10000 milliseconds.
+    updateTime: Output only. The timestamp when the resource was updated.
+    wireFormat: Optional. The format of communication supported by the callout
+      extension. If not specified, the default is `EXT_PROC_GRPC`.
+  """
+
+  class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
+    r"""Required. All backend services and forwarding rules referenced by this
+    extension must share the same load balancing scheme. Supported values:
+    `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more information, refer to
+    [Backend services overview](https://cloud.google.com/load-
+    balancing/docs/backend-service).
+
+    Values:
+      LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Do not use.
+      INTERNAL_MANAGED: Signifies that this is used for Internal HTTP(S) Load
+        Balancing.
+      EXTERNAL_MANAGED: Signifies that this is used for External Managed
+        HTTP(S) Load Balancing.
+    """
+    LOAD_BALANCING_SCHEME_UNSPECIFIED = 0
+    INTERNAL_MANAGED = 1
+    EXTERNAL_MANAGED = 2
+
+  class WireFormatValueValuesEnum(_messages.Enum):
+    r"""Optional. The format of communication supported by the callout
+    extension. If not specified, the default is `EXT_PROC_GRPC`.
+
+    Values:
+      WIRE_FORMAT_UNSPECIFIED: Not specified.
+      EXT_PROC_GRPC: The extension service uses ExtProc GRPC API over a gRPC
+        stream. This is the default value if the wire format is not specified.
+        The backend service for the extension must use HTTP2 or H2C as the
+        protocol. All `supported_events` for a client request will be sent as
+        part of the same gRPC stream.
+    """
+    WIRE_FORMAT_UNSPECIFIED = 0
+    EXT_PROC_GRPC = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of labels associated with the `AuthzExtension` resource.
+    The format must comply with [the requirements for
+    labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+    resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Optional. The metadata provided here is included as part of the
+    `metadata_context` (of type `google.protobuf.Struct`) in the
+    `ProcessingRequest` message sent to the extension server. The metadata is
+    available under the namespace `com.google.authz_extension.`. The following
+    variables are supported in the metadata Struct: `{forwarding_rule_id}` -
+    substituted with the forwarding rule's fully qualified resource name.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  authority = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  failOpen = _messages.BooleanField(4)
+  forwardHeaders = _messages.StringField(5, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 6)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 7)
+  metadata = _messages.MessageField('MetadataValue', 8)
+  name = _messages.StringField(9)
+  service = _messages.StringField(10)
+  timeout = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+  wireFormat = _messages.EnumField('WireFormatValueValuesEnum', 13)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -1327,20 +1509,20 @@ class ExtensionChainExtension(_messages.Message):
       maximum length of 63 characters. Additionally, the first character must
       be a letter and the last a letter or a number.
     service: Required. The reference to the service that runs the extension.
-      Currently only callout extensions are supported here. To configure a
-      callout extension, `service` must be a fully-qualified reference to a
-      [backend service](https://cloud.google.com/compute/docs/reference/rest/v
-      1/backendServices) in the format: `https://www.googleapis.com/compute/v1
-      /projects/{project}/regions/{region}/backendServices/{backendService}`
-      or `https://www.googleapis.com/compute/v1/projects/{project}/global/back
-      endServices/{backendService}`. To configure a plugin extension,
-      `service` must be a reference to a [`WasmPlugin`
+      To configure a callout extension, `service` must be a fully-qualified
+      reference to a [backend service](https://cloud.google.com/compute/docs/r
+      eference/rest/v1/backendServices) in the format: `https://www.googleapis
+      .com/compute/v1/projects/{project}/regions/{region}/backendServices/{bac
+      kendService}` or `https://www.googleapis.com/compute/v1/projects/{projec
+      t}/global/backendServices/{backendService}`. To configure a plugin
+      extension, `service` must be a reference to a [`WasmPlugin`
       resource](https://cloud.google.com/service-
       extensions/docs/reference/rest/v1beta1/projects.locations.wasmPlugins)
       in the format:
       `projects/{project}/locations/{location}/wasmPlugins/{plugin}` or `//net
       workservices.googleapis.com/projects/{project}/locations/{location}/wasm
-      Plugins/{wasmPlugin}`.
+      Plugins/{wasmPlugin}`. Plugin extensions are currently supported for the
+      `LbTrafficExtension` and the `LbRouteExtension` resources.
     supportedEvents: Optional. A set of events during request or response
       processing for which this extension is called. This field is required
       for the `LbTrafficExtension` resource. It must not be set for the
@@ -1628,6 +1810,27 @@ class Gateway(_messages.Message):
   subnetwork = _messages.StringField(18)
   type = _messages.EnumField('TypeValueValuesEnum', 19)
   updateTime = _messages.StringField(20)
+
+
+class GatewayRouteView(_messages.Message):
+  r"""GatewayRouteView defines view-only resource for Routes to a Gateway
+
+  Fields:
+    name: Output only. Identifier. Full path name of the GatewayRouteView
+      resource. Format: projects/{project_number}/locations/{location}/gateway
+      s/{gateway_name}/routeViews/{route_view_name}
+    routeId: Output only. The resource id for the route.
+    routeLocation: Output only. Location where the route exists.
+    routeProjectNumber: Output only. Project number where the route exists.
+    routeType: Output only. Type of the route: HttpRoute,GrpcRoute,TcpRoute,
+      or TlsRoute
+  """
+
+  name = _messages.StringField(1)
+  routeId = _messages.StringField(2)
+  routeLocation = _messages.StringField(3)
+  routeProjectNumber = _messages.IntegerField(4)
+  routeType = _messages.StringField(5)
 
 
 class GrpcRoute(_messages.Message):
@@ -2914,7 +3117,7 @@ class LbTrafficExtension(_messages.Message):
       first extension chain that has a condition that matches the request is
       executed. Any subsequent extension chains do not execute. Limited to 5
       extension chains per resource.
-    forwardingRules: Required. A list of references to the forwarding rules to
+    forwardingRules: Optional. A list of references to the forwarding rules to
       which this service extension is attached. At least one forwarding rule
       is required. There can be only one `LBTrafficExtension` resource per
       forwarding rule.
@@ -3026,6 +3229,21 @@ class LbTrafficExtension(_messages.Message):
   updateTime = _messages.StringField(9)
 
 
+class ListAuthzExtensionsResponse(_messages.Message):
+  r"""Message for response to listing `AuthzExtension` resources.
+
+  Fields:
+    authzExtensions: The list of `AuthzExtension` resources.
+    nextPageToken: A token identifying a page of results that the server
+      returns.
+    unreachable: Locations that could not be reached.
+  """
+
+  authzExtensions = _messages.MessageField('AuthzExtension', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListEdgeCacheKeysetsResponse(_messages.Message):
   r"""The response returned by the `ListEdgeCacheKeysets` method.
 
@@ -3083,6 +3301,19 @@ class ListEndpointPoliciesResponse(_messages.Message):
   """
 
   endpointPolicies = _messages.MessageField('EndpointPolicy', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListGatewayRouteViewsResponse(_messages.Message):
+  r"""Response returned by the ListGatewayRouteViews method.
+
+  Fields:
+    gatewayRouteViews: List of GatewayRouteView resources.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  gatewayRouteViews = _messages.MessageField('GatewayRouteView', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -3173,6 +3404,19 @@ class ListLocationsResponse(_messages.Message):
   """
 
   locations = _messages.MessageField('Location', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListMeshRouteViewsResponse(_messages.Message):
+  r"""Response returned by the ListMeshRouteViews method.
+
+  Fields:
+    meshRouteViews: List of MeshRouteView resources.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  meshRouteViews = _messages.MessageField('MeshRouteView', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -3722,6 +3966,27 @@ class Mesh(_messages.Message):
   name = _messages.StringField(6)
   selfLink = _messages.StringField(7)
   updateTime = _messages.StringField(8)
+
+
+class MeshRouteView(_messages.Message):
+  r"""MeshRouteView defines view-only resource for Routes to a Mesh
+
+  Fields:
+    name: Output only. Identifier. Full path name of the MeshRouteView
+      resource. Format: projects/{project_number}/locations/{location}/meshes/
+      {mesh_name}/routeViews/{route_view_name}
+    routeId: Output only. The resource id for the route.
+    routeLocation: Output only. Location where the route exists.
+    routeProjectNumber: Output only. Project number where the route exists.
+    routeType: Output only. Type of the route: HttpRoute,GrpcRoute,TcpRoute,
+      or TlsRoute
+  """
+
+  name = _messages.StringField(1)
+  routeId = _messages.StringField(2)
+  routeLocation = _messages.StringField(3)
+  routeProjectNumber = _messages.IntegerField(4)
+  routeType = _messages.StringField(5)
 
 
 class MulticastConsumerAssociation(_messages.Message):
@@ -4379,6 +4644,127 @@ class MulticastProducerAssociation(_messages.Message):
   updateTime = _messages.StringField(8)
 
 
+class NetworkservicesProjectsLocationsAuthzExtensionsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsAuthzExtensionsCreateRequest object.
+
+  Fields:
+    authzExtension: A AuthzExtension resource to be passed as the request
+      body.
+    authzExtensionId: Required. User-provided ID of the `AuthzExtension`
+      resource to be created.
+    parent: Required. The parent resource of the `AuthzExtension` resource.
+      Must be in the format `projects/{project}/locations/{location}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  authzExtension = _messages.MessageField('AuthzExtension', 1)
+  authzExtensionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsAuthzExtensionsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsAuthzExtensionsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the `AuthzExtension` resource to delete. Must
+      be in the format `projects/{project}/locations/{location}/authzExtension
+      s/{authz_extension}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsAuthzExtensionsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsAuthzExtensionsGetRequest object.
+
+  Fields:
+    name: Required. A name of the `AuthzExtension` resource to get. Must be in
+      the format `projects/{project}/locations/{location}/authzExtensions/{aut
+      hz_extension}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsAuthzExtensionsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsAuthzExtensionsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
+    pageSize: Optional. Requested page size. The server might return fewer
+      items than requested. If unspecified, the server picks an appropriate
+      default.
+    pageToken: Optional. A token identifying a page of results that the server
+      returns.
+    parent: Required. The project and location from which the `AuthzExtension`
+      resources are listed, specified in the following format:
+      `projects/{project}/locations/{location}`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsAuthzExtensionsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsAuthzExtensionsPatchRequest object.
+
+  Fields:
+    authzExtension: A AuthzExtension resource to be passed as the request
+      body.
+    name: Required. Identifier. Name of the `AuthzExtension` resource in the
+      following format: `projects/{project}/locations/{location}/authzExtensio
+      ns/{authz_extension}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Used to specify the fields to be overwritten in the
+      `AuthzExtension` resource by the update. The fields specified in the
+      `update_mask` are relative to the resource, not the full request. A
+      field is overwritten if it is in the mask. If the user does not specify
+      a mask, then all fields are overwritten.
+  """
+
+  authzExtension = _messages.MessageField('AuthzExtension', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class NetworkservicesProjectsLocationsEdgeCacheKeysetsCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsEdgeCacheKeysetsCreateRequest object.
 
@@ -4974,6 +5360,35 @@ class NetworkservicesProjectsLocationsGatewaysPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class NetworkservicesProjectsLocationsGatewaysRouteViewsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGatewaysRouteViewsGetRequest object.
+
+  Fields:
+    name: Required. Name of the GatewayRouteView resource. Formats: projects/{
+      project_number}/locations/{location}/gateways/{gateway_name}/routeViews/
+      {route_view_name}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsGatewaysRouteViewsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGatewaysRouteViewsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of GatewayRouteViews to return per call.
+    pageToken: The value returned by the last `ListGatewayRouteViewsResponse`
+      Indicates that this is a continuation of a prior `ListGatewayRouteViews`
+      call, and that the system should return the next page of data.
+    parent: Required. The Gateway to which a Route is associated. Formats:
+      projects/{project_number}/locations/{location}/gateways/{gateway_name}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class NetworkservicesProjectsLocationsGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsGetRequest object.
 
@@ -5467,6 +5882,35 @@ class NetworkservicesProjectsLocationsMeshesPatchRequest(_messages.Message):
   mesh = _messages.MessageField('Mesh', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsMeshesRouteViewsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesRouteViewsGetRequest object.
+
+  Fields:
+    name: Required. Name of the MeshRouteView resource. Format: projects/{proj
+      ect_number}/locations/{location}/meshes/{mesh_name}/routeViews/{route_vi
+      ew_name}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMeshesRouteViewsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesRouteViewsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of MeshRouteViews to return per call.
+    pageToken: The value returned by the last `ListMeshRouteViewsResponse`
+      Indicates that this is a continuation of a prior `ListMeshRouteViews`
+      call, and that the system should return the next page of data.
+    parent: Required. The Mesh to which a Route is associated. Format:
+      projects/{project_number}/locations/{location}/meshes/{mesh_name}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class NetworkservicesProjectsLocationsMulticastConsumerAssociationsCreateRequest(_messages.Message):

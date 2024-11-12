@@ -100,6 +100,7 @@ class Backup(_messages.Message):
   Enums:
     BackupTypeValueValuesEnum: Output only. Type of the backup.
     NodeTypeValueValuesEnum: Output only. Node type of the cluster.
+    StateValueValuesEnum: Output only. State of the backup.
 
   Fields:
     backupFiles: Output only. List of backup files of the backup.
@@ -116,6 +117,7 @@ class Backup(_messages.Message):
     nodeType: Output only. Node type of the cluster.
     replicaCount: Output only. Number of replicas for the cluster.
     shardCount: Output only. Number of shards for the cluster.
+    state: Output only. State of the backup.
     totalSizeBytes: Output only. Total size of the backup in bytes.
   """
 
@@ -147,6 +149,20 @@ class Backup(_messages.Message):
     REDIS_HIGHMEM_XLARGE = 3
     REDIS_STANDARD_SMALL = 4
 
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the backup.
+
+    Values:
+      STATE_UNSPECIFIED: The default value, not set.
+      CREATING: The backup is being created.
+      ACTIVE: The backup is active to be used.
+      DELETING: The backup is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
+
   backupFiles = _messages.MessageField('BackupFile', 1, repeated=True)
   backupType = _messages.EnumField('BackupTypeValueValuesEnum', 2)
   cluster = _messages.StringField(3)
@@ -158,7 +174,8 @@ class Backup(_messages.Message):
   nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 9)
   replicaCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
   shardCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  totalSizeBytes = _messages.IntegerField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  totalSizeBytes = _messages.IntegerField(13)
 
 
 class BackupClusterRequest(_messages.Message):
@@ -167,8 +184,12 @@ class BackupClusterRequest(_messages.Message):
   Fields:
     backupId: Optional. The id of the backup to be created. If not specified,
       the default value ([YYYYMMDDHHMMSS]_[Shortened Cluster UID] is used.
-    ttl: Optional. TTL for the backup to expire. If not specified, the default
-      value is infinite, the backup never expires.
+    ttl: Optional. TTL for the backup to expire. Note that this value will be
+      used to set up the backup GCS objects' expiration time. If not
+      specified, the default value is 100 years, which is the max value that
+      GCS supports. Also don't set this to a value that is too small,
+      otherwise the expiration time might be in the past when GCS receives the
+      set up expiration time request, so that the backup operation would fail.
   """
 
   backupId = _messages.StringField(1)
@@ -179,12 +200,16 @@ class BackupCollection(_messages.Message):
   r"""BackupCollection of a cluster.
 
   Fields:
-    clusterId: Output only. The cluster name of the backup collection.
+    cluster: Output only. The full resource path of the cluster the backup
+      collection belongs to. Example:
+      projects/{project}/locations/{location}/clusters/{cluster}
     clusterUid: Output only. The cluster uid of the backup collection.
+    name: Identifier. Full resource path of the backup collection.
   """
 
-  clusterId = _messages.StringField(1)
+  cluster = _messages.StringField(1)
   clusterUid = _messages.StringField(2)
+  name = _messages.StringField(3)
 
 
 class BackupConfiguration(_messages.Message):
@@ -203,16 +228,6 @@ class BackupConfiguration(_messages.Message):
   automatedBackupEnabled = _messages.BooleanField(1)
   backupRetentionSettings = _messages.MessageField('RetentionSettings', 2)
   pointInTimeRecoveryEnabled = _messages.BooleanField(3)
-
-
-class BackupExportConfig(_messages.Message):
-  r"""Backup export configuration.
-
-  Fields:
-    gcsDestination: Google Cloud Storage destination.
-  """
-
-  gcsDestination = _messages.StringField(1)
 
 
 class BackupFile(_messages.Message):
@@ -309,6 +324,9 @@ class Cluster(_messages.Message):
   Fields:
     authorizationMode: Optional. The authorization mode of the Redis cluster.
       If not provided, auth feature is disabled for the cluster.
+    backupCollection: Optional. Output only. The backup collection full
+      resource name. Example:
+      projects/{project}/locations/{location}/backupCollections/{collection}
     clusterEndpoints: Optional. A list of cluster enpoints.
     createTime: Output only. The timestamp associated with the cluster
       creation request.
@@ -322,6 +340,8 @@ class Cluster(_messages.Message):
       Storage buckets need to be the same region as the clusters. Read
       permission is required to import from the provided Cloud Storage
       objects.
+    kmsKey: Optional. The KMS key used to encrypt the at-rest data of the
+      cluster.
     maintenancePolicy: Optional. ClusterMaintenancePolicy determines when to
       allow or deny updates.
     maintenanceSchedule: Output only. ClusterMaintenanceSchedule Output only
@@ -333,6 +353,9 @@ class Cluster(_messages.Message):
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
     nodeType: Optional. The type of a redis node in the cluster. NodeType
       determines the underlying machine-type of a redis node.
+    ondemandMaintenance: Optional. Input only. Ondemand maintenance for the
+      cluster. This field can be used to trigger ondemand critical update on
+      the cluster.
     persistenceConfig: Optional. Persistence config (RDB, AOF) for the
       cluster.
     preciseSizeGb: Output only. Precise value of redis memory size in GB for
@@ -454,34 +477,37 @@ class Cluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 1)
-  clusterEndpoints = _messages.MessageField('ClusterEndpoint', 2, repeated=True)
-  createTime = _messages.StringField(3)
-  crossClusterReplicationConfig = _messages.MessageField('CrossClusterReplicationConfig', 4)
-  deletionProtectionEnabled = _messages.BooleanField(5)
-  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 6, repeated=True)
-  gcsSource = _messages.MessageField('GcsBackupSource', 7)
-  maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 8)
-  maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 9)
-  managedBackupSource = _messages.MessageField('ManagedBackupSource', 10)
-  name = _messages.StringField(11)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 12)
-  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 13)
-  preciseSizeGb = _messages.FloatField(14)
-  pscConfigs = _messages.MessageField('PscConfig', 15, repeated=True)
-  pscConnections = _messages.MessageField('PscConnection', 16, repeated=True)
-  pscServiceAttachments = _messages.MessageField('PscServiceAttachment', 17, repeated=True)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 18)
-  replicaCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  satisfiesPzi = _messages.BooleanField(20)
-  satisfiesPzs = _messages.BooleanField(21)
-  shardCount = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  simulateMaintenanceEvent = _messages.BooleanField(23)
-  sizeGb = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  stateInfo = _messages.MessageField('StateInfo', 26)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 27)
-  uid = _messages.StringField(28)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 29)
+  backupCollection = _messages.StringField(2)
+  clusterEndpoints = _messages.MessageField('ClusterEndpoint', 3, repeated=True)
+  createTime = _messages.StringField(4)
+  crossClusterReplicationConfig = _messages.MessageField('CrossClusterReplicationConfig', 5)
+  deletionProtectionEnabled = _messages.BooleanField(6)
+  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 7, repeated=True)
+  gcsSource = _messages.MessageField('GcsBackupSource', 8)
+  kmsKey = _messages.StringField(9)
+  maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 10)
+  maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 11)
+  managedBackupSource = _messages.MessageField('ManagedBackupSource', 12)
+  name = _messages.StringField(13)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 14)
+  ondemandMaintenance = _messages.BooleanField(15)
+  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 16)
+  preciseSizeGb = _messages.FloatField(17)
+  pscConfigs = _messages.MessageField('PscConfig', 18, repeated=True)
+  pscConnections = _messages.MessageField('PscConnection', 19, repeated=True)
+  pscServiceAttachments = _messages.MessageField('PscServiceAttachment', 20, repeated=True)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 21)
+  replicaCount = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  satisfiesPzi = _messages.BooleanField(23)
+  satisfiesPzs = _messages.BooleanField(24)
+  shardCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  simulateMaintenanceEvent = _messages.BooleanField(26)
+  sizeGb = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 28)
+  stateInfo = _messages.MessageField('StateInfo', 29)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 30)
+  uid = _messages.StringField(31)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 32)
 
 
 class ClusterDenyMaintenancePeriod(_messages.Message):
@@ -1892,10 +1918,10 @@ class ExportBackupRequest(_messages.Message):
   r"""Request for [ExportBackup].
 
   Fields:
-    backupExportConfig: Required. Export configuration
+    gcsBucket: Google Cloud Storage bucket.
   """
 
-  backupExportConfig = _messages.MessageField('BackupExportConfig', 1)
+  gcsBucket = _messages.StringField(1)
 
 
 class ExportInstanceRequest(_messages.Message):

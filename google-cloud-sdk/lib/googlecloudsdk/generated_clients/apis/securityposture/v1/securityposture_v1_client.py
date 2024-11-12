@@ -44,6 +44,7 @@ class SecuritypostureV1(base_api.BaseApiClient):
     self.organizations_locations_postureTemplates = self.OrganizationsLocationsPostureTemplatesService(self)
     self.organizations_locations_postures = self.OrganizationsLocationsPosturesService(self)
     self.organizations_locations_predictions = self.OrganizationsLocationsPredictionsService(self)
+    self.organizations_locations_remediations = self.OrganizationsLocationsRemediationsService(self)
     self.organizations_locations_reports = self.OrganizationsLocationsReportsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
@@ -664,6 +665,43 @@ class SecuritypostureV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuritypostureOrganizationsLocationsPredictionsListRequest',
         response_type_name='ListPredictionsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsRemediationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_remediations resource."""
+
+    _NAME = 'organizations_locations_remediations'
+
+    def __init__(self, client):
+      super(SecuritypostureV1.OrganizationsLocationsRemediationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Remediation resource. Used to create a remediation for a given remediation intent.
+
+      Args:
+        request: (SecuritypostureOrganizationsLocationsRemediationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/remediations:Create',
+        http_method='POST',
+        method_id='securityposture.organizations.locations.remediations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/remediations:Create',
+        request_field='createRemediationRequest',
+        request_type_name='SecuritypostureOrganizationsLocationsRemediationsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

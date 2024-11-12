@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import re
 
 from googlecloudsdk.api_lib.sql import constants
+from googlecloudsdk.api_lib.sql import exceptions as sql_exceptions
 from googlecloudsdk.api_lib.sql import instance_prop_reducers as reducers
 from googlecloudsdk.api_lib.sql import instances as api_util
 from googlecloudsdk.api_lib.sql import validate
@@ -496,6 +497,32 @@ class _BaseInstances(object):
           settings.ipConfiguration = sql_messages.IpConfiguration()
         settings.ipConfiguration.serverCaMode = _ParseServerCaMode(
             sql_messages, args.server_ca_mode
+        )
+
+      if args.IsKnownAndSpecified('server_ca_pool'):
+        if not settings.ipConfiguration:
+          settings.ipConfiguration = sql_messages.IpConfiguration()
+        settings.ipConfiguration.serverCaPool = args.server_ca_pool
+        if (
+            settings.ipConfiguration.serverCaMode
+            != sql_messages.IpConfiguration.ServerCaModeValueValuesEnum.CUSTOMER_MANAGED_CAS_CA
+        ):
+          raise sql_exceptions.ArgumentError(
+              '`--server-ca-pool` can only be specified when the server CA mode'
+              ' is CUSTOMER_MANAGED_CAS_CA.'
+          )
+      elif (
+          settings.ipConfiguration
+          and settings.ipConfiguration.serverCaMode
+          == sql_messages.IpConfiguration.ServerCaModeValueValuesEnum.CUSTOMER_MANAGED_CAS_CA
+      ):
+        raise exceptions.RequiredArgumentException(
+            '--server-ca-pool',
+            (
+                'To create an instance with server CA mode '
+                'CUSTOMER_MANAGED_CAS_CA, [--server-ca-pool] must be '
+                'specified.'
+            ),
         )
 
       if args.IsKnownAndSpecified('custom_subject_alternative_names'):

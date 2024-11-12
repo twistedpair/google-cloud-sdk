@@ -27,6 +27,7 @@ import grpc                        # type: ignore
 from grpc.experimental import aio  # type: ignore
 
 from google.api import httpbody_pb2  # type: ignore
+from google.longrunning import operations_pb2 # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types import prediction_service
 from .base import PredictionServiceTransport, DEFAULT_CLIENT_INFO
 from .grpc import PredictionServiceGrpcTransport
@@ -516,6 +517,56 @@ class PredictionServiceGrpcAsyncIOTransport(PredictionServiceTransport):
         return self._stubs['streaming_raw_predict']
 
     @property
+    def predict_long_running(self) -> Callable[
+            [prediction_service.PredictLongRunningRequest],
+            Awaitable[operations_pb2.Operation]]:
+        r"""Return a callable for the predict long running method over gRPC.
+
+        Returns:
+            Callable[[~.PredictLongRunningRequest],
+                    Awaitable[~.Operation]]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'predict_long_running' not in self._stubs:
+            self._stubs['predict_long_running'] = self.grpc_channel.unary_unary(
+                '/google.cloud.aiplatform.v1.PredictionService/PredictLongRunning',
+                request_serializer=prediction_service.PredictLongRunningRequest.serialize,
+                response_deserializer=operations_pb2.Operation.FromString,
+            )
+        return self._stubs['predict_long_running']
+
+    @property
+    def fetch_predict_operation(self) -> Callable[
+            [prediction_service.FetchPredictOperationRequest],
+            Awaitable[operations_pb2.Operation]]:
+        r"""Return a callable for the fetch predict operation method over gRPC.
+
+        Fetch an asynchronous online prediction operation.
+
+        Returns:
+            Callable[[~.FetchPredictOperationRequest],
+                    Awaitable[~.Operation]]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'fetch_predict_operation' not in self._stubs:
+            self._stubs['fetch_predict_operation'] = self.grpc_channel.unary_unary(
+                '/google.cloud.aiplatform.v1.PredictionService/FetchPredictOperation',
+                request_serializer=prediction_service.FetchPredictOperationRequest.serialize,
+                response_deserializer=operations_pb2.Operation.FromString,
+            )
+        return self._stubs['fetch_predict_operation']
+
+    @property
     def explain(self) -> Callable[
             [prediction_service.ExplainRequest],
             Awaitable[prediction_service.ExplainResponse]]:
@@ -604,6 +655,33 @@ class PredictionServiceGrpcAsyncIOTransport(PredictionServiceTransport):
             )
         return self._stubs['stream_generate_content']
 
+    @property
+    def chat_completions(self) -> Callable[
+            [prediction_service.ChatCompletionsRequest],
+            Awaitable[httpbody_pb2.HttpBody]]:
+        r"""Return a callable for the chat completions method over gRPC.
+
+        Exposes an OpenAI-compatible endpoint for chat
+        completions.
+
+        Returns:
+            Callable[[~.ChatCompletionsRequest],
+                    Awaitable[~.HttpBody]]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'chat_completions' not in self._stubs:
+            self._stubs['chat_completions'] = self.grpc_channel.unary_stream(
+                '/google.cloud.aiplatform.v1.PredictionService/ChatCompletions',
+                request_serializer=prediction_service.ChatCompletionsRequest.serialize,
+                response_deserializer=httpbody_pb2.HttpBody.FromString,
+            )
+        return self._stubs['chat_completions']
+
     def _prep_wrapped_messages(self, client_info):
         """ Precompute the wrapped methods, overriding the base class method to use async wrappers."""
         self._wrapped_methods = {
@@ -657,6 +735,16 @@ class PredictionServiceGrpcAsyncIOTransport(PredictionServiceTransport):
                 default_timeout=None,
                 client_info=client_info,
             ),
+            self.predict_long_running: gapic_v1.method_async.wrap_method(
+                self.predict_long_running,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.fetch_predict_operation: gapic_v1.method_async.wrap_method(
+                self.fetch_predict_operation,
+                default_timeout=None,
+                client_info=client_info,
+            ),
             self.explain: gapic_v1.method_async.wrap_method(
                 self.explain,
                 default_timeout=None,
@@ -669,6 +757,11 @@ class PredictionServiceGrpcAsyncIOTransport(PredictionServiceTransport):
             ),
             self.stream_generate_content: gapic_v1.method_async.wrap_method(
                 self.stream_generate_content,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.chat_completions: gapic_v1.method_async.wrap_method(
+                self.chat_completions,
                 default_timeout=None,
                 client_info=client_info,
             ),

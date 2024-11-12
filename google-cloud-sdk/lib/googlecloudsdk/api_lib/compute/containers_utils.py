@@ -18,9 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import enum
 import itertools
 import re
-import enum
 
 from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.compute import metadata_utils
@@ -29,9 +29,9 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core.universe_descriptor import universe_descriptor
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
-
 import six
 
 
@@ -75,13 +75,13 @@ _MIN_PREFERRED_COS_VERSION = 63
 RESTART_POLICY_API = {
     'never': 'Never',
     'on-failure': 'OnFailure',
-    'always': 'Always'
+    'always': 'Always',
 }
 
 
 class MountVolumeMode(enum.Enum):
-  READ_ONLY = 1,
-  READ_WRITE = 2,
+  READ_ONLY = (1,)
+  READ_WRITE = (2,)
 
   def isReadOnly(self):
     return self == MountVolumeMode.READ_ONLY
@@ -106,7 +106,8 @@ class InvalidMetadataKeyException(Error):
   def __init__(self, metadata_key):
     super(InvalidMetadataKeyException, self).__init__(
         'Metadata key "{0}" is not allowed when running containerized VM.'
-        .format(metadata_key))
+        .format(metadata_key)
+    )
 
 
 class NoGceContainerDeclarationMetadataKey(Error):
@@ -115,7 +116,9 @@ class NoGceContainerDeclarationMetadataKey(Error):
   def __init__(self):
     super(NoGceContainerDeclarationMetadataKey, self).__init__(
         "Instance doesn't have {} metadata key - it is not a container.".format(
-            GCE_CONTAINER_DECLARATION))
+            GCE_CONTAINER_DECLARATION
+        )
+    )
 
 
 def ValidateUserMetadata(metadata):
@@ -141,28 +144,32 @@ def CreateTagsMessage(messages, tags):
 
 
 def GetLabelsMessageWithCosVersion(
-    labels, image_uri, resources, resource_class):
+    labels, image_uri, resources, resource_class
+):
   """Returns message with labels for instance / instance template.
 
   Args:
     labels: dict, labels to assign to the resource.
     image_uri: URI of image used as a base for the resource. The function
-               extracts COS version from the URI and uses it as a value of
-               `container-vm` label.
+      extracts COS version from the URI and uses it as a value of `container-vm`
+      label.
     resources: object that can parse image_uri.
-    resource_class: class of the resource to which labels will be assigned.
-                    Must contain LabelsValue class and
-                    resource_class.LabelsValue must contain AdditionalProperty
-                    class.
+    resource_class: class of the resource to which labels will be assigned. Must
+      contain LabelsValue class and resource_class.LabelsValue must contain
+      AdditionalProperty class.
   """
-  cos_version = resources.Parse(
-      image_uri, collection='compute.images').Name().replace('/', '-')
+  cos_version = (
+      resources.Parse(image_uri, collection='compute.images')
+      .Name()
+      .replace('/', '-')
+  )
   if labels is None:
     labels = {}
   labels['container-vm'] = cos_version
   additional_properties = [
       resource_class.LabelsValue.AdditionalProperty(key=k, value=v)
-      for k, v in sorted(six.iteritems(labels))]
+      for k, v in sorted(six.iteritems(labels))
+  ]
   return resource_class.LabelsValue(additionalProperties=additional_properties)
 
 
@@ -171,15 +178,21 @@ class NoCosImageException(Error):
 
   def __init__(self):
     super(NoCosImageException, self).__init__(
-        'Could not find COS (Cloud OS) for release family \'{0}\''
-        .format(COS_MAJOR_RELEASE))
+        "Could not find COS (Cloud OS) for release family '{0}'".format(
+            COS_MAJOR_RELEASE
+        )
+    )
 
 
 def _AddUniversePrefix(project_name):
   if properties.IsDefaultUniverse():
     return project_name
   else:
-    prefix = properties.VALUES.core.project.GetOrFail().split(':')[0]
+    prefix = (
+        universe_descriptor.UniverseDescriptor()
+        .Get(properties.GetUniverseDomain())
+        .project_prefix
+    )
     return prefix + ':' + project_name
 
 
@@ -190,16 +203,18 @@ def ExpandCosImageFlag(compute_client):
       compute.images,
       'List',
       compute_client.messages.ComputeImagesListRequest(
-          project=_AddUniversePrefix(COS_PROJECT))
+          project=_AddUniversePrefix(COS_PROJECT)
+      ),
   )])
   return _SelectNewestCosImage(images)
 
 
 def _SelectNewestCosImage(images):
   """Selects newest COS image from the list."""
-  cos_images = sorted([image for image in images
-                       if image.name.startswith(COS_MAJOR_RELEASE)],
-                      key=lambda x: times.ParseDateTime(x.creationTimestamp))
+  cos_images = sorted(
+      [image for image in images if image.name.startswith(COS_MAJOR_RELEASE)],
+      key=lambda x: times.ParseDateTime(x.creationTimestamp),
+  )
   if not cos_images:
     raise NoCosImageException()
   return cos_images[-1].selfLink
@@ -213,17 +228,21 @@ def _ValidateAndParsePortMapping(port_mappings):
     if not mapping_match:
       raise calliope_exceptions.InvalidArgumentException(
           '--port-mappings',
-          'Port mappings should follow PORT:TARGET_PORT:PROTOCOL format.')
+          'Port mappings should follow PORT:TARGET_PORT:PROTOCOL format.',
+      )
     port, target_port, protocol = mapping_match.groups()
     if protocol not in ALLOWED_PROTOCOLS:
       raise calliope_exceptions.InvalidArgumentException(
           '--port-mappings',
           'Protocol should be one of [{0}]'.format(
-              ', '.join(ALLOWED_PROTOCOLS)))
+              ', '.join(ALLOWED_PROTOCOLS)
+          ),
+      )
     ports_config.append({
         'containerPort': int(target_port),
         'hostPort': int(port),
-        'protocol': protocol})
+        'protocol': protocol,
+    })
   return ports_config
 
 
@@ -248,28 +267,36 @@ def ExpandKonletCosImageFlag(compute_client):
     healthy.
   """
   compute = compute_client.apitools_client
-  images = compute_client.MakeRequests(
-      [(compute.images,
-        'List',
-        compute_client.messages.ComputeImagesListRequest(
-            project=_AddUniversePrefix(COS_PROJECT)))])
+  images = compute_client.MakeRequests([(
+      compute.images,
+      'List',
+      compute_client.messages.ComputeImagesListRequest(
+          project=_AddUniversePrefix(COS_PROJECT)
+      ),
+  )])
   name_re_template = r'cos-{}-(\d+)-.*'
   image_families = ['stable', 'beta', 'dev']
 
   for family in image_families:
     name_re = name_re_template.format(family)
+
     def MakeCreateComparisonKey(name_re):
       def CreateComparisonKey(image):
         version = int(re.match(name_re, image.name).group(1))
         timestamp = times.ParseDateTime(image.creationTimestamp)
         return version, timestamp
+
       return CreateComparisonKey
 
     cos_images = sorted(
         [image for image in images if re.match(name_re, image.name)],
-        key=MakeCreateComparisonKey(name_re))
-    if (cos_images and MakeCreateComparisonKey(name_re)(cos_images[-1])[0] >=
-        _MIN_PREFERRED_COS_VERSION):
+        key=MakeCreateComparisonKey(name_re),
+    )
+    if (
+        cos_images
+        and MakeCreateComparisonKey(name_re)(cos_images[-1])[0]
+        >= _MIN_PREFERRED_COS_VERSION
+    ):
       return cos_images[-1].selfLink
 
   raise NoCosImageException()
@@ -317,13 +344,16 @@ def _ReadDictionary(filename):
       if assignment_op_loc == -1:
         raise calliope_exceptions.BadFileException(
             'Syntax error in {}:{}: Expected VAR=VAL, got {}'.format(
-                filename, i, line))
+                filename, i, line
+            )
+        )
       env = line[:assignment_op_loc]
-      val = line[assignment_op_loc+1:]
+      val = line[assignment_op_loc + 1 :]
       if ' ' in env or '\t' in env:
         raise calliope_exceptions.BadFileException(
             'Syntax error in {}:{} Variable name cannot contain whitespaces,'
-            ' got "{}"'.format(filename, i, env))
+            ' got "{}"'.format(filename, i, env)
+        )
       env_vars[env] = val
   return env_vars
 
@@ -340,8 +370,9 @@ def _GetPersistentDiskName(idx):
   return 'pd-{}'.format(idx)
 
 
-def _AddMountedDisksToManifest(container_mount_disk, volumes, volume_mounts,
-                               used_names=None, disks=None):
+def _AddMountedDisksToManifest(
+    container_mount_disk, volumes, volume_mounts, used_names=None, disks=None
+):
   """Add volume specs from --container-mount-disk."""
   used_names = used_names or []
   disks = disks or []
@@ -356,8 +387,7 @@ def _AddMountedDisksToManifest(container_mount_disk, volumes, volume_mounts,
     def _GetMatchingVolume(device_name, partition):
       for volume_spec in volumes:
         pd = volume_spec.get('gcePersistentDisk', {})
-        if (pd.get('pdName') == device_name
-            and pd.get('partition') == partition):
+        if pd.get('pdName') == device_name and pd.get('partition') == partition:
           return volume_spec
 
     repeated = _GetMatchingVolume(device_name, partition)
@@ -375,36 +405,41 @@ def _AddMountedDisksToManifest(container_mount_disk, volumes, volume_mounts,
         raise calliope_exceptions.InvalidArgumentException(
             '--container-mount-disk',
             'Must specify the name of the disk to be mounted unless exactly '
-            'one disk is attached to the instance.')
+            'one disk is attached to the instance.',
+        )
       device_name = disks[0].get('name')
       if disks[0].get('device-name', device_name) != device_name:
         raise exceptions.InvalidArgumentException(
             '--container-mount-disk',
             'Must not have a device-name that is different from disk name if '
             'disk is being attached to the instance and mounted to a container:'
-            ' [{}]'.format(disks[0].get('device-name')))
+            ' [{}]'.format(disks[0].get('device-name')),
+        )
 
     volume_mounts.append({
         'name': name,
         'mountPath': mount_disk['mount-path'],
-        'readOnly': mount_disk.get('mode', _DEFAULT_MODE).isReadOnly()})
+        'readOnly': mount_disk.get('mode', _DEFAULT_MODE).isReadOnly(),
+    })
 
     if repeated:
       continue
     volume_spec = {
         'name': name,
-        'gcePersistentDisk': {
-            'pdName': device_name,
-            'fsType': 'ext4'}}
+        'gcePersistentDisk': {'pdName': device_name, 'fsType': 'ext4'},
+    }
     if partition:
       volume_spec['gcePersistentDisk'].update({'partition': partition})
     volumes.append(volume_spec)
     idx += 1
 
 
-def _CreateContainerManifest(args, instance_name,
-                             container_mount_disk_enabled=False,
-                             container_mount_disk=None):
+def _CreateContainerManifest(
+    args,
+    instance_name,
+    container_mount_disk_enabled=False,
+    container_mount_disk=None,
+):
   """Create container manifest from argument namespace and instance name."""
   container = {'image': args.container_image, 'name': instance_name}
 
@@ -423,10 +458,9 @@ def _CreateContainerManifest(args, instance_name,
     for env, val in six.iteritems(env_var_dict):
       env_vars[env] = val
   if env_vars:
-    container['env'] = [{
-        'name': env,
-        'value': val
-    } for env, val in six.iteritems(env_vars)]
+    container['env'] = [
+        {'name': env, 'value': val} for env, val in six.iteritems(env_vars)
+    ]
 
   volumes = []
   volume_mounts = []
@@ -434,27 +468,28 @@ def _CreateContainerManifest(args, instance_name,
   for idx, volume in enumerate(args.container_mount_host_path or []):
     volumes.append({
         'name': _GetHostPathDiskName(idx),
-        'hostPath': {
-            'path': volume['host-path']
-        },
+        'hostPath': {'path': volume['host-path']},
     })
     volume_mounts.append({
         'name': _GetHostPathDiskName(idx),
         'mountPath': volume['mount-path'],
-        'readOnly': volume.get('mode', _DEFAULT_MODE).isReadOnly()
+        'readOnly': volume.get('mode', _DEFAULT_MODE).isReadOnly(),
     })
 
   for idx, tmpfs in enumerate(args.container_mount_tmpfs or []):
     volumes.append(
-        {'name': _GetTmpfsDiskName(idx), 'emptyDir': {'medium': 'Memory'}})
+        {'name': _GetTmpfsDiskName(idx), 'emptyDir': {'medium': 'Memory'}}
+    )
     volume_mounts.append(
-        {'name': _GetTmpfsDiskName(idx), 'mountPath': tmpfs['mount-path']})
+        {'name': _GetTmpfsDiskName(idx), 'mountPath': tmpfs['mount-path']}
+    )
 
   if container_mount_disk_enabled:
     container_mount_disk = container_mount_disk or []
     disks = (args.disk or []) + (args.create_disk or [])
-    _AddMountedDisksToManifest(container_mount_disk, volumes, volume_mounts,
-                               disks=disks)
+    _AddMountedDisksToManifest(
+        container_mount_disk, volumes, volume_mounts, disks=disks
+    )
 
   container['volumeMounts'] = volume_mounts
 
@@ -462,7 +497,7 @@ def _CreateContainerManifest(args, instance_name,
       'spec': {
           'containers': [container],
           'volumes': volumes,
-          'restartPolicy': RESTART_POLICY_API[args.container_restart_policy]
+          'restartPolicy': RESTART_POLICY_API[args.container_restart_policy],
       }
   }
 
@@ -474,72 +509,111 @@ def DumpYaml(data):
   return MANIFEST_DISCLAIMER + yaml.dump(data)
 
 
-def _CreateYamlContainerManifest(args, instance_name,
-                                 container_mount_disk_enabled=False,
-                                 container_mount_disk=None):
+def _CreateYamlContainerManifest(
+    args,
+    instance_name,
+    container_mount_disk_enabled=False,
+    container_mount_disk=None,
+):
   """Helper to create the container manifest."""
-  return DumpYaml(_CreateContainerManifest(
-      args, instance_name,
-      container_mount_disk_enabled=container_mount_disk_enabled,
-      container_mount_disk=container_mount_disk))
+  return DumpYaml(
+      _CreateContainerManifest(
+          args,
+          instance_name,
+          container_mount_disk_enabled=container_mount_disk_enabled,
+          container_mount_disk=container_mount_disk,
+      )
+  )
 
 
-def CreateKonletMetadataMessage(messages, args, instance_name, user_metadata,
-                                container_mount_disk_enabled=False,
-                                container_mount_disk=None):
+def CreateKonletMetadataMessage(
+    messages,
+    args,
+    instance_name,
+    user_metadata,
+    container_mount_disk_enabled=False,
+    container_mount_disk=None,
+):
   """Helper to create the metadata for konlet."""
   konlet_metadata = {
-      GCE_CONTAINER_DECLARATION:
-          _CreateYamlContainerManifest(
-              args, instance_name,
-              container_mount_disk_enabled=container_mount_disk_enabled,
-              container_mount_disk=container_mount_disk),
+      GCE_CONTAINER_DECLARATION: _CreateYamlContainerManifest(
+          args,
+          instance_name,
+          container_mount_disk_enabled=container_mount_disk_enabled,
+          container_mount_disk=container_mount_disk,
+      ),
       # Since COS 69, having logs for Container-VMs written requires enabling
       # Cloud Logging agent.
       STACKDRIVER_LOGGING_AGENT_CONFIGURATION: 'true',
   }
   return metadata_utils.ConstructMetadataMessage(
-      messages, metadata=konlet_metadata, existing_metadata=user_metadata)
+      messages, metadata=konlet_metadata, existing_metadata=user_metadata
+  )
 
 
-def UpdateInstance(holder, client, instance_ref, instance, args,
-                   container_mount_disk_enabled=False,
-                   container_mount_disk=None):
+def UpdateInstance(
+    holder,
+    client,
+    instance_ref,
+    instance,
+    args,
+    container_mount_disk_enabled=False,
+    container_mount_disk=None,
+):
   """Update an instance and its container metadata."""
   operation_poller = poller.Poller(client.apitools_client.instances)
 
-  result = _UpdateShieldedInstanceConfig(holder, client, operation_poller,
-                                         instance_ref, args)
+  result = _UpdateShieldedInstanceConfig(
+      holder, client, operation_poller, instance_ref, args
+  )
 
-  result = _SetShieldedInstanceIntegrityPolicy(holder, client, operation_poller,
-                                               instance_ref, args) or result
+  result = (
+      _SetShieldedInstanceIntegrityPolicy(
+          holder, client, operation_poller, instance_ref, args
+      )
+      or result
+  )
 
   # find gce-container-declaration metadata entry
   for metadata in instance.metadata.items:
     if metadata.key == GCE_CONTAINER_DECLARATION:
       UpdateMetadata(
-          holder, metadata, args, instance,
+          holder,
+          metadata,
+          args,
+          instance,
           container_mount_disk_enabled=container_mount_disk_enabled,
-          container_mount_disk=container_mount_disk)
+          container_mount_disk=container_mount_disk,
+      )
 
       # update Google Compute Engine resource
       operation = client.apitools_client.instances.SetMetadata(
           client.messages.ComputeInstancesSetMetadataRequest(
-              metadata=instance.metadata, **instance_ref.AsDict()))
+              metadata=instance.metadata, **instance_ref.AsDict()
+          )
+      )
 
       operation_ref = holder.resources.Parse(
-          operation.selfLink, collection='compute.zoneOperations')
+          operation.selfLink, collection='compute.zoneOperations'
+      )
 
       set_metadata_waiter = waiter.WaitFor(
-          operation_poller, operation_ref,
+          operation_poller,
+          operation_ref,
           'Updating specification of container [{0}]'.format(
-              instance_ref.Name()))
+              instance_ref.Name()
+          ),
+      )
 
-      if (instance.status ==
-          client.messages.Instance.StatusValueValuesEnum.TERMINATED):
+      if (
+          instance.status
+          == client.messages.Instance.StatusValueValuesEnum.TERMINATED
+      ):
         return set_metadata_waiter or result
-      elif (instance.status ==
-            client.messages.Instance.StatusValueValuesEnum.SUSPENDED):
+      elif (
+          instance.status
+          == client.messages.Instance.StatusValueValuesEnum.SUSPENDED
+      ):
         return _StopVm(holder, client, instance_ref) or result
       else:
         _StopVm(holder, client, instance_ref)
@@ -548,90 +622,126 @@ def UpdateInstance(holder, client, instance_ref, instance, args,
   raise NoGceContainerDeclarationMetadataKey()
 
 
-def _UpdateShieldedInstanceConfig(holder, client, operation_poller,
-                                  instance_ref, args):
+def _UpdateShieldedInstanceConfig(
+    holder, client, operation_poller, instance_ref, args
+):
   """Update the Shielded Instance Config."""
-  if (args.shielded_vm_secure_boot is None and
-      args.shielded_vm_vtpm is None and
-      args.shielded_vm_integrity_monitoring is None):
+  if (
+      args.shielded_vm_secure_boot is None
+      and args.shielded_vm_vtpm is None
+      and args.shielded_vm_integrity_monitoring is None
+  ):
     return None
   shielded_config_msg = client.messages.ShieldedInstanceConfig(
       enableSecureBoot=args.shielded_vm_secure_boot,
       enableVtpm=args.shielded_vm_vtpm,
-      enableIntegrityMonitoring=args.shielded_vm_integrity_monitoring)
+      enableIntegrityMonitoring=args.shielded_vm_integrity_monitoring,
+  )
   request = client.messages.ComputeInstancesUpdateShieldedInstanceConfigRequest(
       instance=instance_ref.Name(),
       project=instance_ref.project,
       shieldedInstanceConfig=shielded_config_msg,
-      zone=instance_ref.zone)
+      zone=instance_ref.zone,
+  )
 
   operation = client.apitools_client.instances.UpdateShieldedInstanceConfig(
-      request)
+      request
+  )
   operation_ref = holder.resources.Parse(
-      operation.selfLink, collection='compute.zoneOperations')
+      operation.selfLink, collection='compute.zoneOperations'
+  )
   return waiter.WaitFor(
-      operation_poller, operation_ref,
+      operation_poller,
+      operation_ref,
       'Setting shieldedInstanceConfig of instance [{0}]'.format(
-          instance_ref.Name()))
+          instance_ref.Name()
+      ),
+  )
 
 
-def _SetShieldedInstanceIntegrityPolicy(holder, client, operation_poller,
-                                        instance_ref, args):
+def _SetShieldedInstanceIntegrityPolicy(
+    holder, client, operation_poller, instance_ref, args
+):
   """Set the Shielded Instance Integrity Policy."""
-  shielded_integrity_policy_msg = client.messages.ShieldedInstanceIntegrityPolicy(
-      updateAutoLearnPolicy=True
+  shielded_integrity_policy_msg = (
+      client.messages.ShieldedInstanceIntegrityPolicy(
+          updateAutoLearnPolicy=True
+      )
   )
 
   if not args.IsSpecified('shielded_vm_learn_integrity_policy'):
     return None
-  request = client.messages.ComputeInstancesSetShieldedInstanceIntegrityPolicyRequest(
-      instance=instance_ref.Name(),
-      project=instance_ref.project,
-      shieldedInstanceIntegrityPolicy=shielded_integrity_policy_msg,
-      zone=instance_ref.zone)
+  request = (
+      client.messages.ComputeInstancesSetShieldedInstanceIntegrityPolicyRequest(
+          instance=instance_ref.Name(),
+          project=instance_ref.project,
+          shieldedInstanceIntegrityPolicy=shielded_integrity_policy_msg,
+          zone=instance_ref.zone,
+      )
+  )
 
-  operation = client.apitools_client.instances.SetShieldedInstanceIntegrityPolicy(
-      request)
+  operation = (
+      client.apitools_client.instances.SetShieldedInstanceIntegrityPolicy(
+          request
+      )
+  )
   operation_ref = holder.resources.Parse(
-      operation.selfLink, collection='compute.zoneOperations')
+      operation.selfLink, collection='compute.zoneOperations'
+  )
 
   return waiter.WaitFor(
-      operation_poller, operation_ref,
+      operation_poller,
+      operation_ref,
       'Setting shieldedInstanceIntegrityPolicy of instance [{0}]'.format(
-          instance_ref.Name()))
+          instance_ref.Name()
+      ),
+  )
 
 
 def _StopVm(holder, client, instance_ref):
   """Stop the Virtual Machine."""
   operation = client.apitools_client.instances.Stop(
-      client.messages.ComputeInstancesStopRequest(
-          **instance_ref.AsDict()))
+      client.messages.ComputeInstancesStopRequest(**instance_ref.AsDict())
+  )
 
   operation_ref = holder.resources.Parse(
-      operation.selfLink, collection='compute.zoneOperations')
+      operation.selfLink, collection='compute.zoneOperations'
+  )
 
   operation_poller = poller.Poller(client.apitools_client.instances)
-  return waiter.WaitFor(operation_poller, operation_ref,
-                        'Stopping instance [{0}]'.format(instance_ref.Name()))
+  return waiter.WaitFor(
+      operation_poller,
+      operation_ref,
+      'Stopping instance [{0}]'.format(instance_ref.Name()),
+  )
 
 
 def _StartVm(holder, client, instance_ref):
   """Start the Virtual Machine."""
   operation = client.apitools_client.instances.Start(
-      client.messages.ComputeInstancesStartRequest(
-          **instance_ref.AsDict()))
+      client.messages.ComputeInstancesStartRequest(**instance_ref.AsDict())
+  )
 
   operation_ref = holder.resources.Parse(
-      operation.selfLink, collection='compute.zoneOperations')
+      operation.selfLink, collection='compute.zoneOperations'
+  )
 
   operation_poller = poller.Poller(client.apitools_client.instances)
-  return waiter.WaitFor(operation_poller, operation_ref,
-                        'Starting instance [{0}]'.format(instance_ref.Name()))
+  return waiter.WaitFor(
+      operation_poller,
+      operation_ref,
+      'Starting instance [{0}]'.format(instance_ref.Name()),
+  )
 
 
-def UpdateMetadata(holder, metadata, args, instance,
-                   container_mount_disk_enabled=False,
-                   container_mount_disk=None):
+def UpdateMetadata(
+    holder,
+    metadata,
+    args,
+    instance,
+    container_mount_disk_enabled=False,
+    container_mount_disk=None,
+):
   """Update konlet metadata entry using user-supplied data."""
   # precondition: metadata.key == GCE_CONTAINER_DECLARATION
 
@@ -665,15 +775,22 @@ def UpdateMetadata(holder, metadata, args, instance,
     container_mount_disk = []
     # Only need disks for updating the container mount disk.
     disks = []
-  _UpdateMounts(holder, manifest, args.remove_container_mounts or [],
-                args.container_mount_host_path or [],
-                args.container_mount_tmpfs or [],
-                container_mount_disk,
-                disks)
+  _UpdateMounts(
+      holder,
+      manifest,
+      args.remove_container_mounts or [],
+      args.container_mount_host_path or [],
+      args.container_mount_tmpfs or [],
+      container_mount_disk,
+      disks,
+  )
 
-  _UpdateEnv(manifest,
-             itertools.chain.from_iterable(args.remove_container_env or []),
-             args.container_env_file, args.container_env or [])
+  _UpdateEnv(
+      manifest,
+      itertools.chain.from_iterable(args.remove_container_env or []),
+      args.container_env_file,
+      args.container_env or [],
+  )
 
   if args.container_stdin is True:
     manifest['spec']['containers'][0]['stdin'] = True
@@ -689,19 +806,30 @@ def UpdateMetadata(holder, metadata, args, instance,
 
   if args.IsSpecified('container_restart_policy'):
     manifest['spec']['restartPolicy'] = RESTART_POLICY_API[
-        args.container_restart_policy]
+        args.container_restart_policy
+    ]
 
   metadata.value = DumpYaml(manifest)
 
 
-def _UpdateMounts(holder, manifest, remove_container_mounts,
-                  container_mount_host_path, container_mount_tmpfs,
-                  container_mount_disk, disks):
+def _UpdateMounts(
+    holder,
+    manifest,
+    remove_container_mounts,
+    container_mount_host_path,
+    container_mount_tmpfs,
+    container_mount_disk,
+    disks,
+):
   """Updates mounts in container manifest."""
 
-  _CleanupMounts(manifest, remove_container_mounts, container_mount_host_path,
-                 container_mount_tmpfs,
-                 container_mount_disk=container_mount_disk)
+  _CleanupMounts(
+      manifest,
+      remove_container_mounts,
+      container_mount_host_path,
+      container_mount_tmpfs,
+      container_mount_disk=container_mount_disk,
+  )
 
   used_names = [volume['name'] for volume in manifest['spec']['volumes']]
   volumes = []
@@ -714,14 +842,12 @@ def _UpdateMounts(holder, manifest, remove_container_mounts,
     next_volume_index += 1
     volumes.append({
         'name': name,
-        'hostPath': {
-            'path': volume['host-path']
-        },
+        'hostPath': {'path': volume['host-path']},
     })
     volume_mounts.append({
         'name': name,
         'mountPath': volume['mount-path'],
-        'readOnly': volume.get('mode', _DEFAULT_MODE).isReadOnly()
+        'readOnly': volume.get('mode', _DEFAULT_MODE).isReadOnly(),
     })
   for tmpfs in container_mount_tmpfs:
     while _GetTmpfsDiskName(next_volume_index) in used_names:
@@ -735,18 +861,32 @@ def _UpdateMounts(holder, manifest, remove_container_mounts,
     # Convert to dict to match helper input needs.
     # The disk must already have a device name that matches its
     # name. For disks that were attached to the instance already.
-    disks = [{'device-name': disk.deviceName,
-              'name': holder.resources.Parse(disk.source).Name()}
-             for disk in disks]
-    _AddMountedDisksToManifest(container_mount_disk, volumes, volume_mounts,
-                               used_names=used_names, disks=disks)
+    disks = [
+        {
+            'device-name': disk.deviceName,
+            'name': holder.resources.Parse(disk.source).Name(),
+        }
+        for disk in disks
+    ]
+    _AddMountedDisksToManifest(
+        container_mount_disk,
+        volumes,
+        volume_mounts,
+        used_names=used_names,
+        disks=disks,
+    )
 
   manifest['spec']['containers'][0]['volumeMounts'].extend(volume_mounts)
   manifest['spec']['volumes'].extend(volumes)
 
 
-def _CleanupMounts(manifest, remove_container_mounts, container_mount_host_path,
-                   container_mount_tmpfs, container_mount_disk=None):
+def _CleanupMounts(
+    manifest,
+    remove_container_mounts,
+    container_mount_host_path,
+    container_mount_tmpfs,
+    container_mount_disk=None,
+):
   """Remove all specified mounts from container manifest."""
   container_mount_disk = container_mount_disk or []
 
@@ -776,16 +916,19 @@ def _CleanupMounts(manifest, remove_container_mounts, container_mount_host_path,
   # start of the procedure
   used_volumes = []
   for volume in manifest['spec'].get('volumes', []):
-    if (volume['name'] in used_mounts_names or
-        volume['name'] not in removed_mount_names):
+    if (
+        volume['name'] in used_mounts_names
+        or volume['name'] not in removed_mount_names
+    ):
       used_volumes.append(volume)
 
   # override volumes
   manifest['spec']['volumes'] = used_volumes
 
 
-def _UpdateEnv(manifest, remove_container_env, container_env_file,
-               container_env):
+def _UpdateEnv(
+    manifest, remove_container_env, container_env_file, container_env
+):
   """Update environment variables in container manifest."""
 
   current_env = {}
@@ -801,7 +944,6 @@ def _UpdateEnv(manifest, remove_container_env, container_env_file,
     for env, val in six.iteritems(env_var_dict):
       current_env[env] = val
   if current_env:
-    manifest['spec']['containers'][0]['env'] = [{
-        'name': env,
-        'value': val
-    } for env, val in six.iteritems(current_env)]
+    manifest['spec']['containers'][0]['env'] = [
+        {'name': env, 'value': val} for env, val in six.iteritems(current_env)
+    ]

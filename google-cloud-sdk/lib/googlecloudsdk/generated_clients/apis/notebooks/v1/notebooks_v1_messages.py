@@ -844,7 +844,7 @@ class Instance(_messages.Message):
     labels: Labels to apply to this instance. These can be later modified by
       the setLabels method.
     machineType: Required. The [Compute Engine machine
-      type](https://cloud.google.com/compute/docs/machine-types) of this
+      type](https://cloud.google.com/compute/docs/machine-resource) of this
       instance.
     metadata: Custom metadata to apply to this instance. For example, to
       specify a Cloud Storage bucket for automatic backup, you can use the
@@ -2655,8 +2655,8 @@ class OperationMetadata(_messages.Message):
     endpoint: API endpoint name of this operation.
     requestedCancellation: Identifies whether the user has requested
       cancellation of the operation. Operations that have successfully been
-      cancelled have Operation.error value with a google.rpc.Status.code of 1,
-      corresponding to `Code.CANCELLED`.
+      cancelled have google.longrunning.Operation.error value with a
+      google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
     statusMessage: Human-readable status of the operation, if any.
     target: Server-defined resource path for the target of the operation.
     verb: Name of the verb executed by the operation.
@@ -3385,13 +3385,15 @@ class Schedule(_messages.Message):
       STATE_UNSPECIFIED: Unspecified state.
       ENABLED: The job is executing normally.
       PAUSED: The job is paused by the user. It will not execute. A user can
-        intentionally pause the job using PauseJobRequest.
+        intentionally pause the job using [Cloud
+        Scheduler](https://cloud.google.com/scheduler/docs/creating#pause).
       DISABLED: The job is disabled by the system due to error. The user
         cannot directly set a job to be disabled.
-      UPDATE_FAILED: The job state resulting from a failed
-        CloudScheduler.UpdateJob operation. To recover a job from this state,
-        retry CloudScheduler.UpdateJob until a successful response is
-        received.
+      UPDATE_FAILED: The job state resulting from a failed [CloudScheduler.Upd
+        ateJob](https://cloud.google.com/scheduler/docs/creating#edit)
+        operation. To recover a job from this state, retry [CloudScheduler.Upd
+        ateJob](https://cloud.google.com/scheduler/docs/creating#edit) until a
+        successful response is received.
       INITIALIZING: The schedule resource is being created.
       DELETING: The schedule resource is being deleted.
     """
@@ -3575,7 +3577,7 @@ class SetInstanceMachineTypeRequest(_messages.Message):
 
   Fields:
     machineType: Required. The [Compute Engine machine
-      type](https://cloud.google.com/compute/docs/machine-types).
+      type](https://cloud.google.com/compute/docs/machine-resource).
   """
 
   machineType = _messages.StringField(1)

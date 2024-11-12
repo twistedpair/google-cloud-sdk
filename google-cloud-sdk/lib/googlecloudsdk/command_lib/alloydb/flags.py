@@ -1463,6 +1463,25 @@ def GetTagsFromArgs(args, tags_message, tags_arg_name='tags'):
       tags_message.AdditionalProperty(key=key, value=value)
       for key, value in sorted(tags.items())])
 
+
+def AddTagsArg(parser):
+  """Makes the base.Argument for --tags flag."""
+  help_parts = [
+      'List of tags KEY=VALUE pairs to bind.',
+      'Each item must be expressed as',
+      '`<tag-key-namespaced-name>=<tag-value-short-name>`.\n',
+      'Example: `123/environment=production,123/costCenter=marketing`\n',
+  ]
+  parser.add_argument(
+      '--tags',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      action=arg_parsers.UpdateAction,
+      hidden=True,
+      help='\n'.join(help_parts),
+  )
+
+
 def AddAssignInboundPublicIp(parser):
   """Adds Assign Inbound Public IP flag.
 
@@ -1843,7 +1862,3 @@ def AddExportOptions(parser):
           ' existence before dropping it in clean_target_objects mode.'
       ),
   )
-
-
-
-

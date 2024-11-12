@@ -14,6 +14,33 @@ from apitools.base.py import extra_types
 package = 'developerconnect'
 
 
+class BitbucketCloudConfig(_messages.Message):
+  r"""Configuration for connections to an instance of Bitbucket Cloud.
+
+  Fields:
+    authorizerCredential: Required. An access token with the minimum
+      `repository`, `pullrequest` and `webhook` scope access. It can either be
+      a workspace, project or repository access token. This is needed to
+      create webhooks. It's recommended to use a system account to generate
+      these credentials.
+    readAuthorizerCredential: Required. An access token with the minimum
+      `repository` access. It can either be a workspace, project or repository
+      access token. It's recommended to use a system account to generate the
+      credentials.
+    webhookSecretSecretVersion: Required. Immutable. SecretManager resource
+      containing the webhook secret used to verify webhook events, formatted
+      as `projects/*/secrets/*/versions/*`. This is used to validate and
+      create webhooks.
+    workspace: Required. The Bitbucket Cloud Workspace ID to be connected to
+      Google Cloud Platform.
+  """
+
+  authorizerCredential = _messages.MessageField('UserCredential', 1)
+  readAuthorizerCredential = _messages.MessageField('UserCredential', 2)
+  webhookSecretSecretVersion = _messages.StringField(3)
+  workspace = _messages.StringField(4)
+
+
 class BitbucketDataCenterConfig(_messages.Message):
   r"""Configuration for connections to an instance of Bitbucket Data Center.
 
@@ -64,6 +91,8 @@ class Connection(_messages.Message):
   Fields:
     annotations: Optional. Allows clients to store small amounts of arbitrary
       data.
+    bitbucketCloudConfig: Configuration for connections to an instance of
+      Bitbucket Clouds.
     bitbucketDataCenterConfig: Configuration for connections to an instance of
       Bitbucket Data Center.
     createTime: Output only. [Output only] Create timestamp
@@ -143,22 +172,23 @@ class Connection(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  bitbucketDataCenterConfig = _messages.MessageField('BitbucketDataCenterConfig', 2)
-  createTime = _messages.StringField(3)
-  cryptoKeyConfig = _messages.MessageField('CryptoKeyConfig', 4)
-  deleteTime = _messages.StringField(5)
-  disabled = _messages.BooleanField(6)
-  etag = _messages.StringField(7)
-  githubConfig = _messages.MessageField('GitHubConfig', 8)
-  githubEnterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 9)
-  gitlabConfig = _messages.MessageField('GitLabConfig', 10)
-  gitlabEnterpriseConfig = _messages.MessageField('GitLabEnterpriseConfig', 11)
-  installationState = _messages.MessageField('InstallationState', 12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  name = _messages.StringField(14)
-  reconciling = _messages.BooleanField(15)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
+  bitbucketCloudConfig = _messages.MessageField('BitbucketCloudConfig', 2)
+  bitbucketDataCenterConfig = _messages.MessageField('BitbucketDataCenterConfig', 3)
+  createTime = _messages.StringField(4)
+  cryptoKeyConfig = _messages.MessageField('CryptoKeyConfig', 5)
+  deleteTime = _messages.StringField(6)
+  disabled = _messages.BooleanField(7)
+  etag = _messages.StringField(8)
+  githubConfig = _messages.MessageField('GitHubConfig', 9)
+  githubEnterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 10)
+  gitlabConfig = _messages.MessageField('GitLabConfig', 11)
+  gitlabEnterpriseConfig = _messages.MessageField('GitLabEnterpriseConfig', 12)
+  installationState = _messages.MessageField('InstallationState', 13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  name = _messages.StringField(15)
+  reconciling = _messages.BooleanField(16)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
 
 
 class CryptoKeyConfig(_messages.Message):

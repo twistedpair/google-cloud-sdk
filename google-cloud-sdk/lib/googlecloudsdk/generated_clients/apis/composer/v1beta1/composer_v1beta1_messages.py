@@ -938,7 +938,7 @@ class Environment(_messages.Message):
       additionally constrained to be <= 128 bytes in size.
 
   Fields:
-    config: Configuration parameters for this environment.
+    config: Optional. Configuration parameters for this environment.
     createTime: Output only. The time at which this environment was created.
     labels: Optional. User-defined labels for this environment. The labels map
       can contain no more than 64 entries. Entries of the labels map are UTF8
@@ -946,7 +946,7 @@ class Environment(_messages.Message):
       to regexp: \p{Ll}\p{Lo}{0,62} * Values must conform to regexp:
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and values are additionally
       constrained to be <= 128 bytes in size.
-    name: The resource name of the environment, in the form:
+    name: Identifier. The resource name of the environment, in the form:
       "projects/{projectId}/locations/{locationId}/environments/{environmentId
       }" EnvironmentId must start with a lowercase letter followed by up to 63
       lowercase letters, numbers, or hyphens, and cannot end with a hyphen.
@@ -1074,20 +1074,21 @@ class EnvironmentConfig(_messages.Message):
       networks feature is: - in case of private environment: enabled with no
       external networks allowlisted. - in case of public environment:
       disabled.
-    nodeConfig: The configuration used for the Kubernetes Engine cluster.
+    nodeConfig: Optional. The configuration used for the Kubernetes Engine
+      cluster.
     nodeCount: The number of nodes in the Kubernetes Engine cluster that will
       be used to run this environment. This field is supported for Cloud
       Composer environments in versions composer-1.*.*-airflow-*.*.*.
-    privateEnvironmentConfig: The configuration used for the Private IP Cloud
-      Composer environment.
+    privateEnvironmentConfig: Optional. The configuration used for the Private
+      IP Cloud Composer environment.
     recoveryConfig: Optional. The Recovery settings configuration of an
       environment. This field is supported for Cloud Composer environments in
       versions composer-2.*.*-airflow-*.*.* and newer.
     resilienceMode: Optional. Resilience mode of the Cloud Composer
       Environment. This field is supported for Cloud Composer environments in
       versions composer-2.2.0-airflow-*.*.* and newer.
-    softwareConfig: The configuration settings for software inside the
-      environment.
+    softwareConfig: Optional. The configuration settings for software inside
+      the environment.
     webServerConfig: Optional. The configuration settings for the Airflow web
       server App Engine instance. This field is supported for Cloud Composer
       environments in versions composer-1.*.*-airflow-*.*.*.
@@ -2048,23 +2049,24 @@ class SoftwareConfig(_messages.Message):
       * `C_FORCE_ROOT` * `CONTAINER_NAME` * `DAGS_FOLDER` * `GCP_PROJECT` *
       `GCS_BUCKET` * `GKE_CLUSTER_NAME` * `SQL_DATABASE` * `SQL_INSTANCE` *
       `SQL_PASSWORD` * `SQL_PROJECT` * `SQL_REGION` * `SQL_USER`
-    imageVersion: The version of the software running in the environment. This
-      encapsulates both the version of Cloud Composer functionality and the
-      version of Apache Airflow. It must match the regular expression `compose
-      r-([0-9]+(\.[0-9]+\.[0-9]+(-preview\.[0-9]+)?)?|latest)-airflow-([0-
-      9]+(\.[0-9]+(\.[0-9]+)?)?)`. When used as input, the server also checks
-      if the provided version is supported and denies the request for an
-      unsupported version. The Cloud Composer portion of the image version is
-      a full [semantic version](https://semver.org), or an alias in the form
-      of major version number or `latest`. When an alias is provided, the
-      server replaces it with the current Cloud Composer version that
-      satisfies the alias. The Apache Airflow portion of the image version is
-      a full semantic version that points to one of the supported Apache
-      Airflow versions, or an alias in the form of only major or major.minor
-      versions specified. When an alias is provided, the server replaces it
-      with the latest Apache Airflow version that satisfies the alias and is
-      supported in the given Cloud Composer version. In all cases, the
-      resolved image version is stored in the same field. See also [version
+    imageVersion: Optional. The version of the software running in the
+      environment. This encapsulates both the version of Cloud Composer
+      functionality and the version of Apache Airflow. It must match the
+      regular expression `composer-([0-9]+(\.[0-9]+\.[0-9]+(-preview\.[0-
+      9]+)?)?|latest)-airflow-([0-9]+(\.[0-9]+(\.[0-9]+)?)?)`. When used as
+      input, the server also checks if the provided version is supported and
+      denies the request for an unsupported version. The Cloud Composer
+      portion of the image version is a full [semantic
+      version](https://semver.org), or an alias in the form of major version
+      number or `latest`. When an alias is provided, the server replaces it
+      with the current Cloud Composer version that satisfies the alias. The
+      Apache Airflow portion of the image version is a full semantic version
+      that points to one of the supported Apache Airflow versions, or an alias
+      in the form of only major or major.minor versions specified. When an
+      alias is provided, the server replaces it with the latest Apache Airflow
+      version that satisfies the alias and is supported in the given Cloud
+      Composer version. In all cases, the resolved image version is stored in
+      the same field. See also [version
       list](/composer/docs/concepts/versioning/composer-versions) and
       [versioning overview](/composer/docs/concepts/versioning/composer-
       versioning-overview).
@@ -2423,12 +2425,14 @@ class UserWorkloadsConfigMap(_messages.Message):
   Messages:
     DataValue: Optional. The "data" field of Kubernetes ConfigMap, organized
       in key-value pairs. For details see:
-      https://kubernetes.io/docs/concepts/configuration/configmap/
+      https://kubernetes.io/docs/concepts/configuration/configmap/ Example: {
+      "example_key": "example_value", "another_key": "another_value" }
 
   Fields:
     data: Optional. The "data" field of Kubernetes ConfigMap, organized in
       key-value pairs. For details see:
-      https://kubernetes.io/docs/concepts/configuration/configmap/
+      https://kubernetes.io/docs/concepts/configuration/configmap/ Example: {
+      "example_key": "example_value", "another_key": "another_value" }
     name: Identifier. The resource name of the ConfigMap, in the form: "projec
       ts/{projectId}/locations/{locationId}/environments/{environmentId}/userW
       orkloadsConfigMaps/{userWorkloadsConfigMapId}"
@@ -2438,7 +2442,8 @@ class UserWorkloadsConfigMap(_messages.Message):
   class DataValue(_messages.Message):
     r"""Optional. The "data" field of Kubernetes ConfigMap, organized in key-
     value pairs. For details see:
-    https://kubernetes.io/docs/concepts/configuration/configmap/
+    https://kubernetes.io/docs/concepts/configuration/configmap/ Example: {
+    "example_key": "example_value", "another_key": "another_value" }
 
     Messages:
       AdditionalProperty: An additional property for a DataValue object.
@@ -2473,14 +2478,18 @@ class UserWorkloadsSecret(_messages.Message):
       key-value pairs, which can contain sensitive values such as a password,
       a token, or a key. The values for all keys have to be base64-encoded
       strings. For details see:
-      https://kubernetes.io/docs/concepts/configuration/secret/
+      https://kubernetes.io/docs/concepts/configuration/secret/ Example: {
+      "example": "ZXhhbXBsZV92YWx1ZQ==", "another-example":
+      "YW5vdGhlcl9leGFtcGxlX3ZhbHVl" }
 
   Fields:
     data: Optional. The "data" field of Kubernetes Secret, organized in key-
       value pairs, which can contain sensitive values such as a password, a
       token, or a key. The values for all keys have to be base64-encoded
       strings. For details see:
-      https://kubernetes.io/docs/concepts/configuration/secret/
+      https://kubernetes.io/docs/concepts/configuration/secret/ Example: {
+      "example": "ZXhhbXBsZV92YWx1ZQ==", "another-example":
+      "YW5vdGhlcl9leGFtcGxlX3ZhbHVl" }
     name: Identifier. The resource name of the Secret, in the form: "projects/
       {projectId}/locations/{locationId}/environments/{environmentId}/userWork
       loadsSecrets/{userWorkloadsSecretId}"
@@ -2492,7 +2501,9 @@ class UserWorkloadsSecret(_messages.Message):
     value pairs, which can contain sensitive values such as a password, a
     token, or a key. The values for all keys have to be base64-encoded
     strings. For details see:
-    https://kubernetes.io/docs/concepts/configuration/secret/
+    https://kubernetes.io/docs/concepts/configuration/secret/ Example: {
+    "example": "ZXhhbXBsZV92YWx1ZQ==", "another-example":
+    "YW5vdGhlcl9leGFtcGxlX3ZhbHVl" }
 
     Messages:
       AdditionalProperty: An additional property for a DataValue object.

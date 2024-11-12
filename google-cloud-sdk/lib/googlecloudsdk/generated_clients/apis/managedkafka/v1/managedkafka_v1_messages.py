@@ -63,6 +63,8 @@ class Cluster(_messages.Message):
     name: Identifier. The name of the cluster. Structured like:
       projects/{project_number}/locations/{location}/clusters/{cluster_id}
     rebalanceConfig: Optional. Rebalance configuration for the Kafka cluster.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The current state of the cluster.
     updateTime: Output only. The time when the cluster was last updated.
   """
@@ -111,8 +113,10 @@ class Cluster(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   rebalanceConfig = _messages.MessageField('RebalanceConfig', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  satisfiesPzi = _messages.BooleanField(7)
+  satisfiesPzs = _messages.BooleanField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class ConsumerGroup(_messages.Message):

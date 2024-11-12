@@ -85,15 +85,16 @@ def GetLabels(labels):
   )
 
 
-def BuildHeader(record):
+def BuildHeader(record, is_multi_region=False):
   con = console_attr.GetConsoleAttr()
   status = con.Colorize(*record.ReadySymbolAndColor())
   try:
-    place = 'region ' + record.region
+    place = ('regions ' if is_multi_region else 'region ') + record.region
   except KeyError:
     place = 'namespace ' + record.namespace
+  kind = ('Multi-Region ' if is_multi_region else '') + record.Kind()
   return con.Emphasize(
-      '{} {} {} in {}'.format(status, record.Kind(), record.name, place)
+      '{} {} {} in {}'.format(status, kind, record.name, place)
   )
 
 

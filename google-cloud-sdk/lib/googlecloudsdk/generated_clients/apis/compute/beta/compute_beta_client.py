@@ -6850,7 +6850,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.instances.delete',
         ordered_params=['project', 'zone', 'instance'],
         path_params=['instance', 'project', 'zone'],
-        query_params=['requestId'],
+        query_params=['noGracefulShutdown', 'requestId'],
         relative_path='projects/{project}/zones/{zone}/instances/{instance}',
         request_field='',
         request_type_name='ComputeInstancesDeleteRequest',
@@ -7864,7 +7864,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.instances.stop',
         ordered_params=['project', 'zone', 'instance'],
         path_params=['instance', 'project', 'zone'],
-        query_params=['discardLocalSsd', 'requestId'],
+        query_params=['discardLocalSsd', 'noGracefulShutdown', 'requestId'],
         relative_path='projects/{project}/zones/{zone}/instances/{instance}/stop',
         request_field='',
         request_type_name='ComputeInstancesStopRequest',
@@ -17310,6 +17310,32 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/removeRule',
         request_field='',
         request_type_name='ComputeRegionSecurityPoliciesRemoveRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeRegionSecurityPoliciesSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionSecurityPolicies.setLabels',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/securityPolicies/{resource}/setLabels',
+        request_field='regionSetLabelsRequest',
+        request_type_name='ComputeRegionSecurityPoliciesSetLabelsRequest',
         response_type_name='Operation',
         supports_download=False,
     )

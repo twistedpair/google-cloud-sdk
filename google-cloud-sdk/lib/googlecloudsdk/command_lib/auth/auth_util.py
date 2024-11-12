@@ -122,7 +122,7 @@ def WriteGcloudCredentialsToADC(creds, add_quota_project=False):
 
   PromptIfADCEnvVarIsSet()
   if add_quota_project:
-    c_creds.ADC(creds).DumpExtendedADCToFile()
+    DumpADCOptionalQuotaProject(creds)
   else:
     c_creds.ADC(creds).DumpADCToFile()
 

@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "PredictionServiceClient",
           "rpcs": {
+            "ChatCompletions": {
+              "methods": [
+                "chat_completions"
+              ]
+            },
             "DirectPredict": {
               "methods": [
                 "direct_predict"
@@ -25,6 +30,11 @@
                 "explain"
               ]
             },
+            "FetchPredictOperation": {
+              "methods": [
+                "fetch_predict_operation"
+              ]
+            },
             "GenerateContent": {
               "methods": [
                 "generate_content"
@@ -33,6 +43,11 @@
             "Predict": {
               "methods": [
                 "predict"
+              ]
+            },
+            "PredictLongRunning": {
+              "methods": [
+                "predict_long_running"
               ]
             },
             "RawPredict": {
@@ -80,6 +95,11 @@
         "grpc-async": {
           "libraryClient": "PredictionServiceAsyncClient",
           "rpcs": {
+            "ChatCompletions": {
+              "methods": [
+                "chat_completions"
+              ]
+            },
             "DirectPredict": {
               "methods": [
                 "direct_predict"
@@ -95,6 +115,11 @@
                 "explain"
               ]
             },
+            "FetchPredictOperation": {
+              "methods": [
+                "fetch_predict_operation"
+              ]
+            },
             "GenerateContent": {
               "methods": [
                 "generate_content"
@@ -103,6 +128,11 @@
             "Predict": {
               "methods": [
                 "predict"
+              ]
+            },
+            "PredictLongRunning": {
+              "methods": [
+                "predict_long_running"
               ]
             },
             "RawPredict": {
@@ -150,6 +180,11 @@
         "rest": {
           "libraryClient": "PredictionServiceClient",
           "rpcs": {
+            "ChatCompletions": {
+              "methods": [
+                "chat_completions"
+              ]
+            },
             "DirectPredict": {
               "methods": [
                 "direct_predict"
@@ -165,6 +200,11 @@
                 "explain"
               ]
             },
+            "FetchPredictOperation": {
+              "methods": [
+                "fetch_predict_operation"
+              ]
+            },
             "GenerateContent": {
               "methods": [
                 "generate_content"
@@ -173,6 +213,11 @@
             "Predict": {
               "methods": [
                 "predict"
+              ]
+            },
+            "PredictLongRunning": {
+              "methods": [
+                "predict_long_running"
               ]
             },
             "RawPredict": {

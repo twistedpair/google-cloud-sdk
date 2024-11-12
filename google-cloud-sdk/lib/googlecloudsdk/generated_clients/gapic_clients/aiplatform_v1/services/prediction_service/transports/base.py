@@ -27,6 +27,7 @@ from google.auth import credentials as ga_credentials  # type: ignore
 from google.oauth2 import service_account # type: ignore
 
 from google.api import httpbody_pb2  # type: ignore
+from google.longrunning import operations_pb2 # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types import prediction_service
 
 DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo(gapic_version=package_version.__version__)
@@ -169,6 +170,16 @@ class PredictionServiceTransport(abc.ABC):
                 default_timeout=None,
                 client_info=client_info,
             ),
+            self.predict_long_running: gapic_v1.method.wrap_method(
+                self.predict_long_running,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.fetch_predict_operation: gapic_v1.method.wrap_method(
+                self.fetch_predict_operation,
+                default_timeout=None,
+                client_info=client_info,
+            ),
             self.explain: gapic_v1.method.wrap_method(
                 self.explain,
                 default_timeout=None,
@@ -181,6 +192,11 @@ class PredictionServiceTransport(abc.ABC):
             ),
             self.stream_generate_content: gapic_v1.method.wrap_method(
                 self.stream_generate_content,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.chat_completions: gapic_v1.method.wrap_method(
+                self.chat_completions,
                 default_timeout=None,
                 client_info=client_info,
             ),
@@ -286,6 +302,24 @@ class PredictionServiceTransport(abc.ABC):
         raise NotImplementedError()
 
     @property
+    def predict_long_running(self) -> Callable[
+            [prediction_service.PredictLongRunningRequest],
+            Union[
+                operations_pb2.Operation,
+                Awaitable[operations_pb2.Operation]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def fetch_predict_operation(self) -> Callable[
+            [prediction_service.FetchPredictOperationRequest],
+            Union[
+                operations_pb2.Operation,
+                Awaitable[operations_pb2.Operation]
+            ]]:
+        raise NotImplementedError()
+
+    @property
     def explain(self) -> Callable[
             [prediction_service.ExplainRequest],
             Union[
@@ -309,6 +343,15 @@ class PredictionServiceTransport(abc.ABC):
             Union[
                 prediction_service.GenerateContentResponse,
                 Awaitable[prediction_service.GenerateContentResponse]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def chat_completions(self) -> Callable[
+            [prediction_service.ChatCompletionsRequest],
+            Union[
+                httpbody_pb2.HttpBody,
+                Awaitable[httpbody_pb2.HttpBody]
             ]]:
         raise NotImplementedError()
 

@@ -63,8 +63,8 @@ class Type(proto.Enum):
 class Schema(proto.Message):
     r"""Schema is used to define the format of input/output data. Represents
     a select subset of an `OpenAPI 3.0 schema
-    object <https://spec.openapis.org/oas/v3.0.3#schema>`__. More fields
-    may be added in the future as needed.
+    object <https://spec.openapis.org/oas/v3.0.3#schema-object>`__. More
+    fields may be added in the future as needed.
 
     Attributes:
         type_ (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.Type):
@@ -94,13 +94,20 @@ class Schema(proto.Message):
             Optional. Maximum number of the elements for
             Type.ARRAY.
         enum (MutableSequence[str]):
-            Optional. Possible values of the element of Type.STRING with
-            enum format. For example we can define an Enum Direction as
-            : {type:STRING, format:enum, enum:["EAST", NORTH", "SOUTH",
-            "WEST"]}
+            Optional. Possible values of the element of primitive type
+            with enum format. Examples:
+
+            1. We can define direction as : {type:STRING, format:enum,
+               enum:["EAST", NORTH", "SOUTH", "WEST"]}
+            2. We can define apartment number as : {type:INTEGER,
+               format:enum, enum:["101", "201", "301"]}
         properties (MutableMapping[str, googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.Schema]):
             Optional. SCHEMA FIELDS FOR TYPE OBJECT
             Properties of Type.OBJECT.
+        property_ordering (MutableSequence[str]):
+            Optional. The order of the properties.
+            Not a standard field in open api spec. Only used
+            to support the order of the properties.
         required (MutableSequence[str]):
             Optional. Required properties of Type.OBJECT.
         min_properties (int):
@@ -127,6 +134,10 @@ class Schema(proto.Message):
         example (google.protobuf.struct_pb2.Value):
             Optional. Example of the object. Will only
             populated when the object is the root.
+        any_of (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.Schema]):
+            Optional. The value should be validated
+            against any (one or more) of the subschemas in
+            the list.
     """
 
     type_: 'Type' = proto.Field(
@@ -178,6 +189,10 @@ class Schema(proto.Message):
         number=3,
         message='Schema',
     )
+    property_ordering: MutableSequence[str] = proto.RepeatedField(
+        proto.STRING,
+        number=25,
+    )
     required: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,
         number=5,
@@ -214,6 +229,11 @@ class Schema(proto.Message):
         proto.MESSAGE,
         number=4,
         message=struct_pb2.Value,
+    )
+    any_of: MutableSequence['Schema'] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=11,
+        message='Schema',
     )
 
 

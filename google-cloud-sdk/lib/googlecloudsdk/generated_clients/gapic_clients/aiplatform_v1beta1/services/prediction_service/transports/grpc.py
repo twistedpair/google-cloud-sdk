@@ -25,6 +25,7 @@ from google.auth.transport.grpc import SslCredentials  # type: ignore
 import grpc  # type: ignore
 
 from google.api import httpbody_pb2  # type: ignore
+from google.longrunning import operations_pb2 # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types import prediction_service
 from .base import PredictionServiceTransport, DEFAULT_CLIENT_INFO
 
@@ -510,6 +511,56 @@ class PredictionServiceGrpcTransport(PredictionServiceTransport):
                 response_deserializer=prediction_service.StreamingRawPredictResponse.deserialize,
             )
         return self._stubs['streaming_raw_predict']
+
+    @property
+    def predict_long_running(self) -> Callable[
+            [prediction_service.PredictLongRunningRequest],
+            operations_pb2.Operation]:
+        r"""Return a callable for the predict long running method over gRPC.
+
+        Returns:
+            Callable[[~.PredictLongRunningRequest],
+                    ~.Operation]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'predict_long_running' not in self._stubs:
+            self._stubs['predict_long_running'] = self.grpc_channel.unary_unary(
+                '/google.cloud.aiplatform.v1beta1.PredictionService/PredictLongRunning',
+                request_serializer=prediction_service.PredictLongRunningRequest.serialize,
+                response_deserializer=operations_pb2.Operation.FromString,
+            )
+        return self._stubs['predict_long_running']
+
+    @property
+    def fetch_predict_operation(self) -> Callable[
+            [prediction_service.FetchPredictOperationRequest],
+            operations_pb2.Operation]:
+        r"""Return a callable for the fetch predict operation method over gRPC.
+
+        Fetch an asynchronous online prediction operation.
+
+        Returns:
+            Callable[[~.FetchPredictOperationRequest],
+                    ~.Operation]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'fetch_predict_operation' not in self._stubs:
+            self._stubs['fetch_predict_operation'] = self.grpc_channel.unary_unary(
+                '/google.cloud.aiplatform.v1beta1.PredictionService/FetchPredictOperation',
+                request_serializer=prediction_service.FetchPredictOperationRequest.serialize,
+                response_deserializer=operations_pb2.Operation.FromString,
+            )
+        return self._stubs['fetch_predict_operation']
 
     @property
     def explain(self) -> Callable[

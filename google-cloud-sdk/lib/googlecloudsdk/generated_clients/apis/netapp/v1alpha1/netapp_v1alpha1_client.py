@@ -46,6 +46,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
     self.projects_locations_kmsConfigs = self.ProjectsLocationsKmsConfigsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_storagePools = self.ProjectsLocationsStoragePoolsService(self)
+    self.projects_locations_volumes_quotaRules = self.ProjectsLocationsVolumesQuotaRulesService(self)
     self.projects_locations_volumes_replications = self.ProjectsLocationsVolumesReplicationsService(self)
     self.projects_locations_volumes_snapshots = self.ProjectsLocationsVolumesSnapshotsService(self)
     self.projects_locations_volumes = self.ProjectsLocationsVolumesService(self)
@@ -1144,6 +1145,151 @@ class NetappV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}:validateDirectoryService',
         request_field='validateDirectoryServiceRequest',
         request_type_name='NetappProjectsLocationsStoragePoolsValidateDirectoryServiceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsVolumesQuotaRulesService(base_api.BaseApiService):
+    """Service class for the projects_locations_volumes_quotaRules resource."""
+
+    _NAME = 'projects_locations_volumes_quotaRules'
+
+    def __init__(self, client):
+      super(NetappV1alpha1.ProjectsLocationsVolumesQuotaRulesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new quota rule.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesQuotaRulesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/quotaRules',
+        http_method='POST',
+        method_id='netapp.projects.locations.volumes.quotaRules.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['quotaRuleId'],
+        relative_path='v1alpha1/{+parent}/quotaRules',
+        request_field='quotaRule',
+        request_type_name='NetappProjectsLocationsVolumesQuotaRulesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a quota rule.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesQuotaRulesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/quotaRules/{quotaRulesId}',
+        http_method='DELETE',
+        method_id='netapp.projects.locations.volumes.quotaRules.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsVolumesQuotaRulesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns details of the specified quota rule.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesQuotaRulesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QuotaRule) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/quotaRules/{quotaRulesId}',
+        http_method='GET',
+        method_id='netapp.projects.locations.volumes.quotaRules.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsVolumesQuotaRulesGetRequest',
+        response_type_name='QuotaRule',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns list of all quota rules in a location.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesQuotaRulesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListQuotaRulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/quotaRules',
+        http_method='GET',
+        method_id='netapp.projects.locations.volumes.quotaRules.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/quotaRules',
+        request_field='',
+        request_type_name='NetappProjectsLocationsVolumesQuotaRulesListRequest',
+        response_type_name='ListQuotaRulesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a quota rule.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesQuotaRulesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/quotaRules/{quotaRulesId}',
+        http_method='PATCH',
+        method_id='netapp.projects.locations.volumes.quotaRules.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='quotaRule',
+        request_type_name='NetappProjectsLocationsVolumesQuotaRulesPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )
