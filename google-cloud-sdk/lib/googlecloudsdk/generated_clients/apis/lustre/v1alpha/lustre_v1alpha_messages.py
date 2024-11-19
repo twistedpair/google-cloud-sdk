@@ -26,6 +26,52 @@ class Empty(_messages.Message):
 
 
 
+class ExportDataRequest(_messages.Message):
+  r"""Message for exporting data from Lustre.
+
+  Fields:
+    gcsBucket: Cloud Storage destination.
+    lustrePath: Lustre path source.
+    requestId: Optional. Optional uuid to identify requests.
+    serviceAccount: Optional. User-specified service account used to perform
+      the transfer. If unspecified, the default Lustre P4SA will be used.
+  """
+
+  gcsBucket = _messages.MessageField('GcsBucket', 1)
+  lustrePath = _messages.MessageField('LustrePath', 2)
+  requestId = _messages.StringField(3)
+  serviceAccount = _messages.StringField(4)
+
+
+class GcsBucket(_messages.Message):
+  r"""Cloud Storage as the source of a data transfer.
+
+  Fields:
+    uri: Required. URI to a Cloud Storage bucket in the format: `gs://`.
+  """
+
+  uri = _messages.StringField(1)
+
+
+class ImportDataRequest(_messages.Message):
+  r"""Message for importing data to Lustre.
+
+  Fields:
+    gcsBucket: The Cloud Storage source bucket and, optionally, path inside
+      the bucket.
+    lustrePath: Lustre path destination.
+    requestId: Optional. Optional uuid to identify requests.
+    serviceAccount: Optional. User-specified service account used to perform
+      the transfer. If unspecified, the default Lustre P4 Service Account will
+      be used.
+  """
+
+  gcsBucket = _messages.MessageField('GcsBucket', 1)
+  lustrePath = _messages.MessageField('LustrePath', 2)
+  requestId = _messages.StringField(3)
+  serviceAccount = _messages.StringField(4)
+
+
 class Instance(_messages.Message):
   r"""Message describing Instance object
 
@@ -223,6 +269,17 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class LustrePath(_messages.Message):
+  r"""LustrePath represents a path in the Lustre filesystem.
+
+  Fields:
+    path: Optional. Root directory path to the Lustre filesystem, starting
+      with `/`. Defaults to `/` if unset.
+  """
+
+  path = _messages.StringField(1)
+
+
 class LustreProjectsLocationsGetRequest(_messages.Message):
   r"""A LustreProjectsLocationsGetRequest object.
 
@@ -283,6 +340,19 @@ class LustreProjectsLocationsInstancesDeleteRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
+class LustreProjectsLocationsInstancesExportDataRequest(_messages.Message):
+  r"""A LustreProjectsLocationsInstancesExportDataRequest object.
+
+  Fields:
+    exportDataRequest: A ExportDataRequest resource to be passed as the
+      request body.
+    name: Required. Name of the resource.
+  """
+
+  exportDataRequest = _messages.MessageField('ExportDataRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class LustreProjectsLocationsInstancesGetRequest(_messages.Message):
   r"""A LustreProjectsLocationsInstancesGetRequest object.
 
@@ -291,6 +361,19 @@ class LustreProjectsLocationsInstancesGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class LustreProjectsLocationsInstancesImportDataRequest(_messages.Message):
+  r"""A LustreProjectsLocationsInstancesImportDataRequest object.
+
+  Fields:
+    importDataRequest: A ImportDataRequest resource to be passed as the
+      request body.
+    name: Required. Name of the resource.
+  """
+
+  importDataRequest = _messages.MessageField('ImportDataRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class LustreProjectsLocationsInstancesListRequest(_messages.Message):

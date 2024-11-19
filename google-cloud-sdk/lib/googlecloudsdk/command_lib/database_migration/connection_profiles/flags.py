@@ -116,7 +116,11 @@ def AddCaCertificateFlag(parser, required=False):
   """Adds --ca-certificate flag to the given parser."""
   help_text = """\
     x509 PEM-encoded certificate of the CA that signed the database
-    server's certificate. Database Migration Service will use this certificate to verify
+    server's certificate. The value for this flag needs to
+    be the content of the certificate file, not the path to the file.
+    For example, on a Linux machine you can use command substitution:
+    <code>--ca-certificate=$(</path/to/certificate_file.pem)</code>.
+    Database Migration Service will use this certificate to verify
     it's connecting to the correct host. Database Migration Service encrypts the
     value when storing it.
   """
@@ -127,7 +131,10 @@ def AddCertificateFlag(parser, required=False):
   """Adds --certificate flag to the given parser."""
   help_text = """\
     x509 PEM-encoded certificate that will be used by the replica to
-    authenticate against the database server.
+    authenticate against the database server. The value for this flag needs to
+    be the content of the certificate file, not the path to the file.
+    For example, on a Linux machine you can use command substitution:
+    <code>--ca-certificate=$(</path/to/certificate_file.pem)</code>.
   """
   parser.add_argument('--certificate', help=help_text, required=required)
 
@@ -136,8 +143,11 @@ def AddClientCertificateFlag(parser, required=False):
   """Adds --client-certificate flag to the given parser."""
   help_text = """\
     x509 PEM-encoded certificate that will be used by the replica to
-    authenticate against the database server. Database Migration Service
-    encrypts the value when storing it.
+    authenticate against the database server.  The value for this flag needs to
+    be the content of the certificate file, not the path to the file.
+    For example, on a Linux machine you can use command substitution:
+    <code>--ca-certificate=$(</path/to/certificate_file.pem)</code>.
+    Database Migration Service encrypts the value when storing it.
   """
   parser.add_argument('--client-certificate', help=help_text, required=required)
 
@@ -146,8 +156,11 @@ def AddPrivateKeyFlag(parser, required=False):
   """Adds --private-key flag to the given parser."""
   help_text = """\
     Unencrypted PKCS#1 or PKCS#8 PEM-encoded private key associated with
-    the Client Certificate. Database Migration Service encrypts the value when
-    storing it.
+    the Client Certificate.  The value for this flag needs to
+    be the content of the certificate file, not the path to the file.
+    For example, on a Linux machine you can use command substitution:
+    <code>--ca-certificate=$(</path/to/certificate_file.pem)</code>.
+    Database Migration Service encrypts the value when storing it.
   """
   parser.add_argument('--private-key', help=help_text, required=required)
 

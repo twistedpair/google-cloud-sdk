@@ -81,10 +81,10 @@ def AddUpdateIncludeExportRangesFlag(
   )
 
 
-def GetCapacityArg(messages):
+def GetCapacityArg(gateway_message):
   return arg_utils.ChoiceEnumMapper(
       arg_name='--capacity',
-      message_enum=messages.Gateway.CapacityValueValuesEnum,
+      message_enum=gateway_message.CapacityValueValuesEnum,
       custom_mappings={
           'CAPACITY_1_GBPS': ('1g', 'Gateway will have capacity of 1 Gbps'),
           'CAPACITY_5_GBPS': ('5g', 'Gateway will have capacity of 5 Gbps'),
@@ -101,8 +101,8 @@ def GetCapacityArg(messages):
   )
 
 
-def AddCapacityFlag(messages, parser):
-  GetCapacityArg(messages).choice_arg.AddToParser(parser)
+def AddCapacityFlag(gateway_message, parser):
+  GetCapacityArg(gateway_message).choice_arg.AddToParser(parser)
 
 
 def AddIpRangeReservationsFlag(parser):

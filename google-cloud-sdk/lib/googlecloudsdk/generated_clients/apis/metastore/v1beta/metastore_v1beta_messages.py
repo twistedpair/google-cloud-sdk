@@ -2865,8 +2865,9 @@ class OperationMetadata(_messages.Message):
     endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. Identifies whether the caller has
       requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
+      successfully been cancelled have google.longrunning.Operation.error
+      value with a google.rpc.Status.code of 1, corresponding to
+      Code.CANCELLED.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
     target: Output only. Server-defined resource path for the target of the
@@ -3063,7 +3064,7 @@ class Restore(_messages.Message):
 
 
 class RestoreServiceRequest(_messages.Message):
-  r"""Request message for DataprocMetastore.Restore.
+  r"""Request message for DataprocMetastore.RestoreService.
 
   Enums:
     RestoreTypeValueValuesEnum: Optional. The type of restore. If unspecified,

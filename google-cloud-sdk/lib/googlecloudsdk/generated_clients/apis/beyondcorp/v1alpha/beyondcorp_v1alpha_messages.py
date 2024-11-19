@@ -155,8 +155,9 @@ class AppGatewayOperationMetadata(_messages.Message):
     endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      successfully been cancelled have google.longrunning.Operation.error
+      value with a google.rpc.Status.code of `1`, corresponding to
+      `Code.CANCELLED`.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
     target: Output only. Server-defined resource path for the target of the
@@ -3036,22 +3037,6 @@ class BeyondcorpProjectsLocationsSecurityGatewaysSetIamPolicyRequest(_messages.M
   resource = _messages.StringField(2, required=True)
 
 
-class BeyondcorpProjectsLocationsSecurityGatewaysSetPeeringRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsSecurityGatewaysSetPeeringRequest object.
-
-  Fields:
-    googleCloudBeyondcorpSecuritygatewaysV1alphaSetPeeringRequest: A
-      GoogleCloudBeyondcorpSecuritygatewaysV1alphaSetPeeringRequest resource
-      to be passed as the request body.
-    securityGateway: Required. BeyondCorp SecurityGateway name using the form:
-      `projects/{project}/locations/{location}/securityGateways/{security_gate
-      way}`
-  """
-
-  googleCloudBeyondcorpSecuritygatewaysV1alphaSetPeeringRequest = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1alphaSetPeeringRequest', 1)
-  securityGateway = _messages.StringField(2, required=True)
-
-
 class BeyondcorpProjectsLocationsSecurityGatewaysTestIamPermissionsRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsSecurityGatewaysTestIamPermissionsRequest
   object.
@@ -3807,8 +3792,9 @@ class GoogleCloudBeyondcorpAppconnectorsV1AppConnectorOperationMetadata(_message
     endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      successfully been cancelled have google.longrunning.Operation.error
+      value with a google.rpc.Status.code of `1`, corresponding to
+      `Code.CANCELLED`.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
     target: Output only. Server-defined resource path for the target of the
@@ -4019,8 +4005,9 @@ class GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnectorOperationMetadata(_me
     endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      successfully been cancelled have google.longrunning.Operation.error
+      value with a google.rpc.Status.code of `1`, corresponding to
+      `Code.CANCELLED`.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
     target: Output only. Server-defined resource path for the target of the
@@ -4277,8 +4264,9 @@ class GoogleCloudBeyondcorpAppgatewaysV1AppGatewayOperationMetadata(_messages.Me
     endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      successfully been cancelled have google.longrunning.Operation.error
+      value with a google.rpc.Status.code of `1`, corresponding to
+      `Code.CANCELLED`.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
     target: Output only. Server-defined resource path for the target of the
@@ -5051,20 +5039,6 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1alphaListSecurityGatewaysResponse(_
   unreachable = _messages.StringField(3, repeated=True)
 
 
-class GoogleCloudBeyondcorpSecuritygatewaysV1alphaPeering(_messages.Message):
-  r"""VPC Peering details.
-
-  Fields:
-    dnsZones: Optional. List of DNS zones for DNS peering with the customer
-      VPC network.
-    targetNetwork: Required. The name of the Target VPC network name in the
-      format: `projects/{project}/global/networks/{network}
-  """
-
-  dnsZones = _messages.StringField(1, repeated=True)
-  targetNetwork = _messages.StringField(2)
-
-
 class GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway(_messages.Message):
   r"""Information about a BeyoncCorp SecurityGateway resource.
 
@@ -5170,32 +5144,6 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGatewayOperationMetada
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
-
-
-class GoogleCloudBeyondcorpSecuritygatewaysV1alphaSetPeeringRequest(_messages.Message):
-  r"""Set Peering request for creating a VPC peering between Google network
-  and customer networks.
-
-  Fields:
-    peerings: Required. List of Peering connection information.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, validates request by executing a dry-run
-      which would not alter the resource in any way.
-  """
-
-  peerings = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1alphaPeering', 1, repeated=True)
-  requestId = _messages.StringField(2)
-  validateOnly = _messages.BooleanField(3)
 
 
 class GoogleCloudLocationListLocationsResponse(_messages.Message):

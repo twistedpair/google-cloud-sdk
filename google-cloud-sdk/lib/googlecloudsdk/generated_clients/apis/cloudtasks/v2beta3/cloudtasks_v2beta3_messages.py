@@ -1133,7 +1133,7 @@ class HttpRequest(_messages.Message):
       partial list of headers that will be ignored or replaced is: * Any
       header that is prefixed with "X-CloudTasks-" will be treated as service
       header. Service headers define properties of the task and are predefined
-      in CloudTask. * Host: This will be computed by Cloud Tasks and derived
+      in Cloud Tasks. * Host: This will be computed by Cloud Tasks and derived
       from HttpRequest.url. * Content-Length: This will be computed by Cloud
       Tasks. * User-Agent: This will be set to `"Google-Cloud-Tasks"`. *
       `X-Google-*`: Google use only. * `X-AppEngine-*`: Google use only.
@@ -1155,7 +1155,7 @@ class HttpRequest(_messages.Message):
       partial list of headers that will be ignored or replaced is: * Any
       header that is prefixed with "X-CloudTasks-" will be treated as service
       header. Service headers define properties of the task and are predefined
-      in CloudTask. * Host: This will be computed by Cloud Tasks and derived
+      in Cloud Tasks. * Host: This will be computed by Cloud Tasks and derived
       from HttpRequest.url. * Content-Length: This will be computed by Cloud
       Tasks. * User-Agent: This will be set to `"Google-Cloud-Tasks"`. *
       `X-Google-*`: Google use only. * `X-AppEngine-*`: Google use only.
@@ -1216,7 +1216,7 @@ class HttpRequest(_messages.Message):
     request. Some HTTP request headers will be ignored or replaced. A partial
     list of headers that will be ignored or replaced is: * Any header that is
     prefixed with "X-CloudTasks-" will be treated as service header. Service
-    headers define properties of the task and are predefined in CloudTask. *
+    headers define properties of the task and are predefined in Cloud Tasks. *
     Host: This will be computed by Cloud Tasks and derived from
     HttpRequest.url. * Content-Length: This will be computed by Cloud Tasks. *
     User-Agent: This will be set to `"Google-Cloud-Tasks"`. * `X-Google-*`:
@@ -1261,9 +1261,9 @@ class HttpTarget(_messages.Message):
 
   Enums:
     HttpMethodValueValuesEnum: The HTTP method to use for the request. When
-      specified, it overrides HttpRequest for the task. Note that if the value
-      is set to HttpMethod the HttpRequest of the task will be ignored at
-      execution time.
+      specified, it overrides HttpRequest.http_method for the task. Note that
+      if the value is set to HttpMethod.GET the HttpRequest.body of the task
+      will be ignored at execution time.
 
   Fields:
     headerOverrides: HTTP target headers. This map contains the header field
@@ -1288,9 +1288,9 @@ class HttpTarget(_messages.Message):
       (Resource Fields) of the [Service Specific
       Terms](https://cloud.google.com/terms/service-terms).
     httpMethod: The HTTP method to use for the request. When specified, it
-      overrides HttpRequest for the task. Note that if the value is set to
-      HttpMethod the HttpRequest of the task will be ignored at execution
-      time.
+      overrides HttpRequest.http_method for the task. Note that if the value
+      is set to HttpMethod.GET the HttpRequest.body of the task will be
+      ignored at execution time.
     oauthToken: If specified, an [OAuth
       token](https://developers.google.com/identity/protocols/OAuth2) is
       generated and attached as the `Authorization` header in the HTTP
@@ -1312,8 +1312,9 @@ class HttpTarget(_messages.Message):
 
   class HttpMethodValueValuesEnum(_messages.Enum):
     r"""The HTTP method to use for the request. When specified, it overrides
-    HttpRequest for the task. Note that if the value is set to HttpMethod the
-    HttpRequest of the task will be ignored at execution time.
+    HttpRequest.http_method for the task. Note that if the value is set to
+    HttpMethod.GET the HttpRequest.body of the task will be ignored at
+    execution time.
 
     Values:
       HTTP_METHOD_UNSPECIFIED: HTTP method unspecified

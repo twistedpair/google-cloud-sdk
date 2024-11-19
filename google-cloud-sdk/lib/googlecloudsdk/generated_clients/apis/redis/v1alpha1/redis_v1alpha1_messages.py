@@ -184,12 +184,8 @@ class BackupClusterRequest(_messages.Message):
   Fields:
     backupId: Optional. The id of the backup to be created. If not specified,
       the default value ([YYYYMMDDHHMMSS]_[Shortened Cluster UID] is used.
-    ttl: Optional. TTL for the backup to expire. Note that this value will be
-      used to set up the backup GCS objects' expiration time. If not
-      specified, the default value is 100 years, which is the max value that
-      GCS supports. Also don't set this to a value that is too small,
-      otherwise the expiration time might be in the past when GCS receives the
-      set up expiration time request, so that the backup operation would fail.
+    ttl: Optional. TTL for the backup to expire. Value range is 1 day to 100
+      years. If not specified, the default value is 100 years.
   """
 
   backupId = _messages.StringField(1)
@@ -2043,8 +2039,8 @@ class GoogleCloudCommonOperationMetadata(_messages.Message):
     apiVersion: Output only. API version used to start the operation.
     cancelRequested: Output only. Identifies whether the user has requested
       cancellation of the operation. Operations that have been cancelled
-      successfully have Operation.error value with a google.rpc.Status.code of
-      1, corresponding to `Code.CANCELLED`.
+      successfully have google.longrunning.Operation.error value with a
+      google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
     statusDetail: Output only. Human-readable status of the operation, if any.

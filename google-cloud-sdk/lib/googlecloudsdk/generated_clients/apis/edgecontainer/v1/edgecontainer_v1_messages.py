@@ -113,6 +113,7 @@ class Cluster(_messages.Message):
     systemAddonsConfig: Optional. The configuration of the system add-ons.
     targetVersion: Optional. The target cluster version. For example: "1.5.0".
     updateTime: Output only. The time when the cluster was last updated.
+    zoneStorageEncryption: Optional. The zone storage encryption configuration
   """
 
   class ReleaseChannelValueValuesEnum(_messages.Enum):
@@ -197,6 +198,7 @@ class Cluster(_messages.Message):
   systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 23)
   targetVersion = _messages.StringField(24)
   updateTime = _messages.StringField(25)
+  zoneStorageEncryption = _messages.MessageField('ZoneStorageEncryption', 26)
 
 
 class ClusterNetworking(_messages.Message):
@@ -2029,6 +2031,37 @@ class ZoneMetadata(_messages.Message):
   configData = _messages.MessageField('ConfigData', 1)
   quota = _messages.MessageField('Quota', 2, repeated=True)
   rackTypes = _messages.MessageField('RackTypesValue', 3)
+
+
+class ZoneStorageEncryption(_messages.Message):
+  r"""Configuration for Zone Storage CMEK Support
+
+  Enums:
+    ResourceStateValueValuesEnum: Output only. The current resource state of
+      the CMEK
+
+  Fields:
+    kmsKey: Optional. The Cloud KMS Key
+    kmsKeyActiveVersion: Output only. The Cloud KMS CryptoKeyVersion currently
+      used for encryption/decryption
+    resourceState: Output only. The current resource state of the CMEK
+  """
+
+  class ResourceStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current resource state of the CMEK
+
+    Values:
+      RESOURCE_STATE_UNSPECIFIED: Default value.
+      RESOURCE_STATE_LOCK_DOWN: The resource is in LOCK DOWN state.
+      RESOURCE_STATE_LOCK_DOWN_PENDING: The resource is pending lock down.
+    """
+    RESOURCE_STATE_UNSPECIFIED = 0
+    RESOURCE_STATE_LOCK_DOWN = 1
+    RESOURCE_STATE_LOCK_DOWN_PENDING = 2
+
+  kmsKey = _messages.StringField(1)
+  kmsKeyActiveVersion = _messages.StringField(2)
+  resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 3)
 
 
 encoding.AddCustomJsonFieldMapping(

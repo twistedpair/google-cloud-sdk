@@ -59,12 +59,13 @@ class Tool(proto.Message):
             declarations to be passed to the model along with the
             current user query. Model may decide to call a subset of
             these functions by populating
-            [FunctionCall][content.part.function_call] in the response.
-            User should provide a
-            [FunctionResponse][content.part.function_response] for each
-            function call in the next turn. Based on the function
-            responses, Model will generate the final response back to
-            the user. Maximum 128 function declarations can be provided.
+            [FunctionCall][google.cloud.aiplatform.v1beta1.Part.function_call]
+            in the response. User should provide a
+            [FunctionResponse][google.cloud.aiplatform.v1beta1.Part.function_response]
+            for each function call in the next turn. Based on the
+            function responses, Model will generate the final response
+            back to the user. Maximum 128 function declarations can be
+            provided.
         retrieval (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.Retrieval):
             Optional. Retrieval tool type.
             System will always execute the provided

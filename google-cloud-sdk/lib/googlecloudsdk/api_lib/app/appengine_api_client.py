@@ -133,7 +133,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     return operations_util.WaitForOperation(
         self.client.apps_operations, operation, message=progress_message)
 
-  def CreateApp(self, location, service_account=None):
+  def CreateApp(self, location, service_account=None, ssl_policy=None):
     """Creates an App Engine app within the current cloud project.
 
     Creates a new singleton app within the currently selected Cloud Project.
@@ -143,6 +143,8 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       location: str, The location (region) of the app, i.e. "us-central"
       service_account: str, The app level service account of the app, i.e.
         "123@test-app.iam.gserviceaccount.com"
+      ssl_policy: enum, the app-level SSL policy to update for this App Engine
+        app. Can be DEFAULT or MODERN.
 
     Raises:
       apitools_exceptions.HttpConflictError if app already exists
@@ -157,6 +159,9 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     else:
       create_request = self.messages.Application(
           id=self.project, locationId=location)
+
+    if ssl_policy:
+      create_request.sslPolicy = ssl_policy
 
     operation = self.client.apps.Create(create_request)
 

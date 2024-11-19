@@ -315,3 +315,18 @@ glossary_category:
     attribute_name: glossary_category
     help: |
       Identifier of the Dataplex Glossary Category resource.
+
+glossary_term:
+  name: glossary term
+  collection: dataplex.projects.locations.glossaries.terms
+  request_id_field: termId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - *glossary
+  - &glossary_term
+    parameter_name: termsId
+    attribute_name: glossary_term
+    help: |
+      Identifier of the Dataplex Glossary Term resource.

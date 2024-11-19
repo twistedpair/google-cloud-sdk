@@ -955,7 +955,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     # known command. The negative lookbehind prefix prevents hyperlinks in
     # SYNOPSIS sections and as the first line in a paragraph.
     return (
-        r'(?<!\n\n)(?<!\*\(ALPHA\)\* )(?<!\*\(BETA\)\* )'
+        r'(?<!\n\n)(?<!\*\(ALPHA\)\* )(?<!\*\(BETA\)\* )(?<!\*\(PREVIEW\)\* )'
         r'([`*])(?P<command>{top}( [a-z][-a-z0-9]*)*)(?P<end>\1)'
         .format(top=re.escape(self._top)))
 

@@ -709,7 +709,8 @@ class BuildOptions(_messages.Message):
       [running builds in a private
       pool](https://cloud.google.com/build/docs/private-pools/run-builds-in-
       private-pool) for more information.
-    pubsubTopic: Optional. Option to specify the Pub/Sub topic to receive build status updates.
+    pubsubTopic: Optional. Option to specify the Pub/Sub topic to receive
+      build status updates.
     requestedVerifyOption: Requested verifiability options.
     secretEnv: A list of global environment variables, which are encrypted
       using a Cloud Key Management Service crypto key. These values must be
@@ -4121,8 +4122,8 @@ class OperationMetadata(_messages.Message):
     apiVersion: Output only. API version used to start the operation.
     cancelRequested: Output only. Identifies whether the user has requested
       cancellation of the operation. Operations that have been cancelled
-      successfully have Operation.error value with a google.rpc.Status.code of
-      1, corresponding to `Code.CANCELLED`.
+      successfully have google.longrunning.Operation.error value with a
+      google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
     statusDetail: Output only. Human-readable status of the operation, if any.

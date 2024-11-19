@@ -1347,3 +1347,13 @@ If the max-retry-delay and min-retry-delay are set to the same value, then the d
           ' is 60.'
       ),
   )
+
+
+def AddLabelsArg(parser, help_text):
+  """Adds arguments for resources' labels."""
+  parser.add_argument(
+      '--labels',
+      help=help_text,
+      type=arg_parsers.ArgDict(),
+      metavar='KEY=VALUE',
+  )

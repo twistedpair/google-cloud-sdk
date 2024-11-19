@@ -1225,6 +1225,8 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
       DOCKER_START_RUNTIME_PERMISSION_DENIED: Docker failed to start OCI
         runtime because of permission denied.
       DOCKER_PERMISSION_DENIED: Docker failed because of permission denied.
+      NETWORK_PROXY_UPDATE_POLICY_ERROR: The bot failed to update the network
+        proxy policy.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -1279,6 +1281,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     DOCKER_START_RUNTIME_FILE_FORMAT_ERROR = 50
     DOCKER_START_RUNTIME_PERMISSION_DENIED = 51
     DOCKER_PERMISSION_DENIED = 52
+    NETWORK_PROXY_UPDATE_POLICY_ERROR = 53
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
@@ -1591,6 +1594,9 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Mess
       docker runtime used for containers started on Linux.
     MacExecutionValueValuesEnum: Defines how Windows actions are allowed to
       execute. DO NOT USE: Experimental / unlaunched feature.
+    NetworkAccessValueValuesEnum: Optional. Defines the network access policy
+      for actions on this instance. DO NOT USE: Experimental / unlaunched
+      feature.
     VmVerificationValueValuesEnum: Whether to verify CreateBotSession and
       UpdateBotSession from the bot.
     WindowsExecutionValueValuesEnum: Defines how Windows actions are allowed
@@ -1630,6 +1636,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Mess
       for containers started on Linux.
     macExecution: Defines how Windows actions are allowed to execute. DO NOT
       USE: Experimental / unlaunched feature.
+    networkAccess: Optional. Defines the network access policy for actions on
+      this instance. DO NOT USE: Experimental / unlaunched feature.
     vmVerification: Whether to verify CreateBotSession and UpdateBotSession
       from the bot.
     windowsExecution: Defines how Windows actions are allowed to execute. DO
@@ -1733,6 +1741,25 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Mess
     MAC_EXECUTION_FORBIDDEN = 1
     MAC_EXECUTION_UNRESTRICTED = 2
 
+  class NetworkAccessValueValuesEnum(_messages.Enum):
+    r"""Optional. Defines the network access policy for actions on this
+    instance. DO NOT USE: Experimental / unlaunched feature.
+
+    Values:
+      NETWORK_ACCESS_UNSPECIFIED: Default value, if not explicitly set.
+        Equivalent to OFF.
+      NETWORK_ACCESS_ALLOWED: Disables enforcing feature policies related to
+        network access.
+      NETWORK_ACCESS_ENFORCED: Requires feature policies to be set that
+        guarantee network access restrctions. Enforced means that network
+        access will be limited and certain features will be disabled to
+        prevent bypassing the filter. However, a determined and malicious
+        actor may still find a way to gain full network access.
+    """
+    NETWORK_ACCESS_UNSPECIFIED = 0
+    NETWORK_ACCESS_ALLOWED = 1
+    NETWORK_ACCESS_ENFORCED = 2
+
   class VmVerificationValueValuesEnum(_messages.Enum):
     r"""Whether to verify CreateBotSession and UpdateBotSession from the bot.
 
@@ -1780,8 +1807,9 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Mess
   linuxExecution = _messages.EnumField('LinuxExecutionValueValuesEnum', 13)
   linuxIsolation = _messages.EnumField('LinuxIsolationValueValuesEnum', 14)
   macExecution = _messages.EnumField('MacExecutionValueValuesEnum', 15)
-  vmVerification = _messages.EnumField('VmVerificationValueValuesEnum', 16)
-  windowsExecution = _messages.EnumField('WindowsExecutionValueValuesEnum', 17)
+  networkAccess = _messages.EnumField('NetworkAccessValueValuesEnum', 16)
+  vmVerification = _messages.EnumField('VmVerificationValueValuesEnum', 17)
+  windowsExecution = _messages.EnumField('WindowsExecutionValueValuesEnum', 18)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature(_messages.Message):
@@ -1840,6 +1868,18 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaGetWorkerPoolRequest(_messag
   name = _messages.StringField(1)
 
 
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaIAMBinding(_messages.Message):
+  r"""Represents an IAM binding.
+
+  Fields:
+    principal: Required. The IAM principal this binding applies to.
+    role: Required. The IAM role this binding applies to. Format: `roles/`
+  """
+
+  principal = _messages.StringField(1)
+  role = _messages.StringField(2)
+
+
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
   r"""Instance conceptually encapsulates all Remote Build Execution resources
   for remote builds. An instance consists of storage and compute resources
@@ -1858,6 +1898,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
       configuration. Currently, this includes the list of user-managed IAM
       bindings applied to the backend project, which will always be empty for
       instances not in one of the ENABLE_BE_IAM_BINDING_* feature allowlists.
+    bindings: Optional. The list of IAM bindings that should be applied to
+      this instance.
     casRelationResult: A CasRelationResultValue attribute.
     casRelations: Specify parent or child instances of `this` instance.
       Configurations will be rejected if: -- If `this` instance is not
@@ -1929,16 +1971,17 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   backendProperties = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaBackendProperties', 1)
-  casRelationResult = _messages.MessageField('CasRelationResultValue', 2)
-  casRelations = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaRelationship', 3, repeated=True)
-  featurePolicy = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy', 4)
-  location = _messages.StringField(5)
-  loggingEnabled = _messages.BooleanField(6)
-  name = _messages.StringField(7)
-  schedulerNotificationConfig = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaSchedulerNotificationConfig', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  storageSettings = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaStorageSettings', 10)
-  zoneDrains = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaZoneDrain', 11, repeated=True)
+  bindings = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaIAMBinding', 2, repeated=True)
+  casRelationResult = _messages.MessageField('CasRelationResultValue', 3)
+  casRelations = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaRelationship', 4, repeated=True)
+  featurePolicy = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy', 5)
+  location = _messages.StringField(6)
+  loggingEnabled = _messages.BooleanField(7)
+  name = _messages.StringField(8)
+  schedulerNotificationConfig = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaSchedulerNotificationConfig', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  storageSettings = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaStorageSettings', 11)
+  zoneDrains = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaZoneDrain', 12, repeated=True)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesRequest(_messages.Message):

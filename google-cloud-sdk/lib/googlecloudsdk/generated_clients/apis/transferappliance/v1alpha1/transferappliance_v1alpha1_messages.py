@@ -14,7 +14,7 @@ package = 'transferappliance'
 
 
 class Appliance(_messages.Message):
-  r"""Message describing a physical Appliance. NextID : 111
+  r"""Message describing a physical Appliance. NextID : 112
 
   Enums:
     ModelValueValuesEnum: The hardware form factor of the appliance.
@@ -873,10 +873,22 @@ class OfflineImportFeature(_messages.Message):
   the customer site and ingested at Google.
 
   Enums:
+    LastNonCancelledStateValueValuesEnum: Output only. Holds the last active
+      state of the transfer before it was set to CANCELLED. When the transfer
+      state is CANCELLED, this field reflects its most recent active state. If
+      the transfer is not CANCELLED, this field is set to STATE_UNSPECIFIED.
     StateValueValuesEnum: Output only. The state of the transfer.
 
   Fields:
+    allocatedBytesCount: Output only. The total number of bytes allocated on
+      the appliance for data transfer.
     destination: The destination of the transfer.
+    lastNonCancelledState: Output only. Holds the last active state of the
+      transfer before it was set to CANCELLED. When the transfer state is
+      CANCELLED, this field reflects its most recent active state. If the
+      transfer is not CANCELLED, this field is set to STATE_UNSPECIFIED.
+    preparedBytesCount: Output only. The number of bytes securely encrypted
+      and uploaded to a temporary Cloud storage location.
     state: Output only. The state of the transfer.
     stsAccount: Output only. The Storage Transfer Service service account used
       for this transfer. This account must be given roles/storage.admin access
@@ -889,15 +901,21 @@ class OfflineImportFeature(_messages.Message):
       using one.
   """
 
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the transfer.
+  class LastNonCancelledStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Holds the last active state of the transfer before it was
+    set to CANCELLED. When the transfer state is CANCELLED, this field
+    reflects its most recent active state. If the transfer is not CANCELLED,
+    this field is set to STATE_UNSPECIFIED.
 
     Values:
       STATE_UNSPECIFIED: Default value. This value is unused.
       DRAFT: The transfer is associated with a draft order.
       ACTIVE: The appliance used for this transfer has been ordered but is not
         yet back at Google for ingest.
-      INGESTING: The data is being ingested off the appliance at Google.
+      INGESTING: The encrypted data is being temporarily uploaded to a
+        temporary Cloud storage location.
+      TRANSFERRING: The data is being transferred to the destination bucket.
+      VERIFYING: Verifying the data transferred to the destination bucket.
       COMPLETED: The transfer has completed and data is available in the
         output bucket.
       CANCELLED: The transfer has been cancelled and data will not be
@@ -907,14 +925,45 @@ class OfflineImportFeature(_messages.Message):
     DRAFT = 1
     ACTIVE = 2
     INGESTING = 3
-    COMPLETED = 4
-    CANCELLED = 5
+    TRANSFERRING = 4
+    VERIFYING = 5
+    COMPLETED = 6
+    CANCELLED = 7
 
-  destination = _messages.MessageField('GcsDestination', 1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
-  stsAccount = _messages.StringField(3)
-  transferResults = _messages.MessageField('TransferResults', 4)
-  workloadAccount = _messages.StringField(5)
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the transfer.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      DRAFT: The transfer is associated with a draft order.
+      ACTIVE: The appliance used for this transfer has been ordered but is not
+        yet back at Google for ingest.
+      INGESTING: The encrypted data is being temporarily uploaded to a
+        temporary Cloud storage location.
+      TRANSFERRING: The data is being transferred to the destination bucket.
+      VERIFYING: Verifying the data transferred to the destination bucket.
+      COMPLETED: The transfer has completed and data is available in the
+        output bucket.
+      CANCELLED: The transfer has been cancelled and data will not be
+        ingested.
+    """
+    STATE_UNSPECIFIED = 0
+    DRAFT = 1
+    ACTIVE = 2
+    INGESTING = 3
+    TRANSFERRING = 4
+    VERIFYING = 5
+    COMPLETED = 6
+    CANCELLED = 7
+
+  allocatedBytesCount = _messages.IntegerField(1)
+  destination = _messages.MessageField('GcsDestination', 2)
+  lastNonCancelledState = _messages.EnumField('LastNonCancelledStateValueValuesEnum', 3)
+  preparedBytesCount = _messages.IntegerField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  stsAccount = _messages.StringField(6)
+  transferResults = _messages.MessageField('TransferResults', 7)
+  workloadAccount = _messages.StringField(8)
 
 
 class OnlineImportFeature(_messages.Message):
@@ -1153,6 +1202,7 @@ class Order(_messages.Message):
       JPN: Japan datacenter location.
       CAN: Canada(Montr\xe9al) data center.
       AUTP: Australia(Third Party) datacenter location.
+      INTP: India(Third Party) datacenter location.
     """
     DATACENTER_LOCATION_UNSPECIFIED = 0
     US = 1
@@ -1163,6 +1213,7 @@ class Order(_messages.Message):
     JPN = 6
     CAN = 7
     AUTP = 8
+    INTP = 9
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the order.
@@ -2004,7 +2055,7 @@ class TransferManifest(_messages.Message):
 
 class TransferResults(_messages.Message):
   r"""A message used in OfflineImportFeature and OnlineImportFeature to
-  display the results of a transfer.
+  display the results of a transfer. NextID : 15
 
   Fields:
     bucketProjectId: Output only. The project id represents the project id
@@ -2027,6 +2078,7 @@ class TransferResults(_messages.Message):
     objectsCopiedCount: Output only. The number of objects successfully copied
       to the destination.
     objectsFoundCount: Output only. The number of objects found.
+    startTime: Output only. The time that this transfer started.
   """
 
   bucketProjectId = _messages.StringField(1)
@@ -2039,6 +2091,7 @@ class TransferResults(_messages.Message):
   errorLog = _messages.StringField(8)
   objectsCopiedCount = _messages.IntegerField(9)
   objectsFoundCount = _messages.IntegerField(10)
+  startTime = _messages.StringField(11)
 
 
 class TransferapplianceProjectsLocationsAppliancesCreateRequest(_messages.Message):

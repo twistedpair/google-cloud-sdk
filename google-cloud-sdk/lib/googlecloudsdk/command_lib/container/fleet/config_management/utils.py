@@ -33,6 +33,7 @@ spec:
   version:
   configSync:
     enabled: true
+    stopSyncing: false
     sourceFormat: hierarchy
     policyDir:
     preventDrift: false
@@ -73,6 +74,11 @@ HNC = 'hierarchyController'
 PREVENT_DRIFT_VERSION = '1.10.0'
 MONITORING_VERSION = '1.12.0'
 OCI_SUPPORT_VERSION = '1.12.0'
+STATUS_PENDING = 'PENDING'
+STATUS_STOPPED = 'STOPPED'
+STATUS_ERROR = 'ERROR'
+STATUS_NOT_INSTALLED = 'NOT_INSTALLED'
+STATUS_INSTALLED = 'INSTALLED'
 
 
 def versions_for_member(feature, membership):

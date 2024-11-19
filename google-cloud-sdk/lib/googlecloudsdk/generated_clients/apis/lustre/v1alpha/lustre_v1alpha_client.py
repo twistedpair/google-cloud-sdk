@@ -108,6 +108,33 @@ class LustreV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ExportData(self, request, global_params=None):
+      r"""Exports data from Lustre to Cloud Storage.
+
+      Args:
+        request: (LustreProjectsLocationsInstancesExportDataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ExportData')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportData.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:exportData',
+        http_method='POST',
+        method_id='lustre.projects.locations.instances.exportData',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:exportData',
+        request_field='exportDataRequest',
+        request_type_name='LustreProjectsLocationsInstancesExportDataRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single Instance.
 
@@ -132,6 +159,33 @@ class LustreV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='LustreProjectsLocationsInstancesGetRequest',
         response_type_name='Instance',
+        supports_download=False,
+    )
+
+    def ImportData(self, request, global_params=None):
+      r"""Imports data from Cloud Storage to Lustre.
+
+      Args:
+        request: (LustreProjectsLocationsInstancesImportDataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ImportData')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ImportData.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:importData',
+        http_method='POST',
+        method_id='lustre.projects.locations.instances.importData',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:importData',
+        request_field='importDataRequest',
+        request_type_name='LustreProjectsLocationsInstancesImportDataRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

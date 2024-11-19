@@ -625,7 +625,7 @@ class PiAndJailbreakFilterResult(_messages.Message):
     r"""Confidence level identified for Prompt injection and Jailbreak.
 
     Values:
-      DETECTION_CONFIDENCE_LEVEL_UNSPECIFIED: Unused
+      DETECTION_CONFIDENCE_LEVEL_UNSPECIFIED: Same as LOW_AND_ABOVE.
       LOW_AND_ABOVE: Highest chance of a false positive.
       MEDIUM_AND_ABOVE: Some chance of false positives.
       HIGH: Low chance of false positives.
@@ -696,7 +696,7 @@ class PiAndJailbreakFilterSettings(_messages.Message):
     reported. Confidence level will only be used if the filter is enabled.
 
     Values:
-      DETECTION_CONFIDENCE_LEVEL_UNSPECIFIED: Unused
+      DETECTION_CONFIDENCE_LEVEL_UNSPECIFIED: Same as LOW_AND_ABOVE.
       LOW_AND_ABOVE: Highest chance of a false positive.
       MEDIUM_AND_ABOVE: Some chance of false positives.
       HIGH: Low chance of false positives.
@@ -753,7 +753,7 @@ class RaiFilter(_messages.Message):
     will use a reasonable default level based on the `filter_type`.
 
     Values:
-      DETECTION_CONFIDENCE_LEVEL_UNSPECIFIED: Unused
+      DETECTION_CONFIDENCE_LEVEL_UNSPECIFIED: Same as LOW_AND_ABOVE.
       LOW_AND_ABOVE: Highest chance of a false positive.
       MEDIUM_AND_ABOVE: Some chance of false positives.
       HIGH: Low chance of false positives.
@@ -892,7 +892,7 @@ class RaiFilterTypeResult(_messages.Message):
     r"""Confidence level identified for this RAI filter.
 
     Values:
-      DETECTION_CONFIDENCE_LEVEL_UNSPECIFIED: Unused
+      DETECTION_CONFIDENCE_LEVEL_UNSPECIFIED: Same as LOW_AND_ABOVE.
       LOW_AND_ABOVE: Highest chance of a false positive.
       MEDIUM_AND_ABOVE: Some chance of false positives.
       HIGH: Low chance of false positives.

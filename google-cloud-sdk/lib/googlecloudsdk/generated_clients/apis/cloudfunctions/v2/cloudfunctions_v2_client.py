@@ -163,6 +163,33 @@ class CloudfunctionsV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DetachFunction(self, request, global_params=None):
+      r"""Detaches 2nd Gen function to Cloud Run function.
+
+      Args:
+        request: (CloudfunctionsProjectsLocationsFunctionsDetachFunctionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DetachFunction')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DetachFunction.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:detachFunction',
+        http_method='POST',
+        method_id='cloudfunctions.projects.locations.functions.detachFunction',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:detachFunction',
+        request_field='detachFunctionRequest',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsDetachFunctionRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def GenerateDownloadUrl(self, request, global_params=None):
       r"""Returns a signed URL for downloading deployed function source code. The URL is only valid for a limited period and should be used within 30 minutes of generation. For more information about the signed URL usage see: https://cloud.google.com/storage/docs/access-control/signed-urls.
 

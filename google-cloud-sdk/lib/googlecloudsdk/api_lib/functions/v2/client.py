@@ -183,3 +183,20 @@ class FunctionsClient(object):
             name=name
         )
     )
+
+  @util_v1.CatchHTTPErrorRaiseHTTPException
+  def DetachFunction(self, name: str) -> types.Operation:
+    """Detach a GCF 2nd gen function from GCF and make it a native Cloud Run function.
+
+    Args:
+      name: str, GCFv2 function resource relative name which follows the format
+        of `projects/{project}/locations/{region}/functions/{function}`.
+
+    Returns:
+      A long-running operation.
+    """
+    return self.client.projects_locations_functions.DetachFunction(
+        self.messages.CloudfunctionsProjectsLocationsFunctionsDetachFunctionRequest(
+            name=name
+        )
+    )

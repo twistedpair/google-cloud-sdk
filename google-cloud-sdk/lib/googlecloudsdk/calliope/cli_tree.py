@@ -379,13 +379,15 @@ class Command(object):
     flags: {str:Flag}, Command flag dict, indexed by normalized flag name.
     is_global: bool, True if the command is the root command.
     is_hidden: bool, True if the command is hidden.
+    is_group: bool, True if the command is a group.
+    path: [str], The command path.
     is_auto_generated: bool, True if this command or group is auto-generated.
     universe_compatible: bool, True if the command is universe compatible.
     default_universe_compatible: bool, True if the command is compatible in the
       default universe.
     name: str, The normalized name ('_' => '-').
     positionals: [dict], Command positionals list.
-    release: str, The command release name {'internal', 'alpha', 'beta', 'ga'}.
+    release: str, The command release name {'preview', 'alpha', 'beta', 'ga'}.
     sections: {str:str}, Section help dict, indexed by section name. At minimum
       contains the DESCRIPTION section.
   """
@@ -571,7 +573,7 @@ class CliTreeGenerator(walker.Walker):
       return False
     path = path[1:]
     # All tracks in the branch are active.
-    if path[0] in ('alpha', 'beta'):
+    if path[0] in ('alpha', 'beta', 'preview'):
       path = path[1:]
     for name in self._branch:
       # branch is longer than path => don't prune.

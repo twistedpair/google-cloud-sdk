@@ -212,6 +212,8 @@ class AcceleratorTypeAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -249,13 +251,14 @@ class AcceleratorTypeAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -376,6 +379,8 @@ class AcceleratorTypeList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -413,13 +418,14 @@ class AcceleratorTypeList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -533,6 +539,8 @@ class AcceleratorTypesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -570,13 +578,14 @@ class AcceleratorTypesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -1122,6 +1131,8 @@ class AddressAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -1159,13 +1170,14 @@ class AddressAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -1286,6 +1298,8 @@ class AddressList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -1323,13 +1337,14 @@ class AddressList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -1442,6 +1457,8 @@ class AddressesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -1479,13 +1496,14 @@ class AddressesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -2484,6 +2502,8 @@ class AutoscalerAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -2521,13 +2541,14 @@ class AutoscalerAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -2648,6 +2669,8 @@ class AutoscalerList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -2685,13 +2708,14 @@ class AutoscalerList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -2992,6 +3016,8 @@ class AutoscalersScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -3029,13 +3055,14 @@ class AutoscalersScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -3894,6 +3921,8 @@ class BackendBucketList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -3931,13 +3960,14 @@ class BackendBucketList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -4711,6 +4741,8 @@ class BackendServiceAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -4748,13 +4780,14 @@ class BackendServiceAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -5328,6 +5361,8 @@ class BackendServiceList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -5365,13 +5400,14 @@ class BackendServiceList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -5491,6 +5527,8 @@ class BackendServiceListUsable(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -5528,13 +5566,14 @@ class BackendServiceListUsable(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -5823,6 +5862,8 @@ class BackendServicesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -5860,13 +5901,14 @@ class BackendServicesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -6632,6 +6674,7 @@ class Commitment(_messages.Message):
       COMPUTE_OPTIMIZED_H3: <no description>
       GENERAL_PURPOSE: <no description>
       GENERAL_PURPOSE_C4: <no description>
+      GENERAL_PURPOSE_C4A: <no description>
       GENERAL_PURPOSE_E2: <no description>
       GENERAL_PURPOSE_N2: <no description>
       GENERAL_PURPOSE_N2D: <no description>
@@ -6653,16 +6696,17 @@ class Commitment(_messages.Message):
     COMPUTE_OPTIMIZED_H3 = 7
     GENERAL_PURPOSE = 8
     GENERAL_PURPOSE_C4 = 9
-    GENERAL_PURPOSE_E2 = 10
-    GENERAL_PURPOSE_N2 = 11
-    GENERAL_PURPOSE_N2D = 12
-    GENERAL_PURPOSE_N4 = 13
-    GENERAL_PURPOSE_T2D = 14
-    GRAPHICS_OPTIMIZED = 15
-    MEMORY_OPTIMIZED = 16
-    MEMORY_OPTIMIZED_M3 = 17
-    STORAGE_OPTIMIZED_Z3 = 18
-    TYPE_UNSPECIFIED = 19
+    GENERAL_PURPOSE_C4A = 10
+    GENERAL_PURPOSE_E2 = 11
+    GENERAL_PURPOSE_N2 = 12
+    GENERAL_PURPOSE_N2D = 13
+    GENERAL_PURPOSE_N4 = 14
+    GENERAL_PURPOSE_T2D = 15
+    GRAPHICS_OPTIMIZED = 16
+    MEMORY_OPTIMIZED = 17
+    MEMORY_OPTIMIZED_M3 = 18
+    STORAGE_OPTIMIZED_Z3 = 19
+    TYPE_UNSPECIFIED = 20
 
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
@@ -6804,6 +6848,8 @@ class CommitmentAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -6841,13 +6887,14 @@ class CommitmentAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -6968,6 +7015,8 @@ class CommitmentList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -7005,13 +7054,14 @@ class CommitmentList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -7137,6 +7187,8 @@ class CommitmentsScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -7174,13 +7226,14 @@ class CommitmentsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -13304,6 +13357,35 @@ class ComputeInstanceGroupManagersResizeRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstanceGroupManagersResumeInstancesRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagersResumeInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group.
+    instanceGroupManagersResumeInstancesRequest: A
+      InstanceGroupManagersResumeInstancesRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the managed instance group is located.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersResumeInstancesRequest = _messages.MessageField('InstanceGroupManagersResumeInstancesRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeInstanceGroupManagersSetInstanceTemplateRequest(_messages.Message):
   r"""A ComputeInstanceGroupManagersSetInstanceTemplateRequest object.
 
@@ -13357,6 +13439,93 @@ class ComputeInstanceGroupManagersSetTargetPoolsRequest(_messages.Message):
 
   instanceGroupManager = _messages.StringField(1, required=True)
   instanceGroupManagersSetTargetPoolsRequest = _messages.MessageField('InstanceGroupManagersSetTargetPoolsRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstanceGroupManagersStartInstancesRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagersStartInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group.
+    instanceGroupManagersStartInstancesRequest: A
+      InstanceGroupManagersStartInstancesRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the managed instance group is located.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersStartInstancesRequest = _messages.MessageField('InstanceGroupManagersStartInstancesRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstanceGroupManagersStopInstancesRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagersStopInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group.
+    instanceGroupManagersStopInstancesRequest: A
+      InstanceGroupManagersStopInstancesRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the managed instance group is located.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersStopInstancesRequest = _messages.MessageField('InstanceGroupManagersStopInstancesRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstanceGroupManagersSuspendInstancesRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagersSuspendInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group.
+    instanceGroupManagersSuspendInstancesRequest: A
+      InstanceGroupManagersSuspendInstancesRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the managed instance group is located.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersSuspendInstancesRequest = _messages.MessageField('InstanceGroupManagersSuspendInstancesRequest', 2)
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
   zone = _messages.StringField(5, required=True)
@@ -22999,6 +23168,35 @@ class ComputeRegionInstanceGroupManagersResizeRequest(_messages.Message):
   size = _messages.IntegerField(5, required=True, variant=_messages.Variant.INT32)
 
 
+class ComputeRegionInstanceGroupManagersResumeInstancesRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersResumeInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: Name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupManagersResumeInstancesRequest: A
+      RegionInstanceGroupManagersResumeInstancesRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersResumeInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersResumeInstancesRequest', 4)
+  requestId = _messages.StringField(5)
+
+
 class ComputeRegionInstanceGroupManagersSetInstanceTemplateRequest(_messages.Message):
   r"""A ComputeRegionInstanceGroupManagersSetInstanceTemplateRequest object.
 
@@ -23054,6 +23252,93 @@ class ComputeRegionInstanceGroupManagersSetTargetPoolsRequest(_messages.Message)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   regionInstanceGroupManagersSetTargetPoolsRequest = _messages.MessageField('RegionInstanceGroupManagersSetTargetPoolsRequest', 4)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionInstanceGroupManagersStartInstancesRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersStartInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: Name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupManagersStartInstancesRequest: A
+      RegionInstanceGroupManagersStartInstancesRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersStartInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersStartInstancesRequest', 4)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionInstanceGroupManagersStopInstancesRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersStopInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupManagersStopInstancesRequest: A
+      RegionInstanceGroupManagersStopInstancesRequest resource to be passed as
+      the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersStopInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersStopInstancesRequest', 4)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionInstanceGroupManagersSuspendInstancesRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersSuspendInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: Name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupManagersSuspendInstancesRequest: A
+      RegionInstanceGroupManagersSuspendInstancesRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersSuspendInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersSuspendInstancesRequest', 4)
   requestId = _messages.StringField(5)
 
 
@@ -24880,6 +25165,34 @@ class ComputeRegionSecurityPoliciesRemoveRuleRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   securityPolicy = _messages.StringField(4, required=True)
+
+
+class ComputeRegionSecurityPoliciesSetLabelsRequest(_messages.Message):
+  r"""A ComputeRegionSecurityPoliciesSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The region for this request.
+    regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
+      the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
+  requestId = _messages.StringField(4)
+  resource = _messages.StringField(5, required=True)
 
 
 class ComputeRegionSslCertificatesDeleteRequest(_messages.Message):
@@ -33696,6 +34009,8 @@ class DiskAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -33733,13 +34048,14 @@ class DiskAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -33990,6 +34306,8 @@ class DiskList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -34027,13 +34345,14 @@ class DiskList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -34370,6 +34689,8 @@ class DiskTypeAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -34407,13 +34728,14 @@ class DiskTypeAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -34534,6 +34856,8 @@ class DiskTypeList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -34571,13 +34895,14 @@ class DiskTypeList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -34690,6 +35015,8 @@ class DiskTypesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -34727,13 +35054,14 @@ class DiskTypesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -34873,6 +35201,8 @@ class DisksScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -34910,13 +35240,14 @@ class DisksScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -35272,6 +35603,8 @@ class ExchangedPeeringRoutesList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -35309,13 +35642,14 @@ class ExchangedPeeringRoutesList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -35625,6 +35959,8 @@ class ExternalVpnGatewayList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -35662,13 +35998,14 @@ class ExternalVpnGatewayList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -35995,6 +36332,8 @@ class FirewallList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -36032,13 +36371,14 @@ class FirewallList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -36300,6 +36640,8 @@ class FirewallPolicyList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -36337,13 +36679,14 @@ class FirewallPolicyList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -37129,6 +37472,8 @@ class ForwardingRuleAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -37166,13 +37511,14 @@ class ForwardingRuleAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -37292,6 +37638,8 @@ class ForwardingRuleList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -37329,13 +37677,14 @@ class ForwardingRuleList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -37478,6 +37827,8 @@ class ForwardingRulesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -37515,13 +37866,14 @@ class ForwardingRulesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -38460,6 +38812,8 @@ class HealthCheckList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -38497,13 +38851,14 @@ class HealthCheckList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -38774,6 +39129,8 @@ class HealthCheckServicesList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -38811,13 +39168,14 @@ class HealthCheckServicesList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -38963,6 +39321,8 @@ class HealthChecksAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -39000,13 +39360,14 @@ class HealthChecksAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -39120,6 +39481,8 @@ class HealthChecksScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -39157,13 +39520,14 @@ class HealthChecksScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -39716,6 +40080,8 @@ class HttpHealthCheckList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -39753,13 +40119,14 @@ class HttpHealthCheckList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -40312,6 +40679,8 @@ class HttpsHealthCheckList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -40349,13 +40718,14 @@ class HttpsHealthCheckList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -40758,6 +41128,8 @@ class ImageList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -40795,13 +41167,14 @@ class ImageList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -41260,6 +41633,8 @@ class InstanceAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -41297,13 +41672,14 @@ class InstanceAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -41545,6 +41921,8 @@ class InstanceGroupAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -41582,13 +41960,14 @@ class InstanceGroupAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -41709,6 +42088,8 @@ class InstanceGroupList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -41746,13 +42127,14 @@ class InstanceGroupList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -41852,6 +42234,7 @@ class InstanceGroupManager(_messages.Message):
     satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] The URL for this managed instance group. The
       server defines this URL.
+    standbyPolicy: Standby policy for stopped and suspended instances.
     statefulPolicy: Stateful configuration for this Instanced Group Manager
     status: [Output Only] The status of this managed instance group.
     targetPools: The URLs for all TargetPool resources to which instances in
@@ -41861,6 +42244,15 @@ class InstanceGroupManager(_messages.Message):
       instance group. You can reduce this number by using the
       instanceGroupManager deleteInstances or abandonInstances methods.
       Resizing the group also changes this number.
+    targetStoppedSize: The target number of stopped instances for this managed
+      instance group. This number changes when you: - Stop instance using the
+      stopInstances method or start instances using the startInstances method.
+      - Manually change the targetStoppedSize using the update method.
+    targetSuspendedSize: The target number of suspended instances for this
+      managed instance group. This number changes when you: - Suspend instance
+      using the suspendInstances method or resume instances using the
+      resumeInstances method. - Manually change the targetSuspendedSize using
+      the update method.
     updatePolicy: The update policy for this managed instance group.
     versions: Specifies the instance templates used by this managed instance
       group to create instances. Each version is defined by an
@@ -41910,13 +42302,16 @@ class InstanceGroupManager(_messages.Message):
   satisfiesPzi = _messages.BooleanField(19)
   satisfiesPzs = _messages.BooleanField(20)
   selfLink = _messages.StringField(21)
-  statefulPolicy = _messages.MessageField('StatefulPolicy', 22)
-  status = _messages.MessageField('InstanceGroupManagerStatus', 23)
-  targetPools = _messages.StringField(24, repeated=True)
-  targetSize = _messages.IntegerField(25, variant=_messages.Variant.INT32)
-  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 26)
-  versions = _messages.MessageField('InstanceGroupManagerVersion', 27, repeated=True)
-  zone = _messages.StringField(28)
+  standbyPolicy = _messages.MessageField('InstanceGroupManagerStandbyPolicy', 22)
+  statefulPolicy = _messages.MessageField('StatefulPolicy', 23)
+  status = _messages.MessageField('InstanceGroupManagerStatus', 24)
+  targetPools = _messages.StringField(25, repeated=True)
+  targetSize = _messages.IntegerField(26, variant=_messages.Variant.INT32)
+  targetStoppedSize = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  targetSuspendedSize = _messages.IntegerField(28, variant=_messages.Variant.INT32)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 29)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 30, repeated=True)
+  zone = _messages.StringField(31)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -42097,6 +42492,8 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -42134,13 +42531,14 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -42424,6 +42822,8 @@ class InstanceGroupManagerList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -42461,13 +42861,14 @@ class InstanceGroupManagerList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -42808,6 +43209,8 @@ class InstanceGroupManagerResizeRequestsListResponse(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -42845,13 +43248,14 @@ class InstanceGroupManagerResizeRequestsListResponse(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -42881,6 +43285,41 @@ class InstanceGroupManagerResizeRequestsListResponse(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class InstanceGroupManagerStandbyPolicy(_messages.Message):
+  r"""A InstanceGroupManagerStandbyPolicy object.
+
+  Enums:
+    ModeValueValuesEnum: Defines how a MIG resumes or starts VMs from a
+      standby pool when the group scales out. The default mode is `MANUAL`.
+
+  Fields:
+    initialDelaySec: Specifies the number of seconds that the MIG should wait
+      to suspend or stop a VM after that VM was created. The initial delay
+      gives the initialization script the time to prepare your VM for a quick
+      scale out. The value of initial delay must be between 0 and 3600
+      seconds. The default value is 0.
+    mode: Defines how a MIG resumes or starts VMs from a standby pool when the
+      group scales out. The default mode is `MANUAL`.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Defines how a MIG resumes or starts VMs from a standby pool when the
+    group scales out. The default mode is `MANUAL`.
+
+    Values:
+      MANUAL: MIG does not automatically resume or start VMs in the standby
+        pool when the group scales out.
+      SCALE_OUT_POOL: MIG automatically resumes or starts VMs in the standby
+        pool when the group scales out, and replenishes the standby pool
+        afterwards.
+    """
+    MANUAL = 0
+    SCALE_OUT_POOL = 1
+
+  initialDelaySec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  mode = _messages.EnumField('ModeValueValuesEnum', 2)
 
 
 class InstanceGroupManagerStatus(_messages.Message):
@@ -43445,6 +43884,8 @@ class InstanceGroupManagersListPerInstanceConfigsResp(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -43482,13 +43923,14 @@ class InstanceGroupManagersListPerInstanceConfigsResp(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -43535,6 +43977,17 @@ class InstanceGroupManagersRecreateInstancesRequest(_messages.Message):
     instances: The URLs of one or more instances to recreate. This can be a
       full URL or a partial URL, such as
       zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
+class InstanceGroupManagersResumeInstancesRequest(_messages.Message):
+  r"""A InstanceGroupManagersResumeInstancesRequest object.
+
+  Fields:
+    instances: The URLs of one or more instances to resume. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -43622,6 +44075,8 @@ class InstanceGroupManagersScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -43659,13 +44114,14 @@ class InstanceGroupManagersScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -43726,6 +44182,46 @@ class InstanceGroupManagersSetTargetPoolsRequest(_messages.Message):
 
   fingerprint = _messages.BytesField(1)
   targetPools = _messages.StringField(2, repeated=True)
+
+
+class InstanceGroupManagersStartInstancesRequest(_messages.Message):
+  r"""A InstanceGroupManagersStartInstancesRequest object.
+
+  Fields:
+    instances: The URLs of one or more instances to start. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
+class InstanceGroupManagersStopInstancesRequest(_messages.Message):
+  r"""A InstanceGroupManagersStopInstancesRequest object.
+
+  Fields:
+    forceStop: If this flag is set to true, the Instance Group Manager will
+      proceed to stop the instances, skipping initialization on them.
+    instances: The URLs of one or more instances to stop. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  forceStop = _messages.BooleanField(1)
+  instances = _messages.StringField(2, repeated=True)
+
+
+class InstanceGroupManagersSuspendInstancesRequest(_messages.Message):
+  r"""A InstanceGroupManagersSuspendInstancesRequest object.
+
+  Fields:
+    forceSuspend: If this flag is set to true, the Instance Group Manager will
+      proceed to suspend the instances, skipping initialization on them.
+    instances: The URLs of one or more instances to suspend. This can be a
+      full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  forceSuspend = _messages.BooleanField(1)
+  instances = _messages.StringField(2, repeated=True)
 
 
 class InstanceGroupManagersUpdatePerInstanceConfigsReq(_messages.Message):
@@ -43838,6 +44334,8 @@ class InstanceGroupsListInstances(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -43875,13 +44373,14 @@ class InstanceGroupsListInstances(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -44037,6 +44536,8 @@ class InstanceGroupsScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -44074,13 +44575,14 @@ class InstanceGroupsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -44214,6 +44716,8 @@ class InstanceList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -44251,13 +44755,14 @@ class InstanceList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -44377,6 +44882,8 @@ class InstanceListReferrers(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -44414,13 +44921,14 @@ class InstanceListReferrers(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -45144,6 +45652,8 @@ class InstanceTemplateAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -45181,13 +45691,14 @@ class InstanceTemplateAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -45307,6 +45818,8 @@ class InstanceTemplateList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -45344,13 +45857,14 @@ class InstanceTemplateList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -45464,6 +45978,8 @@ class InstanceTemplatesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -45501,13 +46017,14 @@ class InstanceTemplatesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -45788,6 +46305,8 @@ class InstancesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -45825,13 +46344,14 @@ class InstancesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -46257,6 +46777,8 @@ class InstantSnapshotAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -46294,13 +46816,14 @@ class InstantSnapshotAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -46420,6 +46943,8 @@ class InstantSnapshotList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -46457,13 +46982,14 @@ class InstantSnapshotList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -46587,6 +47113,8 @@ class InstantSnapshotsScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -46624,13 +47152,14 @@ class InstantSnapshotsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -47577,6 +48106,8 @@ class InterconnectAttachmentAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -47614,13 +48145,14 @@ class InterconnectAttachmentAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -47812,6 +48344,8 @@ class InterconnectAttachmentList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -47849,13 +48383,14 @@ class InterconnectAttachmentList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -48004,6 +48539,8 @@ class InterconnectAttachmentsScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -48041,13 +48578,14 @@ class InterconnectAttachmentsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -48402,6 +48940,8 @@ class InterconnectList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -48439,13 +48979,14 @@ class InterconnectList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -48504,7 +49045,7 @@ class InterconnectLocation(_messages.Message):
       Example: "zone1" or "zone2".
     availableFeatures: [Output only] List of features available at this
       InterconnectLocation, which can take one of the following values: -
-      MACSEC
+      IF_MACSEC
     availableLinkTypes: [Output only] List of link types available at this
       InterconnectLocation, which can take one of the following values: -
       LINK_TYPE_ETHERNET_10G_LR - LINK_TYPE_ETHERNET_100G_LR
@@ -48711,6 +49252,8 @@ class InterconnectLocationList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -48748,13 +49291,14 @@ class InterconnectLocationList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -49364,6 +49908,8 @@ class InterconnectRemoteLocationList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -49401,13 +49947,14 @@ class InterconnectRemoteLocationList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -49492,7 +50039,7 @@ class License(_messages.Message):
       images, snapshots, and disks.
     name: Name of the resource. The name must be 1-63 characters long and
       comply with RFC1035.
-    resourceRequirements: A LicenseResourceRequirements attribute.
+    resourceRequirements: [Input Only] Deprecated.
     selfLink: [Output Only] Server-defined URL for the resource.
     transferable: If false, licenses will not be copied from the source
       resource when creating an image from a disk, disk from snapshot, or
@@ -49600,10 +50147,10 @@ class LicenseResourceRequirements(_messages.Message):
   r"""A LicenseResourceRequirements object.
 
   Fields:
-    minGuestCpuCount: Minimum number of guest cpus required to use the
-      Instance. Enforced at Instance creation and Instance start.
-    minMemoryMb: Minimum memory required to use the Instance. Enforced at
-      Instance creation and Instance start.
+    minGuestCpuCount: [Input Only] Deprecated. This field no longer reflects
+      the minimum number of guest cpus required to use the Instance.
+    minMemoryMb: [Input Only] Deprecated. This field no longer reflects the
+      minimum memory required to use the Instance.
   """
 
   minGuestCpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -49696,6 +50243,8 @@ class LicensesListResponse(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -49733,13 +50282,14 @@ class LicensesListResponse(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -50103,6 +50653,8 @@ class MachineImageList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -50140,13 +50692,14 @@ class MachineImageList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -50392,6 +50945,8 @@ class MachineTypeAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -50429,13 +50984,14 @@ class MachineTypeAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -50556,6 +51112,8 @@ class MachineTypeList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -50593,13 +51151,14 @@ class MachineTypeList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -50713,6 +51272,8 @@ class MachineTypesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -50750,13 +51311,14 @@ class MachineTypesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -51583,6 +52145,8 @@ class NetworkAttachmentAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -51620,13 +52184,14 @@ class NetworkAttachmentAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -51799,6 +52364,8 @@ class NetworkAttachmentList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -51836,13 +52403,14 @@ class NetworkAttachmentList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -51955,6 +52523,8 @@ class NetworkAttachmentsScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -51992,13 +52562,14 @@ class NetworkAttachmentsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -52191,6 +52762,8 @@ class NetworkEdgeSecurityServiceAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -52228,13 +52801,14 @@ class NetworkEdgeSecurityServiceAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -52350,6 +52924,8 @@ class NetworkEdgeSecurityServicesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -52387,13 +52963,14 @@ class NetworkEdgeSecurityServicesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -52751,6 +53328,8 @@ class NetworkEndpointGroupAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -52788,13 +53367,14 @@ class NetworkEndpointGroupAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -52996,6 +53576,8 @@ class NetworkEndpointGroupList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -53033,13 +53615,14 @@ class NetworkEndpointGroupList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -53259,6 +53842,8 @@ class NetworkEndpointGroupsListNetworkEndpoints(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -53296,13 +53881,14 @@ class NetworkEndpointGroupsListNetworkEndpoints(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -53415,6 +54001,8 @@ class NetworkEndpointGroupsScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -53452,13 +54040,14 @@ class NetworkEndpointGroupsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -53731,6 +54320,8 @@ class NetworkList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -53768,13 +54359,14 @@ class NetworkList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -54358,6 +54950,8 @@ class NodeGroupAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -54395,13 +54989,14 @@ class NodeGroupAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -54558,6 +55153,8 @@ class NodeGroupList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -54595,13 +55192,14 @@ class NodeGroupList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -54830,6 +55428,8 @@ class NodeGroupsListNodes(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -54867,13 +55467,14 @@ class NodeGroupsListNodes(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -54999,6 +55600,8 @@ class NodeGroupsScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -55036,13 +55639,14 @@ class NodeGroupsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -55331,6 +55935,8 @@ class NodeTemplateAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -55368,13 +55974,14 @@ class NodeTemplateAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -55495,6 +56102,8 @@ class NodeTemplateList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -55532,13 +56141,14 @@ class NodeTemplateList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -55666,6 +56276,8 @@ class NodeTemplatesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -55703,13 +56315,14 @@ class NodeTemplatesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -55897,6 +56510,8 @@ class NodeTypeAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -55934,13 +56549,14 @@ class NodeTypeAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -56061,6 +56677,8 @@ class NodeTypeList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -56098,13 +56716,14 @@ class NodeTypeList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -56217,6 +56836,8 @@ class NodeTypesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -56254,13 +56875,14 @@ class NodeTypesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -56446,6 +57068,8 @@ class NotificationEndpointList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -56483,13 +57107,14 @@ class NotificationEndpointList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -56736,6 +57361,8 @@ class Operation(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -56773,13 +57400,14 @@ class Operation(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -56946,6 +57574,8 @@ class OperationAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -56983,13 +57613,14 @@ class OperationAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -57110,6 +57741,8 @@ class OperationList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -57147,13 +57780,14 @@ class OperationList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -57266,6 +57900,8 @@ class OperationsScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -57303,13 +57939,14 @@ class OperationsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -57663,6 +58300,8 @@ class PacketMirroringAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -57700,13 +58339,14 @@ class PacketMirroringAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -57881,6 +58521,8 @@ class PacketMirroringList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -57918,13 +58560,14 @@ class PacketMirroringList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -58098,6 +58741,8 @@ class PacketMirroringsScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -58135,13 +58780,14 @@ class PacketMirroringsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -58346,8 +58992,8 @@ class PerInstanceConfig(_messages.Message):
       operations, that is, if a per-instance configuration with the same name
       exists then it will be updated, otherwise a new one will be created for
       the VM instance with the same name. An attempt to create a per-instance
-      configconfiguration for a VM instance that either doesn't exist or is
-      not part of the group will result in an error.
+      configuration for a VM instance that either doesn't exist or is not part
+      of the group will result in an error.
     preservedState: The intended preserved state for the given instance. Does
       not contain preserved state generated from a stateful policy.
     status: The status of applying this per-instance configuration on the
@@ -59194,6 +59840,8 @@ class PublicAdvertisedPrefixList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -59231,13 +59879,14 @@ class PublicAdvertisedPrefixList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -59544,6 +60193,8 @@ class PublicDelegatedPrefixAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -59581,13 +60232,14 @@ class PublicDelegatedPrefixAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -59708,6 +60360,8 @@ class PublicDelegatedPrefixList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -59745,13 +60399,14 @@ class PublicDelegatedPrefixList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -59925,6 +60580,8 @@ class PublicDelegatedPrefixesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -59962,13 +60619,14 @@ class PublicDelegatedPrefixesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -60545,6 +61203,8 @@ class Region(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -60582,13 +61242,14 @@ class Region(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -60732,6 +61393,8 @@ class RegionAutoscalerList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -60769,13 +61432,14 @@ class RegionAutoscalerList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -60895,6 +61559,8 @@ class RegionDiskTypeList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -60932,13 +61598,14 @@ class RegionDiskTypeList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -61106,6 +61773,8 @@ class RegionInstanceGroupList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -61143,13 +61812,14 @@ class RegionInstanceGroupList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -61281,6 +61951,8 @@ class RegionInstanceGroupManagerList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -61318,13 +61990,14 @@ class RegionInstanceGroupManagerList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -61612,6 +62285,8 @@ class RegionInstanceGroupManagersListInstanceConfigsResp(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -61649,13 +62324,14 @@ class RegionInstanceGroupManagersListInstanceConfigsResp(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -61712,6 +62388,17 @@ class RegionInstanceGroupManagersRecreateRequest(_messages.Message):
   instances = _messages.StringField(1, repeated=True)
 
 
+class RegionInstanceGroupManagersResumeInstancesRequest(_messages.Message):
+  r"""A RegionInstanceGroupManagersResumeInstancesRequest object.
+
+  Fields:
+    instances: The URLs of one or more instances to resume. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
 class RegionInstanceGroupManagersSetTargetPoolsRequest(_messages.Message):
   r"""A RegionInstanceGroupManagersSetTargetPoolsRequest object.
 
@@ -61737,6 +62424,46 @@ class RegionInstanceGroupManagersSetTemplateRequest(_messages.Message):
   """
 
   instanceTemplate = _messages.StringField(1)
+
+
+class RegionInstanceGroupManagersStartInstancesRequest(_messages.Message):
+  r"""A RegionInstanceGroupManagersStartInstancesRequest object.
+
+  Fields:
+    instances: The URLs of one or more instances to start. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
+class RegionInstanceGroupManagersStopInstancesRequest(_messages.Message):
+  r"""A RegionInstanceGroupManagersStopInstancesRequest object.
+
+  Fields:
+    forceStop: If this flag is set to true, the Instance Group Manager will
+      proceed to stop the instances, skipping initialization on them.
+    instances: The URLs of one or more instances to stop. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  forceStop = _messages.BooleanField(1)
+  instances = _messages.StringField(2, repeated=True)
+
+
+class RegionInstanceGroupManagersSuspendInstancesRequest(_messages.Message):
+  r"""A RegionInstanceGroupManagersSuspendInstancesRequest object.
+
+  Fields:
+    forceSuspend: If this flag is set to true, the Instance Group Manager will
+      proceed to suspend the instances, skipping initialization on them.
+    instances: The URLs of one or more instances to suspend. This can be a
+      full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  forceSuspend = _messages.BooleanField(1)
+  instances = _messages.StringField(2, repeated=True)
 
 
 class RegionInstanceGroupsListInstances(_messages.Message):
@@ -61826,6 +62553,8 @@ class RegionInstanceGroupsListInstances(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -61863,13 +62592,14 @@ class RegionInstanceGroupsListInstances(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -62037,6 +62767,8 @@ class RegionList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -62074,13 +62806,14 @@ class RegionList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -62575,6 +63308,8 @@ class ReservationAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -62612,13 +63347,14 @@ class ReservationAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -62739,6 +63475,8 @@ class ReservationList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -62776,13 +63514,14 @@ class ReservationList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -62906,6 +63645,8 @@ class ReservationsScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -62943,13 +63684,14 @@ class ReservationsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -63110,6 +63852,8 @@ class ResourcePoliciesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -63147,13 +63891,14 @@ class ResourcePoliciesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -63365,6 +64110,8 @@ class ResourcePolicyAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -63402,13 +64149,14 @@ class ResourcePolicyAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -63636,6 +64384,8 @@ class ResourcePolicyList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -63673,13 +64423,14 @@ class ResourcePolicyList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -63916,8 +64667,9 @@ class ResourceStatus(_messages.Message):
   (intent) in their instance CRUD calls.
 
   Fields:
-    physicalHost: [Output Only] An opaque ID of the host on which the VM is
-      running.
+    physicalHost: [Output Only] The precise location of your instance within
+      the zone's data center, including the block, sub-block, and host. The
+      field is formatted as follows: blockId/subBlockId/hostId.
     scheduling: A ResourceStatusScheduling attribute.
     upcomingMaintenance: A UpcomingMaintenance attribute.
   """
@@ -64161,6 +64913,8 @@ class Route(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -64198,13 +64952,14 @@ class Route(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -64391,6 +65146,8 @@ class RouteList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -64428,13 +65185,14 @@ class RouteList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -64648,6 +65406,8 @@ class RouterAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -64685,13 +65445,14 @@ class RouterAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -65239,6 +66000,8 @@ class RouterList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -65276,13 +66039,14 @@ class RouterList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -65946,6 +66710,8 @@ class RoutersScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -65983,13 +66749,14 @@ class RoutersScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -66642,6 +67409,8 @@ class SecurityPoliciesAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -66679,13 +67448,14 @@ class SecurityPoliciesAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -66810,6 +67580,8 @@ class SecurityPoliciesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -66847,13 +67619,14 @@ class SecurityPoliciesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -67344,6 +68117,8 @@ class SecurityPolicyList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -67381,13 +68156,14 @@ class SecurityPolicyList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -67790,7 +68566,9 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       IP address of the originating client, which is resolved based on
       "userIpRequestHeaders" configured with the security policy. If there is
       no "userIpRequestHeaders" configuration or an IP address cannot be
-      resolved from it, the key type defaults to IP.
+      resolved from it, the key type defaults to IP. - TLS_JA4_FINGERPRINT:
+      JA4 TLS/SSL fingerprint if the client connects using HTTPS, HTTP/2 or
+      HTTP/3. If not available, the key type defaults to ALL.
 
   Fields:
     banDurationSec: Can only be specified if the action for the rule is
@@ -67829,7 +68607,9 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       IP address of the originating client, which is resolved based on
       "userIpRequestHeaders" configured with the security policy. If there is
       no "userIpRequestHeaders" configuration or an IP address cannot be
-      resolved from it, the key type defaults to IP.
+      resolved from it, the key type defaults to IP. - TLS_JA4_FINGERPRINT:
+      JA4 TLS/SSL fingerprint if the client connects using HTTPS, HTTP/2 or
+      HTTP/3. If not available, the key type defaults to ALL.
     enforceOnKeyConfigs: If specified, any combination of values of
       enforce_on_key_type/enforce_on_key_name is treated as the key on which
       ratelimit threshold/action is enforced. You can specify up to 3
@@ -67879,7 +68659,9 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
     address of the originating client, which is resolved based on
     "userIpRequestHeaders" configured with the security policy. If there is no
     "userIpRequestHeaders" configuration or an IP address cannot be resolved
-    from it, the key type defaults to IP.
+    from it, the key type defaults to IP. - TLS_JA4_FINGERPRINT: JA4 TLS/SSL
+    fingerprint if the client connects using HTTPS, HTTP/2 or HTTP/3. If not
+    available, the key type defaults to ALL.
 
     Values:
       ALL: <no description>
@@ -67890,6 +68672,7 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       REGION_CODE: <no description>
       SNI: <no description>
       TLS_JA3_FINGERPRINT: <no description>
+      TLS_JA4_FINGERPRINT: <no description>
       USER_IP: <no description>
       XFF_IP: <no description>
     """
@@ -67901,8 +68684,9 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
     REGION_CODE = 5
     SNI = 6
     TLS_JA3_FINGERPRINT = 7
-    USER_IP = 8
-    XFF_IP = 9
+    TLS_JA4_FINGERPRINT = 8
+    USER_IP = 9
+    XFF_IP = 10
 
   banDurationSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   banThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 2)
@@ -67945,7 +68729,9 @@ class SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig(_messages.Message):
       IP address of the originating client, which is resolved based on
       "userIpRequestHeaders" configured with the security policy. If there is
       no "userIpRequestHeaders" configuration or an IP address cannot be
-      resolved from it, the key type defaults to IP.
+      resolved from it, the key type defaults to IP. - TLS_JA4_FINGERPRINT:
+      JA4 TLS/SSL fingerprint if the client connects using HTTPS, HTTP/2 or
+      HTTP/3. If not available, the key type defaults to ALL.
 
   Fields:
     enforceOnKeyName: Rate limit key name applicable only for the following
@@ -67978,7 +68764,9 @@ class SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig(_messages.Message):
       IP address of the originating client, which is resolved based on
       "userIpRequestHeaders" configured with the security policy. If there is
       no "userIpRequestHeaders" configuration or an IP address cannot be
-      resolved from it, the key type defaults to IP.
+      resolved from it, the key type defaults to IP. - TLS_JA4_FINGERPRINT:
+      JA4 TLS/SSL fingerprint if the client connects using HTTPS, HTTP/2 or
+      HTTP/3. If not available, the key type defaults to ALL.
   """
 
   class EnforceOnKeyTypeValueValuesEnum(_messages.Enum):
@@ -68007,7 +68795,9 @@ class SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig(_messages.Message):
     defaults to ALL. - USER_IP: The IP address of the originating client,
     which is resolved based on "userIpRequestHeaders" configured with the
     security policy. If there is no "userIpRequestHeaders" configuration or an
-    IP address cannot be resolved from it, the key type defaults to IP.
+    IP address cannot be resolved from it, the key type defaults to IP. -
+    TLS_JA4_FINGERPRINT: JA4 TLS/SSL fingerprint if the client connects using
+    HTTPS, HTTP/2 or HTTP/3. If not available, the key type defaults to ALL.
 
     Values:
       ALL: <no description>
@@ -68018,6 +68808,7 @@ class SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig(_messages.Message):
       REGION_CODE: <no description>
       SNI: <no description>
       TLS_JA3_FINGERPRINT: <no description>
+      TLS_JA4_FINGERPRINT: <no description>
       USER_IP: <no description>
       XFF_IP: <no description>
     """
@@ -68029,8 +68820,9 @@ class SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig(_messages.Message):
     REGION_CODE = 5
     SNI = 6
     TLS_JA3_FINGERPRINT = 7
-    USER_IP = 8
-    XFF_IP = 9
+    TLS_JA4_FINGERPRINT = 8
+    USER_IP = 9
+    XFF_IP = 10
 
   enforceOnKeyName = _messages.StringField(1)
   enforceOnKeyType = _messages.EnumField('EnforceOnKeyTypeValueValuesEnum', 2)
@@ -68479,6 +69271,8 @@ class ServiceAttachmentAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -68516,13 +69310,14 @@ class ServiceAttachmentAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -68702,6 +69497,8 @@ class ServiceAttachmentList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -68739,13 +69536,14 @@ class ServiceAttachmentList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -68858,6 +69656,8 @@ class ServiceAttachmentsScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -68895,13 +69695,14 @@ class ServiceAttachmentsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -69499,6 +70300,8 @@ class SnapshotList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -69536,13 +70339,14 @@ class SnapshotList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -70014,6 +70818,8 @@ class SslCertificateAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -70051,13 +70857,14 @@ class SslCertificateAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -70177,6 +70984,8 @@ class SslCertificateList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -70214,13 +71023,14 @@ class SslCertificateList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -70458,6 +71268,8 @@ class SslCertificatesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -70495,13 +71307,14 @@ class SslCertificatesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -70645,6 +71458,8 @@ class SslPoliciesAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -70682,13 +71497,14 @@ class SslPoliciesAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -70810,6 +71626,8 @@ class SslPoliciesList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -70847,13 +71665,14 @@ class SslPoliciesList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -70976,6 +71795,8 @@ class SslPoliciesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -71013,13 +71834,14 @@ class SslPoliciesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -71209,6 +72031,8 @@ class SslPolicy(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -71246,13 +72070,14 @@ class SslPolicy(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -71885,6 +72710,8 @@ class StoragePoolAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -71922,13 +72749,14 @@ class StoragePoolAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -72109,6 +72937,8 @@ class StoragePoolList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -72146,13 +72976,14 @@ class StoragePoolList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -72277,6 +73108,8 @@ class StoragePoolListDisks(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -72314,13 +73147,14 @@ class StoragePoolListDisks(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -72566,6 +73400,8 @@ class StoragePoolTypeAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -72603,13 +73439,14 @@ class StoragePoolTypeAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -72729,6 +73566,8 @@ class StoragePoolTypeList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -72766,13 +73605,14 @@ class StoragePoolTypeList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -72886,6 +73726,8 @@ class StoragePoolTypesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -72923,13 +73765,14 @@ class StoragePoolTypesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -73039,6 +73882,8 @@ class StoragePoolsScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -73076,13 +73921,14 @@ class StoragePoolsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -73297,6 +74143,9 @@ class Subnetwork(_messages.Message):
       INTERNAL_HTTPS_LOAD_BALANCER: Subnet reserved for Internal HTTP(S) Load
         Balancing. This is a legacy purpose, please use REGIONAL_MANAGED_PROXY
         instead.
+      PEER_MIGRATION: Subnetwork will be used for Migration from one peered
+        VPC to another. (a transient state of subnetwork while migrating
+        resources from one project to another).
       PRIVATE: Regular user created or automatically created subnet.
       PRIVATE_NAT: Subnetwork used as source range for Private NAT Gateways.
       PRIVATE_RFC_1918: Regular user created or automatically created subnet.
@@ -73307,11 +74156,12 @@ class Subnetwork(_messages.Message):
     """
     GLOBAL_MANAGED_PROXY = 0
     INTERNAL_HTTPS_LOAD_BALANCER = 1
-    PRIVATE = 2
-    PRIVATE_NAT = 3
-    PRIVATE_RFC_1918 = 4
-    PRIVATE_SERVICE_CONNECT = 5
-    REGIONAL_MANAGED_PROXY = 6
+    PEER_MIGRATION = 2
+    PRIVATE = 3
+    PRIVATE_NAT = 4
+    PRIVATE_RFC_1918 = 5
+    PRIVATE_SERVICE_CONNECT = 6
+    REGIONAL_MANAGED_PROXY = 7
 
   class RoleValueValuesEnum(_messages.Enum):
     r"""The role of subnetwork. Currently, this field is only used when
@@ -73501,6 +74351,8 @@ class SubnetworkAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -73538,13 +74390,14 @@ class SubnetworkAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -73665,6 +74518,8 @@ class SubnetworkList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -73702,13 +74557,14 @@ class SubnetworkList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -73941,6 +74797,8 @@ class SubnetworksScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -73978,13 +74836,14 @@ class SubnetworksScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -74342,6 +75201,8 @@ class TargetGrpcProxyList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -74379,13 +75240,14 @@ class TargetGrpcProxyList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -74498,6 +75360,8 @@ class TargetHttpProxiesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -74535,13 +75399,14 @@ class TargetHttpProxiesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -74785,6 +75650,8 @@ class TargetHttpProxyList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -74822,13 +75689,14 @@ class TargetHttpProxyList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -74941,6 +75809,8 @@ class TargetHttpsProxiesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -74978,13 +75848,14 @@ class TargetHttpsProxiesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -75070,7 +75941,7 @@ class TargetHttpsProxy(_messages.Message):
   Target HTTPS Proxy resources: *
   [Global](/compute/docs/reference/rest/v1/targetHttpsProxies) *
   [Regional](/compute/docs/reference/rest/v1/regionTargetHttpsProxies) A
-  target HTTPS proxy is a component of GCP HTTPS load balancers. *
+  target HTTPS proxy is a component of Google Cloud HTTPS load balancers. *
   targetHttpProxies are used by global external Application Load Balancers,
   classic Application Load Balancers, cross-region internal Application Load
   Balancers, and Traffic Director. * regionTargetHttpProxies are used by
@@ -75276,10 +76147,17 @@ class TargetHttpsProxy(_messages.Message):
         TRACE) without query parameters. Requests that send Early Data with
         non-idempotent HTTP methods or with query parameters will be rejected
         with a HTTP 425.
+      UNRESTRICTED: This enables TLS 1.3 Early Data for requests with any HTTP
+        method including non-idempotent methods list POST. This mode does not
+        enforce any other limitations. This may be valuable for gRPC use
+        cases. However, we do not recommend this method unless you have
+        evaluated your security stance and mitigated the risk of replay
+        attacks using other mechanisms.
     """
     DISABLED = 0
     PERMISSIVE = 1
     STRICT = 2
+    UNRESTRICTED = 3
 
   authorizationPolicy = _messages.StringField(1)
   certificateMap = _messages.StringField(2)
@@ -75416,6 +76294,8 @@ class TargetHttpsProxyAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -75453,13 +76333,14 @@ class TargetHttpsProxyAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -75580,6 +76461,8 @@ class TargetHttpsProxyList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -75617,13 +76500,14 @@ class TargetHttpsProxyList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -75840,6 +76724,8 @@ class TargetInstanceAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -75877,13 +76763,14 @@ class TargetInstanceAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -76003,6 +76890,8 @@ class TargetInstanceList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -76040,13 +76929,14 @@ class TargetInstanceList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -76159,6 +77049,8 @@ class TargetInstancesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -76196,13 +77088,14 @@ class TargetInstancesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -76483,6 +77376,8 @@ class TargetPoolAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -76520,13 +77415,14 @@ class TargetPoolAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -76661,6 +77557,8 @@ class TargetPoolList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -76698,13 +77596,14 @@ class TargetPoolList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -76867,6 +77766,8 @@ class TargetPoolsScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -76904,13 +77805,14 @@ class TargetPoolsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -77167,6 +78069,8 @@ class TargetSslProxyList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -77204,13 +78108,14 @@ class TargetSslProxyList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -77323,6 +78228,8 @@ class TargetTcpProxiesScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -77360,13 +78267,14 @@ class TargetTcpProxiesScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -77613,6 +78521,8 @@ class TargetTcpProxyAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -77650,13 +78560,14 @@ class TargetTcpProxyAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -77776,6 +78687,8 @@ class TargetTcpProxyList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -77813,13 +78726,14 @@ class TargetTcpProxyList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -78079,6 +78993,8 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -78116,13 +79032,14 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -78243,6 +79160,8 @@ class TargetVpnGatewayList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -78280,13 +79199,14 @@ class TargetVpnGatewayList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -78400,6 +79320,8 @@ class TargetVpnGatewaysScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -78437,13 +79359,14 @@ class TargetVpnGatewaysScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -78808,6 +79731,8 @@ class UrlMapList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -78845,13 +79770,14 @@ class UrlMapList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -79078,6 +80004,8 @@ class UrlMapsAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -79115,13 +80043,14 @@ class UrlMapsAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -79235,6 +80164,8 @@ class UrlMapsScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -79272,13 +80203,14 @@ class UrlMapsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -79493,6 +80425,9 @@ class UsableSubnetwork(_messages.Message):
       INTERNAL_HTTPS_LOAD_BALANCER: Subnet reserved for Internal HTTP(S) Load
         Balancing. This is a legacy purpose, please use REGIONAL_MANAGED_PROXY
         instead.
+      PEER_MIGRATION: Subnetwork will be used for Migration from one peered
+        VPC to another. (a transient state of subnetwork while migrating
+        resources from one project to another).
       PRIVATE: Regular user created or automatically created subnet.
       PRIVATE_NAT: Subnetwork used as source range for Private NAT Gateways.
       PRIVATE_RFC_1918: Regular user created or automatically created subnet.
@@ -79503,11 +80438,12 @@ class UsableSubnetwork(_messages.Message):
     """
     GLOBAL_MANAGED_PROXY = 0
     INTERNAL_HTTPS_LOAD_BALANCER = 1
-    PRIVATE = 2
-    PRIVATE_NAT = 3
-    PRIVATE_RFC_1918 = 4
-    PRIVATE_SERVICE_CONNECT = 5
-    REGIONAL_MANAGED_PROXY = 6
+    PEER_MIGRATION = 2
+    PRIVATE = 3
+    PRIVATE_NAT = 4
+    PRIVATE_RFC_1918 = 5
+    PRIVATE_SERVICE_CONNECT = 6
+    REGIONAL_MANAGED_PROXY = 7
 
   class RoleValueValuesEnum(_messages.Enum):
     r"""The role of subnetwork. Currently, this field is only used when
@@ -79659,6 +80595,8 @@ class UsableSubnetworksAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -79696,13 +80634,14 @@ class UsableSubnetworksAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -79921,6 +80860,8 @@ class VmEndpointNatMappingsList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -79958,13 +80899,14 @@ class VmEndpointNatMappingsList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -80239,6 +81181,8 @@ class VpnGatewayAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -80276,13 +81220,14 @@ class VpnGatewayAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -80403,6 +81348,8 @@ class VpnGatewayList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -80440,13 +81387,14 @@ class VpnGatewayList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -80703,6 +81651,8 @@ class VpnGatewaysScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -80740,13 +81690,14 @@ class VpnGatewaysScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -81123,6 +82074,8 @@ class VpnTunnelAggregatedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -81160,13 +82113,14 @@ class VpnTunnelAggregatedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -81287,6 +82241,8 @@ class VpnTunnelList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -81324,13 +82280,14 @@ class VpnTunnelList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -81443,6 +82400,8 @@ class VpnTunnelsScopedList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -81480,13 +82439,14 @@ class VpnTunnelsScopedList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -81673,6 +82633,8 @@ class XpnHostList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -81710,13 +82672,14 @@ class XpnHostList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -81914,6 +82877,8 @@ class ZoneList(_messages.Message):
         NO_RESULTS_ON_PAGE: No results are present on a particular list page.
         PARTIAL_SUCCESS: Success is reported, but some results may be missing
           due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
         REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
           requires a TOS they have not accepted.
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
@@ -81951,13 +82916,14 @@ class ZoneList(_messages.Message):
       NOT_CRITICAL_ERROR = 18
       NO_RESULTS_ON_PAGE = 19
       PARTIAL_SUCCESS = 20
-      REQUIRED_TOS_AGREEMENT = 21
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
-      RESOURCE_NOT_DELETED = 23
-      SCHEMA_VALIDATION_IGNORED = 24
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
-      UNDECLARED_PROPERTIES = 26
-      UNREACHABLE = 27
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.

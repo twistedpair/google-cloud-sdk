@@ -149,6 +149,10 @@ apis:
     v1alpha:
       discovery_doc: appconfigmanager_v1alpha.json
       default: true
+  parametermanager:
+    v1:
+      discovery_doc: parametermanager_v1.json
+      default: true
   appengine:
     v1alpha:
       discovery_doc: appengine_v1alpha.json
@@ -1871,6 +1875,10 @@ canonical_surfaces:
   appconfigmanager:
     name: appconfigmanager
     command: app-config-manager
+    hidden: true
+  parametermanager:
+    name: parametermanager
+    command: parameter-manager
     hidden: true
   apigee:
     name: apigee

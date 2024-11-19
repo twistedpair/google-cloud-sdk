@@ -352,6 +352,12 @@ def _get_s3_compatible_metadata(args, messages):
   return s3_compatible_metadata
 
 
+def _add_additional_s3_source_options(transfer_spec, args):
+  """Adds additional options for S3 source."""
+  if getattr(args, 's3_cloudfront_domain', None):
+    transfer_spec.awsS3DataSource.cloudfrontDomain = args.s3_cloudfront_domain
+
+
 def _create_or_modify_transfer_spec(job, args, messages):
   """Creates or modifies TransferSpec based on args."""
   if not job.transferSpec:
@@ -383,6 +389,10 @@ def _create_or_modify_transfer_spec(job, args, messages):
           source_url,
           VALID_SOURCE_TRANSFER_SCHEMES,
       )
+
+  # If additional options are specified for S3 source, add them here.
+  if job.transferSpec.awsS3DataSource:
+    _add_additional_s3_source_options(job.transferSpec, args)
 
   if getattr(args, 'destination', None):
     # Clear any existing destination to make space for new one.

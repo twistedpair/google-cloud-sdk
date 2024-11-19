@@ -493,3 +493,15 @@ def ValidateRedisClustersURIs(unused_ref, args, request):
           + "  projects/my-project/locations/location/clusters/my-redis-cluster\n"
       )
   return request
+
+
+def ValidateFqdn(unused_ref, args, request):
+  """Checks if destination-gke-master-cluster was specified when destination-fqdn is specified."""
+  if args.IsSpecified("destination_fqdn") and not args.IsSpecified(
+      "destination_gke_master_cluster"
+  ):
+    raise InvalidInputError(
+        "destination-fqdn can only be specified when"
+        " destination-gke-master-cluster is specified\n"
+    )
+  return request

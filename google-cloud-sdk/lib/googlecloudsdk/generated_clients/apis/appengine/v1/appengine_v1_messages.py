@@ -887,6 +887,9 @@ class Application(_messages.Message):
     DatabaseTypeValueValuesEnum: The type of the Cloud Firestore or Cloud
       Datastore database associated with this application.
     ServingStatusValueValuesEnum: Serving status of this application.
+    SslPolicyValueValuesEnum: The SSL policy that will be applied to the
+      application. If set to Modern it will restrict traffic with TLS < 1.2
+      and allow only Modern Ciphers suite
 
   Messages:
     GeneratedCustomerMetadataValue: Additional Google Generated Customer
@@ -933,6 +936,9 @@ class Application(_messages.Message):
       is the app-level default identity. If no identity provided during create
       version, Admin API will fallback to this one.
     servingStatus: Serving status of this application.
+    sslPolicy: The SSL policy that will be applied to the application. If set
+      to Modern it will restrict traffic with TLS < 1.2 and allow only Modern
+      Ciphers suite
   """
 
   class DatabaseTypeValueValuesEnum(_messages.Enum):
@@ -963,6 +969,22 @@ class Application(_messages.Message):
     SERVING = 1
     USER_DISABLED = 2
     SYSTEM_DISABLED = 3
+
+  class SslPolicyValueValuesEnum(_messages.Enum):
+    r"""The SSL policy that will be applied to the application. If set to
+    Modern it will restrict traffic with TLS < 1.2 and allow only Modern
+    Ciphers suite
+
+    Values:
+      SSL_POLICY_UNSPECIFIED: Required by linter. Will work same as DEFAULT
+      DEFAULT: DEFAULT is to allow all TLS versions and cipher suites
+        supported by App Engine
+      MODERN: MODERN is to allow only TLS 1.2 and TLS 1.3 along with Modern
+        cipher suites only
+    """
+    SSL_POLICY_UNSPECIFIED = 0
+    DEFAULT = 1
+    MODERN = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class GeneratedCustomerMetadataValue(_messages.Message):
@@ -1008,6 +1030,7 @@ class Application(_messages.Message):
   name = _messages.StringField(14)
   serviceAccount = _messages.StringField(15)
   servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 16)
+  sslPolicy = _messages.EnumField('SslPolicyValueValuesEnum', 17)
 
 
 class AuthorizedCertificate(_messages.Message):

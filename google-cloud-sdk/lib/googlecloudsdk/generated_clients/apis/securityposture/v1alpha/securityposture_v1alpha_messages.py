@@ -115,9 +115,12 @@ class CreatePredictionRequest(_messages.Message):
     Values:
       PREDICTION_TYPE_UNSPECIFIED: Prediction type unspecified.
       BASIC_POSTURE: Basic predefined posture prediction type.
+      NATURAL_LANGUAGE_QUERY: Posture prediction type to query predictions
+        based on an intent provided in the request.
     """
     PREDICTION_TYPE_UNSPECIFIED = 0
     BASIC_POSTURE = 1
+    NATURAL_LANGUAGE_QUERY = 2
 
   environmentOptions = _messages.MessageField('EnvironmentOptions', 1)
   intent = _messages.StringField(2)
@@ -459,6 +462,13 @@ class GoogleCloudSecuritypostureV1alphaPolicyRule(_messages.Message):
   r"""A rule that defines the allowed and denied values for an organization
   policy constraint.
 
+  Messages:
+    ParametersValue: Optional. Required for GMCs if parameters defined in
+      constraints. Pass parameter values when policy enforcement is enabled.
+      Ensure that parameter value types match those defined in the constraint
+      definition. For example: { "allowedLocations" : ["us-east1", "us-
+      west1"], "allowAll" : true }
+
   Fields:
     allowAll: Whether to allow any value for a list constraint. Valid only for
       list constraints.
@@ -481,15 +491,51 @@ class GoogleCloudSecuritypostureV1alphaPolicyRule(_messages.Message):
       list constraints.
     enforce: Whether to enforce the constraint. Valid only for boolean
       constraints.
+    parameters: Optional. Required for GMCs if parameters defined in
+      constraints. Pass parameter values when policy enforcement is enabled.
+      Ensure that parameter value types match those defined in the constraint
+      definition. For example: { "allowedLocations" : ["us-east1", "us-
+      west1"], "allowAll" : true }
+    resourceTypes: Optional. The resource types policy can support, only used
+      for Google managed constraint and method type is GOVERN_TAGS.
     values: The allowed and denied values for a list constraint. Valid only
       for list constraints.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""Optional. Required for GMCs if parameters defined in constraints. Pass
+    parameter values when policy enforcement is enabled. Ensure that parameter
+    value types match those defined in the constraint definition. For example:
+    { "allowedLocations" : ["us-east1", "us-west1"], "allowAll" : true }
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   allowAll = _messages.BooleanField(1)
   condition = _messages.MessageField('Expr', 2)
   denyAll = _messages.BooleanField(3)
   enforce = _messages.BooleanField(4)
-  values = _messages.MessageField('GoogleCloudSecuritypostureV1alphaPolicyRuleStringValues', 5)
+  parameters = _messages.MessageField('ParametersValue', 5)
+  resourceTypes = _messages.MessageField('ResourceTypes', 6)
+  values = _messages.MessageField('GoogleCloudSecuritypostureV1alphaPolicyRuleStringValues', 7)
 
 
 class GoogleCloudSecuritypostureV1alphaPolicyRuleStringValues(_messages.Message):
@@ -1308,9 +1354,12 @@ class Prediction(_messages.Message):
     Values:
       PREDICTION_TYPE_UNSPECIFIED: Prediction type unspecified.
       BASIC_POSTURE: Basic predefined posture prediction type.
+      NATURAL_LANGUAGE_QUERY: Posture prediction type to query predictions
+        based on an intent provided in the request.
     """
     PREDICTION_TYPE_UNSPECIFIED = 0
     BASIC_POSTURE = 1
+    NATURAL_LANGUAGE_QUERY = 2
 
   createTime = _messages.StringField(1)
   environmentOptions = _messages.MessageField('EnvironmentOptions', 2)
@@ -1393,6 +1442,22 @@ class ResourceSelector(_messages.Message):
   """
 
   resourceTypes = _messages.StringField(1, repeated=True)
+
+
+class ResourceTypes(_messages.Message):
+  r"""Set multiple resource types for one policy, eg: resourceTypes: included:
+  - compute.googleapis.com/Instance - compute.googleapis.com/Disk Constraint
+  definition contains an empty resource type in order to support multiple
+  resource types in the policy. Only support Google managed constriaint and
+  method type is GOVERN_TAGS Refer go/multi-resource-support-force-tags-gmc to
+  get more details.
+
+  Fields:
+    included: Optional. The resource type we currently support.
+      cloud/orgpolicy/customconstraintconfig/prod/resource_types.prototext
+  """
+
+  included = _messages.StringField(1, repeated=True)
 
 
 class SecurityHealthAnalyticsCustomModule(_messages.Message):

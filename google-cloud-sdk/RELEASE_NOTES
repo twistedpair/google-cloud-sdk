@@ -5,6 +5,80 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 502.0.0 (2024-11-19)
+
+### AI
+
+* Added `machine-type` to `gcloud ai index-endpoints mutate-deployed-index`.
+* Added `--psc-automation-configs` flag to `gcloud ai index-endpoints deploy-index`
+to support Private Service Connect automation.
+
+### AlloyDB
+
+* Added export command to support exporting data from an AlloyDB cluster to Google Cloud Storage in alpha and beta tracks.
+
+### Cloud Backup DR
+
+* Promoted `gcloud backup-dr backup-vaults`, `gcloud backup-dr backup-plans`, `gcloud backup-dr backup-plan-associations`, `gcloud backup-dr backups` and `gcloud backup-dr data-sources` command groups to GA.
+
+### Cloud Identity-Aware Proxy
+
+* Promoted `gcloud iap web enable/disable` to beta and GA. Added `--region` flag support to `--resource-type=backend-services`.
+
+### Cloud SQL
+
+* Added `--failover-dr-replica-name` and `--clear-failover-dr-replica-name`
+  flags to `gcloud sql instances patch` command. These flags can be used to set
+  and unset a disaster recovery replica for a Cloud SQL primary instance.
+* Add `--[no-]enable-private-service-connect` flag to
+    `gcloud beta sql instances patch` command to support enabling and disabling
+    Private Service Connect for Cloud SQL instances.
+
+### Compute Engine
+
+* Added `--require-specific-reservation` flag to
+  `gcloud beta compute reservations create` and
+  `gcloud beta compute reservations update`.
+* Added `--reservation-name` flag to
+  `gcloud beta compute reservations create` and
+  `gcloud beta compute reservations update`.
+* Added `--deployment-type` flag to
+  `gcloud beta compute reservations create` and
+  `gcloud beta compute reservations update`.
+* Added `--scheduling-type` flag to
+  `gcloud beta compute reservations create` and
+  `gcloud beta compute reservations update`.
+* Support `--provisioning-model=reservation-bound` in beta for `gcloud compute instances create`, `gcloud compute instances bulk create`, and `gcloud compute instance-templates create` commands.
+* Added `gcloud compute disks convert` command.
+
+### Eventarc
+
+* Added `--labels` to `gcloud eventarc triggers create` and `gcloud eventarc triggers update` to support labelling Eventarc triggers.
+* Added `--labels` to `gcloud beta eventarc message-buses create` and `gcloud beta eventarc message-buses update` to support labelling Eventarc message buses.
+* Added `--labels` to `gcloud beta eventarc google-api-sources create` and `gcloud beta eventarc google-api-sources update` to support labelling Eventarc Google API sources.
+
+### GKE Hub
+
+* Added support for stopping and resuming syncing configs to `gcloud beta container fleet config-management apply` through a new Boolean field `configSync.stopSyncing` in the config file specified in flag `--config`.
+
+### Identity and Access Management
+
+* Added `gcloud iam oauth-clients` commands for OAuth application integration to Workforce Identity Federation management.
+
+### Network Connectivity
+
+* Added `--group` flag for hybrid spokes.
+
+### Network Management
+
+* Added `--destination-fqdn` flag to
+  `gcloud network-management connectivity-tests` to allow executing Connectivity
+  tests to DNS endpoint of Google Kubernetes Engine cluster control plane.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 501.0.0 (2024-11-12)
 
 ### Anthos On-Prem

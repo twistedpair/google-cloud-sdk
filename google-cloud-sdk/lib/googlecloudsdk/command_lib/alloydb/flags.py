@@ -1453,17 +1453,6 @@ def AddTags(parser):
   )
 
 
-def GetTagsFromArgs(args, tags_message, tags_arg_name='tags'):
-  """Makes the tags message object."""
-  tags = getattr(args, tags_arg_name)
-  if not tags:
-    return None
-  # Sorted for test stability
-  return tags_message(additionalProperties=[
-      tags_message.AdditionalProperty(key=key, value=value)
-      for key, value in sorted(tags.items())])
-
-
 def AddTagsArg(parser):
   """Makes the base.Argument for --tags flag."""
   help_parts = [
@@ -1480,6 +1469,17 @@ def AddTagsArg(parser):
       hidden=True,
       help='\n'.join(help_parts),
   )
+
+
+def GetTagsFromArgs(args, tags_message, tags_arg_name='tags'):
+  """Makes the tags message object."""
+  tags = getattr(args, tags_arg_name)
+  if not tags:
+    return None
+  # Sorted for test stability
+  return tags_message(additionalProperties=[
+      tags_message.AdditionalProperty(key=key, value=value)
+      for key, value in sorted(tags.items())])
 
 
 def AddAssignInboundPublicIp(parser):

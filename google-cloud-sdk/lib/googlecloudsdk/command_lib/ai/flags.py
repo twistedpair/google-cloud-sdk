@@ -556,27 +556,6 @@ https://cloud.google.com/ai-platform-unified/docs/predictions/machine-types.
   ).AddToParser(parser)
 
 
-def AddMutateDeploymentResourcesArgs(parser, resource_type):
-  """Add arguments for the deployment resources."""
-  base.Argument(
-      '--min-replica-count',
-      type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
-      help=("""\
-Minimum number of machine replicas the {} will be always deployed
-on. If specified, the value must be equal to or larger than 1.
-""".format(resource_type)),
-  ).AddToParser(parser)
-
-  base.Argument(
-      '--max-replica-count',
-      type=int,
-      help=(
-          'Maximum number of machine replicas the {} will be '
-          'always deployed on.'.format(resource_type)
-      ),
-  ).AddToParser(parser)
-
-
 def AddReservedIpRangesArgs(parser, resource_type):
   """Add arguments for the reserved IP ranges."""
   base.Argument(
@@ -647,6 +626,25 @@ List of allowed JWT issuers for a {}.
 Each entry must be a valid Google service account, in the following format:
 `service-account-name@project-id.iam.gserviceaccount.com`
 """).format(resource_type),
+  ).AddToParser(parser)
+
+
+def AddPscAutomationConfigsArgs(parser):
+  """Add arguments for PSC automation config."""
+  base.Argument(
+      '--psc-automation-configs',
+      type=arg_parsers.ArgDict(
+          spec={'project-id': str, 'network': str},
+          required_keys=['project-id', 'network'],
+      ),
+      action='append',
+      required=False,
+      help="""\
+A pair of `project-id` and `network` the PSC index will be deployed to. For
+example: `--psc-automation-configs=project-id=my-project,network=my-network`.
+For multiple networks, this flag can be repeated:
+`--psc-automation-configs=project-id=my-project,network=my-network --psc-automation-configs=project-id=my-project2,network=my-network2`
+""",
   ).AddToParser(parser)
 
 

@@ -39,3 +39,8 @@ def CreateConsumer(project, folder, organization):
     _ValidateContainer('organization', organization)
     return 'organizations/' + organization
   return None
+
+
+def CreateProjectConsumer(project):
+  _ValidateContainer('project', project)
+  return 'projects/' + project

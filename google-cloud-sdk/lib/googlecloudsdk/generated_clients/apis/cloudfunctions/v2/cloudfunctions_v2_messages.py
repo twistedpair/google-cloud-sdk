@@ -360,6 +360,19 @@ class CloudfunctionsProjectsLocationsFunctionsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class CloudfunctionsProjectsLocationsFunctionsDetachFunctionRequest(_messages.Message):
+  r"""A CloudfunctionsProjectsLocationsFunctionsDetachFunctionRequest object.
+
+  Fields:
+    detachFunctionRequest: A DetachFunctionRequest resource to be passed as
+      the request body.
+    name: Required. The name of the function for which should be detached.
+  """
+
+  detachFunctionRequest = _messages.MessageField('DetachFunctionRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class CloudfunctionsProjectsLocationsFunctionsGenerateDownloadUrlRequest(_messages.Message):
   r"""A CloudfunctionsProjectsLocationsFunctionsGenerateDownloadUrlRequest
   object.
@@ -650,6 +663,10 @@ class Date(_messages.Message):
   day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class DetachFunctionRequest(_messages.Message):
+  r"""Request for the `DetachFunction` method."""
 
 
 class EventFilter(_messages.Message):

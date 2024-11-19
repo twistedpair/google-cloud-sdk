@@ -4878,7 +4878,7 @@ class JobStatistics(_messages.Message):
         ENTERPRISE.
       STANDARD: Standard edition.
       ENTERPRISE: Enterprise edition.
-      ENTERPRISE_PLUS: Enterprise plus edition.
+      ENTERPRISE_PLUS: Enterprise Plus edition.
     """
     RESERVATION_EDITION_UNSPECIFIED = 0
     STANDARD = 1
@@ -8084,11 +8084,11 @@ class Table(_messages.Message):
     Values:
       MANAGED_TABLE_TYPE_UNSPECIFIED: No managed table type specified.
       NATIVE: The managed table is a native BigQuery table.
-      ICEEBERG: The managed table is a BigQuery table for Apache Iceberg.
+      ICEBERG: The managed table is a BigQuery table for Apache Iceberg.
     """
     MANAGED_TABLE_TYPE_UNSPECIFIED = 0
     NATIVE = 1
-    ICEEBERG = 2
+    ICEBERG = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

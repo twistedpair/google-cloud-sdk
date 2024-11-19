@@ -320,9 +320,7 @@ def AllAccountsWithUniverseDomains():
       information for all accounts.
   """
   # First get the accounts and their universe domains from the credential store.
-  # Note that we don't need to load the access token cache because universe
-  # domain is saved only in the credential store.
-  store = c_creds.GetCredentialStore(with_access_token_cache=False)
+  store = c_creds.GetCredentialStore()
   accounts_dict = store.GetAccountsWithUniverseDomain()
 
   # Next get the accounts from the static provider (e.g. GCE provider). To get
@@ -789,12 +787,14 @@ class CredentialInfo(object):
     return cred_info
 
 
-def Load(account=None,
-         scopes=None,
-         prevent_refresh=False,
-         allow_account_impersonation=True,
-         use_google_auth=True,
-         with_access_token_cache=True):
+def Load(
+    account=None,
+    scopes=None,
+    prevent_refresh=False,
+    allow_account_impersonation=True,
+    use_google_auth=True,
+    cache_only_rapt=False,
+):
   """Get the credentials associated with the provided account.
 
   This loads credentials regardless of whether credentials have been disabled
@@ -810,20 +810,18 @@ def Load(account=None,
 
   Args:
     account: str, The account address for the credentials being fetched. If
-        None, the account stored in the core.account property is used.
-    scopes: tuple, Custom auth scopes to request. By default CLOUDSDK_SCOPES
-        are requested.
+      None, the account stored in the core.account property is used.
+    scopes: tuple, Custom auth scopes to request. By default CLOUDSDK_SCOPES are
+      requested.
     prevent_refresh: bool, If True, do not refresh the access token even if it
-        is out of date. (For use with operations that do not require a current
-        access token, such as credential revocation.)
+      is out of date. (For use with operations that do not require a current
+      access token, such as credential revocation.)
     allow_account_impersonation: bool, True to allow use of impersonated service
       account credentials (if that is configured). If False, the active user
       credentials will always be loaded.
     use_google_auth: bool, True to load credentials as google-auth credentials.
       False to load credentials as oauth2client credentials..
-    with_access_token_cache: bool, True to load a credential store with
-      auto caching for access tokens. False to load a credential store without
-      auto caching for access tokens.
+    cache_only_rapt: bool, True to only cache RAPT token.
 
   Returns:
     oauth2client.client.Credentials or google.auth.credentials.Credentials.
@@ -866,7 +864,8 @@ def Load(account=None,
           account=account,
           allow_account_impersonation=False,
           use_google_auth=use_google_auth,
-          with_access_token_cache=with_access_token_cache)
+          cache_only_rapt=cache_only_rapt,
+      )
       cred = IMPERSONATION_TOKEN_PROVIDER.GetElevationAccessTokenGoogleAuth(
           google_auth_source_creds, target_principal, delegates, scopes or
           config.CLOUDSDK_SCOPES)
@@ -879,7 +878,8 @@ def Load(account=None,
         scopes,
         prevent_refresh,
         use_google_auth,
-        with_access_token_cache=with_access_token_cache)
+        cache_only_rapt=cache_only_rapt,
+    )
 
   return cred
 
@@ -1030,11 +1030,13 @@ def _LoadAccessTokenCredsFromFile(token_file, use_google_auth):
   return creds
 
 
-def _Load(account,
-          scopes,
-          prevent_refresh,
-          use_google_auth=True,
-          with_access_token_cache=True):
+def _Load(
+    account,
+    scopes,
+    prevent_refresh,
+    use_google_auth=True,
+    cache_only_rapt=False,
+):
   """Helper for Load()."""
   # If an access token, access token file, or credential file is set, just use
   # that and ignore the active account and whatever is in the credential store.
@@ -1058,7 +1060,8 @@ def _Load(account,
 
     # First check if store has the credential
     store = c_creds.GetCredentialStore(
-        with_access_token_cache=with_access_token_cache)
+        cache_only_rapt=cache_only_rapt,
+    )
     cred = store.Load(account, use_google_auth)
 
     if not cred:
@@ -1075,8 +1078,9 @@ def _Load(account,
 
         # If we can use the token store, attach the token store to the cred, so
         # the tokens can be written into the store automatically after refresh.
-        if with_access_token_cache:
-          cred = c_creds.MaybeAttachAccessTokenCacheStoreGoogleAuth(cred)
+        cred = c_creds.MaybeAttachAccessTokenCacheStoreGoogleAuth(
+            cred, cache_only_rapt=cache_only_rapt
+        )
 
         _HandleGceUniverseDomain(
             cred.universe_domain, cred.service_account_email

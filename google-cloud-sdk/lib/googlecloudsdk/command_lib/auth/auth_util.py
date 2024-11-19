@@ -295,28 +295,40 @@ def AddQuotaProjectToADC(quota_project):
   if not ADCIsUserAccount():
     raise c_exc.BadFileException(
         'The application default credentials are not user credentials, quota '
-        'project cannot be added.')
+        'project cannot be added.'
+    )
 
   credentials, _ = c_creds.GetGoogleAuthDefault().load_credentials_from_file(
-      config.ADCFilePath())
+      config.ADCFilePath()
+  )
+
   previous_quota_project = credentials.quota_project_id
 
-  adc_path = c_creds.ADC(credentials).DumpExtendedADCToFile(
-      quota_project=quota_project)
+  # we call the cloudresourcemanager api under the quota of gcloud's quota
+  # project to check if the user is granted the usage permission. Given the
+  # current project can have this api disabled. So removing the quota project
+  # from ADC so that check can be done regardless if cloudresourcemanager api
+  # is enabled or disabled on the project.
+  c_creds.ADC(credentials).DumpADCToFile()
 
-  try:
-    if not AdcHasGivenPermissionOnProject(
-        quota_project, permissions=[SERVICEUSAGE_PERMISSION]):
-      raise MissingPermissionOnQuotaProjectError(
-          'Cannot add the project "{}" to application default credentials (ADC) '
-          'as a quota project because the account in ADC does not have the '
-          '"{}" permission on this project.'.format(quota_project,
-                                                    SERVICEUSAGE_PERMISSION))
-  except Exception:
-    # Rollback the quota project before surfacing any exception that occurred.
+  if not AdcHasGivenPermissionOnProject(
+      quota_project, permissions=[SERVICEUSAGE_PERMISSION]
+  ):
     c_creds.ADC(credentials).DumpExtendedADCToFile(
-        quota_project=previous_quota_project)
-    raise
+        quota_project=previous_quota_project
+    )
+
+    raise MissingPermissionOnQuotaProjectError(
+        'Cannot add the project "{}" to application default credentials (ADC) '
+        'as a quota project because the account in ADC does not have the '
+        '"{}" permission on this project.'.format(
+            quota_project, SERVICEUSAGE_PERMISSION
+        )
+    )
+
+  adc_path = c_creds.ADC(credentials).DumpExtendedADCToFile(
+      quota_project=quota_project
+  )
 
   LogADCIsWritten(adc_path)
   LogQuotaProjectAdded(quota_project)

@@ -1473,7 +1473,7 @@ def ValidateNetworkInterfaceStackTypeIpv6OnlyNotSupported(stack_type_input):
         'Invalid value for stack-type [%s].' % stack_type)
 
 
-def _ValidateNetworkInterfaceIgmpQuery(igmp_query_input):
+def ValidateNetworkInterfaceIgmpQuery(igmp_query_input):
   """Validates igmp query field, throws exception if invalid."""
   igmp_query = igmp_query_input.upper()
   if igmp_query in constants.NETWORK_INTERFACE_IGMP_QUERY_CHOICES:
@@ -1578,8 +1578,10 @@ def AddAddressArgs(parser,
   multiple_network_interface_cards_spec[
       'nic-type'] = ValidateNetworkInterfaceNicType
 
-  multiple_network_interface_cards_spec[
-      'igmp-query'] = _ValidateNetworkInterfaceIgmpQuery
+  if support_igmp_query:
+    multiple_network_interface_cards_spec['igmp-query'] = (
+        ValidateNetworkInterfaceIgmpQuery
+    )
 
   if support_ipv6_only:
     multiple_network_interface_cards_spec[
@@ -1945,30 +1947,29 @@ def AddProvisioningModelVmArgs(parser, support_reservation_bound=False):
   """Set arguments for specifing provisioning model for instances."""
   choices = {
       'SPOT': (
-          'Spot VMs are spare capacity; Spot VMs are discounted '
-          'to have much lower prices than standard VMs '
-          'but have no guaranteed runtime. Spot VMs are the new version '
-          'of preemptible VM instances, except Spot VMs do not have '
-          'a 24-hour maximum runtime.'
+          'Compute Engine may stop a Spot VM instance whenever it needs '
+          "capacity. Because Spot VM instances don't have a guaranteed "
+          'runtime, they come at a discounted price.'
       ),
       'STANDARD': (
-          'Default. Standard provisioning model for VM instances, '
-          'which has user-controlled runtime '
-          'but no Spot discounts.'
+          'The default option. The STANDARD provisioning model gives you full '
+          "control over your VM instances' runtime."
       ),
   }
   if support_reservation_bound:
     choices['RESERVATION_BOUND'] = (
-        'Reservation-bound provisioning model for VM instances which are bound'
-        ' to the lifecycle of the reservation in which it is provisioned.'
+        'The VM instances run for the entire duration of their associated'
+        ' reservation. You can only specify this provisioning model if you want'
+        ' your VM instances to consume a specific reservation with either a'
+        ' calendar reservation mode or a dense deployment type.'
     )
   parser.add_argument(
       '--provisioning-model',
       choices=choices,
       type=arg_utils.ChoiceToEnumName,
       help="""\
-      Specifies provisioning model, which determines price, obtainability,
-      and runtime for the VM instance.
+      Specifies the provisioning model for your VM instances. This choice
+      affects the price, availability, and how long your VM instances can run.
       """,
   )
 

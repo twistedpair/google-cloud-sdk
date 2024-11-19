@@ -136,6 +136,10 @@ def CreateCLI(surfaces, translator=None):
       base.ReleaseTrack.BETA,
       os.path.join(pkg_root, 'surface', 'beta'),
       component='beta')
+  loader.AddReleaseTrack(
+      base.ReleaseTrack.PREVIEW,
+      os.path.join(pkg_root, 'surface', 'preview'),
+      component='preview')
 
   for dot_path, dir_path in surfaces:
     loader.AddModule(dot_path, dir_path, component=None)

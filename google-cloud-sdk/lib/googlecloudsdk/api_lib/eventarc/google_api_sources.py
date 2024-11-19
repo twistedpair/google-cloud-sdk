@@ -169,6 +169,7 @@ class GoogleApiSourceClientV1(base.EventarcClientBase):
       destination_ref,
       logging_config,
       crypto_key_name,
+      labels,
   ):
     logging_config_enum = None
     if logging_config is not None:
@@ -177,6 +178,17 @@ class GoogleApiSourceClientV1(base.EventarcClientBase):
               logging_config
           ),
       )
+    google_api_source_labels = None
+    if labels is not None:
+      google_api_source_labels = self._messages.GoogleApiSource.LabelsValue(
+          additionalProperties=[
+              self._messages.GoogleApiSource.LabelsValue.AdditionalProperty(
+                  key=key,
+                  value=value,
+              )
+              for key, value in labels.items()
+          ]
+      )
     return self._messages.GoogleApiSource(
         name=google_api_source_ref.RelativeName(),
         destination=destination_ref.RelativeName()
@@ -184,10 +196,11 @@ class GoogleApiSourceClientV1(base.EventarcClientBase):
         else '',
         loggingConfig=logging_config_enum,
         cryptoKeyName=crypto_key_name,
+        labels=google_api_source_labels,
     )
 
   def BuildUpdateMask(
-      self, destination, logging_config, crypto_key, clear_crypto_key
+      self, destination, logging_config, crypto_key, clear_crypto_key, labels
   ):
     """Builds an update mask for updating a GoogleApiSource.
 
@@ -196,6 +209,7 @@ class GoogleApiSourceClientV1(base.EventarcClientBase):
       logging_config: bool, whether to update the logging config.
       crypto_key: bool, whether to update the crypto key.
       clear_crypto_key: bool, whether to clear the crypto key.
+      labels: bool, whether to update the labels.
 
     Returns:
       The update mask as a string.
@@ -211,6 +225,8 @@ class GoogleApiSourceClientV1(base.EventarcClientBase):
       update_mask.append('loggingConfig')
     if crypto_key or clear_crypto_key:
       update_mask.append('cryptoKeyName')
+    if labels:
+      update_mask.append('labels')
 
     if not update_mask:
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')

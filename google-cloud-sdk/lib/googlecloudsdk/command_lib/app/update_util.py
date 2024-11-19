@@ -15,10 +15,6 @@
 
 """Utilities for `gcloud app update` command."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 from googlecloudsdk.api_lib.app.api import appengine_app_update_api_client
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.core import log
@@ -39,9 +35,12 @@ def AddAppUpdateFlags(parser):
       help='The app-level default service account to update the app with.')
 
 
-def PatchApplication(release_track,
-                     split_health_checks=None,
-                     service_account=None):
+def PatchApplication(
+    release_track,
+    split_health_checks=None,
+    service_account=None,
+    ssl_policy=None,
+):
   """Updates an App Engine application via API client.
 
   Args:
@@ -50,15 +49,32 @@ def PatchApplication(release_track,
       default.
     service_account: str, the app-level default service account to update for
       this App Engine app.
+    ssl_policy: str, the app-level SSL policy to update for this App Engine app.
+      Can be default or modern.
   """
   api_client = appengine_app_update_api_client.GetApiClientForTrack(
-      release_track)
+      release_track
+  )
 
-  if split_health_checks is not None or service_account is not None:
+  ssl_policy_enum = {
+      'default': (
+          api_client.messages.Application.SslPolicyValueValuesEnum.DEFAULT
+      ),
+      'modern': api_client.messages.Application.SslPolicyValueValuesEnum.MODERN,
+  }.get(ssl_policy)
+
+  if (
+      split_health_checks is not None
+      or service_account is not None
+      or ssl_policy_enum is not None
+  ):
     with progress_tracker.ProgressTracker(
-        'Updating the app [{0}]'.format(api_client.project)):
+        'Updating the app [{0}]'.format(api_client.project)
+    ):
       api_client.PatchApplication(
           split_health_checks=split_health_checks,
-          service_account=service_account)
+          service_account=service_account,
+          ssl_policy=ssl_policy_enum,
+      )
   else:
     log.status.Print('Nothing to update.')

@@ -59,17 +59,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_RETRYPOLICIES = (
-      'projects.locations.retryPolicies',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/retryPolicies/'
-              '{retryPoliciesId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_SERVICES = (
       'projects.locations.services',
       'projects/{projectsId}/locations/{locationsId}/services/{servicesId}',
@@ -84,6 +73,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/streams/'
               '{streamsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_STREAMS_RETRYPOLICIES = (
+      'projects.locations.streams.retryPolicies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/streams/'
+              '{streamsId}/retryPolicies/{retryPoliciesId}',
       },
       ['name'],
       True

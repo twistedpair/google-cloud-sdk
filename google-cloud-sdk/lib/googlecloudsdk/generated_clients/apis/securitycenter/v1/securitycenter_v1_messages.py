@@ -1633,6 +1633,7 @@ class EffectiveEventThreatDetectionCustomModule(_messages.Message):
   `enabled`. EffectiveEventThreatDetectionCustomModule is read-only.
 
   Enums:
+    CloudProviderValueValuesEnum: The cloud provider of the custom module.
     EnablementStateValueValuesEnum: Output only. The effective state of
       enablement for the module at the given level of the hierarchy.
 
@@ -1640,6 +1641,7 @@ class EffectiveEventThreatDetectionCustomModule(_messages.Message):
     ConfigValue: Output only. Config for the effective module.
 
   Fields:
+    cloudProvider: The cloud provider of the custom module.
     config: Output only. Config for the effective module.
     description: Output only. The description for the module.
     displayName: Output only. The human readable name to be displayed for the
@@ -1653,6 +1655,20 @@ class EffectiveEventThreatDetectionCustomModule(_messages.Message):
       ventThreatDetectionSettings/effectiveCustomModules/{module}`.
     type: Output only. Type for the module. e.g. CONFIGURABLE_BAD_IP.
   """
+
+  class CloudProviderValueValuesEnum(_messages.Enum):
+    r"""The cloud provider of the custom module.
+
+    Values:
+      CLOUD_PROVIDER_UNSPECIFIED: Unspecified cloud provider.
+      GOOGLE_CLOUD_PLATFORM: Google Cloud Platform.
+      AMAZON_WEB_SERVICES: Amazon Web Services.
+      MICROSOFT_AZURE: Microsoft Azure.
+    """
+    CLOUD_PROVIDER_UNSPECIFIED = 0
+    GOOGLE_CLOUD_PLATFORM = 1
+    AMAZON_WEB_SERVICES = 2
+    MICROSOFT_AZURE = 3
 
   class EnablementStateValueValuesEnum(_messages.Enum):
     r"""Output only. The effective state of enablement for the module at the
@@ -1691,12 +1707,13 @@ class EffectiveEventThreatDetectionCustomModule(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  config = _messages.MessageField('ConfigValue', 1)
-  description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 4)
-  name = _messages.StringField(5)
-  type = _messages.StringField(6)
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 1)
+  config = _messages.MessageField('ConfigValue', 2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  type = _messages.StringField(7)
 
 
 class Empty(_messages.Message):
@@ -1729,6 +1746,7 @@ class EventThreatDetectionCustomModule(_messages.Message):
   level are inherited by child folders and projects.
 
   Enums:
+    CloudProviderValueValuesEnum: The cloud provider of the custom module.
     EnablementStateValueValuesEnum: The state of enablement for the module at
       the given level of the hierarchy.
 
@@ -1741,6 +1759,7 @@ class EventThreatDetectionCustomModule(_messages.Message):
     ancestorModule: Output only. The closest ancestor module that this module
       inherits the enablement state from. The format is the same as the
       EventThreatDetectionCustomModule resource name.
+    cloudProvider: The cloud provider of the custom module.
     config: Config for the module. For the resident module, its config value
       is defined at this level. For the inherited module, its config value is
       inherited from the ancestor module.
@@ -1758,6 +1777,20 @@ class EventThreatDetectionCustomModule(_messages.Message):
     type: Type for the module. e.g. CONFIGURABLE_BAD_IP.
     updateTime: Output only. The time the module was last updated.
   """
+
+  class CloudProviderValueValuesEnum(_messages.Enum):
+    r"""The cloud provider of the custom module.
+
+    Values:
+      CLOUD_PROVIDER_UNSPECIFIED: Unspecified cloud provider.
+      GOOGLE_CLOUD_PLATFORM: Google Cloud.
+      AMAZON_WEB_SERVICES: Amazon Web Services (AWS).
+      MICROSOFT_AZURE: Microsoft Azure.
+    """
+    CLOUD_PROVIDER_UNSPECIFIED = 0
+    GOOGLE_CLOUD_PLATFORM = 1
+    AMAZON_WEB_SERVICES = 2
+    MICROSOFT_AZURE = 3
 
   class EnablementStateValueValuesEnum(_messages.Enum):
     r"""The state of enablement for the module at the given level of the
@@ -1801,14 +1834,15 @@ class EventThreatDetectionCustomModule(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   ancestorModule = _messages.StringField(1)
-  config = _messages.MessageField('ConfigValue', 2)
-  description = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 5)
-  lastEditor = _messages.StringField(6)
-  name = _messages.StringField(7)
-  type = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 2)
+  config = _messages.MessageField('ConfigValue', 3)
+  description = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 6)
+  lastEditor = _messages.StringField(7)
+  name = _messages.StringField(8)
+  type = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class ExfilResource(_messages.Message):
@@ -2557,10 +2591,12 @@ class GoogleCloudSecuritycenterV1EffectiveSecurityHealthAnalyticsCustomModule(_m
   read-only.
 
   Enums:
+    CloudProviderValueValuesEnum: The cloud provider of the custom module.
     EnablementStateValueValuesEnum: Output only. The effective state of
       enablement for the module at the given level of the hierarchy.
 
   Fields:
+    cloudProvider: The cloud provider of the custom module.
     customConfig: Output only. The user-specified configuration for the
       module.
     displayName: Output only. The display name for the custom module. The name
@@ -2575,6 +2611,20 @@ class GoogleCloudSecuritycenterV1EffectiveSecurityHealthAnalyticsCustomModule(_m
       /securityHealthAnalyticsSettings/effectiveCustomModules/{customModule}"
   """
 
+  class CloudProviderValueValuesEnum(_messages.Enum):
+    r"""The cloud provider of the custom module.
+
+    Values:
+      CLOUD_PROVIDER_UNSPECIFIED: Unspecified cloud provider.
+      GOOGLE_CLOUD_PLATFORM: Google Cloud Platform.
+      AMAZON_WEB_SERVICES: Amazon Web Services.
+      MICROSOFT_AZURE: Microsoft Azure.
+    """
+    CLOUD_PROVIDER_UNSPECIFIED = 0
+    GOOGLE_CLOUD_PLATFORM = 1
+    AMAZON_WEB_SERVICES = 2
+    MICROSOFT_AZURE = 3
+
   class EnablementStateValueValuesEnum(_messages.Enum):
     r"""Output only. The effective state of enablement for the module at the
     given level of the hierarchy.
@@ -2588,10 +2638,11 @@ class GoogleCloudSecuritycenterV1EffectiveSecurityHealthAnalyticsCustomModule(_m
     ENABLED = 1
     DISABLED = 2
 
-  customConfig = _messages.MessageField('GoogleCloudSecuritycenterV1CustomConfig', 1)
-  displayName = _messages.StringField(2)
-  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 3)
-  name = _messages.StringField(4)
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 1)
+  customConfig = _messages.MessageField('GoogleCloudSecuritycenterV1CustomConfig', 2)
+  displayName = _messages.StringField(3)
+  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 4)
+  name = _messages.StringField(5)
 
 
 class GoogleCloudSecuritycenterV1ExternalSystem(_messages.Message):
@@ -2991,6 +3042,7 @@ class GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule(_messages.M
   level are inherited by the child folders and projects.
 
   Enums:
+    CloudProviderValueValuesEnum: The cloud provider of the custom module.
     EnablementStateValueValuesEnum: The enablement state of the custom module.
 
   Fields:
@@ -2998,6 +3050,7 @@ class GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule(_messages.M
       was created in the organization, folder, or project in which you are
       viewing the custom module. Otherwise, `ancestor_module` specifies the
       organization or folder from which the custom module is inherited.
+    cloudProvider: The cloud provider of the custom module.
     customConfig: The user specified custom configuration for the module.
     displayName: The display name of the Security Health Analytics custom
       module. This display name becomes the finding category for all findings
@@ -3017,6 +3070,20 @@ class GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule(_messages.M
       updated.
   """
 
+  class CloudProviderValueValuesEnum(_messages.Enum):
+    r"""The cloud provider of the custom module.
+
+    Values:
+      CLOUD_PROVIDER_UNSPECIFIED: Unspecified cloud provider.
+      GOOGLE_CLOUD_PLATFORM: Google Cloud.
+      AMAZON_WEB_SERVICES: Amazon Web Services (AWS).
+      MICROSOFT_AZURE: Microsoft Azure.
+    """
+    CLOUD_PROVIDER_UNSPECIFIED = 0
+    GOOGLE_CLOUD_PLATFORM = 1
+    AMAZON_WEB_SERVICES = 2
+    MICROSOFT_AZURE = 3
+
   class EnablementStateValueValuesEnum(_messages.Enum):
     r"""The enablement state of the custom module.
 
@@ -3034,12 +3101,13 @@ class GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule(_messages.M
     INHERITED = 3
 
   ancestorModule = _messages.StringField(1)
-  customConfig = _messages.MessageField('GoogleCloudSecuritycenterV1CustomConfig', 2)
-  displayName = _messages.StringField(3)
-  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 4)
-  lastEditor = _messages.StringField(5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 2)
+  customConfig = _messages.MessageField('GoogleCloudSecuritycenterV1CustomConfig', 3)
+  displayName = _messages.StringField(4)
+  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 5)
+  lastEditor = _messages.StringField(6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class GoogleCloudSecuritycenterV1SensitiveDataProtectionMapping(_messages.Message):

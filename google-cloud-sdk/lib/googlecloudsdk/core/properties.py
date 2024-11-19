@@ -1358,6 +1358,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.osconfig = self._Add('osconfig', hidden=True)
     self.oslogin = self._Add('oslogin', hidden=True)
     self.parallelstore = self._Add('parallelstore', hidden=True)
+    self.parametermanager = self._Add(
+        'parametermanager', command='gcloud parameter-manager', hidden=True)
     self.policyanalyzer = self._Add(
         'policyanalyzer', command='policy-intelligence')
     self.policysimulator = self._Add('policysimulator', hidden=True)

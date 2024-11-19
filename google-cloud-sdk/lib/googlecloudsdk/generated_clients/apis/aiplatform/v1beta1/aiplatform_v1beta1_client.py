@@ -80,6 +80,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     self.projects_locations_extensions_operations = self.ProjectsLocationsExtensionsOperationsService(self)
     self.projects_locations_extensions = self.ProjectsLocationsExtensionsService(self)
     self.projects_locations_featureGroups_featureMonitors_featureMonitorJobs = self.ProjectsLocationsFeatureGroupsFeatureMonitorsFeatureMonitorJobsService(self)
+    self.projects_locations_featureGroups_featureMonitors_operations = self.ProjectsLocationsFeatureGroupsFeatureMonitorsOperationsService(self)
     self.projects_locations_featureGroups_featureMonitors = self.ProjectsLocationsFeatureGroupsFeatureMonitorsService(self)
     self.projects_locations_featureGroups_features_operations = self.ProjectsLocationsFeatureGroupsFeaturesOperationsService(self)
     self.projects_locations_featureGroups_features = self.ProjectsLocationsFeatureGroupsFeaturesService(self)
@@ -5340,6 +5341,124 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsFeatureMonitorJobsListRequest',
         response_type_name='GoogleCloudAiplatformV1beta1ListFeatureMonitorJobsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsFeatureGroupsFeatureMonitorsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_featureGroups_featureMonitors_operations resource."""
+
+    _NAME = 'projects_locations_featureGroups_featureMonitors_operations'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectsLocationsFeatureGroupsFeatureMonitorsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/featureGroups/{featureGroupsId}/featureMonitors/{featureMonitorsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.featureGroups.featureMonitors.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsOperationsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/featureGroups/{featureGroupsId}/featureMonitors/{featureMonitorsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.featureGroups.featureMonitors.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/featureGroups/{featureGroupsId}/featureMonitors/{featureMonitorsId}/operations',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.featureGroups.featureMonitors.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+name}/operations',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsOperationsListRequest',
+        response_type_name='GoogleLongrunningListOperationsResponse',
+        supports_download=False,
+    )
+
+    def Wait(self, request, global_params=None):
+      r"""Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP/RPC timeout, the HTTP/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsOperationsWaitRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Wait')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Wait.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/featureGroups/{featureGroupsId}/featureMonitors/{featureMonitorsId}/operations/{operationsId}:wait',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.featureGroups.featureMonitors.operations.wait',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['timeout'],
+        relative_path='v1beta1/{+name}:wait',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsOperationsWaitRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -16210,7 +16329,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     )
 
     def Resume(self, request, global_params=None):
-      r"""Resumes a paused Schedule to start scheduling new runs. Will mark Schedule.state to 'ACTIVE'. Only paused Schedule can be resumed. When the Schedule is resumed, new runs will be scheduled starting from the next execution time after the current time based on the time_specification in the Schedule. If Schedule.catchUp is set up true, all missed runs will be scheduled for backfill first.
+      r"""Resumes a paused Schedule to start scheduling new runs. Will mark Schedule.state to 'ACTIVE'. Only paused Schedule can be resumed. When the Schedule is resumed, new runs will be scheduled starting from the next execution time after the current time based on the time_specification in the Schedule. If Schedule.catch_up is set up true, all missed runs will be scheduled for backfill first.
 
       Args:
         request: (AiplatformProjectsLocationsSchedulesResumeRequest) input message

@@ -179,6 +179,7 @@ class _TriggersClient(_BaseTriggersClient):
       destination_message,
       transport_topic_ref,
       channel_ref,
+      labels,
   ):
     """Builds a Trigger message with the given data.
 
@@ -194,6 +195,7 @@ class _TriggersClient(_BaseTriggersClient):
         destination.
       transport_topic_ref: Resource or None, the user-provided transport topic.
       channel_ref: Resource or None, the channel for 3p events
+      labels: dict or None, the Trigger's labels.
 
     Returns:
       A Trigger message with a destination service.
@@ -214,6 +216,16 @@ class _TriggersClient(_BaseTriggersClient):
     pubsub = self._messages.Pubsub(topic=transport_topic_name)
     transport = self._messages.Transport(pubsub=pubsub)
     channel = channel_ref.RelativeName() if channel_ref else None
+    trigger_labels = None
+    if labels is not None:
+      trigger_labels = self._messages.Trigger.LabelsValue(
+          additionalProperties=[
+              self._messages.Trigger.LabelsValue.AdditionalProperty(
+                  key=key, value=value
+              )
+              for key, value in labels.items()
+          ]
+      )
     return self._messages.Trigger(
         name=trigger_ref.RelativeName(),
         eventFilters=filter_messages,
@@ -222,6 +234,7 @@ class _TriggersClient(_BaseTriggersClient):
         destination=destination_message,
         transport=transport,
         channel=channel,
+        labels=trigger_labels,
     )
 
   def BuildCloudRunDestinationMessage(self, destination_run_service,
@@ -356,6 +369,7 @@ class _TriggersClient(_BaseTriggersClient):
       destination_workflow_location,
       destination_function,
       destination_function_location,
+      labels,
   ):
     """Builds an update mask for updating a Cloud Run trigger.
 
@@ -385,6 +399,7 @@ class _TriggersClient(_BaseTriggersClient):
       destination_function: bool, whether to update the destination function.
       destination_function_location: bool, whether to update the destination
         function location.
+      labels: bool, whether to update the labels.
 
     Returns:
       The update mask as a string.
@@ -417,6 +432,8 @@ class _TriggersClient(_BaseTriggersClient):
       update_mask.append('serviceAccount')
     if event_data_content_type:
       update_mask.append('eventDataContentType')
+    if labels:
+      update_mask.append('labels')
     if not update_mask:
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
     return ','.join(update_mask)

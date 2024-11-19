@@ -4225,7 +4225,8 @@ class RegionalEndpoint(_messages.Message):
       address is provided, an IP from the subnetwork is allocated. Use one of
       the following formats: * IPv4 address as in `10.0.0.1` * Address
       resource URI as in
-      `projects/{project}/regions/{region}/addresses/{address_name}`
+      `projects/{project}/regions/{region}/addresses/{address_name}` for an
+      IPv4 or IPv6 address.
     createTime: Output only. Time when the RegionalEndpoint was created.
     description: Optional. A description of this resource.
     ipAddress: Output only. The literal IP address of the PSC Forwarding Rule

@@ -805,7 +805,8 @@ def AddFailoverDrReplicaName(parser, hidden=False):
       help=(
           'Set a Disaster Recovery (DR) replica with the specified name for '
           'the primary instance. This must be one of the existing cross region '
-          'replicas of the primary instance. Flag is only available for MySQL.'
+          'replicas of the primary instance. Flag is only available for MySQL '
+          'and PostgreSQL database instances.'
       ),
   )
 
@@ -818,7 +819,7 @@ def AddClearFailoverDrReplicaName(parser, hidden=False):
       hidden=hidden,
       help=(
           'Clear the DR replica setting for the primary instance. Flag is only '
-          'available for MySQL.'
+          'available for MySQL and PostgreSQL database instances.'
       ),
       **kwargs
   )
@@ -2541,8 +2542,8 @@ def AddEnablePrivateServiceConnect(
       '--enable-private-service-connect',
       required=False,
       help=(
-          'When the flag is set, a Cloud SQL instance will be created with '
-          'Private Service Connect enabled.'
+          'Enable connecting to the Cloud SQL instance with Private Service'
+          ' Connect.'
       ),
       hidden=hidden,
       **kwargs

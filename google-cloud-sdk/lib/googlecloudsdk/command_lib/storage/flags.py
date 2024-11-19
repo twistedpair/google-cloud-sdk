@@ -196,17 +196,15 @@ def add_acl_modifier_flags(parser):
   )
 
 
+# TODO: b/377792482 - Add help text for the Zonal Buckets in the placement flag.
 def add_placement_flag(parser):
   """Adds placement flag to set placement config for Dual-region."""
   parser.add_argument(
       '--placement',
       metavar='REGION',
-      type=arg_parsers.ArgList(
-          min_length=2, max_length=2, custom_delim_char=','
-      ),
+      type=arg_parsers.ArgList(custom_delim_char=','),
       help=(
-          'A comma-separated list of exactly 2 regions that form the custom'
-          ' [dual-region]'
+          'A comma-separated list of regions that form the custom [dual-region]'
           ' (https://cloud.google.com/storage/docs/locations#location-dr).'
           ' Only regions within the same continent are or will ever be valid.'
           ' Invalid location pairs (such as mixed-continent, or with'
@@ -767,7 +765,7 @@ def add_management_hub_filter_flags(parser):
       help=(
           'Comma separated list of [locations]'
           '(https://cloud.google.com/storage/docs/locations#available-locations)'
-          'to exclude in Management Hub filter. To clear'
+          ' to exclude in Management Hub filter. To clear'
           ' excluded locations, provide flag with empty list. e.g'
           ' `--exclude-locations=""` or `--exclude-locations=` .'
       ),
@@ -815,8 +813,8 @@ def add_management_hub_filter_flags(parser):
       help=(
           'Sets filter for bucket id regexes to include. Accepts list of bucket'
           ' id regexes in comma separated format. If the regex contains special'
-          ' characters that may have a specific meaning in the shell (like $,'
-          ' &, *, etc.), escape them using backslashes(\\). To clear'
+          ' characters that may have a specific meaning in the shell,'
+          ' escape them using backslashes(\\). To clear'
           ' bucket id regexes list, provide flag with empty list. e.g'
           ' `--include-bucket-id-regexes=""` or'
           ' `--include-bucket-id-regexes=` .'
@@ -849,8 +847,8 @@ def add_management_hub_filter_flags(parser):
       help=(
           'Sets filter for bucket id regexes to exclude. Accepts list of bucket'
           ' id regexes in comma separated format. If the regex contains special'
-          ' characters that may have a specific meaning in the shell (like $,'
-          ' &, *, etc.), escape them using backslashes(\\). To clear bucket id'
+          ' characters that may have a specific meaning in the shell,'
+          ' escape them using backslashes(\\). To clear bucket id'
           ' regexes list, provide flag with an empty list. e.g'
           ' `--exclude-bucket-id-regexes=""` or'
           ' `--exclude-bucket-id-regexes=` .'

@@ -303,6 +303,7 @@ class IndexEndpointsClient(object):
     if args.deployment_group is not None:
       deployed_index.deploymentGroup = args.deployment_group
 
+    # JWT Authentication config
     if args.audiences is not None and args.allowed_issuers is not None:
       auth_provider = self.messages.GoogleCloudAiplatformV1DeployedIndexAuthConfigAuthProvider()
       auth_provider.audiences.extend(args.audiences)
@@ -310,6 +311,17 @@ class IndexEndpointsClient(object):
       deployed_index.deployedIndexAuthConfig = (
           self.messages.GoogleCloudAiplatformV1DeployedIndexAuthConfig(
               authProvider=auth_provider))
+
+    # PSC automation configs
+    if args.psc_automation_configs is not None:
+      deployed_index.pscAutomationConfigs = []
+      for psc_automation_config in args.psc_automation_configs:
+        deployed_index.pscAutomationConfigs.append(
+            self.messages.GoogleCloudAiplatformV1PSCAutomationConfig(
+                projectId=psc_automation_config['project-id'],
+                network=psc_automation_config['network'],
+            )
+        )
 
     if args.machine_type is not None:
       dedicated_resources = (
@@ -363,16 +375,15 @@ class IndexEndpointsClient(object):
   def MutateDeployedIndexBeta(self, index_endpoint_ref, args):
     """Mutate a deployed index from an index endpoint."""
 
-    automatic_resources = self.messages.GoogleCloudAiplatformV1beta1AutomaticResources(
-    )
-    if args.min_replica_count is not None:
-      automatic_resources.minReplicaCount = args.min_replica_count
-    if args.max_replica_count is not None:
-      automatic_resources.maxReplicaCount = args.max_replica_count
-
     deployed_index = self.messages.GoogleCloudAiplatformV1beta1DeployedIndex(
-        automaticResources=automatic_resources, id=args.deployed_index_id,
-        enableAccessLogging=args.enable_access_logging)
+        id=args.deployed_index_id,
+        enableAccessLogging=args.enable_access_logging,
+    )
+
+    if args.machine_type is not None:
+      deployed_index.dedicatedResources = self._GetDedicatedResourcesBeta(args)
+    else:
+      deployed_index.automaticResources = self._GetAutomaticResourcesBeta(args)
 
     if args.reserved_ip_ranges is not None:
       deployed_index.reservedIpRanges.extend(args.reserved_ip_ranges)
@@ -396,16 +407,15 @@ class IndexEndpointsClient(object):
   def MutateDeployedIndex(self, index_endpoint_ref, args):
     """Mutate a deployed index from an index endpoint."""
 
-    automatic_resources = self.messages.GoogleCloudAiplatformV1AutomaticResources(
-    )
-    if args.min_replica_count is not None:
-      automatic_resources.minReplicaCount = args.min_replica_count
-    if args.max_replica_count is not None:
-      automatic_resources.maxReplicaCount = args.max_replica_count
-
     deployed_index = self.messages.GoogleCloudAiplatformV1DeployedIndex(
-        id=args.deployed_index_id, automaticResources=automatic_resources,
-        enableAccessLogging=args.enable_access_logging)
+        id=args.deployed_index_id,
+        enableAccessLogging=args.enable_access_logging,
+    )
+
+    if args.machine_type is not None:
+      deployed_index.dedicatedResources = self._GetDedicatedResources(args)
+    else:
+      deployed_index.automaticResources = self._GetAutomaticResources(args)
 
     if args.reserved_ip_ranges is not None:
       deployed_index.reservedIpRanges.extend(args.reserved_ip_ranges)
@@ -444,3 +454,57 @@ class IndexEndpointsClient(object):
     request = self.messages.AiplatformProjectsLocationsIndexEndpointsDeleteRequest(
         name=index_endpoint_ref.RelativeName())
     return self._service.Delete(request)
+
+  def _GetDedicatedResourcesBeta(self, args):
+    """Construct dedicated resources for beta API."""
+    dedicated_resources = (
+        self.messages.GoogleCloudAiplatformV1beta1DedicatedResources()
+    )
+    dedicated_resources.machineSpec = (
+        self.messages.GoogleCloudAiplatformV1beta1MachineSpec(
+            machineType=args.machine_type
+        )
+    )
+    if args.min_replica_count is not None:
+      dedicated_resources.minReplicaCount = args.min_replica_count
+    if args.max_replica_count is not None:
+      dedicated_resources.maxReplicaCount = args.max_replica_count
+    return dedicated_resources
+
+  def _GetAutomaticResourcesBeta(self, args):
+    """Construct automatic resources for beta API."""
+    automatic_resources = (
+        self.messages.GoogleCloudAiplatformV1beta1AutomaticResources()
+    )
+    if args.min_replica_count is not None:
+      automatic_resources.minReplicaCount = args.min_replica_count
+    if args.max_replica_count is not None:
+      automatic_resources.maxReplicaCount = args.max_replica_count
+    return automatic_resources
+
+  def _GetDedicatedResources(self, args):
+    """Construct dedicated resources for GA API."""
+    dedicated_resources = (
+        self.messages.GoogleCloudAiplatformV1DedicatedResources()
+    )
+    dedicated_resources.machineSpec = (
+        self.messages.GoogleCloudAiplatformV1MachineSpec(
+            machineType=args.machine_type
+        )
+    )
+    if args.min_replica_count is not None:
+      dedicated_resources.minReplicaCount = args.min_replica_count
+    if args.max_replica_count is not None:
+      dedicated_resources.maxReplicaCount = args.max_replica_count
+    return dedicated_resources
+
+  def _GetAutomaticResources(self, args):
+    """Construct automatic resources for GA API."""
+    automatic_resources = (
+        self.messages.GoogleCloudAiplatformV1AutomaticResources()
+    )
+    if args.min_replica_count is not None:
+      automatic_resources.minReplicaCount = args.min_replica_count
+    if args.max_replica_count is not None:
+      automatic_resources.maxReplicaCount = args.max_replica_count
+    return automatic_resources

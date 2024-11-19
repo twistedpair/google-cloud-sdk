@@ -113,7 +113,7 @@ def _GetFlagSpec(flag):
   if flag.is_global:
     flag_spec[GLOBAL] = True
   if flag.choices:
-    flag_spec[CHOICES] = flag.choices
+    flag_spec[CHOICES] = list(flag.choices)
   flag_spec[NODE_ID] = str(uuid.uuid4())
   return flag_spec
 

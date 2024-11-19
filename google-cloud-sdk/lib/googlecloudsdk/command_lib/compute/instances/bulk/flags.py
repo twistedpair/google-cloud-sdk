@@ -279,6 +279,7 @@ def AddBulkCreateNetworkingArgs(
     support_network_queue_count=False,
     support_per_interface_stack_type=False,
     support_ipv6_only=False,
+    support_igmp_query=False,
 ):
   """Adds Networking Args for Bulk Create Command."""
 
@@ -357,6 +358,16 @@ def AddBulkCreateNetworkingArgs(
       The default value is `IPV4_ONLY`.
     """
 
+  if support_igmp_query:
+    multiple_network_interface_cards_spec['igmp-query'] = (
+        instances_flags.ValidateNetworkInterfaceIgmpQuery
+    )
+    network_interface_help += """
+      *igmp-query*::: Determines if the Compute Engine Instance can receive and respond to IGMP query packets on the specified network interface.
+      ``IGMP_QUERY'' must be one of: `IGMP_QUERY_V2`, `IGMP_QUERY_DISABLED`.
+      It is disabled by default.
+    """
+
   parser.add_argument(
       '--network-interface',
       type=arg_parsers.ArgDict(
@@ -395,6 +406,7 @@ def AddCommonBulkInsertArgs(
     support_ipv6_only=False,
     support_watchdog_timer=False,
     support_per_interface_stack_type=False,
+    support_igmp_query=False,
     support_reservation_bound=False,
 ):
   """Register parser args common to all tracks."""
@@ -447,6 +459,7 @@ def AddCommonBulkInsertArgs(
       support_network_queue_count=support_network_queue_count,
       support_per_interface_stack_type=support_per_interface_stack_type,
       support_ipv6_only=support_ipv6_only,
+      support_igmp_query=support_igmp_query,
   )
 
   instances_flags.AddImageArgs(parser, enable_snapshots=True)

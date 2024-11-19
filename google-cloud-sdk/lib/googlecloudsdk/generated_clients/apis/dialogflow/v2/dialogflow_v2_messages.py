@@ -4645,9 +4645,9 @@ class GoogleCloudDialogflowCxV3BargeInConfig(_messages.Message):
   may inform the client that an utterance has been detected. Note that no-
   speech event is not expected in this phase. The client provides this
   configuration in terms of the durations of those two phases. The durations
-  are measured in terms of the audio length from the the start of the input
-  audio. No-speech event is a response with END_OF_UTTERANCE without any
-  transcript following up.
+  are measured in terms of the audio length from the start of the input audio.
+  No-speech event is a response with END_OF_UTTERANCE without any transcript
+  following up.
 
   Fields:
     noBargeInDuration: Duration that is not eligible for barge-in at the
@@ -7342,9 +7342,9 @@ class GoogleCloudDialogflowCxV3beta1BargeInConfig(_messages.Message):
   may inform the client that an utterance has been detected. Note that no-
   speech event is not expected in this phase. The client provides this
   configuration in terms of the durations of those two phases. The durations
-  are measured in terms of the audio length from the the start of the input
-  audio. No-speech event is a response with END_OF_UTTERANCE without any
-  transcript following up.
+  are measured in terms of the audio length from the start of the input audio.
+  No-speech event is a response with END_OF_UTTERANCE without any transcript
+  following up.
 
   Fields:
     noBargeInDuration: Duration that is not eligible for barge-in at the
@@ -12244,7 +12244,7 @@ class GoogleCloudDialogflowV2FaqAnswer(_messages.Message):
 
 class GoogleCloudDialogflowV2FewShotExample(_messages.Message):
   r"""Providing examples in the generator (i.e. building a few-shot generator)
-  helps convey the desired format of the LLM response. NEXT_ID: 10
+  helps convey the desired format of the LLM response.
 
   Messages:
     ExtraInfoValue: Optional. Key is the placeholder field name in input,

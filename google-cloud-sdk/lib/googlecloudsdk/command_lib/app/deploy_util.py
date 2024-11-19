@@ -702,7 +702,7 @@ def RunDeploy(
         if config.name == 'dispatch':
           api_client.UpdateDispatchRules(config.GetRules())
         elif config.name == yaml_parsing.ConfigYamlInfo.INDEX:
-          index_api.CreateMissingIndexes(project, config.parsed)
+          index_api.CreateMissingIndexesViaDatastoreApi(project, config.parsed)
         elif config.name == yaml_parsing.ConfigYamlInfo.QUEUE:
           RunDeployCloudTasks(config)
         elif config.name == yaml_parsing.ConfigYamlInfo.CRON:

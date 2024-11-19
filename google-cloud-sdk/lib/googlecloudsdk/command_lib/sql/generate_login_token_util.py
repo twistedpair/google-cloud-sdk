@@ -43,7 +43,8 @@ def generate_login_token_from_gcloud_auth(scopes):
   cred = c_store.Load(
       allow_account_impersonation=True,
       use_google_auth=True,
-      with_access_token_cache=False)
+      cache_only_rapt=True,
+  )
 
   cred_type = c_creds.CredentialTypeGoogleAuth.FromCredentials(cred)
   if cred_type == c_creds.CredentialTypeGoogleAuth.USER_ACCOUNT:

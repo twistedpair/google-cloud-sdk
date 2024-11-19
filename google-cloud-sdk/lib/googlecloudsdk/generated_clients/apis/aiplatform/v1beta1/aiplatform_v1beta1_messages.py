@@ -2899,6 +2899,64 @@ class AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsListRequest(_messag
   parent = _messages.StringField(5, required=True)
 
 
+class AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsOperationsDelet
+  eRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsOperationsGetRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsOperationsListRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsOperationsWaitRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsFeatureGroupsFeatureMonitorsOperationsWaitRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
 class AiplatformProjectsLocationsFeatureGroupsFeaturesBatchCreateRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsFeatureGroupsFeaturesBatchCreateRequest
   object.
@@ -3147,10 +3205,10 @@ class AiplatformProjectsLocationsFeatureGroupsListRequest(_messages.Message):
       will be returned. The maximum value is 100; any value greater than 100
       will be coerced to 100.
     pageToken: A page token, received from a previous
-      FeatureGroupAdminService.ListFeatureGroups call. Provide this to
-      retrieve the subsequent page. When paginating, all other parameters
-      provided to FeatureGroupAdminService.ListFeatureGroups must match the
-      call that provided the page token.
+      FeatureRegistryService.ListFeatureGroups call. Provide this to retrieve
+      the subsequent page. When paginating, all other parameters provided to
+      FeatureRegistryService.ListFeatureGroups must match the call that
+      provided the page token.
     parent: Required. The resource name of the Location to list FeatureGroups.
       Format: `projects/{project}/locations/{location}`
   """
@@ -7547,7 +7605,7 @@ class AiplatformProjectsLocationsNotebookExecutionJobsListRequest(_messages.Mess
       `display_name, create_time desc`.
     pageSize: Optional. The standard list page size.
     pageToken: Optional. The standard list page token. Typically obtained via
-      ListNotebookExecutionJobs.next_page_token of the previous
+      ListNotebookExecutionJobsResponse.next_page_token of the previous
       NotebookService.ListNotebookExecutionJobs call.
     parent: Required. The resource name of the Location from which to list the
       NotebookExecutionJobs. Format: `projects/{project}/locations/{location}`
@@ -8252,7 +8310,7 @@ class AiplatformProjectsLocationsPersistentResourcesListRequest(_messages.Messag
   Fields:
     pageSize: Optional. The standard list page size.
     pageToken: Optional. The standard list page token. Typically obtained via
-      ListPersistentResourceResponse.next_page_token of the previous
+      ListPersistentResourcesResponse.next_page_token of the previous
       PersistentResourceService.ListPersistentResource call.
     parent: Required. The resource name of the Location to list the
       PersistentResources from. Format:
@@ -10898,7 +10956,7 @@ class AiplatformProjectsLocationsTuningJobsListRequest(_messages.Message):
     filter: Optional. The standard list filter.
     pageSize: Optional. The standard list page size.
     pageToken: Optional. The standard list page token. Typically obtained via
-      ListTuningJob.next_page_token of the previous
+      ListTuningJobsResponse.next_page_token of the previous
       GenAiTuningService.ListTuningJob][] call.
     parent: Required. The resource name of the Location to list the TuningJobs
       from. Format: `projects/{project}/locations/{location}`
@@ -12384,7 +12442,7 @@ class GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadataPartialR
     error: The error result of the migration request in case of failure.
     model: Migrated model resource name.
     request: It's the same as the value in
-      MigrateResourceRequest.migrate_resource_requests.
+      BatchMigrateResourcesRequest.migrate_resource_requests.
   """
 
   dataset = _messages.StringField(1)
@@ -22387,7 +22445,7 @@ class GoogleCloudAiplatformV1beta1ListNotebookExecutionJobsResponse(_messages.Me
 
   Fields:
     nextPageToken: A token to retrieve next page of results. Pass to
-      ListNotebookExecutionJobs.page_token to obtain that page.
+      ListNotebookExecutionJobsRequest.page_token to obtain that page.
     notebookExecutionJobs: List of NotebookExecutionJobs in the requested
       page.
   """
@@ -24390,9 +24448,8 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig(_messages.Message):
   Fields:
     emailAlertConfig: Email alert config.
     enableLogging: Dump the anomalies to Cloud Logging. The anomalies will be
-      put to json payload encoded from proto
-      google.cloud.aiplatform.logging.ModelMonitoringAnomaliesLogEntry. This
-      can be further sinked to Pub/Sub or any other services supported by
+      put to json payload encoded from proto ModelMonitoringStatsAnomalies.
+      This can be further synced to Pub/Sub or any other services supported by
       Cloud Logging.
     notificationChannels: Resource names of the NotificationChannels to send
       alert. Must be of the format `projects//notificationChannels/`
@@ -26242,7 +26299,7 @@ class GoogleCloudAiplatformV1beta1NotebookExecutionJob(_messages.Message):
       up to 128 characters long and can consist of any UTF-8 characters.
     encryptionSpec: Customer-managed encryption key spec for the notebook
       execution job. This field is auto-populated if the
-      NotebookService.NotebookRuntimeTemplate has an encryption spec.
+      NotebookRuntimeTemplate has an encryption spec.
     executionTimeout: Max running time of the execution job in seconds
       (default 86400s / 24 hrs).
     executionUser: The user email to run the execution as. Only supported by
@@ -26252,6 +26309,8 @@ class GoogleCloudAiplatformV1beta1NotebookExecutionJob(_messages.Message):
     gcsOutputUri: The Cloud Storage location to upload the result to. Format:
       `gs://bucket-name`
     jobState: Output only. The state of the NotebookExecutionJob.
+    kernelName: The name of the kernel to use during notebook execution. If
+      unset, the default kernel is used.
     labels: The labels with user-defined metadata to organize
       NotebookExecutionJobs. Label keys and values can be no longer than 64
       characters (Unicode codepoints), can only contain lowercase letters,
@@ -26273,6 +26332,8 @@ class GoogleCloudAiplatformV1beta1NotebookExecutionJob(_messages.Message):
       populated.
     updateTime: Output only. Timestamp when this NotebookExecutionJob was most
       recently updated.
+    workbenchRuntime: The Workbench runtime configuration to use for the
+      notebook execution.
   """
 
   class JobStateValueValuesEnum(_messages.Enum):
@@ -26352,13 +26413,15 @@ class GoogleCloudAiplatformV1beta1NotebookExecutionJob(_messages.Message):
   gcsNotebookSource = _messages.MessageField('GoogleCloudAiplatformV1beta1NotebookExecutionJobGcsNotebookSource', 9)
   gcsOutputUri = _messages.StringField(10)
   jobState = _messages.EnumField('JobStateValueValuesEnum', 11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  name = _messages.StringField(13)
-  notebookRuntimeTemplateResourceName = _messages.StringField(14)
-  scheduleResourceName = _messages.StringField(15)
-  serviceAccount = _messages.StringField(16)
-  status = _messages.MessageField('GoogleRpcStatus', 17)
-  updateTime = _messages.StringField(18)
+  kernelName = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  name = _messages.StringField(14)
+  notebookRuntimeTemplateResourceName = _messages.StringField(15)
+  scheduleResourceName = _messages.StringField(16)
+  serviceAccount = _messages.StringField(17)
+  status = _messages.MessageField('GoogleRpcStatus', 18)
+  updateTime = _messages.StringField(19)
+  workbenchRuntime = _messages.MessageField('GoogleCloudAiplatformV1beta1NotebookExecutionJobWorkbenchRuntime', 20)
 
 
 class GoogleCloudAiplatformV1beta1NotebookExecutionJobCustomEnvironmentSpec(_messages.Message):
@@ -26414,6 +26477,10 @@ class GoogleCloudAiplatformV1beta1NotebookExecutionJobGcsNotebookSource(_message
 
   generation = _messages.StringField(1)
   uri = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1NotebookExecutionJobWorkbenchRuntime(_messages.Message):
+  r"""Configuration for a Workbench Instances-based environment."""
 
 
 class GoogleCloudAiplatformV1beta1NotebookIdleShutdownConfig(_messages.Message):
@@ -36197,7 +36264,7 @@ class GoogleCloudAiplatformV1beta1StreamingPredictResponse(_messages.Message):
 
 class GoogleCloudAiplatformV1beta1StreamingReadFeatureValuesRequest(_messages.Message):
   r"""Request message for
-  FeaturestoreOnlineServingService.StreamingFeatureValuesRead.
+  FeaturestoreOnlineServingService.StreamingReadFeatureValues.
 
   Fields:
     entityIds: Required. IDs of entities to read Feature values of. The

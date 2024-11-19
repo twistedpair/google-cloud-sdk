@@ -580,6 +580,17 @@ def setup_parser(parser, is_update=False, release_track=None):
       ' of the URL. For example, https://s3.region.amazonaws.com/bucket-name'
       '/key-name for path style and Ex. https://bucket-name.s3.region.'
       'amazonaws.com/key-name for virtual-hosted style.')
+  if release_track is base.ReleaseTrack.ALPHA:
+    additional_options.add_argument(
+        '--s3-cloudfront-domain',
+        help=(
+            'For transfers from S3, optionally route egress traffic through a'
+            ' CloudFront instance. Supply the endpoint of the CloudFront'
+            ' instance: https://example.cloudfront.net. See documentation'
+            ' (https://cloud.google.com/storage-transfer/docs/s3-cloudfront)'
+            ' for more information.'
+        ),
+    )
   if is_update:
     additional_options.add_argument(
         '--clear-source-endpoint',
@@ -605,6 +616,12 @@ def setup_parser(parser, is_update=False, release_track=None):
         '--clear-source-request-model',
         action='store_true',
         help='Removes source request model.')
+    if release_track is base.ReleaseTrack.ALPHA:
+      additional_options.add_argument(
+          '--clear-s3-cloudfront-domain',
+          action='store_true',
+          help='Removes S3 CloudFront domain.',
+      )
 
   if not is_update:
     execution_options = parser.add_group(

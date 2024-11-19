@@ -24,13 +24,13 @@ from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.artifacts import requests
+from googlecloudsdk.command_lib.util import java
 from googlecloudsdk.command_lib.util.anthos import binary_operations
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.credentials import transports
 from googlecloudsdk.core.util import platforms
-
 
 DEFAULT_ENV_ARGS = {}
 
@@ -142,7 +142,8 @@ def CreateRegistryFromArtifactUri(artifact_uri):
       projectsId=cleaned_split_path[0],
       locationsId=cleaned_split_path[1],
       repositoriesId=cleaned_split_path[2],
-      filesId=cleaned_jar_file)
+      filesId=cleaned_jar_file,
+  )
 
 
 def DownloadJarFromArtifactRegistry(
@@ -256,6 +257,7 @@ class FlinkClientWrapper(binary_operations.BinaryBackedOperation):
     super(FlinkClientWrapper, self).__init__(
         binary='managed-flink-client', custom_errors=custom_errors, **kwargs
     )
+    self._java_path = java.RequireJavaInstalled('Managed Flink Client', 11)
     # BinaryBackedOperation assumes the binary lives in bin, but that's
     # not the case for managed-flink-client so we need to perform an
     # additiona search. If it still doesn't exist then we can admit that
@@ -346,10 +348,7 @@ class FlinkClientWrapper(binary_operations.BinaryBackedOperation):
     elif job_type == 'python':
       udfs = []
       if extra_jars:
-        udfs.append('--jar')
-        for j in extra_jars:
-          udfs.append(',')
-          udfs.append(j)
+        udfs.append('-Dgcloud.pipeline.jars={0}'.format(','.join(extra_jars)))
 
       env_folder = python_venv.split('/')[-1]
       archives = ['-Dpython.archives={0}'.format(python_venv)]
@@ -362,8 +361,6 @@ class FlinkClientWrapper(binary_operations.BinaryBackedOperation):
               command,
               '--target',
               target,
-              '--class',
-              'org.apache.flink.client.python.PythonDriver',
           ]
           + args
           + [
@@ -378,7 +375,6 @@ class FlinkClientWrapper(binary_operations.BinaryBackedOperation):
           + archives
           + udfs
           + [
-              DummyJar(),
               '--python',
               jar,
           ]
@@ -388,6 +384,9 @@ class FlinkClientWrapper(binary_operations.BinaryBackedOperation):
       class_arg = []
       if main_class:
         class_arg = ['--class', main_class]
+      udfs = []
+      if extra_jars:
+        udfs.append('-Dgcloud.pipeline.jars={0}'.format(','.join(extra_jars)))
 
       return (
           [command, '--target', target]
@@ -396,6 +395,9 @@ class FlinkClientWrapper(binary_operations.BinaryBackedOperation):
           + [
               '-Dgcloud.output-path={0}'.format(temp_dir),
               '-Dgcloud.api.staging-location={0}'.format(staging_location),
+          ]
+          + udfs
+          + [
               jar,
           ]
           + job_args

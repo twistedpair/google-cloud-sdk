@@ -33,29 +33,32 @@ from googlecloudsdk.core import properties
 EPHEMERAL_ADDRESS = object()
 
 
-def CreateNetworkInterfaceMessage(resources,
-                                  scope_lister,
-                                  messages,
-                                  network,
-                                  private_ip,
-                                  subnet_region,
-                                  subnet,
-                                  address,
-                                  alias_ip_ranges_string=None,
-                                  network_tier=None,
-                                  stack_type=None,
-                                  ipv6_network_tier=None,
-                                  nic_type=None,
-                                  ipv6_public_ptr_domain=None,
-                                  ipv6_address=None,
-                                  ipv6_prefix_length=None,
-                                  external_ipv6_address=None,
-                                  external_ipv6_prefix_length=None,
-                                  internal_ipv6_address=None,
-                                  internal_ipv6_prefix_length=None,
-                                  network_attachment=None,
-                                  network_queue_count=None,
-                                  vlan=None):
+def CreateNetworkInterfaceMessage(
+    resources,
+    scope_lister,
+    messages,
+    network,
+    private_ip,
+    subnet_region,
+    subnet,
+    address,
+    alias_ip_ranges_string=None,
+    network_tier=None,
+    stack_type=None,
+    ipv6_network_tier=None,
+    nic_type=None,
+    ipv6_public_ptr_domain=None,
+    ipv6_address=None,
+    ipv6_prefix_length=None,
+    external_ipv6_address=None,
+    external_ipv6_prefix_length=None,
+    internal_ipv6_address=None,
+    internal_ipv6_prefix_length=None,
+    network_attachment=None,
+    network_queue_count=None,
+    vlan=None,
+    igmp_query=None,
+):
   """Creates and returns a new NetworkInterface message.
 
   Args:
@@ -104,6 +107,7 @@ def CreateNetworkInterfaceMessage(resources,
     network_attachment: URL of a network attachment to connect the interface to.
     network_queue_count: the number of queues assigned to the network interface.
     vlan: the VLAN tag of the network interface.
+    igmp_query: the IGMP query mode of the network interface.
 
   Returns:
     network_interface: a NetworkInterface message object
@@ -221,6 +225,11 @@ def CreateNetworkInterfaceMessage(resources,
   if vlan is not None:
     network_interface.vlan = vlan
 
+  if igmp_query is not None:
+    network_interface.igmpQuery = (
+        messages.NetworkInterface.IgmpQueryValueValuesEnum(igmp_query)
+    )
+
   return network_interface
 
 
@@ -268,22 +277,27 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
               nic_type=nic_type,
               stack_type=interface.get('stack-type', None),
               ipv6_network_tier=interface.get('ipv6-network-tier', None),
-              ipv6_public_ptr_domain=interface.get('ipv6-public-ptr-domain',
-                                                   None),
+              ipv6_public_ptr_domain=interface.get(
+                  'ipv6-public-ptr-domain', None
+              ),
               ipv6_address=interface.get('ipv6-address', None),
               ipv6_prefix_length=interface.get('ipv6-prefix-length', None),
-              external_ipv6_address=interface.get('external-ipv6-address',
-                                                  None),
+              external_ipv6_address=interface.get(
+                  'external-ipv6-address', None
+              ),
               external_ipv6_prefix_length=interface.get(
-                  'external-ipv6-prefix-length', None),
-              internal_ipv6_address=interface.get('internal-ipv6-address',
-                                                  None),
+                  'external-ipv6-prefix-length', None
+              ),
+              internal_ipv6_address=interface.get(
+                  'internal-ipv6-address', None
+              ),
               internal_ipv6_prefix_length=interface.get(
                   'internal-ipv6-prefix-length', None
               ),
               network_attachment=interface.get('network-attachment'),
               network_queue_count=interface.get('queue-count', None),
               vlan=interface.get('vlan', None),
+              igmp_query=interface.get('igmp-query', None),
           )
       )
   return result

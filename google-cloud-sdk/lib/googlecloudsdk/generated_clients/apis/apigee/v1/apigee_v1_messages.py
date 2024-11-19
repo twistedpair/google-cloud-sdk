@@ -8055,6 +8055,10 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
   Fields:
     apiProxyType: Optional. API Proxy type supported by the environment. The
       type can be set when creating the Environment and cannot be changed.
+    clientIpResolutionConfig: Optional. The algorithm to resolve IP. This will
+      affect Analytics, API Security, and other features that use the client
+      ip. To remove a client ip resolution config, update the field to an
+      empty value. Example: '{ "clientIpResolutionConfig" = {} }'
     createdAt: Output only. Creation time of this environment as milliseconds
       since epoch.
     deploymentType: Optional. Deployment type supported by the environment.
@@ -8172,18 +8176,44 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
     COMPREHENSIVE = 3
 
   apiProxyType = _messages.EnumField('ApiProxyTypeValueValuesEnum', 1)
-  createdAt = _messages.IntegerField(2)
-  deploymentType = _messages.EnumField('DeploymentTypeValueValuesEnum', 3)
-  description = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  forwardProxyUri = _messages.StringField(6)
-  hasAttachedFlowHooks = _messages.BooleanField(7)
-  lastModifiedAt = _messages.IntegerField(8)
-  name = _messages.StringField(9)
-  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 10)
-  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  type = _messages.EnumField('TypeValueValuesEnum', 13)
+  clientIpResolutionConfig = _messages.MessageField('GoogleCloudApigeeV1EnvironmentClientIPResolutionConfig', 2)
+  createdAt = _messages.IntegerField(3)
+  deploymentType = _messages.EnumField('DeploymentTypeValueValuesEnum', 4)
+  description = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  forwardProxyUri = _messages.StringField(7)
+  hasAttachedFlowHooks = _messages.BooleanField(8)
+  lastModifiedAt = _messages.IntegerField(9)
+  name = _messages.StringField(10)
+  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 11)
+  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  type = _messages.EnumField('TypeValueValuesEnum', 14)
+
+
+class GoogleCloudApigeeV1EnvironmentClientIPResolutionConfig(_messages.Message):
+  r"""Configuration for resolving the client ip.
+
+  Fields:
+    headerIndexAlgorithm: Resolves the client ip based on a custom header.
+  """
+
+  headerIndexAlgorithm = _messages.MessageField('GoogleCloudApigeeV1EnvironmentClientIPResolutionConfigHeaderIndexAlgorithm', 1)
+
+
+class GoogleCloudApigeeV1EnvironmentClientIPResolutionConfigHeaderIndexAlgorithm(_messages.Message):
+  r"""Resolves the client ip based on a custom header.
+
+  Fields:
+    ipHeaderIndex: Required. The index of the ip in the header. Positive
+      indices 0, 1, 2, 3 chooses indices from the left (first ips) Negative
+      indices -1, -2, -3 chooses indices from the right (last ips)
+    ipHeaderName: Required. The name of the header to extract the client ip
+      from. We are currently only supporting the X-Forwarded-For header.
+  """
+
+  ipHeaderIndex = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  ipHeaderName = _messages.StringField(2)
 
 
 class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
@@ -8198,6 +8228,7 @@ class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
     arcConfigLocation: The location for the config blob of API Runtime
       Control, aka Envoy Adapter, for op-based authentication as a URI, e.g. a
       Cloud Storage URI. This is only used by Envoy-based gateways.
+    clientIpResolutionConfig: The algorithm to resolve IP.
     createTime: Time that the environment configuration was created.
     dataCollectors: List of data collectors used by the deployments in the
       environment.
@@ -8261,27 +8292,51 @@ class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
 
   addonsConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeAddonsConfig', 1)
   arcConfigLocation = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  dataCollectors = _messages.MessageField('GoogleCloudApigeeV1DataCollectorConfig', 4, repeated=True)
-  debugMask = _messages.MessageField('GoogleCloudApigeeV1DebugMask', 5)
-  deploymentGroups = _messages.MessageField('GoogleCloudApigeeV1DeploymentGroupConfig', 6, repeated=True)
-  deployments = _messages.MessageField('GoogleCloudApigeeV1DeploymentConfig', 7, repeated=True)
-  envScopedRevisionId = _messages.IntegerField(8)
-  featureFlags = _messages.MessageField('FeatureFlagsValue', 9)
-  flowhooks = _messages.MessageField('GoogleCloudApigeeV1FlowHookConfig', 10, repeated=True)
-  forwardProxyUri = _messages.StringField(11)
-  gatewayConfigLocation = _messages.StringField(12)
-  keystores = _messages.MessageField('GoogleCloudApigeeV1KeystoreConfig', 13, repeated=True)
-  name = _messages.StringField(14)
-  provider = _messages.StringField(15)
-  pubsubTopic = _messages.StringField(16)
-  resourceReferences = _messages.MessageField('GoogleCloudApigeeV1ReferenceConfig', 17, repeated=True)
-  resources = _messages.MessageField('GoogleCloudApigeeV1ResourceConfig', 18, repeated=True)
-  revisionId = _messages.IntegerField(19)
-  sequenceNumber = _messages.IntegerField(20)
-  targets = _messages.MessageField('GoogleCloudApigeeV1TargetServerConfig', 21, repeated=True)
-  traceConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceConfig', 22)
-  uid = _messages.StringField(23)
+  clientIpResolutionConfig = _messages.MessageField('GoogleCloudApigeeV1EnvironmentConfigClientIPResolutionConfig', 3)
+  createTime = _messages.StringField(4)
+  dataCollectors = _messages.MessageField('GoogleCloudApigeeV1DataCollectorConfig', 5, repeated=True)
+  debugMask = _messages.MessageField('GoogleCloudApigeeV1DebugMask', 6)
+  deploymentGroups = _messages.MessageField('GoogleCloudApigeeV1DeploymentGroupConfig', 7, repeated=True)
+  deployments = _messages.MessageField('GoogleCloudApigeeV1DeploymentConfig', 8, repeated=True)
+  envScopedRevisionId = _messages.IntegerField(9)
+  featureFlags = _messages.MessageField('FeatureFlagsValue', 10)
+  flowhooks = _messages.MessageField('GoogleCloudApigeeV1FlowHookConfig', 11, repeated=True)
+  forwardProxyUri = _messages.StringField(12)
+  gatewayConfigLocation = _messages.StringField(13)
+  keystores = _messages.MessageField('GoogleCloudApigeeV1KeystoreConfig', 14, repeated=True)
+  name = _messages.StringField(15)
+  provider = _messages.StringField(16)
+  pubsubTopic = _messages.StringField(17)
+  resourceReferences = _messages.MessageField('GoogleCloudApigeeV1ReferenceConfig', 18, repeated=True)
+  resources = _messages.MessageField('GoogleCloudApigeeV1ResourceConfig', 19, repeated=True)
+  revisionId = _messages.IntegerField(20)
+  sequenceNumber = _messages.IntegerField(21)
+  targets = _messages.MessageField('GoogleCloudApigeeV1TargetServerConfig', 22, repeated=True)
+  traceConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceConfig', 23)
+  uid = _messages.StringField(24)
+
+
+class GoogleCloudApigeeV1EnvironmentConfigClientIPResolutionConfig(_messages.Message):
+  r"""Configuration for resolving the client ip.
+
+  Fields:
+    headerIndexAlgorithm: Resolves the client ip based on a custom header.
+  """
+
+  headerIndexAlgorithm = _messages.MessageField('GoogleCloudApigeeV1EnvironmentConfigClientIPResolutionConfigHeaderIndexAlgorithm', 1)
+
+
+class GoogleCloudApigeeV1EnvironmentConfigClientIPResolutionConfigHeaderIndexAlgorithm(_messages.Message):
+  r"""Resolves the client ip based on a custom header.
+
+  Fields:
+    ipHeaderIndex: The index of the ip in the header. (By default, value is 0
+      if missing)
+    ipHeaderName: The name of the header to extract the client ip from.
+  """
+
+  ipHeaderIndex = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  ipHeaderName = _messages.StringField(2)
 
 
 class GoogleCloudApigeeV1EnvironmentGroup(_messages.Message):

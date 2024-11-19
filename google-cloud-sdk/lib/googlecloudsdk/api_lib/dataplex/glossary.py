@@ -61,6 +61,19 @@ def GenerateGlossaryCategoryForCreateRequest(args):
   return request
 
 
+def GenerateGlossaryCategoryForUpdateRequest(args):
+  """Update Glossary Category Requests."""
+  module = dataplex_api.GetMessageModule()
+  return module.GoogleCloudDataplexV1GlossaryCategory(
+      description=args.description,
+      displayName=args.display_name,
+      parent=args.parent,
+      labels=dataplex_api.CreateLabels(
+          module.GoogleCloudDataplexV1GlossaryCategory, args
+      ),
+  )
+
+
 def GenerateGlossaryTermForCreateRequest(args):
   """Create Glossary Term Requests."""
   module = dataplex_api.GetMessageModule()
@@ -77,6 +90,19 @@ def GenerateGlossaryTermForCreateRequest(args):
   return request
 
 
+def GenerateGlossaryTermForUpdateRequest(args):
+  """Update Glossary Term Requests."""
+  module = dataplex_api.GetMessageModule()
+  return module.GoogleCloudDataplexV1GlossaryTerm(
+      description=args.description,
+      displayName=args.display_name,
+      parent=args.parent,
+      labels=dataplex_api.CreateLabels(
+          module.GoogleCloudDataplexV1GlossaryTerm, args
+      ),
+  )
+
+
 def GenerateUpdateMask(args):
   """Creates Update Mask for Glossary."""
   update_mask = []
@@ -89,21 +115,22 @@ def GenerateUpdateMask(args):
   return update_mask
 
 
-def GenerateGlossaryCategoryForUpdateRequest(args):
-  """Update Glossary Category Requests."""
-  module = dataplex_api.GetMessageModule()
-  return module.GoogleCloudDataplexV1GlossaryCategory(
-      description=args.description,
-      displayName=args.display_name,
-      parent=args.parent,
-      labels=dataplex_api.CreateLabels(
-          module.GoogleCloudDataplexV1GlossaryCategory, args
-      ),
-  )
-
-
 def GenerateCategoryUpdateMask(args):
   """Create Update Mask for Glossary Category."""
+  update_mask = []
+  if args.IsSpecified('description'):
+    update_mask.append('description')
+  if args.IsSpecified('display_name'):
+    update_mask.append('displayName')
+  if args.IsSpecified('labels'):
+    update_mask.append('labels')
+  if args.IsSpecified('parent'):
+    update_mask.append('parent')
+  return update_mask
+
+
+def GenerateTermUpdateMask(args):
+  """Create Update Mask for Glossary Term."""
   update_mask = []
   if args.IsSpecified('description'):
     update_mask.append('description')

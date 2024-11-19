@@ -121,6 +121,8 @@ class Common(base.FeatureCommand):
       ))
     if 'sourceFormat' in spec_source:
       config_sync.sourceFormat = spec_source['sourceFormat']
+    if 'stopSyncing' in spec_source:
+      config_sync.stopSyncing = spec_source['stopSyncing']
     if 'preventDrift' in spec_source:
       config_sync.preventDrift = spec_source['preventDrift']
     if 'metricsGcpServiceAccountEmail' in spec_source:

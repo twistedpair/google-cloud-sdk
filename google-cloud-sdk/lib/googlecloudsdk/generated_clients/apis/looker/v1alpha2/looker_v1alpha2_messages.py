@@ -499,6 +499,9 @@ class Instance(_messages.Message):
       LOOKER_CORE_STANDARD_ANNUAL: Subscription Standard.
       LOOKER_CORE_ENTERPRISE_ANNUAL: Subscription Enterprise.
       LOOKER_CORE_EMBED_ANNUAL: Subscription Embed.
+      LOOKER_CORE_NONPROD_STANDARD_ANNUAL: Nonprod Subscription Standard.
+      LOOKER_CORE_NONPROD_ENTERPRISE_ANNUAL: Nonprod Subscription Enterprise.
+      LOOKER_CORE_NONPROD_EMBED_ANNUAL: Nonprod Subscription Embed.
     """
     PLATFORM_EDITION_UNSPECIFIED = 0
     LOOKER_CORE_TRIAL = 1
@@ -506,6 +509,9 @@ class Instance(_messages.Message):
     LOOKER_CORE_STANDARD_ANNUAL = 3
     LOOKER_CORE_ENTERPRISE_ANNUAL = 4
     LOOKER_CORE_EMBED_ANNUAL = 5
+    LOOKER_CORE_NONPROD_STANDARD_ANNUAL = 6
+    LOOKER_CORE_NONPROD_ENTERPRISE_ANNUAL = 7
+    LOOKER_CORE_NONPROD_EMBED_ANNUAL = 8
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the instance.

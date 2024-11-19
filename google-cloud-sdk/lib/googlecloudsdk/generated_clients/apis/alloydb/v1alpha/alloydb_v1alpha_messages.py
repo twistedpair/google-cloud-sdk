@@ -1718,6 +1718,62 @@ class ConnectionInfo(_messages.Message):
   publicIpAddress = _messages.StringField(6)
 
 
+class ConnectionPoolConfig(_messages.Message):
+  r"""Configuration for Managed Connection Pool (MCP).
+
+  Enums:
+    PoolModeValueValuesEnum: Optional. The pool mode. Defaults to
+      `POOL_MODE_TRANSACTION`.
+
+  Fields:
+    defaultPoolSize: Optional. The default pool size. Defaults to 20.
+    enable: Optional. Whether to enable Managed Connection Pool (MCP).
+    ignoreStartupParameters: Optional. The list of startup parameters to
+      ignore.
+    maxClientConn: Optional. The maximum number of client connections allowed.
+    maxPreparedStatements: Optional. The maximum number of prepared statements
+      allowed. MCP makes sure that any statement prepared by a client, up to
+      this limit, is available on the backing server connection in transaction
+      and statement pooling mode. Even if the statement was originally
+      prepared on another server connection. Defaults to 0.
+    minPoolSize: Optional. The minimum pool size. Defaults to 0.
+    poolMode: Optional. The pool mode. Defaults to `POOL_MODE_TRANSACTION`.
+    queryWaitTimeout: Optional. The maximum number of seconds queries are
+      allowed to spend waiting for execution. If the query is not assigned to
+      a server during that time, the client is disconnected. 0 disables.
+    serverIdleTimeout: Optional. The maximum number of seconds a server is
+      allowed to be idle before it is disconnected. 0 disables.
+    statsUsers: Optional. The list of users that are allowed to connect to the
+      MCP stats console. The users must exist in the database.
+  """
+
+  class PoolModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The pool mode. Defaults to `POOL_MODE_TRANSACTION`.
+
+    Values:
+      POOL_MODE_UNSPECIFIED: The pool mode is not specified. Defaults to
+        `POOL_MODE_TRANSACTION`.
+      POOL_MODE_SESSION: Server is released back to pool after a client
+        disconnects.
+      POOL_MODE_TRANSACTION: Server is released back to pool after a
+        transaction finishes.
+    """
+    POOL_MODE_UNSPECIFIED = 0
+    POOL_MODE_SESSION = 1
+    POOL_MODE_TRANSACTION = 2
+
+  defaultPoolSize = _messages.StringField(1)
+  enable = _messages.BooleanField(2)
+  ignoreStartupParameters = _messages.StringField(3, repeated=True)
+  maxClientConn = _messages.StringField(4)
+  maxPreparedStatements = _messages.StringField(5)
+  minPoolSize = _messages.StringField(6)
+  poolMode = _messages.EnumField('PoolModeValueValuesEnum', 7)
+  queryWaitTimeout = _messages.StringField(8)
+  serverIdleTimeout = _messages.StringField(9)
+  statsUsers = _messages.StringField(10, repeated=True)
+
+
 class ContinuousBackupConfig(_messages.Message):
   r"""ContinuousBackupConfig describes the continuous backups recovery
   configurations of a cluster.
@@ -2222,6 +2278,8 @@ class Instance(_messages.Message):
       one node will have a node in at least two zones).
     clientConnectionConfig: Optional. Client connection specific
       configurations
+    connectionPoolConfig: Optional. The configuration for Managed Connection
+      Pool (MCP).
     createTime: Output only. Create time stamp
     databaseFlags: Database flags. Set at the instance level. They are copied
       from the primary instance on secondary instance creation. Flags that
@@ -2456,36 +2514,37 @@ class Instance(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 2)
   clientConnectionConfig = _messages.MessageField('ClientConnectionConfig', 3)
-  createTime = _messages.StringField(4)
-  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 5)
-  deleteTime = _messages.StringField(6)
-  displayName = _messages.StringField(7)
-  enablePublicIp = _messages.BooleanField(8)
-  etag = _messages.StringField(9)
-  gceZone = _messages.StringField(10)
-  geminiConfig = _messages.MessageField('GeminiInstanceConfig', 11)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 12)
-  ipAddress = _messages.StringField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  machineConfig = _messages.MessageField('MachineConfig', 15)
-  name = _messages.StringField(16)
-  networkConfig = _messages.MessageField('InstanceNetworkConfig', 17)
-  nodes = _messages.MessageField('Node', 18, repeated=True)
-  observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 19)
-  outboundPublicIpAddresses = _messages.StringField(20, repeated=True)
-  pgbouncerConfig = _messages.MessageField('PgBouncerConfig', 21)
-  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 22)
-  publicIpAddress = _messages.StringField(23)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 24)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 25)
-  reconciling = _messages.BooleanField(26)
-  satisfiesPzi = _messages.BooleanField(27)
-  satisfiesPzs = _messages.BooleanField(28)
-  state = _messages.EnumField('StateValueValuesEnum', 29)
-  uid = _messages.StringField(30)
-  updatePolicy = _messages.MessageField('UpdatePolicy', 31)
-  updateTime = _messages.StringField(32)
-  writableNode = _messages.MessageField('Node', 33)
+  connectionPoolConfig = _messages.MessageField('ConnectionPoolConfig', 4)
+  createTime = _messages.StringField(5)
+  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 6)
+  deleteTime = _messages.StringField(7)
+  displayName = _messages.StringField(8)
+  enablePublicIp = _messages.BooleanField(9)
+  etag = _messages.StringField(10)
+  gceZone = _messages.StringField(11)
+  geminiConfig = _messages.MessageField('GeminiInstanceConfig', 12)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 13)
+  ipAddress = _messages.StringField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  machineConfig = _messages.MessageField('MachineConfig', 16)
+  name = _messages.StringField(17)
+  networkConfig = _messages.MessageField('InstanceNetworkConfig', 18)
+  nodes = _messages.MessageField('Node', 19, repeated=True)
+  observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 20)
+  outboundPublicIpAddresses = _messages.StringField(21, repeated=True)
+  pgbouncerConfig = _messages.MessageField('PgBouncerConfig', 22)
+  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 23)
+  publicIpAddress = _messages.StringField(24)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 25)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 26)
+  reconciling = _messages.BooleanField(27)
+  satisfiesPzi = _messages.BooleanField(28)
+  satisfiesPzs = _messages.BooleanField(29)
+  state = _messages.EnumField('StateValueValuesEnum', 30)
+  uid = _messages.StringField(31)
+  updatePolicy = _messages.MessageField('UpdatePolicy', 32)
+  updateTime = _messages.StringField(33)
+  writableNode = _messages.MessageField('Node', 34)
 
 
 class InstanceNetworkConfig(_messages.Message):
@@ -2967,8 +3026,9 @@ class OperationMetadata(_messages.Message):
     endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      successfully been cancelled have google.longrunning.Operation.error
+      value with a google.rpc.Status.code of 1, corresponding to
+      `Code.CANCELLED`.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
     target: Output only. Server-defined resource path for the target of the

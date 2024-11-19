@@ -14,10 +14,6 @@
 # limitations under the License.
 """Functions for creating a client to talk to the App Engine Admin API."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base as base
 from googlecloudsdk.calliope import base as calliope_base
@@ -50,7 +46,9 @@ class AppengineAppUpdateApiClient(base.AppengineApiClientBase):
     # pylint: disable=protected-access
     self._registry.RegisterApiByName('appengine', client._VERSION)
 
-  def PatchApplication(self, split_health_checks=None, service_account=None):
+  def PatchApplication(
+      self, split_health_checks=None, service_account=None, ssl_policy=None
+  ):
     """Updates an application.
 
     Args:
@@ -58,6 +56,8 @@ class AppengineAppUpdateApiClient(base.AppengineApiClientBase):
         default.
       service_account: str, the app-level default service account to update for
         this App Engine app.
+      ssl_policy: enum, the app-level SSL policy to update for this App Engine
+        app. Can be DEFAULT or MODERN.
 
     Returns:
       Long running operation.
@@ -69,10 +69,14 @@ class AppengineAppUpdateApiClient(base.AppengineApiClientBase):
       update_mask += 'featureSettings.splitHealthChecks,'
     if service_account is not None:
       update_mask += 'serviceAccount,'
+    if ssl_policy is not None:
+      update_mask += 'sslPolicy,'
+
     application_update = self.messages.Application()
     application_update.featureSettings = self.messages.FeatureSettings(
         splitHealthChecks=split_health_checks)
     application_update.serviceAccount = service_account
+    application_update.sslPolicy = ssl_policy
 
     update_request = self.messages.AppengineAppsPatchRequest(
         name=self._FormatApp(),

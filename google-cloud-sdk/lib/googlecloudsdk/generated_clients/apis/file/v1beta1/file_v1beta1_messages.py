@@ -643,6 +643,8 @@ class FileProjectsLocationsInstancesSnapshotsListRequest(_messages.Message):
     parent: Required. The instance for which to retrieve snapshot information,
       in the format
       `projects/{project_id}/locations/{location}/instances/{instance_id}`.
+    returnPartialSuccess: Optional. If true, allow partial responses for
+      multi-regional Aggregated List requests.
   """
 
   filter = _messages.StringField(1)
@@ -650,6 +652,7 @@ class FileProjectsLocationsInstancesSnapshotsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class FileProjectsLocationsInstancesSnapshotsPatchRequest(_messages.Message):
@@ -769,12 +772,9 @@ class FixedIOPS(_messages.Message):
 
   Fields:
     maxIops: Required. Maximum IOPS.
-    maxReadIops: Optional. Deprecated: `max_iops` should be used instead of
-      this parameter. Maximum read IOPS.
   """
 
   maxIops = _messages.IntegerField(1)
-  maxReadIops = _messages.IntegerField(2)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message):
@@ -1346,12 +1346,9 @@ class IOPSPerTB(_messages.Message):
 
   Fields:
     maxIopsPerTb: Required. Maximum IOPS per TiB.
-    maxReadIopsPerTb: Optional. Deprecated: `max_iops_per_tb` should be used
-      instead of this parameter. Maximum read IOPS per TiB.
   """
 
   maxIopsPerTb = _messages.IntegerField(1)
-  maxReadIopsPerTb = _messages.IntegerField(2)
 
 
 class Instance(_messages.Message):
@@ -1685,10 +1682,12 @@ class ListSnapshotsResponse(_messages.Message):
     nextPageToken: The token you can use to retrieve the next page of results.
       Not returned if there are no more results in the list.
     snapshots: A list of snapshots in the project for the specified instance.
+    unreachable: Locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
   snapshots = _messages.MessageField('Snapshot', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -2155,8 +2154,8 @@ class OperationMetadata(_messages.Message):
     apiVersion: Output only. API version used to start the operation.
     cancelRequested: Output only. Identifies whether the user has requested
       cancellation of the operation. Operations that have been cancelled
-      successfully have Operation.error value with a google.rpc.Status.code of
-      1, corresponding to `Code.CANCELLED`.
+      successfully have google.longrunning.Operation.error value with a
+      google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
     statusDetail: Output only. Human-readable status of the operation, if any.

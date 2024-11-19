@@ -332,6 +332,7 @@ def AddCreateFlags(
     support_auto_delete=False,
     support_require_specific_reservation=False,
     support_gsc=False,
+    support_cuds=False,
 ):
   """Adds all flags needed for the create command."""
   GetNamePrefixFlag().AddToParser(parser)
@@ -396,8 +397,10 @@ def AddCreateFlags(
   if support_gsc:
     GetReservationNameFlag().AddToParser(parser)
     GetDeploymentTypeFlag().AddToParser(parser)
-    AddCommitmentInfoFlags(parser)
     GetSchedulingTypeFlag().AddToParser(parser)
+
+  if support_cuds:
+    AddCommitmentInfoFlags(parser)
 
 
 def AddUpdateFlags(
@@ -410,6 +413,7 @@ def AddUpdateFlags(
     support_auto_delete=False,
     support_require_specific_reservation=False,
     support_gsc=False,
+    support_cuds=False,
 ):
   """Adds all flags needed for the update command."""
 
@@ -487,8 +491,10 @@ def AddUpdateFlags(
   if support_gsc:
     GetReservationNameFlag().AddToParser(parser)
     GetDeploymentTypeFlag().AddToParser(parser)
-    AddCommitmentInfoFlags(parser)
     GetSchedulingTypeFlag().AddToParser(parser)
+
+  if support_cuds:
+    AddCommitmentInfoFlags(parser)
 
 
 def AddAutoDeleteFlags(parser, is_update=False):

@@ -117,6 +117,18 @@ class KeyCompleter(ListCommandCompleter):
     )
 
 
+@base.ReleaseTracks(base.ReleaseTrack.ALPHA)
+class KeyHandleCompleter(ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(KeyHandleCompleter, self).__init__(
+        collection=KEY_HANDLE_COLLECTION,
+        list_command='kms key-handles list --uri',
+        flags=['location'],
+        **kwargs
+    )
+
+
 class KeyVersionCompleter(ListCommandCompleter):
 
   def __init__(self, **kwargs):
@@ -145,6 +157,7 @@ class ImportJobCompleter(ListCommandCompleter):
 COMPLETERS_BY_CONVENTION = {
     'location': (LocationCompleter, False),
     'keyring': (KeyRingCompleter, False),
+    'key-handle': (KeyHandleCompleter, False),
     'key': (KeyCompleter, False),
     'import-jobs': (ImportJobCompleter, False),
 }

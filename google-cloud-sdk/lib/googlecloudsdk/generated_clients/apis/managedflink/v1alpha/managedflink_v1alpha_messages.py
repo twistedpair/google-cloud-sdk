@@ -111,8 +111,8 @@ class DeploymentSpec(_messages.Message):
   Fields:
     limits: Optional. The limit constraints for the deployment.
     networkConfig: Optional. Network configuration for the deployment.
-    secretsPaths: Optional. Not currently supported. The paths to the secrets
-      to be associated with this deployment.
+    secretsPaths: Optional. The list of secrets paths to be shared among all
+      jobs in the deployment.
   """
 
   limits = _messages.MessageField('Limits', 1)
@@ -288,6 +288,8 @@ class JobSpec(_messages.Message):
     managedKafkaConfig: Optional. The configuration for the Google Cloud
       Managed Service for Apache Kafka clusters to be used by the job.
     networkConfig: Optional. Network configuration for the job.
+    secretsPaths: Optional. The list of secrets paths to be used by an on-
+      demand deployment job.
   """
 
   artifactUris = _messages.StringField(1, repeated=True)
@@ -299,6 +301,7 @@ class JobSpec(_messages.Message):
   jobName = _messages.StringField(7)
   managedKafkaConfig = _messages.MessageField('ManagedKafkaConfig', 8)
   networkConfig = _messages.MessageField('NetworkConfig', 9)
+  secretsPaths = _messages.StringField(10, repeated=True)
 
 
 class Limits(_messages.Message):

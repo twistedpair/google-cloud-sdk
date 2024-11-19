@@ -34,7 +34,7 @@ def _GetClientInstance(release_track, no_http=False):
 
 
 def GetQuotaAdjusterSettings(args, release_track=base.ReleaseTrack.ALPHA):
-  """Retrieve the QuotaAdjusterSettings for a project, folder or organization.
+  """Retrieve the QuotaAdjusterSettings for a project.
 
   Args:
     args: argparse.Namespace, The arguments that this command was invoked with.
@@ -43,9 +43,7 @@ def GetQuotaAdjusterSettings(args, release_track=base.ReleaseTrack.ALPHA):
   Returns:
     The requested QuotaAdjusterSettings.
   """
-  consumer = message_util.CreateConsumer(
-      args.project, args.folder, args.organization
-  )
+  consumer = message_util.CreateProjectConsumer(args.project)
   client = _GetClientInstance(release_track)
   messages = client.MESSAGES_MODULE
   name = _CONSUMER_LOCATION_RESOURCE % (consumer) + '/quotaAdjusterSettings'
@@ -58,23 +56,9 @@ def GetQuotaAdjusterSettings(args, release_track=base.ReleaseTrack.ALPHA):
     )
     return client.projects_locations.GetQuotaAdjusterSettings(request)
 
-  if args.folder:
-    request = (
-        messages.CloudquotasFoldersLocationsGetQuotaAdjusterSettingsRequest(
-            name=name
-        )
-    )
-    return client.folders_locations.GetQuotaAdjusterSettings(request)
-
-  if args.organization:
-    request = messages.CloudquotasOrganizationsLocationsGetQuotaAdjusterSettingsRequest(
-        name=name
-    )
-    return client.organizations_locations.GetQuotaAdjusterSettings(request)
-
 
 def UpdateQuotaAdjusterSettings(args, release_track=base.ReleaseTrack.ALPHA):
-  """Updates the parameters of the QuotaAdjusterSettings.
+  """Updates the QuotaAdjusterSettings of a project.
 
   Args:
     args: argparse.Namespace, The arguments that this command was invoked with.
@@ -83,9 +67,7 @@ def UpdateQuotaAdjusterSettings(args, release_track=base.ReleaseTrack.ALPHA):
   Returns:
     The updated QuotaAdjusterSettings.
   """
-  consumer = message_util.CreateConsumer(
-      args.project, args.folder, args.organization
-  )
+  consumer = message_util.CreateProjectConsumer(args.project)
   client = _GetClientInstance(release_track)
   messages = client.MESSAGES_MODULE
   name = _CONSUMER_LOCATION_RESOURCE % (consumer) + '/quotaAdjusterSettings'
@@ -106,21 +88,3 @@ def UpdateQuotaAdjusterSettings(args, release_track=base.ReleaseTrack.ALPHA):
         )
     )
     return client.projects_locations.UpdateQuotaAdjusterSettings(request)
-
-  if args.folder:
-    request = (
-        messages.CloudquotasFoldersLocationsUpdateQuotaAdjusterSettingsRequest(
-            name=name,
-            quotaAdjusterSettings=quota_adjuster_settings,
-            validateOnly=args.validate_only,
-        )
-    )
-    return client.folders_locations.UpdateQuotaAdjusterSettings(request)
-
-  if args.organization:
-    request = messages.CloudquotasOrganizationsLocationsUpdateQuotaAdjusterSettingsRequest(
-        name=name,
-        quotaAdjusterSettings=quota_adjuster_settings,
-        validateOnly=args.validate_only,
-    )
-    return client.organizations_locations.UpdateQuotaAdjusterSettings(request)

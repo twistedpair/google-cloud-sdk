@@ -1485,13 +1485,18 @@ class ExperimentalFeatures(_messages.Message):
   default.
 
   Fields:
+    protobufPythonicTypesEnabled: Enables generation of protobuf code using
+      new types that are more Pythonic which are included in
+      `protobuf>=5.29.x`. This feature will be enabled by default 1 month
+      after launching the feature in preview packages.
     restAsyncIoEnabled: Enables generation of asynchronous REST clients if
       `rest` transport is enabled. By default, asynchronous REST clients will
       not be generated. This feature will be enabled by default 1 month after
       launching the feature in preview packages.
   """
 
-  restAsyncIoEnabled = _messages.BooleanField(1)
+  protobufPythonicTypesEnabled = _messages.BooleanField(1)
+  restAsyncIoEnabled = _messages.BooleanField(2)
 
 
 class Expr(_messages.Message):

@@ -493,6 +493,9 @@ class Instance(_messages.Message):
     stateNote: Output only. An optional field providing information about the
       current instance state.
     updateTime: Output only. Update timestamp.
+    workforceIdentityFederationConfig: Optional. Configuration for Workforce
+      Identity Federation to support third party identity provider. If unset,
+      defaults to the Google OIDC IdP.
   """
 
   class StateNoteValueValuesEnum(_messages.Enum):
@@ -562,6 +565,7 @@ class Instance(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 7)
   stateNote = _messages.EnumField('StateNoteValueValuesEnum', 8)
   updateTime = _messages.StringField(9)
+  workforceIdentityFederationConfig = _messages.MessageField('WorkforceIdentityFederationConfig', 10)
 
 
 class IssueRedirectTicketInternalRequest(_messages.Message):
@@ -1648,6 +1652,18 @@ class URIs(_messages.Message):
   api = _messages.StringField(1)
   gitHttps = _messages.StringField(2)
   html = _messages.StringField(3)
+
+
+class WorkforceIdentityFederationConfig(_messages.Message):
+  r"""WorkforceIdentityFederationConfig allows this instance to support users
+  from external identity providers.
+
+  Fields:
+    enabled: Optional. Immutable. Whether Workforce Identity Federation is
+      enabled.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

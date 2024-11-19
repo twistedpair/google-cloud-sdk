@@ -48,6 +48,22 @@ def AddResourceFlags(parser, help_string):
   )
 
 
+def AddProjectFlag(parser, help_string):
+  """Add project flag to the parser.
+
+  Args:
+    parser: An argparse parser that you can use to add arguments that go on the
+      command line after this command. Positional arguments are allowed.
+    help_string: text that is prepended to help for each argument.
+  """
+  group = parser.add_mutually_exclusive_group(required=True)
+  group.add_argument(
+      '--project',
+      metavar='PROJECT_ID_OR_NUMBER',
+      help='Project of the {0}.'.format(help_string),
+  )
+
+
 def QuotaId(
     positional=True,
     text='ID of the quota, which is unique within the service.',

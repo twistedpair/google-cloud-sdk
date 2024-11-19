@@ -679,55 +679,6 @@ class MessagestreamsProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class MessagestreamsProjectsLocationsRetryPoliciesCreateRequest(_messages.Message):
-  r"""A MessagestreamsProjectsLocationsRetryPoliciesCreateRequest object.
-
-  Fields:
-    parent: Required. Value for parent.
-    retryPolicy: A RetryPolicy resource to be passed as the request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  retryPolicy = _messages.MessageField('RetryPolicy', 2)
-
-
-class MessagestreamsProjectsLocationsRetryPoliciesDeleteRequest(_messages.Message):
-  r"""A MessagestreamsProjectsLocationsRetryPoliciesDeleteRequest object.
-
-  Fields:
-    name: Required. The retry policy name in spanner. Name is a required field
-      by ccfe.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class MessagestreamsProjectsLocationsRetryPoliciesGetRequest(_messages.Message):
-  r"""A MessagestreamsProjectsLocationsRetryPoliciesGetRequest object.
-
-  Fields:
-    name: Required. The retry policy id in spanner.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class MessagestreamsProjectsLocationsRetryPoliciesListRequest(_messages.Message):
-  r"""A MessagestreamsProjectsLocationsRetryPoliciesListRequest object.
-
-  Fields:
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Valye for parent.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
 class MessagestreamsProjectsLocationsStreamsCreateRequest(_messages.Message):
   r"""A MessagestreamsProjectsLocationsStreamsCreateRequest object.
 
@@ -840,6 +791,61 @@ class MessagestreamsProjectsLocationsStreamsPatchRequest(_messages.Message):
   requestId = _messages.StringField(2)
   stream = _messages.MessageField('Stream', 3)
   updateMask = _messages.StringField(4)
+
+
+class MessagestreamsProjectsLocationsStreamsRetryPoliciesCreateRequest(_messages.Message):
+  r"""A MessagestreamsProjectsLocationsStreamsRetryPoliciesCreateRequest
+  object.
+
+  Fields:
+    parent: Required. Value for parent.
+    retryPolicy: A RetryPolicy resource to be passed as the request body.
+    retryPolicyId: Required. Id of the requesting object If auto-generating Id
+      server-side, remove this field and stream_id from the method_signature
+      of Create RPC
+  """
+
+  parent = _messages.StringField(1, required=True)
+  retryPolicy = _messages.MessageField('RetryPolicy', 2)
+  retryPolicyId = _messages.StringField(3)
+
+
+class MessagestreamsProjectsLocationsStreamsRetryPoliciesDeleteRequest(_messages.Message):
+  r"""A MessagestreamsProjectsLocationsStreamsRetryPoliciesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The retry policy name in spanner. Name is a required field
+      by ccfe.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MessagestreamsProjectsLocationsStreamsRetryPoliciesGetRequest(_messages.Message):
+  r"""A MessagestreamsProjectsLocationsStreamsRetryPoliciesGetRequest object.
+
+  Fields:
+    name: Required. The retry policy id in spanner.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MessagestreamsProjectsLocationsStreamsRetryPoliciesListRequest(_messages.Message):
+  r"""A MessagestreamsProjectsLocationsStreamsRetryPoliciesListRequest object.
+
+  Fields:
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Valye for parent.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class MutualTlsAuthConfig(_messages.Message):
@@ -1095,18 +1101,15 @@ class RetryPolicy(_messages.Message):
   r"""The representation of the retry policy resource.
 
   Fields:
-    name: Required. Identifier. The name of the retry policy. Format:
-      projects/{project}/locations/{location}/retryPolicies/{retry_policy}
-    stream: Required. The full stream name that this retry policy is
-      associated with. Format:
-      projects/{project}/locations/{location}/streams/{stream}
+    name: Required. Identifier. The name of the retry policy. Format: projects
+      /{project}/locations/{location}/streams/{stream}/retryPolicies/{retry_po
+      licy}
     truncatedExpBackoffRetryPolicy: Optional. Configuration for a
       TruncatedExponentialBackoff retry policy.
   """
 
   name = _messages.StringField(1)
-  stream = _messages.StringField(2)
-  truncatedExpBackoffRetryPolicy = _messages.MessageField('TruncatedExponentialBackoff', 3)
+  truncatedExpBackoffRetryPolicy = _messages.MessageField('TruncatedExponentialBackoff', 2)
 
 
 class SaslAuthConfig(_messages.Message):

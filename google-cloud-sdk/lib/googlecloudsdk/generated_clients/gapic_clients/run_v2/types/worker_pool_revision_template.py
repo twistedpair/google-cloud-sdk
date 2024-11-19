@@ -19,6 +19,7 @@ from typing import MutableMapping, MutableSequence
 
 import proto  # type: ignore
 
+from cloudsdk.google.protobuf import duration_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import k8s_min
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import vendor_settings
 
@@ -97,6 +98,13 @@ class WorkerPoolRevisionTemplate(proto.Message):
             https://cloud.google.com/run/docs/securing/using-cmek
         service_mesh (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.ServiceMesh):
             Optional. Enables service mesh connectivity.
+        encryption_key_revocation_action (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.EncryptionKeyRevocationAction):
+            Optional. The action to take if the
+            encryption key is revoked.
+        encryption_key_shutdown_duration (google.protobuf.duration_pb2.Duration):
+            Optional. If encryption_key_revocation_action is SHUTDOWN,
+            the duration before shutting down all instances. The minimum
+            increment is 1 hour.
         session_affinity (bool):
             Optional. Enable session affinity.
         node_selector (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.NodeSelector):
@@ -145,6 +153,16 @@ class WorkerPoolRevisionTemplate(proto.Message):
         proto.MESSAGE,
         number=9,
         message=vendor_settings.ServiceMesh,
+    )
+    encryption_key_revocation_action: vendor_settings.EncryptionKeyRevocationAction = proto.Field(
+        proto.ENUM,
+        number=10,
+        enum=vendor_settings.EncryptionKeyRevocationAction,
+    )
+    encryption_key_shutdown_duration: duration_pb2.Duration = proto.Field(
+        proto.MESSAGE,
+        number=11,
+        message=duration_pb2.Duration,
     )
     session_affinity: bool = proto.Field(
         proto.BOOL,

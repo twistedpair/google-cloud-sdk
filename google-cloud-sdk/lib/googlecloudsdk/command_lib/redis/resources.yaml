@@ -62,3 +62,28 @@ cluster:
     attribute_name: cluster
     help: The name of the Redis cluster
   disable_auto_completers: false
+
+backup_collection:
+  name: backup collection
+  collection: redis.projects.locations.backupCollections
+  request_id_field: backupCollectionId
+  attributes:
+  - *region
+  - parameter_name: backupCollectionsId
+    attribute_name: backup_collection
+    help: The name of the Redis cluster backup collection.
+  disable_auto_completers: false
+
+backup:
+  name: backup
+  collection: redis.projects.locations.backupCollections.backups
+  request_id_field: backupId
+  attributes:
+  - *region
+  - parameter_name: backupCollectionsId
+    attribute_name: backup-collection
+    help: The name of the Redis cluster backup collection.
+  - parameter_name: backupsId
+    attribute_name: backup
+    help: The name of the Redis cluster backup.
+  disable_auto_completers: false

@@ -5320,6 +5320,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ResumeInstances(self, request, global_params=None):
+      r"""Flags the specified instances in the managed instance group to be resumed. This method increases the targetSize and decreases the targetSuspendedSize of the managed instance group by the number of instances that you resume. The resumeInstances operation is marked DONE if the resumeInstances request is successful. The underlying actions take additional time. You must separately verify the status of the RESUMING action with the listmanagedinstances method. In this request, you can only specify instances that are suspended. For example, if an instance was previously suspended using the suspendInstances method, it can be resumed using the resumeInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are resumed. You can specify a maximum of 1000 instances with this method per request.
+
+      Args:
+        request: (ComputeInstanceGroupManagersResumeInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ResumeInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ResumeInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.resumeInstances',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resumeInstances',
+        request_field='instanceGroupManagersResumeInstancesRequest',
+        request_type_name='ComputeInstanceGroupManagersResumeInstancesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetInstanceTemplate(self, request, global_params=None):
       r"""Specifies the instance template to use when creating new instances in this group. The templates for existing instances in the group do not change unless you run recreateInstances, run applyUpdatesToInstances, or set the group's updatePolicy.type to PROACTIVE.
 
@@ -5368,6 +5394,84 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/setTargetPools',
         request_field='instanceGroupManagersSetTargetPoolsRequest',
         request_type_name='ComputeInstanceGroupManagersSetTargetPoolsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StartInstances(self, request, global_params=None):
+      r"""Flags the specified instances in the managed instance group to be started. This method increases the targetSize and decreases the targetStoppedSize of the managed instance group by the number of instances that you start. The startInstances operation is marked DONE if the startInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STARTING action with the listmanagedinstances method. In this request, you can only specify instances that are stopped. For example, if an instance was previously stopped using the stopInstances method, it can be started using the startInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are started. You can specify a maximum of 1000 instances with this method per request.
+
+      Args:
+        request: (ComputeInstanceGroupManagersStartInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StartInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StartInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.startInstances',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/startInstances',
+        request_field='instanceGroupManagersStartInstancesRequest',
+        request_type_name='ComputeInstanceGroupManagersStartInstancesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StopInstances(self, request, global_params=None):
+      r"""Flags the specified instances in the managed instance group to be immediately stopped. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetStoppedSize of the managed instance group by the number of instances that you stop. The stopInstances operation is marked DONE if the stopInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STOPPING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays stopping the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is stopped. Stopped instances can be started using the startInstances method. You can specify a maximum of 1000 instances with this method per request.
+
+      Args:
+        request: (ComputeInstanceGroupManagersStopInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StopInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StopInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.stopInstances',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/stopInstances',
+        request_field='instanceGroupManagersStopInstancesRequest',
+        request_type_name='ComputeInstanceGroupManagersStopInstancesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SuspendInstances(self, request, global_params=None):
+      r"""Flags the specified instances in the managed instance group to be immediately suspended. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetSuspendedSize of the managed instance group by the number of instances that you suspend. The suspendInstances operation is marked DONE if the suspendInstances request is successful. The underlying actions take additional time. You must separately verify the status of the SUSPENDING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays suspension of the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is suspended. Suspended instances can be resumed using the resumeInstances method. You can specify a maximum of 1000 instances with this method per request.
+
+      Args:
+        request: (ComputeInstanceGroupManagersSuspendInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SuspendInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SuspendInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.suspendInstances',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/suspendInstances',
+        request_field='instanceGroupManagersSuspendInstancesRequest',
+        request_type_name='ComputeInstanceGroupManagersSuspendInstancesRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -13398,6 +13502,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ResumeInstances(self, request, global_params=None):
+      r"""Flags the specified instances in the managed instance group to be resumed. This method increases the targetSize and decreases the targetSuspendedSize of the managed instance group by the number of instances that you resume. The resumeInstances operation is marked DONE if the resumeInstances request is successful. The underlying actions take additional time. You must separately verify the status of the RESUMING action with the listmanagedinstances method. In this request, you can only specify instances that are suspended. For example, if an instance was previously suspended using the suspendInstances method, it can be resumed using the resumeInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are resumed. You can specify a maximum of 1000 instances with this method per request.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersResumeInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ResumeInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ResumeInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.resumeInstances',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/resumeInstances',
+        request_field='regionInstanceGroupManagersResumeInstancesRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersResumeInstancesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetInstanceTemplate(self, request, global_params=None):
       r"""Sets the instance template to use when creating new instances or recreating instances in this group. Existing instances are not affected.
 
@@ -13446,6 +13576,84 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/setTargetPools',
         request_field='regionInstanceGroupManagersSetTargetPoolsRequest',
         request_type_name='ComputeRegionInstanceGroupManagersSetTargetPoolsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StartInstances(self, request, global_params=None):
+      r"""Flags the specified instances in the managed instance group to be started. This method increases the targetSize and decreases the targetStoppedSize of the managed instance group by the number of instances that you start. The startInstances operation is marked DONE if the startInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STARTING action with the listmanagedinstances method. In this request, you can only specify instances that are stopped. For example, if an instance was previously stopped using the stopInstances method, it can be started using the startInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are started. You can specify a maximum of 1000 instances with this method per request.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersStartInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StartInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StartInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.startInstances',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/startInstances',
+        request_field='regionInstanceGroupManagersStartInstancesRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersStartInstancesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StopInstances(self, request, global_params=None):
+      r"""Flags the specified instances in the managed instance group to be immediately stopped. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetStoppedSize of the managed instance group by the number of instances that you stop. The stopInstances operation is marked DONE if the stopInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STOPPING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays stopping the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is stopped. Stopped instances can be started using the startInstances method. You can specify a maximum of 1000 instances with this method per request.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersStopInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StopInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StopInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.stopInstances',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/stopInstances',
+        request_field='regionInstanceGroupManagersStopInstancesRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersStopInstancesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SuspendInstances(self, request, global_params=None):
+      r"""Flags the specified instances in the managed instance group to be immediately suspended. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetSuspendedSize of the managed instance group by the number of instances that you suspend. The suspendInstances operation is marked DONE if the suspendInstances request is successful. The underlying actions take additional time. You must separately verify the status of the SUSPENDING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays suspension of the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is suspended. Suspended instances can be resumed using the resumeInstances method. You can specify a maximum of 1000 instances with this method per request.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersSuspendInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SuspendInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SuspendInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.suspendInstances',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/suspendInstances',
+        request_field='regionInstanceGroupManagersSuspendInstancesRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersSuspendInstancesRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -15070,6 +15278,32 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/removeRule',
         request_field='',
         request_type_name='ComputeRegionSecurityPoliciesRemoveRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeRegionSecurityPoliciesSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionSecurityPolicies.setLabels',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/securityPolicies/{resource}/setLabels',
+        request_field='regionSetLabelsRequest',
+        request_type_name='ComputeRegionSecurityPoliciesSetLabelsRequest',
         response_type_name='Operation',
         supports_download=False,
     )

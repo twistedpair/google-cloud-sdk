@@ -184,12 +184,8 @@ class BackupClusterRequest(_messages.Message):
   Fields:
     backupId: Optional. The id of the backup to be created. If not specified,
       the default value ([YYYYMMDDHHMMSS]_[Shortened Cluster UID] is used.
-    ttl: Optional. TTL for the backup to expire. Note that this value will be
-      used to set up the backup GCS objects' expiration time. If not
-      specified, the default value is 100 years, which is the max value that
-      GCS supports. Also don't set this to a value that is too small,
-      otherwise the expiration time might be in the past when GCS receives the
-      set up expiration time request, so that the backup operation would fail.
+    ttl: Optional. TTL for the backup to expire. Value range is 1 day to 100
+      years. If not specified, the default value is 100 years.
   """
 
   backupId = _messages.StringField(1)

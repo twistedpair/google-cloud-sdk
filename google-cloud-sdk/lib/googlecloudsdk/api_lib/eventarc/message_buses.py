@@ -214,7 +214,9 @@ class MessageBusClientV1(base.EventarcClientBase):
         batch_size_attribute='pageSize',
     )
 
-  def BuildMessageBus(self, message_bus_ref, logging_config, crypto_key_name):
+  def BuildMessageBus(
+      self, message_bus_ref, logging_config, crypto_key_name, labels
+  ):
     logging_config_enum = None
     if logging_config is not None:
       logging_config_enum = self._messages.LoggingConfig(
@@ -222,19 +224,34 @@ class MessageBusClientV1(base.EventarcClientBase):
               logging_config
           ),
       )
+    message_bus_labels = None
+    if labels is not None:
+      message_bus_labels = self._messages.MessageBus.LabelsValue(
+          additionalProperties=[
+              self._messages.MessageBus.LabelsValue.AdditionalProperty(
+                  key=key,
+                  value=value,
+              )
+              for key, value in labels.items()
+          ]
+      )
     return self._messages.MessageBus(
         name=message_bus_ref.RelativeName(),
         loggingConfig=logging_config_enum,
         cryptoKeyName=crypto_key_name,
+        labels=message_bus_labels,
     )
 
-  def BuildUpdateMask(self, logging_config, crypto_key, clear_crypto_key):
+  def BuildUpdateMask(
+      self, logging_config, crypto_key, clear_crypto_key, labels
+  ):
     """Builds an update mask for updating a MessageBus.
 
     Args:
       logging_config: bool, whether to update the logging config.
       crypto_key: bool, whether to update the crypto key.
       clear_crypto_key: bool, whether to clear the crypto key.
+      labels: bool, whether to update the labels.
 
     Returns:
       The update mask as a string.
@@ -248,6 +265,8 @@ class MessageBusClientV1(base.EventarcClientBase):
       update_mask.append('loggingConfig')
     if crypto_key or clear_crypto_key:
       update_mask.append('cryptoKeyName')
+    if labels:
+      update_mask.append('labels')
 
     if not update_mask:
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')

@@ -223,13 +223,12 @@ def AddIapIamResourceArgs(parser, is_alpha=False, is_beta=False):
   )
 
 
-def AddIapResourceArgs(parser, use_region_arg=False):
+def AddIapResourceArgs(parser):
   """Adds flags for an IAP resource.
 
   Args:
     parser: An argparse.ArgumentParser-like object. It is mocked out in order to
       capture some information, but behaves like an ArgumentParser.
-    use_region_arg: Whether or not to show and accept the region argument.
   """
   group = parser.add_group()
   group.add_argument(
@@ -240,14 +239,13 @@ def AddIapResourceArgs(parser, use_region_arg=False):
   group.add_argument(
       '--service',
       help='Service name. Required with `--resource-type=backend-services`.')
-  if use_region_arg:
-    group.add_argument(
-        '--region',
-        help=(
-            "Region name. Not applicable for ``app-engine''. Optional when"
-            " ``resource-type'' is ``compute''."
-        ),
-    )
+  group.add_argument(
+      '--region',
+      help=(
+          "Region name. Not applicable for ``app-engine''. Optional when"
+          " ``resource-type'' is ``compute''."
+      ),
+  )
 
 
 def AddIapSettingArg(
@@ -533,14 +531,13 @@ def ParseIapIamResource(release_track, args):
   raise iap_exc.InvalidIapIamResourceError('Could not parse IAP IAM resource.')
 
 
-def ParseIapResource(release_track, args, support_region_arg=False):
+def ParseIapResource(release_track, args):
   """Parse an IAP resource from the input arguments.
 
   Args:
     release_track: base.ReleaseTrack, release track of command.
     args: an argparse namespace. All the arguments that were provided to this
       command invocation.
-    support_region_arg: bool, whether to support region arg.
 
   Raises:
     calliope_exc.InvalidArgumentException: if `--version` was specified with
@@ -569,14 +566,9 @@ def ParseIapResource(release_track, args, support_region_arg=False):
             '`--service` must be specified for '
             '`--resource-type=backend-services`.')
 
-      if support_region_arg:
-        return iap_api.BackendService(
-            release_track, project, args.region, args.service
-        )
-      else:
-        return iap_api.BackendService(
-            release_track, project, None, args.service
-        )
+      return iap_api.BackendService(
+          release_track, project, args.region, args.service
+      )
 
   raise iap_exc.InvalidIapIamResourceError('Could not parse IAP resource.')
 

@@ -111,6 +111,13 @@ class RevisionTemplate(proto.Message):
             when requested ``CPU < 1``.
         service_mesh (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.ServiceMesh):
             Optional. Enables service mesh connectivity.
+        encryption_key_revocation_action (googlecloudsdk.generated_clients.gapic_clients.run_v2.types.EncryptionKeyRevocationAction):
+            Optional. The action to take if the
+            encryption key is revoked.
+        encryption_key_shutdown_duration (google.protobuf.duration_pb2.Duration):
+            Optional. If encryption_key_revocation_action is SHUTDOWN,
+            the duration before shutting down all instances. The minimum
+            increment is 1 hour.
         session_affinity (bool):
             Optional. Enable session affinity.
         health_check_disabled (bool):
@@ -181,6 +188,16 @@ class RevisionTemplate(proto.Message):
         proto.MESSAGE,
         number=16,
         message=vendor_settings.ServiceMesh,
+    )
+    encryption_key_revocation_action: vendor_settings.EncryptionKeyRevocationAction = proto.Field(
+        proto.ENUM,
+        number=17,
+        enum=vendor_settings.EncryptionKeyRevocationAction,
+    )
+    encryption_key_shutdown_duration: duration_pb2.Duration = proto.Field(
+        proto.MESSAGE,
+        number=18,
+        message=duration_pb2.Duration,
     )
     session_affinity: bool = proto.Field(
         proto.BOOL,

@@ -77,6 +77,15 @@ def UpdateMaintenanceWindowAny(unused_cluster_ref, args, patch_request):
   return patch_request
 
 
+def UpdateOnDemandMaintenance(unused_cluster_ref, args, patch_request):
+  """Hook to update on demand maintenance to the update mask of the request."""
+  if args.IsSpecified('ondemand_maintenance'):
+    patch_request = AddFieldToUpdateMask(
+        'ondemand_maintenance', patch_request
+    )
+  return patch_request
+
+
 def UpdateShardCount(unused_cluster_ref, args, patch_request):
   """Hook to add shard count to the redis cluster update request."""
   if args.IsSpecified('shard_count'):

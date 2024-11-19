@@ -593,7 +593,8 @@ class AccessTokenCache(object):
   See go/gcloud-multi-universe-auth-cache section 3.2, 3.3 for more details.
   """
 
-  def __init__(self, store_file):
+  def __init__(self, store_file, cache_only_rapt=False):
+    self._cache_only_rapt = cache_only_rapt
     self._cursor = _SqlCursor(store_file)
     self._Execute(
         'CREATE TABLE IF NOT EXISTS "{}" '
@@ -649,6 +650,19 @@ class AccessTokenCache(object):
       rapt_token: str, The rapt token string to store.
       id_token: str, The ID token string to store.
     """
+    # This is used for the cases, when we want to cache the RAPT token but not
+    # the access token. For example, when we generate a scoped access token
+    # using the print-access-token command.
+    if self._cache_only_rapt:
+      result = self.Load(formatted_account_id)
+      if result:
+        access_token, token_expiry, _, id_token = result
+      else:
+        # If the access token is not stored in the cache, we will set it to
+        # None, as we only want to cache the RAPT token here.
+        access_token = None
+        token_expiry = None
+        id_token = None
     try:
       self._Execute(
           'REPLACE INTO "{}" '
@@ -850,8 +864,9 @@ def MaybeAttachAccessTokenCacheStore(credentials,
   return store.get()
 
 
-def MaybeAttachAccessTokenCacheStoreGoogleAuth(credentials,
-                                               access_token_file=None):
+def MaybeAttachAccessTokenCacheStoreGoogleAuth(
+    credentials, access_token_file=None, cache_only_rapt=False
+):
   """Attaches access token cache to given credentials if no store set.
 
   Note that credentials themselves will not be persisted only access token. Use
@@ -866,6 +881,7 @@ def MaybeAttachAccessTokenCacheStoreGoogleAuth(credentials,
   Args:
     credentials: google.auth.credentials.Credentials.
     access_token_file: str, optional path to use for access token storage.
+    cache_only_rapt: bool, True to only cache RAPT token.
 
   Returns:
     google.auth.credentials.Credentials, reloaded credentials.
@@ -882,8 +898,10 @@ def MaybeAttachAccessTokenCacheStoreGoogleAuth(credentials,
     account_id = hashlib.sha256(six.ensure_binary(
         credentials.refresh_token)).hexdigest()
 
-  access_token_cache = AccessTokenCache(access_token_file or
-                                        config.Paths().access_token_db_path)
+  access_token_cache = AccessTokenCache(
+      access_token_file or config.Paths().access_token_db_path,
+      cache_only_rapt=cache_only_rapt,
+  )
   store = AccessTokenStoreGoogleAuth(access_token_cache, account_id,
                                      credentials)
   credentials = store.Get()
@@ -953,6 +971,10 @@ class CredentialStoreWithCache(CredentialStore):
     """Returns all the accounts stored in the cache."""
     return self._credential_store.GetAccounts()
 
+  def GetAccountsWithUniverseDomain(self):
+    """Returns all the accounts stored in the cache with their universe domain."""
+    return self._credential_store.GetAccountsWithUniverseDomain()
+
   def Load(self, account_id, use_google_auth=True):
     """Loads the credentials of account_id from the cache.
 
@@ -1018,29 +1040,27 @@ class CredentialStoreWithCache(CredentialStore):
     )
 
 
-def GetCredentialStore(store_file=None,
-                       access_token_file=None,
-                       with_access_token_cache=True):
+def GetCredentialStore(
+    store_file=None,
+    access_token_file=None,
+    cache_only_rapt=False,
+):
   """Constructs credential store.
 
   Args:
     store_file: str, optional path to use for storage. If not specified
       config.Paths().credentials_path will be used.
-
     access_token_file: str, optional path to use for access token storage. Note
       that some implementations use store_file to also store access_tokens, in
       which case this argument is ignored.
-    with_access_token_cache: bool, True to load a credential store with
-      auto caching for access tokens. False to load a credential store without
-      auto caching for access tokens.
+    cache_only_rapt: bool, True to only cache RAPT token.
 
   Returns:
     CredentialStore object.
   """
-  if with_access_token_cache:
-    return _GetSqliteStoreWithCache(store_file, access_token_file)
-  else:
-    return _GetSqliteStore(store_file)
+  return _GetSqliteStoreWithCache(
+      store_file, access_token_file, cache_only_rapt
+  )
 
 
 class CredentialType(enum.Enum):
@@ -1572,8 +1592,11 @@ def WrapGoogleAuthExternalAccountRefresh(cred):
   return cred
 
 
-def _GetSqliteStoreWithCache(sqlite_credential_file=None,
-                             sqlite_access_token_file=None):
+def _GetSqliteStoreWithCache(
+    sqlite_credential_file=None,
+    sqlite_access_token_file=None,
+    cache_only_rapt=False,
+):
   """Get a sqlite-based Credential Store."""
 
   credential_store = _GetSqliteStore(sqlite_credential_file)
@@ -1581,7 +1604,9 @@ def _GetSqliteStoreWithCache(sqlite_credential_file=None,
   sqlite_access_token_file = (sqlite_access_token_file or
                               config.Paths().access_token_db_path)
   files.PrivatizeFile(sqlite_access_token_file)
-  access_token_cache = AccessTokenCache(sqlite_access_token_file)
+  access_token_cache = AccessTokenCache(
+      sqlite_access_token_file, cache_only_rapt
+  )
   return CredentialStoreWithCache(credential_store, access_token_cache)
 
 

@@ -908,6 +908,8 @@ def GetCategoricalUsage(command, categories):
           short_help = element.short_help[10:]
         elif element.name == 'beta':
           short_help = element.short_help[9:]
+        elif element.name == 'preview':
+          short_help = element.short_help[12:]
         else:
           short_help = element.short_help
         buf.write('{name} | {description}\n'.format(

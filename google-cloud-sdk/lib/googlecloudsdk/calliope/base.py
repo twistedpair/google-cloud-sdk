@@ -120,6 +120,19 @@ class ReleaseTrack(enum.Enum):
     return self.name
 
   GA = (None, None, None)
+  # TODO(b/330610172): __NOT FOR GENERAL USE__: This release track is not
+  # intended for general use. It is only intended for use by the gcloud team and
+  # specific Contirbutors for testing new API versioning UX.
+  PREVIEW = (
+      'preview',
+      '{0}(PREVIEW){0} '.format(MARKDOWN_BOLD),
+      (
+          'This command is currently in DEVELOPER PREVIEW and may change'
+          ' without notice. If this command fails with API permission errors'
+          ' despite specifying the correct project, you might be trying to'
+          ' access an API with an invitation-only early access allowlist.'
+      ),
+  )
   BETA = (
       'beta',
       '{0}(BETA){0} '.format(MARKDOWN_BOLD),

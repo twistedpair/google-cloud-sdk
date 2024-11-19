@@ -524,16 +524,16 @@ class CommandGroup(CommandCommon):
         with respect to the CLI itself.  This path should be used for things
         like error reporting when a specific element in the tree needs to be
         referenced.
-      release_track: base.ReleaseTrack, The release track (ga, beta, alpha) that
-        this command group is in.  This will apply to all commands under it.
-      construction_id: str, A unique identifier for the CLILoader that is
-        being constructed.
+      release_track: base.ReleaseTrack, The release track (ga, beta, alpha,
+        preview) that this command group is in.  This will apply to all commands
+        under it.
+      construction_id: str, A unique identifier for the CLILoader that is being
+        constructed.
       cli_generator: cli.CLILoader, The builder used to generate this CLI.
       parser_group: the current argparse parser, or None if this is the root
-        command group.  The root command group will allocate the initial
-        top level argparse parser.
-      parent_group: CommandGroup, The parent of this group. None if at the
-        root.
+        command group.  The root command group will allocate the initial top
+        level argparse parser.
+      parent_group: CommandGroup, The parent of this group. None if at the root.
       allow_empty: bool, True to allow creating this group as empty to start
         with.
 
@@ -789,14 +789,15 @@ class Command(CommandCommon):
     Args:
       impl_paths: [str], A list of file paths to the command implementation for
         this command.
-      path: [str], A list of group names that got us down to this command
-        with respect to the CLI itself.  This path should be used for things
-        like error reporting when a specific element in the tree needs to be
+      path: [str], A list of group names that got us down to this command with
+        respect to the CLI itself.  This path should be used for things like
+        error reporting when a specific element in the tree needs to be
         referenced.
-      release_track: base.ReleaseTrack, The release track (ga, beta, alpha) that
-        this command group is in.  This will apply to all commands under it.
-      construction_id: str, A unique identifier for the CLILoader that is
-        being constructed.
+      release_track: base.ReleaseTrack, The release track (ga, beta, alpha,
+        preview) that this command group is in.  This will apply to all commands
+        under it.
+      construction_id: str, A unique identifier for the CLILoader that is being
+        constructed.
       cli_generator: cli.CLILoader, The builder used to generate this CLI.
       parser_group: argparse.Parser, The parser to be used for this command.
       parent_group: CommandGroup, The parent of this command.

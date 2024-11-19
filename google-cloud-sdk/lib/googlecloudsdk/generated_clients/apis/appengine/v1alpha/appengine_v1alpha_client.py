@@ -45,10 +45,13 @@ class AppengineV1alpha(base_api.BaseApiClient):
     self.apps_locations = self.AppsLocationsService(self)
     self.apps_operations = self.AppsOperationsService(self)
     self.apps_services_migration = self.AppsServicesMigrationService(self)
+    self.apps_services_versions_instances = self.AppsServicesVersionsInstancesService(self)
+    self.apps_services_versions = self.AppsServicesVersionsService(self)
     self.apps_services = self.AppsServicesService(self)
     self.apps = self.AppsService(self)
     self.projects_locations_applications_authorizedDomains = self.ProjectsLocationsApplicationsAuthorizedDomainsService(self)
     self.projects_locations_applications_services_migration = self.ProjectsLocationsApplicationsServicesMigrationService(self)
+    self.projects_locations_applications_services_versions = self.ProjectsLocationsApplicationsServicesVersionsService(self)
     self.projects_locations_applications_services = self.ProjectsLocationsApplicationsServicesService(self)
     self.projects_locations_applications = self.ProjectsLocationsApplicationsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
@@ -601,6 +604,269 @@ class AppengineV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class AppsServicesVersionsInstancesService(base_api.BaseApiService):
+    """Service class for the apps_services_versions_instances resource."""
+
+    _NAME = 'apps_services_versions_instances'
+
+    def __init__(self, client):
+      super(AppengineV1alpha.AppsServicesVersionsInstancesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Debug(self, request, global_params=None):
+      r"""Enables debugging on a VM instance. This allows you to use the SSH command to connect to the virtual machine where the instance lives. While in "debug mode", the instance continues to serve live traffic. You should delete the instance when you are done debugging and then allow the system to take over and determine if another instance should be started.Only applicable for instances in App Engine flexible environment.
+
+      Args:
+        request: (AppengineAppsServicesVersionsInstancesDebugRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Debug')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Debug.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances/{instancesId}:debug',
+        http_method='POST',
+        method_id='appengine.apps.services.versions.instances.debug',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:debug',
+        request_field='debugInstanceRequest',
+        request_type_name='AppengineAppsServicesVersionsInstancesDebugRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Stops a running instance.The instance might be automatically recreated based on the scaling settings of the version. For more information, see "How Instances are Managed" (standard environment (https://cloud.google.com/appengine/docs/standard/python/how-instances-are-managed) | flexible environment (https://cloud.google.com/appengine/docs/flexible/python/how-instances-are-managed)).To ensure that instances are not re-created and avoid getting billed, you can stop all instances within the target version by changing the serving status of the version to STOPPED with the apps.services.versions.patch (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions/patch) method.
+
+      Args:
+        request: (AppengineAppsServicesVersionsInstancesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances/{instancesId}',
+        http_method='DELETE',
+        method_id='appengine.apps.services.versions.instances.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AppengineAppsServicesVersionsInstancesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets instance information.
+
+      Args:
+        request: (AppengineAppsServicesVersionsInstancesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Instance) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances/{instancesId}',
+        http_method='GET',
+        method_id='appengine.apps.services.versions.instances.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AppengineAppsServicesVersionsInstancesGetRequest',
+        response_type_name='Instance',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the instances of a version.Tip: To aggregate details about instances over time, see the Stackdriver Monitoring API (https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.timeSeries/list).
+
+      Args:
+        request: (AppengineAppsServicesVersionsInstancesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListInstancesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances',
+        http_method='GET',
+        method_id='appengine.apps.services.versions.instances.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/instances',
+        request_field='',
+        request_type_name='AppengineAppsServicesVersionsInstancesListRequest',
+        response_type_name='ListInstancesResponse',
+        supports_download=False,
+    )
+
+  class AppsServicesVersionsService(base_api.BaseApiService):
+    """Service class for the apps_services_versions resource."""
+
+    _NAME = 'apps_services_versions'
+
+    def __init__(self, client):
+      super(AppengineV1alpha.AppsServicesVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Deploys code and resource files to a new version.
+
+      Args:
+        request: (AppengineAppsServicesVersionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services/{servicesId}/versions',
+        http_method='POST',
+        method_id='appengine.apps.services.versions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/versions',
+        request_field='version',
+        request_type_name='AppengineAppsServicesVersionsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing Version resource.
+
+      Args:
+        request: (AppengineAppsServicesVersionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services/{servicesId}/versions/{versionsId}',
+        http_method='DELETE',
+        method_id='appengine.apps.services.versions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AppengineAppsServicesVersionsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified Version resource. By default, only a BASIC_VIEW will be returned. Specify the FULL_VIEW parameter to get the full resource.
+
+      Args:
+        request: (AppengineAppsServicesVersionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Version) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services/{servicesId}/versions/{versionsId}',
+        http_method='GET',
+        method_id='appengine.apps.services.versions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AppengineAppsServicesVersionsGetRequest',
+        response_type_name='Version',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the versions of a service.
+
+      Args:
+        request: (AppengineAppsServicesVersionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListVersionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services/{servicesId}/versions',
+        http_method='GET',
+        method_id='appengine.apps.services.versions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'view'],
+        relative_path='v1alpha/{+parent}/versions',
+        request_field='',
+        request_type_name='AppengineAppsServicesVersionsListRequest',
+        response_type_name='ListVersionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified Version resource. You can specify the following fields depending on the App Engine environment and type of scaling that the version resource uses:Standard environment instance_class (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1alpha/apps.services.versions#Version.FIELDS.instance_class)automatic scaling in the standard environment: automatic_scaling.min_idle_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1alpha/apps.services.versions#Version.FIELDS.automatic_scaling) automatic_scaling.max_idle_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1alpha/apps.services.versions#Version.FIELDS.automatic_scaling) automaticScaling.standard_scheduler_settings.max_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1alpha/apps.services.versions#StandardSchedulerSettings) automaticScaling.standard_scheduler_settings.min_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1alpha/apps.services.versions#StandardSchedulerSettings) automaticScaling.standard_scheduler_settings.target_cpu_utilization (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1alpha/apps.services.versions#StandardSchedulerSettings) automaticScaling.standard_scheduler_settings.target_throughput_utilization (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1alpha/apps.services.versions#StandardSchedulerSettings)basic scaling or manual scaling in the standard environment: serving_status (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1alpha/apps.services.versions#Version.FIELDS.serving_status) manual_scaling.instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1alpha/apps.services.versions#manualscaling)Flexible environment serving_status (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1alpha/apps.services.versions#Version.FIELDS.serving_status)automatic scaling in the flexible environment: automatic_scaling.min_total_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1alpha/apps.services.versions#Version.FIELDS.automatic_scaling) automatic_scaling.max_total_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1alpha/apps.services.versions#Version.FIELDS.automatic_scaling) automatic_scaling.cool_down_period_sec (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1alpha/apps.services.versions#Version.FIELDS.automatic_scaling) automatic_scaling.cpu_utilization.target_utilization (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1alpha/apps.services.versions#Version.FIELDS.automatic_scaling)manual scaling in the flexible environment: manual_scaling.instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1alpha/apps.services.versions#manualscaling).
+
+      Args:
+        request: (AppengineAppsServicesVersionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services/{servicesId}/versions/{versionsId}',
+        http_method='PATCH',
+        method_id='appengine.apps.services.versions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='version',
+        request_type_name='AppengineAppsServicesVersionsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class AppsServicesService(base_api.BaseApiService):
     """Service class for the apps_services resource."""
 
@@ -611,6 +877,195 @@ class AppengineV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified service and all enclosed versions.
+
+      Args:
+        request: (AppengineAppsServicesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services/{servicesId}',
+        http_method='DELETE',
+        method_id='appengine.apps.services.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AppengineAppsServicesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the current configuration of the specified service.
+
+      Args:
+        request: (AppengineAppsServicesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Service) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services/{servicesId}',
+        http_method='GET',
+        method_id='appengine.apps.services.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AppengineAppsServicesGetRequest',
+        response_type_name='Service',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the IAM policy of the specified service. See google/iam/v1/iam_policy.proto for details.
+
+      Args:
+        request: (AppengineAppsServicesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services/{servicesId}:getIamPolicy',
+        http_method='POST',
+        method_id='appengine.apps.services.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='AppengineAppsServicesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the services in the application.
+
+      Args:
+        request: (AppengineAppsServicesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListServicesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services',
+        http_method='GET',
+        method_id='appengine.apps.services.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/services',
+        request_field='',
+        request_type_name='AppengineAppsServicesListRequest',
+        response_type_name='ListServicesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the configuration of the specified service.
+
+      Args:
+        request: (AppengineAppsServicesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services/{servicesId}',
+        http_method='PATCH',
+        method_id='appengine.apps.services.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['migrateTraffic', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='service',
+        request_type_name='AppengineAppsServicesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the IAM policy of the specified service for the specified user. See google/iam/v1/iam_policy.proto for details.
+
+      Args:
+        request: (AppengineAppsServicesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services/{servicesId}:setIamPolicy',
+        http_method='POST',
+        method_id='appengine.apps.services.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='AppengineAppsServicesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Gets the permissions that the specified user has on the current resource.
+
+      Args:
+        request: (AppengineAppsServicesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}/services/{servicesId}:testIamPermissions',
+        http_method='POST',
+        method_id='appengine.apps.services.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='AppengineAppsServicesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
   class AppsService(base_api.BaseApiService):
     """Service class for the apps resource."""
 
@@ -620,6 +1075,221 @@ class AppengineV1alpha(base_api.BaseApiClient):
       super(AppengineV1alpha.AppsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an App Engine application for a Google Cloud Platform project. Required fields: id - The ID of the target Cloud Platform project. location - The region (https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.For more information about App Engine applications, see Managing Projects, Applications, and Billing (https://cloud.google.com/appengine/docs/standard/python/console/).
+
+      Args:
+        request: (Application) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='appengine.apps.create',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v1alpha/apps',
+        request_field='<request>',
+        request_type_name='Application',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets information about an application.
+
+      Args:
+        request: (AppengineAppsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Application) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}',
+        http_method='GET',
+        method_id='appengine.apps.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['includeExtraData'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AppengineAppsGetRequest',
+        response_type_name='Application',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the IAM policy for the specified application. See google/iam/v1/iam_policy.proto for details.
+
+      Args:
+        request: (AppengineAppsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}:getIamPolicy',
+        http_method='POST',
+        method_id='appengine.apps.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='AppengineAppsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def ListRuntimes(self, request, global_params=None):
+      r"""Lists all the available runtimes for the application.
+
+      Args:
+        request: (AppengineAppsListRuntimesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRuntimesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListRuntimes')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListRuntimes.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}:listRuntimes',
+        http_method='GET',
+        method_id='appengine.apps.listRuntimes',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['environment'],
+        relative_path='v1alpha/{+parent}:listRuntimes',
+        request_field='',
+        request_type_name='AppengineAppsListRuntimesRequest',
+        response_type_name='ListRuntimesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified Application resource. You can update the following fields: auth_domain - Google authentication domain for controlling user access to the application. default_cookie_expiration - Cookie expiration policy for the application. iap - Identity-Aware Proxy properties for the application.
+
+      Args:
+        request: (AppengineAppsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}',
+        http_method='PATCH',
+        method_id='appengine.apps.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='application',
+        request_type_name='AppengineAppsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Repair(self, request, global_params=None):
+      r"""Recreates the required App Engine features for the specified App Engine application, for example a Cloud Storage bucket or App Engine service account. Use this method if you receive an error message about a missing feature, for example, Error retrieving the App Engine service account. If you have deleted your App Engine service account, this will not be able to recreate it. Instead, you should attempt to use the IAM undelete API if possible at https://cloud.google.com/iam/reference/rest/v1/projects.serviceAccounts/undelete?apix_params=%7B"name"%3A"projects%2F-%2FserviceAccounts%2Funique_id"%2C"resource"%3A%7B%7D%7D . If the deletion was recent, the numeric ID can be found in the Cloud Console Activity Log.
+
+      Args:
+        request: (AppengineAppsRepairRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Repair')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Repair.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}:repair',
+        http_method='POST',
+        method_id='appengine.apps.repair',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:repair',
+        request_field='repairApplicationRequest',
+        request_type_name='AppengineAppsRepairRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the IAM policy for the specified users on the specified application. See google/iam/v1/iam_policy.proto for details.
+
+      Args:
+        request: (AppengineAppsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}:setIamPolicy',
+        http_method='POST',
+        method_id='appengine.apps.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='AppengineAppsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Gets the permissions that the specified user has on the current resource.
+
+      Args:
+        request: (AppengineAppsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/apps/{appsId}:testIamPermissions',
+        http_method='POST',
+        method_id='appengine.apps.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='AppengineAppsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsApplicationsAuthorizedDomainsService(base_api.BaseApiService):
     """Service class for the projects_locations_applications_authorizedDomains resource."""
@@ -746,6 +1416,43 @@ class AppengineV1alpha(base_api.BaseApiClient):
         request_field='migrateConfigYamlRequest',
         request_type_name='AppengineProjectsLocationsApplicationsServicesMigrationMigrateConfigYamlRequest',
         response_type_name='MigrateConfigYamlResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsApplicationsServicesVersionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_applications_services_versions resource."""
+
+    _NAME = 'projects_locations_applications_services_versions'
+
+    def __init__(self, client):
+      super(AppengineV1alpha.ProjectsLocationsApplicationsServicesVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing Version resource.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsServicesVersionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/services/{servicesId}/versions/{versionsId}',
+        http_method='DELETE',
+        method_id='appengine.projects.locations.applications.services.versions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AppengineProjectsLocationsApplicationsServicesVersionsDeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

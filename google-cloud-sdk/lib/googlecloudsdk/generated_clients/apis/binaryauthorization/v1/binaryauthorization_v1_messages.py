@@ -33,13 +33,7 @@ class AdmissionRule(_messages.Message):
     enforcementMode: Required. The action when a pod creation is denied by the
       admission rule.
     evaluationMode: Required. How this admission rule will be evaluated.
-    requireAttestationsBy: Optional. The resource names of the attestors that
-      must attest to a container image, in the format
-      `projects/*/attestors/*`. Each attestor must exist before a policy can
-      reference it. To add an attestor to a policy the principal issuing the
-      policy change request must be able to read the attestor resource. Note:
-      this field must be non-empty when the `evaluation_mode` field specifies
-      `REQUIRE_ATTESTATION`, otherwise it must be empty.
+    requireAttestationsBy: A string attribute.
   """
 
   class EnforcementModeValueValuesEnum(_messages.Enum):

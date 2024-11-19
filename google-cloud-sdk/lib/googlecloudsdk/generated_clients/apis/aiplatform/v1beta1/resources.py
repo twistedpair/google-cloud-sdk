@@ -457,6 +457,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_FEATUREGROUPS_FEATUREMONITORS_OPERATIONS = (
+      'projects.locations.featureGroups.featureMonitors.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/featureGroups/'
+              '{featureGroupsId}/featureMonitors/{featureMonitorsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_FEATUREGROUPS_FEATURES = (
       'projects.locations.featureGroups.features',
       '{+name}',

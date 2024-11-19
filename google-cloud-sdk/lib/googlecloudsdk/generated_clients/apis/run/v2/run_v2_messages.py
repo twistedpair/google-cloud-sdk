@@ -1916,6 +1916,8 @@ class GoogleCloudRunV2RevisionTemplate(_messages.Message):
   from a template.
 
   Enums:
+    EncryptionKeyRevocationActionValueValuesEnum: Optional. The action to take
+      if the encryption key is revoked.
     ExecutionEnvironmentValueValuesEnum: Optional. The sandbox environment to
       host this Revision.
 
@@ -1957,6 +1959,11 @@ class GoogleCloudRunV2RevisionTemplate(_messages.Message):
     encryptionKey: A reference to a customer managed encryption key (CMEK) to
       use to encrypt this container image. For more information, go to
       https://cloud.google.com/run/docs/securing/using-cmek
+    encryptionKeyRevocationAction: Optional. The action to take if the
+      encryption key is revoked.
+    encryptionKeyShutdownDuration: Optional. If
+      encryption_key_revocation_action is SHUTDOWN, the duration before
+      shutting down all instances. The minimum increment is 1 hour.
     executionEnvironment: Optional. The sandbox environment to host this
       Revision.
     healthCheckDisabled: Optional. Disables health checking containers during
@@ -1995,6 +2002,19 @@ class GoogleCloudRunV2RevisionTemplate(_messages.Message):
       For more information, visit
       https://cloud.google.com/run/docs/configuring/connecting-vpc.
   """
+
+  class EncryptionKeyRevocationActionValueValuesEnum(_messages.Enum):
+    r"""Optional. The action to take if the encryption key is revoked.
+
+    Values:
+      ENCRYPTION_KEY_REVOCATION_ACTION_UNSPECIFIED: Unspecified
+      PREVENT_NEW: Prevents the creation of new instances.
+      SHUTDOWN: Shuts down existing instances, and prevents creation of new
+        ones.
+    """
+    ENCRYPTION_KEY_REVOCATION_ACTION_UNSPECIFIED = 0
+    PREVENT_NEW = 1
+    SHUTDOWN = 2
 
   class ExecutionEnvironmentValueValuesEnum(_messages.Enum):
     r"""Optional. The sandbox environment to host this Revision.
@@ -2076,19 +2096,21 @@ class GoogleCloudRunV2RevisionTemplate(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   containers = _messages.MessageField('GoogleCloudRunV2Container', 2, repeated=True)
   encryptionKey = _messages.StringField(3)
-  executionEnvironment = _messages.EnumField('ExecutionEnvironmentValueValuesEnum', 4)
-  healthCheckDisabled = _messages.BooleanField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  maxInstanceRequestConcurrency = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 8)
-  revision = _messages.StringField(9)
-  scaling = _messages.MessageField('GoogleCloudRunV2RevisionScaling', 10)
-  serviceAccount = _messages.StringField(11)
-  serviceMesh = _messages.MessageField('GoogleCloudRunV2ServiceMesh', 12)
-  sessionAffinity = _messages.BooleanField(13)
-  timeout = _messages.StringField(14)
-  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 15, repeated=True)
-  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 16)
+  encryptionKeyRevocationAction = _messages.EnumField('EncryptionKeyRevocationActionValueValuesEnum', 4)
+  encryptionKeyShutdownDuration = _messages.StringField(5)
+  executionEnvironment = _messages.EnumField('ExecutionEnvironmentValueValuesEnum', 6)
+  healthCheckDisabled = _messages.BooleanField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  maxInstanceRequestConcurrency = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 10)
+  revision = _messages.StringField(11)
+  scaling = _messages.MessageField('GoogleCloudRunV2RevisionScaling', 12)
+  serviceAccount = _messages.StringField(13)
+  serviceMesh = _messages.MessageField('GoogleCloudRunV2ServiceMesh', 14)
+  sessionAffinity = _messages.BooleanField(15)
+  timeout = _messages.StringField(16)
+  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 17, repeated=True)
+  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 18)
 
 
 class GoogleCloudRunV2RunJobRequest(_messages.Message):
@@ -3372,6 +3394,10 @@ class GoogleCloudRunV2WorkerPoolRevisionTemplate(_messages.Message):
   r"""WorkerPoolRevisionTemplate describes the data a worker pool revision
   should have when created from a template.
 
+  Enums:
+    EncryptionKeyRevocationActionValueValuesEnum: Optional. The action to take
+      if the encryption key is revoked.
+
   Messages:
     AnnotationsValue: Optional. Unstructured key value map that may be set by
       external tools to store and arbitrary metadata. They are not queryable
@@ -3410,6 +3436,11 @@ class GoogleCloudRunV2WorkerPoolRevisionTemplate(_messages.Message):
     encryptionKey: A reference to a customer managed encryption key (CMEK) to
       use to encrypt this container image. For more information, go to
       https://cloud.google.com/run/docs/securing/using-cmek
+    encryptionKeyRevocationAction: Optional. The action to take if the
+      encryption key is revoked.
+    encryptionKeyShutdownDuration: Optional. If
+      encryption_key_revocation_action is SHUTDOWN, the duration before
+      shutting down all instances. The minimum increment is 1 hour.
     labels: Optional. Unstructured key value map that can be used to organize
       and categorize objects. User-provided labels are shared with Google's
       billing system, so they can be used to filter, or break down billing
@@ -3438,6 +3469,19 @@ class GoogleCloudRunV2WorkerPoolRevisionTemplate(_messages.Message):
       For more information, visit
       https://cloud.google.com/run/docs/configuring/connecting-vpc.
   """
+
+  class EncryptionKeyRevocationActionValueValuesEnum(_messages.Enum):
+    r"""Optional. The action to take if the encryption key is revoked.
+
+    Values:
+      ENCRYPTION_KEY_REVOCATION_ACTION_UNSPECIFIED: Unspecified
+      PREVENT_NEW: Prevents the creation of new instances.
+      SHUTDOWN: Shuts down existing instances, and prevents creation of new
+        ones.
+    """
+    ENCRYPTION_KEY_REVOCATION_ACTION_UNSPECIFIED = 0
+    PREVENT_NEW = 1
+    SHUTDOWN = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -3507,14 +3551,16 @@ class GoogleCloudRunV2WorkerPoolRevisionTemplate(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   containers = _messages.MessageField('GoogleCloudRunV2Container', 2, repeated=True)
   encryptionKey = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 5)
-  revision = _messages.StringField(6)
-  serviceAccount = _messages.StringField(7)
-  serviceMesh = _messages.MessageField('GoogleCloudRunV2ServiceMesh', 8)
-  sessionAffinity = _messages.BooleanField(9)
-  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 10, repeated=True)
-  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 11)
+  encryptionKeyRevocationAction = _messages.EnumField('EncryptionKeyRevocationActionValueValuesEnum', 4)
+  encryptionKeyShutdownDuration = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 7)
+  revision = _messages.StringField(8)
+  serviceAccount = _messages.StringField(9)
+  serviceMesh = _messages.MessageField('GoogleCloudRunV2ServiceMesh', 10)
+  sessionAffinity = _messages.BooleanField(11)
+  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 12, repeated=True)
+  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 13)
 
 
 class GoogleCloudRunV2WorkerPoolScaling(_messages.Message):

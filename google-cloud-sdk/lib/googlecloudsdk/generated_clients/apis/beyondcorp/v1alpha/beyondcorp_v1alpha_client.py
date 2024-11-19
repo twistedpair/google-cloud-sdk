@@ -3476,33 +3476,6 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def SetPeering(self, request, global_params=None):
-      r"""This is a custom method to allow customers to create a peering connections between Google network and customer networks. This is enabled only for the allowlisted customers.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsSecurityGatewaysSetPeeringRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('SetPeering')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetPeering.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/securityGateways/{securityGatewaysId}:setPeering',
-        http_method='POST',
-        method_id='beyondcorp.projects.locations.securityGateways.setPeering',
-        ordered_params=['securityGateway'],
-        path_params=['securityGateway'],
-        query_params=[],
-        relative_path='v1alpha/{+securityGateway}:setPeering',
-        request_field='googleCloudBeyondcorpSecuritygatewaysV1alphaSetPeeringRequest',
-        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysSetPeeringRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
