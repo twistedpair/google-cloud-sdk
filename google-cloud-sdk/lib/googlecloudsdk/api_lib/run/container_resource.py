@@ -95,6 +95,12 @@ class ContainerResource(k8s_object.KubernetesObject):
     if len(containers) == 1:
       return next(iter(containers))
 
+    if self.KIND == 'TaskTemplateSpec':
+      raise ValueError(
+          'the target job has multiple containers, a container name must be'
+          ' specified via --container flag'
+      )
+
     for container in containers:
       if container.ports:
         return container

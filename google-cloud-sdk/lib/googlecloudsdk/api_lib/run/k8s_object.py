@@ -587,18 +587,26 @@ class ListAsDictionaryWrapper(collections_abc.MutableMapping):
     )
 
   def items(self):
-    return ListItemsView(self)
+    return ListItemsView(self, none_key='')
 
   def values(self):
     return ListValuesView(self)
 
 
 class ListItemsView(collections_abc.ItemsView):
+  """Item iterator for ListAsDictionaryWrapper."""
+
+  def __init__(self, *args, none_key=None, **kwargs):
+    super().__init__(*args, **kwargs)
+    self._none_key = none_key
 
   def __iter__(self):
     for item in self._mapping._m:
       if self._mapping._filter(item):
-        yield (getattr(item, self._mapping._key_field), item)
+        key = getattr(item, self._mapping._key_field)
+        if key is None:
+          key = self._none_key
+        yield (key, item)
 
 
 class ListValuesView(collections_abc.ValuesView):

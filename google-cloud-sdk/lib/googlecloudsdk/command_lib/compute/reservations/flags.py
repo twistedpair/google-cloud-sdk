@@ -231,6 +231,29 @@ def GetDeleteAfterDurationFlag():
   )
 
 
+def AddScopeFlags(parser):
+  """Adds scope flag to the parser."""
+  parser.add_argument(
+      '--scope',
+      metavar='SCOPE',
+      type=lambda x: x.lower(),
+      choices={
+          'all': (
+              'Maintenance should be performed on all hosts in the reservation.'
+          ),
+          'running': (
+              'Maintenance should be performed only on the hosts in the '
+              ' reservation which have running VMs.'
+          ),
+          'unused': (
+              'Maintenance should be performed only on the hosts in the'
+              ' reservation which have no running VMs.'
+          ),
+      },
+      help='The maintenance scope to set for the reservation.',
+  )
+
+
 def GetDisableAutoDelete():
   """Gets the --disable-auto-delete flag."""
   help_text = """\

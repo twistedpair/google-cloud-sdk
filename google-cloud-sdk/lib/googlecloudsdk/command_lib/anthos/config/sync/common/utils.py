@@ -162,17 +162,19 @@ def KubeconfigForMembership(project, membership):
                                    {}).get('gkeCluster',
                                            {}).get('resourceLink', '')
     if cluster_link:
-      m = re.compile('.*/projects/(.*)/locations/(.*)/clusters/(.*)').match(
-          cluster_link)
-      project = ''
-      location = ''
-      cluster = ''
+      m = re.compile(
+          '.*/projects/(.*)/(locations|zones)/(.*)/clusters/(.*)'
+      ).match(cluster_link)
       try:
         project = m.group(1)
-        location = m.group(2)
-        cluster = m.group(3)
-      except IndexError:
-        pass
+        location = m.group(3)
+        cluster = m.group(4)
+      except (IndexError, AttributeError):
+        raise exceptions.ConfigSyncError(
+            'Error parsing the cluster link {} from the membership {}'.format(
+                cluster_link, membership
+            )
+        )
       if project and location and cluster:
         KubeconfigForCluster(project, location, cluster)
         return

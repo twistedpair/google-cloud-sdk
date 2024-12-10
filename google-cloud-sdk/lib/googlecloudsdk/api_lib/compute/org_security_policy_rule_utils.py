@@ -85,3 +85,11 @@ def ConvertPriorityToInt(priority):
     raise calliope_exceptions.InvalidArgumentException(
         'priority', 'priority must be a valid non-negative integer.')
   return int_priority
+
+
+def ConvertAction(action):
+  return {
+      'deny-403': 'deny(403)',
+      'deny-404': 'deny(404)',
+      'deny-502': 'deny(502)'
+  }.get(action, action)

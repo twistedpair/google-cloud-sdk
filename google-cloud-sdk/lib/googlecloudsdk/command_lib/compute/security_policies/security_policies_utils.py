@@ -49,6 +49,8 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
           six.text_type(e)))
 
   security_policy = messages.SecurityPolicy()
+  if 'shortName' in parsed_security_policy:
+    security_policy.shortName = parsed_security_policy['shortName']
   if 'description' in parsed_security_policy:
     security_policy.description = parsed_security_policy['description']
   if 'fingerprint' in parsed_security_policy:
@@ -211,187 +213,214 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
     security_policy.userDefinedFields = user_defined_fields
 
   rules = []
-  for rule in parsed_security_policy['rules']:
-    security_policy_rule = messages.SecurityPolicyRule()
-    security_policy_rule.action = rule['action']
-    if 'description' in rule:
-      security_policy_rule.description = rule['description']
-    if 'match' in rule:
-      match = messages.SecurityPolicyRuleMatcher()
-      if 'versionedExpr' in rule['match']:
-        match.versionedExpr = ConvertToEnum(
-            rule['match']['versionedExpr'], messages
-        )
-      if 'expr' in rule['match']:
-        match.expr = messages.Expr(
-            expression=rule['match']['expr']['expression']
-        )
-      if 'exprOptions' in rule['match']:
-        expr_options = messages.SecurityPolicyRuleMatcherExprOptions()
-        if 'recaptchaOptions' in rule['match']['exprOptions']:
-          expr_options.recaptchaOptions = (
-              messages.SecurityPolicyRuleMatcherExprOptionsRecaptchaOptions(
-                  actionTokenSiteKeys=rule['match']['exprOptions'][
-                      'recaptchaOptions'
-                  ].get('actionTokenSiteKeys', []),
-                  sessionTokenSiteKeys=rule['match']['exprOptions'][
-                      'recaptchaOptions'
-                  ].get('sessionTokenSiteKeys', []),
+  if 'rules' in parsed_security_policy:
+    for rule in parsed_security_policy['rules']:
+      security_policy_rule = messages.SecurityPolicyRule()
+      security_policy_rule.action = rule['action']
+      if 'description' in rule:
+        security_policy_rule.description = rule['description']
+      if 'match' in rule:
+        match = messages.SecurityPolicyRuleMatcher()
+        if 'versionedExpr' in rule['match']:
+          match.versionedExpr = ConvertToEnum(
+              rule['match']['versionedExpr'], messages
+          )
+        if 'expr' in rule['match']:
+          match.expr = messages.Expr(
+              expression=rule['match']['expr']['expression']
+          )
+        if 'exprOptions' in rule['match']:
+          expr_options = messages.SecurityPolicyRuleMatcherExprOptions()
+          if 'recaptchaOptions' in rule['match']['exprOptions']:
+            expr_options.recaptchaOptions = (
+                messages.SecurityPolicyRuleMatcherExprOptionsRecaptchaOptions(
+                    actionTokenSiteKeys=rule['match']['exprOptions'][
+                        'recaptchaOptions'
+                    ].get('actionTokenSiteKeys', []),
+                    sessionTokenSiteKeys=rule['match']['exprOptions'][
+                        'recaptchaOptions'
+                    ].get('sessionTokenSiteKeys', []),
+                )
+            )
+          match.exprOptions = expr_options
+        if 'config' in rule['match']:
+          if 'srcIpRanges' in rule['match']['config']:
+            match.config = messages.SecurityPolicyRuleMatcherConfig(
+                srcIpRanges=rule['match']['config']['srcIpRanges']
+            )
+        security_policy_rule.match = match
+      if 'networkMatch' in rule:
+        network_match = messages.SecurityPolicyRuleNetworkMatcher()
+        if 'userDefinedFields' in rule['networkMatch']:
+          user_defined_fields = []
+          for udf in rule['networkMatch']['userDefinedFields']:
+            user_defined_field_match = (
+                messages.SecurityPolicyRuleNetworkMatcherUserDefinedFieldMatch()
+            )
+            user_defined_field_match.name = udf['name']
+            user_defined_field_match.values = udf['values']
+            user_defined_fields.append(user_defined_field_match)
+          network_match.userDefinedFields = user_defined_fields
+        if 'srcIpRanges' in rule['networkMatch']:
+          network_match.srcIpRanges = rule['networkMatch']['srcIpRanges']
+        if 'destIpRanges' in rule['networkMatch']:
+          network_match.destIpRanges = rule['networkMatch']['destIpRanges']
+        if 'ipProtocols' in rule['networkMatch']:
+          network_match.ipProtocols = rule['networkMatch']['ipProtocols']
+        if 'srcPorts' in rule['networkMatch']:
+          network_match.srcPorts = rule['networkMatch']['srcPorts']
+        if 'destPorts' in rule['networkMatch']:
+          network_match.destPorts = rule['networkMatch']['destPorts']
+        if 'srcRegionCodes' in rule['networkMatch']:
+          network_match.srcRegionCodes = rule['networkMatch']['srcRegionCodes']
+        if 'srcAsns' in rule['networkMatch']:
+          network_match.srcAsns = rule['networkMatch']['srcAsns']
+        security_policy_rule.networkMatch = network_match
+      security_policy_rule.priority = int(rule['priority'])
+      if 'preview' in rule:
+        security_policy_rule.preview = rule['preview']
+      rules.append(security_policy_rule)
+      if 'redirectTarget' in rule:
+        security_policy_rule.redirectTarget = rule['redirectTarget']
+      if 'ruleNumber' in rule:
+        security_policy_rule.ruleNumber = int(rule['ruleNumber'])
+      if 'redirectOptions' in rule:
+        redirect_options = messages.SecurityPolicyRuleRedirectOptions()
+        if 'type' in rule['redirectOptions']:
+          redirect_options.type = (
+              messages.SecurityPolicyRuleRedirectOptions.TypeValueValuesEnum(
+                  rule['redirectOptions']['type']
               )
           )
-        match.exprOptions = expr_options
-      if 'config' in rule['match']:
-        if 'srcIpRanges' in rule['match']['config']:
-          match.config = messages.SecurityPolicyRuleMatcherConfig(
-              srcIpRanges=rule['match']['config']['srcIpRanges']
+        if 'target' in rule['redirectOptions']:
+          redirect_options.target = rule['redirectOptions']['target']
+        security_policy_rule.redirectOptions = redirect_options
+      if 'headerAction' in rule:
+        header_action = messages.SecurityPolicyRuleHttpHeaderAction()
+        headers_in_rule = rule['headerAction'].get('requestHeadersToAdds', [])
+        headers_to_add = []
+        for header_to_add in headers_in_rule:
+          headers_to_add.append(
+              messages.SecurityPolicyRuleHttpHeaderActionHttpHeaderOption(
+                  headerName=header_to_add['headerName'],
+                  headerValue=header_to_add['headerValue'],
+              )
           )
-      security_policy_rule.match = match
-    if 'networkMatch' in rule:
-      network_match = messages.SecurityPolicyRuleNetworkMatcher()
-      if 'userDefinedFields' in rule['networkMatch']:
-        user_defined_fields = []
-        for udf in rule['networkMatch']['userDefinedFields']:
-          user_defined_field_match = (
-              messages.SecurityPolicyRuleNetworkMatcherUserDefinedFieldMatch()
+        if headers_to_add:
+          header_action.requestHeadersToAdds = headers_to_add
+        security_policy_rule.headerAction = header_action
+      if 'rateLimitOptions' in rule:
+        rate_limit_options = rule['rateLimitOptions']
+        security_policy_rule.rateLimitOptions = messages.SecurityPolicyRuleRateLimitOptions(
+            rateLimitThreshold=messages.SecurityPolicyRuleRateLimitOptionsThreshold(
+                count=rate_limit_options['rateLimitThreshold']['count'],
+                intervalSec=rate_limit_options['rateLimitThreshold'][
+                    'intervalSec'
+                ],
+            ),
+            conformAction=rate_limit_options['conformAction'],
+            exceedAction=rate_limit_options['exceedAction'],
+        )
+        if 'exceedActionRpcStatus' in rate_limit_options:
+          exceed_action_rpc_status = (
+              messages.SecurityPolicyRuleRateLimitOptionsRpcStatus()
           )
-          user_defined_field_match.name = udf['name']
-          user_defined_field_match.values = udf['values']
-          user_defined_fields.append(user_defined_field_match)
-        network_match.userDefinedFields = user_defined_fields
-      if 'srcIpRanges' in rule['networkMatch']:
-        network_match.srcIpRanges = rule['networkMatch']['srcIpRanges']
-      if 'destIpRanges' in rule['networkMatch']:
-        network_match.destIpRanges = rule['networkMatch']['destIpRanges']
-      if 'ipProtocols' in rule['networkMatch']:
-        network_match.ipProtocols = rule['networkMatch']['ipProtocols']
-      if 'srcPorts' in rule['networkMatch']:
-        network_match.srcPorts = rule['networkMatch']['srcPorts']
-      if 'destPorts' in rule['networkMatch']:
-        network_match.destPorts = rule['networkMatch']['destPorts']
-      if 'srcRegionCodes' in rule['networkMatch']:
-        network_match.srcRegionCodes = rule['networkMatch']['srcRegionCodes']
-      if 'srcAsns' in rule['networkMatch']:
-        network_match.srcAsns = rule['networkMatch']['srcAsns']
-      security_policy_rule.networkMatch = network_match
-    security_policy_rule.priority = int(rule['priority'])
-    if 'preview' in rule:
-      security_policy_rule.preview = rule['preview']
-    rules.append(security_policy_rule)
-    if 'redirectTarget' in rule:
-      security_policy_rule.redirectTarget = rule['redirectTarget']
-    if 'ruleNumber' in rule:
-      security_policy_rule.ruleNumber = int(rule['ruleNumber'])
-    if 'redirectOptions' in rule:
-      redirect_options = messages.SecurityPolicyRuleRedirectOptions()
-      if 'type' in rule['redirectOptions']:
-        redirect_options.type = (
-            messages.SecurityPolicyRuleRedirectOptions.TypeValueValuesEnum(
-                rule['redirectOptions']['type']))
-      if 'target' in rule['redirectOptions']:
-        redirect_options.target = rule['redirectOptions']['target']
-      security_policy_rule.redirectOptions = redirect_options
-    if 'headerAction' in rule:
-      header_action = messages.SecurityPolicyRuleHttpHeaderAction()
-      headers_in_rule = rule['headerAction'].get('requestHeadersToAdds', [])
-      headers_to_add = []
-      for header_to_add in headers_in_rule:
-        headers_to_add.append(
-            messages.SecurityPolicyRuleHttpHeaderActionHttpHeaderOption(
-                headerName=header_to_add['headerName'],
-                headerValue=header_to_add['headerValue']))
-      if headers_to_add:
-        header_action.requestHeadersToAdds = headers_to_add
-      security_policy_rule.headerAction = header_action
-    if 'rateLimitOptions' in rule:
-      rate_limit_options = rule['rateLimitOptions']
-      security_policy_rule.rateLimitOptions = (
-          messages.SecurityPolicyRuleRateLimitOptions(
-              rateLimitThreshold=messages
-              .SecurityPolicyRuleRateLimitOptionsThreshold(
-                  count=rate_limit_options['rateLimitThreshold']['count'],
-                  intervalSec=rate_limit_options['rateLimitThreshold']
-                  ['intervalSec']),
-              conformAction=rate_limit_options['conformAction'],
-              exceedAction=rate_limit_options['exceedAction']))
-      if 'exceedActionRpcStatus' in rate_limit_options:
-        exceed_action_rpc_status = (
-            messages.SecurityPolicyRuleRateLimitOptionsRpcStatus()
-        )
-        if 'code' in rate_limit_options['exceedActionRpcStatus']:
-          exceed_action_rpc_status.code = rate_limit_options[
-              'exceedActionRpcStatus']['code']
-        if 'message' in rate_limit_options['exceedActionRpcStatus']:
-          exceed_action_rpc_status.message = rate_limit_options[
-              'exceedActionRpcStatus']['message']
-        security_policy_rule.rateLimitOptions.exceedActionRpcStatus = (
-            exceed_action_rpc_status
-        )
-      if 'exceedRedirectOptions' in rate_limit_options:
-        exceed_redirect_options = messages.SecurityPolicyRuleRedirectOptions()
-        if 'type' in rate_limit_options['exceedRedirectOptions']:
-          exceed_redirect_options.type = (
-              messages.SecurityPolicyRuleRedirectOptions.TypeValueValuesEnum(
-                  rate_limit_options['exceedRedirectOptions']['type']))
-        if 'target' in rate_limit_options['exceedRedirectOptions']:
-          exceed_redirect_options.target = rate_limit_options[
-              'exceedRedirectOptions']['target']
-        security_policy_rule.rateLimitOptions.exceedRedirectOptions = (
-            exceed_redirect_options)
-      if 'banThreshold' in rate_limit_options:
-        security_policy_rule.rateLimitOptions.banThreshold = (
-            messages.SecurityPolicyRuleRateLimitOptionsThreshold(
-                count=rate_limit_options['banThreshold']['count'],
-                intervalSec=rate_limit_options['banThreshold']['intervalSec']))
-      if 'banDurationSec' in rate_limit_options:
-        security_policy_rule.rateLimitOptions.banDurationSec = (
-            rate_limit_options['banDurationSec'])
-      if 'enforceOnKey' in rate_limit_options:
-        security_policy_rule.rateLimitOptions.enforceOnKey = (
-            messages.SecurityPolicyRuleRateLimitOptions
-            .EnforceOnKeyValueValuesEnum(rate_limit_options['enforceOnKey']))
-      if 'enforceOnKeyName' in rate_limit_options:
-        security_policy_rule.rateLimitOptions.enforceOnKeyName = (
-            rate_limit_options['enforceOnKeyName'])
-      for config in rate_limit_options.get('enforceOnKeyConfigs', []):
-        enforce_on_key_config = (
-            messages.SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig()
-        )
-        if 'enforceOnKeyType' in config:
-          enforce_on_key_config.enforceOnKeyType = messages.SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig.EnforceOnKeyTypeValueValuesEnum(
-              config['enforceOnKeyType']
+          if 'code' in rate_limit_options['exceedActionRpcStatus']:
+            exceed_action_rpc_status.code = rate_limit_options[
+                'exceedActionRpcStatus'
+            ]['code']
+          if 'message' in rate_limit_options['exceedActionRpcStatus']:
+            exceed_action_rpc_status.message = rate_limit_options[
+                'exceedActionRpcStatus'
+            ]['message']
+          security_policy_rule.rateLimitOptions.exceedActionRpcStatus = (
+              exceed_action_rpc_status
           )
-        if 'enforceOnKeyName' in config:
-          enforce_on_key_config.enforceOnKeyName = config['enforceOnKeyName']
-        security_policy_rule.rateLimitOptions.enforceOnKeyConfigs.append(
-            enforce_on_key_config
+        if 'exceedRedirectOptions' in rate_limit_options:
+          exceed_redirect_options = messages.SecurityPolicyRuleRedirectOptions()
+          if 'type' in rate_limit_options['exceedRedirectOptions']:
+            exceed_redirect_options.type = (
+                messages.SecurityPolicyRuleRedirectOptions.TypeValueValuesEnum(
+                    rate_limit_options['exceedRedirectOptions']['type']
+                )
+            )
+          if 'target' in rate_limit_options['exceedRedirectOptions']:
+            exceed_redirect_options.target = rate_limit_options[
+                'exceedRedirectOptions'
+            ]['target']
+          security_policy_rule.rateLimitOptions.exceedRedirectOptions = (
+              exceed_redirect_options
+          )
+        if 'banThreshold' in rate_limit_options:
+          security_policy_rule.rateLimitOptions.banThreshold = (
+              messages.SecurityPolicyRuleRateLimitOptionsThreshold(
+                  count=rate_limit_options['banThreshold']['count'],
+                  intervalSec=rate_limit_options['banThreshold']['intervalSec'],
+              )
+          )
+        if 'banDurationSec' in rate_limit_options:
+          security_policy_rule.rateLimitOptions.banDurationSec = (
+              rate_limit_options['banDurationSec']
+          )
+        if 'enforceOnKey' in rate_limit_options:
+          security_policy_rule.rateLimitOptions.enforceOnKey = messages.SecurityPolicyRuleRateLimitOptions.EnforceOnKeyValueValuesEnum(
+              rate_limit_options['enforceOnKey']
+          )
+        if 'enforceOnKeyName' in rate_limit_options:
+          security_policy_rule.rateLimitOptions.enforceOnKeyName = (
+              rate_limit_options['enforceOnKeyName']
+          )
+        for config in rate_limit_options.get('enforceOnKeyConfigs', []):
+          enforce_on_key_config = (
+              messages.SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig()
+          )
+          if 'enforceOnKeyType' in config:
+            enforce_on_key_config.enforceOnKeyType = messages.SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig.EnforceOnKeyTypeValueValuesEnum(
+                config['enforceOnKeyType']
+            )
+          if 'enforceOnKeyName' in config:
+            enforce_on_key_config.enforceOnKeyName = config['enforceOnKeyName']
+          security_policy_rule.rateLimitOptions.enforceOnKeyConfigs.append(
+              enforce_on_key_config
+          )
+      if 'preconfiguredWafConfig' in rule:
+        preconfig_waf_config = (
+            messages.SecurityPolicyRulePreconfiguredWafConfig()
         )
-    if 'preconfiguredWafConfig' in rule:
-      preconfig_waf_config = messages.SecurityPolicyRulePreconfiguredWafConfig()
-      for exclusion in rule['preconfiguredWafConfig'].get('exclusions', []):
-        exclusion_to_add = (
-            messages.SecurityPolicyRulePreconfiguredWafConfigExclusion())
-        if 'targetRuleSet' in exclusion:
-          exclusion_to_add.targetRuleSet = exclusion['targetRuleSet']
-        for target_rule_id in exclusion.get('targetRuleIds', []):
-          exclusion_to_add.targetRuleIds.append(target_rule_id)
-        for request_header in exclusion.get('requestHeadersToExclude', []):
-          exclusion_to_add.requestHeadersToExclude.append(
-              ConvertPreconfigWafExclusionRequestField(request_header,
-                                                       messages))
-        for request_cookie in exclusion.get('requestCookiesToExclude', []):
-          exclusion_to_add.requestCookiesToExclude.append(
-              ConvertPreconfigWafExclusionRequestField(request_cookie,
-                                                       messages))
-        for request_query_param in exclusion.get('requestQueryParamsToExclude',
-                                                 []):
-          exclusion_to_add.requestQueryParamsToExclude.append(
-              ConvertPreconfigWafExclusionRequestField(request_query_param,
-                                                       messages))
-        for request_uri in exclusion.get('requestUrisToExclude', []):
-          exclusion_to_add.requestUrisToExclude.append(
-              ConvertPreconfigWafExclusionRequestField(request_uri, messages))
-        preconfig_waf_config.exclusions.append(exclusion_to_add)
-      security_policy_rule.preconfiguredWafConfig = preconfig_waf_config
+        for exclusion in rule['preconfiguredWafConfig'].get('exclusions', []):
+          exclusion_to_add = (
+              messages.SecurityPolicyRulePreconfiguredWafConfigExclusion()
+          )
+          if 'targetRuleSet' in exclusion:
+            exclusion_to_add.targetRuleSet = exclusion['targetRuleSet']
+          for target_rule_id in exclusion.get('targetRuleIds', []):
+            exclusion_to_add.targetRuleIds.append(target_rule_id)
+          for request_header in exclusion.get('requestHeadersToExclude', []):
+            exclusion_to_add.requestHeadersToExclude.append(
+                ConvertPreconfigWafExclusionRequestField(
+                    request_header, messages
+                )
+            )
+          for request_cookie in exclusion.get('requestCookiesToExclude', []):
+            exclusion_to_add.requestCookiesToExclude.append(
+                ConvertPreconfigWafExclusionRequestField(
+                    request_cookie, messages
+                )
+            )
+          for request_query_param in exclusion.get(
+              'requestQueryParamsToExclude', []
+          ):
+            exclusion_to_add.requestQueryParamsToExclude.append(
+                ConvertPreconfigWafExclusionRequestField(
+                    request_query_param, messages
+                )
+            )
+          for request_uri in exclusion.get('requestUrisToExclude', []):
+            exclusion_to_add.requestUrisToExclude.append(
+                ConvertPreconfigWafExclusionRequestField(request_uri, messages)
+            )
+          preconfig_waf_config.exclusions.append(exclusion_to_add)
+        security_policy_rule.preconfiguredWafConfig = preconfig_waf_config
 
   security_policy.rules = rules
 

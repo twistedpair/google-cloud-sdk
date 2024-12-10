@@ -72,6 +72,18 @@ project_location_connection:
     attribute_name: connection
     help: The connection id of the {resource} resource.
   disable_auto_completers: false
+project_location_user_connection:
+  name: userConnection
+  plural_name: userConnections
+  collection: developerconnect.projects.locations.userConnections
+  attributes:
+  - *project
+  - *location
+  - &userConnection
+    parameter_name: userConnectionsId
+    attribute_name: user_connection
+    help: The userConnection id of the {resource} resource.
+  disable_auto_completers: false
 project_location_key_ring:
   name: keyRing
   plural_name: keyRings
@@ -83,6 +95,18 @@ project_location_key_ring:
     parameter_name: keyRingsId
     attribute_name: key_ring
     help: The keyRing id of the {resource} resource.
+  disable_auto_completers: true
+project_location_namespace:
+  name: namespace
+  plural_name: namespaces
+  collection: developerconnect.projects.locations.namespaces
+  attributes:
+  - *project
+  - *location
+  - &namespace
+    parameter_name: namespacesId
+    attribute_name: namespace
+    help: The namespace id of the {resource} resource.
   disable_auto_completers: true
 project_location_key_ring_crypto_key:
   name: cryptoKey
@@ -97,6 +121,19 @@ project_location_key_ring_crypto_key:
     attribute_name: crypto_key
     help: The cryptoKey id of the {resource} resource.
   disable_auto_completers: true
+project_location_namespace_service:
+  name: service
+  plural_name: services
+  collection: developerconnect.projects.locations.namespaces.services
+  attributes:
+  - *project
+  - *location
+  - *namespace
+  - &service
+    parameter_name: servicesId
+    attribute_name: service
+    help: The service id of the {resource} resource.
+  disable_auto_completers: true
 project_location_connection_git_repository_link:
   name: gitRepositoryLink
   plural_name: gitRepositoryLinks
@@ -109,4 +146,17 @@ project_location_connection_git_repository_link:
     parameter_name: gitRepositoryLinksId
     attribute_name: git_repository_link
     help: The gitRepositoryLink id of the {resource} resource.
+  disable_auto_completers: false
+project_location_user_connection_user:
+  name: user
+  plural_name: users
+  collection: developerconnect.projects.locations.userConnections.users
+  attributes:
+  - *project
+  - *location
+  - *userConnection
+  - &user
+    parameter_name: usersId
+    attribute_name: user
+    help: The user id of the {resource} resource.
   disable_auto_completers: false

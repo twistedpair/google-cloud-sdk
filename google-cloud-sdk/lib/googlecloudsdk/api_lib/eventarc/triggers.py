@@ -22,7 +22,6 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.eventarc import common
 from googlecloudsdk.api_lib.eventarc.base import EventarcClientBase
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.eventarc import types
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
@@ -34,14 +33,6 @@ MAX_ACTIVE_DELAY_MINUTES = 2
 
 class NoFieldsSpecifiedError(exceptions.Error):
   """Error when no fields were specified for a Patch operation."""
-
-
-def CreateTriggersClient(release_track):
-  api_version = common.GetApiVersion(release_track)
-  if release_track == base.ReleaseTrack.GA:
-    return _TriggersClient(api_version)
-  else:
-    return None
 
 
 def GetTriggerURI(resource):
@@ -74,10 +65,9 @@ def TriggerActiveTime(event_type, update_time):
 class _BaseTriggersClient(EventarcClientBase):
   """Base Triggers Client."""
 
-  def __init__(self, api_version):
-    super(_BaseTriggersClient, self).__init__(common.API_NAME, api_version,
-                                              'trigger')
-    client = apis.GetClientInstance(common.API_NAME, api_version)
+  def __init__(self):
+    super(_BaseTriggersClient, self).__init__(common.API_NAME, 'v1', 'trigger')
+    client = apis.GetClientInstance(common.API_NAME, 'v1')
     self._messages = client.MESSAGES_MODULE
     self._service = client.projects_locations_triggers
     self._operation_service = client.projects_locations_operations
@@ -166,7 +156,7 @@ class _BaseTriggersClient(EventarcClientBase):
     return self._service.Patch(patch_req)
 
 
-class _TriggersClient(_BaseTriggersClient):
+class TriggersClientV1(_BaseTriggersClient):
   """Client for Triggers service in the Eventarc GA API."""
 
   def BuildTriggerMessage(
@@ -216,16 +206,6 @@ class _TriggersClient(_BaseTriggersClient):
     pubsub = self._messages.Pubsub(topic=transport_topic_name)
     transport = self._messages.Transport(pubsub=pubsub)
     channel = channel_ref.RelativeName() if channel_ref else None
-    trigger_labels = None
-    if labels is not None:
-      trigger_labels = self._messages.Trigger.LabelsValue(
-          additionalProperties=[
-              self._messages.Trigger.LabelsValue.AdditionalProperty(
-                  key=key, value=value
-              )
-              for key, value in labels.items()
-          ]
-      )
     return self._messages.Trigger(
         name=trigger_ref.RelativeName(),
         eventFilters=filter_messages,
@@ -234,7 +214,7 @@ class _TriggersClient(_BaseTriggersClient):
         destination=destination_message,
         transport=transport,
         channel=channel,
-        labels=trigger_labels,
+        labels=labels,
     )
 
   def BuildCloudRunDestinationMessage(self, destination_run_service,
@@ -441,3 +421,7 @@ class _TriggersClient(_BaseTriggersClient):
   def GetEventType(self, trigger_message):
     """Gets the Trigger's event type."""
     return types.EventFiltersMessageToType(trigger_message.eventFilters)
+
+  def LabelsValueClass(self):
+    """Returns the labels value class."""
+    return self._messages.Trigger.LabelsValue

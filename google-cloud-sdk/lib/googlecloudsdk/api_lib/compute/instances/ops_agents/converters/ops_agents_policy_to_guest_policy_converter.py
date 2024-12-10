@@ -221,6 +221,7 @@ _APT_CODENAMES = {
     '23.04': 'lunar',
     '23.10': 'mantic',
     '24.04': 'noble',
+    '24.10': 'oracular',
 }
 
 _SUSE_OS = ('sles-sap', 'sles')

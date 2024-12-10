@@ -252,7 +252,7 @@ class QueryPlan(proto.Message):
             [PlanNode][google.spanner.v1.PlanNode]'s ``id`` corresponds
             to its index in ``plan_nodes``.
         query_advice (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.QueryAdvisorResult):
-            Optional. The advices/recommendations for a
+            Optional. The advise/recommendations for a
             query. Currently this field will be serving
             index recommendations for a query.
     """

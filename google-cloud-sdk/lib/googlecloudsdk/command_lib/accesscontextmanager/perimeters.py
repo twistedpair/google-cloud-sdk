@@ -303,6 +303,7 @@ def AddPerimeterUpdateArgs(parser, version=None):
   _AddRestrictedServices(parser)
   _AddLevelsUpdate(parser)
   _AddVpcRestrictionArgs(parser)
+  AddEtagArg(parser)
   AddUpdateDirectionalPoliciesGroupArgs(parser, version)
 
 
@@ -500,6 +501,20 @@ def _AddVpcRestrictionArgs(parser):
       enable_help=('When specified restrict API calls within the Service '
                    'Perimeter to the set of vpc allowed services. To disable '
                    'use \'--no-enable-vpc-accessible-services\'.'))
+
+
+def AddEtagArg(parser):
+  parser.add_argument(
+      '--etag',
+      metavar='etag',
+      default=None,
+      help="""The etag for the version of the Access Policy that this
+              operation is to be performed on. If, at the time of the
+              operation, the etag for the Access Policy stored in Access
+              Context Manager is different from the specified etag, then the
+              commit operation will not be performed and the call will fail.
+              If etag is not provided, the operation will be performed as if a
+              valid etag is provided.""")
 
 
 def _AddLevelsUpdate(parser, include_set=True):

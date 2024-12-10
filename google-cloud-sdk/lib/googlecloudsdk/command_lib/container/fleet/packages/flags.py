@@ -83,6 +83,19 @@ def AddResourceBundleFlag(parser):
   )
 
 
+def AddForceDeleteFlag(parser, resource_name):
+  parser.add_argument(
+      '--force',
+      required=False,
+      default=False,
+      action='store_true',
+      help=(
+          'If true, force deletion of any child resources. Otherwise,'
+          f' attempting to delete a {resource_name} with children will fail.'
+      ),
+  )
+
+
 def AddLifecycleFlag(parser):
   parser.add_argument(
       '--lifecycle', required=False, help='Lifecycle of the Release.'

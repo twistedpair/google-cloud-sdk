@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.ai import constants
 
@@ -48,3 +49,27 @@ class ModelGardenClient(object):
         name=model_name, isHuggingFaceModel=is_hugging_face_model
     )
     return self._service.Get(request)
+
+  def ListPublisherModels(self, limit=None, include_hf_models=False):
+    """List publisher models in Model Garden.
+
+    Args:
+      limit: The maximum number of items to list.
+      include_hf_models: Whether to include Hugging Face models.
+
+    Returns:
+      The list of publisher models in Model Garden..
+    """
+    return list_pager.YieldFromList(
+        self._service,
+        self._messages.AiplatformPublishersModelsListRequest(
+            parent='publishers/*',
+            listAllVersions=True,
+            filter='is_hf_wildcard=true'
+            if include_hf_models
+            else 'is_hf_wildcard=false',
+        ),
+        field='publisherModels',
+        batch_size_attribute='pageSize',
+        limit=limit,
+    )

@@ -155,6 +155,19 @@ def UpdatePersistenceConfig(unused_cluster_ref, args, patch_request):
   return patch_request
 
 
+def UpdateAutomatedBackupConfig(unused_cluster_ref, args, patch_request):
+  """Hook to add automated backup config to the redis cluster update request."""
+  if (
+      args.IsSpecified('automated_backup_ttl')
+      or args.IsSpecified('automated_backup_start_time')
+      or args.IsSpecified('automated_backup_mode')
+  ):
+    patch_request = AddFieldToUpdateMask(
+        'automated_backup_config', patch_request
+    )
+  return patch_request
+
+
 def CheckMaintenanceWindowStartTimeField(maintenance_window_start_time):
   if maintenance_window_start_time < 0 or maintenance_window_start_time > 23:
     raise InvalidTimeOfDayError(

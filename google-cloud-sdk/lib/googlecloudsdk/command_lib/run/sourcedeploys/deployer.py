@@ -41,7 +41,7 @@ _BUILD_NAME_PATTERN = re.compile(
 def CreateImage(
     tracker,
     build_image,
-    local_source,
+    build_source,
     build_pack,
     repo_to_create,
     release_track,
@@ -74,7 +74,9 @@ def CreateImage(
     # builds API.
     tracker.StartStage(stages.UPLOAD_SOURCE)
     tracker.UpdateHeaderMessage('Uploading sources.')
-    source = sources.Upload(local_source, region, resource_ref, source_bucket)
+    source = sources.Upload(
+        build_source, region, resource_ref, source_bucket
+    )
     tracker.CompleteStage(stages.UPLOAD_SOURCE)
     submit_build_request = _PrepareSubmitBuildRequest(
         build_image,
@@ -105,7 +107,7 @@ def CreateImage(
       response_dict, build_log_url = _CreateImageWithoutSubmitBuild(
           tracker,
           build_image,
-          local_source,
+          build_source,
           build_pack,
           already_activated_services,
           remote_source=source,
@@ -114,7 +116,7 @@ def CreateImage(
     response_dict, build_log_url = _CreateImageWithoutSubmitBuild(
         tracker,
         build_image,
-        local_source,
+        build_source,
         build_pack,
         already_activated_services,
         remote_source=None,
@@ -146,7 +148,7 @@ def CreateImage(
 def _CreateImageWithoutSubmitBuild(
     tracker,
     build_image,
-    local_source,
+    build_source,
     build_pack,
     already_activated_services,
     remote_source,
@@ -155,7 +157,7 @@ def _CreateImageWithoutSubmitBuild(
   build_messages, build_config = _PrepareBuildConfig(
       tracker,
       build_image,
-      local_source,
+      build_source,
       build_pack,
       remote_source,
   )
@@ -171,7 +173,7 @@ def _CreateImageWithoutSubmitBuild(
 def _PrepareBuildConfig(
     tracker,
     build_image,
-    local_source,
+    build_source,
     build_pack,
     remote_source,
 ):
@@ -198,7 +200,7 @@ def _PrepareBuildConfig(
         arg_config=None,
         is_specified_source=True,
         no_source=False,
-        source=local_source,
+        source=build_source,
         gcs_source_staging_dir=None,
         ignore_file=None,
         arg_gcs_log_dir=None,
@@ -242,7 +244,7 @@ def _PrepareBuildConfig(
         arg_config=None,
         is_specified_source=True,
         no_source=False,
-        source=local_source,
+        source=build_source,
         gcs_source_staging_dir=None,
         ignore_file=None,
         arg_gcs_log_dir=None,

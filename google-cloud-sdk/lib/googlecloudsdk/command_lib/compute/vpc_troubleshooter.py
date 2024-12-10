@@ -59,7 +59,7 @@ DEFAULT_SSH_PORT_MESSAGE = (
     'Help for default firewall rule: '
     'https://cloud.google.com/vpc/docs/vpc#default-network\n'
     'Help for custom firewall rule: '
-    'https://cloud.google.com/network-connectivity/docs/vpn/how-to/configuring-firewall-rules?hl=it\n'  # pylint: disable=line-too-long
+    'https://cloud.google.com/network-connectivity/docs/vpn/how-to/configuring-firewall-rules\n'  # pylint: disable=line-too-long
     '\n'
     "If you need to investigate further, enable the VM's serial console. "
     "Then connect through the VM serial port, find the SSH server's listen "

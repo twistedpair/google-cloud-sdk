@@ -289,15 +289,16 @@ def AddMutationArgs(parser, required=True):
           min_length=1,
           element_type=arg_parsers.ArgDict(
               spec={
-                  'short-name':
-                      ArgEnum(
-                          'short-name',
-                          list(agent_policy.OpsAgentPolicy.Assignment.OsType
-                               .OsShortName)),
-                  'version':
-                      str,
+                  'short-name': ArgEnum(
+                      'short-name',
+                      list(
+                          agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName
+                      ),
+                  ),
+                  'version': str,
               },
-              required_keys=['short-name', 'version']),
+              required_keys=['short-name', 'version'],
+          ),
       ),
       help="""\
       A non-empty list of OS types to filter instances that the policy applies
@@ -335,6 +336,7 @@ def AddMutationArgs(parser, required=True):
         ubuntu             23.04
         ubuntu             23.10
         ubuntu             24.04
+        ubuntu             24.10
         windows            10.*
         windows            6.*
 

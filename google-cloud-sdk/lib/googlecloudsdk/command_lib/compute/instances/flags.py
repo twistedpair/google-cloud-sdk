@@ -2126,17 +2126,14 @@ def AddGracefulShutdownArgs(parser, is_create=False):
         '--graceful-shutdown',
         action=arg_parsers.StoreTrueFalseAction,
         help="""\
-        If set to true, enables graceful shutdown for the instance.
+        Enables or disables graceful shutdown for the instance.
         """,
     )
   parser.add_argument(
       '--graceful-shutdown-max-duration',
       type=arg_parsers.Duration(lower_bound='1s', upper_bound='3600s'),
       help="""
-      Specifies time needed to gracefully
-      shutdown the instance. After that time, the instance goes to STOPPING even
-      if graceful shutdown is not completed.e.g. `300s`, `1h`. See $ gcloud
-      topic datetimes for information on duration formats.
+      Specifies the maximum time for the graceful shutdown. After this time, the instance is set to STOPPING even if tasks are still running. Specify the time as the number of hours, minutes, or seconds followed by h, m, and s respectively. For example, specify 30m for 30 minutes or 20m10s for 20 minutes and 10 seconds. The value must be between 1 second and 1 hour.
       """,
   )
 

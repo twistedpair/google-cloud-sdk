@@ -1359,10 +1359,15 @@ class EgressPolicy(_messages.Message):
       EgressPolicy to apply.
     egressTo: Defines the conditions on the ApiOperation and destination
       resources that cause this EgressPolicy to apply.
+    title: Optional. Human-readable title for the egress rule. The title must
+      be unique within the perimeter and can not exceed 100 characters. Within
+      the access policy, the combined length of all rule titles must not
+      exceed 240,000 characters.
   """
 
   egressFrom = _messages.MessageField('EgressFrom', 1)
   egressTo = _messages.MessageField('EgressTo', 2)
+  title = _messages.StringField(3)
 
 
 class EgressSource(_messages.Message):
@@ -1609,10 +1614,15 @@ class IngressPolicy(_messages.Message):
       this IngressPolicy to apply.
     ingressTo: Defines the conditions on the ApiOperation and request
       destination that cause this IngressPolicy to apply.
+    title: Optional. Human-readable title for the ingress rule. The title must
+      be unique within the perimeter and can not exceed 100 characters. Within
+      the access policy, the combined length of all rule titles must not
+      exceed 240,000 characters.
   """
 
   ingressFrom = _messages.MessageField('IngressFrom', 1)
   ingressTo = _messages.MessageField('IngressTo', 2)
+  title = _messages.StringField(3)
 
 
 class IngressSource(_messages.Message):
@@ -2100,6 +2110,10 @@ class ServicePerimeter(_messages.Message):
   Fields:
     description: Description of the `ServicePerimeter` and its use. Does not
       affect behavior.
+    etag: Optional. An opaque identifier for the current version of the
+      `ServicePerimeter`. This identifier does not follow any specific format.
+      If an etag is not provided, the operation will be performed as if a
+      valid etag is provided.
     name: Identifier. Resource name for the `ServicePerimeter`. Format:
       `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`.
       The `service_perimeter` component must begin with a letter, followed by
@@ -2148,12 +2162,13 @@ class ServicePerimeter(_messages.Message):
     PERIMETER_TYPE_BRIDGE = 1
 
   description = _messages.StringField(1)
-  name = _messages.StringField(2)
-  perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 3)
-  spec = _messages.MessageField('ServicePerimeterConfig', 4)
-  status = _messages.MessageField('ServicePerimeterConfig', 5)
-  title = _messages.StringField(6)
-  useExplicitDryRunSpec = _messages.BooleanField(7)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 4)
+  spec = _messages.MessageField('ServicePerimeterConfig', 5)
+  status = _messages.MessageField('ServicePerimeterConfig', 6)
+  title = _messages.StringField(7)
+  useExplicitDryRunSpec = _messages.BooleanField(8)
 
 
 class ServicePerimeterConfig(_messages.Message):

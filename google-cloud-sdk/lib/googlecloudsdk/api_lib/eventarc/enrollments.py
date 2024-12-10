@@ -147,7 +147,7 @@ class EnrollmentClientV1(base.EventarcClientBase):
     return self._service.Delete(delete_req)
 
   def BuildEnrollment(
-      self, enrollment_ref, cel_match, message_bus_ref, destination_ref
+      self, enrollment_ref, cel_match, message_bus_ref, destination_ref, labels
   ):
     return self._messages.Enrollment(
         name=enrollment_ref.RelativeName(),
@@ -158,14 +158,16 @@ class EnrollmentClientV1(base.EventarcClientBase):
         destination=destination_ref.RelativeName()
         if destination_ref is not None
         else '',
+        labels=labels,
     )
 
-  def BuildUpdateMask(self, cel_match, destination):
+  def BuildUpdateMask(self, cel_match, destination, labels):
     """Builds an update mask for updating a enrollment.
 
     Args:
       cel_match: bool, whether to update the cel_match.
       destination: bool, whether to update the destination.
+      labels: bool, whether to update the labels.
 
     Returns:
       The update mask as a string.
@@ -179,7 +181,12 @@ class EnrollmentClientV1(base.EventarcClientBase):
       update_mask.append('celMatch')
     if destination:
       update_mask.append('destination')
+    if labels:
+      update_mask.append('labels')
 
     if not update_mask:
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
     return ','.join(update_mask)
+
+  def LabelsValueClass(self):
+    return self._messages.Enrollment.LabelsValue

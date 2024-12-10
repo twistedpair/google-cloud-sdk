@@ -26,13 +26,14 @@ from googlecloudsdk.core import log
 ORGANIZATION_PREFIX = 'organizations/'
 
 
-def ResolveOrganizationSecurityPolicyId(org_security_policy, display_name,
-                                        organization_id):
-  """Returns the security policy id that matches the display_name in the org.
+def ResolveOrganizationSecurityPolicyId(
+    org_security_policy, short_name, organization_id
+):
+  """Returns the security policy id that matches the short_name in the org.
 
   Args:
     org_security_policy: the organization security policy.
-    display_name: the display name of the security policy to be resolved.
+    short_name: the short name of the security policy to be resolved.
     organization_id: the organization ID which the security policy belongs to.
 
   Returns:
@@ -43,13 +44,14 @@ def ResolveOrganizationSecurityPolicyId(org_security_policy, display_name,
       parent_id=organization_id, only_generate_request=False)
   sp_id = None
   for sp in response[0].items:
-    if sp.displayName == display_name:
+    if sp.displayName == short_name or sp.shortName == short_name:
       sp_id = sp.name
       break
   if sp_id is None:
     log.error(
-        'Invalid display name: {0}. No Security Policy with this display name exists.'
-        .format(display_name))
+        'Invalid display name: {0}. No Security Policy with this short name'
+        ' exists.'.format(short_name)
+    )
     sys.exit()
   return sp_id
 
@@ -57,7 +59,7 @@ def ResolveOrganizationSecurityPolicyId(org_security_policy, display_name,
 def GetSecurityPolicyId(org_security_policy_client,
                         security_policy,
                         organization=None):
-  """Returns the security policy id that matches the display_name in the org.
+  """Returns the security policy id that matches the short_name in the org.
 
   Args:
     org_security_policy_client: the organization security policy client.
@@ -73,8 +75,9 @@ def GetSecurityPolicyId(org_security_policy_client,
   if not re.match(r'\d{9,15}', security_policy):
     if organization is None:
       log.error(
-          'Must set --organization=ORGANIZATION when display name [%s]'
-          'is used.', security_policy)
+          'Must set --organization=ORGANIZATION when short name [%s]is used.',
+          security_policy,
+      )
       sys.exit()
     return ResolveOrganizationSecurityPolicyId(
         org_security_policy_client, security_policy,

@@ -28,8 +28,7 @@ properties:
   enabled:
     description: |-
       Whether the serving infrastructure will authenticate and authorize all
-      incoming requests. If true, the oauth2ClientId and oauth2ClientSecret
-      fields must be non-empty.
+      incoming requests.
     type: boolean
   oauth2ClientId:
     description: OAuth2 client ID to use for the authentication flow.

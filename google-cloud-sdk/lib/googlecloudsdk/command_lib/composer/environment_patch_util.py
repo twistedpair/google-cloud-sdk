@@ -1011,14 +1011,13 @@ def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, web_server_cpu,
     workload_resources['triggerer'] = messages.TriggererResource(
         cpu=triggerer_cpu, memoryGb=triggerer_memory_gb, count=triggerer_count
     )
-  if release_track != base.ReleaseTrack.GA:
-    if dag_processor_count is not None:
-      workload_resources['dagProcessor'] = messages.DagProcessorResource(
-          cpu=dag_processor_cpu,
-          memoryGb=dag_processor_memory_gb,
-          storageGb=dag_processor_storage_gb,
-          count=dag_processor_count,
-      )
+  if dag_processor_count is not None:
+    workload_resources['dagProcessor'] = messages.DagProcessorResource(
+        cpu=dag_processor_cpu,
+        memoryGb=dag_processor_memory_gb,
+        storageGb=dag_processor_storage_gb,
+        count=dag_processor_count,
+    )
 
   config = messages.EnvironmentConfig(
       workloadsConfig=messages.WorkloadsConfig(**workload_resources))

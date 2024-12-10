@@ -503,6 +503,24 @@ def AddResourceType(parser):
   )
 
 
+def AddLogRetentionDays(parser, hidden=True):
+  """Adds a positional log-retention-days argument to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+    hidden: Whether or not --log-retention-days is hidden. Default is True.
+  """
+  parser.add_argument(
+      '--log-retention-days',
+      required=False,
+      hidden=hidden,
+      type=int,
+      help=("""Configures how long logs will be stored. It is defined in "days".
+          This value should be greater than or equal to minimum enforced log
+          retention duration of the backup vault."""),
+  )
+
+
 def AddBackupRule(parser, required=True):
   """Adds a positional backup-rule argument to parser.
 

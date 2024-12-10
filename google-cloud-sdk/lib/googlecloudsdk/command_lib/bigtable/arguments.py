@@ -121,6 +121,13 @@ class ArgAdder(object):
   def __init__(self, parser):
     self.parser = parser
 
+  def _GetNodeScalingFactorChoice(self, node_scaling_factor):
+    return arg_utils.ChoiceToEnum(
+        node_scaling_factor,
+        util.GetAdminMessages().Cluster.NodeScalingFactorValueValuesEnum,
+        valid_choices=GetValidNodeScalingFactors(),
+    )
+
   def AddAsync(self):
     base.ASYNC_FLAG.AddToParser(self.parser)
     return self
@@ -189,7 +196,6 @@ class ArgAdder(object):
         help_str='Node scaling factor for the cluster.',
         choices=GetValidNodeScalingFactors(),
         default='node-scaling-factor-1x',
-        hidden=True,  # TODO(b/340864145): Unhide
     )
     node_scaling_factor_argument.AddToParser(self.parser)
     return self
@@ -264,7 +270,6 @@ class ArgAdder(object):
       self,
       required=True,
       allow_failover_radius=False,
-      allow_row_affinity=False,
   ):
     """Adds arguments for app_profile routing to parser."""
     routing_group = self.parser.add_mutually_exclusive_group(required=required)
@@ -286,14 +291,12 @@ class ArgAdder(object):
         metavar='RESTRICT_TO',
     )
     # By default, will not enable/disable unless the user explicitly says so.
-    if allow_row_affinity:
-      any_group.add_argument(
-          '--row-affinity',
-          action='store_true',
-          default=None,
-          help='Use row affinity sticky routing for this app profile.',
-          hidden=True,  # TODO(b/279939624): Remove hidden=True for GA
-      )
+    any_group.add_argument(
+        '--row-affinity',
+        action='store_true',
+        default=None,
+        help='Use row-affinity routing for this app profile.',
+    )
     if allow_failover_radius:
       choices = {
           'ANY_REGION': (
@@ -499,21 +502,28 @@ class ArgAdder(object):
         '--cluster-config',
         action='append',
         type=arg_parsers.ArgDict(
-            # TODO(b/306145057): Re-add spec once node scaling factor is GA.
-            # Since node scaling factor has not been released to GA yet,
-            # we removed the spec to avoid printing this new field out in
-            # the help text (See b/188686383#comment4). We will add the spec
-            # back once node scaling factor is GA.
+            spec={
+                'id': str,
+                'zone': str,
+                'nodes': int,
+                'node-scaling-factor': self._GetNodeScalingFactorChoice,
+                'kms-key': str,
+                'autoscaling-min-nodes': int,
+                'autoscaling-max-nodes': int,
+                'autoscaling-cpu-target': int,
+                'autoscaling-storage-target': int,
+            },
             required_keys=['id', 'zone'],
             max_length=9,
         ),
         metavar=(
-            'id=ID,zone=ZONE,nodes=NODES,'
-            'kms-key=KMS_KEY,'
-            'autoscaling-min-nodes=AUTOSCALING_MIN_NODES,'
+            'id=ID,zone=ZONE,[nodes=NODES],'
+            '[node-scaling-factor=NODE_SCALING_FACTOR],'
+            '[kms-key=KMS_KEY],'
+            '[autoscaling-min-nodes=AUTOSCALING_MIN_NODES,'
             'autoscaling-max-nodes=AUTOSCALING_MAX_NODES,'
             'autoscaling-cpu-target=AUTOSCALING_CPU_TARGET,'
-            'autoscaling-storage-target=AUTOSCALING_STORAGE_TARGET'
+            'autoscaling-storage-target=AUTOSCALING_STORAGE_TARGET]'
         ),
         help=textwrap.dedent("""\
         *Repeatable*. Specify cluster config as a key-value dictionary.
@@ -527,6 +537,8 @@ class ArgAdder(object):
           *zone*: Required. ID of the zone where the cluster is located. Supported zones are listed at https://cloud.google.com/bigtable/docs/locations.
 
           *nodes*: The number of nodes in the cluster. Default=1.
+
+          *node-scaling-factor*: The node scaling factor for the cluster. Default=node-scaling-factor-1x. NODE_SCALING_FACTOR must be one of: node-scaling-factor-1x, node-scaling-factor-2x.
 
           *kms-key*: The Cloud KMS (Key Management Service) cryptokey that will be used to protect the cluster.
 

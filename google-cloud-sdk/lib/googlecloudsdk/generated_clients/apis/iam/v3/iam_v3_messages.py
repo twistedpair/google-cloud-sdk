@@ -99,16 +99,6 @@ class GoogleIamV3OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
-class GoogleIamV3Policy(_messages.Message):
-  r"""One of the policies supported by IAM V3
-
-  Fields:
-    principalAccessBoundaryPolicy: The principal access boundary kind policy
-  """
-
-  principalAccessBoundaryPolicy = _messages.MessageField('GoogleIamV3PrincipalAccessBoundaryPolicy', 1)
-
-
 class GoogleIamV3PolicyBinding(_messages.Message):
   r"""IAM policy binding
 
@@ -261,14 +251,6 @@ class GoogleIamV3PolicyBindingTarget(_messages.Message):
   resource = _messages.StringField(2)
 
 
-class GoogleIamV3PolicyInaccessible(_messages.Message):
-  r"""A marker to indicate that the policy is inaccessible"""
-
-
-class GoogleIamV3PolicyNotFound(_messages.Message):
-  r"""A marker to indicate that the policy was not found"""
-
-
 class GoogleIamV3PrincipalAccessBoundaryPolicy(_messages.Message):
   r"""An IAM principal access boundary policy resource.
 
@@ -388,46 +370,6 @@ class GoogleIamV3PrincipalAccessBoundaryPolicyRule(_messages.Message):
   description = _messages.StringField(1)
   effect = _messages.EnumField('EffectValueValuesEnum', 2)
   resources = _messages.StringField(3, repeated=True)
-
-
-class GoogleIamV3SearchApplicablePoliciesResponse(_messages.Message):
-  r"""Response message for SearchApplicablePolicies
-
-  Fields:
-    bindingsAndPolicies: A list of Bindings and the policies associated with
-      those bindings. The bindings are ordered by attachment point starting
-      from the lowest level of the resource hierarchy. No order is guaranteed
-      for bindings for a given enforcement point.
-    nextPageToken: The page token to use in a follow up
-      SearchApplicablePolicies request
-    responseComplete: Does the response contain the full list of all bindings
-      and policies applicable or were some excluded due to lack of permissions
-  """
-
-  bindingsAndPolicies = _messages.MessageField('GoogleIamV3SearchApplicablePoliciesResponseBindingAndPolicy', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  responseComplete = _messages.BooleanField(3)
-
-
-class GoogleIamV3SearchApplicablePoliciesResponseBindingAndPolicy(_messages.Message):
-  r"""A pair of a binding and a policy referenced by that binding (if
-  accessible)
-
-  Fields:
-    binding: A binding between a target and a policy
-    policy: The policy associated with the above binding. Omitted if the
-      policy cannot be retrieved due to lack of permissions
-    policyInaccessible: Will be set if there was a permission error getting
-      the policy (even though the binding was accessible).
-    policyNotFound: Will be set if there was not a permission error, but the
-      policy was not found. This would indicate the binding is orphaned. Any
-      orphan binding will eventually be cleaned up - this state is temporary.
-  """
-
-  binding = _messages.MessageField('GoogleIamV3PolicyBinding', 1)
-  policy = _messages.MessageField('GoogleIamV3Policy', 2)
-  policyInaccessible = _messages.MessageField('GoogleIamV3PolicyInaccessible', 3)
-  policyNotFound = _messages.MessageField('GoogleIamV3PolicyNotFound', 4)
 
 
 class GoogleIamV3SearchPrincipalAccessBoundaryPolicyBindingsResponse(_messages.Message):
@@ -1291,46 +1233,6 @@ class IamProjectsLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_messa
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   target = _messages.StringField(4)
-
-
-class IamSearchApplicablePoliciesSearchRequest(_messages.Message):
-  r"""A IamSearchApplicablePoliciesSearchRequest object.
-
-  Fields:
-    filter: Optional. Filtering currently only supports the kind of policies
-      to return, and must be in the format "kind:[policyKind1] OR
-      kind:[policyKind2]". New policy kinds may be added in the future without
-      notice. Example value: "kind:principalAccessBoundaryPolicies"
-    pageSize: Optional. The limit of number of items (binding+policy pairs) to
-      return. The default and maximum is 100 and values above 100 are
-      truncated to 100.
-    pageToken: Optional. A page token, received from a previous
-      `SearchApplicablePolicies` call.
-    targetQuery: Required. The target for which to list the policies and
-      bindings for. Binding conditions will not be evaluated and all bindings
-      that are bound to the target will be returned. All targets from the
-      PolicyBinding are supported, as well as principals that are part of the
-      principalSet. For example: *
-      `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
-      `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` *
-      `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER` *
-      `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID` * `//iam.goo
-      gleapis.com/projects/PROJECT_NUMBER/locations/LOCATION/workloadIdentityP
-      ools/WORKLOAD_POOL_ID` *
-      `//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID`
-      * `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID` *
-      `principal:alice@example.com` *
-      `principal://iam.googleapis.com/locations/global/workforcePools/pool-
-      id/subject/alice` * `principal://iam.googleapis.com/projects/123/locatio
-      ns/global/workloadIdentityPools/pool-id/subject/alice` *
-      `serviceAccount:my-sa@my-project.iam.gserviceaccount.com` *
-      `user:user@example.com` * `user@example.com`
-  """
-
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  targetQuery = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

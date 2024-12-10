@@ -863,7 +863,7 @@ class DomainFilter(_messages.Message):
 
 
 class DomainFilteringProfile(_messages.Message):
-  r"""DomainFilteringProfile defines filters based on domain name.
+  r"""A DomainFilteringProfile object.
 
   Fields:
     domainFilters: Optional. The list of filtering configs in which each
@@ -1758,7 +1758,7 @@ class InterceptDeploymentGroupConnectedEndpointGroup(_messages.Message):
 
 
 class InterceptEndpointGroup(_messages.Message):
-  r"""Message describing InterceptEndpointGroup object. Next ID: 10
+  r"""Message describing InterceptEndpointGroup object.
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the endpoint group.
@@ -1770,6 +1770,8 @@ class InterceptEndpointGroup(_messages.Message):
     associations: Output only. List of Intercept Endpoint Group Associations
       that are associated to this endpoint group.
     createTime: Output only. [Output only] Create time stamp
+    description: Optional. User-provided description of the endpoint group.
+      Used as additional context for the endpoint group.
     interceptDeploymentGroup: Required. Immutable. The Intercept Deployment
       Group that this resource is connected to. Format is: `projects/{project}
       /locations/global/interceptDeploymentGroups/{interceptDeploymentGroup}`
@@ -1831,12 +1833,13 @@ class InterceptEndpointGroup(_messages.Message):
 
   associations = _messages.MessageField('InterceptEndpointGroupAssociationDetails', 1, repeated=True)
   createTime = _messages.StringField(2)
-  interceptDeploymentGroup = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  reconciling = _messages.BooleanField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  description = _messages.StringField(3)
+  interceptDeploymentGroup = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class InterceptEndpointGroupAssociation(_messages.Message):
@@ -2729,7 +2732,7 @@ class MirroringDeployment(_messages.Message):
 
 
 class MirroringDeploymentGroup(_messages.Message):
-  r"""Message describing MirroringDeploymentGroup object
+  r"""Message describing MirroringDeploymentGroup object NEXT ID: 10
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the deployment group.
@@ -2741,6 +2744,8 @@ class MirroringDeploymentGroup(_messages.Message):
     connectedEndpointGroups: Output only. The list of Mirroring Endpoint
       Groups that are connected to this resource.
     createTime: Output only. [Output only] Create time stamp
+    description: Optional. User-provided description of the deployment group.
+      Used as additional context for the deployment group.
     labels: Optional. Labels as key value pairs
     name: Immutable. Identifier. Then name of the MirroringDeploymentGroup.
     network: Required. Immutable. The network that is being used for the
@@ -2791,12 +2796,13 @@ class MirroringDeploymentGroup(_messages.Message):
 
   connectedEndpointGroups = _messages.MessageField('MirroringDeploymentGroupConnectedEndpointGroup', 1, repeated=True)
   createTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  network = _messages.StringField(5)
-  reconciling = _messages.BooleanField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class MirroringDeploymentGroupConnectedEndpointGroup(_messages.Message):
@@ -2819,7 +2825,11 @@ class MirroringEndpointGroup(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
+    associations: Output only. List of Mirroring Endpoint Group Associations
+      that are associated to this endpoint group.
     createTime: Output only. [Output only] Create time stamp
+    description: Optional. User-provided description of the endpoint group.
+      Used as additional context for the endpoint group.
     labels: Optional. Labels as key value pairs
     mirroringDeploymentGroup: Required. Immutable. The Mirroring Deployment
       Group that this resource is connected to. Format is: `projects/{project}
@@ -2880,13 +2890,15 @@ class MirroringEndpointGroup(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  mirroringDeploymentGroup = _messages.StringField(3)
-  name = _messages.StringField(4)
-  reconciling = _messages.BooleanField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  associations = _messages.MessageField('MirroringEndpointGroupAssociationDetails', 1, repeated=True)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  mirroringDeploymentGroup = _messages.StringField(5)
+  name = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class MirroringEndpointGroupAssociation(_messages.Message):
@@ -2976,6 +2988,54 @@ class MirroringEndpointGroupAssociation(_messages.Message):
   reconciling = _messages.BooleanField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
   updateTime = _messages.StringField(9)
+
+
+class MirroringEndpointGroupAssociationDetails(_messages.Message):
+  r"""This is a subset of the MirroringEndpointGroupAssociation message,
+  containing fields to be used by the consumer.
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the association.
+
+  Fields:
+    name: Output only. The resource name of the
+      MirroringEndpointGroupAssociation. Format: projects/{project}/locations/
+      {location}/mirroringEndpointGroupAssociations/{mirroringEndpointGroupAss
+      ociation}
+    network: Output only. The VPC network associated. Format:
+      projects/{project}/global/networks/{name}.
+    state: Output only. Current state of the association.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the association.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: Ready.
+      CREATING: Being created.
+      DELETING: Being deleted.
+      CLOSED: Mirroring is disabled due to an operation on another resource.
+      OUT_OF_SYNC: The underlying data plane is out of sync with the
+        association. The association is not expected to be usable. This state
+        can result in undefined behavior. See the `locations_details` field
+        for more details.
+      DELETE_FAILED: An attempt to delete the association has failed. This is
+        a terminal state and the association is not expected to be usable as
+        some of its resources have been deleted. The only permitted operation
+        is to retry deleting the association.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+    CLOSED = 4
+    OUT_OF_SYNC = 5
+    DELETE_FAILED = 6
+
+  name = _messages.StringField(1)
+  network = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class MirroringEndpointGroupAssociationLocationDetails(_messages.Message):
@@ -7747,7 +7807,7 @@ class SSEGatewayReference(_messages.Message):
 
 class SecurityProfile(_messages.Message):
   r"""SecurityProfile is a resource that defines the behavior for one of many
-  ProfileTypes. Next ID: 12
+  ProfileTypes.
 
   Enums:
     TypeValueValuesEnum: Immutable. The single ProfileType that the
@@ -7764,8 +7824,7 @@ class SecurityProfile(_messages.Message):
       the SecurityProfile.
     description: Optional. An optional description of the profile. Max length
       512 characters.
-    domainFilteringProfile: The domain filtering configuration for the
-      SecurityProfile.
+    domainFilteringProfile: A DomainFilteringProfile attribute.
     etag: Output only. This checksum is computed by the server based on the
       value of other fields, and may be sent on update and delete requests to
       ensure the client has an up-to-date value before proceeding.
@@ -7778,6 +7837,8 @@ class SecurityProfile(_messages.Message):
     type: Immutable. The single ProfileType that the SecurityProfile resource
       configures.
     updateTime: Output only. Last resource update timestamp.
+    urlFilteringProfile: The URL filtering configuration for the
+      SecurityProfile.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
@@ -7789,13 +7850,15 @@ class SecurityProfile(_messages.Message):
       THREAT_PREVENTION: Profile type for threat prevention.
       CUSTOM_MIRRORING: Profile type for packet mirroring v2
       CUSTOM_INTERCEPT: Profile type for TPPI.
-      DOMAIN_FILTERING: Profile type for domain filtering.
+      DOMAIN_FILTERING: <no description>
+      URL_FILTERING: Profile type for URL filtering.
     """
     PROFILE_TYPE_UNSPECIFIED = 0
     THREAT_PREVENTION = 1
     CUSTOM_MIRRORING = 2
     CUSTOM_INTERCEPT = 3
     DOMAIN_FILTERING = 4
+    URL_FILTERING = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -7832,11 +7895,12 @@ class SecurityProfile(_messages.Message):
   threatPreventionProfile = _messages.MessageField('ThreatPreventionProfile', 9)
   type = _messages.EnumField('TypeValueValuesEnum', 10)
   updateTime = _messages.StringField(11)
+  urlFilteringProfile = _messages.MessageField('UrlFilteringProfile', 12)
 
 
 class SecurityProfileGroup(_messages.Message):
   r"""SecurityProfileGroup is a resource that defines the behavior for various
-  ProfileTypes. Next ID: 11
+  ProfileTypes.
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs.
@@ -7849,8 +7913,7 @@ class SecurityProfileGroup(_messages.Message):
       CustomMirroring configuration.
     description: Optional. An optional description of the profile group. Max
       length 2048 characters.
-    domainFilteringProfile: Optional. Reference to a SecurityProfile with the
-      DomainFiltering configuration.
+    domainFilteringProfile: Optional.
     etag: Output only. This checksum is computed by the server based on the
       value of other fields, and may be sent on update and delete requests to
       ensure the client has an up-to-date value before proceeding.
@@ -7861,6 +7924,8 @@ class SecurityProfileGroup(_messages.Message):
     threatPreventionProfile: Optional. Reference to a SecurityProfile with the
       ThreatPrevention configuration.
     updateTime: Output only. Last resource update timestamp.
+    urlFilteringProfile: Optional. Reference to a SecurityProfile with the
+      UrlFiltering configuration.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -7897,6 +7962,7 @@ class SecurityProfileGroup(_messages.Message):
   name = _messages.StringField(8)
   threatPreventionProfile = _messages.StringField(9)
   updateTime = _messages.StringField(10)
+  urlFilteringProfile = _messages.StringField(11)
 
 
 class ServerTlsPolicy(_messages.Message):
@@ -8536,6 +8602,46 @@ class UllMirroringEngine(_messages.Message):
   name = _messages.StringField(3)
   reconciling = _messages.BooleanField(4)
   updateTime = _messages.StringField(5)
+
+
+class UrlFilter(_messages.Message):
+  r"""A URL filter defines an action to take for some URL match.
+
+  Enums:
+    FilteringActionValueValuesEnum: Required. The action taken when this
+      filter is applied.
+
+  Fields:
+    filteringAction: Required. The action taken when this filter is applied.
+    urls: Required. The list of strings that a URL must match with for this
+      filter to be applied.
+  """
+
+  class FilteringActionValueValuesEnum(_messages.Enum):
+    r"""Required. The action taken when this filter is applied.
+
+    Values:
+      URL_FILTERING_ACTION_UNSPECIFIED: Filtering action not specified.
+      ALLOW: The connection matching this filter will be allowed to transmit.
+      DENY: The connection matching this filter will be dropped.
+    """
+    URL_FILTERING_ACTION_UNSPECIFIED = 0
+    ALLOW = 1
+    DENY = 2
+
+  filteringAction = _messages.EnumField('FilteringActionValueValuesEnum', 1)
+  urls = _messages.StringField(2, repeated=True)
+
+
+class UrlFilteringProfile(_messages.Message):
+  r"""UrlFilteringProfile defines filters based on URL.
+
+  Fields:
+    urlFilters: Optional. The list of filtering configs in which each config
+      defines an action to take for some URL match.
+  """
+
+  urlFilters = _messages.MessageField('UrlFilter', 1, repeated=True)
 
 
 class UrlList(_messages.Message):

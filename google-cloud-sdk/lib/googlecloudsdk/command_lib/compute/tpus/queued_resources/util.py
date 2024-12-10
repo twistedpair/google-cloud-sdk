@@ -17,6 +17,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
@@ -330,6 +332,8 @@ def CreateReservationName(api_version):
           'Only one reservation host is permitted'
       )
     pattern = '{}/{}/locations/{}/reservations/-'
+    short_reservation_name_pattern = '^[a-zA-Z0-9-]+$'
+    full_reservation_name_pattern = 'projects/{}/locations/{}/reservations/{}'
     reservation_name = None
     if args.reservation_host_project:
       reservation_name = pattern.format(
@@ -346,7 +350,13 @@ def CreateReservationName(api_version):
     elif api_version == 'v2' and hasattr(args, 'reserved') and args.reserved:
       project = properties.VALUES.core.project.GetOrFail()
       reservation_name = pattern.format('projects', project, args.zone)
-
+    elif hasattr(args, 'reservation') and args.reservation and re.match(
+        short_reservation_name_pattern, args.reservation
+    ):
+      project = properties.VALUES.core.project.GetOrFail()
+      reservation_name = full_reservation_name_pattern.format(
+          project, args.zone, args.reservation
+      )
     if reservation_name:
       request.queuedResource.reservationName = reservation_name
     return request

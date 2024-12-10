@@ -46,9 +46,7 @@ def GetRegionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='region',
       help_text='Cloud region for the {resource}.',
-      fallthroughs=[
-          deps.PropertyFallthrough(properties.VALUES.colab.region)
-      ],
+      fallthroughs=[deps.PropertyFallthrough(properties.VALUES.colab.region)],
   )
 
 
@@ -527,4 +525,10 @@ def AddUpgradeRuntimeFlags(parser):
 def AddStartRuntimeFlags(parser):
   """Construct arguments specific to starting a stopped runtime."""
   AddRuntimeResourceArg(parser, verb='to start')
+  AddAsyncFlag(parser)
+
+
+def AddStopRuntimeFlags(parser):
+  """Construct arguments specific to stopping a runtime."""
+  AddRuntimeResourceArg(parser, verb='to stop')
   AddAsyncFlag(parser)

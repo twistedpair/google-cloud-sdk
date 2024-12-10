@@ -163,7 +163,8 @@ class Client(object):
             vpc_allowed_services=None,
             enable_vpc_accessible_services=None,
             ingress_policies=None,
-            egress_policies=None):
+            egress_policies=None,
+            etag=None):
     """Patch a service perimeter.
 
     Args:
@@ -186,6 +187,8 @@ class Client(object):
         callable within the access zone, or None if not updating.
       ingress_policies: list of IngressPolicy, or None if not updating.
       egress_policies: list of EgressPolicy, or None if not updating.
+      etag: str, the optional etag for the version of the Perimeter that
+        this operation is to be performed on.
 
     Returns:
       ServicePerimeter, the updated Service Perimeter.
@@ -197,6 +200,7 @@ class Client(object):
     _SetIfNotNone('title', title, perimeter, update_mask)
     _SetIfNotNone('description', description, perimeter, update_mask)
     _SetIfNotNone('perimeterType', perimeter_type, perimeter, update_mask)
+    _SetIfNotNone('etag', etag, perimeter, update_mask)
 
     config, config_mask_additions = _CreateServicePerimeterConfig(
         messages=m,
@@ -231,7 +235,8 @@ class Client(object):
                         vpc_allowed_services=None,
                         enable_vpc_accessible_services=None,
                         ingress_policies=None,
-                        egress_policies=None):
+                        egress_policies=None,
+                        etag=None):
     """Patch the dry-run config (spec) for a Service Perimeter.
 
     Args:
@@ -254,6 +259,8 @@ class Client(object):
         callable within the access zone, or None if not updating.
       ingress_policies: list of IngressPolicy, or None if not updating.
       egress_policies: list of EgressPolicy, or None if not updating.
+      etag: str, the optional etag for the version of the Perimeter that
+        this operation is to be performed on.
 
     Returns:
       ServicePerimeter, the updated Service Perimeter.
@@ -267,6 +274,7 @@ class Client(object):
       update_mask.append('name')
     _SetIfNotNone('description', description, perimeter, update_mask)
     _SetIfNotNone('perimeterType', perimeter_type, perimeter, update_mask)
+    _SetIfNotNone('etag', etag, perimeter, update_mask)
 
     config, config_mask_additions = _CreateServicePerimeterConfig(
         messages=m,

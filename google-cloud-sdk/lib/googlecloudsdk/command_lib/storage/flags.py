@@ -205,7 +205,7 @@ def add_placement_flag(parser):
       type=arg_parsers.ArgList(custom_delim_char=','),
       help=(
           'A comma-separated list of regions that form the custom [dual-region]'
-          ' (https://cloud.google.com/storage/docs/locations#location-dr).'
+          '(https://cloud.google.com/storage/docs/locations#location-dr).'
           ' Only regions within the same continent are or will ever be valid.'
           ' Invalid location pairs (such as mixed-continent, or with'
           ' unsupported regions) will return an error.'

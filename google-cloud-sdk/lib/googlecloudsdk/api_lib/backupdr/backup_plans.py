@@ -34,6 +34,7 @@ class BackupPlansClient(util.BackupDrClientBase):
       backup_vault,
       resource_type,
       backup_rules,
+      log_retention_days,
       description,
       labels,
   ):
@@ -100,6 +101,8 @@ class BackupPlansClient(util.BackupDrClientBase):
           standardSchedule=standard_schedule,
       )
       backup_plan.backupRules.append(backup_rule_message)
+    if log_retention_days is not None:
+      backup_plan.logRetentionDays = log_retention_days
     request = self.messages.BackupdrProjectsLocationsBackupPlansCreateRequest(
         parent=parent,
         backupPlan=backup_plan,

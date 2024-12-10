@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.command_lib.container.fleet import base as hub_base
 from googlecloudsdk.command_lib.container.fleet.features import info
@@ -64,3 +65,29 @@ class UpdateCommandMixin(MembershipFeatureCommand):
 
 class UpdateCommand(UpdateCommandMixin, calliope_base.UpdateCommand):
   """Base class for the command that updates a MembershipFeature."""
+
+
+class DeleteCommandMixin(MembershipFeatureCommand):
+  """A mixin for functionality to delte a MembershipFeature."""
+
+  def DeleteV2(self, membership_path):
+    membershipfeature_path = self.MembershipFeatureResourceName(membership_path)
+
+    try:
+      op = self.hubclient_v2.DeleteMembershipFeature(membershipfeature_path)
+    except apitools_exceptions.HttpNotFoundError:
+      return  # Already deleted.
+
+    msg = (
+        f'Waiting for MembershipFeature {membershipfeature_path} to be deleted'
+    )
+    return self.WaitForHubOp(
+        self.hubclient_v2.resourceless_waiter,
+        op,
+        message=msg,
+        warnings=False,
+    )
+
+
+class DeleteCommand(DeleteCommandMixin, calliope_base.DeleteCommand):
+  """Base class for the command that deletes a MembershipFeature."""

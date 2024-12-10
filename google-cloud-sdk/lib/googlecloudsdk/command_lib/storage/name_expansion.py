@@ -29,6 +29,7 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import debug_output
 
 
@@ -138,7 +139,10 @@ class NameExpansionIterator:
     """Returns get_wildcard_iterator with instance variables as args."""
     return wildcard_iterator.get_wildcard_iterator(
         url,
-        fetch_encrypted_object_hashes=True,
+        fetch_encrypted_object_hashes=(
+            properties.VALUES.storage.check_hashes.Get()
+            != properties.CheckHashes.NEVER.value
+        ),
         fields_scope=self._fields_scope,
         ignore_symlinks=self._ignore_symlinks,
         managed_folder_setting=managed_folder_setting,

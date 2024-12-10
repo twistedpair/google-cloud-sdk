@@ -65,9 +65,7 @@ def _WarnForPscAllowedVpcsRemovalUpdate():
 
   console_io.PromptContinue(
       message=message,
-      prompt_string=(
-          'Do you want to proceed with removal of PSC allowed vpcs?'
-      ),
+      prompt_string='Do you want to proceed with removal of PSC allowed vpcs?',
       cancel_on_no=True,
   )
 
@@ -233,5 +231,20 @@ def UpdatePscServiceAttachments(unused_instance_ref, args, patch_request):
     _WarnForPscServiceAttachmentsRemovalUpdate()
     patch_request = AddFieldToUpdateMask(
         'psc_config.service_attachments', patch_request
+    )
+  return patch_request
+
+
+def UpdateGeminiAiConfig(unused_instance_ref, args, patch_request):
+  """Hook to update gemini enabled to the update mask of the request."""
+  if args.IsSpecified('gemini_enabled'):
+    patch_request = AddFieldToUpdateMask('gemini_enabled', patch_request)
+  if args.IsSpecified('gemini_preview_tester_enabled'):
+    patch_request = AddFieldToUpdateMask(
+        'gemini_ai_config.trusted_tester', patch_request
+    )
+  if args.IsSpecified('gemini_prompt_log_enabled'):
+    patch_request = AddFieldToUpdateMask(
+        'gemini_ai_config.prompt_logging', patch_request
     )
   return patch_request

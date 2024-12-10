@@ -33,9 +33,7 @@ class InterconnectAttachmentGroupsCompleter(
   def __init__(self, **kwargs):
     super(InterconnectAttachmentGroupsCompleter, self).__init__(
         collection='compute.interconnectAttachmentGroups',
-        list_command=(
-            'alpha compute interconnects attachments groups list --uri'
-        ),
+        list_command='compute interconnects attachments groups list --uri',
         **kwargs,
     )
 

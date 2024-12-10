@@ -5,6 +5,242 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 503.0.0 (2024-12-10)
+
+### Breaking Changes
+
+*   **(Colab)** Remove deprecated `gcloud colab beta runtimes assign`.
+    Please use `gcloud colab beta runtimes create` instead.
+*   **(Eventarc)** Deprecated `--labels` from `gcloud eventarc triggers update`. Use `--update-labels`, `--remove-labels`, `--clear-labels` in `gcloud eventarc triggers update` instead.
+*   **(Eventarc)** Deprecated `--labels` from `gcloud beta eventarc message-buses update`. Use `--update-labels`, `--remove-labels`, `--clear-labels` in `gcloud beta eventarc message-buses update` instead.
+*   **(Eventarc)** Deprecated `--labels` from `gcloud beta eventarc google-api-sources update`. Use `--update-labels`, `--remove-labels`, `--clear-labels` in `gcloud beta eventarc google-api-sources update` instead.
+
+
+### AlloyDB
+
+* Added export command to support exporting data from an AlloyDB cluster to Google Cloud Storage in alpha and beta tracks.
+* Promoted `--tags` flag to `gcloud alloydb clusters restore` and `gcloud alloydb clusters create-secondary` to bind tags in GA track.
+
+### Anthos Multi-Cloud
+
+* Fixed issue where the following command groups return `operation not found`
+  error when attempting to delete missing resource with `--allow-missing` and
+  `--ignore-errors` flags:
+    `gcloud container aws clusters delete`,
+    `gcloud container aws node-pools delete`,
+    `gcloud container azure clusters delete`,
+    `gcloud container azure node-pools delete`,
+    `gcloud container attached clusters delete`.
+* Fixed issue where the following command groups return `resource not found`
+  error when attempting to delete missing resource with only `--allow-missing`
+  flag:
+    `gcloud container aws clusters delete`,
+    `gcloud container aws node-pools delete`,
+    `gcloud container azure clusters delete`,
+    `gcloud container azure node-pools delete`,
+    `gcloud container attached clusters delete`.
+
+### Artifact Registry
+
+* Removed deprecated `artifacts v1alpha1` API
+* Added `--pkg-dev-location` flag for `gcloud artifacts docker upgrade migrate`.
+
+### BigQuery
+
+* Fixed the behavior of `--oauth_access_token` to skip loading the active account credentials from Google Cloud CLI when a flag value is specified.
+* Included Cloud CLI information to the `info` command.
+* Updated behavior of `--force` for the `mk` command for datasets and tables to no longer do existence pre-checks.
+* Aligned tag key parsing with documentation so that the value is split using the last colon.
+* Broadened tolerance for tag key names to align with documentation, eg. `project/department:sales`.
+* Fixed the bug when the command `query` would fail if `--project_id` mismatched the project in fully qualified `--reservation_id`.
+* Added support for IAM condition in Dataset ACL.
+* Updated logging to a file using `--apilog` to append to the file instead of overwriting to fix a bug of truncated logs.
+* Added `--job_creation_mode` to the `query` command.
+
+### Cloud Access Context Manager
+
+*   Added `--etag` parameter to `access-context-manager perimeters update`
+  command.
+*   Added `--etag` parameter to `access-context-manager perimeters dry-run update`
+  command.
+
+### Cloud Bigtable
+
+* Added `--row-affinity` flag to `gcloud bigtable app-profiles create` and `gcloud bigtable app-profiles update`.
+*  Added `node-scaling-factor` flag for alpha, beta and GA to
+`gcloud bigtable clusters create` to allow users to enable 2x node scaling on
+new clusters.
+*  Added key `node-scaling-factor` to `--cluster-config` flag of
+ `gcloud bigtable instances create` for alpha, beta and GA to enable 2x node
+scaling on new clusters.
+
+### Cloud Composer
+
+* Added `--network-attachment` to `gcloud composer environments create/update` to specify network attachment.
+* Added `--network` and `--subnetwork` to `gcloud composer environments update` to update network and subnetwork.
+* Added `--support-web-server-plugins` to `gcloud composer environments create/update` to enable/disable the support for web server plugins.
+* Added `--enable-private-builds-only` to `gcloud composer environments create/update` to enable only private connectivity to Google services for Python packages installations.
+* Added `--disable-private-builds-only` to `gcloud composer environments create/update` to disable only private connectivity to Google services for Python packages installations.
+* Added `--disable-vpc-connectivity` to `gcloud composer environments update` to disable connectivity with a user's VPC network.
+* Added `--enable-private-environment` to `gcloud composer environments update` to disable internet connection from any Composer component.
+* Added `--disable-private-environment` to `gcloud composer environments update` to enable internet connection from any Composer component.
+* Added `--composer-internal-ipv4-cidr-block` to `gcloud composer environments create` to specify the IP range in CIDR notation to use internally by Cloud Composer.
+* Added `--dag-processor-storage` to `gcloud composer environments create/update` to specify the storage allocated to Airflow dag processor.
+* Added `--dag-processor-count` to `gcloud composer environments create/update` to specify the number of dag processors.
+* Added `--dag-processor-cpu` to `gcloud composer environments create/update` to specify the CPU allocated to Airflow dag processor.
+* Added `--dag-processor-memory` to `gcloud composer environments create/update` to specify the memory allocated to Airflow dag processor.
+* Added `gcloud composer environments list-workloads` to display Composer workloads list.
+* Added `gcloud composer environments user-workloads-config-maps create` to create a user workloads ConfigMap.
+* Added `gcloud composer environments user-workloads-config-maps delete` to delete a user workloads ConfigMap.
+* Added `gcloud composer environments user-workloads-config-maps describe` to get details about a user workloads ConfigMap.
+* Added `gcloud composer environments user-workloads-config-maps list` to list user workloads ConfigMaps.
+* Added `gcloud composer environments user-workloads-config-maps update` to update a user workloads ConfigMap.
+* Added `gcloud composer environments user-workloads-secrets create` to create a user workloads Secret.
+* Added `gcloud composer environments user-workloads-secrets delete` to delete a user workloads Secret.
+* Added `gcloud composer environments user-workloads-secrets describe` to get details about a user workloads Secret.
+* Added `gcloud composer environments user-workloads-secrets list` to list user user workloads Secrets.
+* Added `gcloud composer environments user-workloads-secrets update` to update a user workloads Secret.
+
+### Cloud Identity-Aware Proxy
+
+* Promoted invalid scenario checks for `gcloud iap settings --project=value --service=value` to beta and GA.
+
+### Cloud Memorystore
+
+*   Promoted `memorystore` command group to GA.
+
+### Cloud Resource Manager
+
+* Updated `gcloud resource-manager tags keys create` to
+  accept `purpose-data=organization`.
+
+### Cloud Run
+
+* Added `--container` and `--depends-on` flags to
+  `gcloud beta run jobs create` to allow creating multi-container Jobs.
+* Added `--container`, `--remove-containers`, and `--depends-on` flags to
+  `gcloud beta run jobs deploy` and `gcloud beta run jobs update` to allow
+  deploying and updating multi-container Jobs.
+* Added `--container` flag to
+  `gcloud beta run jobs execute` to allow executing multi-container Jobs with
+  container overrides.
+* Added a warning about an incomplete customer-managed encryption key (CMEK)
+  compliance when using source deploys (using `--key` and `--source` flags
+  together).
+* Added `--allow-unencrypted-build` flag to bypass the warning prompt for
+  customer-managed encryption key (CMEK) source deployments (using `--key` and
+  `--source` flags together).
+* Renamed flags `--service-min-instances` and `--service-max-instances` to
+  `--min` and `--max` for a simplified experience. The old names are retained as
+  aliases for compatibility.
+
+### Cloud SQL
+
+*   Added `--server-ca-pool` flag to `gcloud beta sql instances create` for
+    creation of instances using customer-managed CAS server CA.
+*   Promoted `--server-ca-mode` flag of `gcloud sql instances create` to GA.
+*   Promoted `gcloud sql ssl server-certs` to GA.
+
+### Cloud Storage
+
+* Fix `gcloud storage rsync`, and `gcloud storage cp` command to respect
+`check_hashes` property.
+* Updated gsutil component to 5.32.
+
+### Colab
+
+*   Added `gcloud beta colab runtimes stop`.
+*   Added `gcloud colab runtimes stop`.
+
+### Compute Engine
+
+* Promoted `--bgp-best-path-selection-mode` and related flags in `gcloud compute networks create` and `update` to v1.
+* Promote graceful shutdown related flags to beta:
+    - `--graceful-shutdown` and `--graceful-shutdown-max-duration` of:
+        - `gcloud compute instances create`
+        - `gcloud compute instances update`
+        - `gcloud compute instances set-scheduling`
+        - `gcloud compute instance-templates create`
+    - `--no-graceful-shutdown` of:
+        - `gcloud compute instances delete`
+        - `gcloud compute instances stop`.
+* Added Cloud Armor flags to `gcloud compute org-security-policies`.
+* Added `gcloud compute backend-services get-effective-security-policies` command in beta.
+* Fix "compute instances export" in beta and v1 leaving the performanceMonitoringUnit field unpopulated.
+* Added `24.10` to allowed list of values for `--version` of `gcloud beta compute instances ops-agents policies [create|update]`.
+* Added `gce_vm_ip_portmap` Network Endpoint Group for `gcloud compute network-endpoint-groups` beta support.
+* Added `gcloud compute reservations blocks list`command in beta.
+* Added `gcloud compute reservations blocks describe`command in beta.
+
+### Compute Firewall Policy Rules
+
+*   Promoted `gcloud compute firewall-policies export-rules` to beta.
+*   Promoted `gcloud compute firewall-policies import-rules` to beta.
+*   Promoted `gcloud compute network-firewall-policies export-rules` to beta.
+*   Promoted `gcloud compute network-firewall-policies import-rules` to beta.
+
+### Developer Connect
+
+* Promoted `gcloud developer-connect` to GA.
+
+### Distributed Cloud Edge
+
+* Added `--zone-storage-kms-key` flag to `gcloud edge-cloud container clusters create` command to allow for specifying a KMS key for zone storage encryption.
+*  Introduced a Status field for machines as output during list and describe operations.
+* Added `--zone-storage-kms-key` and `--use-google-managed-zone-key` flag to `gcloud edge-cloud container clusters update` command to allow for updating the zone storage encryption key with either a CMEK or Google managed key.
+
+### Eventarc
+
+* Added `--labels` to `gcloud beta eventarc enrollments create` and added `--update-labels`, `--remove-labels`, `--clear-labels` to `gcloud beta eventarc enrollments update` to support labelling Eventarc enrollments.
+* Added `--labels` to `gcloud beta eventarc pipelines create` and added `--update-labels`, `--remove-labels`, `--clear-labels` to `gcloud beta eventarc pipelines update` to support labelling Eventarc pipelines.
+* Added `--labels` to `gcloud eventarc channels create` to support adding Eventarc channels' labels.
+* Added `--update-labels`, `--remove-labels`, `--clear-labels` to `gcloud eventarc channels update` to support updating Eventarc channels' labels.
+* Added `--labels` to `gcloud eventarc channel-connections create` to support adding Eventarc channel connections' labels.
+
+### GKE Hub
+
+* Fixed a bug in `gcloud beta container fleet config-management unmanage` when sending empty payload would fail validation. This was introduced in Google Cloud CLI version 498.0.0.
+
+### Kubernetes Engine
+
+* Added flags to use Control Plane Authority features on cluster
+  creation<https://cloud.google.com/kubernetes-engine/docs/concepts/about-control-plane-authority>
+  * `--cluster-ca`
+  * `--aggregation-ca`
+  * `--etcd-api-ca`
+  * `--etcd-peer-ca`
+  * `--service-account-signing-keys`
+  * `--service-account-verification-keys`
+  * `--control-plane-disk-encryption-key`
+  * `--gkeops-etcd-backup-encryption-key`
+* Promoted `--additive-vpc-scope-dns-domain` and `--disable-additive-vpc-scope` flags to GA in cluster creation and update.
+
+### Looker
+
+* Updated `--edition` flag in `gcloud looker instances create` to include nonprod looker instances.
+* Add `--gemini-enabled`, `--gemini-preview-tester-enabled`, and `--gemini-prompt-log-enabled` to the update command.
+
+### Network Security
+
+*   Added `network-security intercept-deployment-groups` commands to manage intercept deployment groups.
+*   Added `network-security intercept-deployments` commands to manage intercept deployments.
+*   Added `network-security intercept-endpoint-groups` commands to manage intercept endpoint groups.
+*   Added `network-security intercept-endpoint-group-associations` commands to manage intercept endpoint group associations.
+
+### Secure Source Manager
+
+* Added `--enable-workforce-identity-federation` to
+`gcloud beta source-manager instances create` to support creation of instances
+with Workforce Identity Federation.
+
+### Workbench
+
+* Fixed a bug with `workbench instances update` unintentionally removing accelerators.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 502.0.0 (2024-11-19)
 
 ### AI

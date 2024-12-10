@@ -40,6 +40,7 @@ properties:
     type: string
     enum:
     - CONNECTION
+    - CUSTOM_METRICS
     - RATE
     - UTILIZATION
   capacityScaler:
@@ -55,15 +56,21 @@ properties:
       includes backends such as global internet NEGs, regional serverless NEGs,
       and PSC NEGs.
     type: number
+  customMetrics:
+    description: |-
+      List of custom metrics that are used for CUSTOM_METRICS BalancingMode.
+    type: array
+    items:
+      $ref: BackendCustomMetric.yaml
   description:
     description: |-
-      An optional description of this resource. Provide this property when you
-      create the resource.
+      An optional description of this resource. Provide this property when
+      you create the resource.
     type: string
   failover:
     description: |-
-      This field designates whether this is a failover backend. More than one
-      failover backend can be configured for a given BackendService.
+      This field designates whether this is a failover backend. More than
+      one failover backend can be configured for a given BackendService.
     type: boolean
   group:
     description: |-
@@ -71,61 +78,58 @@ properties:
       (NEG) resource. To determine what types of backends a load balancer
       supports, see the [Backend services
       overview](https://cloud.google.com/load-balancing/docs/backend-
-      service#backends). You must use the *fully-qualified* URL (starting with
-      https://www.googleapis.com/) to specify the instance group or NEG. Partial
-      URLs are not supported.
+      service#backends). You must use the *fully-qualified* URL (starting
+      with https://www.googleapis.com/) to specify the instance group or
+      NEG. Partial URLs are not supported.
     type: string
   maxConnections:
     description: |-
       Defines a target maximum number of simultaneous connections. For usage
-      guidelines, see Connection balancing mode and Utilization balancing mode.
-      Not available if the backend's balancingMode is RATE.
+      guidelines, see Connection balancing mode and Utilization balancing
+      mode. Not available if the backend's balancingMode is RATE.
     type: integer
   maxConnectionsPerEndpoint:
     description: |-
       Defines a target maximum number of simultaneous connections. For usage
-      guidelines, see Connection balancing mode and Utilization balancing mode.
-      Not available if the backend's balancingMode is RATE.
+      guidelines, see Connection balancing mode and Utilization balancing
+      mode. Not available if the backend's balancingMode is RATE.
     type: integer
   maxConnectionsPerInstance:
     description: |-
       Defines a target maximum number of simultaneous connections. For usage
-      guidelines, see Connection balancing mode and Utilization balancing mode.
-      Not available if the backend's balancingMode is RATE.
+      guidelines, see Connection balancing mode and Utilization balancing
+      mode. Not available if the backend's balancingMode is RATE.
     type: integer
   maxRate:
     description: |-
       Defines a maximum number of HTTP requests per second (RPS). For usage
-      guidelines, see Rate balancing mode and Utilization balancing mode. Not
-      available if the backend's balancingMode is CONNECTION.
+      guidelines, see Rate balancing mode and Utilization balancing mode.
+      Not available if the backend's balancingMode is CONNECTION.
     type: integer
   maxRatePerEndpoint:
     description: |-
       Defines a maximum target for requests per second (RPS). For usage
-      guidelines, see Rate balancing mode and Utilization balancing mode. Not
-      available if the backend's balancingMode is CONNECTION.
+      guidelines, see Rate balancing mode and Utilization balancing mode.
+      Not available if the backend's balancingMode is CONNECTION.
     type: number
   maxRatePerInstance:
     description: |-
       Defines a maximum target for requests per second (RPS). For usage
-      guidelines, see Rate balancing mode and Utilization balancing mode. Not
-      available if the backend's balancingMode is CONNECTION.
+      guidelines, see Rate balancing mode and Utilization balancing mode.
+      Not available if the backend's balancingMode is CONNECTION.
     type: number
   maxUtilization:
     description: |-
       Optional parameter to define a target capacity for the UTILIZATION
-      balancing mode. The valid range is [0.0, 1.0]. For usage guidelines, see
-      Utilization balancing mode.
+      balancing mode. The valid range is [0.0, 1.0]. For usage guidelines,
+      see Utilization balancing mode.
     type: number
   preference:
     description: |-
-      This field indicates whether this backend should be fully utilized before
-      sending traffic to backends with default preference. The possible values
-       are: 1) DEFAULT:  If preferred backends don't have enough capacity,
-      backends in this layer would be used and traffic would be assigned based
-      on the load balancing algorithm you use. This is the default.
-      2) PREFERRED: Backends with this preference level will be filled up to
-      their capacity limits first, based on RTT.
+      This field indicates whether this backend should be fully utilized
+      before sending traffic to backends with default preference. The
+      possible values are: - PREFERRED: Backends with this preference level
+      will be filled up to their capacity limits first, based on RTT. -
     type: string
     enum:
     - DEFAULT

@@ -319,6 +319,13 @@ class Collections(enum.Enum):
       ['project', 'firewallPolicy'],
       True
   )
+  NETWORKPROFILES = (
+      'networkProfiles',
+      'projects/{project}/global/networkProfiles/{networkProfile}',
+      {},
+      ['project', 'networkProfile'],
+      True
+  )
   NETWORKS = (
       'networks',
       'projects/{project}/global/networks/{network}',

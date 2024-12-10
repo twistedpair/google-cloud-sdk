@@ -50,12 +50,16 @@ _EDGE_AVAILABILITY_DOMAIN_CHOICES = {
 _ENCRYPTION_CHOICES = ('IPSEC', 'NONE')
 
 
+@base.UniverseCompatible
+@base.ReleaseTracks(
+    base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA, base.ReleaseTrack.GA
+)
 class InterconnectAttachmentsCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(InterconnectAttachmentsCompleter, self).__init__(
         collection='compute.interconnectAttachments',
-        list_command='alpha compute interconnects attachments list --uri',
+        list_command='compute interconnects attachments list --uri',
         **kwargs
     )
 

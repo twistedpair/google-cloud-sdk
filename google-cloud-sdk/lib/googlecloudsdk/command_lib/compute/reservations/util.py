@@ -359,6 +359,42 @@ def MakeResourcePolicies(messages, reservation_ref, resource_policy_dictionary,
   ])
 
 
+def MakeReservationsMaintenanceScope(messages, maintenance_scope):
+  """Constructs the maintenance scope message object for reservations."""
+  if maintenance_scope == 'all':
+    return (
+        messages.ReservationsPerformMaintenanceRequest.MaintenanceScopeValueValuesEnum.ALL
+    )
+  elif maintenance_scope == 'unused':
+    return (
+        messages.ReservationsPerformMaintenanceRequest.MaintenanceScopeValueValuesEnum.UNUSED_CAPACITY
+    )
+  elif maintenance_scope == 'running':
+    return (
+        messages.ReservationsPerformMaintenanceRequest.MaintenanceScopeValueValuesEnum.RUNNING_VMS
+    )
+  else:
+    return None
+
+
+def MakeReservationBlocksMaintenanceScope(messages, maintenance_scope):
+  """Constructs the maintenance scope message object for reservation blocks."""
+  if maintenance_scope == 'all':
+    return (
+        messages.ReservationsBlocksPerformMaintenanceRequest.MaintenanceScopeValueValuesEnum.ALL
+    )
+  elif maintenance_scope == 'unused':
+    return (
+        messages.ReservationsBlocksPerformMaintenanceRequest.MaintenanceScopeValueValuesEnum.UNUSED_CAPACITY
+    )
+  elif maintenance_scope == 'running':
+    return (
+        messages.ReservationsBlocksPerformMaintenanceRequest.MaintenanceScopeValueValuesEnum.RUNNING_VMS
+    )
+  else:
+    return None
+
+
 def MakeUrl(resources, value, reservation_ref):
   return maintenance_util.ParseResourcePolicyWithZone(
       resources,

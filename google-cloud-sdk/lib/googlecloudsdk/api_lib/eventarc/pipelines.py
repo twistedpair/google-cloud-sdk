@@ -161,6 +161,7 @@ class PipelineClientV1(base.EventarcClientBase):
       min_retry_delay,
       max_retry_delay,
       crypto_key_name,
+      labels,
   ):
     return self._messages.Pipeline(
         name=pipeline_ref.RelativeName(),
@@ -176,6 +177,7 @@ class PipelineClientV1(base.EventarcClientBase):
             max_retry_attempts, min_retry_delay, max_retry_delay
         ),
         cryptoKeyName=crypto_key_name,
+        labels=labels,
     )
 
   def BuildUpdateMask(
@@ -191,6 +193,7 @@ class PipelineClientV1(base.EventarcClientBase):
       max_retry_delay,
       crypto_key,
       clear_crypto_key,
+      labels,
   ):
     """Builds an update mask for updating a pipeline.
 
@@ -209,6 +212,7 @@ class PipelineClientV1(base.EventarcClientBase):
       max_retry_delay: bool, whether to update the max_retry_delay.
       crypto_key: bool, whether to update the crypto_key.
       clear_crypto_key: bool, whether to clear the crypto_key.
+      labels: bool, whether to update the labels.
 
     Returns:
       The update mask as a string.
@@ -239,10 +243,15 @@ class PipelineClientV1(base.EventarcClientBase):
       update_mask.append('retryPolicy')
     if crypto_key or clear_crypto_key:
       update_mask.append('cryptoKeyName')
+    if labels:
+      update_mask.append('labels')
 
     if not update_mask:
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
     return ','.join(update_mask)
+
+  def LabelsValueClass(self):
+    return self._messages.Pipeline.LabelsValue
 
   def _BuildDestinations(self, pipeline_ref, destinations):
     if destinations is None:

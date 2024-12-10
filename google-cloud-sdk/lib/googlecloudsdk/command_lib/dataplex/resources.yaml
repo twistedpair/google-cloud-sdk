@@ -330,3 +330,17 @@ glossary_term:
     attribute_name: glossary_term
     help: |
       Identifier of the Dataplex Glossary Term resource.
+
+metadata_job:
+  name: metadata job
+  collection: dataplex.projects.locations.metadataJobs
+  request_id_field: metadataJobId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - &metadata_job
+    parameter_name: metadataJobsId
+    attribute_name: metadata_job
+    help: |
+      Identifier of the Dataplex Metadata Job resource.

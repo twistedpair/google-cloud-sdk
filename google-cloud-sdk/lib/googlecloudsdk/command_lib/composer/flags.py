@@ -459,7 +459,7 @@ NETWORK_FLAG = base.Argument(
 SUBNETWORK_FLAG = base.Argument(
     '--subnetwork',
     help=(
-        'The Compute Engine subnetwork '
+        'The Compute Engine Subnetwork '
         '(https://cloud.google.com/compute/docs/subnetworks) to which the '
         'environment will be connected.'
     ),
@@ -578,8 +578,7 @@ DISABLE_PRIVATE_BUILDS_ONLY = base.Argument(
     const=True,
     help="""\
     Builds performed during operations that install Python
-    packages have an access to the internet
-    supported in Composer {} or greater.
+    packages have an access to the internet, supported in Composer {} or greater.
     """.format(MIN_COMPOSER3_VERSION),
 )
 
@@ -1065,9 +1064,14 @@ ENABLE_PRIVATE_ENVIRONMENT_FLAG = base.Argument(
 
     If not specified, cluster nodes will be assigned public IP addresses.
 
+    When used with Composer 3, disable internet connection from any Composer
+    component.
+
     When used with Composer 1.x, cannot be specified unless `--enable-ip-alias`
     is also specified.
-    """)
+
+    """,
+)
 
 ENABLE_PRIVATE_ENDPOINT_FLAG = base.Argument(
     '--enable-private-endpoint',
@@ -1794,14 +1798,13 @@ def AddAutoscalingUpdateFlagsToGroup(update_type_group, release_track):
   TRIGGERER_MEMORY.AddToParser(triggerer_enabled_group)
   ENABLE_TRIGGERER.AddToParser(triggerer_enabled_group)
   DISABLE_TRIGGERER.AddToParser(triggerer_params_group)
-  if release_track != base.ReleaseTrack.GA:
-    dag_processor_params_group = update_group.add_argument_group(
-        DAG_PROCESSOR_PARAMETERS_FLAG_GROUP_DESCRIPTION,
-    )
-    DAG_PROCESSOR_CPU.AddToParser(dag_processor_params_group)
-    DAG_PROCESSOR_COUNT.AddToParser(dag_processor_params_group)
-    DAG_PROCESSOR_MEMORY.AddToParser(dag_processor_params_group)
-    DAG_PROCESSOR_STORAGE.AddToParser(dag_processor_params_group)
+  dag_processor_params_group = update_group.add_argument_group(
+      DAG_PROCESSOR_PARAMETERS_FLAG_GROUP_DESCRIPTION,
+  )
+  DAG_PROCESSOR_CPU.AddToParser(dag_processor_params_group)
+  DAG_PROCESSOR_COUNT.AddToParser(dag_processor_params_group)
+  DAG_PROCESSOR_MEMORY.AddToParser(dag_processor_params_group)
+  DAG_PROCESSOR_STORAGE.AddToParser(dag_processor_params_group)
 
   # Note: this flag is available for patching of both Composer 1.*.* and 2.*.*
   # environments.

@@ -414,6 +414,9 @@ class SpannerGrpcTransport(SpannerTransport):
         [ExecuteStreamingSql][google.spanner.v1.Spanner.ExecuteStreamingSql]
         instead.
 
+        The query string can be SQL or `Graph Query Language
+        (GQL) <https://cloud.google.com/spanner/docs/reference/standard-sql/graph-intro>`__.
+
         Returns:
             Callable[[~.ExecuteSqlRequest],
                     ~.ResultSet]:
@@ -444,6 +447,9 @@ class SpannerGrpcTransport(SpannerTransport):
         limit on the size of the returned result set. However, no
         individual row in the result set can exceed 100 MiB, and no
         column value can exceed 10 MiB.
+
+        The query string can be SQL or `Graph Query Language
+        (GQL) <https://cloud.google.com/spanner/docs/reference/standard-sql/graph-intro>`__.
 
         Returns:
             Callable[[~.ExecuteSqlRequest],

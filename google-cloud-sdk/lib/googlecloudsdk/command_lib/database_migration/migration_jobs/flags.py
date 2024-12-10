@@ -256,6 +256,10 @@ def AddSqlServerEncryptedDatabasesFlag(parser):
   """Adds a --sqlserver-encrypted-databases flag to the given parser."""
   help_text = """\
     A JSON/YAML file describing the encryption settings per database for all encrytped databases.
+    Note:
+    Path to the Certificate (.cer) and Private Key (.pvk) in Cloud Storage,
+    should be in the form of `gs://bucketName/fileName`. The instance must
+    have write permissions to the bucket and read access to the file.
     An example of a JSON request:
         [{
             "database": "db1",

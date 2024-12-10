@@ -156,6 +156,10 @@ class Artifacts(_messages.Message):
       Registry upon successful completion of all build steps. The build
       service account credentials will be used to perform the upload. If any
       objects fail to be pushed, the build is marked FAILURE.
+    testResults: Optional. Files in the workspace matching specified paths
+      globs will be uploaded to the specified Cloud Storage location using the
+      builder service account's credentials. Will also contain the format of
+      the test which by default will be JUnit
   """
 
   images = _messages.StringField(1, repeated=True)
@@ -163,6 +167,7 @@ class Artifacts(_messages.Message):
   npmPackages = _messages.MessageField('NpmPackage', 3, repeated=True)
   objects = _messages.MessageField('ArtifactObjects', 4)
   pythonPackages = _messages.MessageField('PythonPackage', 5, repeated=True)
+  testResults = _messages.MessageField('TestResults', 6)
 
 
 class BatchCreateBitbucketServerConnectedRepositoriesRequest(_messages.Message):
@@ -3631,9 +3636,12 @@ class HttpConfig(_messages.Message):
       user-specified Service Account) should have
       `secretmanager.versions.access` permissions on this secret. The proxy
       URL should be in format `protocol://@]proxyhost[:port]`.
+    proxySslCaInfo: Optional. Cloud Storage object storing the certificate to
+      use with the HTTP proxy.
   """
 
   proxySecretVersionName = _messages.StringField(1)
+  proxySslCaInfo = _messages.MessageField('GCSLocation', 2)
 
 
 class HybridPoolConfig(_messages.Message):
@@ -5026,6 +5034,38 @@ class StorageSourceManifest(_messages.Message):
   bucket = _messages.StringField(1)
   generation = _messages.IntegerField(2)
   object = _messages.StringField(3)
+
+
+class TestResults(_messages.Message):
+  r"""Files in the workspace to upload to Cloud Storage upon successful
+  completion of all build steps.
+
+  Enums:
+    FormatValueValuesEnum: Optional. Format of the test results.
+
+  Fields:
+    bucketUri: Optional. Cloud Storage bucket and optional object path, in the
+      form "gs://bucket/path/to/somewhere/". (see [Bucket Name
+      Requirements](https://cloud.google.com/storage/docs/bucket-
+      naming#requirements)). Files in the workspace matching any path pattern
+      will be uploaded to Cloud Storage with this location as a prefix.
+    format: Optional. Format of the test results.
+    paths: Optional. Path globs used to match files in the build's workspace.
+  """
+
+  class FormatValueValuesEnum(_messages.Enum):
+    r"""Optional. Format of the test results.
+
+    Values:
+      FORMAT_UNSPECIFIED: The default format is JUnit.
+      JUNIT: The test results are in JUnit format.
+    """
+    FORMAT_UNSPECIFIED = 0
+    JUNIT = 1
+
+  bucketUri = _messages.StringField(1)
+  format = _messages.EnumField('FormatValueValuesEnum', 2)
+  paths = _messages.StringField(3, repeated=True)
 
 
 class TimeSpan(_messages.Message):

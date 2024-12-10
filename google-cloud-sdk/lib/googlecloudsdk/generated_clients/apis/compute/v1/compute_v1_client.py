@@ -80,6 +80,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.networkEdgeSecurityServices = self.NetworkEdgeSecurityServicesService(self)
     self.networkEndpointGroups = self.NetworkEndpointGroupsService(self)
     self.networkFirewallPolicies = self.NetworkFirewallPoliciesService(self)
+    self.networkProfiles = self.NetworkProfilesService(self)
     self.networks = self.NetworksService(self)
     self.nodeGroups = self.NodeGroupsService(self)
     self.nodeTemplates = self.NodeTemplatesService(self)
@@ -9647,6 +9648,68 @@ class ComputeV1(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputeNetworkFirewallPoliciesTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class NetworkProfilesService(base_api.BaseApiService):
+    """Service class for the networkProfiles resource."""
+
+    _NAME = 'networkProfiles'
+
+    def __init__(self, client):
+      super(ComputeV1.NetworkProfilesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified network profile.
+
+      Args:
+        request: (ComputeNetworkProfilesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkProfile) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.networkProfiles.get',
+        ordered_params=['project', 'networkProfile'],
+        path_params=['networkProfile', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/networkProfiles/{networkProfile}',
+        request_field='',
+        request_type_name='ComputeNetworkProfilesGetRequest',
+        response_type_name='NetworkProfile',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of network profiles available to the specified project.
+
+      Args:
+        request: (ComputeNetworkProfilesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkProfilesListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.networkProfiles.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/networkProfiles',
+        request_field='',
+        request_type_name='ComputeNetworkProfilesListRequest',
+        response_type_name='NetworkProfilesListResponse',
         supports_download=False,
     )
 

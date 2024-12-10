@@ -200,6 +200,19 @@ def AddAllowUnauthenticatedFlag(parser):
   )
 
 
+def AddAllowUnencryptedBuildFlag(parser):
+  """Add the --allow-unencrypted-build flag."""
+  parser.add_argument(
+      '--allow-unencrypted-build',
+      action=arg_parsers.StoreTrueFalseAction,
+      help=(
+          'Whether to allow customer-managed encryption key (CMEK) deployments'
+          ' without encrypting the build process. This means that only the'
+          ' deployed container will be encrypted.'
+      ),
+  )
+
+
 def AddAsyncFlag(parser, default_async_for_cluster=False):
   """Add an async flag."""
   help_text = """\
@@ -901,9 +914,9 @@ def AddMutexEnvVarsFlagsForCreate(parser):
   )
 
 
-def AddOverrideEnvVarsFlag(parser):
-  """Add the --update-env-vars flag."""
-  parser.add_argument(
+def OverrideEnvVarsFlag():
+  """Creates a flag for overrding container's evn vars args."""
+  return base.Argument(
       '--update-env-vars',
       metavar='KEY=VALUE',
       action=arg_parsers.UpdateAction,
@@ -920,6 +933,11 @@ def AddOverrideEnvVarsFlag(parser):
           ' are used.'
       ),
   )
+
+
+def AddOverrideEnvVarsFlag(parser):
+  """Add the --update-env-vars flag."""
+  OverrideEnvVarsFlag().AddToParser(parser)
 
 
 def MemoryFlag():
@@ -1404,8 +1422,19 @@ def AddMinInstancesFlag(parser, resource_kind='service'):
 def AddServiceMinInstancesFlag(parser):
   """Add service-level min scaling flag."""
   parser.add_argument(
+      '--min',
+      type=_ScaleValue,
+      help=(
+          'The minimum number of container instances for this Service to run '
+          "or 'default' to remove any minimum. These instances will be divided "
+          'among all Revisions receiving a percentage of traffic.'
+      ),
+  )
+
+  parser.add_argument(
       '--service-min-instances',
       type=_ScaleValue,
+      hidden=True,
       help=(
           'The minimum number of container instances for this Service to run '
           "or 'default' to remove any minimum. These instances will be divided "
@@ -1417,8 +1446,20 @@ def AddServiceMinInstancesFlag(parser):
 def AddServiceMaxInstancesFlag(parser):
   """Add service-level max scaling flag."""
   parser.add_argument(
+      '--max',
+      type=_ScaleValue,
+      help=(
+          'The maximum number of container instances for this Service to run. '
+          'This instance limit will be divided among all Revisions receiving a '
+          'percentage of traffic. Once service-max-instances is enabled for a '
+          'service, it cannot be disabled.'
+      ),
+  )
+
+  parser.add_argument(
       '--service-max-instances',
       type=_ScaleValue,
+      hidden=True,
       help=(
           'The maximum number of container instances for this Service to run. '
           'This instance limit will be divided among all Revisions receiving a '
@@ -2163,10 +2204,18 @@ def HasExecutionOverrides(args):
       'task_timeout',
       'tasks',
   ]
-  return HasChanges(args, overrides_flags)
+  return HasChanges(args, overrides_flags) or FlagIsExplicitlySet(
+      args, 'containers'
+  )
 
 
 def HasContainerOverrides(args):
+  return HasTopLevelContainerOverride(args) or FlagIsExplicitlySet(
+      args, 'containers'
+  )
+
+
+def HasTopLevelContainerOverride(args):
   overrides_flags = [
       'args',
       'update_env_vars',
@@ -2228,9 +2277,10 @@ def _GetScalingChanges(args):
 def _GetServiceScalingChanges(args):
   """Return the changes for service-level scaling for the given args."""
   result = []
-  if 'service_min_instances' in args and args.service_min_instances is not None:
-    scale_value = args.service_min_instances
-    if scale_value.restore_default or scale_value.instance_count == 0:
+  min_scale_value = (getattr(args, 'service_min_instances', None)
+                     or getattr(args, 'min', None))
+  if min_scale_value is not None:
+    if min_scale_value.restore_default or min_scale_value.instance_count == 0:
       result.append(
           config_changes.DeleteAnnotationChange(
               service.SERVICE_MIN_SCALE_ANNOTATION
@@ -2240,15 +2290,14 @@ def _GetServiceScalingChanges(args):
       result.append(
           config_changes.SetAnnotationChange(
               service.SERVICE_MIN_SCALE_ANNOTATION,
-              str(scale_value.instance_count),
+              str(min_scale_value.instance_count),
           )
       )
-  if 'service_max_instances' in args and args.service_max_instances is not None:
-    if (
-        'scaling' in args
-        and args.scaling is not None
-        and not args.scaling.auto_scaling
-    ):
+
+  max_scale_value = (getattr(args, 'service_max_instances', None)
+                     or getattr(args, 'max', None))
+  if max_scale_value is not None:
+    if getattr(args, 'scaling', None) and not args.scaling.auto_scaling:
       # TODO(b/373873152): this validation should expand to service min instance
       # once we enforce the use of manual instance count for manual scaling.
       raise serverless_exceptions.ConfigurationError(
@@ -2257,7 +2306,7 @@ def _GetServiceScalingChanges(args):
     result.append(
         config_changes.SetAnnotationChange(
             service.SERVICE_MAX_SCALE_ANNOTATION,
-            str(args.service_max_instances.instance_count),
+            str(max_scale_value.instance_count),
         )
     )
   if 'max_surge' in args and args.max_surge is not None:
@@ -2337,7 +2386,7 @@ def _GetServiceScalingChanges(args):
 
 
 def _GetWorkerScalingChanges(args):
-  """Return the changes for engine-level scaling for Worker resources for the given args."""
+  """Return the changes for service-level scaling for Worker resources for the given args."""
   result = []
   # TODO(b/322180968): Once Worker API is ready, replace Service related
   # references.
@@ -3271,16 +3320,29 @@ def GetJobConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
   return changes
 
 
-def GetRunJobConfigurationOverrides(args):
-  """Returns a list of overrides to the job config."""
-  overrides = []
+def GetExecutionOverridesChangesForValidation(args):
+  """Returns a list of config changes caused by overrides for validation."""
+  changes = []
+  # Include env var overrides to prevent from overriding secrets/config_maps
+  # that could also be mapped as env vars.
   if FlagIsExplicitlySet(args, 'update_env_vars'):
-    overrides.append(
+    changes.append(
         config_changes.EnvVarLiteralChanges(
             updates=_StripKeys(getattr(args, 'update_env_vars', None) or {}),
         )
     )
-  return overrides
+  if FlagIsExplicitlySet(args, 'containers'):
+    for container_name, container_args in args.containers.items():
+      if _HasEnvChanges(container_args):
+        changes.append(
+            config_changes.EnvVarLiteralChanges(
+                updates=_StripKeys(
+                    getattr(container_args, 'update_env_vars', None) or {}
+                ),
+                container_name=container_name,
+            )
+        )
+  return changes
 
 
 # TODO(b/322180968): There exist a few configurations that are "locked" while

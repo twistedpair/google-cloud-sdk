@@ -18,7 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from apitools.base.py import encoding
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
@@ -60,4 +63,26 @@ def AdditionalClusterUpdateArguments():
 def PackageClusterRedisConfig(config, messages):
   return encoding.DictToAdditionalPropertyMessage(
       config, messages.Cluster.RedisConfigsValue, sort_items=True
+  )
+
+
+def ParseTimeOfDayAlpha(start_time):
+  return ParseTimeOfDay(start_time, 'v1alpha1')
+
+
+def ParseTimeOfDayBeta(start_time):
+  return ParseTimeOfDay(start_time, 'v1beta1')
+
+
+def ParseTimeOfDay(start_time, api_version):
+  m = re.match(r'^(\d?\d):00$', start_time)
+  if m:
+    message = apis.GetMessagesModule('redis', api_version)
+    hour = int(m.group(1))
+    if hour <= 23 and hour >= 0:
+      return message.TimeOfDay(hours=hour)
+  raise arg_parsers.ArgumentTypeError(
+      'Failed to parse time of day: {0}, expected format: HH:00.'.format(
+          start_time
+      )
   )

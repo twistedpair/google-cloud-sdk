@@ -93,3 +93,12 @@ def AddProviderFlag(parser):
       help='Database provider, for managed databases.',
       choices=['RDS'],
   )
+
+
+def AddDatabaseFlag(parser):
+  """Add the specific database within the host to the parser."""
+  parser.add_argument(
+      '--database',
+      required=False,
+      hidden=True,
+      help='The specific database within the host.')

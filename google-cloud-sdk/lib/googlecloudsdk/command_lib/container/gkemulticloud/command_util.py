@@ -51,6 +51,10 @@ def _GetOperationTarget(op):
 def _LogAndWaitForOperation(op, async_, message):
   op_ref = _GetOperationResource(op)
   log.CreatedResource(op_ref, kind=constants.LRO_KIND)
+  # Some requests return already done operations. These operations may not be
+  # persisted, so we can't query and wait for them.
+  if op.done:
+    return
   if not async_:
     op_client = op_api_util.OperationsClient()
     op_client.Wait(op_ref, message)
@@ -244,7 +248,12 @@ def DeleteWithIgnoreErrors(args, resource_client, resource_ref, message, kind):
 
 def _PromptIgnoreErrors(args, resource_client, resource_ref):
   """Prompt for --ignore-errors flag if the resource is in ERROR or DEGRADED state."""
-  resp = resource_client.Get(resource_ref)
+  try:
+    resp = resource_client.Get(resource_ref)
+  except apitools_exceptions.HttpError as e:
+    if e.status_code == 404:
+      return
+    raise e
   messages = util.GetMessagesModule()
   error_states = [
       messages.GoogleCloudGkemulticloudV1AttachedCluster.StateValueValuesEnum.ERROR,

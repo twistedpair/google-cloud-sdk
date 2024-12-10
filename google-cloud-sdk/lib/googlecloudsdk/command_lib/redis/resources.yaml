@@ -70,7 +70,7 @@ backup_collection:
   attributes:
   - *region
   - parameter_name: backupCollectionsId
-    attribute_name: backup_collection
+    attribute_name: backup-collection
     help: The name of the Redis cluster backup collection.
   disable_auto_completers: false
 

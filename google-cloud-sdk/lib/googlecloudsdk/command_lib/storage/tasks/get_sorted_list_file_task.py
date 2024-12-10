@@ -105,7 +105,10 @@ class GetSortedContainerContentsTask(task.Task):
         wildcard_iterator.get_wildcard_iterator(
             self._container_query_path,
             exclude_patterns=self._exclude_patterns,
-            fetch_encrypted_object_hashes=True,
+            fetch_encrypted_object_hashes=(
+                properties.VALUES.storage.check_hashes.Get()
+                != properties.CheckHashes.NEVER.value
+            ),
             fields_scope=cloud_api.FieldsScope.RSYNC,
             files_only=not self._managed_folders_only,
             force_include_hidden_files=True,

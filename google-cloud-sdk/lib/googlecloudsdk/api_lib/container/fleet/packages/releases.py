@@ -137,6 +137,7 @@ class ReleasesClient(object):
       location,
       lifecycle=None,
       variants=None,
+      clh_variants=False,
   ):
     """Create Release for a ResourceBundle.
 
@@ -147,6 +148,8 @@ class ReleasesClient(object):
       location: Valid GCP location (e.g., uc-central1)
       lifecycle: Lifecycle of the Release.
       variants: Variants of the Release.
+      clh_variants: Boolean flag to create variants sent in the request as a
+        separate resource.
 
     Returns:
       Created Release resource.
@@ -155,9 +158,18 @@ class ReleasesClient(object):
         project, location, resource_bundle, version
     )
     variants_value = self._VariantsValueFromInputVariants(variants)
+    labels_value = None
+    if clh_variants:
+      labels_value = self.messages.Release.LabelsValue(
+          additionalProperties=[
+              self.messages.Release.LabelsValue.AdditionalProperty(
+                  key='configdelivery-variant-storage-strategy', value='nested'
+              )
+          ]
+      )
     release = self.messages.Release(
         name=fully_qualified_path,
-        labels=None,
+        labels=labels_value,
         lifecycle=self.GetLifecycleEnum(lifecycle),
         variants=variants_value,
         version=version,
@@ -173,23 +185,28 @@ class ReleasesClient(object):
         f'Creating Release {fully_qualified_path}',
     )
 
-  def Delete(self, project, location, resource_bundle, release):
-    """Delete a ResourceBundle resource.
+  def Delete(self, project, location, resource_bundle, release, force=False):
+    """Delete a Release resource.
 
     Args:
       project: GCP project ID.
       location: GCP location of Release.
       resource_bundle: Name of ResourceBundle.
       release: Name of Release.
+      force: Whether to force deletion of any child variants.
 
     Returns:
       Empty Response Message.
     """
     fully_qualified_path = _FullyQualifiedPath(
-        project, location, resource_bundle, release
+        project,
+        location,
+        resource_bundle,
+        release,
     )
     delete_req = self.messages.ConfigdeliveryProjectsLocationsResourceBundlesReleasesDeleteRequest(
-        name=fully_qualified_path
+        name=fully_qualified_path,
+        force=force,
     )
     return waiter.WaitFor(
         self.release_waiter,

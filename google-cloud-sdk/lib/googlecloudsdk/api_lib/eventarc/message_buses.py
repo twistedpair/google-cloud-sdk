@@ -224,22 +224,11 @@ class MessageBusClientV1(base.EventarcClientBase):
               logging_config
           ),
       )
-    message_bus_labels = None
-    if labels is not None:
-      message_bus_labels = self._messages.MessageBus.LabelsValue(
-          additionalProperties=[
-              self._messages.MessageBus.LabelsValue.AdditionalProperty(
-                  key=key,
-                  value=value,
-              )
-              for key, value in labels.items()
-          ]
-      )
     return self._messages.MessageBus(
         name=message_bus_ref.RelativeName(),
         loggingConfig=logging_config_enum,
         cryptoKeyName=crypto_key_name,
-        labels=message_bus_labels,
+        labels=labels,
     )
 
   def BuildUpdateMask(
@@ -282,6 +271,10 @@ class MessageBusClientV1(base.EventarcClientBase):
           'A message bus already exists in the project. Currently, only one'
           ' message bus per project is supported.'
       )
+
+  def LabelsValueClass(self):
+    """Returns the labels value class."""
+    return self._messages.MessageBus.LabelsValue
 
   def _BuildCloudEventProtoMessage(
       self, event_id, event_type, event_source, event_data, event_attributes

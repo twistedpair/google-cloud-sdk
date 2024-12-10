@@ -42,3 +42,4 @@ properties:
     - RING_HASH
     - ROUND_ROBIN
     - WEIGHTED_MAGLEV
+    - WEIGHTED_ROUND_ROBIN

@@ -25,4 +25,7 @@ message UniverseDescriptorData {
 
   // Documentation domain.
   optional string documentation_domain = 7;
+
+  // State of the universe.
+  optional string state = 8;
 }

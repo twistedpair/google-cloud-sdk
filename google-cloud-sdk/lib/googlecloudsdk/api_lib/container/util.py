@@ -87,7 +87,7 @@ WARN_NODE_VERSION_WITH_AUTOUPGRADE_ENABLED = (
 WARN_BETA_APIS_ENABLED = (
     ' Kubernetes Beta APIs are not stable, it is advised to use them with'
     ' caution. Please read carefully about limitations and associated risks at'
-    'https://cloud.google.com//kubernetes-engine/docs/how-to/use-beta-apis '
+    ' https://cloud.google.com//kubernetes-engine/docs/how-to/use-beta-apis '
 )
 
 INVALIID_SURGE_UPGRADE_SETTINGS = (

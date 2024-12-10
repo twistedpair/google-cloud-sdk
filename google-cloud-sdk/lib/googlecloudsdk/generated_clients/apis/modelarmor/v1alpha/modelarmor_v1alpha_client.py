@@ -39,9 +39,161 @@ class ModelarmorV1alpha(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.folders_locations = self.FoldersLocationsService(self)
+    self.folders = self.FoldersService(self)
+    self.organizations_locations = self.OrganizationsLocationsService(self)
+    self.organizations = self.OrganizationsService(self)
     self.projects_locations_templates = self.ProjectsLocationsTemplatesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class FoldersLocationsService(base_api.BaseApiService):
+    """Service class for the folders_locations resource."""
+
+    _NAME = 'folders_locations'
+
+    def __init__(self, client):
+      super(ModelarmorV1alpha.FoldersLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetFloorSetting(self, request, global_params=None):
+      r"""Gets details of a single floor setting of a project.
+
+      Args:
+        request: (ModelarmorFoldersLocationsGetFloorSettingRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FloorSetting) The response message.
+      """
+      config = self.GetMethodConfig('GetFloorSetting')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetFloorSetting.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/floorSetting',
+        http_method='GET',
+        method_id='modelarmor.folders.locations.getFloorSetting',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ModelarmorFoldersLocationsGetFloorSettingRequest',
+        response_type_name='FloorSetting',
+        supports_download=False,
+    )
+
+    def UpdateFloorSetting(self, request, global_params=None):
+      r"""Updates the parameters of a single floor setting of a project.
+
+      Args:
+        request: (ModelarmorFoldersLocationsUpdateFloorSettingRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FloorSetting) The response message.
+      """
+      config = self.GetMethodConfig('UpdateFloorSetting')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateFloorSetting.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/floorSetting',
+        http_method='PATCH',
+        method_id='modelarmor.folders.locations.updateFloorSetting',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='floorSetting',
+        request_type_name='ModelarmorFoldersLocationsUpdateFloorSettingRequest',
+        response_type_name='FloorSetting',
+        supports_download=False,
+    )
+
+  class FoldersService(base_api.BaseApiService):
+    """Service class for the folders resource."""
+
+    _NAME = 'folders'
+
+    def __init__(self, client):
+      super(ModelarmorV1alpha.FoldersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsLocationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations resource."""
+
+    _NAME = 'organizations_locations'
+
+    def __init__(self, client):
+      super(ModelarmorV1alpha.OrganizationsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetFloorSetting(self, request, global_params=None):
+      r"""Gets details of a single floor setting of a project.
+
+      Args:
+        request: (ModelarmorOrganizationsLocationsGetFloorSettingRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FloorSetting) The response message.
+      """
+      config = self.GetMethodConfig('GetFloorSetting')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetFloorSetting.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/floorSetting',
+        http_method='GET',
+        method_id='modelarmor.organizations.locations.getFloorSetting',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ModelarmorOrganizationsLocationsGetFloorSettingRequest',
+        response_type_name='FloorSetting',
+        supports_download=False,
+    )
+
+    def UpdateFloorSetting(self, request, global_params=None):
+      r"""Updates the parameters of a single floor setting of a project.
+
+      Args:
+        request: (ModelarmorOrganizationsLocationsUpdateFloorSettingRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FloorSetting) The response message.
+      """
+      config = self.GetMethodConfig('UpdateFloorSetting')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateFloorSetting.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/floorSetting',
+        http_method='PATCH',
+        method_id='modelarmor.organizations.locations.updateFloorSetting',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='floorSetting',
+        request_type_name='ModelarmorOrganizationsLocationsUpdateFloorSettingRequest',
+        response_type_name='FloorSetting',
+        supports_download=False,
+    )
+
+  class OrganizationsService(base_api.BaseApiService):
+    """Service class for the organizations resource."""
+
+    _NAME = 'organizations'
+
+    def __init__(self, client):
+      super(ModelarmorV1alpha.OrganizationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsTemplatesService(base_api.BaseApiService):
     """Service class for the projects_locations_templates resource."""

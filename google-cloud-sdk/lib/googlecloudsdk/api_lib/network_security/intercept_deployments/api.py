@@ -29,26 +29,27 @@ from googlecloudsdk.core import resources
 
 _API_VERSION_FOR_TRACK = {
     base.ReleaseTrack.ALPHA: 'v1alpha1',
+    base.ReleaseTrack.BETA: 'v1beta1',
 }
 _API_NAME = 'networksecurity'
 
 
-def GetMessagesModule(release_track=base.ReleaseTrack.ALPHA):
+def GetMessagesModule(release_track=base.ReleaseTrack.BETA):
   api_version = GetApiVersion(release_track)
   return apis.GetMessagesModule(_API_NAME, api_version)
 
 
-def GetClientInstance(release_track=base.ReleaseTrack.ALPHA):
+def GetClientInstance(release_track=base.ReleaseTrack.BETA):
   api_version = GetApiVersion(release_track)
   return apis.GetClientInstance(_API_NAME, api_version)
 
 
-def GetEffectiveApiEndpoint(release_track=base.ReleaseTrack.ALPHA):
+def GetEffectiveApiEndpoint(release_track=base.ReleaseTrack.BETA):
   api_version = GetApiVersion(release_track)
   return apis.GetEffectiveApiEndpoint(_API_NAME, api_version)
 
 
-def GetApiVersion(release_track=base.ReleaseTrack.ALPHA):
+def GetApiVersion(release_track=base.ReleaseTrack.BETA):
   return _API_VERSION_FOR_TRACK.get(release_track)
 
 

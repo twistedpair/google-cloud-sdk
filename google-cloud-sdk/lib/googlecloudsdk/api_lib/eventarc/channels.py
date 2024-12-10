@@ -166,19 +166,22 @@ class ChannelClientV1(EventarcClientBase):
     # GoogleCloudEventarcPublishingV1PublishEventsResponse
     self._publishing_service.PublishEvents(publish_req)
 
-  def BuildChannel(self, channel_ref, provider_ref, crypto_key_name):
+  def BuildChannel(self, channel_ref, provider_ref, crypto_key_name, labels):
     return self._messages.Channel(
         name=channel_ref.RelativeName(),
         cryptoKeyName=crypto_key_name,
         provider=provider_ref
-        if provider_ref is None else provider_ref.RelativeName())
+        if provider_ref is None else provider_ref.RelativeName(),
+        labels=labels,
+        )
 
-  def BuildUpdateMask(self, crypto_key, clear_crypto_key):
+  def BuildUpdateMask(self, crypto_key, clear_crypto_key, labels):
     """Builds an update mask for updating a channel.
 
     Args:
       crypto_key: bool, whether to update the crypto key.
       clear_crypto_key: bool, whether to clear the crypto key.
+      labels: bool, whether to update the labels.
 
     Returns:
       The update mask as a string.
@@ -191,7 +194,12 @@ class ChannelClientV1(EventarcClientBase):
       update_mask.append('cryptoKeyName')
     if clear_crypto_key:
       update_mask.append('cryptoKeyName')
+    if labels:
+      update_mask.append('labels')
 
     if not update_mask:
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
     return ','.join(update_mask)
+
+  def LabelsValueCls(self):
+    return self._messages.Channel.LabelsValue

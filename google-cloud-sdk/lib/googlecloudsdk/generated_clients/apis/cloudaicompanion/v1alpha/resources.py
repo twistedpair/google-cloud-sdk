@@ -64,50 +64,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_ENABLEMENTS = (
-      'projects.locations.enablements',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/enablements/'
-              '{enablementsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_INSTANCES = (
-      'projects.locations.instances',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/instances/'
-              '{instancesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_LOGGINGSETTINGS = (
-      'projects.locations.loggingSettings',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/loggingSettings/'
-              '{loggingSettingsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_LOGGINGSETTINGS_SETTINGBINDINGS = (
-      'projects.locations.loggingSettings.settingBindings',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/loggingSettings/'
-              '{loggingSettingsId}/settingBindings/{settingBindingsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -115,37 +71,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_RELEASECHANNELSETTINGS = (
-      'projects.locations.releaseChannelSettings',
-      'projects/{projectsId}/locations/{locationsId}/releaseChannelSettings/'
-      '{releaseChannelSettingsId}',
-      {},
-      ['projectsId', 'locationsId', 'releaseChannelSettingsId'],
-      True
-  )
-  PROJECTS_LOCATIONS_RELEASECHANNELSETTINGS_SETTINGBINDINGS = (
-      'projects.locations.releaseChannelSettings.settingBindings',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'releaseChannelSettings/{releaseChannelSettingsId}/'
-              'settingBindings/{settingBindingsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_TOPICS = (
-      'projects.locations.topics',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/topics/'
-              '{topicsId}',
       },
       ['name'],
       True

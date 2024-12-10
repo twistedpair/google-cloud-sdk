@@ -46,9 +46,23 @@ EFFECTIVE_FIREWALL_LIST_FORMAT = """\
     disabled,
     ip_ranges.list():label=IP_RANGES
   )"""
+EFFECTIVE_SECURITY_POLICY_LIST_FORMAT = """\
+  table(
+    type,
+    security_policy_name,
+    priority,
+    action,
+    preview,
+    expression,
+    src_ip_ranges.list():label=SRC_IP_RANGES
+  )"""
 
 LIST_NOTICE = """\
 To show all fields of the firewall, please show in JSON format: --format=json
+To show more fields in table format, please see the examples in --help.
+"""
+LIST_NOTICE_SECURITY_POLICY = """\
+To show all fields of the security policy, please show in JSON format: --format=json
 To show more fields in table format, please see the examples in --help.
 """
 
@@ -449,7 +463,9 @@ def SortOrgFirewallRules(client, rules):
       client.messages.SecurityPolicyRule.DirectionValueValuesEnum.EGRESS
   ]
   egress_org_firewall_rule.sort(key=lambda x: x.priority, reverse=False)
-  return ingress_org_firewall_rule + egress_org_firewall_rule
+  cloud_armor_rule = [item for item in rules if not item.direction]
+  cloud_armor_rule.sort(key=lambda x: x.priority, reverse=False)
+  return ingress_org_firewall_rule + egress_org_firewall_rule + cloud_armor_rule
 
 
 def SortFirewallPolicyRules(client, rules):
@@ -580,5 +596,43 @@ def ConvertNetworkFirewallRulesToEffectiveFwRules(network_firewalls):
     else:
       item.update({'disabled': False})
     item.update({'name': rule.name})
+    result.append(item)
+  return result
+
+
+def ConvertOrgSecurityPolicyRulesToEffectiveSpRules(security_policy):
+  """Convert org security policy rules to effective security policy rules."""
+  result = []
+  for rule in security_policy.rules:
+    item = {}
+    item.update({'type': 'org-security-policy'})
+    item.update({'description': rule.description})
+    item.update({'security_policy_name': security_policy.shortName})
+    item.update({'priority': rule.priority})
+    item.update({'action': rule.action.upper()})
+    item.update({'preview': rule.preview})
+    if rule.match.expr and rule.match.expr.expression:
+      item.update({'expression': rule.match.expr.expression})
+    if rule.match.config and rule.match.config.srcIpRanges:
+      item.update({'src_ip_ranges': rule.match.config.srcIpRanges})
+    result.append(item)
+  return result
+
+
+def ConvertSecurityPolicyRulesToEffectiveSpRules(security_policy):
+  """Convert security policy rules to effective security policy rules."""
+  result = []
+  for rule in security_policy.rules:
+    item = {}
+    item.update({'type': 'security-policy'})
+    item.update({'description': rule.description})
+    item.update({'security_policy_name': security_policy.name})
+    item.update({'priority': rule.priority})
+    item.update({'action': rule.action.upper()})
+    item.update({'preview': rule.preview})
+    if rule.match.expr and rule.match.expr.expression:
+      item.update({'expression': rule.match.expr.expression})
+    if rule.match.config and rule.match.config.srcIpRanges:
+      item.update({'src_ip_ranges': rule.match.config.srcIpRanges})
     result.append(item)
   return result

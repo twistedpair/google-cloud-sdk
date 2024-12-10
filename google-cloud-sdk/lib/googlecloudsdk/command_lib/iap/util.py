@@ -577,8 +577,7 @@ def ParseIapSettingsResource(
     release_track,
     args,
     support_forwarding_rule=False,
-    support_cloud_run=False,
-    is_missing_resource_type=False,
+    support_cloud_run=False
 ):
   """Parse an IAP setting resource from the input arguments.
 
@@ -588,8 +587,6 @@ def ParseIapSettingsResource(
       command invocation.
     support_forwarding_rule: bool, whether to support forwarding rule.
     support_cloud_run: bool, whether to support cloud run.
-    is_missing_resource_type: bool, throw invalid arguement exception if flags
-      are specified without resource type.
 
   Raises:
     calliope_exc.InvalidArgumentException: if `--version` was specified with
@@ -626,19 +623,18 @@ def ParseIapSettingsResource(
         release_track, 'folders/{0}'.format(args.folder)
     )
   if args.project:
-    if is_missing_resource_type:
-      if args.service and not args.resource_type:
-        raise calliope_exc.InvalidArgumentException(
-            '--service',
-            '`--service` cannot be specified without `--resource-type`.')
-      if args.region and not args.resource_type:
-        raise calliope_exc.InvalidArgumentException(
-            '--region',
-            '`--region` cannot be specified without `--resource-type`.')
-      if args.version and not args.resource_type:
-        raise calliope_exc.InvalidArgumentException(
-            '--version',
-            '`--version` cannot be specified without `--resource-type`.')
+    if args.service and not args.resource_type:
+      raise calliope_exc.InvalidArgumentException(
+          '--service',
+          '`--service` cannot be specified without `--resource-type`.')
+    if args.region and not args.resource_type:
+      raise calliope_exc.InvalidArgumentException(
+          '--region',
+          '`--region` cannot be specified without `--resource-type`.')
+    if args.version and not args.resource_type:
+      raise calliope_exc.InvalidArgumentException(
+          '--version',
+          '`--version` cannot be specified without `--resource-type`.')
 
     if not args.resource_type:
       return iap_api.IapSettingsResource(

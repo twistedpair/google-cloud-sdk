@@ -424,6 +424,7 @@ properties:
     type: string
     enum:
     - ALL
+    - H2C
     - GRPC
     - HTTP
     - HTTP2

@@ -694,7 +694,7 @@ def AddDestNetworkScope(parser, required=False):
       help=(
           'Use this flag to indicate that the rule should match internet or'
           ' non-internet traffic. It applies to destination traffic for egress'
-          ' rules. Valid values are INTERNET, NON_INTERNET and INTRA_VPC. Use'
+          ' rules. Valid values are INTERNET and NON_INTERNET. Use'
           ' empty string to clear the field.'
       ),
   )

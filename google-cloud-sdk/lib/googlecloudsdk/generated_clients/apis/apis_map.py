@@ -468,16 +468,6 @@ MAP = {
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
-        'v1alpha1':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.artifactregistry.v1alpha1',
-                    client_classpath='artifactregistry_v1alpha1_client.ArtifactregistryV1alpha1',
-                    base_url='https://artifactregistry.googleapis.com/',
-                    messages_modulepath='artifactregistry_v1alpha1_messages'),
-                default_version=False,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3147,7 +3137,7 @@ MAP = {
                 apitools=ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.parametermanager.v1',
                     client_classpath='parametermanager_v1_client.ParametermanagerV1',
-                    base_url='',
+                    base_url='https://parametermanager.googleapis.com/',
                     messages_modulepath='parametermanager_v1_messages'),
                 default_version=True,
                 enable_mtls=True,

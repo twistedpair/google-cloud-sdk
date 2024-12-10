@@ -742,7 +742,7 @@ def AddVersion(parser: parser_arguments.ArgumentInterceptor, required=False):
   parser.add_argument(
       '--version',
       required=required,
-      help='Anthos Cluster on VMware version for the user cluster resource',
+      help='Anthos Cluster on VMware version for the cluster resource',
   )
 
 
@@ -1355,8 +1355,8 @@ def AddRequiredPlatformVersion(parser: parser_arguments.ArgumentInterceptor):
       '--required-platform-version',
       type=str,
       help=(
-          'Platform version required for upgrading a user cluster. '
-          'If the current platform version is lower than the required '
+          'Platform version required for upgrading an admin cluster or a user '
+          'cluster. If the current platform version is lower than the required '
           'version, the platform version will be updated to the required '
           'version. If it is not installed in the platform, '
           'download the required version bundle.'

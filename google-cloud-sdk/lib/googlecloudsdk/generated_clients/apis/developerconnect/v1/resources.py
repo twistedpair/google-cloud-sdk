@@ -71,6 +71,14 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId', 'keyRingsId', 'cryptoKeysId'],
       True
   )
+  PROJECTS_LOCATIONS_NAMESPACES_SERVICES = (
+      'projects.locations.namespaces.services',
+      'projects/{projectsId}/locations/{locationsId}/namespaces/'
+      '{namespacesId}/services/{servicesId}',
+      {},
+      ['projectsId', 'locationsId', 'namespacesId', 'servicesId'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

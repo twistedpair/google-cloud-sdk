@@ -122,7 +122,7 @@ class ContainerConfigChanger(TemplateConfigChanger):
     Args:
       resource: The resoure to modify.
     """
-    if self.container_name:
+    if self.container_name is not None:
       container = resource.template.containers[self.container_name]
     else:
       container = resource.template.container

@@ -27,3 +27,28 @@ def AddDescribeFlags(parser):
       type=str,
       required=True,
       help='The name of the reservation block.')
+
+
+def AddScopeFlags(parser):
+  """Adds scope flag to the parser."""
+  parser.add_argument(
+      '--scope',
+      metavar='SCOPE',
+      type=lambda x: x.lower(),
+      choices={
+          'all': (
+              'Maintenance should be performed on all hosts in the reservation'
+              ' block.'
+          ),
+          'running': (
+              'Maintenance should be performed only on the hosts in the '
+              ' reservation block which have running VMs.'
+          ),
+          'unused': (
+              'Maintenance should be performed only on the hosts in the'
+              ' reservation block which have no running VMs.'
+          ),
+      },
+      help='The maintenance scope to set for the reservation block.',
+  )
+

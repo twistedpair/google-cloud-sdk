@@ -142,8 +142,21 @@ class ChannelConnectionClientV1(EventarcClientBase):
     self._publishing_service.PublishEvents(publish_req)
 
   def BuildChannelConnection(self, channel_connection_ref, channel,
-                             activation_token):
+                             activation_token, labels):
+    channel_connection_labels = None
+    if labels is not None:
+      channel_connection_labels = self._messages.ChannelConnection.LabelsValue(
+          additionalProperties=[
+              self._messages.ChannelConnection.LabelsValue.AdditionalProperty(
+                  key=key,
+                  value=value,
+              )
+              for key, value in labels.items()
+          ]
+      )
     return self._messages.ChannelConnection(
         name=channel_connection_ref.RelativeName(),
         channel=channel,
-        activationToken=activation_token)
+        activationToken=activation_token,
+        labels=channel_connection_labels,
+        )

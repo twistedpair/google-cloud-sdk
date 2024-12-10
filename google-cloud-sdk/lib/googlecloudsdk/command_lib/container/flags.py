@@ -2471,9 +2471,7 @@ def AddILBSubsettingFlags(parser, hidden=False):
   )
 
 
-def AddClusterDNSFlags(
-    parser, release_track=base.ReleaseTrack.GA, hidden=False
-):
+def AddClusterDNSFlags(parser, hidden=False):
   """Adds flags related to clusterDNS to parser.
 
   This includes:
@@ -2485,7 +2483,6 @@ def AddClusterDNSFlags(
 
   Args:
     parser: A given parser.
-    release_track: Release track the flags are being added to.
     hidden: Indicates that the flags are hidden.
   """
   group = parser.add_argument_group('ClusterDNS', hidden=hidden)
@@ -2514,12 +2511,10 @@ def AddClusterDNSFlags(
             """,
       hidden=hidden,
   )
-  AddAdditiveVPCScopeFlags(group, release_track=release_track, hidden=hidden)
+  AddAdditiveVPCScopeFlags(group, hidden=hidden)
 
 
-def AddAdditiveVPCScopeFlags(
-    parser, release_track=base.ReleaseTrack.GA, hidden=False
-):
+def AddAdditiveVPCScopeFlags(parser, hidden=False):
   """Adds flags related to DNS Additive VPC scope to parser.
 
   This includes:
@@ -2528,29 +2523,25 @@ def AddAdditiveVPCScopeFlags(
 
   Args:
     parser: A given parser.
-    release_track: Release track the flags are being added to.
     hidden: Indicates that the flags are hidden.
   """
-  if release_track != base.ReleaseTrack.GA:
-    mutex = parser.add_argument_group(
-        'ClusterDNS_AdditiveVPCScope_EnabledDisable', hidden=hidden, mutex=True
-    )
-    mutex.add_argument(
-        '--disable-additive-vpc-scope',
-        default=None,
-        action='store_true',
-        hidden=hidden,
-        help='Disables Additive VPC Scope.',
-    )
-    mutex.add_argument(
-        '--additive-vpc-scope-dns-domain',
-        default=None,
-        hidden=hidden,
-        help=(
-            'The domain used in Additive VPC scope. Only works with Cluster'
-            ' Scope.'
-        ),
-    )
+  mutex = parser.add_argument_group(hidden=hidden, mutex=True)
+  mutex.add_argument(
+      '--disable-additive-vpc-scope',
+      default=None,
+      action='store_true',
+      hidden=hidden,
+      help='Disables Additive VPC Scope.',
+  )
+  mutex.add_argument(
+      '--additive-vpc-scope-dns-domain',
+      default=None,
+      hidden=hidden,
+      help=(
+          'The domain used in Additive VPC scope. Only works with Cluster'
+          ' Scope.'
+      ),
+  )
 
 
 def AddPrivateClusterFlags(parser, default=None, with_deprecated=False):
@@ -6736,7 +6727,7 @@ def AddControlPlaneKeysFlags(parser):
     parser: A given parser.
   """
 
-  group = parser.add_group(help='Control Plane Keys', hidden=True, mutex=False)
+  group = parser.add_group(help='Control Plane Keys', mutex=False)
 
   group.add_argument(
       '--cluster-ca',

@@ -755,13 +755,17 @@ def ApplyLogConfigArgs(
       messages.BackendService.ProtocolValueValuesEnum.UDP,
       messages.BackendService.ProtocolValueValuesEnum.UNSPECIFIED,
   ]
+
+  if hasattr(messages.BackendService.ProtocolValueValuesEnum, 'H2C'):
+    valid_protocols.append(messages.BackendService.ProtocolValueValuesEnum.H2C)
+
   if logging_specified and backend_service.protocol not in valid_protocols:
     raise exceptions.InvalidArgumentException(
         '--protocol',
         (
             'can only specify --enable-logging, --logging-sample-rate,'
             ' --logging-optional or --logging-optional-fields if the'
-            ' protocol is HTTP/HTTPS/HTTP2/TCP/SSL/UDP/UNSPECIFIED.'
+            ' protocol is HTTP/HTTPS/HTTP2/H2C/TCP/SSL/UDP/UNSPECIFIED.'
         ),
     )
 

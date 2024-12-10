@@ -1920,7 +1920,7 @@ class ServerlessOperations(object):
           )
       )
 
-  def ValidateConfigOverrides(self, job_ref, config_overrides):
+  def ValidateConfigOverrides(self, job_ref, config_changes):
     """Apply config changes to Job resource to validate.
 
     This is to replicate the same validation logic in `jobs/services update`.
@@ -1930,11 +1930,11 @@ class ServerlessOperations(object):
 
     Args:
       job_ref: Resource, job resource.
-      config_overrides: Job configuration changes from Overrides
+      config_changes: Job configuration changes from Overrides
     """
     run_job = self.GetJob(job_ref)
-    for override in config_overrides:
-      run_job = override.Adjust(run_job)
+    for change in config_changes:
+      run_job = change.Adjust(run_job)
 
   def GetExecutionOverrides(self, tasks, task_timeout, container_overrides):
     return self.messages_module.Overrides(
@@ -1943,15 +1943,13 @@ class ServerlessOperations(object):
         timeoutSeconds=task_timeout,
     )
 
-  def GetContainerOverrides(self, update_env_vars, args, clear_args):
-    container_overrides = []
-    env_vars = self._GetEnvVarList(update_env_vars)
-    container_overrides.append(
-        self.messages_module.ContainerOverride(
-            args=args or [], env=env_vars, clearArgs=clear_args
-        )
+  def MakeContainerOverride(self, name, update_env_vars, args, clear_args):
+    return self.messages_module.ContainerOverride(
+        name=name,
+        args=args or [],
+        env=self._GetEnvVarList(update_env_vars),
+        clearArgs=clear_args,
     )
-    return container_overrides
 
   def _GetEnvVarList(self, env_vars):
     env_var_list = []

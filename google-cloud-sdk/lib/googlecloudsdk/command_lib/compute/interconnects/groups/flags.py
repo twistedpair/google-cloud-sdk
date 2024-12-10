@@ -19,16 +19,19 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
+@base.UniverseCompatible
+@base.ReleaseTracks(base.ReleaseTrack.ALPHA)
 class InterconnectGroupsCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(InterconnectGroupsCompleter, self).__init__(
         collection='compute.interconnectGroups',
-        list_command='alpha compute interconnects groups list --uri',
+        list_command='compute interconnects groups list --uri',
         **kwargs
     )
 

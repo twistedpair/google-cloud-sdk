@@ -14,9 +14,11 @@
 # limitations under the License.
 """Service account utils."""
 import re
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.command_lib.projects import util as project_util
+from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 
 _BUILDER_ROLE = 'roles/cloudbuild.builds.builder'
@@ -64,9 +66,22 @@ def ValidateDefaultBuildServiceAccountAndPromptWarning(
     )
   project_number = project_util.GetProjectNumber(project_id)
   if build_service_account == _GCE_SA.format(project_number=project_number):
-    iam_policy = projects_api.GetIamPolicy(
-        project_util.ParseProject(project_id)
-    )
+    try:
+      iam_policy = projects_api.GetIamPolicy(
+          project_util.ParseProject(project_id)
+      )
+    except apitools_exceptions.HttpForbiddenError:
+      log.warning(
+          (
+              'Your account does not have permission to check or bind IAM'
+              ' policies to project [%s]. If the deployment fails, ensure [%s]'
+              ' has the role [%s] before retrying.'
+          ),
+          project_id,
+          build_service_account,
+          _BUILDER_ROLE,
+      )
+      return
 
     account_string = f'serviceAccount:{build_service_account}'
     contained_roles = [

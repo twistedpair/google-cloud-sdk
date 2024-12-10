@@ -605,6 +605,9 @@ class ConnectionProfilesClient(object):
     else:
       connection_profile_obj.backups = self._GetSqlServerBackups(args)
 
+    if args.IsKnownAndSpecified('database'):
+      connection_profile_obj.database = args.database
+
     return connection_profile_obj
 
   def _GetConnectionProfile(self, cp_type, args, connection_profile_id):

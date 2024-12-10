@@ -6683,6 +6683,9 @@ class Commitment(_messages.Message):
       GRAPHICS_OPTIMIZED: <no description>
       MEMORY_OPTIMIZED: <no description>
       MEMORY_OPTIMIZED_M3: <no description>
+      MEMORY_OPTIMIZED_X4_16TB: <no description>
+      MEMORY_OPTIMIZED_X4_24TB: <no description>
+      MEMORY_OPTIMIZED_X4_32TB: <no description>
       STORAGE_OPTIMIZED_Z3: <no description>
       TYPE_UNSPECIFIED: <no description>
     """
@@ -6705,8 +6708,11 @@ class Commitment(_messages.Message):
     GRAPHICS_OPTIMIZED = 16
     MEMORY_OPTIMIZED = 17
     MEMORY_OPTIMIZED_M3 = 18
-    STORAGE_OPTIMIZED_Z3 = 19
-    TYPE_UNSPECIFIED = 20
+    MEMORY_OPTIMIZED_X4_16TB = 19
+    MEMORY_OPTIMIZED_X4_24TB = 20
+    MEMORY_OPTIMIZED_X4_32TB = 21
+    STORAGE_OPTIMIZED_Z3 = 22
+    TYPE_UNSPECIFIED = 23
 
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
@@ -18406,6 +18412,87 @@ class ComputeNetworkFirewallPoliciesTestIamPermissionsRequest(_messages.Message)
   project = _messages.StringField(1, required=True)
   resource = _messages.StringField(2, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
+class ComputeNetworkProfilesGetRequest(_messages.Message):
+  r"""A ComputeNetworkProfilesGetRequest object.
+
+  Fields:
+    networkProfile: Name of the network profile to return.
+    project: Project ID for this request.
+  """
+
+  networkProfile = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeNetworkProfilesListRequest(_messages.Message):
+  r"""A ComputeNetworkProfilesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeNetworksAddPeeringRequest(_messages.Message):
@@ -40438,24 +40525,18 @@ class HttpRouteRule(_messages.Message):
     routeAction: In response to a matching matchRule, the load balancer
       performs advanced routing actions, such as URL rewrites and header
       transformations, before forwarding the request to the selected backend.
-      If routeAction specifies any weightedBackendServices, service must not
-      be set. Conversely if service is set, routeAction cannot contain any
-      weightedBackendServices. Only one of urlRedirect, service or
-      routeAction.weightedBackendService must be set. URL maps for classic
-      Application Load Balancers only support the urlRewrite action within a
-      route rule's routeAction.
+      Only one of urlRedirect, service or routeAction.weightedBackendService
+      can be set. URL maps for classic Application Load Balancers only support
+      the urlRewrite action within a route rule's routeAction.
     service: The full or partial URL of the backend service resource to which
       traffic is directed if this rule is matched. If routeAction is also
       specified, advanced routing actions, such as URL rewrites, take effect
-      before sending the request to the backend. However, if service is
-      specified, routeAction cannot contain any weightedBackendServices.
-      Conversely, if routeAction specifies any weightedBackendServices,
-      service must not be specified. Only one of urlRedirect, service or
-      routeAction.weightedBackendService must be set.
+      before sending the request to the backend. Only one of urlRedirect,
+      service or routeAction.weightedBackendService can be set.
     urlRedirect: When this rule is matched, the request is redirected to a URL
-      specified by urlRedirect. If urlRedirect is specified, service or
-      routeAction must not be set. Not supported when the URL map is bound to
-      a target gRPC proxy.
+      specified by urlRedirect. Only one of urlRedirect, service or
+      routeAction.weightedBackendService can be set. Not supported when the
+      URL map is bound to a target gRPC proxy.
   """
 
   customErrorResponsePolicy = _messages.MessageField('CustomErrorResponsePolicy', 1)
@@ -51912,6 +51993,12 @@ class Network(_messages.Message):
       enforcement order. Can be either AFTER_CLASSIC_FIREWALL or
       BEFORE_CLASSIC_FIREWALL. Defaults to AFTER_CLASSIC_FIREWALL if the field
       is not specified.
+    networkProfile: A full or partial URL of the network profile to apply to
+      this network. This field can be set only at resource creation time. For
+      example, the following are valid URLs: - https://www.googleapis.com/comp
+      ute/{api_version}/projects/{project_id}/global/networkProfiles/{network_
+      profile_name} -
+      projects/{project_id}/global/networkProfiles/{network_profile_name}
     peerings: [Output Only] A list of network peerings for the resource.
     routingConfig: The network-level routing configuration for this network.
       Used by Cloud Router to determine what type of network-wide routing
@@ -51948,11 +52035,12 @@ class Network(_messages.Message):
   mtu = _messages.IntegerField(11, variant=_messages.Variant.INT32)
   name = _messages.StringField(12)
   networkFirewallPolicyEnforcementOrder = _messages.EnumField('NetworkFirewallPolicyEnforcementOrderValueValuesEnum', 13)
-  peerings = _messages.MessageField('NetworkPeering', 14, repeated=True)
-  routingConfig = _messages.MessageField('NetworkRoutingConfig', 15)
-  selfLink = _messages.StringField(16)
-  selfLinkWithId = _messages.StringField(17)
-  subnetworks = _messages.StringField(18, repeated=True)
+  networkProfile = _messages.StringField(14)
+  peerings = _messages.MessageField('NetworkPeering', 15, repeated=True)
+  routingConfig = _messages.MessageField('NetworkRoutingConfig', 16)
+  selfLink = _messages.StringField(17)
+  selfLinkWithId = _messages.StringField(18)
+  subnetworks = _messages.StringField(19, repeated=True)
 
 
 class NetworkAttachment(_messages.Message):
@@ -54191,13 +54279,17 @@ class NetworkInterface(_messages.Message):
     Values:
       GVNIC: GVNIC
       IDPF: IDPF
+      IRDMA: IRDMA
+      MRDMA: MRDMA
       UNSPECIFIED_NIC_TYPE: No type specified.
       VIRTIO_NET: VIRTIO
     """
     GVNIC = 0
     IDPF = 1
-    UNSPECIFIED_NIC_TYPE = 2
-    VIRTIO_NET = 3
+    IRDMA = 2
+    MRDMA = 3
+    UNSPECIFIED_NIC_TYPE = 4
+    VIRTIO_NET = 5
 
   class StackTypeValueValuesEnum(_messages.Enum):
     r"""The stack type for this network interface. To assign only IPv4
@@ -54518,6 +54610,589 @@ class NetworkPerformanceConfig(_messages.Message):
     TIER_1 = 1
 
   totalEgressBandwidthTier = _messages.EnumField('TotalEgressBandwidthTierValueValuesEnum', 1)
+
+
+class NetworkProfile(_messages.Message):
+  r"""NetworkProfile represents a Google managed network profile resource.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: [Output Only] An optional description of this resource.
+    features: [Output Only] Features supported by the network.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of the resource. Always compute#networkProfile
+      for network profiles.
+    location: [Output Only] Location to which the network is restricted.
+    name: [Output Only] Name of the resource.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLinkWithId: [Output Only] Server-defined URL for this resource with
+      the resource id.
+    zone: [Output Only] Zone to which the network is restricted.
+  """
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  features = _messages.MessageField('NetworkProfileNetworkFeatures', 3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default='compute#networkProfile')
+  location = _messages.MessageField('NetworkProfileLocation', 6)
+  name = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+  selfLinkWithId = _messages.StringField(9)
+  zone = _messages.StringField(10)
+
+
+class NetworkProfileLocation(_messages.Message):
+  r"""A NetworkProfileLocation object.
+
+  Enums:
+    ScopeValueValuesEnum:
+
+  Fields:
+    name: A string attribute.
+    scope: A ScopeValueValuesEnum attribute.
+  """
+
+  class ScopeValueValuesEnum(_messages.Enum):
+    r"""ScopeValueValuesEnum enum type.
+
+    Values:
+      REGION: <no description>
+      ZONE: <no description>
+    """
+    REGION = 0
+    ZONE = 1
+
+  name = _messages.StringField(1)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 2)
+
+
+class NetworkProfileNetworkFeatures(_messages.Message):
+  r"""A NetworkProfileNetworkFeatures object.
+
+  Enums:
+    AddressPurposesValueListEntryValuesEnum:
+    AllowAliasIpRangesValueValuesEnum: Specifies whether alias IP ranges (and
+      secondary address ranges) are allowed.
+    AllowAutoModeSubnetValueValuesEnum: Specifies whether auto mode subnet
+      creation is allowed.
+    AllowClassDFirewallsValueValuesEnum: Specifies whether firewalls for Class
+      D address ranges are supported.
+    AllowCloudNatValueValuesEnum: Specifies whether cloud NAT creation is
+      allowed.
+    AllowCloudRouterValueValuesEnum: Specifies whether cloud router creation
+      is allowed.
+    AllowExternalIpAccessValueValuesEnum: Specifies whether VMs are allowed to
+      have external IP access on network interfaces connected to this VPC.
+    AllowInterconnectValueValuesEnum: Specifies whether Cloud Interconnect
+      creation is allowed.
+    AllowLoadBalancingValueValuesEnum: Specifies whether cloud load balancing
+      is allowed.
+    AllowMultiNicInSameNetworkValueValuesEnum: Specifies whether multi-nic in
+      the same network is allowed.
+    AllowPacketMirroringValueValuesEnum: Specifies whether Packet Mirroring
+      1.0 is supported.
+    AllowPrivateGoogleAccessValueValuesEnum: Specifies whether private Google
+      access is allowed.
+    AllowPscValueValuesEnum: Specifies whether PSC creation is allowed.
+    AllowSameNetworkUnicastValueValuesEnum: Specifies whether unicast within
+      the same network is allowed.
+    AllowStaticRoutesValueValuesEnum: Specifies whether static route creation
+      is allowed.
+    AllowSubInterfacesValueValuesEnum: Specifies whether sub interfaces are
+      allowed.
+    AllowVpcPeeringValueValuesEnum: Specifies whether VPC peering is allowed.
+    AllowVpnValueValuesEnum: Specifies whether VPN creation is allowed.
+    InterfaceTypesValueListEntryValuesEnum:
+    SubnetPurposesValueListEntryValuesEnum:
+    SubnetStackTypesValueListEntryValuesEnum:
+    UnicastValueValuesEnum: Specifies which type of unicast is supported.
+
+  Fields:
+    addressPurposes: Specifies what address purposes are supported. If empty,
+      all address purposes are supported.
+    allowAliasIpRanges: Specifies whether alias IP ranges (and secondary
+      address ranges) are allowed.
+    allowAutoModeSubnet: Specifies whether auto mode subnet creation is
+      allowed.
+    allowClassDFirewalls: Specifies whether firewalls for Class D address
+      ranges are supported.
+    allowCloudNat: Specifies whether cloud NAT creation is allowed.
+    allowCloudRouter: Specifies whether cloud router creation is allowed.
+    allowExternalIpAccess: Specifies whether VMs are allowed to have external
+      IP access on network interfaces connected to this VPC.
+    allowInterconnect: Specifies whether Cloud Interconnect creation is
+      allowed.
+    allowLoadBalancing: Specifies whether cloud load balancing is allowed.
+    allowMultiNicInSameNetwork: Specifies whether multi-nic in the same
+      network is allowed.
+    allowPacketMirroring: Specifies whether Packet Mirroring 1.0 is supported.
+    allowPrivateGoogleAccess: Specifies whether private Google access is
+      allowed.
+    allowPsc: Specifies whether PSC creation is allowed.
+    allowSameNetworkUnicast: Specifies whether unicast within the same network
+      is allowed.
+    allowStaticRoutes: Specifies whether static route creation is allowed.
+    allowSubInterfaces: Specifies whether sub interfaces are allowed.
+    allowVpcPeering: Specifies whether VPC peering is allowed.
+    allowVpn: Specifies whether VPN creation is allowed.
+    interfaceTypes: If set, limits the interface types that the network
+      supports. If empty, all interface types are supported.
+    subnetPurposes: Specifies which subnetwork purposes are supported.
+    subnetStackTypes: Specifies which subnetwork stack types are supported.
+    unicast: Specifies which type of unicast is supported.
+  """
+
+  class AddressPurposesValueListEntryValuesEnum(_messages.Enum):
+    r"""AddressPurposesValueListEntryValuesEnum enum type.
+
+    Values:
+      DNS_RESOLVER: DNS resolver address in the subnetwork.
+      GCE_ENDPOINT: VM internal/alias IP, Internal LB service IP, etc.
+      IPSEC_INTERCONNECT: A regional internal IP address range reserved for
+        the VLAN attachment that is used in HA VPN over Cloud Interconnect.
+        This regional internal IP address range must not overlap with any IP
+        address range of subnet/route in the VPC network and its peering
+        networks. After the VLAN attachment is created with the reserved IP
+        address range, when creating a new VPN gateway, its interface IP
+        address is allocated from the associated VLAN attachment's IP address
+        range.
+      NAT_AUTO: External IP automatically reserved for Cloud NAT.
+      PRIVATE_SERVICE_CONNECT: A private network IP address that can be used
+        to configure Private Service Connect. This purpose can be specified
+        only for GLOBAL addresses of Type INTERNAL
+      SERVERLESS: A regional internal IP address range reserved for
+        Serverless.
+      SHARED_LOADBALANCER_VIP: A private network IP address that can be shared
+        by multiple Internal Load Balancer forwarding rules.
+      VPC_PEERING: IP range for peer networks.
+    """
+    DNS_RESOLVER = 0
+    GCE_ENDPOINT = 1
+    IPSEC_INTERCONNECT = 2
+    NAT_AUTO = 3
+    PRIVATE_SERVICE_CONNECT = 4
+    SERVERLESS = 5
+    SHARED_LOADBALANCER_VIP = 6
+    VPC_PEERING = 7
+
+  class AllowAliasIpRangesValueValuesEnum(_messages.Enum):
+    r"""Specifies whether alias IP ranges (and secondary address ranges) are
+    allowed.
+
+    Values:
+      ALIAS_IP_RANGES_ALLOWED: <no description>
+      ALIAS_IP_RANGES_BLOCKED: <no description>
+    """
+    ALIAS_IP_RANGES_ALLOWED = 0
+    ALIAS_IP_RANGES_BLOCKED = 1
+
+  class AllowAutoModeSubnetValueValuesEnum(_messages.Enum):
+    r"""Specifies whether auto mode subnet creation is allowed.
+
+    Values:
+      AUTO_MODE_SUBNET_ALLOWED: <no description>
+      AUTO_MODE_SUBNET_BLOCKED: <no description>
+    """
+    AUTO_MODE_SUBNET_ALLOWED = 0
+    AUTO_MODE_SUBNET_BLOCKED = 1
+
+  class AllowClassDFirewallsValueValuesEnum(_messages.Enum):
+    r"""Specifies whether firewalls for Class D address ranges are supported.
+
+    Values:
+      CLASS_D_FIREWALLS_ALLOWED: <no description>
+      CLASS_D_FIREWALLS_BLOCKED: <no description>
+    """
+    CLASS_D_FIREWALLS_ALLOWED = 0
+    CLASS_D_FIREWALLS_BLOCKED = 1
+
+  class AllowCloudNatValueValuesEnum(_messages.Enum):
+    r"""Specifies whether cloud NAT creation is allowed.
+
+    Values:
+      CLOUD_NAT_ALLOWED: <no description>
+      CLOUD_NAT_BLOCKED: <no description>
+    """
+    CLOUD_NAT_ALLOWED = 0
+    CLOUD_NAT_BLOCKED = 1
+
+  class AllowCloudRouterValueValuesEnum(_messages.Enum):
+    r"""Specifies whether cloud router creation is allowed.
+
+    Values:
+      CLOUD_ROUTER_ALLOWED: <no description>
+      CLOUD_ROUTER_BLOCKED: <no description>
+    """
+    CLOUD_ROUTER_ALLOWED = 0
+    CLOUD_ROUTER_BLOCKED = 1
+
+  class AllowExternalIpAccessValueValuesEnum(_messages.Enum):
+    r"""Specifies whether VMs are allowed to have external IP access on
+    network interfaces connected to this VPC.
+
+    Values:
+      EXTERNAL_IP_ACCESS_ALLOWED: <no description>
+      EXTERNAL_IP_ACCESS_BLOCKED: <no description>
+    """
+    EXTERNAL_IP_ACCESS_ALLOWED = 0
+    EXTERNAL_IP_ACCESS_BLOCKED = 1
+
+  class AllowInterconnectValueValuesEnum(_messages.Enum):
+    r"""Specifies whether Cloud Interconnect creation is allowed.
+
+    Values:
+      INTERCONNECT_ALLOWED: <no description>
+      INTERCONNECT_BLOCKED: <no description>
+    """
+    INTERCONNECT_ALLOWED = 0
+    INTERCONNECT_BLOCKED = 1
+
+  class AllowLoadBalancingValueValuesEnum(_messages.Enum):
+    r"""Specifies whether cloud load balancing is allowed.
+
+    Values:
+      LOAD_BALANCING_ALLOWED: <no description>
+      LOAD_BALANCING_BLOCKED: <no description>
+    """
+    LOAD_BALANCING_ALLOWED = 0
+    LOAD_BALANCING_BLOCKED = 1
+
+  class AllowMultiNicInSameNetworkValueValuesEnum(_messages.Enum):
+    r"""Specifies whether multi-nic in the same network is allowed.
+
+    Values:
+      MULTI_NIC_IN_SAME_NETWORK_ALLOWED: <no description>
+      MULTI_NIC_IN_SAME_NETWORK_BLOCKED: <no description>
+    """
+    MULTI_NIC_IN_SAME_NETWORK_ALLOWED = 0
+    MULTI_NIC_IN_SAME_NETWORK_BLOCKED = 1
+
+  class AllowPacketMirroringValueValuesEnum(_messages.Enum):
+    r"""Specifies whether Packet Mirroring 1.0 is supported.
+
+    Values:
+      PACKET_MIRRORING_ALLOWED: <no description>
+      PACKET_MIRRORING_BLOCKED: <no description>
+    """
+    PACKET_MIRRORING_ALLOWED = 0
+    PACKET_MIRRORING_BLOCKED = 1
+
+  class AllowPrivateGoogleAccessValueValuesEnum(_messages.Enum):
+    r"""Specifies whether private Google access is allowed.
+
+    Values:
+      PRIVATE_GOOGLE_ACCESS_ALLOWED: <no description>
+      PRIVATE_GOOGLE_ACCESS_BLOCKED: <no description>
+    """
+    PRIVATE_GOOGLE_ACCESS_ALLOWED = 0
+    PRIVATE_GOOGLE_ACCESS_BLOCKED = 1
+
+  class AllowPscValueValuesEnum(_messages.Enum):
+    r"""Specifies whether PSC creation is allowed.
+
+    Values:
+      PSC_ALLOWED: <no description>
+      PSC_BLOCKED: <no description>
+    """
+    PSC_ALLOWED = 0
+    PSC_BLOCKED = 1
+
+  class AllowSameNetworkUnicastValueValuesEnum(_messages.Enum):
+    r"""Specifies whether unicast within the same network is allowed.
+
+    Values:
+      SAME_NETWORK_UNICAST_ALLOWED: <no description>
+      SAME_NETWORK_UNICAST_BLOCKED: <no description>
+    """
+    SAME_NETWORK_UNICAST_ALLOWED = 0
+    SAME_NETWORK_UNICAST_BLOCKED = 1
+
+  class AllowStaticRoutesValueValuesEnum(_messages.Enum):
+    r"""Specifies whether static route creation is allowed.
+
+    Values:
+      STATIC_ROUTES_ALLOWED: <no description>
+      STATIC_ROUTES_BLOCKED: <no description>
+    """
+    STATIC_ROUTES_ALLOWED = 0
+    STATIC_ROUTES_BLOCKED = 1
+
+  class AllowSubInterfacesValueValuesEnum(_messages.Enum):
+    r"""Specifies whether sub interfaces are allowed.
+
+    Values:
+      SUBINTERFACES_ALLOWED: <no description>
+      SUBINTERFACES_BLOCKED: <no description>
+    """
+    SUBINTERFACES_ALLOWED = 0
+    SUBINTERFACES_BLOCKED = 1
+
+  class AllowVpcPeeringValueValuesEnum(_messages.Enum):
+    r"""Specifies whether VPC peering is allowed.
+
+    Values:
+      VPC_PEERING_ALLOWED: <no description>
+      VPC_PEERING_BLOCKED: <no description>
+    """
+    VPC_PEERING_ALLOWED = 0
+    VPC_PEERING_BLOCKED = 1
+
+  class AllowVpnValueValuesEnum(_messages.Enum):
+    r"""Specifies whether VPN creation is allowed.
+
+    Values:
+      VPN_ALLOWED: <no description>
+      VPN_BLOCKED: <no description>
+    """
+    VPN_ALLOWED = 0
+    VPN_BLOCKED = 1
+
+  class InterfaceTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""InterfaceTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      GVNIC: GVNIC
+      IDPF: IDPF
+      IRDMA: IRDMA
+      MRDMA: MRDMA
+      UNSPECIFIED_NIC_TYPE: No type specified.
+      VIRTIO_NET: VIRTIO
+    """
+    GVNIC = 0
+    IDPF = 1
+    IRDMA = 2
+    MRDMA = 3
+    UNSPECIFIED_NIC_TYPE = 4
+    VIRTIO_NET = 5
+
+  class SubnetPurposesValueListEntryValuesEnum(_messages.Enum):
+    r"""SubnetPurposesValueListEntryValuesEnum enum type.
+
+    Values:
+      SUBNET_PURPOSE_CUSTOM_HARDWARE: <no description>
+      SUBNET_PURPOSE_PRIVATE: <no description>
+    """
+    SUBNET_PURPOSE_CUSTOM_HARDWARE = 0
+    SUBNET_PURPOSE_PRIVATE = 1
+
+  class SubnetStackTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""SubnetStackTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      SUBNET_STACK_TYPE_IPV4_IPV6: <no description>
+      SUBNET_STACK_TYPE_IPV4_ONLY: <no description>
+      SUBNET_STACK_TYPE_IPV6_ONLY: <no description>
+    """
+    SUBNET_STACK_TYPE_IPV4_IPV6 = 0
+    SUBNET_STACK_TYPE_IPV4_ONLY = 1
+    SUBNET_STACK_TYPE_IPV6_ONLY = 2
+
+  class UnicastValueValuesEnum(_messages.Enum):
+    r"""Specifies which type of unicast is supported.
+
+    Values:
+      UNICAST_SDN: <no description>
+      UNICAST_ULL: <no description>
+    """
+    UNICAST_SDN = 0
+    UNICAST_ULL = 1
+
+  addressPurposes = _messages.EnumField('AddressPurposesValueListEntryValuesEnum', 1, repeated=True)
+  allowAliasIpRanges = _messages.EnumField('AllowAliasIpRangesValueValuesEnum', 2)
+  allowAutoModeSubnet = _messages.EnumField('AllowAutoModeSubnetValueValuesEnum', 3)
+  allowClassDFirewalls = _messages.EnumField('AllowClassDFirewallsValueValuesEnum', 4)
+  allowCloudNat = _messages.EnumField('AllowCloudNatValueValuesEnum', 5)
+  allowCloudRouter = _messages.EnumField('AllowCloudRouterValueValuesEnum', 6)
+  allowExternalIpAccess = _messages.EnumField('AllowExternalIpAccessValueValuesEnum', 7)
+  allowInterconnect = _messages.EnumField('AllowInterconnectValueValuesEnum', 8)
+  allowLoadBalancing = _messages.EnumField('AllowLoadBalancingValueValuesEnum', 9)
+  allowMultiNicInSameNetwork = _messages.EnumField('AllowMultiNicInSameNetworkValueValuesEnum', 10)
+  allowPacketMirroring = _messages.EnumField('AllowPacketMirroringValueValuesEnum', 11)
+  allowPrivateGoogleAccess = _messages.EnumField('AllowPrivateGoogleAccessValueValuesEnum', 12)
+  allowPsc = _messages.EnumField('AllowPscValueValuesEnum', 13)
+  allowSameNetworkUnicast = _messages.EnumField('AllowSameNetworkUnicastValueValuesEnum', 14)
+  allowStaticRoutes = _messages.EnumField('AllowStaticRoutesValueValuesEnum', 15)
+  allowSubInterfaces = _messages.EnumField('AllowSubInterfacesValueValuesEnum', 16)
+  allowVpcPeering = _messages.EnumField('AllowVpcPeeringValueValuesEnum', 17)
+  allowVpn = _messages.EnumField('AllowVpnValueValuesEnum', 18)
+  interfaceTypes = _messages.EnumField('InterfaceTypesValueListEntryValuesEnum', 19, repeated=True)
+  subnetPurposes = _messages.EnumField('SubnetPurposesValueListEntryValuesEnum', 20, repeated=True)
+  subnetStackTypes = _messages.EnumField('SubnetStackTypesValueListEntryValuesEnum', 21, repeated=True)
+  unicast = _messages.EnumField('UnicastValueValuesEnum', 22)
+
+
+class NetworkProfilesListResponse(_messages.Message):
+  r"""Contains a list of network profiles.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    etag: A string attribute.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of NetworkProfile resources.
+    kind: [Output Only] Type of resource. Always compute#networkProfileList
+      for network profiles.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources. end_interface:
+      MixerListResponseWithEtagBuilder
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        LIST_OVERHEAD_QUOTA_EXCEED: Resource can't be retrieved due to list
+          overhead quota exceed which captures the amount of resources
+          filtered out by user-defined list filter.
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        QUOTA_INFO_UNAVAILABLE: Quota information is not available to client
+          requests (e.g: regions.list).
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      LIST_OVERHEAD_QUOTA_EXCEED = 10
+      MISSING_TYPE_DEPENDENCY = 11
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 12
+      NEXT_HOP_CANNOT_IP_FORWARD = 13
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 14
+      NEXT_HOP_INSTANCE_NOT_FOUND = 15
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 16
+      NEXT_HOP_NOT_RUNNING = 17
+      NOT_CRITICAL_ERROR = 18
+      NO_RESULTS_ON_PAGE = 19
+      PARTIAL_SUCCESS = 20
+      QUOTA_INFO_UNAVAILABLE = 21
+      REQUIRED_TOS_AGREEMENT = 22
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 23
+      RESOURCE_NOT_DELETED = 24
+      SCHEMA_VALIDATION_IGNORED = 25
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 26
+      UNDECLARED_PROPERTIES = 27
+      UNREACHABLE = 28
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  etag = _messages.StringField(1)
+  id = _messages.StringField(2)
+  items = _messages.MessageField('NetworkProfile', 3, repeated=True)
+  kind = _messages.StringField(4, default='compute#networkProfileList')
+  nextPageToken = _messages.StringField(5)
+  selfLink = _messages.StringField(6)
+  unreachables = _messages.StringField(7, repeated=True)
+  warning = _messages.MessageField('WarningValue', 8)
 
 
 class NetworkRoutingConfig(_messages.Message):
@@ -58850,14 +59525,11 @@ class PathMatcher(_messages.Message):
     defaultRouteAction: defaultRouteAction takes effect when none of the
       pathRules or routeRules match. The load balancer performs advanced
       routing actions, such as URL rewrites and header transformations, before
-      forwarding the request to the selected backend. If defaultRouteAction
-      specifies any weightedBackendServices, defaultService must not be set.
-      Conversely if defaultService is set, defaultRouteAction cannot contain
-      any weightedBackendServices. If defaultRouteAction is specified, don't
-      set defaultUrlRedirect. If defaultRouteAction.weightedBackendServices is
-      specified, don't set defaultService. URL maps for classic Application
-      Load Balancers only support the urlRewrite action within a path
-      matcher's defaultRouteAction.
+      forwarding the request to the selected backend. Only one of
+      defaultUrlRedirect, defaultService or
+      defaultRouteAction.weightedBackendService can be set. URL maps for
+      classic Application Load Balancers only support the urlRewrite action
+      within a path matcher's defaultRouteAction.
     defaultService: The full or partial URL to the BackendService resource.
       This URL is used if none of the pathRules or routeRules defined by this
       PathMatcher are matched. For example, the following are all valid URLs
@@ -58867,19 +59539,16 @@ class PathMatcher(_messages.Message):
       compute/v1/projects/project/global/backendServices/backendService -
       global/backendServices/backendService If defaultRouteAction is also
       specified, advanced routing actions, such as URL rewrites, take effect
-      before sending the request to the backend. However, if defaultService is
-      specified, defaultRouteAction cannot contain any
-      weightedBackendServices. Conversely, if defaultRouteAction specifies any
-      weightedBackendServices, defaultService must not be specified. If
-      defaultService is specified, then set either defaultUrlRedirect or
-      defaultRouteAction.weightedBackendService. Don't set both. Authorization
+      before sending the request to the backend. Only one of
+      defaultUrlRedirect, defaultService or
+      defaultRouteAction.weightedBackendService can be set. Authorization
       requires one or more of the following Google IAM permissions on the
       specified resource default_service: - compute.backendBuckets.use -
       compute.backendServices.use
     defaultUrlRedirect: When none of the specified pathRules or routeRules
       match, the request is redirected to a URL specified by
-      defaultUrlRedirect. If defaultUrlRedirect is specified, then set either
-      defaultService or defaultRouteAction. Don't set both. Not supported when
+      defaultUrlRedirect. Only one of defaultUrlRedirect, defaultService or
+      defaultRouteAction.weightedBackendService can be set. Not supported when
       the URL map is bound to a target gRPC proxy.
     description: An optional description of this resource. Provide this
       property when you create the resource.
@@ -58949,23 +59618,18 @@ class PathRule(_messages.Message):
     routeAction: In response to a matching path, the load balancer performs
       advanced routing actions, such as URL rewrites and header
       transformations, before forwarding the request to the selected backend.
-      If routeAction specifies any weightedBackendServices, service must not
-      be set. Conversely if service is set, routeAction cannot contain any
-      weightedBackendServices. Only one of routeAction or urlRedirect must be
-      set. URL maps for classic Application Load Balancers only support the
-      urlRewrite action within a path rule's routeAction.
+      Only one of urlRedirect, service or routeAction.weightedBackendService
+      can be set. URL maps for classic Application Load Balancers only support
+      the urlRewrite action within a path rule's routeAction.
     service: The full or partial URL of the backend service resource to which
       traffic is directed if this rule is matched. If routeAction is also
       specified, advanced routing actions, such as URL rewrites, take effect
-      before sending the request to the backend. However, if service is
-      specified, routeAction cannot contain any weightedBackendServices.
-      Conversely, if routeAction specifies any weightedBackendServices,
-      service must not be specified. Only one of urlRedirect, service or
-      routeAction.weightedBackendService must be set.
+      before sending the request to the backend. Only one of urlRedirect,
+      service or routeAction.weightedBackendService can be set.
     urlRedirect: When a path pattern is matched, the request is redirected to
-      a URL specified by urlRedirect. If urlRedirect is specified, service or
-      routeAction must not be set. Not supported when the URL map is bound to
-      a target gRPC proxy.
+      a URL specified by urlRedirect. Only one of urlRedirect, service or
+      routeAction.weightedBackendService can be set. Not supported when the
+      URL map is bound to a target gRPC proxy.
   """
 
   customErrorResponsePolicy = _messages.MessageField('CustomErrorResponsePolicy', 1)
@@ -59395,7 +60059,8 @@ class Project(_messages.Message):
     defaultServiceAccount: [Output Only] Default service account used by VMs
       running in this project.
     description: An optional textual description of the resource.
-    enabledFeatures: Restricted features enabled for use on this project.
+    enabledFeatures: An optional list of restricted features enabled for use
+      on this project.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server. This is *not* the project ID, and is just a
       unique ID used by Compute Engine to identify resources.
@@ -59405,8 +60070,8 @@ class Project(_messages.Message):
       to make requests to Compute Engine.
     quotas: [Output Only] Quotas assigned to this project.
     selfLink: [Output Only] Server-defined URL for the resource.
-    usageExportLocation: The naming prefix for daily usage reports and the
-      Google Cloud Storage bucket where they are stored.
+    usageExportLocation: An optional naming prefix for daily usage reports and
+      the Google Cloud Storage bucket where they are stored.
     vmDnsSetting: [Output Only] Default internal DNS setting used by VMs
       running in this project.
     xpnProjectStatus: [Output Only] The role this project has in a shared VPC
@@ -73970,16 +74635,18 @@ class Subnetwork(_messages.Message):
       This field can be both set at resource creation time and updated using
       patch.
     PurposeValueValuesEnum: The purpose of the resource. This field can be
-      either PRIVATE, GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, or
-      PRIVATE_SERVICE_CONNECT. PRIVATE is the default purpose for user-created
-      subnets or subnets that are automatically created in auto mode networks.
-      Subnets with purpose set to GLOBAL_MANAGED_PROXY or
-      REGIONAL_MANAGED_PROXY are user-created subnetworks that are reserved
-      for Envoy-based load balancers. A subnet with purpose set to
-      PRIVATE_SERVICE_CONNECT is used to publish services using Private
-      Service Connect. If unspecified, the subnet purpose defaults to PRIVATE.
-      The enableFlowLogs field isn't supported if the subnet purpose field is
-      set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
+      either PRIVATE, GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY,
+      PEER_MIGRATION or PRIVATE_SERVICE_CONNECT. PRIVATE is the default
+      purpose for user-created subnets or subnets that are automatically
+      created in auto mode networks. Subnets with purpose set to
+      GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY are user-created
+      subnetworks that are reserved for Envoy-based load balancers. A subnet
+      with purpose set to PRIVATE_SERVICE_CONNECT is used to publish services
+      using Private Service Connect. A subnet with purpose set to
+      PEER_MIGRATION is used for subnet migration from one peered VPC to
+      another. If unspecified, the subnet purpose defaults to PRIVATE. The
+      enableFlowLogs field isn't supported if the subnet purpose field is set
+      to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
     RoleValueValuesEnum: The role of subnetwork. Currently, this field is only
       used when purpose is set to GLOBAL_MANAGED_PROXY or
       REGIONAL_MANAGED_PROXY. The value can be set to ACTIVE or BACKUP. An
@@ -74057,16 +74724,18 @@ class Subnetwork(_messages.Message):
     privateIpv6GoogleAccess: This field is for internal use. This field can be
       both set at resource creation time and updated using patch.
     purpose: The purpose of the resource. This field can be either PRIVATE,
-      GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, or
+      GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PEER_MIGRATION or
       PRIVATE_SERVICE_CONNECT. PRIVATE is the default purpose for user-created
       subnets or subnets that are automatically created in auto mode networks.
       Subnets with purpose set to GLOBAL_MANAGED_PROXY or
       REGIONAL_MANAGED_PROXY are user-created subnetworks that are reserved
       for Envoy-based load balancers. A subnet with purpose set to
       PRIVATE_SERVICE_CONNECT is used to publish services using Private
-      Service Connect. If unspecified, the subnet purpose defaults to PRIVATE.
-      The enableFlowLogs field isn't supported if the subnet purpose field is
-      set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
+      Service Connect. A subnet with purpose set to PEER_MIGRATION is used for
+      subnet migration from one peered VPC to another. If unspecified, the
+      subnet purpose defaults to PRIVATE. The enableFlowLogs field isn't
+      supported if the subnet purpose field is set to GLOBAL_MANAGED_PROXY or
+      REGIONAL_MANAGED_PROXY.
     region: URL of the region where the Subnetwork resides. This field can be
       set only at resource creation time.
     reservedInternalRange: The URL of the reserved internal range.
@@ -74127,15 +74796,17 @@ class Subnetwork(_messages.Message):
 
   class PurposeValueValuesEnum(_messages.Enum):
     r"""The purpose of the resource. This field can be either PRIVATE,
-    GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, or PRIVATE_SERVICE_CONNECT.
-    PRIVATE is the default purpose for user-created subnets or subnets that
-    are automatically created in auto mode networks. Subnets with purpose set
-    to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY are user-created
-    subnetworks that are reserved for Envoy-based load balancers. A subnet
-    with purpose set to PRIVATE_SERVICE_CONNECT is used to publish services
-    using Private Service Connect. If unspecified, the subnet purpose defaults
-    to PRIVATE. The enableFlowLogs field isn't supported if the subnet purpose
-    field is set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
+    GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PEER_MIGRATION or
+    PRIVATE_SERVICE_CONNECT. PRIVATE is the default purpose for user-created
+    subnets or subnets that are automatically created in auto mode networks.
+    Subnets with purpose set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY
+    are user-created subnetworks that are reserved for Envoy-based load
+    balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used to
+    publish services using Private Service Connect. A subnet with purpose set
+    to PEER_MIGRATION is used for subnet migration from one peered VPC to
+    another. If unspecified, the subnet purpose defaults to PRIVATE. The
+    enableFlowLogs field isn't supported if the subnet purpose field is set to
+    GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
 
     Values:
       GLOBAL_MANAGED_PROXY: Subnet reserved for Global Envoy-based Load
@@ -79562,31 +80233,25 @@ class UrlMap(_messages.Message):
     defaultRouteAction: defaultRouteAction takes effect when none of the
       hostRules match. The load balancer performs advanced routing actions,
       such as URL rewrites and header transformations, before forwarding the
-      request to the selected backend. If defaultRouteAction specifies any
-      weightedBackendServices, defaultService must not be set. Conversely if
-      defaultService is set, defaultRouteAction cannot contain any
-      weightedBackendServices. Only one of defaultRouteAction or
-      defaultUrlRedirect must be set. URL maps for classic Application Load
-      Balancers only support the urlRewrite action within defaultRouteAction.
-      defaultRouteAction has no effect when the URL map is bound to a target
-      gRPC proxy that has the validateForProxyless field set to true.
+      request to the selected backend. Only one of defaultUrlRedirect,
+      defaultService or defaultRouteAction.weightedBackendService can be set.
+      URL maps for classic Application Load Balancers only support the
+      urlRewrite action within defaultRouteAction. defaultRouteAction has no
+      effect when the URL map is bound to a target gRPC proxy that has the
+      validateForProxyless field set to true.
     defaultService: The full or partial URL of the defaultService resource to
       which traffic is directed if none of the hostRules match. If
       defaultRouteAction is also specified, advanced routing actions, such as
       URL rewrites, take effect before sending the request to the backend.
-      However, if defaultService is specified, defaultRouteAction cannot
-      contain any defaultRouteAction.weightedBackendServices. Conversely, if
-      defaultRouteAction specifies any
-      defaultRouteAction.weightedBackendServices, defaultService must not be
-      specified. If defaultService is specified, then set either
-      defaultUrlRedirect , or defaultRouteAction.weightedBackendService Don't
-      set both. defaultService has no effect when the URL map is bound to a
-      target gRPC proxy that has the validateForProxyless field set to true.
+      Only one of defaultUrlRedirect, defaultService or
+      defaultRouteAction.weightedBackendService can be set. defaultService has
+      no effect when the URL map is bound to a target gRPC proxy that has the
+      validateForProxyless field set to true.
     defaultUrlRedirect: When none of the specified hostRules match, the
-      request is redirected to a URL specified by defaultUrlRedirect. If
-      defaultUrlRedirect is specified, defaultService or defaultRouteAction
-      must not be set. Not supported when the URL map is bound to a target
-      gRPC proxy.
+      request is redirected to a URL specified by defaultUrlRedirect. Only one
+      of defaultUrlRedirect, defaultService or
+      defaultRouteAction.weightedBackendService can be set. Not supported when
+      the URL map is bound to a target gRPC proxy.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
@@ -80333,16 +80998,18 @@ class UsableSubnetwork(_messages.Message):
       holds. It's immutable and can only be specified during creation or the
       first time the subnet is updated into IPV4_IPV6 dual stack.
     PurposeValueValuesEnum: The purpose of the resource. This field can be
-      either PRIVATE, GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, or
-      PRIVATE_SERVICE_CONNECT. PRIVATE is the default purpose for user-created
-      subnets or subnets that are automatically created in auto mode networks.
-      Subnets with purpose set to GLOBAL_MANAGED_PROXY or
-      REGIONAL_MANAGED_PROXY are user-created subnetworks that are reserved
-      for Envoy-based load balancers. A subnet with purpose set to
-      PRIVATE_SERVICE_CONNECT is used to publish services using Private
-      Service Connect. If unspecified, the subnet purpose defaults to PRIVATE.
-      The enableFlowLogs field isn't supported if the subnet purpose field is
-      set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
+      either PRIVATE, GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY,
+      PEER_MIGRATION or PRIVATE_SERVICE_CONNECT. PRIVATE is the default
+      purpose for user-created subnets or subnets that are automatically
+      created in auto mode networks. Subnets with purpose set to
+      GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY are user-created
+      subnetworks that are reserved for Envoy-based load balancers. A subnet
+      with purpose set to PRIVATE_SERVICE_CONNECT is used to publish services
+      using Private Service Connect. A subnet with purpose set to
+      PEER_MIGRATION is used for subnet migration from one peered VPC to
+      another. If unspecified, the subnet purpose defaults to PRIVATE. The
+      enableFlowLogs field isn't supported if the subnet purpose field is set
+      to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
     RoleValueValuesEnum: The role of subnetwork. Currently, this field is only
       used when purpose is set to GLOBAL_MANAGED_PROXY or
       REGIONAL_MANAGED_PROXY. The value can be set to ACTIVE or BACKUP. An
@@ -80368,16 +81035,18 @@ class UsableSubnetwork(_messages.Message):
       the subnet is updated into IPV4_IPV6 dual stack.
     network: Network URL.
     purpose: The purpose of the resource. This field can be either PRIVATE,
-      GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, or
+      GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PEER_MIGRATION or
       PRIVATE_SERVICE_CONNECT. PRIVATE is the default purpose for user-created
       subnets or subnets that are automatically created in auto mode networks.
       Subnets with purpose set to GLOBAL_MANAGED_PROXY or
       REGIONAL_MANAGED_PROXY are user-created subnetworks that are reserved
       for Envoy-based load balancers. A subnet with purpose set to
       PRIVATE_SERVICE_CONNECT is used to publish services using Private
-      Service Connect. If unspecified, the subnet purpose defaults to PRIVATE.
-      The enableFlowLogs field isn't supported if the subnet purpose field is
-      set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
+      Service Connect. A subnet with purpose set to PEER_MIGRATION is used for
+      subnet migration from one peered VPC to another. If unspecified, the
+      subnet purpose defaults to PRIVATE. The enableFlowLogs field isn't
+      supported if the subnet purpose field is set to GLOBAL_MANAGED_PROXY or
+      REGIONAL_MANAGED_PROXY.
     role: The role of subnetwork. Currently, this field is only used when
       purpose is set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY. The
       value can be set to ACTIVE or BACKUP. An ACTIVE subnetwork is one that
@@ -80409,15 +81078,17 @@ class UsableSubnetwork(_messages.Message):
 
   class PurposeValueValuesEnum(_messages.Enum):
     r"""The purpose of the resource. This field can be either PRIVATE,
-    GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, or PRIVATE_SERVICE_CONNECT.
-    PRIVATE is the default purpose for user-created subnets or subnets that
-    are automatically created in auto mode networks. Subnets with purpose set
-    to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY are user-created
-    subnetworks that are reserved for Envoy-based load balancers. A subnet
-    with purpose set to PRIVATE_SERVICE_CONNECT is used to publish services
-    using Private Service Connect. If unspecified, the subnet purpose defaults
-    to PRIVATE. The enableFlowLogs field isn't supported if the subnet purpose
-    field is set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
+    GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PEER_MIGRATION or
+    PRIVATE_SERVICE_CONNECT. PRIVATE is the default purpose for user-created
+    subnets or subnets that are automatically created in auto mode networks.
+    Subnets with purpose set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY
+    are user-created subnetworks that are reserved for Envoy-based load
+    balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used to
+    publish services using Private Service Connect. A subnet with purpose set
+    to PEER_MIGRATION is used for subnet migration from one peered VPC to
+    another. If unspecified, the subnet purpose defaults to PRIVATE. The
+    enableFlowLogs field isn't supported if the subnet purpose field is set to
+    GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
 
     Values:
       GLOBAL_MANAGED_PROXY: Subnet reserved for Global Envoy-based Load

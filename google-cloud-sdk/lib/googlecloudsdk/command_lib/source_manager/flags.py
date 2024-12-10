@@ -130,3 +130,16 @@ def AddCAPool(parser, help_text="CA Pool path for private instance."):
   parser.add_argument(
       "--ca-pool", dest="ca_pool", required=False, help=help_text
   )
+
+
+def AddEnableWorkforceIdentityFederation(
+    parser,
+    help_text="Bool indicator for workforce identity federation instance.",
+):
+  parser.add_argument(
+      "--enable-workforce-identity-federation",
+      dest="enable_workforce_identity_federation",
+      action="store_true",
+      required=False,
+      help=help_text,
+  )

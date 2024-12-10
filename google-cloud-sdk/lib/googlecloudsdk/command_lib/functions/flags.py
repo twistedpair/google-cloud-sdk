@@ -835,7 +835,7 @@ def GetFunctionResourceSpec():
 
 
 def AddFunctionResourceArg(parser, verb, required=True):
-  """Adds a Cloud function resource argument.
+  """Adds a Cloud Function resource argument.
 
   NOTE: May be used only if it's the only resource arg in the command.
 
@@ -847,7 +847,7 @@ def AddFunctionResourceArg(parser, verb, required=True):
   concept_parsers.ConceptParser.ForResource(
       'NAME',
       GetFunctionResourceSpec(),
-      'The Cloud function name {}.'.format(verb),
+      'The Cloud Function name {}.'.format(verb),
       required=required,
   ).AddToParser(parser)
 

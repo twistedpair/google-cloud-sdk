@@ -55,7 +55,7 @@ class ParametermanagerV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new ParameterVersion in a given project and location.
+      r"""Creates a new ParameterVersion in a given project, location, and parameter.
 
       Args:
         request: (ParametermanagerProjectsLocationsParametersVersionsCreateRequest) input message
@@ -136,7 +136,7 @@ class ParametermanagerV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists ParameterVersions in a given project and location.
+      r"""Lists ParameterVersions in a given project, location, and parameter.
 
       Args:
         request: (ParametermanagerProjectsLocationsParametersVersionsListRequest) input message
@@ -154,7 +154,7 @@ class ParametermanagerV1(base_api.BaseApiClient):
         method_id='parametermanager.projects.locations.parameters.versions.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'view'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/versions',
         request_field='',
         request_type_name='ParametermanagerProjectsLocationsParametersVersionsListRequest',
@@ -163,7 +163,7 @@ class ParametermanagerV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single ParameterVersion.
+      r"""Updates a single ParameterVersion.
 
       Args:
         request: (ParametermanagerProjectsLocationsParametersVersionsPatchRequest) input message
@@ -190,7 +190,7 @@ class ParametermanagerV1(base_api.BaseApiClient):
     )
 
     def Render(self, request, global_params=None):
-      r"""Gets rendered version of a Parameter Version.
+      r"""Gets rendered version of a ParameterVersion.
 
       Args:
         request: (ParametermanagerProjectsLocationsParametersVersionsRenderRequest) input message
@@ -335,7 +335,7 @@ class ParametermanagerV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Parameter.
+      r"""Updates a single Parameter.
 
       Args:
         request: (ParametermanagerProjectsLocationsParametersPatchRequest) input message

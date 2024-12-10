@@ -48,7 +48,14 @@ class InstancesClient(object):
     self._resource_parser = resources.Registry()
     self._resource_parser.RegisterApiByName('securesourcemanager', 'v1')
 
-  def Create(self, instance_ref, kms_key, is_private, ca_pool):
+  def Create(
+      self,
+      instance_ref,
+      kms_key,
+      is_private,
+      ca_pool,
+      enable_workforce_identity_federation,
+  ):
     """Create a new Secure Source Manager instance.
 
     Args:
@@ -57,6 +64,8 @@ class InstancesClient(object):
       kms_key: customer managed encrypted key to create instance.
       is_private:  boolean indicator for private instance.
       ca_pool: path of ca pool for private instance.
+      enable_workforce_identity_federation: boolean indicator for workforce
+        identity federation.
 
     Returns:
       Created instance.
@@ -66,8 +75,17 @@ class InstancesClient(object):
       private_config = self.messages.PrivateConfig(
           caPool=ca_pool, isPrivate=is_private
       )
+    workforce_identity_federation_config = None
+    if enable_workforce_identity_federation:
+      workforce_identity_federation_config = (
+          self.messages.WorkforceIdentityFederationConfig(
+              enabled=enable_workforce_identity_federation
+          )
+      )
     instance = self.messages.Instance(
-        kmsKey=kms_key, privateConfig=private_config
+        kmsKey=kms_key,
+        privateConfig=private_config,
+        workforceIdentityFederationConfig=workforce_identity_federation_config,
     )
     # messages_util.DictToMessageWithErrorCheck
     create_req = self.messages.SecuresourcemanagerProjectsLocationsInstancesCreateRequest(

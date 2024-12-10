@@ -1443,6 +1443,14 @@ class ExecuteBatchDmlRequest(_messages.Message):
   r"""The request for ExecuteBatchDml.
 
   Fields:
+    lastStatements: Optional. If set to true, this request marks the end of
+      the transaction. The transaction should be committed or aborted after
+      these statements execute, and attempts to execute any other requests
+      against this transaction (including reads and queries) will be rejected.
+      Setting this option may cause some error reporting to be deferred until
+      commit time (e.g. validation of unique constraints). Given this,
+      successful execution of statements should not be assumed until a
+      subsequent Commit call completes successfully.
     requestOptions: Common options for this request.
     seqno: Required. A per-transaction sequence number used to identify this
       request. This field makes each request idempotent such that if the
@@ -1462,10 +1470,11 @@ class ExecuteBatchDmlRequest(_messages.Message):
       begin a new transaction.
   """
 
-  requestOptions = _messages.MessageField('RequestOptions', 1)
-  seqno = _messages.IntegerField(2)
-  statements = _messages.MessageField('Statement', 3, repeated=True)
-  transaction = _messages.MessageField('TransactionSelector', 4)
+  lastStatements = _messages.BooleanField(1)
+  requestOptions = _messages.MessageField('RequestOptions', 2)
+  seqno = _messages.IntegerField(3)
+  statements = _messages.MessageField('Statement', 4, repeated=True)
+  transaction = _messages.MessageField('TransactionSelector', 5)
 
 
 class ExecuteBatchDmlResponse(_messages.Message):
@@ -1535,6 +1544,14 @@ class ExecuteSqlRequest(_messages.Message):
       compute resources. If the field is set to `true` but the request does
       not set `partition_token`, the API returns an `INVALID_ARGUMENT` error.
     directedReadOptions: Directed read options for this request.
+    lastStatement: Optional. If set to true, this statement marks the end of
+      the transaction. The transaction should be committed or aborted after
+      this statement executes, and attempts to execute any other requests
+      against this transaction (including reads and queries) will be rejected.
+      For DML statements, setting this option may cause some error reporting
+      to be deferred until commit time (e.g. validation of unique
+      constraints). Given this, successful execution of a DML statement should
+      not be assumed until a subsequent Commit call completes successfully.
     paramTypes: It is not always possible for Cloud Spanner to infer the right
       SQL type from a JSON value. For example, values of type `BYTES` and
       values of type `STRING` both appear in params as JSON strings. In these
@@ -1670,16 +1687,17 @@ class ExecuteSqlRequest(_messages.Message):
 
   dataBoostEnabled = _messages.BooleanField(1)
   directedReadOptions = _messages.MessageField('DirectedReadOptions', 2)
-  paramTypes = _messages.MessageField('ParamTypesValue', 3)
-  params = _messages.MessageField('ParamsValue', 4)
-  partitionToken = _messages.BytesField(5)
-  queryMode = _messages.EnumField('QueryModeValueValuesEnum', 6)
-  queryOptions = _messages.MessageField('QueryOptions', 7)
-  requestOptions = _messages.MessageField('RequestOptions', 8)
-  resumeToken = _messages.BytesField(9)
-  seqno = _messages.IntegerField(10)
-  sql = _messages.StringField(11)
-  transaction = _messages.MessageField('TransactionSelector', 12)
+  lastStatement = _messages.BooleanField(3)
+  paramTypes = _messages.MessageField('ParamTypesValue', 4)
+  params = _messages.MessageField('ParamsValue', 5)
+  partitionToken = _messages.BytesField(6)
+  queryMode = _messages.EnumField('QueryModeValueValuesEnum', 7)
+  queryOptions = _messages.MessageField('QueryOptions', 8)
+  requestOptions = _messages.MessageField('RequestOptions', 9)
+  resumeToken = _messages.BytesField(10)
+  seqno = _messages.IntegerField(11)
+  sql = _messages.StringField(12)
+  transaction = _messages.MessageField('TransactionSelector', 13)
 
 
 class Expr(_messages.Message):
@@ -1971,12 +1989,14 @@ class Instance(_messages.Message):
 
   Enums:
     DefaultBackupScheduleTypeValueValuesEnum: Optional. Controls the default
-      backup behavior for new databases within the instance. Note that
-      `AUTOMATIC` is not permitted for free instances, as backups and backup
-      schedules are not allowed for free instances. In the `GetInstance` or
-      `ListInstances` response, if the value of default_backup_schedule_type
-      is unset or NONE, no default backup schedule will be created for new
-      databases within the instance.
+      backup schedule behavior for new databases within the instance. By
+      default, a backup schedule is created automatically when a new database
+      is created in a new instance. Note that the `AUTOMATIC` value isn't
+      permitted for free instances, as backups and backup schedules aren't
+      supported for free instances. In the `GetInstance` or `ListInstances`
+      response, if the value of `default_backup_schedule_type` isn't set, or
+      set to `NONE`, Spanner doesn't create a default backup schedule for new
+      databases in the instance.
     DefaultStorageTypeValueValuesEnum: The `StorageType` of the current
       instance. If unspecified, it will default to the first StorageType in
       the list of allowed_storage_types in the `InstanceConfig` for this
@@ -2006,6 +2026,8 @@ class Instance(_messages.Message):
       disallowed. For example, representing labels as the string: name + "_" +
       value would prove problematic if we were to allow "_" in a future
       release.
+    TagsValue: Optional. Tag keys/values directly bound to this resource. For
+      example: "123/environment": "prod", "123/costCenter": "marketing"
 
   Fields:
     autoscalingConfig: Optional. The autoscaling configuration. Autoscaling is
@@ -2016,13 +2038,15 @@ class Instance(_messages.Message):
       the form `projects//instanceConfigs/`. See also InstanceConfig and
       ListInstanceConfigs.
     createTime: Output only. The time at which the instance was created.
-    defaultBackupScheduleType: Optional. Controls the default backup behavior
-      for new databases within the instance. Note that `AUTOMATIC` is not
-      permitted for free instances, as backups and backup schedules are not
-      allowed for free instances. In the `GetInstance` or `ListInstances`
-      response, if the value of default_backup_schedule_type is unset or NONE,
-      no default backup schedule will be created for new databases within the
-      instance.
+    defaultBackupScheduleType: Optional. Controls the default backup schedule
+      behavior for new databases within the instance. By default, a backup
+      schedule is created automatically when a new database is created in a
+      new instance. Note that the `AUTOMATIC` value isn't permitted for free
+      instances, as backups and backup schedules aren't supported for free
+      instances. In the `GetInstance` or `ListInstances` response, if the
+      value of `default_backup_schedule_type` isn't set, or set to `NONE`,
+      Spanner doesn't create a default backup schedule for new databases in
+      the instance.
     defaultStorageType: The `StorageType` of the current instance. If
       unspecified, it will default to the first StorageType in the list of
       allowed_storage_types in the `InstanceConfig` for this instance.
@@ -2088,27 +2112,32 @@ class Instance(_messages.Message):
     state: Output only. The current instance state. For CreateInstance, the
       state must be either omitted or set to `CREATING`. For UpdateInstance,
       the state must be either omitted or set to `READY`.
+    tags: Optional. Tag keys/values directly bound to this resource. For
+      example: "123/environment": "prod", "123/costCenter": "marketing"
     updateTime: Output only. The time at which the instance was most recently
       updated.
   """
 
   class DefaultBackupScheduleTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. Controls the default backup behavior for new databases
-    within the instance. Note that `AUTOMATIC` is not permitted for free
-    instances, as backups and backup schedules are not allowed for free
-    instances. In the `GetInstance` or `ListInstances` response, if the value
-    of default_backup_schedule_type is unset or NONE, no default backup
-    schedule will be created for new databases within the instance.
+    r"""Optional. Controls the default backup schedule behavior for new
+    databases within the instance. By default, a backup schedule is created
+    automatically when a new database is created in a new instance. Note that
+    the `AUTOMATIC` value isn't permitted for free instances, as backups and
+    backup schedules aren't supported for free instances. In the `GetInstance`
+    or `ListInstances` response, if the value of
+    `default_backup_schedule_type` isn't set, or set to `NONE`, Spanner
+    doesn't create a default backup schedule for new databases in the
+    instance.
 
     Values:
       DEFAULT_BACKUP_SCHEDULE_TYPE_UNSPECIFIED: Not specified.
-      NONE: No default backup schedule will be created automatically on
-        creation of a database within the instance.
-      AUTOMATIC: A default backup schedule will be created automatically on
-        creation of a database within the instance. Once created, the default
-        backup schedule can be edited or deleted just like any other backup
-        schedule. Currently, the default backup schedule creates a full backup
-        every 24 hours and retains the backup for a period of 7 days.
+      NONE: A default backup schedule isn't created automatically when a new
+        database is created in the instance.
+      AUTOMATIC: A default backup schedule is created automatically when a new
+        database is created in the instance. The default backup schedule
+        creates a full backup every 24 hours. These full backups are retained
+        for 7 days. You can edit or delete the default backup schedule once
+        it's created.
     """
     DEFAULT_BACKUP_SCHEDULE_TYPE_UNSPECIFIED = 0
     NONE = 1
@@ -2213,6 +2242,31 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Tag keys/values directly bound to this resource. For
+    example: "123/environment": "prod", "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   autoscalingConfig = _messages.MessageField('AutoscalingConfig', 1)
   config = _messages.StringField(2)
   createTime = _messages.StringField(3)
@@ -2230,7 +2284,8 @@ class Instance(_messages.Message):
   replicaComputeCapacity = _messages.MessageField('ReplicaComputeCapacity', 15, repeated=True)
   ssdCache = _messages.StringField(16)
   state = _messages.EnumField('StateValueValuesEnum', 17)
-  updateTime = _messages.StringField(18)
+  tags = _messages.MessageField('TagsValue', 18)
+  updateTime = _messages.StringField(19)
 
 
 class InstanceConfig(_messages.Message):
@@ -3906,7 +3961,7 @@ class QueryPlan(_messages.Message):
     planNodes: The nodes in the query plan. Plan nodes are returned in pre-
       order starting with the plan root. Each PlanNode's `id` corresponds to
       its index in `plan_nodes`.
-    queryAdvice: Optional. The advices/recommendations for a query. Currently
+    queryAdvice: Optional. The advise/recommendations for a query. Currently
       this field will be serving index recommendations for a query.
   """
 

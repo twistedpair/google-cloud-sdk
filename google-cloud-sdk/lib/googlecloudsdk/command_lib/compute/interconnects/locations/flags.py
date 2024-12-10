@@ -18,17 +18,23 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
+@base.UniverseCompatible
+@base.ReleaseTracks(
+    base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA, base.ReleaseTrack.GA
+)
 class InterconnectLocationsCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(InterconnectLocationsCompleter, self).__init__(
         collection='compute.interconnectLocations',
-        list_command='alpha compute interconnects attachments list --uri',
-        **kwargs)
+        list_command='compute interconnects locations list --uri',
+        **kwargs
+    )
 
 
 def InterconnectLocationArgument(required=True):

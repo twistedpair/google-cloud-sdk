@@ -22,6 +22,7 @@ import collections
 
 from googlecloudsdk.calliope import actions as calliope_actions
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
@@ -56,6 +57,10 @@ _REQUESTED_FEATURES_CHOICES = {
 }
 
 
+@base.UniverseCompatible
+@base.ReleaseTracks(
+    base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA, base.ReleaseTrack.GA
+)
 class InterconnectsCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):

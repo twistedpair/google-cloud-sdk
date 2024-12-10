@@ -306,6 +306,11 @@ def _ConstructClusterResourceForRestoreRequest(alloydb_messages, args):
   if args.enable_private_service_connect:
     cluster_resource.pscConfig = alloydb_messages.PscConfig(pscEnabled=True)
 
+  if args.tags:
+    cluster_resource.tags = flags.GetTagsFromArgs(
+        args, alloydb_messages.Cluster.TagsValue
+    )
+
   return cluster_resource
 
 
@@ -353,6 +358,43 @@ def ConstructRestoreRequestFromArgsAlpha(
           alloydb_messages, resource_parser, args
       )
   )
+  cluster_resource.tags = flags.GetTagsFromArgs(
+      args, alloydb_messages.Cluster.TagsValue
+  )
+  return alloydb_messages.AlloydbProjectsLocationsClustersRestoreRequest(
+      parent=location_ref.RelativeName(),
+      restoreClusterRequest=alloydb_messages.RestoreClusterRequest(
+          backupSource=backup_source,
+          continuousBackupSource=continuous_backup_source,
+          clusterId=args.cluster,
+          cluster=cluster_resource,
+      ),
+  )
+
+
+def _ConstructClusterResourceForRestoreRequestBeta(alloydb_messages, args):
+  """Returns the cluster resource for restore request."""
+  cluster_resource = _ConstructClusterResourceForRestoreRequest(
+      alloydb_messages, args
+  )
+
+  return cluster_resource
+
+
+def ConstructRestoreRequestFromArgsBeta(
+    alloydb_messages, location_ref, resource_parser, args
+):
+  """Returns the cluster restore request for Beta track based on args."""
+  cluster_resource = _ConstructClusterResourceForRestoreRequestBeta(
+      alloydb_messages, args
+  )
+
+  backup_source, continuous_backup_source = (
+      _ConstructBackupAndContinuousBackupSourceForRestoreRequest(
+          alloydb_messages, resource_parser, args
+      )
+  )
+
   return alloydb_messages.AlloydbProjectsLocationsClustersRestoreRequest(
       parent=location_ref.RelativeName(),
       restoreClusterRequest=alloydb_messages.RestoreClusterRequest(
@@ -570,16 +612,18 @@ def _ConstructClusterForCreateSecondaryRequestGA(alloydb_messages, args):
     cluster.networkConfig = alloydb_messages.NetworkConfig(
         allocatedIpRange=args.allocated_ip_range_name
     )
+
+  if args.tags:
+    cluster.tags = flags.GetTagsFromArgs(
+        args, alloydb_messages.Cluster.TagsValue
+    )
   return cluster
 
 
 def _ConstructClusterForCreateSecondaryRequestBeta(
     alloydb_messages, args):
   cluster = _ConstructClusterForCreateSecondaryRequestGA(alloydb_messages, args)
-  if args.tags:
-    cluster.tags = flags.GetTagsFromArgs(
-        args, alloydb_messages.Cluster.TagsValue
-    )
+
   return cluster
 
 

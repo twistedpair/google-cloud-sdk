@@ -178,17 +178,6 @@ class GoogleApiSourceClientV1(base.EventarcClientBase):
               logging_config
           ),
       )
-    google_api_source_labels = None
-    if labels is not None:
-      google_api_source_labels = self._messages.GoogleApiSource.LabelsValue(
-          additionalProperties=[
-              self._messages.GoogleApiSource.LabelsValue.AdditionalProperty(
-                  key=key,
-                  value=value,
-              )
-              for key, value in labels.items()
-          ]
-      )
     return self._messages.GoogleApiSource(
         name=google_api_source_ref.RelativeName(),
         destination=destination_ref.RelativeName()
@@ -196,7 +185,7 @@ class GoogleApiSourceClientV1(base.EventarcClientBase):
         else '',
         loggingConfig=logging_config_enum,
         cryptoKeyName=crypto_key_name,
-        labels=google_api_source_labels,
+        labels=labels,
     )
 
   def BuildUpdateMask(
@@ -244,6 +233,10 @@ class GoogleApiSourceClientV1(base.EventarcClientBase):
           'A Google API source already exists in the project. Currently, only'
           ' one Google API source per project is supported.'
       )
+
+  def LabelsValueClass(self):
+    """Returns the labels value class."""
+    return self._messages.GoogleApiSource.LabelsValue
 
   @property
   def _resource_label_plural(self):

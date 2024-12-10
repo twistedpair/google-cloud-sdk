@@ -464,6 +464,13 @@ class _BaseInstances(object):
     if args.enable_dataplex_integration is not None:
       settings.enableDataplexIntegration = args.enable_dataplex_integration
 
+    if args.IsKnownAndSpecified('server_ca_mode'):
+      if not settings.ipConfiguration:
+        settings.ipConfiguration = sql_messages.IpConfiguration()
+      settings.ipConfiguration.serverCaMode = _ParseServerCaMode(
+          sql_messages, args.server_ca_mode
+      )
+
     # BETA args.
     if IsBetaOrNewer(release_track):
       if args.IsSpecified('storage_auto_increase_limit'):
@@ -490,13 +497,6 @@ class _BaseInstances(object):
       if args.replication_lag_max_seconds_for_recreate is not None:
         settings.replicationLagMaxSeconds = (
             args.replication_lag_max_seconds_for_recreate
-        )
-
-      if args.IsKnownAndSpecified('server_ca_mode'):
-        if not settings.ipConfiguration:
-          settings.ipConfiguration = sql_messages.IpConfiguration()
-        settings.ipConfiguration.serverCaMode = _ParseServerCaMode(
-            sql_messages, args.server_ca_mode
         )
 
       if args.IsKnownAndSpecified('server_ca_pool'):

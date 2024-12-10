@@ -173,6 +173,9 @@ class Channel(_messages.Message):
   Enums:
     StateValueValuesEnum: Output only. The state of a Channel.
 
+  Messages:
+    LabelsValue: Optional. Resource labels.
+
   Fields:
     activationToken: Output only. The activation token for the channel. The
       token must be used by the provider to register the channel for
@@ -181,6 +184,7 @@ class Channel(_messages.Message):
     cryptoKeyName: Resource name of a KMS crypto key (managed by the user)
       used to encrypt/decrypt their event data. It must match the pattern
       `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
+    labels: Optional. Resource labels.
     name: Required. The resource name of the channel. Must be unique within
       the location on the project and must be in
       `projects/{project}/locations/{location}/channels/{channel_id}` format.
@@ -224,22 +228,50 @@ class Channel(_messages.Message):
     ACTIVE = 2
     INACTIVE = 3
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Resource labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   activationToken = _messages.StringField(1)
   createTime = _messages.StringField(2)
   cryptoKeyName = _messages.StringField(3)
-  name = _messages.StringField(4)
-  provider = _messages.StringField(5)
-  pubsubTopic = _messages.StringField(6)
-  satisfiesPzs = _messages.BooleanField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  provider = _messages.StringField(6)
+  pubsubTopic = _messages.StringField(7)
+  satisfiesPzs = _messages.BooleanField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class ChannelConnection(_messages.Message):
   r"""A representation of the ChannelConnection resource. A ChannelConnection
   is a resource which event providers create during the activation process to
   establish a connection between the provider and the subscriber channel.
+
+  Messages:
+    LabelsValue: Optional. Resource labels.
 
   Fields:
     activationToken: Input only. Activation token for the channel. The token
@@ -251,18 +283,44 @@ class ChannelConnection(_messages.Message):
       This must be in
       `projects/{project}/location/{location}/channels/{channel_id}` format.
     createTime: Output only. The creation time.
+    labels: Optional. Resource labels.
     name: Required. The name of the connection.
     uid: Output only. Server assigned ID of the resource. The server
       guarantees uniqueness and immutability until deleted.
     updateTime: Output only. The last-modified time.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Resource labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   activationToken = _messages.StringField(1)
   channel = _messages.StringField(2)
   createTime = _messages.StringField(3)
-  name = _messages.StringField(4)
-  uid = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  uid = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class CloudRun(_messages.Message):
@@ -739,7 +797,7 @@ class EventarcProjectsLocationsEnrollmentsCreateRequest(_messages.Message):
     enrollment: A Enrollment resource to be passed as the request body.
     enrollmentId: Required. The user-provided ID to be assigned to the
       Enrollment. It should match the format
-      (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+      `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
     parent: Required. The parent collection in which to add this enrollment.
     validateOnly: Optional. If set, validate the request and preview the
       review, but do not post it.
@@ -917,7 +975,7 @@ class EventarcProjectsLocationsGoogleApiSourcesCreateRequest(_messages.Message):
       body.
     googleApiSourceId: Required. The user-provided ID to be assigned to the
       GoogleApiSource. It should match the format
-      (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+      `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
     parent: Required. The parent collection in which to add this google api
       source.
     validateOnly: Optional. If set, validate the request and preview the
@@ -1097,7 +1155,7 @@ class EventarcProjectsLocationsMessageBusesCreateRequest(_messages.Message):
     messageBus: A MessageBus resource to be passed as the request body.
     messageBusId: Required. The user-provided ID to be assigned to the
       MessageBus. It should match the format
-      (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$)
+      `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
     parent: Required. The parent collection in which to add this message bus.
     validateOnly: Optional. If set, validate the request and preview the
       review, but do not post it.
@@ -1322,6 +1380,7 @@ class EventarcProjectsLocationsPipelinesCreateRequest(_messages.Message):
     parent: Required. The parent collection in which to add this pipeline.
     pipeline: A Pipeline resource to be passed as the request body.
     pipelineId: Required. The user-provided ID to be assigned to the Pipeline.
+      It should match the format `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
     validateOnly: Optional. If set, validate the request and preview the
       review, but do not post it.
   """
@@ -1949,10 +2008,10 @@ class GoogleCloudEventarcV1PipelineDestinationAuthenticationConfigOAuthToken(_me
       [OAuth token](https://developers.google.com/identity/protocols/OAuth2).
       The principal who calls this API must have iam.serviceAccounts.actAs
       permission in the service account. See
-      https://cloud.google.com/iam/docs/understanding-service-
-      accounts?hl=en#sa_common for more information. Eventarc service agents
-      must have roles/roles/iam.serviceAccountTokenCreator role to allow
-      Pipeline to create OAuth2 tokens for authenticated requests.
+      https://cloud.google.com/iam/docs/understanding-service-accounts for
+      more information. Eventarc service agents must have
+      roles/roles/iam.serviceAccountTokenCreator role to allow Pipeline to
+      create OAuth2 tokens for authenticated requests.
   """
 
   scope = _messages.StringField(1)
@@ -1972,10 +2031,10 @@ class GoogleCloudEventarcV1PipelineDestinationAuthenticationConfigOidcToken(_mes
     serviceAccount: Required. Service account email used to generate the OIDC
       Token. The principal who calls this API must have
       iam.serviceAccounts.actAs permission in the service account. See
-      https://cloud.google.com/iam/docs/understanding-service-
-      accounts?hl=en#sa_common for more information. Eventarc service agents
-      must have roles/roles/iam.serviceAccountTokenCreator role to allow the
-      Pipeline to create OpenID tokens for authenticated requests.
+      https://cloud.google.com/iam/docs/understanding-service-accounts for
+      more information. Eventarc service agents must have
+      roles/roles/iam.serviceAccountTokenCreator role to allow the Pipeline to
+      create OpenID tokens for authenticated requests.
   """
 
   audience = _messages.StringField(1)
@@ -1986,81 +2045,115 @@ class GoogleCloudEventarcV1PipelineDestinationHttpEndpoint(_messages.Message):
   r"""Represents a HTTP endpoint destination.
 
   Fields:
-    messageBindingTemplate: Optional. The CEL expression used to construct a
-      new HTTP request to be sent to the final destination. The result of the
-      CEL expression must be a map of key/value pairs such that: - If a map
-      named `headers` exists on the result of the expression, then its
-      key/value pairs are directly mapped to the HTTP request headers. The
-      headers values are constructed from the corresponding value type's
-      canonical representation. If the `headers` field doesn't exist then the
-      resulting HTTP request will be without headers. - If a field named
-      `body` exists on the result of the expression then its value is directly
-      mapped to the body of the request. If the value of the `body` field is
-      of type bytes or string then it is used for the HTTP request body as-is,
-      with no conversion. If the body field is of any other type then it is
-      converted to a JSON string. If the body field doesn't exist then the
-      resulting HTTP request will be without a body. - Any other fields in the
-      resulting expression will be ignored. The CEL expression may access the
-      incoming CloudEvent message in its definition, as follows: - The `data`
-      field of the incoming CloudEvent message can be accessed using the
-      `message.data` value. - Each attribute of the incoming CloudEvent
+    messageBindingTemplate: Optional. The CEL expression used to modify how
+      the destination-bound HTTP request is constructed. If a binding
+      expression is not specified here, the message is treated as a CloudEvent
+      and is mapped to the HTTP request according to the CloudEvent HTTP
+      Protocol Binding Binary Content Mode. In this representation, all fields
+      except the `data` and `datacontenttype` field on the message are mapped
+      to HTTP request headers with a prefix of `ce-`. To construct the HTTP
+      request payload and the value of the content-type HTTP header, the
+      payload format is defined as follows: 1) Use the
+      output_payload_format_type on the Pipeline.Destination if it is set,
+      else: 2) Use the input_payload_format_type on the Pipeline if it is set,
+      else: 3) Treat the payload as opaque binary data. The `data` field of
+      the message is converted to the payload format or left as-is for case 3)
+      and then attached as the payload of the HTTP request. The `content-type`
+      header on the HTTP request is set to the payload format type or left
+      empty for case 3). However, if a mediation has updated the
+      `datacontenttype` field on the message so that it is not the same as the
+      payload format type but it is still a prefix of the payload format type,
+      then the `content-type` header on the HTTP request is set to this
+      `datacontenttype` value. For example, if the `datacontenttype` is
+      "application/json" and the payload format type is "application/json;
+      charset=utf-8", then the `content-type` header on the HTTP request is
+      set to "application/json; charset=utf-8". If a non-empty binding
+      expression is specified then this expression is used to modify the
+      default CloudEvent HTTP Protocol Binding Binary Content representation.
+      The result of the CEL expression must be a map of key/value pairs which
+      is used as follows: - If a map named `headers` exists on the result of
+      the expression, then its key/value pairs are directly mapped to the HTTP
+      request headers. The headers values are constructed from the
+      corresponding value type's canonical representation. If the `headers`
+      field doesn't exist then the resulting HTTP request will be the headers
+      of the CloudEvent HTTP Binding Binary Content Mode representation of the
+      final message. Note: If the specified binding expression, has updated
+      the `datacontenttype` field on the message so that it is not the same as
+      the payload format type but it is still a prefix of the payload format
+      type, then the `content-type` header in the `headers` map is set to this
+      `datacontenttype` value. - If a field named `body` exists on the result
+      of the expression then its value is directly mapped to the body of the
+      request. If the value of the `body` field is of type bytes or string
+      then it is used for the HTTP request body as-is, with no conversion. If
+      the body field is of any other type then it is converted to a JSON
+      string. If the body field does not exist then the resulting payload of
+      the HTTP request will be data value of the CloudEvent HTTP Binding
+      Binary Content Mode representation of the final message as described
+      earlier. - Any other fields in the resulting expression will be ignored.
+      The CEL expression may access the incoming CloudEvent message in its
+      definition, as follows: - The `data` field of the incoming CloudEvent
+      message can be accessed using the `message.data` value. Subfields of
+      `message.data` may also be accessed if an input_payload_format has been
+      specified on the Pipeline. - Each attribute of the incoming CloudEvent
       message can be accessed using the `message.` value, where is replaced
-      with the name of the attribute. Headers added to the request by previous
-      filters in the chain can be accessed in the CEL expression using the
-      `headers` variable. The `headers` variable defines a map of key/value
-      pairs corresponding to the HTTP headers added by previous mediation
-      steps and not the headers present on the original incoming request. For
-      example, the following CEL expression can be used to construct a
-      Headers-only HTTP request by adding an additional header to the headers
-      added by previous mediations in the Pipeline: ``` {"headers":
-      headers.merge({"new-header-key": "new-header-value"})} ``` Additionally,
-      the following CEL extension functions are provided for use in this CEL
-      expression: - toBase64Url: map.toBase64Url() -> string - Converts a
-      CelValue to a base64url encoded string - toJsonString:
-      map.toJsonString() -> string - Converts a CelValue to a JSON string -
-      merge: map1.merge(map2) -> map3 - Merges the passed CEL map with the
-      existing CEL map the function is applied to. - If the same key exists in
-      both maps, if the key's value is type map both maps are merged else the
-      value from the passed map is used. - toMap: list(map).toMap() -> map -
-      Converts a CEL list of CEL maps to a single CEL map -
-      toDestinationPayloadFormat(): message.data.toDestinationPayloadFormat()
-      -> string or bytes - Converts the message data to the destination
-      payload format specified in Pipeline.Destination.output_payload_format -
-      This function is meant to be applied to the message.data field. - If the
-      destination payload format is not set, the function will return the
-      message data unchanged. - toCloudEventJsonWithPayloadFormat:
+      with the name of the attribute. - Existing headers can be accessed in
+      the CEL expression using the `headers` variable. The `headers` variable
+      defines a map of key/value pairs corresponding to the HTTP headers of
+      the CloudEvent HTTP Binding Binary Content Mode representation of the
+      final message as described earlier. For example, the following CEL
+      expression can be used to construct an HTTP request by adding an
+      additional header to the HTTP headers of the CloudEvent HTTP Binding
+      Binary Content Mode representation of the final message and by
+      overwriting the body of the request: ``` { "headers":
+      headers.merge({"new-header-key": "new-header-value"}), "body": "new-
+      body" } ``` - The default binding for the message payload can be
+      accessed using the `body` variable. It conatins a string representation
+      of the message payload in the format specified by the
+      `output_payload_format` field. If the `input_payload_format` field is
+      not set, the `body` variable contains the same message payload bytes
+      that were published. Additionally, the following CEL extension functions
+      are provided for use in this CEL expression: - toBase64Url:
+      map.toBase64Url() -> string - Converts a CelValue to a base64url encoded
+      string - toJsonString: map.toJsonString() -> string - Converts a
+      CelValue to a JSON string - merge: map1.merge(map2) -> map3 - Merges the
+      passed CEL map with the existing CEL map the function is applied to. -
+      If the same key exists in both maps, if the key's value is type map both
+      maps are merged else the value from the passed map is used. -
+      denormalize: map.denormalize() -> map - Denormalizes a CEL map such that
+      every value of type map or key in the map is expanded to return a single
+      level map. - The resulting keys are "." separated indices of the map
+      keys. - For example: { "a": 1, "b": { "c": 2, "d": 3 } "e": [4, 5] }
+      .denormalize() -> { "a": 1, "b.c": 2, "b.d": 3, "e.0": 4, "e.1": 5 } -
+      setField: map.setField(key, value) -> message - Sets the field of the
+      message with the given key to the given value. - If the field is not
+      present it will be added. - If the field is present it will be
+      overwritten. - The key can be a dot separated path to set a field in a
+      nested message. - Key must be of type string. - Value may be any valid
+      type. - removeFields: map.removeFields([key1, key2, ...]) -> message -
+      Removes the fields of the map with the given keys. - The keys can be a
+      dot separated path to remove a field in a nested message. - If a key is
+      not found it will be ignored. - Keys must be of type string. - toMap:
+      [map1, map2, ...].toMap() -> map - Converts a CEL list of CEL maps to a
+      single CEL map - toCloudEventJsonWithPayloadFormat:
       message.toCloudEventJsonWithPayloadFormat() -> map - Converts a message
-      to the corresponding structure of JSON format for CloudEvents - This
-      function applies toDestinationPayloadFormat() to the message data. It
-      also sets the corresponding datacontenttype of the CloudEvent, as
-      indicated by Pipeline.Destination.output_payload_format. If no
-      output_payload_format is set it will use the existing datacontenttype on
-      the CloudEvent if present, else leave datacontenttype absent. - This
-      function expects that the content of the message will adhere to the
-      standard CloudEvent format. If it doesn't then this function will fail.
-      - The result is a CEL map that corresponds to the JSON representation of
-      the CloudEvent. To convert that data to a JSON string it can be chained
-      with the toJsonString function. If a binding is not specified here, by
-      default the message is treated as a CloudEvent and is mapped to the HTTP
-      request according to the CloudEvent HTTP Protocol Binding Binary Content
-      Mode. The Pipeline converts the data field of the message to the format
-      provided in Pipeline.Destination.output_payload_format and maps it to
-      the body field of the result. It also sets the corresponding Content-
-      Type header to the output_payload_format type. If the
-      Pipeline.Destination.output_payload_format is not set, then the Pipeline
-      will treat the data field of the message as opaque binary data and
-      attach it to the request body as bytes. In this case the Content-type
-      header will be set to the value of the datacontenttype attribute set on
-      the incoming CloudEvent message if present and the `application/octet-
-      stream` MIME type otherwise. The Pipeline expects that the content of
+      to the corresponding structure of JSON format for CloudEvents. - It
+      converts `data` to destination payload format specified in
+      `output_payload_format`. If `output_payload_format` is not set, the data
+      will remain unchanged. - It also sets the corresponding datacontenttype
+      of the CloudEvent, as indicated by `output_payload_format`. If no
+      `output_payload_format` is set it will use the value of the
+      "datacontenttype" attribute on the CloudEvent if present, else remove
+      "datacontenttype" attribute. - This function expects that the content of
       the message will adhere to the standard CloudEvent format. If it doesn't
-      then the outgoing message request may fail with a persistent error.
+      then this function will fail. - The result is a CEL map that corresponds
+      to the JSON representation of the CloudEvent. To convert that data to a
+      JSON string it can be chained with the toJsonString function. The
+      Pipeline expects that the message it receives adheres to the standard
+      CloudEvent format. If it doesn't then the outgoing message request may
+      fail with a persistent error.
     uri: Required. The URI of the HTTP enpdoint. The value must be a RFC2396
-      URI string. Examples: `http://10.10.10.8:80/route`, `http://svc.us-
-      central1.p.local:8080/`. Only HTTP and HTTPS protocols are supported.
-      The host can be either a static IP addressable from the VPC specified by
-      the network config, or an internal DNS hostname of the service
-      resolvable via Cloud DNS.
+      URI string. Examples: `https://svc.us-central1.p.local:8080/route`. Only
+      the HTTPS protocol is supported.
   """
 
   messageBindingTemplate = _messages.StringField(1)
@@ -2094,8 +2187,46 @@ class GoogleCloudEventarcV1PipelineMediationTransformation(_messages.Message):
   r"""Transformation defines the way to transform an incoming message.
 
   Fields:
-    transformationTemplate: Optional. The template to apply to transform
-      messages.
+    transformationTemplate: Optional. The CEL expression template to apply to
+      transform messages. The following CEL extension functions are provided
+      for use in this CEL expression: - merge: map1.merge(map2) -> map3 -
+      Merges the passed CEL map with the existing CEL map the function is
+      applied to. - If the same key exists in both maps, if the key's value is
+      type map both maps are merged else the value from the passed map is
+      used. - denormalize: map.denormalize() -> map - Denormalizes a CEL map
+      such that every value of type map or key in the map is expanded to
+      return a single level map. - The resulting keys are "." separated
+      indices of the map keys. - For example: { "a": 1, "b": { "c": 2, "d": 3
+      } "e": [4, 5] } .denormalize() -> { "a": 1, "b.c": 2, "b.d": 3, "e.0":
+      4, "e.1": 5 } - setField: map.setField(key, value) -> message - Sets the
+      field of the message with the given key to the given value. - If the
+      field is not present it will be added. - If the field is present it will
+      be overwritten. - The key can be a dot separated path to set a field in
+      a nested message. - Key must be of type string. - Value may be any valid
+      type. - removeFields: map.removeFields([key1, key2, ...]) -> message -
+      Removes the fields of the map with the given keys. - The keys can be a
+      dot separated path to remove a field in a nested message. - If a key is
+      not found it will be ignored. - Keys must be of type string. - toMap:
+      [map1, map2, ...].toMap() -> map - Converts a CEL list of CEL maps to a
+      single CEL map - toDestinationPayloadFormat():
+      message.data.toDestinationPayloadFormat() -> string or bytes - Converts
+      the message data to the destination payload format specified in
+      Pipeline.Destination.output_payload_format - This function is meant to
+      be applied to the message.data field. - If the destination payload
+      format is not set, the function will return the message data unchanged.
+      - toCloudEventJsonWithPayloadFormat:
+      message.toCloudEventJsonWithPayloadFormat() -> map - Converts a message
+      to the corresponding structure of JSON format for CloudEvents - This
+      function applies toDestinationPayloadFormat() to the message data. It
+      also sets the corresponding datacontenttype of the CloudEvent, as
+      indicated by Pipeline.Destination.output_payload_format. If no
+      output_payload_format is set it will use the existing datacontenttype on
+      the CloudEvent if present, else leave datacontenttype absent. - This
+      function expects that the content of the message will adhere to the
+      standard CloudEvent format. If it doesn't then this function will fail.
+      - The result is a CEL map that corresponds to the JSON representation of
+      the CloudEvent. To convert that data to a JSON string it can be chained
+      with the toJsonString function.
   """
 
   transformationTemplate = _messages.StringField(1)
@@ -2156,10 +2287,10 @@ class GoogleCloudEventarcV1PipelineRetryPolicy(_messages.Message):
       message. The value must be between 1 and 100. The default value for this
       field is 5.
     maxRetryDelay: Optional. The maximum amount of seconds to wait between
-      retry attempts. The value must be between 0 and 600. The default value
+      retry attempts. The value must be between 1 and 600. The default value
       for this field is 60.
     minRetryDelay: Optional. The minimum amount of seconds to wait between
-      retry attempts. The value must be between 0 and 600. The default value
+      retry attempts. The value must be between 1 and 600. The default value
       for this field is 5.
   """
 
@@ -2600,7 +2731,7 @@ class Location(_messages.Message):
 
 
 class LoggingConfig(_messages.Message):
-  r"""The configuration for Platform Telemetry logging for Eventarc Avdvanced
+  r"""The configuration for Platform Telemetry logging for Eventarc Advanced
   resources.
 
   Enums:

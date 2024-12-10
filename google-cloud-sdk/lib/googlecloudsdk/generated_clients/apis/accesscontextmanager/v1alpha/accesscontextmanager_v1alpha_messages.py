@@ -1321,10 +1321,15 @@ class EgressPolicy(_messages.Message):
       EgressPolicy to apply.
     egressTo: Defines the conditions on the ApiOperation and destination
       resources that cause this EgressPolicy to apply.
+    title: Optional. Human-readable title for the egress rule. The title must
+      be unique within the perimeter and can not exceed 100 characters. Within
+      the access policy, the combined length of all rule titles must not
+      exceed 240,000 characters.
   """
 
   egressFrom = _messages.MessageField('EgressFrom', 1)
   egressTo = _messages.MessageField('EgressTo', 2)
+  title = _messages.StringField(3)
 
 
 class EgressSource(_messages.Message):
@@ -1341,9 +1346,17 @@ class EgressSource(_messages.Message):
       origins within the perimeter. Example:
       `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If a single `*` is
       specified for `access_level`, then all EgressSources will be allowed.
+    resource: A Google Cloud resource that is allowed to egress the perimeter.
+      Requests from these resources are allowed to access data outside the
+      perimeter. Currently only projects are allowed. Project format:
+      `projects/{project_number}`. The resource may be in any Google Cloud
+      organization, not just the organization that the perimeter is defined
+      in. `*` is not allowed, the case of allowing all Google Cloud resources
+      only is not supported.
   """
 
   accessLevel = _messages.StringField(1)
+  resource = _messages.StringField(2)
 
 
 class EgressTo(_messages.Message):
@@ -1564,10 +1577,15 @@ class IngressPolicy(_messages.Message):
       this IngressPolicy to apply.
     ingressTo: Defines the conditions on the ApiOperation and request
       destination that cause this IngressPolicy to apply.
+    title: Optional. Human-readable title for the ingress rule. The title must
+      be unique within the perimeter and can not exceed 100 characters. Within
+      the access policy, the combined length of all rule titles must not
+      exceed 240,000 characters.
   """
 
   ingressFrom = _messages.MessageField('IngressFrom', 1)
   ingressTo = _messages.MessageField('IngressTo', 2)
+  title = _messages.StringField(3)
 
 
 class IngressSource(_messages.Message):
@@ -2063,8 +2081,8 @@ class ServicePerimeter(_messages.Message):
     description: Description of the `ServicePerimeter` and its use. Does not
       affect behavior.
     etag: Optional. An opaque identifier for the current version of the
-      `ServicePerimeter`. Clients should not expect this to be in any specific
-      format. If etag is not provided, the operation will be performed as if a
+      `ServicePerimeter`. This identifier does not follow any specific format.
+      If an etag is not provided, the operation will be performed as if a
       valid etag is provided.
     name: Identifier. Resource name for the `ServicePerimeter`. Format:
       `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`.

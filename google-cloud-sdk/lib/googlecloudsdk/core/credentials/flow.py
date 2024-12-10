@@ -32,6 +32,7 @@ from google_auth_oauthlib import flow as google_auth_flow
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as c_exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import requests
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
@@ -863,8 +864,20 @@ class _RedirectWSGIApp(object):
     self.last_request_uri = wsgiref.util.request_uri(environ)
     query = self.last_request_uri.split('?', 1)[-1]
     query = dict(parse.parse_qsl(query))
+
     if 'code' in query:
       page = 'oauth2_landing.html'
     else:
       page = 'oauth2_landing_error.html'
-    return [pkg_resources.GetResource(__name__, page)]
+
+    page_string = pkg_resources.GetResource(__name__, page)
+    if not properties.IsDefaultUniverse():
+      # decode and replace cloud.google.com with the universe document domain
+      # and encode again.
+      page_string = bytes(
+          bytes(page_string)
+          .decode('utf-8')
+          .replace('cloud.google.com', properties.GetUniverseDocumentDomain()),
+          'utf-8',
+      )
+    return [page_string]

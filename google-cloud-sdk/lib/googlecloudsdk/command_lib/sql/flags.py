@@ -2845,11 +2845,12 @@ def AddSwitchoverDbTimeout(parser):
   )
 
 
-def AddServerCaMode(parser):
+def AddServerCaMode(parser, hidden=False):
   """Adds the '--server-ca-mode' flag to the parser.
 
   Args:
     parser: The current argparse parser to add this to.
+    hidden: if the field needs to be hidden.
   """
   help_text = 'Set the server CA mode of the instance.'
   parser.add_argument(
@@ -2864,13 +2865,13 @@ def AddServerCaMode(parser):
           ),
           'CUSTOMER_MANAGED_CAS_CA': (
               "Customer-managed CA hosted on Google Cloud's Certificate"
-              " Authority Service (CAS)."
+              ' Authority Service (CAS).'
           ),
       },
       required=False,
       default=None,
       help=help_text,
-      hidden=False,
+      hidden=hidden,
   )
 
 
@@ -3083,5 +3084,5 @@ def AddServerCaPool(parser):
       required=False,
       default=None,
       help=help_text,
-      hidden=True,
+      hidden=False,
   )

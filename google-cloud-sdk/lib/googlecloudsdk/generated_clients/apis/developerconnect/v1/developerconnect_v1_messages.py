@@ -105,6 +105,9 @@ class Connection(_messages.Message):
     etag: Optional. This checksum is computed by the server based on the value
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
+    gitProxyConfig: Optional. Configuration for the git proxy feature.
+      Enabling the git proxy allows clients to perform git operations on the
+      repositories linked in the connection.
     githubConfig: Configuration for connections to github.com.
     githubEnterpriseConfig: Configuration for connections to an instance of
       GitHub Enterprise.
@@ -117,8 +120,7 @@ class Connection(_messages.Message):
       `projects/{project}/locations/{location}/connections/{connection_id}`.
     reconciling: Output only. Set to true when the connection is being set up
       or updated in the background.
-    uid: Output only. A system-assigned unique identifier for a the
-      GitRepositoryLink.
+    uid: Output only. A system-assigned unique identifier for the Connection.
     updateTime: Output only. [Output only] Update timestamp
   """
 
@@ -179,16 +181,17 @@ class Connection(_messages.Message):
   deleteTime = _messages.StringField(6)
   disabled = _messages.BooleanField(7)
   etag = _messages.StringField(8)
-  githubConfig = _messages.MessageField('GitHubConfig', 9)
-  githubEnterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 10)
-  gitlabConfig = _messages.MessageField('GitLabConfig', 11)
-  gitlabEnterpriseConfig = _messages.MessageField('GitLabEnterpriseConfig', 12)
-  installationState = _messages.MessageField('InstallationState', 13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  name = _messages.StringField(15)
-  reconciling = _messages.BooleanField(16)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
+  gitProxyConfig = _messages.MessageField('GitProxyConfig', 9)
+  githubConfig = _messages.MessageField('GitHubConfig', 10)
+  githubEnterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 11)
+  gitlabConfig = _messages.MessageField('GitLabConfig', 12)
+  gitlabEnterpriseConfig = _messages.MessageField('GitLabEnterpriseConfig', 13)
+  installationState = _messages.MessageField('InstallationState', 14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  name = _messages.StringField(16)
+  reconciling = _messages.BooleanField(17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
 
 
 class CryptoKeyConfig(_messages.Message):
@@ -882,6 +885,18 @@ class GitLabEnterpriseConfig(_messages.Message):
   webhookSecretSecretVersion = _messages.StringField(7)
 
 
+class GitProxyConfig(_messages.Message):
+  r"""The git proxy configuration.
+
+  Fields:
+    enabled: Optional. Setting this to true allows the git proxy to be used
+      for performing git operations on the repositories linked in the
+      connection.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class GitRepositoryLink(_messages.Message):
   r"""Message describing the GitRepositoryLink object
 
@@ -899,12 +914,15 @@ class GitRepositoryLink(_messages.Message):
     etag: Optional. This checksum is computed by the server based on the value
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
+    gitProxyUri: Output only. URI to access the linked repository through the
+      Git Proxy. This field is only populated if the git proxy is enabled for
+      the connection.
     labels: Optional. Labels as key value pairs
     name: Identifier. Resource name of the repository, in the format
       `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
     reconciling: Output only. Set to true when the connection is being set up
       or updated in the background.
-    uid: Output only. A system-assigned unique identifier for a the
+    uid: Output only. A system-assigned unique identifier for the
       GitRepositoryLink.
     updateTime: Output only. [Output only] Update timestamp
     webhookId: Output only. External ID of the webhook created for the
@@ -965,12 +983,13 @@ class GitRepositoryLink(_messages.Message):
   createTime = _messages.StringField(3)
   deleteTime = _messages.StringField(4)
   etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  reconciling = _messages.BooleanField(8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
-  webhookId = _messages.StringField(11)
+  gitProxyUri = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  reconciling = _messages.BooleanField(9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+  webhookId = _messages.StringField(12)
 
 
 class HttpBody(_messages.Message):

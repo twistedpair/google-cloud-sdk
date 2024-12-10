@@ -97,7 +97,7 @@ def GetContainers(record: container_resource.ContainerResource) -> cp.Table:
 
   def Containers():
     for name, container in k8s_util.OrderByKey(record.containers):
-      key = 'Container {name}'.format(name=name)
+      key = 'Container {name}'.format(name=container.name)
       value = GetContainer(
           name,
           container,

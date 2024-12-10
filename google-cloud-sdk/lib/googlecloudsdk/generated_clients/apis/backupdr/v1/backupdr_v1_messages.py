@@ -428,6 +428,8 @@ class Backup(_messages.Message):
       datasource.
     resourceSizeBytes: Output only. source resource size in bytes at the time
       of the backup.
+    satisfiesPzi: Optional. Output only. Reserved for future use.
+    satisfiesPzs: Optional. Output only. Reserved for future use.
     serviceLocks: Output only. The list of BackupLocks taken by the service to
       prevent the deletion of the backup.
     state: Output only. The Backup resource instance state.
@@ -502,9 +504,11 @@ class Backup(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 13)
   name = _messages.StringField(14)
   resourceSizeBytes = _messages.IntegerField(15)
-  serviceLocks = _messages.MessageField('BackupLock', 16, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  updateTime = _messages.StringField(18)
+  satisfiesPzi = _messages.BooleanField(16)
+  satisfiesPzs = _messages.BooleanField(17)
+  serviceLocks = _messages.MessageField('BackupLock', 18, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  updateTime = _messages.StringField(20)
 
 
 class BackupApplianceBackupConfig(_messages.Message):
@@ -672,12 +676,16 @@ class BackupPlan(_messages.Message):
       prevent stale resources.
     labels: Optional. This collection of key/value pairs allows for custom
       labels to be supplied by the user. Example, {"tag": "Weekly"}.
+    logRetentionDays: Optional. Required for CloudSQL resource_type Configures
+      how long logs will be stored. It is defined in "days". This value should
+      be greater than or equal to minimum enforced log retention duration of
+      the backup vault.
     name: Output only. Identifier. The resource name of the `BackupPlan`.
       Format:
       `projects/{project}/locations/{location}/backupPlans/{backup_plan}`
     resourceType: Required. The resource type to which the `BackupPlan` will
       be applied. Examples include, "compute.googleapis.com/Instance",
-      "sqladmin.googleapis.com/Instance" and "storage.googleapis.com/Bucket".
+      "sqladmin.googleapis.com/Instance", or "alloydb.googleapis.com/Cluster".
     state: Output only. The `State` for the `BackupPlan`.
     updateTime: Output only. When the `BackupPlan` was last updated.
   """
@@ -730,10 +738,11 @@ class BackupPlan(_messages.Message):
   description = _messages.StringField(5)
   etag = _messages.StringField(6)
   labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  resourceType = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  logRetentionDays = _messages.IntegerField(8)
+  name = _messages.StringField(9)
+  resourceType = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
 
 
 class BackupPlanAssociation(_messages.Message):
@@ -749,16 +758,15 @@ class BackupPlanAssociation(_messages.Message):
       applied on workload. Format:
       projects/{project}/locations/{location}/backupPlans/{backupPlanId}
     createTime: Output only. The time when the instance was created.
-    dataSource: Output only. Output Only. Resource name of data source which
-      will be used as storage location for backups taken. Format : projects/{p
-      roject}/locations/{location}/backupVaults/{backupvault}/dataSources/{dat
-      asource}
+    dataSource: Output only. Resource name of data source which will be used
+      as storage location for backups taken. Format : projects/{project}/locat
+      ions/{location}/backupVaults/{backupvault}/dataSources/{datasource}
     name: Output only. Identifier. The resource name of BackupPlanAssociation
       in below format Format : projects/{project}/locations/{location}/backupP
       lanAssociations/{backupPlanAssociationId}
     resource: Required. Immutable. Resource name of workload on which
       backupplan is applied
-    resourceType: Optional. Required. Resource type of workload on which
+    resourceType: Required. Immutable. Resource type of workload on which
       backupplan is applied
     rulesConfigInfo: Output only. The config info related to backup rules.
     state: Output only. The BackupPlanAssociation resource state.
@@ -804,7 +812,7 @@ class BackupRule(_messages.Message):
       value is 1 and maximum value is 90 for hourly backups. Minimum value is
       1 and maximum value is 90 for daily backups. Minimum value is 7 and
       maximum value is 186 for weekly backups. Minimum value is 30 and maximum
-      value is 732 for monthly backups. Minimum value is 30 and maximum value
+      value is 732 for monthly backups. Minimum value is 365 and maximum value
       is 36159 for yearly backups.
     ruleId: Required. Immutable. The unique id of this `BackupRule`. The
       `rule_id` is unique per `BackupPlan`.The `rule_id` must start with a
@@ -824,9 +832,9 @@ class BackupVault(_messages.Message):
 
   Enums:
     AccessRestrictionValueValuesEnum: Optional. Note: This field is added for
-      future use case and will not be supported in the current release.
-      Optional. Access restriction for the backup vault. Default value is
-      WITHIN_ORGANIZATION if not provided during creation.
+      future use case and will not be supported in the current release. Access
+      restriction for the backup vault. Default value is WITHIN_ORGANIZATION
+      if not provided during creation.
     StateValueValuesEnum: Output only. The BackupVault resource instance
       state.
 
@@ -839,9 +847,9 @@ class BackupVault(_messages.Message):
 
   Fields:
     accessRestriction: Optional. Note: This field is added for future use case
-      and will not be supported in the current release. Optional. Access
-      restriction for the backup vault. Default value is WITHIN_ORGANIZATION
-      if not provided during creation.
+      and will not be supported in the current release. Access restriction for
+      the backup vault. Default value is WITHIN_ORGANIZATION if not provided
+      during creation.
     annotations: Optional. User annotations. See
       https://google.aip.dev/128#annotations Stores small amounts of arbitrary
       data.
@@ -872,15 +880,15 @@ class BackupVault(_messages.Message):
     state: Output only. The BackupVault resource instance state.
     totalStoredBytes: Output only. Total size of the storage used by all
       backup resources.
-    uid: Output only. Output only Immutable after resource creation until
-      resource deletion.
+    uid: Output only. Immutable after resource creation until resource
+      deletion.
     updateTime: Output only. The time when the instance was updated.
   """
 
   class AccessRestrictionValueValuesEnum(_messages.Enum):
     r"""Optional. Note: This field is added for future use case and will not
-    be supported in the current release. Optional. Access restriction for the
-    backup vault. Default value is WITHIN_ORGANIZATION if not provided during
+    be supported in the current release. Access restriction for the backup
+    vault. Default value is WITHIN_ORGANIZATION if not provided during
     creation.
 
     Values:
@@ -3700,8 +3708,9 @@ class OperationMetadata(_messages.Message):
     endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to 'Code.CANCELLED'.
+      successfully been cancelled have google.longrunning.Operation.error
+      value with a google.rpc.Status.code of 1, corresponding to
+      'Code.CANCELLED'.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
     target: Output only. Server-defined resource path for the target of the
@@ -3902,12 +3911,12 @@ class RuleConfigInfo(_messages.Message):
       rule.
 
   Fields:
-    lastBackupError: Output only. Output Only. google.rpc.Status object to
-      store the last backup error.
+    lastBackupError: Output only. google.rpc.Status object to store the last
+      backup error.
     lastBackupState: Output only. The last backup state for rule.
     lastSuccessfulBackupConsistencyTime: Output only. The point in time when
       the last successful backup was captured from the source.
-    ruleId: Output only. Output Only. Backup Rule id fetched from backup plan.
+    ruleId: Output only. Backup Rule id fetched from backup plan.
   """
 
   class LastBackupStateValueValuesEnum(_messages.Enum):

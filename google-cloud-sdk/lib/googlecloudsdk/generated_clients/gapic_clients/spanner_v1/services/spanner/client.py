@@ -1164,6 +1164,9 @@ class SpannerClient(metaclass=SpannerClientMeta):
         [ExecuteStreamingSql][google.spanner.v1.Spanner.ExecuteStreamingSql]
         instead.
 
+        The query string can be SQL or `Graph Query Language
+        (GQL) <https://cloud.google.com/spanner/docs/reference/standard-sql/graph-intro>`__.
+
         .. code-block:: python
 
             # This snippet has been automatically generated and should be regarded as a
@@ -1253,6 +1256,9 @@ class SpannerClient(metaclass=SpannerClientMeta):
         limit on the size of the returned result set. However, no
         individual row in the result set can exceed 100 MiB, and no
         column value can exceed 10 MiB.
+
+        The query string can be SQL or `Graph Query Language
+        (GQL) <https://cloud.google.com/spanner/docs/reference/standard-sql/graph-intro>`__.
 
         .. code-block:: python
 

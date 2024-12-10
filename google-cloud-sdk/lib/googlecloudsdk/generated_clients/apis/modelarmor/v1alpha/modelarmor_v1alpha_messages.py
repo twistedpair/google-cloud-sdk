@@ -401,6 +401,64 @@ class MessageItem(_messages.Message):
   messageType = _messages.EnumField('MessageTypeValueValuesEnum', 2)
 
 
+class ModelarmorFoldersLocationsGetFloorSettingRequest(_messages.Message):
+  r"""A ModelarmorFoldersLocationsGetFloorSettingRequest object.
+
+  Fields:
+    name: Required. The name of the floor setting to get, example
+      projects/123/floorsetting.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ModelarmorFoldersLocationsUpdateFloorSettingRequest(_messages.Message):
+  r"""A ModelarmorFoldersLocationsUpdateFloorSettingRequest object.
+
+  Fields:
+    floorSetting: A FloorSetting resource to be passed as the request body.
+    name: Identifier. The resource name.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the FloorSetting resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  floorSetting = _messages.MessageField('FloorSetting', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class ModelarmorOrganizationsLocationsGetFloorSettingRequest(_messages.Message):
+  r"""A ModelarmorOrganizationsLocationsGetFloorSettingRequest object.
+
+  Fields:
+    name: Required. The name of the floor setting to get, example
+      projects/123/floorsetting.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ModelarmorOrganizationsLocationsUpdateFloorSettingRequest(_messages.Message):
+  r"""A ModelarmorOrganizationsLocationsUpdateFloorSettingRequest object.
+
+  Fields:
+    floorSetting: A FloorSetting resource to be passed as the request body.
+    name: Identifier. The resource name.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the FloorSetting resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  floorSetting = _messages.MessageField('FloorSetting', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class ModelarmorProjectsLocationsGetFloorSettingRequest(_messages.Message):
   r"""A ModelarmorProjectsLocationsGetFloorSettingRequest object.
 
@@ -973,6 +1031,18 @@ class RangeInfo(_messages.Message):
   start = _messages.IntegerField(2)
 
 
+class SanitizationMetadata(_messages.Message):
+  r"""Message describing Sanitization metadata.
+
+  Fields:
+    errorCode: Error code if any.
+    errorMessage: Error message if any.
+  """
+
+  errorCode = _messages.IntegerField(1)
+  errorMessage = _messages.StringField(2)
+
+
 class SanitizationResult(_messages.Message):
   r"""Sanitization result after applying all the filters on input content.
 
@@ -992,6 +1062,7 @@ class SanitizationResult(_messages.Message):
       configuration satisfies matching. In other words, input did not pass one
       or more filters.
     filterResults: Output only. Results for all filters.
+    sanitizationMetadata: Output only. Metadata related to Sanitization.
   """
 
   class FilterMatchStateValueValuesEnum(_messages.Enum):
@@ -1012,6 +1083,7 @@ class SanitizationResult(_messages.Message):
 
   filterMatchState = _messages.EnumField('FilterMatchStateValueValuesEnum', 1)
   filterResults = _messages.MessageField('FilterResult', 2, repeated=True)
+  sanitizationMetadata = _messages.MessageField('SanitizationMetadata', 3)
 
 
 class SanitizeModelResponseRequest(_messages.Message):
@@ -1405,6 +1477,7 @@ class Template(_messages.Message):
     filterConfig: Required. filter configuration for this template
     labels: Optional. Labels as key value pairs
     name: Identifier. name of resource
+    templateMetadata: Optional. metadata for this template
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -1436,7 +1509,35 @@ class Template(_messages.Message):
   filterConfig = _messages.MessageField('FilterConfig', 2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  templateMetadata = _messages.MessageField('TemplateMetadata', 5)
+  updateTime = _messages.StringField(6)
+
+
+class TemplateMetadata(_messages.Message):
+  r"""Message describing TemplateMetadata
+
+  Fields:
+    customLlmResponseSafetyErrorCode: Optional. Indicates the custom error
+      code set by the user to be returned to the end user if the LLM response
+      trips Model Armor filters.
+    customLlmResponseSafetyErrorMessage: Optional. Indicates the custom error
+      message set by the user to be returned to the end user if the LLM
+      response trips Model Armor filters.
+    customPromptSafetyErrorCode: Optional. Indicates the custom error code set
+      by the user to be returned to the end user by the service extension if
+      the prompt trips Model Armor filters.
+    customPromptSafetyErrorMessage: Optional. Indicates the custom error
+      message set by the user to be returned to the end user if the prompt
+      trips Model Armor filters.
+    ignorePartialInvocationFailures: Optional. If true, partial detector
+      failures should be ignored.
+  """
+
+  customLlmResponseSafetyErrorCode = _messages.IntegerField(1)
+  customLlmResponseSafetyErrorMessage = _messages.StringField(2)
+  customPromptSafetyErrorCode = _messages.IntegerField(3)
+  customPromptSafetyErrorMessage = _messages.StringField(4)
+  ignorePartialInvocationFailures = _messages.BooleanField(5)
 
 
 class VirusDetail(_messages.Message):

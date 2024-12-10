@@ -3296,7 +3296,7 @@ class RestoreTableMetadata(_messages.Message):
     optimizeTableOperationName: If exists, the name of the long-running
       operation that will be used to track the post-restore optimization
       process to optimize the performance of the restored table. The metadata
-      type of the long-running operation is OptimizeRestoreTableMetadata. The
+      type of the long-running operation is OptimizeRestoredTableMetadata. The
       response type is Empty. This long-running operation may be automatically
       created by the system if applicable after the RestoreTable long-running
       operation completes successfully. This operation may not be created if

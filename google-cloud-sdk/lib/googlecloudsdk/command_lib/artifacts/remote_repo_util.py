@@ -81,6 +81,10 @@ def Args():
           projects/<project>/locations/<location>/namespaces/<namespace>/services/<service>
           """, hidden=True
       ),
+      base.Argument(
+          "--remote-repo",
+          help=_CommonRemoteRepoHelpText(), hidden=True
+      ),
   ]
 
 
@@ -258,6 +262,12 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
     else:  # raise error
       _RaiseRemoteRepoUpstreamError(facade, remote_input)
 
+  # COMMON
+  elif repo_args.remote_repo:
+    remote_input = repo_args.remote_repo
+    if _IsRemoteURI(remote_input):  # input is CustomRepository
+      remote_cfg.commonRepository = messages.CommonRemoteRepository()
+      remote_cfg.commonRepository.uri = remote_input
   else:
     return request
 
@@ -292,7 +302,15 @@ REMOTE_{command}_REPO can be either:
 def _GoRemoteRepoHelpText() -> str:
   return (
       '(Go only) Repo upstream for go remote repository. "https://github.com"'
-      " is theonly valid value at this moment."
+      " is the only valid value at this moment."
+  )
+
+
+def _CommonRemoteRepoHelpText() -> str:
+  return (
+      'An upstream for a given remote repository. Ex: "https://github.com"'
+      ', "https://docker.io/v2/" are valid values for their given formats of'
+      ' Go and Docker respectively.'
   )
 
 
@@ -368,6 +386,10 @@ def _EnumsMessageForFacade(facade: str):
           ar_requests.GetMessages()
           .GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryPublicRepository()
           .RepositoryBaseValueValuesEnum
+      ),
+      "Ruby": (
+          ar_requests.GetMessages()
+          .CommonRemoteRepository()
       ),
   }
   if facade not in facade_to_enum:

@@ -92,12 +92,16 @@ def AddPurposeDataArgToParser(parser):
   parser.add_argument(
       "--purpose-data",
       type=arg_parsers.ArgDict(
-          spec={"network": str},
+          spec={"network": str, "organization": None},
+          allow_key_only=True,
           max_length=1,
       ),
-      help=("Purpose data of the TagKey that can only be set on creation. "
-            "This data is validated by the policy system that corresponds"
-            " to the purpose."))
+      help=(
+          "Purpose data of the TagKey that can only be set on creation. "
+          "This data is validated by the policy system that corresponds"
+          " to the purpose."
+      ),
+  )
 
 
 def AddAsyncArgToParser(parser):

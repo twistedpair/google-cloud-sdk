@@ -770,6 +770,7 @@ class ConfigSync(_messages.Message):
   Fields:
     allowVerticalScale: Set to true to allow the vertical scaling. Defaults to
       false which disallows vertical scaling. This field is deprecated.
+    deploymentOverrides: Optional. Configuration for deployment overrides.
     enabled: Enables the installation of ConfigSync. If set to true,
       ConfigSync resources will be created and the other ConfigSync fields
       will be applied if exist. If set to false, all other ConfigSync fields
@@ -798,13 +799,14 @@ class ConfigSync(_messages.Message):
   """
 
   allowVerticalScale = _messages.BooleanField(1)
-  enabled = _messages.BooleanField(2)
-  git = _messages.MessageField('GitConfig', 3)
-  metricsGcpServiceAccountEmail = _messages.StringField(4)
-  oci = _messages.MessageField('OciConfig', 5)
-  preventDrift = _messages.BooleanField(6)
-  sourceFormat = _messages.StringField(7)
-  stopSyncing = _messages.BooleanField(8)
+  deploymentOverrides = _messages.MessageField('DeploymentOverride', 2, repeated=True)
+  enabled = _messages.BooleanField(3)
+  git = _messages.MessageField('GitConfig', 4)
+  metricsGcpServiceAccountEmail = _messages.StringField(5)
+  oci = _messages.MessageField('OciConfig', 6)
+  preventDrift = _messages.BooleanField(7)
+  sourceFormat = _messages.StringField(8)
+  stopSyncing = _messages.BooleanField(9)
 
 
 class ConfigSyncDeploymentState(_messages.Message):
@@ -1135,6 +1137,24 @@ class ConfigSyncVersion(_messages.Message):
   resourceGroupControllerManager = _messages.StringField(7)
   rootReconciler = _messages.StringField(8)
   syncer = _messages.StringField(9)
+
+
+class ContainerOverride(_messages.Message):
+  r"""Configuration for a container override.
+
+  Fields:
+    containerName: Required. The name of the container.
+    cpuLimit: Optional. The cpu limit of the container.
+    cpuRequest: Optional. The cpu request of the container.
+    memoryLimit: Optional. The memory limit of the container.
+    memoryRequest: Optional. The memory request of the container.
+  """
+
+  containerName = _messages.StringField(1)
+  cpuLimit = _messages.StringField(2)
+  cpuRequest = _messages.StringField(3)
+  memoryLimit = _messages.StringField(4)
+  memoryRequest = _messages.StringField(5)
 
 
 class ControlPlaneManagement(_messages.Message):
@@ -1473,6 +1493,23 @@ class DeleteReferenceRequest(_messages.Message):
 
   name = _messages.StringField(1)
   requestId = _messages.StringField(2)
+
+
+class DeploymentOverride(_messages.Message):
+  r"""Configuration for a deployment override.
+
+  Fields:
+    containers: Optional. The containers of the deployment resource to be
+      overridden.
+    deploymentName: Required. The name of the deployment resource to be
+      overridden.
+    deploymentNamespace: Required. The namespace of the deployment resource to
+      be overridden..
+  """
+
+  containers = _messages.MessageField('ContainerOverride', 1, repeated=True)
+  deploymentName = _messages.StringField(2)
+  deploymentNamespace = _messages.StringField(3)
 
 
 class Empty(_messages.Message):
@@ -2441,8 +2478,10 @@ class GoogleIamV1Condition(_messages.Message):
         CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
         based on the *absence* of a credentials type, so the conditions can
         only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
-      CREDS_ASSERTION: EXPERIMENTAL -- DO NOT USE. The conditions can only be
-        used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+      CREDS_ASSERTION: Properties of the credentials supplied with this
+        request. See http://go/rpcsp-credential-assertions?polyglot=rpcsp-v1-0
+        The conditions can only be used in a "positive" context (e.g.,
+        ALLOW/IN or DENY/NOT_IN).
     """
     NO_ATTR = 0
     AUTHORITY = 1

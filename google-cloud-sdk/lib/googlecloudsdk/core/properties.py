@@ -1194,6 +1194,9 @@ class _SectionApiEndpointOverrides(_Section):
     self.apigee = self._Add('apigee', command='gcloud apigee')
     self.apihub = self._Add(
         'apihub', command='gcloud apigeeregistry', hidden=True)
+    self.apikeys = self._Add(
+        'apikeys', command='gcloud services api-keys', hidden=True
+    )
     self.appconfigmanager = self._Add(
         'appconfigmanager', command='gcloud app-config-manager', hidden=True)
     self.appengine = self._Add('appengine', command='gcloud app')
@@ -1275,7 +1278,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.deploymentmanager = self._Add(
         'deploymentmanager', command='gcloud deployment-manager')
     self.developerconnect = self._Add(
-        'developerconnect', command='gcloud developerconnect', hidden=True)
+        'developerconnect', command='gcloud developer-connect')
     self.discovery = self._Add('discovery', hidden=True)
     self.dns = self._Add('dns', command='gcloud dns')
     self.domains = self._Add('domains', command='gcloud domains')

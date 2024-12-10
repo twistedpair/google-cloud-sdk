@@ -17,6 +17,8 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.spanner import database_sessions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import resources
@@ -49,8 +51,28 @@ def ListSplitPoints(database_ref):
       collection='spanner.projects.instances.databases.sessions',
   )
   try:
-    return database_sessions.ExecuteSql(
-        'SELECT * FROM SPANNER_SYS.USER_SPLIT_POINTS', 'NORMAL', session
+    return _TransformToSplitResult(
+        database_sessions.ExecuteSql(
+            'SELECT TABLE_NAME, INDEX_NAME, INITIATOR, SPLIT_KEY, EXPIRE_TIME'
+            ' FROM SPANNER_SYS.USER_SPLIT_POINTS',
+            'NORMAL',
+            session,
+        )
     )
   finally:
     database_sessions.Delete(session)
+
+
+def _TransformToSplitResult(result):
+  """Transform the result of the query to a list of split points."""
+  split_points = [
+      {
+          'TABLE_NAME': encoding.MessageToPyValue(row.entry[0]),
+          'INDEX_NAME': encoding.MessageToPyValue(row.entry[1]),
+          'INITIATOR': encoding.MessageToPyValue(row.entry[2]),
+          'SPLIT_KEY': encoding.MessageToPyValue(row.entry[3]),
+          'EXPIRE_TIME': encoding.MessageToPyValue(row.entry[4]),
+      }
+      for row in result.rows
+  ]
+  return split_points

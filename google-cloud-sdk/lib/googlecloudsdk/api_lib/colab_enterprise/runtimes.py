@@ -240,3 +240,20 @@ def CreateRuntimeStartRequestMessage(args, messages):
       googleCloudAiplatformV1beta1StartNotebookRuntimeRequest=messages.GoogleCloudAiplatformV1beta1StartNotebookRuntimeRequest(),
       name=GetRuntimeResourceName(args),
   )
+
+
+def CreateRuntimeStopRequestMessage(args, messages):
+  """Builds a StopNotebookRuntimeRequest message.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the specified API.
+
+  Returns:
+    Instance of the StopNotebookRuntimeRequest message.
+  """
+
+  return messages.AiplatformProjectsLocationsNotebookRuntimesStopRequest(
+      googleCloudAiplatformV1beta1StopNotebookRuntimeRequest=messages.GoogleCloudAiplatformV1beta1StopNotebookRuntimeRequest(),
+      name=GetRuntimeResourceName(args),
+  )

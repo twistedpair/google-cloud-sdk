@@ -129,6 +129,9 @@ def PopulateClusterMessage(req, messages, args):
   if flags.FlagIsExplicitlySet(args, 'control_plane_kms_key'):
     req.cluster.controlPlaneEncryption = messages.ControlPlaneEncryption()
     req.cluster.controlPlaneEncryption.kmsKey = args.control_plane_kms_key
+  if flags.FlagIsExplicitlySet(args, 'zone_storage_kms_key'):
+    req.cluster.zoneStorageEncryption = messages.ZoneStorageEncryption()
+    req.cluster.zoneStorageEncryption.kmsKey = args.zone_storage_kms_key
   admin_users.SetAdminUsers(messages, args, req)
   fleet.SetFleetProjectPath(GetClusterReference(args), args, req)
 
@@ -199,10 +202,6 @@ def PopulateClusterAlphaMessage(req, args):
     )
   resource_args.SetSystemAddonsConfig(args, req)
   resource_args.SetExternalLoadBalancerAddressPoolsConfig(args, req)
-  messages = util.GetMessagesModule(base.ReleaseTrack.ALPHA)
-  if flags.FlagIsExplicitlySet(args, 'zone_storage_kms_key'):
-    req.cluster.zoneStorageEncryption = messages.ZoneStorageEncryption()
-    req.cluster.zoneStorageEncryption.kmsKey = args.zone_storage_kms_key
 
 
 def IsLCPCluster(args):

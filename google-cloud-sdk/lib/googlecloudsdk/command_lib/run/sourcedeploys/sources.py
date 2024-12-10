@@ -30,7 +30,8 @@ def Upload(source, region, resource_ref, source_bucket=None):
   """Uploads a source to a staging bucket.
 
   Args:
-    source: The source to upload.
+    source: Location of the source to be uploaded. Can be local path or a
+      reference to a GCS object.
     region: The region to upload to.
     resource_ref: The Cloud Run service resource reference.
     source_bucket: The source bucket to upload to, if not None.

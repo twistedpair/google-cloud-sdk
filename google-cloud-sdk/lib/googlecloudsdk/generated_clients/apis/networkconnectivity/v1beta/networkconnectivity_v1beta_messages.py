@@ -272,6 +272,9 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment(_messages
       speaker.
     project: The consumer project where CustomHardwareInstance are created.
       Format: `projects/{project}`
+    subnetwork: The name of the VPC subnetwork from which the BGP IP Addresses
+      will be allocated for this CustomHardwareLinkAttachment. Format:
+      `projects/{project}/regions/{region}/subnetworks/{subnetwork}`
     updateTime: Output only. Time when the CustomHardwareLinkAttachment was
       updated.
   """
@@ -323,7 +326,8 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment(_messages
   peerAsn = _messages.IntegerField(9)
   peerBgpIp = _messages.StringField(10)
   project = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  subnetwork = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair(_messages.Message):
@@ -806,13 +810,16 @@ class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
 
 
 class GoogleCloudNetworkconnectivityV1betaHubStatusEntry(_messages.Message):
-  r"""The hub status entry.
+  r"""A hub status entry represents the status of a set of propagated Private
+  Service Connect connections grouped by certain fields.
 
   Fields:
-    count: The number of status. If group_by is not set in the request, the
-      default is 1.
-    groupBy: The same group_by field from the request.
-    pscPropagationStatus: The PSC propagation status.
+    count: The number of propagated Private Service Connect connections with
+      this status. If the `group_by` field was not set in the request message,
+      the value of this field is 1.
+    groupBy: The fields that this entry is grouped by. This has the same value
+      as the `group_by` field in the request message.
+    pscPropagationStatus: The Private Service Connect propagation status.
   """
 
   count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1386,15 +1393,16 @@ class GoogleCloudNetworkconnectivityV1betaPolicyBasedRoute(_messages.Message):
 
 
 class GoogleCloudNetworkconnectivityV1betaPscPropagationStatus(_messages.Message):
-  r"""The PSC propagation status in a hub.
+  r"""The status of one or more propagated Private Service Connect connections
+  in a hub.
 
   Enums:
     CodeValueValuesEnum: The propagation status.
 
   Fields:
     code: The propagation status.
-    message: The human-readable summary of the PSC connection propagation
-      status.
+    message: The human-readable summary of the Private Service Connect
+      connection propagation status.
     sourceForwardingRule: The name of the forwarding rule exported to the hub.
     sourceGroup: The name of the group that the source spoke belongs to.
     sourceSpoke: The name of the spoke that the source forwarding rule belongs
@@ -1409,22 +1417,27 @@ class GoogleCloudNetworkconnectivityV1betaPscPropagationStatus(_messages.Message
 
     Values:
       CODE_UNSPECIFIED: The code is unspecified.
-      READY: The propagated PSC connection is ready.
-      PROPAGATING: PSC connection is propagating. This is a transient state.
-      ERROR_PRODUCER_PROPAGATED_CONNECTION_LIMIT_EXCEEDED: The PSC connection
-        propagation failed because the VPC network or the project of the
-        target spoke has exceeded the connection limit set by the producer.
-      ERROR_PRODUCER_NAT_IP_SPACE_EXHAUSTED: The PSC connection propagation
-        failed because the NAT IP subnet space has been exhausted. It is
-        equivalent to the `Needs attention` status of the PSC connection. See
+      READY: The propagated Private Service Connect connection is ready.
+      PROPAGATING: The Private Service Connect connection is propagating. This
+        is a transient state.
+      ERROR_PRODUCER_PROPAGATED_CONNECTION_LIMIT_EXCEEDED: The Private Service
+        Connect connection propagation failed because the VPC network or the
+        project of the target spoke has exceeded the connection limit set by
+        the producer.
+      ERROR_PRODUCER_NAT_IP_SPACE_EXHAUSTED: The Private Service Connect
+        connection propagation failed because the NAT IP subnet space has been
+        exhausted. It is equivalent to the `Needs attention` status of the
+        Private Service Connect connection. See
         https://cloud.google.com/vpc/docs/about-accessing-vpc-hosted-services-
         endpoints#connection-statuses.
-      ERROR_PRODUCER_QUOTA_EXCEEDED: PSC connection propagation failed because
-        the `PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK` quota in
-        the producer VPC network has been exceeded.
-      ERROR_CONSUMER_QUOTA_EXCEEDED: The PSC connection propagation failed
-        because the `PSC_PROPAGATED_CONNECTIONS_PER_VPC_NETWORK` quota in the
-        consumer VPC network has been exceeded.
+      ERROR_PRODUCER_QUOTA_EXCEEDED: The Private Service Connect connection
+        propagation failed because the
+        `PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK` quota in the
+        producer VPC network has been exceeded.
+      ERROR_CONSUMER_QUOTA_EXCEEDED: The Private Service Connect connection
+        propagation failed because the
+        `PSC_PROPAGATED_CONNECTIONS_PER_VPC_NETWORK` quota in the consumer VPC
+        network has been exceeded.
     """
     CODE_UNSPECIFIED = 0
     READY = 1
@@ -3694,26 +3707,27 @@ class NetworkconnectivityProjectsLocationsGlobalHubsQueryStatusRequest(_messages
   Fields:
     filter: Optional. An expression that filters the list of results. The
       filter can be used to filter the results by the following fields: *
-      psc_propagation_status.source_spoke *
-      psc_propagation_status.source_group *
-      psc_propagation_status.source_forwarding_rule *
-      psc_propagation_status.target_spoke *
-      psc_propagation_status.target_group * psc_propagation_status.code *
-      psc_propagation_status.message
-    groupBy: Optional. A field that counts are grouped by. A comma-separated
-      list of any of these fields: * psc_propagation_status.source_spoke *
-      psc_propagation_status.source_group *
-      psc_propagation_status.source_forwarding_rule *
-      psc_propagation_status.target_spoke *
-      psc_propagation_status.target_group * psc_propagation_status.code
+      `psc_propagation_status.source_spoke` *
+      `psc_propagation_status.source_group` *
+      `psc_propagation_status.source_forwarding_rule` *
+      `psc_propagation_status.target_spoke` *
+      `psc_propagation_status.target_group` * `psc_propagation_status.code` *
+      `psc_propagation_status.message`
+    groupBy: Optional. Aggregate the results by the specified fields. A comma-
+      separated list of any of these fields: *
+      `psc_propagation_status.source_spoke` *
+      `psc_propagation_status.source_group` *
+      `psc_propagation_status.source_forwarding_rule` *
+      `psc_propagation_status.target_spoke` *
+      `psc_propagation_status.target_group` * `psc_propagation_status.code`
     name: Required. The name of the hub.
-    orderBy: Optional. Sort the results in the ascending order by specific
-      fields returned in the response. A comma-separated list of any of these
-      fields: * psc_propagation_status.source_spoke *
-      psc_propagation_status.source_group *
-      psc_propagation_status.source_forwarding_rule *
-      psc_propagation_status.target_spoke *
-      psc_propagation_status.target_group * psc_propagation_status.code If
+    orderBy: Optional. Sort the results in ascending order by the specified
+      fields. A comma-separated list of any of these fields: *
+      `psc_propagation_status.source_spoke` *
+      `psc_propagation_status.source_group` *
+      `psc_propagation_status.source_forwarding_rule` *
+      `psc_propagation_status.target_spoke` *
+      `psc_propagation_status.target_group` * `psc_propagation_status.code` If
       `group_by` is set, the value of the `order_by` field must be the same as
       or a subset of the `group_by` field.
     pageSize: Optional. The maximum number of results to return per page.

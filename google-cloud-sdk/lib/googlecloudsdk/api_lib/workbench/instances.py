@@ -452,17 +452,22 @@ def UpdateInstance(args, messages):
     Instance of the Instance message.
   """
   gce_setup = messages.GceSetup(
-      acceleratorConfigs=[CreateAcceleratorConfigMessage(args, messages)],
       gpuDriverConfig=CreateGPUDriverConfigMessage(args, messages),
       machineType=args.machine_type,
       metadata=GetMetadataFromArgs(args, messages),
       shieldedInstanceConfig=GetShieldedInstanceConfigFromArgs(args, messages),
-    )
+  )
+  if args.IsSpecified('accelerator_type') or args.IsSpecified(
+      'accelerator_core_count'
+  ):
+    gce_setup.acceleratorConfigs = [
+        CreateAcceleratorConfigMessage(args, messages)
+    ]
   instance = messages.Instance(
       name=args.instance,
       gceSetup=gce_setup,
       labels=GetLabelsFromArgs(args, messages),
-    )
+  )
   return instance
 
 

@@ -130,11 +130,11 @@ def AddBgpBestPathSelectionArgGroup(parser):
               ' and MED BGP attributes. When global routing is enabled,'
               ' region-to-region cost is used as a tiebreaker. This mode offers'
               ' customizations to fine-tune BGP best path routing with'
-              ' additional knobs like --bgp-bps-always-compare-med and'
+              ' additional flags like --bgp-bps-always-compare-med and'
               ' --bgp-bps-inter-region-cost'
           ),
       },
-      help="""The BGP best path selection algorithm to be employed. MODE can be LEGACY or STANDARD.""",
+      help="""The BGP best path selection algorithm to be employed.""",
       type=arg_utils.ChoiceToEnumName,
   )
   group.add_argument(
@@ -233,6 +233,7 @@ def AddUpdateArgs(parser):
   AddEnableUlaInternalIpv6Arg(parser)
 
   AddNetworkFirewallPolicyEnforcementOrderArg(parser)
+  AddBgpBestPathSelectionArgGroup(parser)
 
 
 def CheckRangeLegacyModeOrRaise(args):

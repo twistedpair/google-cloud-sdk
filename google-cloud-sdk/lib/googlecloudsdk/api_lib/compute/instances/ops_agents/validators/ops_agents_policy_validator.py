@@ -69,6 +69,7 @@ _SUPPORTED_OS_SHORT_NAMES_AND_VERSIONS = {
         '23.04',
         '23.10',
         '24.04',
+        '24.10',
     ],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.WINDOWS: [
         '10',
