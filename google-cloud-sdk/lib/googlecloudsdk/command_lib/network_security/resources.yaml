@@ -323,3 +323,15 @@ firewallAttachment:
     parameter_name: firewallAttachmentId
     attribute_name: firewall_attachment
     help: Id of the firewall attachment
+
+backendAuthenticationConfig:
+  name: backend authentication config
+  collection: networksecurity.projects.locations.backendAuthenticationConfigs
+  request_id_field: backendAuthenticationConfigId
+  attributes:
+  - *project
+  - *globalDefaultLocation
+  - &backendAuthenticationConfig
+    parameter_name: backendAuthenticationConfigsId
+    attribute_name: backend_authentication_config
+    help: Id of the backend authentication config.

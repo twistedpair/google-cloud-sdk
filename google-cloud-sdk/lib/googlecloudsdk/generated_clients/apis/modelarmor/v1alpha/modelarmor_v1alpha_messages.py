@@ -1358,10 +1358,10 @@ class SdpInspectResult(_messages.Message):
       successfully executed or not.
     findings: List of SDP findings.
     findingsTruncated: If true, then there is possibility that more findings
-      were identified and and the findings returned are an arbitrary subset of
-      all findings. The findings list might be truncated because the input
-      items were too large, or because the server reached the maximum amount
-      of resources allowed for a single API call.
+      were identified and the findings returned are an arbitrary subset of all
+      findings. The findings list might be truncated because the input items
+      were too large, or because the server reached the maximum amount of
+      resources allowed for a single API call.
     matchState: Output only. Match state for SDP Inspection. Value is
       MATCH_FOUND if at least one SDP finding is identified.
     messageItems: Optional messages corresponding to the result. A message can
@@ -1531,13 +1531,17 @@ class TemplateMetadata(_messages.Message):
       trips Model Armor filters.
     ignorePartialInvocationFailures: Optional. If true, partial detector
       failures should be ignored.
+    logSanitizeOperations: Optional. If true, log sanitize operations.
+    logTemplateOperations: Optional. If true, log template crud operations.
   """
 
-  customLlmResponseSafetyErrorCode = _messages.IntegerField(1)
+  customLlmResponseSafetyErrorCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   customLlmResponseSafetyErrorMessage = _messages.StringField(2)
-  customPromptSafetyErrorCode = _messages.IntegerField(3)
+  customPromptSafetyErrorCode = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   customPromptSafetyErrorMessage = _messages.StringField(4)
   ignorePartialInvocationFailures = _messages.BooleanField(5)
+  logSanitizeOperations = _messages.BooleanField(6)
+  logTemplateOperations = _messages.BooleanField(7)
 
 
 class VirusDetail(_messages.Message):

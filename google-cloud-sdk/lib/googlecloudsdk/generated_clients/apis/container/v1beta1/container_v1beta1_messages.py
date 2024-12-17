@@ -331,7 +331,8 @@ class Autopilot(_messages.Message):
   Fields:
     conversionStatus: Output only. ConversionStatus shows conversion status.
     enabled: Enable Autopilot
-    workloadPolicyConfig: Workload policy configuration for Autopilot.
+    workloadPolicyConfig: WorkloadPolicyConfig is the configuration related to
+      GCW workload policy
   """
 
   conversionStatus = _messages.MessageField('AutopilotConversionStatus', 1)
@@ -1326,8 +1327,8 @@ class ClusterUpdate(_messages.Message):
     desiredAutopilot: The desired Autopilot configuration for the cluster.
     desiredAutopilotInsecureKubeletReadonlyPortEnabled: Enable/disable kubelet
       readonly port for autopilot cluster
-    desiredAutopilotWorkloadPolicyConfig: The desired workload policy
-      configuration for the autopilot cluster.
+    desiredAutopilotWorkloadPolicyConfig: WorkloadPolicyConfig is the
+      configuration related to GCW workload policy
     desiredBinaryAuthorization: The desired configuration options for the
       Binary Authorization feature.
     desiredClusterAutoscaling: Cluster-level autoscaling configuration.
@@ -2519,14 +2520,11 @@ class ControlPlaneEndpointsConfig(_messages.Message):
 
   Fields:
     dnsEndpointConfig: DNS endpoint configuration.
-    enhancedIngress: Enhanced KCP ingress configuration. Deprecated: Use
-      dns_endpoint_config or ip_endpoints_config instead.
     ipEndpointsConfig: IP endpoints configuration.
   """
 
   dnsEndpointConfig = _messages.MessageField('DNSEndpointConfig', 1)
-  enhancedIngress = _messages.MessageField('EnhancedKCPIngress', 2)
-  ipEndpointsConfig = _messages.MessageField('IPEndpointsConfig', 3)
+  ipEndpointsConfig = _messages.MessageField('IPEndpointsConfig', 2)
 
 
 class CostManagementConfig(_messages.Message):
@@ -2708,7 +2706,6 @@ class DNSEndpointConfig(_messages.Message):
     allowExternalTraffic: Controls whether user traffic is allowed over this
       endpoint. Note that GCP-managed services may still use the endpoint even
       if this is false.
-    enabled: Controls whether this endpoint is available.
     endpoint: Output only. The cluster's DNS endpoint configuration. A DNS
       format address. This is accessible from the public internet. Ex: uid.us-
       central1.gke.goog. Always present, but the behavior may change according
@@ -2716,8 +2713,7 @@ class DNSEndpointConfig(_messages.Message):
   """
 
   allowExternalTraffic = _messages.BooleanField(1)
-  enabled = _messages.BooleanField(2)
-  endpoint = _messages.StringField(3)
+  endpoint = _messages.StringField(2)
 
 
 class DailyMaintenanceWindow(_messages.Message):
@@ -2896,22 +2892,6 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
-
-
-class EnhancedKCPIngress(_messages.Message):
-  r"""Enhanced KCP ingress configuration. Deprecated: Use IPEndpointsConfig
-  and DNSEndpointConfig instead.
-
-  Fields:
-    enabled: Controls whether the cluster is configured to use enhanced KCP
-      ingress.
-    endpoint: Output only. The cluster's DNS endpoint configuration. A DNS
-      format address. This is accessible from the public internet. Ex: uid.us-
-      central1.gke.goog.
-  """
-
-  enabled = _messages.BooleanField(1)
-  endpoint = _messages.StringField(2)
 
 
 class EnterpriseConfig(_messages.Message):
@@ -3792,7 +3772,8 @@ class LinuxNodeConfig(_messages.Message):
       net.core.busy_poll net.core.busy_read net.core.netdev_max_backlog
       net.core.rmem_max net.core.wmem_default net.core.wmem_max
       net.core.optmem_max net.core.somaxconn net.ipv4.tcp_rmem
-      net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
+      net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse kernel.shmmni kernel.shmmax
+      kernel.shmall
 
   Fields:
     cgroupMode: cgroup_mode specifies the cgroup mode to be used on the node.
@@ -3802,7 +3783,8 @@ class LinuxNodeConfig(_messages.Message):
       net.core.busy_poll net.core.busy_read net.core.netdev_max_backlog
       net.core.rmem_max net.core.wmem_default net.core.wmem_max
       net.core.optmem_max net.core.somaxconn net.ipv4.tcp_rmem
-      net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
+      net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse kernel.shmmni kernel.shmmax
+      kernel.shmall
   """
 
   class CgroupModeValueValuesEnum(_messages.Enum):
@@ -3828,7 +3810,7 @@ class LinuxNodeConfig(_messages.Message):
     net.core.busy_poll net.core.busy_read net.core.netdev_max_backlog
     net.core.rmem_max net.core.wmem_default net.core.wmem_max
     net.core.optmem_max net.core.somaxconn net.ipv4.tcp_rmem net.ipv4.tcp_wmem
-    net.ipv4.tcp_tw_reuse
+    net.ipv4.tcp_tw_reuse kernel.shmmni kernel.shmmax kernel.shmall
 
     Messages:
       AdditionalProperty: An additional property for a SysctlsValue object.
@@ -4403,6 +4385,7 @@ class MonitoringComponentConfig(_messages.Message):
       CADVISOR: CADVISOR
       KUBELET: KUBELET
       DCGM: NVIDIA Data Center GPU Manager (DCGM)
+      JOBSET: JobSet
     """
     COMPONENT_UNSPECIFIED = 0
     SYSTEM_COMPONENTS = 1
@@ -4420,6 +4403,7 @@ class MonitoringComponentConfig(_messages.Message):
     CADVISOR = 13
     KUBELET = 14
     DCGM = 15
+    JOBSET = 16
 
   enableComponents = _messages.EnumField('EnableComponentsValueListEntryValuesEnum', 1, repeated=True)
 
@@ -5095,16 +5079,29 @@ class NodeKubeletConfig(_messages.Message):
   r"""Node kubelet configs.
 
   Fields:
+    allowedUnsafeSysctls: Optional. Defines a comma-separated allowlist of
+      unsafe sysctls or sysctl patterns (ending in `*`). The unsafe namespaced
+      sysctl groups are `kernel.shm*`, `kernel.msg*`, `kernel.sem`,
+      `fs.mqueue.*`, and `net.*`. Leaving this allowlist empty means they
+      cannot be set on Pods. To allow certain sysctls or sysctl patterns to be
+      set on Pods, list them separated by commas. For example:
+      `kernel.msg*,net.ipv4.route.min_pmtu`. See
+      https://kubernetes.io/docs/tasks/administer-cluster/sysctl-cluster/ for
+      more details.
     containerLogMaxFiles: Optional. Defines the maximum number of container
       log files that can be present for a container. See
       https://kubernetes.io/docs/concepts/cluster-administration/logging/#log-
-      rotation The default value is 5 if unspecified.
+      rotation The value must be an integer between 2 and 10, inclusive. The
+      default value is 5 if unspecified.
     containerLogMaxSize: Optional. Defines the maximum size of the container
       log file before it is rotated. See
       https://kubernetes.io/docs/concepts/cluster-administration/logging/#log-
-      rotation Format: positive number + unit, e.g. 100Ki, 10Mi, 5Gi. Or -1
-      which means the log rotation is disabled. Valid units are Ki, Mi, Gi.
-      The default value is 10Mi if unspecified.
+      rotation Valid format is positive number + unit, e.g. 100Ki, 10Mi. Valid
+      units are Ki, Mi, Gi. The value must be between 10Mi and 500Mi,
+      inclusive. Note that the total container log size
+      (container_log_max_size * container_log_max_files) cannot exceed 1% of
+      the total storage of the node, to avoid disk pressure caused by log
+      files. The default value is 10Mi if unspecified.
     cpuCfsQuota: Enable CPU CFS quota enforcement for containers that specify
       CPU limits. This option is enabled by default which makes kubelet use
       CFS quota (https://www.kernel.org/doc/Documentation/scheduler/sched-
@@ -5124,27 +5121,30 @@ class NodeKubeletConfig(_messages.Message):
       with certain resource characteristics to be granted increased CPU
       affinity and exclusivity on the node. The default value is 'none' if
       unspecified.
-    imageGcHighThresholdPercent: Optional. The percent of disk usage after
-      which image garbage collection is always run. The percent is calculated
-      as this field value out of 100. If not set, the default value is 85 in
-      OSS
-    imageGcLowThresholdPercent: Optional. The percent of disk usage before
-      which image garbage collection is never run. Lowest disk usage to
+    imageGcHighThresholdPercent: Optional. Defines the percent of disk usage
+      after which image garbage collection is always run. The percent is
+      calculated as this field value out of 100. The value must be between 10
+      and 85, inclusive and greater than image_gc_low_threshold_percent. The
+      default value is 85 if unspecified.
+    imageGcLowThresholdPercent: Optional. Defines the percent of disk usage
+      before which image garbage collection is never run. Lowest disk usage to
       garbage collect to. The percent is calculated as this field value out of
-      100. If not set, the default value is 80 in OSS
-    imageMaximumGcAge: Optional. The maximum age an image can be unused before
-      it is garbage collected. The string must be a sequence of decimal
+      100. The value must be between 10 and 85, inclusive and smaller than
+      image_gc_high_threshold_percent. The default value is 80 if unspecified.
+    imageMaximumGcAge: Optional. Defines the maximum age an image can be
+      unused before it is garbage collected. The string must be a sequence of
+      decimal numbers, each with optional fraction and a unit suffix, such as
+      "300s", "1.5h", and "2h45m". Valid time units are "ns", "us" (or
+      "\xb5s"), "ms", "s", "m", "h". The value must be a positive duration
+      greater than image_minimum_gc_age or "0s". The default value is "0s" if
+      unspecified, which disables this field, meaning images won't be garbage
+      collected based on being unused for too long.
+    imageMinimumGcAge: Optional. Defines the minimum age for an unused image
+      before it is garbage collected. The string must be a sequence of decimal
       numbers, each with optional fraction and a unit suffix, such as "300s",
       "1.5h", and "2h45m". Valid time units are "ns", "us" (or "\xb5s"), "ms",
-      "s", "m", "h". The value must be a positive duration or "0s". The
-      default value is "0s" if unspecified, which disables this field, meaning
-      images won't be garbage collected based on being unused for too long.
-    imageMinimumGcAge: Optional. The minimum age for an unused image before it
-      is garbage collected. The string must be a sequence of decimal numbers,
-      each with optional fraction and a unit suffix, such as "300s", "1.5h",
-      and "2h45m". Valid time units are "ns", "us" (or "\xb5s"), "ms", "s",
-      "m", "h". The value must be a positive duration. The default value is
-      "2m0s" if unspecified.
+      "s", "m", "h". The value must be a positive duration less than or equal
+      to 2 minutes. The default value is "2m0s" if unspecified.
     insecureKubeletReadonlyPortEnabled: Enable or disable Kubelet read only
       port.
     memoryManager: Optional. Controls NUMA-aware Memory Manager configuration
@@ -5159,19 +5159,20 @@ class NodeKubeletConfig(_messages.Message):
       https://kubernetes.io/docs/tasks/administer-cluster/topology-manager/
   """
 
-  containerLogMaxFiles = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  containerLogMaxSize = _messages.StringField(2)
-  cpuCfsQuota = _messages.BooleanField(3)
-  cpuCfsQuotaPeriod = _messages.StringField(4)
-  cpuManagerPolicy = _messages.StringField(5)
-  imageGcHighThresholdPercent = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  imageGcLowThresholdPercent = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  imageMaximumGcAge = _messages.StringField(8)
-  imageMinimumGcAge = _messages.StringField(9)
-  insecureKubeletReadonlyPortEnabled = _messages.BooleanField(10)
-  memoryManager = _messages.MessageField('MemoryManager', 11)
-  podPidsLimit = _messages.IntegerField(12)
-  topologyManager = _messages.MessageField('TopologyManager', 13)
+  allowedUnsafeSysctls = _messages.StringField(1, repeated=True)
+  containerLogMaxFiles = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  containerLogMaxSize = _messages.StringField(3)
+  cpuCfsQuota = _messages.BooleanField(4)
+  cpuCfsQuotaPeriod = _messages.StringField(5)
+  cpuManagerPolicy = _messages.StringField(6)
+  imageGcHighThresholdPercent = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  imageGcLowThresholdPercent = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  imageMaximumGcAge = _messages.StringField(9)
+  imageMinimumGcAge = _messages.StringField(10)
+  insecureKubeletReadonlyPortEnabled = _messages.BooleanField(11)
+  memoryManager = _messages.MessageField('MemoryManager', 12)
+  podPidsLimit = _messages.IntegerField(13)
+  topologyManager = _messages.MessageField('TopologyManager', 14)
 
 
 class NodeLabels(_messages.Message):
@@ -6780,6 +6781,7 @@ class SecurityBulletinEvent(_messages.Message):
     cveIds: The CVEs associated with this bulletin.
     manualStepsRequired: If this field is specified, it means there are manual
       steps that the user must take to make their clusters safe.
+    mitigatedVersions: The GKE versions where this vulnerability is mitigated.
     patchedVersions: The GKE versions where this vulnerability is patched.
     resourceTypeAffected: The resource type (node/control plane) that has the
       vulnerability. Multiple notifications (1 notification per resource type)
@@ -6799,10 +6801,11 @@ class SecurityBulletinEvent(_messages.Message):
   bulletinUri = _messages.StringField(4)
   cveIds = _messages.StringField(5, repeated=True)
   manualStepsRequired = _messages.BooleanField(6)
-  patchedVersions = _messages.StringField(7, repeated=True)
-  resourceTypeAffected = _messages.StringField(8)
-  severity = _messages.StringField(9)
-  suggestedUpgradeTarget = _messages.StringField(10)
+  mitigatedVersions = _messages.StringField(7, repeated=True)
+  patchedVersions = _messages.StringField(8, repeated=True)
+  resourceTypeAffected = _messages.StringField(9)
+  severity = _messages.StringField(10)
+  suggestedUpgradeTarget = _messages.StringField(11)
 
 
 class SecurityPostureConfig(_messages.Message):
@@ -8035,15 +8038,29 @@ class UpgradeDetails(_messages.Message):
   operation.
 
   Enums:
+    StartTypeValueValuesEnum: The start type of the upgrade.
     StateValueValuesEnum: Output only. The state of the upgrade.
 
   Fields:
     endTime: The end timestamp of the upgrade.
     initialVersion: The version before the upgrade.
     startTime: The start timestamp of the upgrade.
+    startType: The start type of the upgrade.
     state: Output only. The state of the upgrade.
     targetVersion: The version after the upgrade.
   """
+
+  class StartTypeValueValuesEnum(_messages.Enum):
+    r"""The start type of the upgrade.
+
+    Values:
+      START_TYPE_UNSPECIFIED: Upgrade start type is unspecified.
+      AUTOMATIC: Upgrade started automatically.
+      MANUAL: Upgrade started manually.
+    """
+    START_TYPE_UNSPECIFIED = 0
+    AUTOMATIC = 1
+    MANUAL = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the upgrade.
@@ -8053,17 +8070,20 @@ class UpgradeDetails(_messages.Message):
       FAILED: Upgrade has failed with an error.
       SUCCEEDED: Upgrade has succeeded.
       CANCELED: Upgrade has been canceled.
+      RUNNING: Upgrade is running.
     """
     UNKNOWN = 0
     FAILED = 1
     SUCCEEDED = 2
     CANCELED = 3
+    RUNNING = 4
 
   endTime = _messages.StringField(1)
   initialVersion = _messages.StringField(2)
   startTime = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  targetVersion = _messages.StringField(5)
+  startType = _messages.EnumField('StartTypeValueValuesEnum', 4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  targetVersion = _messages.StringField(6)
 
 
 class UpgradeEvent(_messages.Message):
@@ -8109,21 +8129,39 @@ class UpgradeInfoEvent(_messages.Message):
   information of a resource.
 
   Enums:
+    EventTypeValueValuesEnum: The type of the event.
     ResourceTypeValueValuesEnum: The resource type associated with the
       upgrade.
     StateValueValuesEnum: Output only. The state of the upgrade.
 
   Fields:
     currentVersion: The current version before the upgrade.
+    description: A brief description of the event.
     endTime: The time when the operation ended.
+    eventType: The type of the event.
+    extendedSupportEndTime: The end of extended support timestamp.
     operation: The operation associated with this upgrade.
     resource: Optional relative path to the resource. For example in node pool
       upgrades, the relative path of the node pool.
     resourceType: The resource type associated with the upgrade.
+    standardSupportEndTime: The end of standard support timestamp.
     startTime: The time when the operation was started.
     state: Output only. The state of the upgrade.
     targetVersion: The target version for the upgrade.
   """
+
+  class EventTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the event.
+
+    Values:
+      EVENT_TYPE_UNSPECIFIED: EVENT_TYPE_UNSPECIFIED indicates the event type
+        is unspecified.
+      END_OF_SUPPORT: END_OF_SUPPORT indicates GKE version reaches end of
+        support, check standard_support_end_time and extended_support_end_time
+        for more details.
+    """
+    EVENT_TYPE_UNSPECIFIED = 0
+    END_OF_SUPPORT = 1
 
   class ResourceTypeValueValuesEnum(_messages.Enum):
     r"""The resource type associated with the upgrade.
@@ -8155,13 +8193,17 @@ class UpgradeInfoEvent(_messages.Message):
     CANCELED = 4
 
   currentVersion = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-  operation = _messages.StringField(3)
-  resource = _messages.StringField(4)
-  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 5)
-  startTime = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  targetVersion = _messages.StringField(8)
+  description = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  eventType = _messages.EnumField('EventTypeValueValuesEnum', 4)
+  extendedSupportEndTime = _messages.StringField(5)
+  operation = _messages.StringField(6)
+  resource = _messages.StringField(7)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 8)
+  standardSupportEndTime = _messages.StringField(9)
+  startTime = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  targetVersion = _messages.StringField(12)
 
 
 class UpgradeSettings(_messages.Message):
@@ -8616,14 +8658,16 @@ class WorkloadMonitoringEapConfig(_messages.Message):
 
 
 class WorkloadPolicyConfig(_messages.Message):
-  r"""WorkloadPolicyConfig is the configuration of workload policy for
-  autopilot clusters.
+  r"""WorkloadPolicyConfig is the configuration related to GCW workload policy
 
   Fields:
     allowNetAdmin: If true, workloads can use NET_ADMIN capability.
+    autopilotCompatibilityAuditingEnabled: If true, enables the GCW Auditor
+      that audits workloads on standard clusters.
   """
 
   allowNetAdmin = _messages.BooleanField(1)
+  autopilotCompatibilityAuditingEnabled = _messages.BooleanField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

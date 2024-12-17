@@ -76,7 +76,8 @@ RB_LIST_FORMAT = """
       name.segment(7):sort=1:label=NAME,
       user:sort=1:label=USER,
       group:sort=1:label=GROUP,
-      role.predefinedRole:label=ROLE
+      role.predefinedRole:label=ROLE,
+      role.customRole:label=CUSTOM_ROLE
     )
 """
 B_LIST_FORMAT = """

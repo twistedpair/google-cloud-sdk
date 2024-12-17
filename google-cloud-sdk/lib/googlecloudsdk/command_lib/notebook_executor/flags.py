@@ -20,18 +20,21 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.colab_enterprise import flags as colab_flags
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
 
 
-def GetRegionAttributeConfig():
+def GetRegionAttributeConfig(for_workbench=False):
+  if (for_workbench):
+    fallthrough = None
+  else:
+    fallthrough = deps.PropertyFallthrough(properties.VALUES.colab.region)
   return concepts.ResourceParameterAttributeConfig(
       name='region',
       help_text='Cloud region for the {resource}.',
-      fallthroughs=[
-          deps.PropertyFallthrough(properties.VALUES.colab.region)
-      ],
+      fallthroughs=[fallthrough],
   )
 
 
@@ -126,18 +129,19 @@ def AddDataformRepositoryResourceArg(parser):
   ).AddToParser(parser)
 
 
-def AddRegionResourceArg(parser, verb):
+def AddRegionResourceArg(parser, verb, for_workbench=False):
   """Add a resource argument for a Vertex AI region to the parser.
 
   Args:
     parser: argparse parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
+    for_workbench: bool, whether the flag is added for a workbench execution.
 
   """
   region_resource_spec = concepts.ResourceSpec(
       'aiplatform.projects.locations',
       resource_name='region',
-      locationsId=GetRegionAttributeConfig(),
+      locationsId=GetRegionAttributeConfig(for_workbench),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
   )
 
@@ -185,7 +189,7 @@ def AddRuntimeTemplateResourceArg(parser):
   ).AddToParser(parser)
 
 
-def AddCreateExecutionFlags(parser, is_schedule=False):
+def AddCreateExecutionFlags(parser, is_schedule=False, for_workbench=False):
   """Adds flags for creating an execution to the parser."""
   execution_group = parser.add_group(
       help='Configuration of the execution job.',
@@ -219,23 +223,20 @@ def AddCreateExecutionFlags(parser, is_schedule=False):
       required=True,
       mutex=True,
   )
-  dataform_source_group = notebook_source_group.add_group(
-      help=(
-          'The Dataform repository containing the notebook. Any notebook'
-          ' created from the Colab UI is automatically stored in a Dataform'
-          ' repository. The repository name can be found via the Dataform'
-          ' API by listing repositories in the same project and region as the'
-          ' notebook.'
-      ),
-  )
-  AddDataformRepositoryResourceArg(dataform_source_group)
-  dataform_source_group.add_argument(
-      '--commit-sha',
-      help=(
-          'The commit SHA to read from the Dataform repository. If unset, the'
-          ' file will be read from HEAD.'
-      ),
-  )
+  if not for_workbench:
+    dataform_source_group = notebook_source_group.add_group(
+        help='The Dataform repository containing the notebook. Any notebook'
+        ' created from the Colab UI is automatically stored in a Dataform'
+        ' repository. The repository name can be found via the Dataform'
+        ' API by listing repositories in the same project and region as the'
+        ' notebook.'
+    )
+    AddDataformRepositoryResourceArg(dataform_source_group)
+    dataform_source_group.add_argument(
+        '--commit-sha',
+        help='The commit SHA to read from the Dataform repository. If unset,'
+        ' the file will be read from HEAD.',
+    )
   gcs_source_group = notebook_source_group.add_group(
       help='The Cloud Storage notebook source.',
   )
@@ -273,7 +274,40 @@ def AddCreateExecutionFlags(parser, is_schedule=False):
       type=arg_parsers.Duration(),
       default='24h',
   )
-  AddRuntimeTemplateResourceArg(execution_group)
+  if for_workbench:
+    colab_flags.AddCustomEnvSpecFlags(execution_group)
+    colab_flags.AddKmsKeyResourceArg(
+        execution_group,
+        'The Cloud KMS encryption key (customer-managed encryption key) used to'
+        ' protect the execution. The key must be in the same region as the'
+        ' execution. If not specified, Google-managed encryption will be used.',
+    )
+    execution_group.add_argument(
+        '--kernel-name',
+        help='The kernel name to use for the execution.',
+        default='python3',
+    )
+    execution_group.add_argument(
+        '--service-account',
+        help='The service account to run the execution as'
+    )
+  else:
+    AddRuntimeTemplateResourceArg(execution_group)
+    execution_identity_group = execution_group.add_group(
+        help='Identity to run the execution as.',
+        mutex=True,
+        required=True,
+    )
+    execution_identity_group.add_argument(
+        '--user-email',
+        help='The user email to run the execution as. This requires the'
+        ' provided runtime template to have end user credentials enabled.',
+    )
+    execution_identity_group.add_argument(
+        '--service-account',
+        help='The service account to run the execution as.',
+        required=False,
+    )
   execution_group.add_argument(
       '--gcs-output-uri',
       help=(
@@ -281,23 +315,6 @@ def AddCreateExecutionFlags(parser, is_schedule=False):
           ' Format: gs://bucket-name.'
       ),
       required=True,
-  )
-  execution_identity_group = execution_group.add_group(
-      help='Identity to run the execution as.',
-      mutex=True,
-      required=True,
-  )
-  execution_identity_group.add_argument(
-      '--user-email',
-      help=(
-          'The user email to run the execution as. This requires the provided'
-          ' runtime template to have end user credentials enabled.'
-      ),
-  )
-  execution_identity_group.add_argument(
-      '--service-account',
-      help='The service account to run the execution as.',
-      required=False,
   )
 
 

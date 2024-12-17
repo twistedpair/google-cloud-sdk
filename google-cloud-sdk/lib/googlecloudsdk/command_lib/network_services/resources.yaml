@@ -176,6 +176,18 @@ multicastDomain:
     attribute_name: multicast_domain
     help: Id of the multicast domain.
 
+multicastDomainGroup:
+  name: multicast domain group
+  collection: networkservices.projects.locations.multicastDomainGroups
+  request_id_field: multicastDomainGroupId
+  attributes:
+  - *project
+  - *location
+  - &multicastDomainGroup
+    parameter_name: multicastDomainGroupsId
+    attribute_name: multicast_domain_group
+    help: Id of the multicast domain group.
+
 multicastGroupDefinition:
   name: multicast group definition
   collection: networkservices.projects.locations.multicastGroupDefinitions

@@ -253,12 +253,10 @@ class HubV2Client(object):
       and OperationRef to watch the operation and get the final status,
       typically using waiter.WaitFor to present a user-friendly spinner.
     """
-    req = (
-        self.messages.GkehubProjectsLocationsMembershipsFeaturesCreateRequest(
-            membership_feature=membership_feature,
-            featureId=feature_id,
-            parent=parent,
-        )
+    req = self.messages.GkehubProjectsLocationsMembershipsFeaturesCreateRequest(
+        membership_feature=membership_feature,
+        featureId=feature_id,
+        parent=parent,
     )
     return self.client.projects_locations_memberships_features.Create(req)
 
@@ -293,13 +291,11 @@ class HubV2Client(object):
       OperationRef to watch the operation and get the final status, typically
       using waiter.WaitFor to present a user-friendly spinner.
     """
-    req = (
-        self.messages.GkehubProjectsLocationsMembershipsFeaturesPatchRequest(
-            name=name,
-            updateMask=','.join(mask),
-            membershipFeature=membership_feature,
-            allowMissing=True,
-        )
+    req = self.messages.GkehubProjectsLocationsMembershipsFeaturesPatchRequest(
+        name=name,
+        updateMask=','.join(mask),
+        membershipFeature=membership_feature,
+        allowMissing=True,
     )
     return self.client.projects_locations_memberships_features.Patch(req)
 
@@ -316,10 +312,8 @@ class HubV2Client(object):
       watch the operation and get the final status, typically using
       waiter.WaitFor to present a user-friendly spinner.
     """
-    req = (
-        self.messages.GkehubProjectsLocationsMembershipsFeaturesDeleteRequest(
-            name=name,
-        )
+    req = self.messages.GkehubProjectsLocationsMembershipsFeaturesDeleteRequest(
+        name=name,
     )
     return self.client.projects_locations_memberships_features.Delete(req)
 
@@ -370,9 +364,7 @@ class FleetClient(object):
     )
     return self.client.projects_locations_fleets.Get(req)
 
-  def CreateFleet(
-      self, req: types.GkehubProjectsLocationsFleetsCreateRequest
-  ):
+  def CreateFleet(self, req: types.GkehubProjectsLocationsFleetsCreateRequest):
     """Creates a fleet resource from the Fleet API.
 
     Args:
@@ -1047,12 +1039,15 @@ class FleetClient(object):
     )
     return self.client.projects_locations_scopes_rbacrolebindings.Get(req)
 
-  def CreateScopeRBACRoleBinding(self, name, role, user, group, labels=None):
+  def CreateScopeRBACRoleBinding(
+      self, name, role, custom_role, user, group, labels=None
+  ):
     """Creates an ScopeRBACRoleBinding resource from the GKEHub API.
 
     Args:
       name: the full Scoperbacrolebinding resource name.
       role: the role.
+      custom_role: the custom role.
       user: the user.
       group: the group.
       labels: labels for the RBACRoleBinding resource.
@@ -1065,13 +1060,17 @@ class FleetClient(object):
       calliope_exceptions.RequiredArgumentException: if a required field is
         missing
     """
+    if custom_role:
+      roledef = self.messages.Role(customRole=custom_role)
+    else:
+      roledef = self.messages.Role(
+          predefinedRole=self.messages.Role.PredefinedRoleValueValuesEnum(
+              role.upper()
+          )
+      )
     rolebinding = self.messages.RBACRoleBinding(
         name=name,
-        role=self.messages.Role(
-            predefinedRole=self.messages.Role.PredefinedRoleValueValuesEnum(
-                role.upper()
-            )
-        ),
+        role=roledef,
         user=user,
         group=group,
         labels=labels,
@@ -1126,14 +1125,17 @@ class FleetClient(object):
         'Waiting for rbacrolebinding to be deleted',
     )
 
-  def UpdateScopeRBACRoleBinding(self, name, user, group, role, labels, mask):
+  def UpdateScopeRBACRoleBinding(
+      self, name, user, group, role, custom_role, labels, mask
+  ):
     """Updates an ScopeRBACRoleBinding resource in the fleet.
 
     Args:
       name: the rolebinding name.
       user: the user.
       group: the group.
-      role: the role.
+      role: the predefined role.
+      custom_role: the custom role.
       labels: labels for the RBACRoleBinding resource.
       mask: a mask of the fields to update.
 
@@ -1143,16 +1145,21 @@ class FleetClient(object):
     Raises:
       apitools.base.py.HttpError: if the request returns an HTTP error
     """
+    roledef = None
+    if custom_role:
+      roledef = self.messages.Role(customRole=custom_role)
+    if role:
+      roledef = self.messages.Role(
+          predefinedRole=self.messages.Role.PredefinedRoleValueValuesEnum(
+              role.upper()
+          )
+      )
     # RoleBinding containing fields with updated value(s)
     rolebinding = self.messages.RBACRoleBinding(
         name=name,
         user=user,
         group=group,
-        role=self.messages.Role(
-            predefinedRole=self.messages.Role.PredefinedRoleValueValuesEnum(
-                role.upper()
-            )
-        ),
+        role=roledef,
         labels=labels,
     )
     req = (
@@ -1550,9 +1557,7 @@ class OperationClient:
         max_wait_ms=43200000,
     )
 
-  def Describe(
-      self, req: types.GkehubProjectsLocationsOperationsGetRequest
-  ):
+  def Describe(self, req: types.GkehubProjectsLocationsOperationsGetRequest):
     """Describes a long-running operation."""
     return self.client.projects_locations_operations.Get(req)
 

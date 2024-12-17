@@ -6408,7 +6408,7 @@ def AddEnableCiliumClusterwideNetworkPolicyFlag(parser, is_update=False):
 
 def AddDisableL4LbFirewallReconciliationFlag(
     parser,
-    hidden=True,
+    hidden=False,
     is_update=False
 ):
   """Adds a disable-l4-lb-firewall-reconciliation to the given cluster parser.
@@ -6425,14 +6425,21 @@ def AddDisableL4LbFirewallReconciliationFlag(
         '--disable-l4-lb-firewall-reconciliation',
         action='store_const',
         const=True,
-        help="""Disable L4 loadbalancer firewall reconciliation on the cluster.""",
+        help="""\
+            Disable reconciliation on the cluster for L4 Load Balancer VPC
+            firewalls targeting ingress traffic.
+            """,
         hidden=hidden,
     )
     group.add_argument(
         '--enable-l4-lb-firewall-reconciliation',
         action='store_const',
         const=True,
-        help="""Enable L4 loadbalancer firewall reconciliation on the cluster. L4 LB firewall reconciliation is enabled by default.""",
+        help="""\
+            Enable reconciliation on the cluster for L4 Load Balancer VPC
+            firewalls targeting ingress traffic. L4 LB VPC firewall
+            reconciliation is enabled by default.
+            """,
         hidden=hidden,
     )
   else:
@@ -6440,7 +6447,10 @@ def AddDisableL4LbFirewallReconciliationFlag(
         '--disable-l4-lb-firewall-reconciliation',
         action='store_const',
         const=True,
-        help="""Disable L4 loadbalancer firewall reconciliation on the cluster.""",
+        help="""\
+            Disable reconciliation on the cluster for L4 Load Balancer VPC
+            firewalls targeting ingress traffic.
+            """,
         hidden=hidden,
     )
 

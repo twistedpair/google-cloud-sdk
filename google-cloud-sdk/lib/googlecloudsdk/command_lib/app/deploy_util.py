@@ -527,7 +527,7 @@ def ArgsDeploy(parser):
   parser.add_argument(
       '--image-url',
       help='(App Engine flexible environment only.) Deploy with a specific '
-      'Docker image. Docker url must be from one of the valid Container '
+      'Docker image. Docker url must be from one of the valid Artifact '
       'Registry hostnames.')
   parser.add_argument(
       '--appyaml',
@@ -709,7 +709,7 @@ def RunDeploy(
           RunDeployCloudScheduler(config)
         else:
           raise ValueError(
-              'Unkonwn config [{config}]'.format(config=config.name)
+              'Unknown config [{config}]'.format(config=config.name)
           )
     metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG)
 

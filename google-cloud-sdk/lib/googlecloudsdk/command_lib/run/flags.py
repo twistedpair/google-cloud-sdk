@@ -1402,20 +1402,17 @@ class ScalingValue:
 
 def AddMinInstancesFlag(parser, resource_kind='service'):
   """Add min scaling flag."""
-  help_text = (
-      'The minimum number of container instances for this Revision of the'
-      " Service to run or 'default' to remove any minimum."
-  )
-  if resource_kind == 'worker':
-    help_text = (
-        'The minimum number of container instances for this Worker to run or'
-        " 'default' to remove any minimum. These instances will be divided"
-        ' among all Revisions receiving a percentage of instance split.'
-    )
+  resource = 'Service' if resource_kind == 'service' else 'Worker'
   parser.add_argument(
       '--min-instances',
       type=_ScaleValue,
-      help=help_text,
+      help=(
+          'The minimum number of container instances to run for this Revision '
+          " or 'default' to remove. This setting is immutably set on each new "
+          ' Revision and modifying its value will deploy a another Revision.'
+          ' Consider using --min to set the minimum number of instances across'
+          f' all revisions of the {resource} which may be modified dynamically.'
+      ),
   )
 
 
@@ -1425,9 +1422,10 @@ def AddServiceMinInstancesFlag(parser):
       '--min',
       type=_ScaleValue,
       help=(
-          'The minimum number of container instances for this Service to run '
-          "or 'default' to remove any minimum. These instances will be divided "
-          'among all Revisions receiving a percentage of traffic.'
+          'The minimum number of container instances to run for this Service '
+          "or 'default' to remove. These instances will be divided among all "
+          'Revisions receiving a percentage of traffic and can be modified '
+          'without deploying a new Revision.'
       ),
   )
 
@@ -1436,9 +1434,10 @@ def AddServiceMinInstancesFlag(parser):
       type=_ScaleValue,
       hidden=True,
       help=(
-          'The minimum number of container instances for this Service to run '
-          "or 'default' to remove any minimum. These instances will be divided "
-          'among all Revisions receiving a percentage of traffic.'
+          'The minimum number of container instances to run for this Service '
+          "or 'default' to remove. These instances will be divided among all "
+          'Revisions receiving a percentage of traffic and can be modified '
+          'without deploying a new Revision.'
       ),
   )
 
@@ -1449,10 +1448,11 @@ def AddServiceMaxInstancesFlag(parser):
       '--max',
       type=_ScaleValue,
       help=(
-          'The maximum number of container instances for this Service to run. '
+          'The maximum number of container instances  to run for this Service. '
           'This instance limit will be divided among all Revisions receiving a '
-          'percentage of traffic. Once service-max-instances is enabled for a '
-          'service, it cannot be disabled.'
+          'percentage of traffic and can be modified without deploying a new '
+          'Revision. Once service-max-instances is enabled for a service, it '
+          'cannot be disabled.'
       ),
   )
 
@@ -1472,13 +1472,17 @@ def AddServiceMaxInstancesFlag(parser):
 def AddMaxInstancesFlag(parser, resource_kind='service'):
   """Add max scaling flag."""
   help_text = (
-      'The maximum number of container instances of the Service to run. '
-      "Use 'default' to unset the limit and use the platform default."
+      'The maximum number of container instances for this Revision '
+      "to run or 'default' to remove. This setting is immutably set on each "
+      'new Revision and modifying its value will deploy another Revision. '
   )
   if resource_kind == 'worker':
     help_text = (
-        'The maximum number of container instances of the Worker to run. '
-        "Use 'default' to unset the limit and use the platform default."
+        'The maximum number of container instances for this Revision '
+        "to run or 'default' to remove. This setting is immutably set on each "
+        'new Revision and modifying its value will deploy another Revision. '
+        'Consider using --max to set the maximum number of instances across '
+        'all revisions of the Worker which may be modified dynamically.'
     )
   parser.add_argument(
       '--max-instances',
@@ -2103,6 +2107,25 @@ def AddRuntimeFlag(parser):
   )
 
 
+def AddOverflowScalingFlag(parser):
+  """Add flag to enable overflow scaling."""
+  parser.add_argument(
+      '--overflow-scaling',
+      hidden=True,
+      action=arg_parsers.StoreTrueFalseAction,
+      help=(
+          'Whether to start instances for new requests when no capacity is'
+          ' available on existing instances. This behavior is enabled by'
+          ' default i.e. Overflow instances will be started if a request cannot'
+          ' be handled by the existing instances. Enables rapid scaling in'
+          ' response to traffic spikes. When disabled, only Scheduled instances'
+          ' will be started, based on the configured scaling factors and'
+          ' targets. Use --overflow-scaling to enable and --no-overflow-scaling'
+          ' to disable.'
+      ),
+  )
+
+
 def HasChanges(args, flags):
   """True iff any of the passed flags are set."""
   return any(FlagIsExplicitlySet(args, flag) for flag in flags)
@@ -2584,6 +2607,19 @@ def _GetConfigMapsChanges(args):
   if any(volume_kwargs.values()):
     config_maps_changes.append(
         config_changes.ConfigMapVolumeChanges(**volume_kwargs)
+    )
+  return config_maps_changes
+
+
+def _GetOverFlowScalingChanges(args):
+  """Return overflow scaling changes for given args."""
+  config_maps_changes = []
+  if FlagIsExplicitlySet(args, 'overflow_scaling'):
+    config_maps_changes.append(
+        config_changes.SetTemplateAnnotationChange(
+            revision.OVERFLOW_SCALING_ANNOTATION,
+            str(args.overflow_scaling).lower(),
+        )
     )
   return config_maps_changes
 
@@ -3255,6 +3291,7 @@ def GetServiceConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
     )
 
   changes.extend(_GetIapChanges(args))
+  changes.extend(_GetOverFlowScalingChanges(args))
   return changes
 
 

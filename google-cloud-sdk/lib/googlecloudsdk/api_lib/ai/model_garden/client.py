@@ -50,12 +50,13 @@ class ModelGardenClient(object):
     )
     return self._service.Get(request)
 
-  def ListPublisherModels(self, limit=None, include_hf_models=False):
+  def ListPublisherModels(self, limit=None, list_hf_models=False):
     """List publisher models in Model Garden.
 
     Args:
-      limit: The maximum number of items to list.
-      include_hf_models: Whether to include Hugging Face models.
+      limit: The maximum number of items to list. None if all available records
+        should be yielded.
+      list_hf_models: Whether to only list Hugging Face models.
 
     Returns:
       The list of publisher models in Model Garden..
@@ -65,9 +66,9 @@ class ModelGardenClient(object):
         self._messages.AiplatformPublishersModelsListRequest(
             parent='publishers/*',
             listAllVersions=True,
-            filter='is_hf_wildcard=true'
-            if include_hf_models
-            else 'is_hf_wildcard=false',
+            filter='is_hf_wildcard(true)'
+            if list_hf_models
+            else 'is_hf_wildcard(false)',
         ),
         field='publisherModels',
         batch_size_attribute='pageSize',

@@ -127,6 +127,11 @@ def AddLocationResourceArg(parser: parser_arguments.ArgumentInterceptor,
   ).AddToParser(parser)
 
 
+def AddDescriptionArg(parser, help_text="Description of the endpoint"):
+  """Adds a resource argument for Google Cloud description."""
+  parser.add_argument("--description", required=False, help=help_text)
+
+
 def AddMirroringDeploymentGroupResource(release_track, parser):
   """Adds mirroring deployment group resource."""
   api_version = api.GetApiVersion(release_track)

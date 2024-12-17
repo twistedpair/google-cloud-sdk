@@ -14,10 +14,6 @@
 # limitations under the License.
 """Wraps a Cloud Run revision message with convenience methods."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import k8s_object
 
@@ -40,6 +36,8 @@ IDENTITY_ANNOTATION = 'run.googleapis.com/identity'
 BASE_IMAGE_UPDATE_RUNTIME_CLASS_NAME = (
     'run.googleapis.com/linux-base-image-update'
 )
+# If true, overflow scaling capabilities are enabled for this revision.
+OVERFLOW_SCALING_ANNOTATION = 'run.googleapis.com/overflow-scaling'
 
 
 class Revision(container_resource.ContainerResource):

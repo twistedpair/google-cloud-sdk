@@ -696,7 +696,7 @@ def HasFailoverPolicyArgs(args):
     return False
 
 
-def ApplyFailoverPolicyArgs(messages, args, backend_service, support_failover):
+def ApplyFailoverPolicyArgs(messages, args, backend_service):
   """Applies the FailoverPolicy arguments to the specified backend service.
 
   If there are no arguments related to FailoverPolicy, the backend service
@@ -706,9 +706,8 @@ def ApplyFailoverPolicyArgs(messages, args, backend_service, support_failover):
     messages: The available API proto messages.
     args: The arguments passed to the gcloud command.
     backend_service: The backend service proto message object.
-    support_failover: Indicates whether failover functionality is supported.
   """
-  if (support_failover and HasFailoverPolicyArgs(args)):
+  if HasFailoverPolicyArgs(args):
     failover_policy = (
         backend_service.failoverPolicy if backend_service.failoverPolicy else
         messages.BackendServiceFailoverPolicy())

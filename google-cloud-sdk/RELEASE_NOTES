@@ -5,6 +5,73 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 504.0.0 (2024-12-17)
+
+### AlloyDB
+
+* Added export command to support exporting data from an AlloyDB cluster to Google Cloud Storage.
+
+### BigQuery
+
+* Fixed the bug where quota project ID would default to the resource project ID for an active service account from Cloud CLI used for authentication.
+* Added `--reservation_id=none` to the `query` command to enforce on-demand job execution.
+* Added `--bigquery_discovery_api_key` to allow specifying an API key when making a discovery request.
+
+### Cloud Bigtable
+
+*   Changed the default retention period from 3d to 7d when automated backup is enabled using `--enable-automated-backup` flag in `gcloud bigtable instances tables create` and `gcloud bigtable instances tables update`.
+*   Added `--automated-backup-retention-period` flag to `gcloud bigtable instances tables create` and `gcloud bigtable instances tables update` commands which can be used to configure the retention period for automated backup.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.33.
+
+### Compute Engine
+
+* Added `--request-body-inspection-size` for `gcloud compute security-policies update`, and promoted it to beta.
+* Promoted `gcloud compute network-profiles list` and `describe` to v1.
+* Promoted `--network-profile` in `gcloud compute networks create` to v1.
+
+### Kubernetes Engine
+
+* Added `--disable-l4-lb-firewall-reconciliation` flag to
+`gcloud container clusters create`, `gcloud container clusters create-auto`, and
+`gcloud container clusters update` to disable reconciliation for VPC firewalls
+targeting ingress traffic for L4 Load Balancer Services.
+* Updated default kubectl from 1.30.6 to 1.30.8.
+* Added new kubectl version 1.32.0
+* Additional kubectl versions:
+  * kubectl.1.27 (1.27.16)
+  * kubectl.1.28 (1.28.15
+  * kubectl.1.29 (1.29.12)
+  * kubectl.1.30 (1.30.8)
+  * kubectl.1.31 (1.31.4)
+  * kubectl.1.32 (1.32.0)
+
+### Migrate to Virtual Machines
+
+* Promoted `gcloud migration vms machine-image-imports` commands to GA.
+
+### Network Security
+
+* New flag to add description for Intercept Endpoint Group in `create` and `update` commands.
+* Added `gcloud network-security security-profiles custom-intercept` commands to create Custom Intercept Security Profiles.
+* Added `--custom-intercept-profile` flag to `gcloud network-security security-profile-groups create` to associate a Custom Intercept SP to an SPG.
+
+### Network Services
+
+* Added `gcloud network-services route-views list`.
+
+* Added `gcloud network-services route-views describe`.
+
+### Service Extensions
+
+* Added per extension metadata field to the DEP extensions.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 503.0.0 (2024-12-10)
 
 ### Breaking Changes

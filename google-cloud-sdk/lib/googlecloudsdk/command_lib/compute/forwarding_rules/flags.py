@@ -341,7 +341,7 @@ TARGET_SSL_PROXY_ARG = compute_flags.ResourceArgument(
       """))
 
 
-def TargetTcpProxyArg(allow_regional=False):
+def TargetTcpProxyArg():
   """Return a resource argument for parsing a target tcp proxy."""
 
   target_https_proxy_arg = compute_flags.ResourceArgument(
@@ -349,14 +349,13 @@ def TargetTcpProxyArg(allow_regional=False):
       required=False,
       resource_name='tcp proxy',
       global_collection='compute.targetTcpProxies',
-      regional_collection='compute.regionTargetTcpProxies'
-      if allow_regional else None,
-      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
-      if allow_regional else None,
+      regional_collection='compute.regionTargetTcpProxies',
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
       short_help='Target TCP proxy that receives the traffic.',
       detailed_help=textwrap.dedent("""\
       Target TCP proxy that receives the traffic. For the acceptable ports, see [Port specifications](https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts#port_specifications).
-      """))
+      """),
+  )
 
   return target_https_proxy_arg
 
@@ -425,13 +424,13 @@ def AddressArg():
       detailed_help=AddressArgHelp())
 
 
-def AddUpdateTargetArgs(parser,
-                        include_psc_google_apis=False,
-                        include_target_service_attachment=False,
-                        include_regional_tcp_proxy=False):
+def AddUpdateTargetArgs(
+    parser,
+    include_psc_google_apis=False,
+    include_target_service_attachment=False,
+):
   """Adds common flags for mutating forwarding rule targets."""
   target = parser.add_mutually_exclusive_group(required=True)
-
   TargetGrpcProxyArg().AddArgument(parser, mutex_group=target)
 
   if include_target_service_attachment:
@@ -442,8 +441,7 @@ def AddUpdateTargetArgs(parser,
   TARGET_INSTANCE_ARG.AddArgument(parser, mutex_group=target)
   TARGET_POOL_ARG.AddArgument(parser, mutex_group=target)
   TARGET_SSL_PROXY_ARG.AddArgument(parser, mutex_group=target)
-  TargetTcpProxyArg(allow_regional=include_regional_tcp_proxy).AddArgument(
-      parser, mutex_group=target)
+  TargetTcpProxyArg().AddArgument(parser, mutex_group=target)
   TARGET_VPN_GATEWAY_ARG.AddArgument(parser, mutex_group=target)
   BACKEND_SERVICE_ARG.AddArgument(parser, mutex_group=target)
 
@@ -463,12 +461,11 @@ def AddCreateArgs(
     parser,
     include_psc_google_apis=False,
     include_target_service_attachment=False,
-    include_regional_tcp_proxy=False,
 ):
   """Adds common flags for creating forwarding rules."""
-  AddUpdateTargetArgs(parser, include_psc_google_apis,
-                      include_target_service_attachment,
-                      include_regional_tcp_proxy)
+  AddUpdateTargetArgs(
+      parser, include_psc_google_apis, include_target_service_attachment
+  )
 
   NetworkArg().AddArgument(parser)
   SUBNET_ARG.AddArgument(parser)
@@ -478,17 +475,18 @@ def AddCreateArgs(
       parser,
       include_psc_google_apis=include_psc_google_apis,
       include_target_service_attachment=include_target_service_attachment,
-      include_regional_tcp_proxy=include_regional_tcp_proxy)
+  )
 
 
-def AddSetTargetArgs(parser,
-                     include_psc_google_apis=False,
-                     include_target_service_attachment=False,
-                     include_regional_tcp_proxy=False):
+def AddSetTargetArgs(
+    parser,
+    include_psc_google_apis=False,
+    include_target_service_attachment=False,
+):
   """Adds flags for the set-target command."""
-  AddUpdateTargetArgs(parser, include_psc_google_apis,
-                      include_target_service_attachment,
-                      include_regional_tcp_proxy)
+  AddUpdateTargetArgs(
+      parser, include_psc_google_apis, include_target_service_attachment
+  )
 
   # The argument below are deprecated and will be eventually removed.
   def CreateDeprecationAction(name):
@@ -540,7 +538,6 @@ def AddSetTargetArgs(parser,
       parser,
       include_psc_google_apis=include_psc_google_apis,
       include_target_service_attachment=include_target_service_attachment,
-      include_regional_tcp_proxy=include_regional_tcp_proxy,
       deprecation_action=CreateDeprecationAction('--load-balancing-scheme'),
   )
 
@@ -549,17 +546,9 @@ def AddLoadBalancingScheme(
     parser,
     include_psc_google_apis=False,
     include_target_service_attachment=False,
-    include_regional_tcp_proxy=False,
     deprecation_action=None,
 ):
   """Adds the load-balancing-scheme flag."""
-  td_proxies = (
-      '--target-http-proxy, --target-https-proxy, '
-      '--target-grpc-proxy, --target-tcp-proxy'
-  )
-  ilb_proxies = '--target-http-proxy, --target-https-proxy'
-  if include_regional_tcp_proxy:
-    ilb_proxies += ', --target-tcp-proxy'
   load_balancing_choices = {
       'EXTERNAL': (
           'Classic Application Load Balancers, global external proxy Network '
@@ -578,12 +567,14 @@ def AddLoadBalancingScheme(
           'Internal passthrough Network Load Balancers or protocol '
           'forwarding, used with --backend-service.'
       ),
-      'INTERNAL_SELF_MANAGED': 'Traffic Director, used with {0}.'.format(
-          td_proxies
+      'INTERNAL_SELF_MANAGED': (
+          'Traffic Director, used with --target-http-proxy,'
+          ' --target-https-proxy, --target-grpc-proxy, --target-tcp-proxy.'
       ),
       'INTERNAL_MANAGED': (
-          'Internal Application Load Balancers and internal proxy Network '
-          'Load Balancers, used with {0}.'.format(ilb_proxies)
+          'Internal Application Load Balancers and internal proxy Network Load'
+          ' Balancers, used with --target-http-proxy, --target-https-proxy,'
+          ' --target-tcp-proxy.'
       ),
   }
 
@@ -675,61 +666,36 @@ def AddDisableAutomateDnsZone(parser):
       """)
 
 
-def AddIPProtocols(parser, support_all_protocol, support_l3_default):
+def AddIPProtocols(parser, support_all_protocol):
   """Adds IP protocols flag, with values available in the given version.
 
   Args:
     parser: The parser that parses args from user input.
     support_all_protocol: Whether to include "ALL" in the protocols list.
-    support_l3_default: Whether to include "L3_DEFAULT" in the protocols list.
   """
 
-  protocols = ['AH', 'ESP', 'ICMP', 'SCTP', 'TCP', 'UDP']
-  if support_l3_default:
-    protocols.append('L3_DEFAULT')
+  protocols = ['AH', 'ESP', 'ICMP', 'SCTP', 'TCP', 'UDP', 'L3_DEFAULT']
   if support_all_protocol:
     protocols.append('ALL')
-    if support_l3_default:
-      help_str = """\
-        IP protocol that the rule will serve. The default is `TCP`.
+    help_str = """\
+      IP protocol that the rule will serve. The default is `TCP`.
 
-        Note that if the load-balancing scheme is `INTERNAL`, the protocol must
-        be one of: `TCP`, `UDP`, `ALL`, `L3_DEFAULT`.
+      Note that if the load-balancing scheme is `INTERNAL`, the protocol must
+      be one of: `TCP`, `UDP`, `ALL`, `L3_DEFAULT`.
 
-        For a load-balancing scheme that is `EXTERNAL`, all IP_PROTOCOL
-        options other than `ALL` are valid.
-        """
-    else:
-      help_str = """\
-        IP protocol that the rule will serve. The default is `TCP`.
-
-        Note that if the load-balancing scheme is `INTERNAL`, the protocol must
-        be one of: `TCP`, `UDP`, `ALL`.
-
-        For a load-balancing scheme that is `EXTERNAL`, all IP_PROTOCOL
-        options other than `ALL` are valid.
+      For a load-balancing scheme that is `EXTERNAL`, all IP_PROTOCOL
+      options other than `ALL` are valid.
         """
   else:
-    if support_l3_default:
-      help_str = """\
-        IP protocol that the rule will serve. The default is `TCP`.
+    help_str = """\
+      IP protocol that the rule will serve. The default is `TCP`.
 
-        Note that if the load-balancing scheme is `INTERNAL`, the protocol must
-        be one of: `TCP`, `UDP`, `L3_DEFAULT`.
+      Note that if the load-balancing scheme is `INTERNAL`, the protocol must
+      be one of: `TCP`, `UDP`, `L3_DEFAULT`.
 
-        For a load-balancing scheme that is `EXTERNAL`, all IP_PROTOCOL
-        options are valid.
-        """
-    else:
-      help_str = """\
-        IP protocol that the rule will serve. The default is `TCP`.
-
-        Note that if the load-balancing scheme is `INTERNAL`, the protocol must
-        be one of: `TCP`, `UDP`.
-
-        For a load-balancing scheme that is `EXTERNAL`, all IP_PROTOCOL
-        options are valid.
-        """
+      For a load-balancing scheme that is `EXTERNAL`, all IP_PROTOCOL
+      options are valid.
+      """
 
   parser.add_argument(
       '--ip-protocol',
@@ -791,29 +757,26 @@ def AddPortsAndPortRange(parser):
       """)
 
 
-def AddNetworkTier(parser, supports_network_tier_flag, for_update):
+def AddNetworkTier(parser, for_update):
   """Adds network tier flag."""
-
-  # This arg is a string simulating enum NetworkTier because one of the
-  # option SELECT is hidden since it's not advertised to all customers.
-  if supports_network_tier_flag:
-    if for_update:
-      parser.add_argument(
-          '--network-tier',
-          type=lambda x: x.upper(),
-          help="""\
-          Update the network tier of a forwarding rule. It does not allow to
-          change from `PREMIUM` to `STANDARD` and visa versa.
-          """)
-    else:
-      parser.add_argument(
-          '--network-tier',
-          type=lambda x: x.upper(),
-          help="""\
-          Network tier to assign to the forwarding rules. ``NETWORK_TIER''
-          must be one of: `PREMIUM`, `STANDARD`. The default value is `PREMIUM`.
-          """,
-      )
+  if for_update:
+    parser.add_argument(
+        '--network-tier',
+        type=lambda x: x.upper(),
+        help="""\
+        Update the network tier of a forwarding rule. It does not allow to
+        change from `PREMIUM` to `STANDARD` and visa versa.
+        """,
+    )
+  else:
+    parser.add_argument(
+        '--network-tier',
+        type=lambda x: x.upper(),
+        help="""\
+        Network tier to assign to the forwarding rules. ``NETWORK_TIER''
+        must be one of: `PREMIUM`, `STANDARD`. The default value is `PREMIUM`.
+        """,
+    )
 
 
 def AddIsMirroringCollector(parser):

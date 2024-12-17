@@ -77,6 +77,7 @@ class Client:
       endpoint_group_id,
       parent,
       mirroring_deployment_group,
+      description,
       labels=None,
   ):
     """Calls the CreateEndpointGroup API.
@@ -86,6 +87,7 @@ class Client:
       parent: The parent of the Endpoint Group to create.
       mirroring_deployment_group: The Mirroring Deployment Group to associate
         with the Endpoint Group.
+      description: Description of the Endpoint Group.
       labels: Labels to apply to the Endpoint Group.
 
     Returns:
@@ -96,6 +98,11 @@ class Client:
         labels=labels,
         mirroringDeploymentGroup=mirroring_deployment_group,
     )
+
+    # BETA API doesn't have the new field yet, so don't assign it.
+    if hasattr(endpoint_group, 'description'):
+      endpoint_group.description = description
+
     create_request = self.messages.NetworksecurityProjectsLocationsMirroringEndpointGroupsCreateRequest(
         mirroringEndpointGroup=endpoint_group,
         mirroringEndpointGroupId=endpoint_group_id,
@@ -110,15 +117,12 @@ class Client:
     )
     return self._endpoint_group_client.Delete(delete_request)
 
-  def UpdateEndpointGroup(
-      self,
-      name,
-      update_fields,
-  ):
+  def UpdateEndpointGroup(self, name, description, update_fields):
     """Calls the UpdateEndpointGroup API.
 
     Args:
       name: The name of the Endpoint Group to update.
+      description: Description of the Endpoint Group.
       update_fields: A dictionary of the fields to update mapped to their new
         values.
 
@@ -128,6 +132,13 @@ class Client:
     endpoint_group = self.messages.MirroringEndpointGroup(
         labels=update_fields.get('labels', None),
     )
+
+    # TODO(b/381836581): Remove this check once the field is
+    # available in BETA and V1 (and b/381837549).
+    # BETA API doesn't have the new field yet, so don't assign it.
+    if hasattr(endpoint_group, 'description'):
+      endpoint_group.description = description
+
     update_request = self.messages.NetworksecurityProjectsLocationsMirroringEndpointGroupsPatchRequest(
         name=name,
         mirroringEndpointGroup=endpoint_group,

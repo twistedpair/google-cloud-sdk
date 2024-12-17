@@ -781,6 +781,7 @@ class ServerlessOperations(object):
       enable_automatic_updates=False,
       is_verbose=False,
       source_bucket=None,
+      kms_key=None,
   ):
     """Change the given service in prod using the given config_changes.
 
@@ -826,6 +827,7 @@ class ServerlessOperations(object):
         If false, opt-out automatic build image updates.
       is_verbose: Print verbose output. Forces polling instead of waiting.
       source_bucket: The bucket to use for source uploads.
+      kms_key: The KMS key to use for the deployment.
 
     Returns:
       service.Service, the service as returned by the server on the POST/PUT
@@ -868,6 +870,7 @@ class ServerlessOperations(object):
           build_env_vars,
           enable_automatic_updates,
           source_bucket,
+          kms_key,
       )
       if image_digest is None:
         return

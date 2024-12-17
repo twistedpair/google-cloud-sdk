@@ -45,7 +45,7 @@ def ParseSingleRule(rule):
 
   if rule_parts[0] == 'maxage':
     return util.GetAdminMessages().GcRule(
-        maxAge=ConvertDurationToSeconds(rule_parts[1])
+        maxAge=ConvertDurationToSeconds(rule_parts[1], '--column-families')
     )
   elif rule_parts[0] == 'maxversions':
     return util.GetAdminMessages().GcRule(maxNumVersions=int(rule_parts[1]))
@@ -177,11 +177,12 @@ def MakeSplits(split_list):
   return results
 
 
-def ConvertDurationToSeconds(duration):
+def ConvertDurationToSeconds(duration, arg_name):
   """Convert a string of duration in any form to seconds.
 
   Args:
     duration: A string of any valid form of duration, such as `10d`, `1w`, `36h`
+    arg_name: The name of the argument that the duration is passed in.
 
   Returns:
     A string of duration counted in seconds, such as `1000s`
@@ -193,11 +194,13 @@ def ConvertDurationToSeconds(duration):
     return times.FormatDurationForJson(times.ParseDuration(duration))
   except times.DurationSyntaxError as duration_error:
     raise exceptions.BadArgumentException(
-        '--column-families/change-stream-retention-period', str(duration_error)
+        arg_name,
+        str(duration_error),
     )
   except times.DurationValueError as duration_error:
     raise exceptions.BadArgumentException(
-        '--column-families/change-stream-retention-period', str(duration_error)
+        arg_name,
+        str(duration_error),
     )
 
 
@@ -225,6 +228,21 @@ def ParseColumnFamilies(family_list):
 
   return util.GetAdminMessages().Table.ColumnFamiliesValue(
       additionalProperties=results
+  )
+
+
+def ParseChangeStreamRetentionPeriod(retention_period):
+  """Parses change stream retention period from the string.
+
+  Args:
+    retention_period: Change stream retention period in the format of `3d` for 3
+      days.
+
+  Returns:
+    A string of duration counted in seconds, such as `259200s`
+  """
+  return ConvertDurationToSeconds(
+      retention_period, '--change-stream-retention-period'
   )
 
 
@@ -264,6 +282,8 @@ def RefreshUpdateMask(unused_ref, args, req):
     req = AddFieldToUpdateMask('changeStreamConfig.retentionPeriod', req)
   if args.enable_automated_backup or args.disable_automated_backup:
     req = AddFieldToUpdateMask('automatedBackupPolicy', req)
+  if args.automated_backup_retention_period:
+    req = AddFieldToUpdateMask('automatedBackupPolicy.retentionPeriod', req)
   return req
 
 
@@ -314,23 +334,77 @@ def AddChangeStreamConfigUpdateTableArgs():
   return [argument_group]
 
 
-def AddAutomatedBackupPolicyUpdateTableArgs():
-  """Adds automated backup policy commands to update table CLI."""
-  return [
+def AddAutomatedBackupPolicyCreateTableArgs():
+  """Adds automated backup policy commands to create table CLI.
+
+  This can't be defined in the yaml because that automatically generates the
+  inverse for any boolean args and we don't want the nonsensical
+  `no-enable-automated-backup`. We use store_const to only allow
+  `enable-automated-backup` argument.
+
+  Returns:
+    Argument group containing automated backup args.
+  """
+  argument_group = base.ArgumentGroup(mutex=True)
+  argument_group.AddArgument(
       base.Argument(
           '--enable-automated-backup',
           help=(
-              'Once set, enables the default automated backup policy '
-              '(retention_period=72h, frequency=24h) for the table.'
+              'Once set, enables the default automated backup policy'
+              ' (retention_period=7d, frequency=1d) for the table.'
           ),
-          action='store_true',
-      ),
+          action='store_const',
+          const=True,
+      )
+  )
+  argument_group.AddArgument(
+      base.Argument(
+          '--automated-backup-retention-period',
+          help=(
+              'The retention period of automated backup in the format of `30d`'
+              ' for 30 days. Min retention period is `3d` and max is `90d`.'
+              ' Setting this flag will enable automated backup for the table.'
+          ),
+      )
+  )
+  return [argument_group]
+
+
+def AddAutomatedBackupPolicyUpdateTableArgs():
+  """Adds automated backup policy commands to update table CLI."""
+  argument_group = base.ArgumentGroup(mutex=True)
+  argument_group.AddArgument(
+      base.Argument(
+          '--enable-automated-backup',
+          help=(
+              'Once set, enables the default automated backup policy'
+              ' (retention_period=7d, frequency=1d) for the table. Note: If a'
+              ' table has automated backup enabled, this flag resets it to the'
+              ' default policy.'
+          ),
+          action='store_const',
+          const=True,
+      )
+  )
+  argument_group.AddArgument(
       base.Argument(
           '--disable-automated-backup',
           help='Once set, disables automated backup policy for the table.',
-          action='store_true',
-      ),
-  ]
+          action='store_const',
+          const=True,
+      )
+  )
+  argument_group.AddArgument(
+      base.Argument(
+          '--automated-backup-retention-period',
+          help=(
+              'The retention period of automated backup in the format of `30d`'
+              ' for 30 days. Min retention period is `3d` and max is `90d`.'
+              ' Setting this flag will enable automated backup for the table.'
+          ),
+      )
+  )
+  return [argument_group]
 
 
 def HandleChangeStreamArgs(unused_ref, args, req):
@@ -341,40 +415,85 @@ def HandleChangeStreamArgs(unused_ref, args, req):
   return req
 
 
-def HandleAutomatedBackupPolicyArgs(unused_ref, args, req):
-  # If `enable_automated_backup` flag is set, add default policy to table.
-  # If `disable_automated_backup` flag is set, keep table.automatedBackupPolicy
-  # as empty, together with the update_mask, it will clear automated backup
-  # policy.
+def HandleAutomatedBackupPolicyCreateTableArgs(unused_ref, args, req):
+  """Handles automated backup policy args for create table CLI."""
+  if args.enable_automated_backup:
+    req.createTableRequest.table.automatedBackupPolicy = (
+        CreateDefaultAutomatedBackupPolicy()
+    )
+  if args.automated_backup_retention_period:
+    req.createTableRequest.table.automatedBackupPolicy = (
+        # Keeping the frequency as None to be consistent with the UpdateTable
+        # command.
+        CreateAutomatedBackupPolicy(
+            args.automated_backup_retention_period, None
+        )
+    )
+  return req
+
+
+def HandleAutomatedBackupPolicyUpdateTableArgs(unused_ref, args, req):
+  """Handle automated backup policy args for update table CLI.
+
+  If `enable_automated_backup` flag is set, add default policy to table. If
+  `disable_automated_backup` flag is set, keep table.automatedBackupPolicy as
+  empty, together with the update_mask, it will clear automated backup policy.
+  If `automated_backup_retention_period` flag is set, add policy with given
+  retention period to table.
+
+  Args:
+    unused_ref: the gcloud resource (unused).
+    args: the input arguments.
+    req: the original updateTableRequest.
+
+  Returns:
+    req: the updateTableRequest with automated backup policy handled.
+  """
   if args.enable_automated_backup:
     req.table.automatedBackupPolicy = CreateDefaultAutomatedBackupPolicy()
+  if args.automated_backup_retention_period:
+    req.table.automatedBackupPolicy = CreateAutomatedBackupPolicy(
+        args.automated_backup_retention_period, None
+    )
   return req
 
 
 def CreateChangeStreamConfig(duration):
   return util.GetAdminMessages().ChangeStreamConfig(
-      retentionPeriod=ConvertDurationToSeconds(duration)
+      retentionPeriod=ConvertDurationToSeconds(
+          duration, '--change-stream-retention-period'
+      )
   )
+
+
+def CreateAutomatedBackupPolicy(retention_period, frequency):
+  """Constructs AutomatedBackupPolicy message with given values.
+
+  Args:
+    retention_period: The retention period of the automated backup policy.
+    frequency: The frequency of the automated backup policy.
+
+  Returns:
+    AutomatedBackupPolicy with the specified policy config.
+  """
+  policy = util.GetAdminMessages().AutomatedBackupPolicy()
+  if retention_period:
+    policy.retentionPeriod = ConvertDurationToSeconds(
+        retention_period, '--automated-backup-retention-period'
+    )
+  if frequency:
+    policy.frequency = ConvertDurationToSeconds(
+        frequency, '--automated-backup-frequency'
+    )
+  return policy
 
 
 def CreateDefaultAutomatedBackupPolicy():
   """Constructs AutomatedBackupPolicy message with default values.
 
-  The default values are: retention_period=3d, frequency=1d
+  The default values are: retention_period=7d, frequency=1d
 
   Returns:
     AutomatedBackupPolicy with default policy config.
   """
-  # TODO(b/308123191): Add LINT IFTTT for the default value to
-  # //bigtable/anviltop/table/v2/validate.cc
-  return util.GetAdminMessages().AutomatedBackupPolicy(
-      retentionPeriod=ConvertDurationToSeconds('3d'),
-      frequency=ConvertDurationToSeconds('1d'),
-  )
-
-
-def EnableDefaultAutomatedBackupPolicy(enabled):
-  """Add default automated backup policy."""
-  if enabled:
-    return CreateDefaultAutomatedBackupPolicy()
-  return None
+  return CreateAutomatedBackupPolicy('7d', '1d')

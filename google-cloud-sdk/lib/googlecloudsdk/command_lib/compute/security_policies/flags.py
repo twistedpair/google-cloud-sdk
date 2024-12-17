@@ -221,7 +221,7 @@ def AddCloudArmorAdaptiveProtectionAutoDeploy(parser):
       ))
 
 
-def AddAdvancedOptions(parser, required=False):
+def AddAdvancedOptions(parser, required=False, enable_large_body_size=False):
   """Adds the cloud armor advanced options arguments to the argparse."""
   parser.add_argument(
       '--json-parsing',
@@ -250,6 +250,15 @@ def AddAdvancedOptions(parser, required=False):
       type=lambda x: x.upper(),
       required=required,
       help='The level of detail to display for WAF logging.')
+
+  if enable_large_body_size:
+    parser.add_argument(
+        '--request-body-inspection-size',
+        choices=['8KB', '128KB'],
+        type=lambda x: x.upper(),
+        required=required,
+        help='Maximum request body inspection size.',
+    )
 
   parser.add_argument(
       '--user-ip-request-headers',

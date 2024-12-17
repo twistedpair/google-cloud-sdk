@@ -64,8 +64,10 @@ def GetGlobalTarget(resources, args):
         args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL)
   if args.target_ssl_proxy:
     return flags.TARGET_SSL_PROXY_ARG.ResolveAsResource(args, resources)
-  if getattr(args, 'target_tcp_proxy', None):
-    return flags.TARGET_TCP_PROXY_ARG.ResolveAsResource(args, resources)
+  if args.target_tcp_proxy:
+    return flags.TARGET_TCP_PROXY_ARG.ResolveAsResource(
+        args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL
+    )
 
 
 def _ValidateRegionalTargetArgs(args):
@@ -90,12 +92,7 @@ def _ValidateRegionalTargetArgs(args):
         'specifying [--target-instance].')
 
 
-def GetRegionalTarget(client,
-                      resources,
-                      args,
-                      forwarding_rule_ref,
-                      include_target_service_attachment=False,
-                      include_regional_tcp_proxy=False):
+def GetRegionalTarget(client, resources, args, forwarding_rule_ref):
   """Return the forwarding target for a regionally scoped request."""
   _ValidateRegionalTargetArgs(args)
   region_arg = forwarding_rule_ref.region
@@ -135,11 +132,11 @@ def GetRegionalTarget(client,
     target_ref = flags.TARGET_SSL_PROXY_ARG.ResolveAsResource(args, resources)
     target_region = region_arg
   elif args.target_tcp_proxy:
-    target_ref = flags.TargetTcpProxyArg(
-        allow_regional=include_regional_tcp_proxy).ResolveAsResource(
-            args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL)
+    target_ref = flags.TargetTcpProxyArg().ResolveAsResource(
+        args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL
+    )
     target_region = region_arg
-  elif include_target_service_attachment and args.target_service_attachment:
+  elif args.target_service_attachment:
     target_ref = flags.TargetServiceAttachmentArg().ResolveAsResource(
         args, resources)
     target_region = target_ref.region
@@ -154,9 +151,9 @@ def GetRegionalTarget(client,
 For a regional forwarding rule, exactly one of  ``--target-instance``,
 ``--target-pool``, ``--target-http-proxy``, ``--target-https-proxy``,
 ``--target-grpc-proxy``, ``--target-ssl-proxy``, ``--target-tcp-proxy``,
-{} ``--target-vpn-gateway`` or ``--backend-service`` must be specified.
-""".format('``--target-service-attachment``,'
-           if include_target_service_attachment else None))
+``--target-service-attachment``, ``--target-vpn-gateway`` or
+``--backend-service`` must be specified.
+""")
 
   return target_ref, target_region
 

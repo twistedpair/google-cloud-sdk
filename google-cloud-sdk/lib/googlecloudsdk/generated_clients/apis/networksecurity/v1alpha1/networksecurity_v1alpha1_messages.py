@@ -142,6 +142,66 @@ class AddressGroup(_messages.Message):
   updateTime = _messages.StringField(10)
 
 
+class AntivirusOverride(_messages.Message):
+  r"""Defines what action to take for antivirus threats per protocol.
+
+  Enums:
+    ActionValueValuesEnum: Required. Threat action override. For some threat
+      types, only a subset of actions applies.
+    ProtocolValueValuesEnum: Required. Protocol to match.
+
+  Fields:
+    action: Required. Threat action override. For some threat types, only a
+      subset of actions applies.
+    protocol: Required. Protocol to match.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Required. Threat action override. For some threat types, only a subset
+    of actions applies.
+
+    Values:
+      THREAT_ACTION_UNSPECIFIED: Threat action not specified.
+      DEFAULT_ACTION: The default action (as specified by the vendor) is
+        taken.
+      ALLOW: The packet matching this rule will be allowed to transmit.
+      ALERT: The packet matching this rule will be allowed to transmit, but a
+        threat_log entry will be sent to the consumer project.
+      DENY: The packet matching this rule will be dropped, and a threat_log
+        entry will be sent to the consumer project.
+    """
+    THREAT_ACTION_UNSPECIFIED = 0
+    DEFAULT_ACTION = 1
+    ALLOW = 2
+    ALERT = 3
+    DENY = 4
+
+  class ProtocolValueValuesEnum(_messages.Enum):
+    r"""Required. Protocol to match.
+
+    Values:
+      PROTOCOL_UNSPECIFIED: Protocol not specified.
+      SMTP: SMTP prtocol
+      SMB: SMB protocol
+      POP3: POP3 protocol
+      IMAP: IMAP protocol
+      HTTP2: HTTP2 protocol
+      HTTP: HTTP protocol
+      FTP: FTP protocol
+    """
+    PROTOCOL_UNSPECIFIED = 0
+    SMTP = 1
+    SMB = 2
+    POP3 = 3
+    IMAP = 4
+    HTTP2 = 5
+    HTTP = 6
+    FTP = 7
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 2)
+
+
 class AntivirusThreatOverride(_messages.Message):
   r"""Defines what action to take for VIRUS threats per protocol.
 
@@ -409,8 +469,8 @@ class AuthzPolicyAuthzRule(_messages.Message):
   r"""Conditions to match against the incoming request.
 
   Fields:
-    from_: Optional. Describes properties of one or more sources of a request.
-    to: Optional. Describes properties of one or more targets of a request.
+    from_: Optional. Describes properties of a source of a request.
+    to: Optional. Describes properties of a target of a request.
     when: Optional. CEL expression that describes the conditions to be
       satisfied for the action. The result of the CEL expression is ANDed with
       the from and to. Refer to the CEL language reference for a list of
@@ -430,8 +490,8 @@ class AuthzPolicyAuthzRuleFrom(_messages.Message):
       Matches requests from sources that do not match the criteria specified
       in this field. At least one of sources or notSources must be specified.
     sources: Optional. Describes the properties of a request's sources. At
-      least one of sources or notSources must be specified. Limited to 5
-      sources. A match occurs when ANY source (in sources or notSources)
+      least one of sources or notSources must be specified. Limited to 1
+      source. A match occurs when ANY source (in sources or notSources)
       matches the request. Within a single source, the match follows AND
       semantics across fields and OR semantics within a single field, i.e. a
       match occurs when ANY principal matches AND ANY ipBlocks match.
@@ -539,11 +599,11 @@ class AuthzPolicyAuthzRuleTo(_messages.Message):
       notOperations must be specified.
     operations: Optional. Describes properties of one or more targets of a
       request. At least one of operations or notOperations must be specified.
-      Limited to 5 operations. A match occurs when ANY operation (in
-      operations or notOperations) matches. Within an operation, the match
-      follows AND semantics across fields and OR semantics within a field,
-      i.e. a match occurs when ANY path matches AND ANY header matches and ANY
-      method matches.
+      Limited to 1 operation. A match occurs when ANY operation (in operations
+      or notOperations) matches. Within an operation, the match follows AND
+      semantics across fields and OR semantics within a field, i.e. a match
+      occurs when ANY path matches AND ANY header matches and ANY method
+      matches.
   """
 
   notOperations = _messages.MessageField('AuthzPolicyAuthzRuleToRequestOperation', 1, repeated=True)
@@ -677,6 +737,105 @@ class AuthzPolicyTarget(_messages.Message):
 
   loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 1)
   resources = _messages.StringField(2, repeated=True)
+
+
+class BackendAuthenticationConfig(_messages.Message):
+  r"""BackendAuthenticationConfig message groups the TrustConfig together with
+  other settings that control how the load balancer authenticates, and
+  expresses its identity to, the backend: * `trustConfig` is the attached
+  TrustConfig. * `wellKnownRoots` indicates whether the load balance should
+  trust backend server certificates that are issued by public certificate
+  authorities, in addition to certificates trusted by the TrustConfig. *
+  `clientCertificate` is a client certificate that the load balancer uses to
+  express its identity to the backend, if the connection to the backend uses
+  mTLS. You can attach the BackendAuthenticationConfig to the load balancer's
+  BackendService directly determining how that BackendService negotiates TLS.
+
+  Enums:
+    WellKnownRootsValueValuesEnum: Well known roots to use for server
+      certificate validation.
+
+  Messages:
+    LabelsValue: Set of label tags associated with the resource.
+
+  Fields:
+    clientCertificate: Optional. A reference to a
+      certificatemanager.googleapis.com.Certificate resource. This is a
+      relative resource path following the form
+      "projects/{project}/locations/{location}/certificates/{certificate}".
+      Used by a BackendService to negotiate mTLS when the backend connection
+      uses TLS and the backend requests a client certificate. Must have a
+      CLIENT_AUTH scope.
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. Free-text description of the resource.
+    etag: Output only. Etag of the resource.
+    labels: Set of label tags associated with the resource.
+    name: Required. Name of the BackendAuthenticationConfig resource. It
+      matches the pattern `projects/*/locations/{location}/backendAuthenticati
+      onConfigs/{backend_authentication_config}`
+    trustConfig: Optional. A reference to a TrustConfig resource from the
+      certificatemanager.googleapis.com namespace. This is a relative resource
+      path following the form
+      "projects/{project}/locations/{location}/trustConfigs/{trust_config}". A
+      BackendService uses the chain of trust represented by this TrustConfig,
+      if specified, to validate the server certificates presented by the
+      backend. Required unless wellKnownRoots is set to PUBLIC_ROOTS.
+    updateTime: Output only. The timestamp when the resource was updated.
+    wellKnownRoots: Well known roots to use for server certificate validation.
+  """
+
+  class WellKnownRootsValueValuesEnum(_messages.Enum):
+    r"""Well known roots to use for server certificate validation.
+
+    Values:
+      WELL_KNOWN_ROOTS_UNSPECIFIED: Equivalent to NONE.
+      NONE: The BackendService will only validate server certificates against
+        roots specified in TrustConfig.
+      PUBLIC_ROOTS: The BackendService uses a set of well-known public roots,
+        in addition to any roots specified in the trustConfig field, when
+        validating the server certificates presented by the backend.
+        Validation with these roots is only considered when the
+        TlsSettings.sni field in the BackendService is set. The well-known
+        roots are a set of root CAs managed by Google. CAs in this set can be
+        added or removed without notice.
+    """
+    WELL_KNOWN_ROOTS_UNSPECIFIED = 0
+    NONE = 1
+    PUBLIC_ROOTS = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Set of label tags associated with the resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clientCertificate = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  trustConfig = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  wellKnownRoots = _messages.EnumField('WellKnownRootsValueValuesEnum', 9)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -2084,6 +2243,22 @@ class ListAuthzPoliciesResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListBackendAuthenticationConfigsResponse(_messages.Message):
+  r"""Response returned by the ListBackendAuthenticationConfigs method.
+
+  Fields:
+    backendAuthenticationConfigs: List of BackendAuthenticationConfig
+      resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+  """
+
+  backendAuthenticationConfigs = _messages.MessageField('BackendAuthenticationConfig', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListClientTlsPoliciesResponse(_messages.Message):
   r"""Response returned by the ListClientTlsPolicies method.
 
@@ -2650,7 +2825,7 @@ class MTLSPolicy(_messages.Message):
 
 
 class MirroringDeployment(_messages.Message):
-  r"""Message describing MirroringDeployment object
+  r"""Message describing MirroringDeployment object NEXT ID: 10
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the deployment.
@@ -2660,6 +2835,8 @@ class MirroringDeployment(_messages.Message):
 
   Fields:
     createTime: Output only. [Output only] Create time stamp
+    description: Optional. User-provided description of the deployment. Used
+      as additional context for the deployment.
     forwardingRule: Required. Immutable. The regional load balancer which the
       mirrored traffic should be forwarded to. Format is:
       projects/{project}/regions/{region}/forwardingRules/{forwardingRule}
@@ -2722,13 +2899,14 @@ class MirroringDeployment(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  forwardingRule = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  mirroringDeploymentGroup = _messages.StringField(4)
-  name = _messages.StringField(5)
-  reconciling = _messages.BooleanField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  description = _messages.StringField(2)
+  forwardingRule = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  mirroringDeploymentGroup = _messages.StringField(5)
+  name = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class MirroringDeploymentGroup(_messages.Message):
@@ -4170,6 +4348,103 @@ class NetworksecurityProjectsLocationsAuthzPoliciesTestIamPermissionsRequest(_me
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
   resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsBackendAuthenticationConfigsCreateRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsBackendAuthenticationConfigsCreateRequest
+  object.
+
+  Fields:
+    backendAuthenticationConfig: A BackendAuthenticationConfig resource to be
+      passed as the request body.
+    backendAuthenticationConfigId: Required. Short name of the
+      BackendAuthenticationConfig resource to be created. This value should be
+      1-63 characters long, containing only letters, numbers, hyphens, and
+      underscores, and should not start with a number. E.g. "backend-auth-
+      config".
+    parent: Required. The parent resource of the BackendAuthenticationConfig.
+      Must be in the format `projects/*/locations/{location}`.
+  """
+
+  backendAuthenticationConfig = _messages.MessageField('BackendAuthenticationConfig', 1)
+  backendAuthenticationConfigId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsBackendAuthenticationConfigsDeleteRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsBackendAuthenticationConfigsDeleteRequest
+  object.
+
+  Fields:
+    etag: Optional. Etag of the resource. If this is provided, it must match
+      the server's etag.
+    name: Required. A name of the BackendAuthenticationConfig to delete. Must
+      be in the format
+      `projects/*/locations/{location}/backendAuthenticationConfigs/*`.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsBackendAuthenticationConfigsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsBackendAuthenticationConfigsGetRequest
+  object.
+
+  Fields:
+    name: Required. A name of the BackendAuthenticationConfig to get. Must be
+      in the format
+      `projects/*/locations/{location}/backendAuthenticationConfigs/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsBackendAuthenticationConfigsListRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsBackendAuthenticationConfigsListRequest
+  object.
+
+  Fields:
+    pageSize: Maximum number of BackendAuthenticationConfigs to return per
+      call.
+    pageToken: The value returned by the last
+      `ListBackendAuthenticationConfigsResponse` Indicates that this is a
+      continuation of a prior `ListBackendAuthenticationConfigs` call, and
+      that the system should return the next page of data.
+    parent: Required. The project and location from which the
+      BackendAuthenticationConfigs should be listed, specified in the format
+      `projects/*/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsBackendAuthenticationConfigsPatchRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsBackendAuthenticationConfigsPatchRequest
+  object.
+
+  Fields:
+    backendAuthenticationConfig: A BackendAuthenticationConfig resource to be
+      passed as the request body.
+    name: Required. Name of the BackendAuthenticationConfig resource. It
+      matches the pattern `projects/*/locations/{location}/backendAuthenticati
+      onConfigs/{backend_authentication_config}`
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the BackendAuthenticationConfig resource by the update.
+      The fields specified in the update_mask are relative to the resource,
+      not the full request. A field will be overwritten if it is in the mask.
+      If the user does not provide a mask then all fields will be overwritten.
+  """
+
+  backendAuthenticationConfig = _messages.MessageField('BackendAuthenticationConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class NetworksecurityProjectsLocationsClientTlsPoliciesCreateRequest(_messages.Message):
@@ -8328,6 +8603,8 @@ class ThreatPreventionProfile(_messages.Message):
   or severity levels.
 
   Fields:
+    antivirusOverrides: Optional. Configuration for overriding antivirus
+      actions per protocol.
     antivirusThreatOverrides: Optional. Configuration for overriding VIRUS
       threat actions per protocol.
     severityOverrides: Optional. Configuration for overriding threats actions
@@ -8338,9 +8615,10 @@ class ThreatPreventionProfile(_messages.Message):
       is applied.
   """
 
-  antivirusThreatOverrides = _messages.MessageField('AntivirusThreatOverride', 1, repeated=True)
-  severityOverrides = _messages.MessageField('SeverityOverride', 2, repeated=True)
-  threatOverrides = _messages.MessageField('ThreatOverride', 3, repeated=True)
+  antivirusOverrides = _messages.MessageField('AntivirusOverride', 1, repeated=True)
+  antivirusThreatOverrides = _messages.MessageField('AntivirusThreatOverride', 2, repeated=True)
+  severityOverrides = _messages.MessageField('SeverityOverride', 3, repeated=True)
+  threatOverrides = _messages.MessageField('ThreatOverride', 4, repeated=True)
 
 
 class TlsCertificateFiles(_messages.Message):

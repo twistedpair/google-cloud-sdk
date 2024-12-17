@@ -77,6 +77,7 @@ class Client:
       endpoint_group_id,
       parent,
       intercept_deployment_group,
+      description,
       labels=None,
   ):
     """Calls the CreateEndpointGroup API.
@@ -86,6 +87,7 @@ class Client:
       parent: The parent of the Endpoint Group to create.
       intercept_deployment_group: The Intercept Deployment Group to associate
         with the Endpoint Group.
+      description: The description of the Endpoint Group.
       labels: Labels to apply to the Endpoint Group.
 
     Returns:
@@ -96,6 +98,13 @@ class Client:
         labels=labels,
         interceptDeploymentGroup=intercept_deployment_group,
     )
+
+    # TODO(b/381836581): Remove this check once the field is
+    # available in BETA and V1.
+    # BETA API doesn't have the new field yet, so don't assign it. b/381837549
+    if hasattr(endpoint_group, 'description'):
+      endpoint_group.description = description
+
     create_request = self.messages.NetworksecurityProjectsLocationsInterceptEndpointGroupsCreateRequest(
         interceptEndpointGroup=endpoint_group,
         interceptEndpointGroupId=endpoint_group_id,
@@ -113,12 +122,14 @@ class Client:
   def UpdateEndpointGroup(
       self,
       name,
+      description,
       update_fields,
   ):
     """Calls the UpdateEndpointGroup API.
 
     Args:
       name: The name of the Endpoint Group to update.
+      description: The description of the Endpoint Group.
       update_fields: A dictionary of the fields to update mapped to their new
         values.
 
@@ -128,6 +139,11 @@ class Client:
     endpoint_group = self.messages.InterceptEndpointGroup(
         labels=update_fields.get('labels', None),
     )
+
+    # v1 API doesn't have the new field yet, so don't assign it.
+    if hasattr(endpoint_group, 'description'):
+      endpoint_group.description = description
+
     update_request = self.messages.NetworksecurityProjectsLocationsInterceptEndpointGroupsPatchRequest(
         name=name,
         interceptEndpointGroup=endpoint_group,

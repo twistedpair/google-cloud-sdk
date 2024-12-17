@@ -601,13 +601,12 @@ class IapSettingsResource(object):
     return getattr(self.client, self.api_version)
 
   def _ParseIapSettingsFile(self, iap_settings_file_path,
-                            iap_settings_message_type, log_warning=False):
+                            iap_settings_message_type):
     """Create an iap settings message from a JSON formatted file.
 
     Args:
        iap_settings_file_path: Path to iap_setttings JSON file
        iap_settings_message_type: iap settings message type to convert JSON to
-       log_warning: bool, whether to log warning messages
 
     Returns:
        the iap_settings message filled from JSON file
@@ -615,29 +614,28 @@ class IapSettingsResource(object):
        BadFileException if JSON file is malformed.
     """
     iap_settings_to_parse = yaml.load_path(iap_settings_file_path)
-    if log_warning:
-      if (
-          'access_settings' in iap_settings_to_parse
-          and 'oauth_settings' in iap_settings_to_parse['access_settings']
-          and 'login_hint'
-          in iap_settings_to_parse['access_settings']['oauth_settings']
-      ):
-        log.warning(
-            'login_hint setting is not a replacement for access control. Always'
-            ' enforce an appropriate access policy if you want to restrict'
-            ' access to users outside your domain.'
-        )
+    if (
+        'access_settings' in iap_settings_to_parse
+        and 'oauth_settings' in iap_settings_to_parse['access_settings']
+        and 'login_hint'
+        in iap_settings_to_parse['access_settings']['oauth_settings']
+    ):
+      log.warning(
+          'login_hint setting is not a replacement for access control. Always'
+          ' enforce an appropriate access policy if you want to restrict'
+          ' access to users outside your domain.'
+      )
 
-      if (
-          'access_settings' in iap_settings_to_parse
-          and 'gcip_settings' in iap_settings_to_parse['access_settings']
-      ):
-        log.warning(
-            'Enabling gcip_settings significantly changes the way IAP'
-            ' authenticates users. Identity Platform does not support IAM, so'
-            ' IAP will not enforce any IAM policies for requests to your'
-            ' application.'
-        )
+    if (
+        'access_settings' in iap_settings_to_parse
+        and 'gcip_settings' in iap_settings_to_parse['access_settings']
+    ):
+      log.warning(
+          'Enabling gcip_settings significantly changes the way IAP'
+          ' authenticates users. Identity Platform does not support IAM, so'
+          ' IAP will not enforce any IAM policies for requests to your'
+          ' application.'
+      )
     try:
       iap_settings_message = encoding.PyValueToMessage(
           iap_settings_message_type, iap_settings_to_parse
@@ -654,10 +652,10 @@ class IapSettingsResource(object):
     request = self.messages.IapGetIapSettingsRequest(name=self.resource_name)
     return self.service.GetIapSettings(request)
 
-  def SetIapSetting(self, setting_file, log_warning):
+  def SetIapSetting(self, setting_file):
     """Set the setting for an IAP resource."""
     iap_settings = self._ParseIapSettingsFile(
-        setting_file, self.messages.IapSettings, log_warning
+        setting_file, self.messages.IapSettings
     )
     iap_settings.name = self.resource_name
     request = self.messages.IapUpdateIapSettingsRequest(

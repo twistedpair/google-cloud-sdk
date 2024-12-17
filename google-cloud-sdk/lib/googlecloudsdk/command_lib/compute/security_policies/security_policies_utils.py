@@ -178,6 +178,10 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
       security_policy.advancedOptionsConfig.logLevel = (
           messages.SecurityPolicyAdvancedOptionsConfig.LogLevelValueValuesEnum(
               advanced_options_config['logLevel']))
+    if 'requestBodyInspectionSize' in advanced_options_config:
+      security_policy.advancedOptionsConfig.requestBodyInspectionSize = (
+          advanced_options_config['requestBodyInspectionSize']
+      )
     if 'userIpRequestHeaders' in advanced_options_config:
       security_policy.advancedOptionsConfig.userIpRequestHeaders = (
           advanced_options_config['userIpRequestHeaders'])
@@ -552,7 +556,9 @@ def CreateAdaptiveProtectionConfigWithAutoDeployConfig(
   return adaptive_protection_config
 
 
-def CreateAdvancedOptionsConfig(client, args, existing_advanced_options_config):
+def CreateAdvancedOptionsConfig(
+    client, args, existing_advanced_options_config, enable_large_body_size=False
+):
   """Returns a SecurityPolicyAdvancedOptionsConfig message."""
 
   messages = client.messages
@@ -574,6 +580,13 @@ def CreateAdvancedOptionsConfig(client, args, existing_advanced_options_config):
     advanced_options_config.logLevel = (
         messages.SecurityPolicyAdvancedOptionsConfig.LogLevelValueValuesEnum(
             args.log_level))
+
+  if enable_large_body_size and args.IsSpecified(
+      'request_body_inspection_size'
+  ):
+    advanced_options_config.requestBodyInspectionSize = (
+        args.request_body_inspection_size
+    )
 
   if args.IsSpecified('user_ip_request_headers'):
     advanced_options_config.userIpRequestHeaders = args.user_ip_request_headers

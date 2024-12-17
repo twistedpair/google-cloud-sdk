@@ -75,14 +75,12 @@ INSTANCES_LIST_FORMAT_ALPHA = """\
     )"""
 
 FILE_SHARE_ARG_SPEC = {
-    'name':
-        str,
-    'capacity':
-        arg_parsers.BinarySize(
-            default_unit='GB',
-            suggested_binary_size_scales=['GB', 'GiB', 'TB', 'TiB']),
-    'nfs-export-options':
-        list
+    'name': str,
+    'capacity': arg_parsers.BinarySize(
+        default_unit='GB',
+        suggested_binary_size_scales=['GB', 'GiB', 'TB', 'TiB'],
+    ),
+    'nfs-export-options': list,
 }
 
 FILE_TIER_TO_TYPE = {
@@ -108,10 +106,7 @@ def AddAsyncFlag(parser):
 def AddForceArg(parser):
   help_text = """Forces the deletion of an instance and its child resources,
   such as snapshots."""
-  parser.add_argument(
-      '--force',
-      action='store_true',
-      help=(help_text))
+  parser.add_argument('--force', action='store_true', help=(help_text))
 
 
 def AddClearNfsExportOptionsArg(parser):
@@ -121,7 +116,8 @@ def AddClearNfsExportOptionsArg(parser):
       '--clear-nfs-export-options',
       action='store_true',
       required=False,
-      help=help_text)
+      help=help_text,
+  )
 
 
 def GetTierType(instance_tier):
@@ -133,14 +129,14 @@ def AddLocationArg(parser):
   parser.add_argument(
       '--location',
       required=False,
-      help='Location of the Cloud Filestore instance/operation.')
+      help='Location of the Cloud Filestore instance/operation.',
+  )
 
 
 def AddRegionArg(parser):
   parser.add_argument(
-      '--region',
-      required=False,
-      help='Region of the Cloud Filestore instance.')
+      '--region', required=False, help='Region of the Cloud Filestore instance.'
+  )
 
 
 def GetTagsArg():
@@ -167,14 +163,18 @@ def GetTagsFromArgs(args, tags_message, tags_arg_name='tags'):
   if not tags:
     return None
   # Sorted for test stability
-  return tags_message(additionalProperties=[
-      tags_message.AdditionalProperty(key=key, value=value)
-      for key, value in sorted(six.iteritems(tags))])
+  return tags_message(
+      additionalProperties=[
+          tags_message.AdditionalProperty(key=key, value=value)
+          for key, value in sorted(six.iteritems(tags))
+      ]
+  )
 
 
 def AddDescriptionArg(parser):
   parser.add_argument(
-      '--description', help='A description of the Cloud Filestore instance.')
+      '--description', help='A description of the Cloud Filestore instance.'
+  )
 
 
 def GetAndValidateKmsKeyName(args):
@@ -183,26 +183,28 @@ def GetAndValidateKmsKeyName(args):
   if kms_ref:
     return kms_ref.RelativeName()
   # If parsing fails but args were specified, raise error.
-  for keyword in ['kms-key', 'kms-keyring',
-                  'kms-location', 'kms-project']:
+  for keyword in ['kms-key', 'kms-keyring', 'kms-location', 'kms-project']:
     if getattr(args, keyword.replace('-', '_'), None):
       raise exceptions.InvalidArgumentException(
           '--kms-project --kms-location --kms-keyring --kms-key',
           'Specify fully qualified KMS key ID with --kms-key, or use '
           'combination of --kms-project, --kms-location, --kms-keyring and '
-          '--kms-key to specify the key ID in pieces.')
+          '--kms-key to specify the key ID in pieces.',
+      )
   return None  # user didn't specify KMS key
 
 
 def AddKmsKeyArg(parser):
   permission_info = '{} must hold permission {}'.format(
       "The 'Filestore Service Agent' service account",
-      "'Cloud KMS CryptoKey Encrypter/Decrypter'")
+      "'Cloud KMS CryptoKey Encrypter/Decrypter'",
+  )
   kms_resource_args.AddKmsKeyResourceArg(
       parser=parser,
       resource='instance',
       permission_info=permission_info,
-      required=False)
+      required=False,
+  )
 
 
 def GetTierArg(messages):
@@ -328,14 +330,15 @@ def AddDisconnectManagedActiveDirectoryArg(parser):
     parser: argparse parser.
   """
 
-  disconnnect_managed_ad_help = """\
+  disconnect_managed_ad_help = """\
         Disconnect the instance from Managed Active Directory."""
 
   parser.add_argument(
       '--disconnect-managed-ad',
       action='store_true',
       required=False,
-      help=disconnnect_managed_ad_help)
+      help=disconnect_managed_ad_help,
+  )
 
 
 def AddManagedActiveDirectoryConnectionArgs(parser):
@@ -354,7 +357,8 @@ def AddSourceInstanceArg(parser):
   parser.add_argument(
       '--source-instance',
       required=False,
-      help='The replication source instance of the Cloud Filestore instance.')
+      help='The replication source instance of the Cloud Filestore instance.',
+  )
 
 
 def AddNetworkArg(parser):
@@ -398,15 +402,18 @@ def AddNetworkArg(parser):
       '--network',
       type=arg_parsers.ArgDict(spec=network_arg_spec, required_keys=['name']),
       required=True,
-      help=network_help)
+      help=network_help,
+  )
 
 
-def AddFileShareArg(parser,
-                    api_version,
-                    include_snapshot_flags=False,
-                    include_backup_flags=False,
-                    clear_nfs_export_options_required=False,
-                    required=True):
+def AddFileShareArg(
+    parser,
+    api_version,
+    include_snapshot_flags=False,
+    include_backup_flags=False,
+    clear_nfs_export_options_required=False,
+    required=True,
+):
   """Adds a --file-share flag to the given parser.
 
   Args:
@@ -481,8 +488,7 @@ The security flavors supported are:
 """
 
   file_share_help = {
-      filestore_client.V1_API_VERSION:
-          """\
+      filestore_client.V1_API_VERSION: """\
 File share configuration for an instance.  Specifying both `name` and `capacity`
 is required.
 
@@ -534,7 +540,7 @@ If NO_ROOT_SQUASH is specified, an error will be returned.
 The default value is 65534.
 """,
       filestore_client.ALPHA_API_VERSION: alpha_beta_help_text,
-      filestore_client.BETA_API_VERSION: alpha_beta_help_text
+      filestore_client.BETA_API_VERSION: alpha_beta_help_text,
   }
   source_snapshot_help = """\
 
@@ -638,50 +644,10 @@ def AddPerformanceArg(parser, hidden=False):
 
   parser.add_argument(
       '--performance',
-      type=arg_parsers.ArgDict(
-          spec=performance_arg_spec, max_length=1
-      ),
+      type=arg_parsers.ArgDict(spec=performance_arg_spec, max_length=1),
       help=performance_help,
       hidden=hidden,
   )
-
-
-def AddClearPerformanceArg(parser, hidden=False):
-  """Adds a --clear-performance flag to the given parser.
-
-  Args:
-    parser: argparse parser.
-    hidden: if hidden or not.
-  """
-  clear_performance_help = """\
-        Clear the performance configuration of the instance and set it to the
-        default performance mode. In the default performance mode, the instance
-        performance will be automatically adjusted based on its capacity
-        (changes in the instance's capacity will automatically adjust the
-        instance's performance accordingly). For more information about the
-        default performance mode see: https://cloud.google.com/filestore/docs/performance.
-  """
-
-  parser.add_argument(
-      '--clear-performance',
-      action='store_true',
-      required=False,
-      help=clear_performance_help,
-      hidden=hidden,
-  )
-
-
-def AddPerformanceArgs(parser, hidden=False):
-  """Adds performance mutually exclusive args group to the parser.
-
-  Args:
-    parser: argparse parser.
-    hidden: if hidden or not.
-  """
-
-  performance_arg_group = parser.add_mutually_exclusive_group(hidden=hidden)
-  AddPerformanceArg(performance_arg_group, hidden=hidden)
-  AddClearPerformanceArg(performance_arg_group, hidden=hidden)
 
 
 def AddInstanceCreateArgs(parser, api_version):
@@ -704,10 +670,14 @@ def AddInstanceCreateArgs(parser, api_version):
       parser,
       api_version,
       include_snapshot_flags=(
-          api_version == filestore_client.ALPHA_API_VERSION),
-      include_backup_flags=True)
-  if api_version in [filestore_client.BETA_API_VERSION,
-                     filestore_client.V1_API_VERSION]:
+          api_version == filestore_client.ALPHA_API_VERSION
+      ),
+      include_backup_flags=True,
+  )
+  if api_version in [
+      filestore_client.BETA_API_VERSION,
+      filestore_client.V1_API_VERSION,
+  ]:
     AddKmsKeyArg(parser)
     AddSourceInstanceArg(parser)
 
@@ -719,9 +689,9 @@ def AddInstanceCreateArgs(parser, api_version):
 
 def AddInstanceUpdateArgs(parser, api_version):
   """Add args for updating an instance."""
-  concept_parsers.ConceptParser([
-      flags.GetInstancePresentationSpec('The instance to update.')
-  ]).AddToParser(parser)
+  concept_parsers.ConceptParser(
+      [flags.GetInstancePresentationSpec('The instance to update.')]
+  ).AddToParser(parser)
   AddDescriptionArg(parser)
   AddLocationArg(parser)
   AddRegionArg(parser)
@@ -733,11 +703,15 @@ def AddInstanceUpdateArgs(parser, api_version):
       parser,
       api_version,
       include_snapshot_flags=(
-          api_version == filestore_client.ALPHA_API_VERSION),
+          api_version == filestore_client.ALPHA_API_VERSION
+      ),
       clear_nfs_export_options_required=True,
-      required=False)
-  if api_version in [filestore_client.BETA_API_VERSION,
-                     filestore_client.V1_API_VERSION]:
+      required=False,
+  )
+  if api_version in [
+      filestore_client.BETA_API_VERSION,
+      filestore_client.V1_API_VERSION,
+  ]:
     # TODO(b/362786746): Expose (hidden=False) when Negba-lite is in AGA.
-    AddPerformanceArgs(parser, hidden=True)
+    AddPerformanceArg(parser, hidden=True)
     dp_util.AddDeletionProtectionUpdateArgs(parser)

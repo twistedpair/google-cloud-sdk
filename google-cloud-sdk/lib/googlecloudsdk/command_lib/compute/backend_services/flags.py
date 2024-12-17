@@ -777,7 +777,6 @@ def AddSessionAffinity(
     support_stateful_affinity=False,
     target_pools=False,
     hidden=False,
-    support_client_only=False,
 ):
   """Adds session affinity flag to the argparse.
 
@@ -786,7 +785,6 @@ def AddSessionAffinity(
     support_stateful_affinity: Whether STRONG_COOKIE_AFFINITY is a valid choice.
     target_pools: Indicates if the backend pool is target pool.
     hidden: if hidden=True, retains help but does not display it.
-    support_client_only: Indicates if CLIENT_IP_NO_DESTINATION is valid choice.
   """
   choices = {
       'CLIENT_IP':
@@ -806,27 +804,27 @@ def AddSessionAffinity(
             '(Applicable if `--load-balancing-scheme` is '
             '`INTERNAL_MANAGED`, `INTERNAL_SELF_MANAGED`, `EXTERNAL_MANAGED`, '
             'or `EXTERNAL`) '
-            ' If the `--load-balancing-scheme` is `EXTERNAL` or '
+            'If the `--load-balancing-scheme` is `EXTERNAL` or '
             '`EXTERNAL_MANAGED`, routes requests to backend VMs or endpoints '
-            ' in a NEG, based on the contents of the `GCLB` cookie set by the '
-            ' load balancer. Only applicable when `--protocol` is HTTP, HTTPS, '
-            ' or HTTP2. If the `--load-balancing-scheme` is `INTERNAL_MANAGED` '
-            ' or `INTERNAL_SELF_MANAGED`, routes requests to backend VMs or '
-            ' endpoints in a NEG, based on the contents of the `GCILB` cookie '
-            ' set by the proxy. (If no cookie is present, the proxy '
-            ' chooses a backend VM or endpoint and sends a `Set-Cookie` '
-            ' response for future requests.) If the `--load-balancing-scheme` '
-            ' is `INTERNAL_SELF_MANAGED`, routes requests to backend VMs or '
-            ' endpoints in a NEG, based on the contents of a cookie set by '
-            ' Traffic Director. This session affinity is only valid if the '
-            ' load balancing locality policy is either `RING_HASH` or '
-            ' `MAGLEV`.'
+            'in a NEG, based on the contents of the `GCLB` cookie set by the '
+            'load balancer. Only applicable when `--protocol` is HTTP, HTTPS, '
+            'or HTTP2. If the `--load-balancing-scheme` is `INTERNAL_MANAGED` '
+            'or `INTERNAL_SELF_MANAGED`, routes requests to backend VMs or '
+            'endpoints in a NEG, based on the contents of the `GCILB` cookie '
+            'set by the proxy. (If no cookie is present, the proxy '
+            'chooses a backend VM or endpoint and sends a `Set-Cookie` '
+            'response for future requests.) If the `--load-balancing-scheme` '
+            'is `INTERNAL_SELF_MANAGED`, routes requests to backend VMs or '
+            'endpoints in a NEG, based on the contents of a cookie set by '
+            'Traffic Director. This session affinity is only valid if the '
+            'load balancing locality policy is either `RING_HASH` or '
+            '`MAGLEV`.'
         ),
         'CLIENT_IP_PROTO': (
             '(Applicable if `--load-balancing-scheme` is `INTERNAL`) '
             'Connections from the same client IP with the same IP '
-            'protocol will go to the same backend VM while that VM remains'
-            ' healthy.'
+            'protocol will go to the same backend VM while that VM remains '
+            'healthy.'
         ),
         'CLIENT_IP_PORT_PROTO': (
             '(Applicable if `--load-balancing-scheme` is `INTERNAL`) '
@@ -837,48 +835,45 @@ def AddSessionAffinity(
         'HTTP_COOKIE': (
             '(Applicable if `--load-balancing-scheme` is `INTERNAL_MANAGED`, '
             '`EXTERNAL_MANAGED` or `INTERNAL_SELF_MANAGED`) Route requests to '
-            ' backend VMs or endpoints in a NEG, based on an HTTP cookie '
-            ' in the `--affinity-cookie-name` flag (with the optional '
-            ' `--affinity-cookie-ttl` flag). If the client has not provided '
-            ' the cookie, the proxy generates the cookie and returns it to the '
-            ' client in a `Set-Cookie` header. This session affinity is only '
-            ' valid if the load balancing locality policy is either '
-            " `RING_HASH` or `MAGLEV` and the backend service's consistent "
-            ' hash specifies the HTTP cookie.'
+            'backend VMs or endpoints in a NEG, based on an HTTP cookie '
+            'in the `--affinity-cookie-name` flag (with the optional '
+            '`--affinity-cookie-ttl` flag). If the client has not provided '
+            'the cookie, the proxy generates the cookie and returns it to the '
+            'client in a `Set-Cookie` header. This session affinity is only '
+            'valid if the load balancing locality policy is either '
+            "`RING_HASH` or `MAGLEV` and the backend service's consistent "
+            'hash specifies the HTTP cookie.'
         ),
         'HEADER_FIELD': (
             '(Applicable if `--load-balancing-scheme` is `INTERNAL_MANAGED`, '
             '`EXTERNAL_MANAGED`, or `INTERNAL_SELF_MANAGED`) Route requests '
-            ' to backend VMs or '
-            ' endpoints in a NEG based on the value of the HTTP header named '
-            ' in the `--custom-request-header` flag. This session '
-            ' affinity is only valid if the load balancing locality policy '
-            " is either `RING_HASH` or `MAGLEV` and the backend service's "
+            'to backend VMs or endpoints in a NEG based on the value of the '
+            'HTTP header named in the `--custom-request-header` flag. This '
+            'session affinity is only valid if the load balancing locality '
+            "policy is either `RING_HASH` or `MAGLEV` and the backend service's"
             ' consistent hash specifies the name of the HTTP header.'
+        ),
+        'CLIENT_IP_NO_DESTINATION': (
+            "Directs a particular client's request to the same backend VM "
+            "based on a hash created on the client's IP address only. This "
+            'is used in L4 ILB as Next-Hop scenarios. It differs from the '
+            'Client-IP option in that Client-IP uses a hash based on both '
+            "client-IP's address and destination address."
         ),
     })
     if support_stateful_affinity:
       choices.update({
           'STRONG_COOKIE_AFFINITY': (
               '(Applicable if `--load-balancing-scheme` is `INTERNAL_MANAGED` '
-              ' or `EXTERNAL_MANAGED`) '
-              ' Strong cookie-based affinity, based on an HTTP cookie named in '
-              ' the `--affinity-cookie-name` flag (with the optional '
-              ' `--affinity-cookie-ttl` flag). Connections bearing the same '
-              ' cookie will be served by the same backend VM while that VM '
-              ' remains healthy, as long as the cookie has not expired. If '
-              ' the `--affinity-cookie-ttl` flag is set to 0, the cookie will '
-              ' be treated as a session cookie.'
+              'or `EXTERNAL_MANAGED`) '
+              'Strong cookie-based affinity, based on an HTTP cookie named in '
+              'the `--affinity-cookie-name` flag (with the optional '
+              '`--affinity-cookie-ttl` flag). Connections bearing the same '
+              'cookie will be served by the same backend VM while that VM '
+              'remains healthy, as long as the cookie has not expired. If '
+              'the `--affinity-cookie-ttl` flag is set to 0, the cookie will '
+              'be treated as a session cookie.'
           ),
-      })
-    if support_client_only:
-      choices.update({
-          'CLIENT_IP_NO_DESTINATION':
-              ('Directs a particular client\'s request to the same backend VM '
-               'based on a hash created on the client\'s IP address only. This '
-               'is used in L4 ILB as Next-Hop scenarios. It differs from the '
-               'Client-IP option in that Client-IP uses a hash based on both '
-               'client-IP\'s address and destination address.')
       })
   help_str = 'The type of session affinity to use. Supports both TCP and UDP.'
   parser.add_argument(
@@ -1016,19 +1011,16 @@ def AddPortName(parser):
       """)
 
 
-def AddProtocol(parser, default='HTTP', support_unspecified_protocol=False):
+def AddProtocol(parser, default='HTTP'):
   """Adds --protocol flag to the argparse.
 
   Args:
     parser: An argparse.ArgumentParser instance.
     default: The default protocol if this flag is unspecified.
-    support_unspecified_protocol: Indicates if UNSPECIFIED is a valid protocol.
   """
-  ilb_protocols = ('TCP, UDP, UNSPECIFIED'
-                   if support_unspecified_protocol else 'TCP, UDP')
+  ilb_protocols = 'TCP, UDP, UNSPECIFIED'
   td_protocols = ('HTTP, HTTPS, HTTP2, GRPC')
-  netlb_protocols = ('TCP, UDP, UNSPECIFIED'
-                     if support_unspecified_protocol else 'TCP, UDP')
+  netlb_protocols = 'TCP, UDP, UNSPECIFIED'
   parser.add_argument(
       '--protocol',
       default=default,

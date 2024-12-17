@@ -26,6 +26,9 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import times
 
 
+_GCS_PREFIX = 'gs://'
+
+
 def Upload(source, region, resource_ref, source_bucket=None):
   """Uploads a source to a staging bucket.
 
@@ -43,7 +46,7 @@ def Upload(source, region, resource_ref, source_bucket=None):
 
   bucket_name = _GetOrCreateBucket(gcs_client, region, source_bucket)
   object_name = _GetObject(source, resource_ref)
-  log.debug(f'Uploading source to gs://{bucket_name}/{object_name}')
+  log.debug(f'Uploading source to {_GCS_PREFIX}{bucket_name}/{object_name}')
 
   object_ref = resources.REGISTRY.Create(
       collection='storage.objects',
@@ -55,9 +58,27 @@ def Upload(source, region, resource_ref, source_bucket=None):
   )
 
 
+def GetGcsObject(source: str):
+  """Retrieves the GCS object corresponding to the source location string.
+
+  Args:
+    source: The source location string in the format `gs://<bucket>/<object>`.
+
+  Returns:
+    storage_v1_messages.Object, The GCS object.
+  """
+  object_ref = storage_util.ObjectReference.FromUrl(source)
+  return storage_api.StorageClient().GetObject(object_ref)
+
+
+def IsGcsObject(source: str) -> bool:
+  """Returns true if the source is located remotely in a GCS object."""
+  return (source or '').startswith(_GCS_PREFIX)
+
+
 def _GetOrCreateBucket(gcs_client, region, bucket_name=None):
   """Gets or Creates bucket used to store sources."""
-  bucket = bucket_name or _GetBucketName(region)
+  bucket = bucket_name or _GetDefaultBucketName(region)
 
   cors = [
       storage_util.GetMessages().Bucket.CorsValueListEntry(
@@ -87,7 +108,7 @@ def _GetOrCreateBucket(gcs_client, region, bucket_name=None):
 def _GetObject(source, resource_ref):
   """Gets the object name for a source to be uploaded."""
   suffix = '.zip'
-  if source.startswith('gs://') or os.path.isfile(source):
+  if source.startswith(_GCS_PREFIX) or os.path.isfile(source):
     _, suffix = os.path.splitext(source)
 
   # TODO(b/319452047) update object naming
@@ -103,7 +124,7 @@ def _GetObject(source, resource_ref):
   return object_path
 
 
-def _GetBucketName(region):
+def _GetDefaultBucketName(region: str) -> str:
   """Returns the default regional bucket name.
 
   Args:

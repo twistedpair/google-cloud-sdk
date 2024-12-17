@@ -14,6 +14,7 @@
 # limitations under the License.
 """Notebook-executor executions api helper."""
 
+from googlecloudsdk.api_lib.colab_enterprise import runtime_templates as runtime_templates_util
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 
@@ -144,7 +145,7 @@ def GetExecutionTimeoutFromArgs(args):
 
 
 def GetRuntimeTemplateResourceName(args):
-  """Get the notebook runtime template resource name from the args.
+  """Get the runtime template resource name from the args.
 
   Args:
     args: Argparse object from Command.Run
@@ -153,6 +154,28 @@ def GetRuntimeTemplateResourceName(args):
     The notebook runtime template resource name.
   """
   return args.CONCEPTS.notebook_runtime_template.Parse().RelativeName()
+
+
+def GetCustomEnvironmentSpec(args, messages):
+  """Get the custom environment spec from the args for a Workbench execution.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the aiplatform API.
+
+  Returns:
+    CustomEnvironmentSpec message for the execution.
+  """
+  custom_environment_spec = (
+      messages.GoogleCloudAiplatformV1beta1NotebookExecutionJobCustomEnvironmentSpec
+  )
+  return custom_environment_spec(
+      machineSpec=runtime_templates_util.GetMachineSpecFromArgs(args, messages),
+      networkSpec=runtime_templates_util.GetNetworkSpecFromArgs(args, messages),
+      persistentDiskSpec=runtime_templates_util.GetPersistentDiskSpecFromArgs(
+          args, messages
+      ),
+  )
 
 
 def GetExecutionUri(resource):
@@ -164,21 +187,44 @@ def GetExecutionUri(resource):
   return execution.SelfLink()
 
 
-def CreateNotebookExecutionJob(args, messages, for_schedule=False):
+def CreateNotebookExecutionJob(
+    args, messages, workbench_execution, for_schedule=False):
   """Creates the NotebookExecutionJob message for the create request.
 
   Args:
     args: Argparse object from Command.Run
     messages: Module containing messages definition for the AIPlatform API.
+    workbench_execution: Whether this execution is for a Workbench notebook.
     for_schedule: Whether this execution is used to create a schedule.
 
   Returns:
     Instance of the NotebookExecutionJob message.
   """
+  if workbench_execution:
+    dataform_repository_source = None
+    custom_environment_spec = GetCustomEnvironmentSpec(args, messages)
+    workbench_runtime = (
+        messages.GoogleCloudAiplatformV1beta1NotebookExecutionJobWorkbenchRuntime()
+    )
+    execution_user = None
+    runtime_template_name = None
+    encryption_spec = runtime_templates_util.CreateEncryptionSpecConfig(
+        args, messages
+    )
+    kernel_name = args.kernel_name
+  else:
+    dataform_repository_source = GetDataformRepositorySourceFromArgs(
+        args, messages
+    )
+    custom_environment_spec = None
+    workbench_runtime = None
+    execution_user = args.user_email
+    runtime_template_name = GetRuntimeTemplateResourceName(args)
+    encryption_spec = None
+    kernel_name = None
+
   return messages.GoogleCloudAiplatformV1beta1NotebookExecutionJob(
-      dataformRepositorySource=GetDataformRepositorySourceFromArgs(
-          args, messages
-      ),
+      dataformRepositorySource=dataform_repository_source,
       directNotebookSource=None
       if for_schedule
       else GetDirectNotebookSourceFromArgs(args, messages),
@@ -186,11 +232,15 @@ def CreateNotebookExecutionJob(args, messages, for_schedule=False):
       if for_schedule
       else args.display_name,
       executionTimeout=GetExecutionTimeoutFromArgs(args),
-      executionUser=args.user_email,
+      executionUser=execution_user,
       gcsNotebookSource=GetGcsNotebookSourceFromArgs(args, messages),
       gcsOutputUri=args.gcs_output_uri,
-      notebookRuntimeTemplateResourceName=GetRuntimeTemplateResourceName(args),
+      notebookRuntimeTemplateResourceName=runtime_template_name,
+      customEnvironmentSpec=custom_environment_spec,
       serviceAccount=args.service_account,
+      encryptionSpec=encryption_spec,
+      workbenchRuntime=workbench_runtime,
+      kernelName=kernel_name,
   )
 
 
@@ -206,7 +256,7 @@ def CreateExecutionCreateRequestForSchedule(args, messages):
   """
   parent = GetParentForExecutionOrSchedule(args)
   notebook_execution_job = CreateNotebookExecutionJob(
-      args, messages, for_schedule=True
+      args, messages, workbench_execution=False, for_schedule=True
   )
   return messages.GoogleCloudAiplatformV1beta1CreateNotebookExecutionJobRequest(
       notebookExecutionJob=notebook_execution_job,
@@ -214,18 +264,21 @@ def CreateExecutionCreateRequestForSchedule(args, messages):
   )
 
 
-def CreateExecutionCreateRequest(args, messages):
+def CreateExecutionCreateRequest(args, messages, for_workbench=False):
   """Builds a NotebookExecutionJobsCreateRequest message.
 
   Args:
     args: Argparse object from Command.Run
     messages: Module containing messages definition for the specified API.
+    for_workbench: Indicates whether this is a Workbench execution.
 
   Returns:
     Instance of the NotebookExecutionJobsCreateRequest message.
   """
   parent = GetParentForExecutionOrSchedule(args)
-  notebook_execution_job = CreateNotebookExecutionJob(args, messages)
+  notebook_execution_job = CreateNotebookExecutionJob(
+      args, messages, workbench_execution=for_workbench
+  )
   return messages.AiplatformProjectsLocationsNotebookExecutionJobsCreateRequest(
       googleCloudAiplatformV1beta1NotebookExecutionJob=notebook_execution_job,
       notebookExecutionJobId=args.execution_job_id,

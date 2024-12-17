@@ -61,6 +61,9 @@ class GoogleCloudRunV2BuildpacksBuild(_messages.Message):
       variables.
     functionTarget: Optional. Name of the function target if the source is a
       function source. Required for function builds.
+    projectDescriptor: Optional. project_descriptor stores the path to the
+      project descriptor file. When empty, it means that there is no project
+      descriptor file in the source.
     runtime: The runtime name, e.g. 'go113'. Leave blank for generic builds.
   """
 
@@ -95,7 +98,8 @@ class GoogleCloudRunV2BuildpacksBuild(_messages.Message):
   enableAutomaticUpdates = _messages.BooleanField(3)
   environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 4)
   functionTarget = _messages.StringField(5)
-  runtime = _messages.StringField(6)
+  projectDescriptor = _messages.StringField(6)
+  runtime = _messages.StringField(7)
 
 
 class GoogleCloudRunV2CancelExecutionRequest(_messages.Message):
@@ -1982,8 +1986,8 @@ class GoogleCloudRunV2RevisionTemplate(_messages.Message):
       RevisionTemplate.
     maxInstanceRequestConcurrency: Optional. Sets the maximum number of
       requests that each serving instance can receive. If not specified or 0,
-      defaults to 80 when requested `CPU >= 1` and defaults to 1 when
-      requested `CPU < 1`.
+      concurrency defaults to 80 when requested `CPU >= 1` and defaults to 1
+      when requested `CPU < 1`.
     nodeSelector: Optional. The node selector for the revision template.
     revision: Optional. The unique name for the revision. If this field is
       omitted, it will be automatically generated based on the Service name.
@@ -2159,13 +2163,13 @@ class GoogleCloudRunV2SecretVolumeSource(_messages.Message):
       Notes * Internally, a umask of 0222 will be applied to any non-zero
       value. * This is an integer representation of the mode bits. So, the
       octal integer value should look exactly as the chmod numeric notation
-      with a leading zero. Some examples: for chmod 777 (a=rwx), set to 0777
-      (octal) or 511 (base-10). For chmod 640 (u=rw,g=r), set to 0640 (octal)
-      or 416 (base-10). For chmod 755 (u=rwx,g=rx,o=rx), set to 0755 (octal)
-      or 493 (base-10). * This might be in conflict with other options that
-      affect the file mode, like fsGroup, and the result can be other mode
-      bits set. This might be in conflict with other options that affect the
-      file mode, like fsGroup, and as a result, other mode bits could be set.
+      with a leading zero. Some examples: for chmod 640 (u=rw,g=r), set to
+      0640 (octal) or 416 (base-10). For chmod 755 (u=rwx,g=rx,o=rx), set to
+      0755 (octal) or 493 (base-10). * This might be in conflict with other
+      options that affect the file mode, like fsGroup, and the result can be
+      other mode bits set. This might be in conflict with other options that
+      affect the file mode, like fsGroup, and as a result, other mode bits
+      could be set.
     items: If unspecified, the volume will expose a file whose name is the
       secret, relative to VolumeMount.mount_path. If specified, the key will
       be used as the version to fetch from Cloud Secret Manager and the path
@@ -2541,6 +2545,10 @@ class GoogleCloudRunV2ServiceScaling(_messages.Message):
     ScalingModeValueValuesEnum: Optional. The scaling mode for the service.
 
   Fields:
+    manualInstanceCount: Optional. total instance count for the service in
+      manual scaling mode. This number of instances is divided among all
+      revisions with specified traffic based on the percent of traffic they
+      are receiving.
     minInstanceCount: Optional. total min instances for the service. This
       number of instances is divided among all revisions with specified
       traffic based on the percent of traffic they are receiving.
@@ -2559,8 +2567,9 @@ class GoogleCloudRunV2ServiceScaling(_messages.Message):
     AUTOMATIC = 1
     MANUAL = 2
 
-  minInstanceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  scalingMode = _messages.EnumField('ScalingModeValueValuesEnum', 2)
+  manualInstanceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minInstanceCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  scalingMode = _messages.EnumField('ScalingModeValueValuesEnum', 3)
 
 
 class GoogleCloudRunV2StorageSource(_messages.Message):
@@ -2993,12 +3002,11 @@ class GoogleCloudRunV2VersionToPath(_messages.Message):
       used. Notes * Internally, a umask of 0222 will be applied to any non-
       zero value. * This is an integer representation of the mode bits. So,
       the octal integer value should look exactly as the chmod numeric
-      notation with a leading zero. Some examples: for chmod 777 (a=rwx), set
-      to 0777 (octal) or 511 (base-10). For chmod 640 (u=rw,g=r), set to 0640
-      (octal) or 416 (base-10). For chmod 755 (u=rwx,g=rx,o=rx), set to 0755
-      (octal) or 493 (base-10). * This might be in conflict with other options
-      that affect the file mode, like fsGroup, and the result can be other
-      mode bits set.
+      notation with a leading zero. Some examples: for chmod 640 (u=rw,g=r),
+      set to 0640 (octal) or 416 (base-10). For chmod 755 (u=rwx,g=rx,o=rx),
+      set to 0755 (octal) or 493 (base-10). * This might be in conflict with
+      other options that affect the file mode, like fsGroup, and the result
+      can be other mode bits set.
     path: Required. The relative path of the secret in the container.
     version: The Cloud Secret Manager secret version. Can be 'latest' for the
       latest value, or an integer or a secret alias for a specific version.
@@ -3714,6 +3722,10 @@ class GoogleDevtoolsCloudbuildV1Artifacts(_messages.Message):
       Registry upon successful completion of all build steps. The build
       service account credentials will be used to perform the upload. If any
       objects fail to be pushed, the build is marked FAILURE.
+    testResults: Optional. Files in the workspace matching specified paths
+      globs will be uploaded to the specified Cloud Storage location using the
+      builder service account's credentials. Will also contain the format of
+      the test which by default will be JUnit
   """
 
   images = _messages.StringField(1, repeated=True)
@@ -3721,6 +3733,7 @@ class GoogleDevtoolsCloudbuildV1Artifacts(_messages.Message):
   npmPackages = _messages.MessageField('GoogleDevtoolsCloudbuildV1NpmPackage', 3, repeated=True)
   objects = _messages.MessageField('GoogleDevtoolsCloudbuildV1ArtifactObjects', 4)
   pythonPackages = _messages.MessageField('GoogleDevtoolsCloudbuildV1PythonPackage', 5, repeated=True)
+  testResults = _messages.MessageField('GoogleDevtoolsCloudbuildV1TestResults', 6)
 
 
 class GoogleDevtoolsCloudbuildV1Build(_messages.Message):
@@ -4949,6 +4962,38 @@ class GoogleDevtoolsCloudbuildV1StorageSourceManifest(_messages.Message):
   bucket = _messages.StringField(1)
   generation = _messages.IntegerField(2)
   object = _messages.StringField(3)
+
+
+class GoogleDevtoolsCloudbuildV1TestResults(_messages.Message):
+  r"""Files in the workspace to upload to Cloud Storage upon successful
+  completion of all build steps.
+
+  Enums:
+    FormatValueValuesEnum: Optional. Format of the test results.
+
+  Fields:
+    bucketUri: Optional. Cloud Storage bucket and optional object path, in the
+      form "gs://bucket/path/to/somewhere/". (see [Bucket Name
+      Requirements](https://cloud.google.com/storage/docs/bucket-
+      naming#requirements)). Files in the workspace matching any path pattern
+      will be uploaded to Cloud Storage with this location as a prefix.
+    format: Optional. Format of the test results.
+    paths: Optional. Path globs used to match files in the build's workspace.
+  """
+
+  class FormatValueValuesEnum(_messages.Enum):
+    r"""Optional. Format of the test results.
+
+    Values:
+      FORMAT_UNSPECIFIED: The default format is JUnit.
+      JUNIT: The test results are in JUnit format.
+    """
+    FORMAT_UNSPECIFIED = 0
+    JUNIT = 1
+
+  bucketUri = _messages.StringField(1)
+  format = _messages.EnumField('FormatValueValuesEnum', 2)
+  paths = _messages.StringField(3, repeated=True)
 
 
 class GoogleDevtoolsCloudbuildV1TimeSpan(_messages.Message):

@@ -15,11 +15,14 @@
 """Utilities for Package Rollouts Releases API."""
 
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.container.fleet.packages import variants as variants_apis
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import resources
 
 _LIST_REQUEST_BATCH_SIZE_ATTRIBUTE = 'pageSize'
+_VARIANT_STORAGE_STRATEGY_LABEL_KEY = 'configdelivery-variant-storage-strategy'
+_VARIANT_STORAGE_STRATEGY_LABEL_VALUE_NESTED = 'nested'
 
 
 def GetClientInstance(no_http=False):
@@ -137,6 +140,7 @@ class ReleasesClient(object):
       location,
       lifecycle=None,
       variants=None,
+      use_nested_variants=False,
       clh_variants=False,
   ):
     """Create Release for a ResourceBundle.
@@ -148,6 +152,7 @@ class ReleasesClient(object):
       location: Valid GCP location (e.g., uc-central1)
       lifecycle: Lifecycle of the Release.
       variants: Variants of the Release.
+      use_nested_variants: Whether to create nested variant resources.
       clh_variants: Boolean flag to create variants sent in the request as a
         separate resource.
 
@@ -158,20 +163,50 @@ class ReleasesClient(object):
         project, location, resource_bundle, version
     )
     variants_value = self._VariantsValueFromInputVariants(variants)
-    labels_value = None
-    if clh_variants:
-      labels_value = self.messages.Release.LabelsValue(
-          additionalProperties=[
-              self.messages.Release.LabelsValue.AdditionalProperty(
-                  key='configdelivery-variant-storage-strategy', value='nested'
-              )
-          ]
+    if not use_nested_variants:
+      # Obsolete behavior, create Release with variants sent inline
+      labels_value = None
+      if clh_variants:
+        labels_value = self.messages.Release.LabelsValue(
+            additionalProperties=[
+                self.messages.Release.LabelsValue.AdditionalProperty(
+                    key='configdelivery-variant-storage-strategy',
+                    value='nested',
+                )
+            ]
+        )
+      release = self.messages.Release(
+          name=fully_qualified_path,
+          labels=labels_value,
+          lifecycle=self.GetLifecycleEnum(lifecycle),
+          variants=variants_value,
+          version=version,
       )
+      create_request = self.messages.ConfigdeliveryProjectsLocationsResourceBundlesReleasesCreateRequest(
+          parent=_ParentPath(project, location, resource_bundle),
+          release=release,
+          releaseId=version.replace('.', '-'),
+      )
+      return waiter.WaitFor(
+          self.release_waiter,
+          self._service.Create(create_request),
+          f'Creating Release {fully_qualified_path}',
+      )
+    # Create Draft Release, create nested Variant resources, then updates
+    # release to have those variants. Publishes release at update step, if
+    # necessary.
+    labels = self.messages.Release.LabelsValue(
+        additionalProperties=[
+            self.messages.Release.LabelsValue.AdditionalProperty(
+                key=_VARIANT_STORAGE_STRATEGY_LABEL_KEY,
+                value=_VARIANT_STORAGE_STRATEGY_LABEL_VALUE_NESTED,
+            )
+        ]
+    )
     release = self.messages.Release(
         name=fully_qualified_path,
-        labels=labels_value,
-        lifecycle=self.GetLifecycleEnum(lifecycle),
-        variants=variants_value,
+        labels=labels,
+        lifecycle=self.GetLifecycleEnum('DRAFT'),
         version=version,
     )
     create_request = self.messages.ConfigdeliveryProjectsLocationsResourceBundlesReleasesCreateRequest(
@@ -179,10 +214,38 @@ class ReleasesClient(object):
         release=release,
         releaseId=version.replace('.', '-'),
     )
-    return waiter.WaitFor(
+    _ = waiter.WaitFor(
         self.release_waiter,
         self._service.Create(create_request),
         f'Creating Release {fully_qualified_path}',
+    )
+    full_variant_names = {}
+    for variant, variant_resources in variants.items():
+      variants_client = variants_apis.VariantsClient()
+      variants_client.Create(
+          resource_bundle=resource_bundle,
+          release=version.replace('.', '-'),
+          name=variant,
+          project=project,
+          location=location,
+          variant_resources=variant_resources,
+      )
+      full_name = variants_apis.GetFullyQualifiedPath(
+          project,
+          location,
+          resource_bundle,
+          version.replace('.', '-'),
+          variant,
+      )
+      full_variant_names[full_name] = ['...']
+    return self.Update(
+        release=version,
+        project=project,
+        location=location,
+        resource_bundle=resource_bundle,
+        labels=labels,
+        lifecycle=lifecycle,
+        variants=full_variant_names,
     )
 
   def Delete(self, project, location, resource_bundle, release, force=False):
@@ -240,6 +303,7 @@ class ReleasesClient(object):
       project,
       location,
       resource_bundle,
+      labels=None,
       lifecycle=None,
       variants=None,
       update_mask=None,
@@ -251,6 +315,7 @@ class ReleasesClient(object):
       project: GCP project ID.
       location: GCP location of Release.
       resource_bundle: Name of parent ResourceBundle.
+      labels: Labels of the Release.
       lifecycle: Lifecycle of the Release.
       variants: Variants of the Release.
       update_mask: Fields to be updated.
@@ -264,7 +329,7 @@ class ReleasesClient(object):
     variants_value = self._VariantsValueFromInputVariants(variants)
     release = self.messages.Release(
         name=fully_qualified_path,
-        labels=None,
+        labels=labels,
         lifecycle=self.GetLifecycleEnum(lifecycle),
         variants=variants_value,
         version=release,

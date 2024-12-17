@@ -1,0 +1,64 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networksecurity v1alpha1 BackendAuthenticationConfig export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  description:
+    description: Free-text description of the resource.
+    type: string
+  labels:
+    description: Set of label tags associated with the resource.
+    $ref: LabelsValue.yaml
+  clientCertificate:
+    description: |-
+      Reference to the Certificate from certificatemanager.googleapis.com
+      namespace. Client certificate that the load balancer uses to express
+      its identity to the backend, if the connection to the backend uses mTLS.
+    type: string
+  name:
+    description: |-
+      Name of the BackendAuthenticationConfig resource. It matches the pattern
+      `projects/*/locations/{location}/backendAuthenticationConfigs/{backend_authentication_config}`
+    type: string
+  trustConfig:
+    description: |-
+      Reference to the TrustConfig from certificatemanager.googleapis.com
+      namespace.
+    type: string
+  wellKnownRoots:
+    description: |-
+      Indicates whether the load balance should trust backend server certificates
+      that are issued by public certificate authorities, in addition to certificates
+      trusted by the TrustConfig.
+    type: string
+    enum:
+    - NONE
+    - PUBLIC_ROOTS
+  etag:
+    description: |-
+      This checksum is computed by the server based on the value of other
+      fields, and may be sent on update and delete requests to ensure the client
+      has an up-to-date value before proceeding.
+    type: string

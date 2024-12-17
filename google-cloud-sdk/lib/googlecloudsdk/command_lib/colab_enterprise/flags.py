@@ -209,7 +209,6 @@ def AddSubnetworkResourceArg(help_text, parser):
         subnetwork=SubnetAttributeConfig(),
         region=RegionAttributeConfig(),
         project=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-        disable_auto_completers=False,
     )
 
   concept_parsers.ConceptParser.ForResource(
@@ -268,6 +267,88 @@ def AddAsyncFlag(parser):
   base.ASYNC_FLAG.AddToParser(parser)
 
 
+# This can be used for both to providing compute configuration for Workbench
+# executions and creating Colab runtime templates since CustomEnvironmentSpec is
+# a subset of RuntimeTemplate.
+def AddCustomEnvSpecFlags(parser, workbench_execution=False):
+  """Construct args to provide a custom compute spec for notebook execution.
+
+  Args:
+    parser: argparse parser for the command.
+    workbench_execution: bool, true if these flags are for creating a Workbench
+      execution.
+  """
+  # `Runtime` is decoupled from Workbench for clarity to end users.
+  vm_name = (
+      'execution environment' if workbench_execution else 'runtime'
+  )
+  machine_spec_group = parser.add_group(
+      help=f'The machine configuration of the {vm_name}.',
+  )
+  machine_spec_group.add_argument(
+      '--machine-type',
+      required=False,
+      help=f'The Compute Engine machine type selected for the {vm_name}.',
+      default='e2-standard-4',
+  )
+  machine_spec_group.add_argument(
+      '--accelerator-type',
+      help=f'The type of hardware accelerator used by the {vm_name}. If'
+      ' specified, --accelerator-count must also be specified.',
+      choices=_accelerator_choices,
+      default=None,
+  )
+  machine_spec_group.add_argument(
+      '--accelerator-count',
+      type=int,
+      help='The number of accelerators used by the runtime.',
+  )
+  disk_spec_group = parser.add_group(
+      help=(
+          f'The configuration for the data disk of the {vm_name}.'
+      ),
+  )
+  disk_spec_group.add_argument(
+      '--disk-type',
+      help='The type of the persistent disk.',
+      choices=_disk_choices,
+      default='PD_STANDARD',
+  )
+  disk_spec_group.add_argument(
+      '--disk-size-gb',
+      help=f'The disk size of the {vm_name} in GB. If specified, the'
+      ' --disk-type must also be specified. The minimum size is 10GB and the'
+      ' maximum is 65536GB.',
+      type=int,
+      default=100,
+  )
+  network_spec_group = parser.add_group(
+      help=f'The network configuration for the {vm_name}.',
+  )
+  AddNetworkResourceArg(
+      help_text=f'The name of the VPC that this {vm_name} is in.',
+      parser=network_spec_group,
+  )
+  AddSubnetworkResourceArg(
+      help_text=(
+          f'The name of the subnetwork that this {vm_name} is in.'
+      ),
+      parser=network_spec_group,
+  )
+  # Since default for this flag is True, the documentation will only show
+  # --no-enable-internet-access. Even though now true/false values will always
+  # be specified in API request instead of defaulting to none, this gives a
+  # better UX than providing both the flag and its negative when default is
+  # True.
+  network_spec_group.add_argument(
+      '--enable-internet-access',
+      action='store_true',
+      dest='enable_internet_access',
+      default=True,
+      help=f'Enable public internet access for the {vm_name}.',
+  )
+
+
 def AddCreateRuntimeTemplateFlags(parser):
   """Construct groups and arguments specific to runtime template creation."""
 
@@ -275,10 +356,8 @@ def AddCreateRuntimeTemplateFlags(parser):
   parser.add_argument(
       '--runtime-template-id',
       required=False,
-      help=(
-          'The id of the runtime template. If not specified, a random id will'
-          ' be generated.'
-      ),
+      help='The id of the runtime template. If not specified, a random id will'
+      ' be generated.',
   )
   parser.add_argument(
       '--display-name',
@@ -293,77 +372,7 @@ def AddCreateRuntimeTemplateFlags(parser):
       required=False,
       help='The description of the runtime template.',
   )
-  machine_spec_group = runtime_template_group.add_group(
-      help=(
-          'The machine configuration of the runtime provisioned from this'
-          ' template.'
-      ),
-  )
-  machine_spec_group.add_argument(
-      '--machine-type',
-      required=False,
-      help='The Compute Engine machine type selected for the runtime.',
-      default='e2-standard-4',
-  )
-  machine_spec_group.add_argument(
-      '--accelerator-type',
-      help=(
-          'The type of hardware accelerator used by the runtime. If specified,'
-          ' --accelerator-count must also be specified.'
-      ),
-      choices=_accelerator_choices,
-      default=None,
-  )
-  machine_spec_group.add_argument(
-      '--accelerator-count',
-      type=int,
-      help='The number of accelerators used by the runtime.',
-  )
-  disk_spec_group = runtime_template_group.add_group(
-      help=(
-          'The configuration for the data disk of the runtime provisioned from'
-          ' this template.'
-      ),
-  )
-  disk_spec_group.add_argument(
-      '--disk-type',
-      help='The type of the persistent disk.',
-      choices=_disk_choices,
-      default='PD_STANDARD',
-  )
-  disk_spec_group.add_argument(
-      '--disk-size-gb',
-      help=(
-          'The disk size of the runtime in GB. If specified, the --disk-type'
-          ' must also be specified. The minimum size is 10GB and the maximum is'
-          ' 65536GB.'
-      ),
-      type=int,
-      default=100,
-  )
-  network_spec_group = runtime_template_group.add_group(
-      help='The network configuration for the runtime.',
-  )
-  AddNetworkResourceArg(
-      help_text='The name of the VPC that this runtime is in.',
-      parser=network_spec_group,
-  )
-  AddSubnetworkResourceArg(
-      help_text='The name of the subnetwork that this runtime is in.',
-      parser=network_spec_group,
-  )
-  # Since default for this flag is True, the documentation will only show
-  # --no-enable-internet-access. Even though now true/false values will always
-  # be specified in API request instead of defaulting to none, this gives a
-  # better UX than providing both the flag and its negative when default is
-  # True.
-  network_spec_group.add_argument(
-      '--enable-internet-access',
-      action='store_true',
-      dest='enable_internet_access',
-      default=True,
-      help='Enable public internet access for the runtime.',
-  )
+  AddCustomEnvSpecFlags(runtime_template_group)
   runtime_template_group.add_argument(
       '--labels',
       help='Add labels to identify and group the runtime template.',

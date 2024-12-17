@@ -102,9 +102,51 @@ class RolloutFlags:
         api_version=util.VERSION_MAP[self.release_track],
     )
 
-  def AddFeatureUpdate(self):
-    feature_update_mutex_group = self.parser.add_mutually_exclusive_group(
-        help='Feature config to use for Rollout.',
+  def AddRolloutTypeConfig(self):
+    rollout_type_mutex_group = self.parser.add_mutually_exclusive_group(
+        help=(
+            'Configuration for specific rollout types.'
+        ),
+    )
+    self._AddVersionUpgrade(rollout_type_mutex_group)
+    self._AddFeatureUpdate(rollout_type_mutex_group)
+
+  def _AddVersionUpgrade(
+      self, rollout_type_mutex_group: parser_arguments.ArgumentInterceptor
+  ):
+    version_upgrade_config_group = rollout_type_mutex_group.add_group(
+        help='Version upgrade rollout config.',
+    )
+    self._AddControlPlaneUpgrade(version_upgrade_config_group)
+    self._AddTargetVersion(version_upgrade_config_group)
+
+  def _AddControlPlaneUpgrade(
+      self, version_upgrade_config_group: parser_arguments.ArgumentInterceptor
+  ):
+    version_upgrade_config_group.add_argument(
+        '--control-plane-upgrade',
+        help=textwrap.dedent("""\
+          Upgrade the control plane of the clusters in the fleet."""),
+        action='store_true',
+    )
+
+  def _AddTargetVersion(
+      self, version_upgrade_config_group: parser_arguments.ArgumentInterceptor
+  ):
+    version_upgrade_config_group.add_argument(
+        '--target-version',
+        help=textwrap.dedent("""\
+          The version to upgrade clusters from the fleet to."""),
+        type=str,
+    )
+
+  def _AddFeatureUpdate(
+      self, rollout_type_mutex_group: parser_arguments.ArgumentInterceptor
+  ):
+    feature_update_mutex_group = (
+        rollout_type_mutex_group.add_mutually_exclusive_group(
+            help='Feature config to use for Rollout.',
+        )
     )
 
     self._AddSecurityPostureConfig(feature_update_mutex_group)
@@ -240,6 +282,7 @@ class RolloutFlagParser:
     rollout.displayName = self._DisplayName()
     rollout.labels = self._Labels()
     rollout.managedRolloutConfig = self._ManagedRolloutConfig()
+    rollout.versionUpgrade = self._VersionUpgrade()
     rollout.feature = self._FeatureUpdate()
     return rollout
 
@@ -278,6 +321,28 @@ class RolloutFlagParser:
     if '--soak-duration' not in self.args.GetSpecifiedArgs():
       return None
     return '{}s'.format(self.args.soak_duration)
+
+  def _VersionUpgrade(self) -> fleet_messages.VersionUpgrade:
+    """Constructs message VersionUpgrade."""
+    version_upgrade = fleet_messages.VersionUpgrade()
+    version_upgrade.type = self._VersionUpgradeType()
+    version_upgrade.desiredVersion = self._VersionUpgradeDesiredVersion()
+    return self.TrimEmpty(version_upgrade)
+
+  def _VersionUpgradeType(
+      self,
+  ) -> fleet_messages.VersionUpgrade.TypeValueValuesEnum:
+    """Parses --control-plane-upgrade."""
+    enum_type = fleet_messages.VersionUpgrade.TypeValueValuesEnum
+    if '--control-plane-upgrade' not in self.args.GetSpecifiedArgs():
+      return enum_type.TYPE_UNSPECIFIED
+    return enum_type.TYPE_CONTROL_PLANE
+
+  def _VersionUpgradeDesiredVersion(self) -> str:
+    """Parses --target-version."""
+    if '--target-version' not in self.args.GetSpecifiedArgs():
+      return None
+    return self.args.target_version
 
   def _FeatureUpdate(self) -> fleet_messages.FeatureUpdate:
     """Constructs message FeatureUpdate."""

@@ -119,19 +119,18 @@ def GetPersistentDiskSpecFromArgs(args, messages):
   persistent_disk_spec_config = (
       messages.GoogleCloudAiplatformV1beta1PersistentDiskSpec
   )
-  if args.IsSpecified('disk_type'):
-    disk_type = FormatDiskTypeForApiRequest(args.disk_type)
-    return persistent_disk_spec_config(
-        diskType=disk_type, diskSizeGb=args.disk_size_gb
-    )
   # Match API requirement that disk type must be specified when disk size is,
   # instead of silently using the default stored in args.disk_type.
-  elif args.IsSpecified('disk_size_gb'):
+  if args.IsSpecified('disk_size_gb') and not args.IsSpecified('disk_type'):
     raise exceptions.RequiredArgumentException(
         '--disk-type',
         'Disk type must be specified when disk size is specified.',
     )
-  return None
+  else:
+    disk_type = FormatDiskTypeForApiRequest(args.disk_type)
+    return persistent_disk_spec_config(
+        diskType=disk_type, diskSizeGb=args.disk_size_gb
+    )
 
 
 def GetNetworkSpecFromArgs(args, messages):
@@ -249,14 +248,14 @@ def CreateEncryptionSpecConfig(args, messages):
     messages: Module containing messages definition for the aiplatform API.
 
   Returns:
-    Encryption spec for the runtime template.
+    Encryption spec for the notebook resource.
   """
   encryption_spec = messages.GoogleCloudAiplatformV1beta1EncryptionSpec
   if args.IsSpecified('kms_key'):
     return encryption_spec(
         kmsKeyName=args.CONCEPTS.kms_key.Parse().RelativeName()
     )
-  # Runtime template will use Google-managed encryption key if kms not specified
+  # Google-managed encryption will be used if kms is not specified.
   return None
 
 

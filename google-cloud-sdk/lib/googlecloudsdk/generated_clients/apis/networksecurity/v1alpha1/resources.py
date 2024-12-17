@@ -143,6 +143,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_BACKENDAUTHENTICATIONCONFIGS = (
+      'projects.locations.backendAuthenticationConfigs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'backendAuthenticationConfigs/{backendAuthenticationConfigsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_CLIENTTLSPOLICIES = (
       'projects.locations.clientTlsPolicies',
       '{+name}',

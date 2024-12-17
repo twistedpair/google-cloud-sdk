@@ -52,15 +52,6 @@ class TargetTcpProxiesCompleter(compute_completers.ListCommandCompleter):
         **kwargs)
 
 
-class GATargetTcpProxiesCompleter(compute_completers.ListCommandCompleter):
-
-  def __init__(self, **kwargs):
-    super(GATargetTcpProxiesCompleter, self).__init__(
-        collection='compute.targetTcpProxies',
-        list_command='compute target-tcp-proxies list --uri',
-        **kwargs)
-
-
 def TargetTcpProxyArgument(required=True, plural=False, allow_regional=False):
   return compute_flags.ResourceArgument(
       resource_name='target TCP proxy',

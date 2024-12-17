@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.builds import submit_util
 from googlecloudsdk.command_lib.run import artifact_registry
+from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import stages
 from googlecloudsdk.command_lib.run.sourcedeploys import sources
 from googlecloudsdk.command_lib.run.sourcedeploys import types
@@ -37,7 +38,7 @@ _BUILD_NAME_PATTERN = re.compile(
 )
 
 
-# TODO(b/313435281): Bundle these "build_" variables into an object
+# TODO(b/383160656): Bundle these "build_" variables into an object
 def CreateImage(
     tracker,
     build_image,
@@ -55,6 +56,7 @@ def CreateImage(
     build_env_vars=None,
     enable_automatic_updates=False,
     source_bucket=None,
+    kms_key=None,
 ):
   """Creates an image from Source."""
   if repo_to_create:
@@ -73,10 +75,13 @@ def CreateImage(
     # upload the source code then call the new
     # builds API.
     tracker.StartStage(stages.UPLOAD_SOURCE)
-    tracker.UpdateHeaderMessage('Uploading sources.')
-    source = sources.Upload(
-        build_source, region, resource_ref, source_bucket
-    )
+    if kms_key and base.ReleaseTrack.ALPHA:
+      tracker.UpdateHeaderMessage('Using the source from the specified bucket.')
+      _ValidateCmekDeployment(build_source, kms_key, release_track)
+      source = sources.GetGcsObject(build_source)
+    else:
+      tracker.UpdateHeaderMessage('Uploading sources.')
+      source = sources.Upload(build_source, region, resource_ref, source_bucket)
     tracker.CompleteStage(stages.UPLOAD_SOURCE)
     submit_build_request = _PrepareSubmitBuildRequest(
         build_image,
@@ -263,6 +268,22 @@ def _PrepareBuildConfig(
     tracker.CompleteStage(stages.UPLOAD_SOURCE)
 
   return build_messages, build_config
+
+
+def _ValidateCmekDeployment(source: str, kms_key: str, release_track) -> None:
+  """Validate the CMEK parameters of the deployment."""
+  if not kms_key or release_track != base.ReleaseTrack.ALPHA:
+    return
+
+  if not sources.IsGcsObject(source):
+    # TODO: b/380348558 - Link to the relevant CMEK guide, once published.
+    raise exceptions.ArgumentError(
+        f'Invalid source location: {source}.'
+        ' Deployments encrypted with a customer-managed encryption key (CMEK)'
+        ' expect the source to be passed in a pre-configured Cloud Storage'
+        ' bucket.'
+    )
+   # TODO: b/378907596 - Validate the BYO repository, once supported.
 
 
 def _BuildFromSource(

@@ -901,6 +901,10 @@ class ConnectionProfile(_messages.Message):
     postgresql: A PostgreSQL database connection profile.
     provider: The database provider.
     role: Optional. The connection profile role.
+    satisfiesPzi: Output only. Zone Isolation compliance state of the
+      resource.
+    satisfiesPzs: Output only. Zone Separation compliance state of the
+      resource.
     spanner: A Spanner database connection profile.
     sqlserver: Connection profile for a SQL Server data source.
     state: The current connection profile state (e.g. DRAFT, READY, or
@@ -1007,10 +1011,12 @@ class ConnectionProfile(_messages.Message):
   postgresql = _messages.MessageField('PostgreSqlConnectionProfile', 10)
   provider = _messages.EnumField('ProviderValueValuesEnum', 11)
   role = _messages.EnumField('RoleValueValuesEnum', 12)
-  spanner = _messages.MessageField('SpannerConnectionProfile', 13)
-  sqlserver = _messages.MessageField('SqlServerConnectionProfile', 14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  updateTime = _messages.StringField(16)
+  satisfiesPzi = _messages.BooleanField(13)
+  satisfiesPzs = _messages.BooleanField(14)
+  spanner = _messages.MessageField('SpannerConnectionProfile', 15)
+  sqlserver = _messages.MessageField('SqlServerConnectionProfile', 16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  updateTime = _messages.StringField(18)
 
 
 class ConstraintEntity(_messages.Message):
@@ -3350,8 +3356,9 @@ class GoogleCloudClouddmsV1OperationMetadata(_messages.Message):
     endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      successfully been cancelled have google.longrunning.Operation.error
+      value with a google.rpc.Status.code of 1, corresponding to
+      `Code.CANCELLED`.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
     target: Output only. Server-defined resource path for the target of the
@@ -3925,6 +3932,7 @@ class MaterializedViewEntity(_messages.Message):
 
   Fields:
     customFeatures: Custom engine specific features.
+    indices: View indices.
     sqlCode: The SQL code which creates the view.
   """
 
@@ -3954,7 +3962,8 @@ class MaterializedViewEntity(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   customFeatures = _messages.MessageField('CustomFeaturesValue', 1)
-  sqlCode = _messages.StringField(2)
+  indices = _messages.MessageField('IndexEntity', 2, repeated=True)
+  sqlCode = _messages.StringField(3)
 
 
 class MigrationJob(_messages.Message):
@@ -4024,6 +4033,10 @@ class MigrationJob(_messages.Message):
     phase: Output only. The current migration job phase.
     reverseSshConnectivity: The details needed to communicate to the source
       over Reverse SSH tunnel connectivity.
+    satisfiesPzi: Output only. Zone Isolation compliance state of the
+      resource.
+    satisfiesPzs: Output only. Zone Separation compliance state of the
+      resource.
     source: Required. The resource name (URI) of the source connection
       profile.
     sourceDatabase: The database engine type and provider of the source.
@@ -4173,14 +4186,16 @@ class MigrationJob(_messages.Message):
   performanceConfig = _messages.MessageField('PerformanceConfig', 18)
   phase = _messages.EnumField('PhaseValueValuesEnum', 19)
   reverseSshConnectivity = _messages.MessageField('ReverseSshConnectivity', 20)
-  source = _messages.StringField(21)
-  sourceDatabase = _messages.MessageField('DatabaseType', 22)
-  sqlserverHomogeneousMigrationJobConfig = _messages.MessageField('SqlServerHomogeneousMigrationJobConfig', 23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 25)
-  type = _messages.EnumField('TypeValueValuesEnum', 26)
-  updateTime = _messages.StringField(27)
-  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 28)
+  satisfiesPzi = _messages.BooleanField(21)
+  satisfiesPzs = _messages.BooleanField(22)
+  source = _messages.StringField(23)
+  sourceDatabase = _messages.MessageField('DatabaseType', 24)
+  sqlserverHomogeneousMigrationJobConfig = _messages.MessageField('SqlServerHomogeneousMigrationJobConfig', 25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 27)
+  type = _messages.EnumField('TypeValueValuesEnum', 28)
+  updateTime = _messages.StringField(29)
+  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 30)
 
 
 class MigrationJobObject(_messages.Message):
@@ -5101,6 +5116,10 @@ class PrivateConnection(_messages.Message):
       containing a list of "key": "value" pairs. Example: `{ "name": "wrench",
       "mass": "1.3kg", "count": "3" }`.
     name: The name of the resource.
+    satisfiesPzi: Output only. Zone Isolation compliance state of the
+      resource.
+    satisfiesPzs: Output only. Zone Separation compliance state of the
+      resource.
     state: Output only. The state of the private connection.
     updateTime: Output only. The last update time of the resource.
     vpcPeeringConfig: VPC peering configuration.
@@ -5161,9 +5180,11 @@ class PrivateConnection(_messages.Message):
   error = _messages.MessageField('Status', 3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
-  vpcPeeringConfig = _messages.MessageField('VpcPeeringConfig', 8)
+  satisfiesPzi = _messages.BooleanField(6)
+  satisfiesPzs = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
+  vpcPeeringConfig = _messages.MessageField('VpcPeeringConfig', 10)
 
 
 class PrivateConnectivity(_messages.Message):
@@ -5206,12 +5227,15 @@ class RestartMigrationJobRequest(_messages.Message):
 
   Fields:
     objectsFilter: Optional. The object filter to apply to the migration job.
+    restartFailedObjects: Optional. If true, only failed objects will be
+      restarted.
     skipValidation: Optional. Restart the migration job without running prior
       configuration verification. Defaults to `false`.
   """
 
   objectsFilter = _messages.MessageField('MigrationJobObjectsConfig', 1)
-  skipValidation = _messages.BooleanField(2)
+  restartFailedObjects = _messages.BooleanField(2)
+  skipValidation = _messages.BooleanField(3)
 
 
 class ResumeMigrationJobRequest(_messages.Message):
@@ -5614,10 +5638,6 @@ class SourceObjectIdentifier(_messages.Message):
   Fields:
     database: The database name. This will be required only if the object uses
       a database name as part of its unique identifier.
-    name: The migration job object name. This will be required only if the
-      object is a level below database or schema.
-    schema: The schema name. This will be required only if the object uses a
-      schema name as part of its unique identifier.
     type: Required. The type of the migration job object.
   """
 
@@ -5628,28 +5648,42 @@ class SourceObjectIdentifier(_messages.Message):
       MIGRATION_JOB_OBJECT_TYPE_UNSPECIFIED: The type of the migration job
         object is unknown.
       DATABASE: The migration job object is a database.
-      SCHEMA: The migration job object is a schema.
-      TABLE: The migration job object is a table.
     """
     MIGRATION_JOB_OBJECT_TYPE_UNSPECIFIED = 0
     DATABASE = 1
-    SCHEMA = 2
-    TABLE = 3
 
   database = _messages.StringField(1)
-  name = _messages.StringField(2)
-  schema = _messages.StringField(3)
-  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class SourceObjectsConfig(_messages.Message):
   r"""List of configurations for the source objects to be migrated.
 
+  Enums:
+    ObjectsSelectionTypeValueValuesEnum: Optional. The objects selection type
+      of the migration job.
+
   Fields:
     objectConfigs: The list of the objects to be migrated.
+    objectsSelectionType: Optional. The objects selection type of the
+      migration job.
   """
 
+  class ObjectsSelectionTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The objects selection type of the migration job.
+
+    Values:
+      OBJECTS_SELECTION_TYPE_UNSPECIFIED: The type of the objects selection is
+        unknown, indicating that the migration job is at instance level.
+      ALL_OBJECTS: Migrate all of the objects.
+      SPECIFIED_OBJECTS: Migrate specific objects.
+    """
+    OBJECTS_SELECTION_TYPE_UNSPECIFIED = 0
+    ALL_OBJECTS = 1
+    SPECIFIED_OBJECTS = 2
+
   objectConfigs = _messages.MessageField('SourceObjectConfig', 1, repeated=True)
+  objectsSelectionType = _messages.EnumField('ObjectsSelectionTypeValueValuesEnum', 2)
 
 
 class SourceSqlChange(_messages.Message):
@@ -5765,6 +5799,8 @@ class SqlServerConnectionProfile(_messages.Message):
       Cloud SQL for SQL Server.
     cloudSqlId: If the source is a Cloud SQL database, use this field to
       provide the Cloud SQL instance ID of the source.
+    cloudSqlProjectId: Optional. The project id of the Cloud SQL instance. If
+      not provided, the project id of the connection profile will be used.
     database: Required. The name of the specific database within the host.
     forwardSshConnectivity: Forward SSH tunnel connectivity.
     host: Required. The IP or hostname of the source SQL Server database.
@@ -5788,17 +5824,18 @@ class SqlServerConnectionProfile(_messages.Message):
 
   backups = _messages.MessageField('SqlServerBackups', 1)
   cloudSqlId = _messages.StringField(2)
-  database = _messages.StringField(3)
-  forwardSshConnectivity = _messages.MessageField('ForwardSshTunnelConnectivity', 4)
-  host = _messages.StringField(5)
-  password = _messages.StringField(6)
-  passwordSet = _messages.BooleanField(7)
-  port = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  privateConnectivity = _messages.MessageField('PrivateConnectivity', 9)
-  privateServiceConnectConnectivity = _messages.MessageField('PrivateServiceConnectConnectivity', 10)
-  ssl = _messages.MessageField('SslConfig', 11)
-  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 12)
-  username = _messages.StringField(13)
+  cloudSqlProjectId = _messages.StringField(3)
+  database = _messages.StringField(4)
+  forwardSshConnectivity = _messages.MessageField('ForwardSshTunnelConnectivity', 5)
+  host = _messages.StringField(6)
+  password = _messages.StringField(7)
+  passwordSet = _messages.BooleanField(8)
+  port = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  privateConnectivity = _messages.MessageField('PrivateConnectivity', 10)
+  privateServiceConnectConnectivity = _messages.MessageField('PrivateServiceConnectConnectivity', 11)
+  ssl = _messages.MessageField('SslConfig', 12)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 13)
+  username = _messages.StringField(14)
 
 
 class SqlServerDatabaseBackup(_messages.Message):
@@ -5841,11 +5878,15 @@ class SqlServerEncryptionOptions(_messages.Message):
   r"""Encryption settings for the SQL Server database.
 
   Fields:
-    certPath: Required. Path to certificate.
+    certPath: Required. Path to the Certificate (.cer) in Cloud Storage, in
+      the form `gs://bucketName/fileName`. The instance must have write
+      permissions to the bucket and read access to the file.
     pkvPassword: Optional. Input only. Private key password. To be deprecated
     pkvPath: Optional. Path to certificate private key. To be deprecated
-    pvkPassword: Required. Input only. Private key password.
-    pvkPath: Required. Path to certificate private key.
+    pvkPassword: Required. Input only. Password that encrypts the private key.
+    pvkPath: Required. Path to the Certificate Private Key (.pvk) in Cloud
+      Storage, in the form `gs://bucketName/fileName`. The instance must have
+      write permissions to the bucket and read access to the file.
   """
 
   certPath = _messages.StringField(1)

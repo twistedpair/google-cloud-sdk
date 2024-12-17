@@ -105,7 +105,8 @@ class FilestoreClient(object):
       Generator that yields the Cloud Filestore instances.
     """
     request = self.messages.FileProjectsLocationsInstancesListRequest(
-        parent=location_ref)
+        parent=location_ref
+    )
     # Check for unreachable locations.
     response = self.client.projects_locations_instances.List(request)
     for location in response.unreachable:
@@ -115,42 +116,49 @@ class FilestoreClient(object):
         request,
         field='instances',
         limit=limit,
-        batch_size_attribute='pageSize')
+        batch_size_attribute='pageSize',
+    )
 
   def GetInstance(self, instance_ref):
     """Get Cloud Filestore instance information."""
     request = self.messages.FileProjectsLocationsInstancesGetRequest(
-        name=instance_ref.RelativeName())
+        name=instance_ref.RelativeName()
+    )
     return self.client.projects_locations_instances.Get(request)
 
   def GetSnapshot(self, snapshot_ref):
     """Get Cloud Filestore snapshot information."""
     request = self.messages.FileProjectsLocationsSnapshotsGetRequest(
-        name=snapshot_ref.RelativeName())
+        name=snapshot_ref.RelativeName()
+    )
     return self.client.projects_locations_snapshots.Get(request)
 
   def GetInstanceSnapshot(self, snapshot_ref):
     """Get Cloud Filestore snapshot information."""
     request = self.messages.FileProjectsLocationsInstancesSnapshotsGetRequest(
-        name=snapshot_ref.RelativeName())
+        name=snapshot_ref.RelativeName()
+    )
     return self.client.projects_locations_instances_snapshots.Get(request)
 
   def GetBackup(self, backup_ref):
     """Get Cloud Filestore backup information."""
     request = self.messages.FileProjectsLocationsBackupsGetRequest(
-        name=backup_ref.RelativeName())
+        name=backup_ref.RelativeName()
+    )
     return self.client.projects_locations_backups.Get(request)
 
   def DeleteInstance(self, instance_ref, async_, force=False):
     """Deletes an existing Cloud Filestore instance."""
     request = self.messages.FileProjectsLocationsInstancesDeleteRequest(
-        name=instance_ref.RelativeName(), force=force)
+        name=instance_ref.RelativeName(), force=force
+    )
     return self._DeleteInstance(async_, request)
 
   def DeleteInstanceAlpha(self, instance_ref, async_):
     """Delete an existing Cloud Filestore instance."""
     request = self.messages.FileProjectsLocationsInstancesDeleteRequest(
-        name=instance_ref.RelativeName())
+        name=instance_ref.RelativeName()
+    )
     return self._DeleteInstance(async_, request)
 
   def _DeleteInstance(self, async_, request):
@@ -158,7 +166,8 @@ class FilestoreClient(object):
     if async_:
       return delete_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        delete_op.name, collection=OPERATIONS_COLLECTION)
+        delete_op.name, collection=OPERATIONS_COLLECTION
+    )
     return self.WaitForOperation(operation_ref)
 
   def GetOperation(self, operation_ref):
@@ -171,7 +180,8 @@ class FilestoreClient(object):
       messages.GoogleLongrunningOperation, the operation.
     """
     request = self.messages.FileProjectsLocationsOperationsGetRequest(
-        name=operation_ref.RelativeName())
+        name=operation_ref.RelativeName()
+    )
     return self.client.projects_locations_operations.Get(request)
 
   def WaitForOperation(self, operation_ref):
@@ -188,8 +198,11 @@ class FilestoreClient(object):
     """
     return waiter.WaitFor(
         waiter.CloudOperationPollerNoResources(
-            self.client.projects_locations_operations), operation_ref,
-        'Waiting for [{0}] to finish'.format(operation_ref.Name()))
+            self.client.projects_locations_operations
+        ),
+        operation_ref,
+        'Waiting for [{0}] to finish'.format(operation_ref.Name()),
+    )
 
   def CancelOperation(self, operation_ref):
     """Cancels a long-running operation.
@@ -201,7 +214,8 @@ class FilestoreClient(object):
       Empty response message.
     """
     request = self.messages.FileProjectsLocationsOperationsCancelRequest(
-        name=operation_ref.RelativeName())
+        name=operation_ref.RelativeName()
+    )
     return self.client.projects_locations_operations.Cancel(request)
 
   def CreateInstance(self, instance_ref, async_, config):
@@ -209,12 +223,14 @@ class FilestoreClient(object):
     request = self.messages.FileProjectsLocationsInstancesCreateRequest(
         parent=instance_ref.Parent().RelativeName(),
         instanceId=instance_ref.Name(),
-        instance=config)
+        instance=config,
+    )
     create_op = self.client.projects_locations_instances.Create(request)
     if async_:
       return create_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        create_op.name, collection=OPERATIONS_COLLECTION)
+        create_op.name, collection=OPERATIONS_COLLECTION
+    )
     return self.WaitForOperation(operation_ref)
 
   def GetLocation(self, location_ref):
@@ -223,13 +239,15 @@ class FilestoreClient(object):
 
   def ListLocations(self, project_ref, limit=None):
     request = self.messages.FileProjectsLocationsListRequest(
-        name=project_ref.RelativeName())
+        name=project_ref.RelativeName()
+    )
     return list_pager.YieldFromList(
         self.client.projects_locations,
         request,
         field='locations',
         limit=limit,
-        batch_size_attribute='pageSize')
+        batch_size_attribute='pageSize',
+    )
 
   def ListOperations(self, operation_ref, limit=None):  # pylint: disable=redefined-builtin
     """Make API calls to List active Cloud Filestore operations.
@@ -243,31 +261,34 @@ class FilestoreClient(object):
       Generator that yields the Cloud Filestore instances.
     """
     request = self.messages.FileProjectsLocationsOperationsListRequest(
-        name=operation_ref)
+        name=operation_ref
+    )
     return list_pager.YieldFromList(
         self.client.projects_locations_operations,
         request,
         field='operations',
         limit=limit,
-        batch_size_attribute='pageSize')
+        batch_size_attribute='pageSize',
+    )
 
-  def ParseFilestoreConfig(self,
-                           tier=None,
-                           protocol=None,
-                           description=None,
-                           file_share=None,
-                           network=None,
-                           performance=None,
-                           labels=None,
-                           tags=None,
-                           zone=None,
-                           nfs_export_options=None,
-                           kms_key_name=None,
-                           managed_ad=None,
-                           source_instance=None,
-                           deletion_protection_enabled=None,
-                           deletion_protection_reason=None,
-                           ):
+  def ParseFilestoreConfig(
+      self,
+      tier=None,
+      protocol=None,
+      description=None,
+      file_share=None,
+      network=None,
+      performance=None,
+      labels=None,
+      tags=None,
+      zone=None,
+      nfs_export_options=None,
+      kms_key_name=None,
+      managed_ad=None,
+      source_instance=None,
+      deletion_protection_enabled=None,
+      deletion_protection_reason=None,
+  ):
     """Parses the command line arguments for Create into a config.
 
     Args:
@@ -340,19 +361,19 @@ class FilestoreClient(object):
 
     return instance
 
-  def ParseUpdatedInstanceConfig(self,
-                                 instance_config,
-                                 description=None,
-                                 labels=None,
-                                 file_share=None,
-                                 performance=None,
-                                 clear_performance=False,
-                                 managed_ad=None,
-                                 disconnect_managed_ad=None,
-                                 clear_nfs_export_options=False,
-                                 deletion_protection_enabled=None,
-                                 deletion_protection_reason=None,
-                                 ):
+  def ParseUpdatedInstanceConfig(
+      self,
+      instance_config,
+      description=None,
+      labels=None,
+      file_share=None,
+      performance=None,
+      managed_ad=None,
+      disconnect_managed_ad=None,
+      clear_nfs_export_options=False,
+      deletion_protection_enabled=None,
+      deletion_protection_reason=None,
+  ):
     """Parses updates into an instance config.
 
     Args:
@@ -361,7 +382,6 @@ class FilestoreClient(object):
       labels: LabelsValue message, the new labels value, if any.
       file_share: dict representing a new file share config, if any.
       performance: The performance configuration for the instance.
-      clear_performance: bool, whether to clear the performance configuration.
       managed_ad: The Managed Active Directory settings of the instance.
       disconnect_managed_ad: Disconnect from Managed Active Directory.
       clear_nfs_export_options: bool, whether to clear the NFS export options.
@@ -382,13 +402,12 @@ class FilestoreClient(object):
         labels=labels,
         file_share=file_share,
         performance=performance,
-        clear_performance=clear_performance,
         managed_ad=managed_ad,
         disconnect_managed_ad=disconnect_managed_ad,
         clear_nfs_export_options=clear_nfs_export_options,
         deletion_protection_enabled=deletion_protection_enabled,
         deletion_protection_reason=deletion_protection_reason,
-        )
+    )
     return instance
 
   def UpdateInstance(self, instance_ref, instance_config, update_mask, async_):
@@ -403,12 +422,14 @@ class FilestoreClient(object):
     Returns:
       an Operation or Instance message.
     """
-    update_op = self._adapter.UpdateInstance(instance_ref, instance_config,
-                                             update_mask)
+    update_op = self._adapter.UpdateInstance(
+        instance_ref, instance_config, update_mask
+    )
     if async_:
       return update_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        update_op.name, collection=OPERATIONS_COLLECTION)
+        update_op.name, collection=OPERATIONS_COLLECTION
+    )
     return self.WaitForOperation(operation_ref)
 
   @staticmethod
@@ -455,7 +476,8 @@ class FilestoreClient(object):
           anonUid=anon_uid,
           anonGid=anon_gid,
           accessMode=access_mode,
-          squashMode=squash_mode)
+          squashMode=squash_mode,
+      )
       nfs_export_configs.append(nfs_export_config)
     return nfs_export_configs
 
@@ -508,14 +530,17 @@ class FilestoreClient(object):
       for flavor in flavors:
         security_flavors_list.append(
             messages.NfsExportOptions.SecurityFlavorsValueListEntryValuesEnum.lookup_by_name(
-                flavor))
+                flavor
+            )
+        )
       nfs_export_config = messages.NfsExportOptions(
           ipRanges=nfs_export_option.get('ip-ranges', []),
           anonUid=anon_uid,
           anonGid=anon_gid,
           accessMode=access_mode,
           squashMode=squash_mode,
-          securityFlavors=security_flavors_list)
+          securityFlavors=security_flavors_list,
+      )
       nfs_export_configs.append(nfs_export_config)
     return nfs_export_configs
 
@@ -564,10 +589,9 @@ class AlphaFilestoreAdapter(object):
     self.client = GetClient(version=ALPHA_API_VERSION)
     self.messages = GetMessages(version=ALPHA_API_VERSION)
 
-  def ParseFileShareIntoInstance(self,
-                                 instance,
-                                 file_share,
-                                 instance_zone=None):
+  def ParseFileShareIntoInstance(
+      self, instance, file_share, instance_zone=None
+  ):
     """Parse specified file share configs into an instance message.
 
     Args:
@@ -577,7 +601,6 @@ class AlphaFilestoreAdapter(object):
 
     Raises:
       InvalidArgumentError: If file_share argument constraints are violated.
-
     """
     if instance.fileShares is None:
       instance.fileShares = []
@@ -637,7 +660,6 @@ class AlphaFilestoreAdapter(object):
       labels=None,
       file_share=None,
       performance=None,
-      clear_performance=False,
       managed_ad=None,
       disconnect_managed_ad=None,
       clear_nfs_export_options=False,
@@ -676,8 +698,6 @@ class AlphaFilestoreAdapter(object):
 
     if performance:
       self.ParsePerformanceIntoInstance(instance_config, performance)
-    if clear_performance:
-      instance_config.performanceConfig = None
 
     if managed_ad:
       self.ParseManagedADIntoInstance(instance_config, managed_ad)
@@ -780,9 +800,7 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
     """
     domain = managed_ad.get('domain')
     if domain is None:
-      raise InvalidArgumentError(
-          'Domain parameter is missing in --managed_ad.'
-      )
+      raise InvalidArgumentError('Domain parameter is missing in --managed_ad.')
     computer = managed_ad.get('computer')
     if computer is None:
       raise InvalidArgumentError(
@@ -804,12 +822,12 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
     """
 
     role = self.messages.Replication.RoleValueValuesEnum.lookup_by_name(
-        'STANDBY')
+        'STANDBY'
+    )
     replicas = []
     replicas.append(self.messages.ReplicaConfig(peerInstance=source_instance))
     instance.replication = self.messages.Replication(
-        role=role,
-        replicas=replicas
+        role=role, replicas=replicas
     )
 
   def ParsePerformanceIntoInstance(self, instance, performance):
@@ -821,7 +839,8 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
     """
 
     instance.performanceConfig = FilestoreClient.MakePerformanceConfigMsg(
-        self.messages, performance)
+        self.messages, performance
+    )
 
   def ParseFileShareIntoInstance(
       self, instance, file_share, instance_zone=None
@@ -873,10 +892,9 @@ class FilestoreAdapter(BetaFilestoreAdapter):
     self.client = GetClient(version=V1_API_VERSION)
     self.messages = GetMessages(version=V1_API_VERSION)
 
-  def ParseFileShareIntoInstance(self,
-                                 instance,
-                                 file_share,
-                                 instance_zone=None):
+  def ParseFileShareIntoInstance(
+      self, instance, file_share, instance_zone=None
+  ):
     """Parse specified file share configs into an instance message."""
     del instance_zone  # Unused.
     if instance.fileShares is None:
@@ -890,13 +908,15 @@ class FilestoreAdapter(BetaFilestoreAdapter):
       source_backup = self._ParseSourceBackupFromFileshare(file_share)
 
       nfs_export_options = FilestoreClient.MakeNFSExportOptionsMsg(
-          self.messages, file_share.get('nfs-export-options', []))
+          self.messages, file_share.get('nfs-export-options', [])
+      )
 
       file_share_config = self.messages.FileShareConfig(
           name=file_share.get('name'),
           capacityGb=utils.BytesToGb(file_share.get('capacity')),
           sourceBackup=source_backup,
-          nfsExportOptions=nfs_export_options)
+          nfsExportOptions=nfs_export_options,
+      )
       instance.fileShares.append(file_share_config)
 
 

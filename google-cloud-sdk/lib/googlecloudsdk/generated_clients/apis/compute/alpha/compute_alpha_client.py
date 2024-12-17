@@ -41,6 +41,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.acceleratorTypes = self.AcceleratorTypesService(self)
     self.addresses = self.AddressesService(self)
+    self.advice = self.AdviceService(self)
     self.autoscalers = self.AutoscalersService(self)
     self.backendBuckets = self.BackendBucketsService(self)
     self.backendServices = self.BackendServicesService(self)
@@ -460,6 +461,42 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputeAddressesTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class AdviceService(base_api.BaseApiService):
+    """Service class for the advice resource."""
+
+    _NAME = 'advice'
+
+    def __init__(self, client):
+      super(ComputeAlpha.AdviceService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def CalendarMode(self, request, global_params=None):
+      r"""Advise how, where and when to create the requested amount of instances with specified accelerators, within the specified time and location limits. The method recommends creating future reservations for the requested resources.
+
+      Args:
+        request: (ComputeAdviceCalendarModeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CalendarModeAdviceResponse) The response message.
+      """
+      config = self.GetMethodConfig('CalendarMode')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CalendarMode.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.advice.calendarMode',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/advice/calendarMode',
+        request_field='calendarModeAdviceRequest',
+        request_type_name='ComputeAdviceCalendarModeRequest',
+        response_type_name='CalendarModeAdviceResponse',
         supports_download=False,
     )
 
@@ -11440,6 +11477,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='firewallPolicyRule',
         request_type_name='ComputeNetworkFirewallPoliciesAddRuleRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves an aggregated list of network firewall policies, listing network firewall policies from all applicable scopes (global and regional) and grouping the results per scope. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+
+      Args:
+        request: (ComputeNetworkFirewallPoliciesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkFirewallPolicyAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.networkFirewallPolicies.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
+        relative_path='projects/{project}/aggregated/firewallPolicies',
+        request_field='',
+        request_type_name='ComputeNetworkFirewallPoliciesAggregatedListRequest',
+        response_type_name='NetworkFirewallPolicyAggregatedList',
         supports_download=False,
     )
 

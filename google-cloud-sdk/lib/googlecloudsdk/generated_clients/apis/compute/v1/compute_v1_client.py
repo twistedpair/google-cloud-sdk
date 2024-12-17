@@ -9287,6 +9287,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves an aggregated list of network firewall policies, listing network firewall policies from all applicable scopes (global and regional) and grouping the results per scope. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+
+      Args:
+        request: (ComputeNetworkFirewallPoliciesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkFirewallPolicyAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.networkFirewallPolicies.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
+        relative_path='projects/{project}/aggregated/firewallPolicies',
+        request_field='',
+        request_type_name='ComputeNetworkFirewallPoliciesAggregatedListRequest',
+        response_type_name='NetworkFirewallPolicyAggregatedList',
+        supports_download=False,
+    )
+
     def CloneRules(self, request, global_params=None):
       r"""Copies rules to the specified firewall policy.
 
