@@ -5,6 +5,16 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 504.0.1 (2024-12-19)
+
+### Google Cloud CLI
+
+* Rebuilt gcloud with certifi 2024.08.30 which fixed CVE-2024-3968.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 504.0.0 (2024-12-17)
 
 ### AlloyDB
