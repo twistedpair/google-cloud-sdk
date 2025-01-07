@@ -334,8 +334,8 @@ class AuthzPolicyAuthzRule(_messages.Message):
   r"""Conditions to match against the incoming request.
 
   Fields:
-    from_: Optional. Describes properties of one or more sources of a request.
-    to: Optional. Describes properties of one or more targets of a request.
+    from_: Optional. Describes properties of a source of a request.
+    to: Optional. Describes properties of a target of a request.
     when: Optional. CEL expression that describes the conditions to be
       satisfied for the action. The result of the CEL expression is ANDed with
       the from and to. Refer to the CEL language reference for a list of
@@ -355,8 +355,8 @@ class AuthzPolicyAuthzRuleFrom(_messages.Message):
       Matches requests from sources that do not match the criteria specified
       in this field. At least one of sources or notSources must be specified.
     sources: Optional. Describes the properties of a request's sources. At
-      least one of sources or notSources must be specified. Limited to 5
-      sources. A match occurs when ANY source (in sources or notSources)
+      least one of sources or notSources must be specified. Limited to 1
+      source. A match occurs when ANY source (in sources or notSources)
       matches the request. Within a single source, the match follows AND
       semantics across fields and OR semantics within a single field, i.e. a
       match occurs when ANY principal matches AND ANY ipBlocks match.
@@ -464,11 +464,11 @@ class AuthzPolicyAuthzRuleTo(_messages.Message):
       notOperations must be specified.
     operations: Optional. Describes properties of one or more targets of a
       request. At least one of operations or notOperations must be specified.
-      Limited to 5 operations. A match occurs when ANY operation (in
-      operations or notOperations) matches. Within an operation, the match
-      follows AND semantics across fields and OR semantics within a field,
-      i.e. a match occurs when ANY path matches AND ANY header matches and ANY
-      method matches.
+      Limited to 1 operation. A match occurs when ANY operation (in operations
+      or notOperations) matches. Within an operation, the match follows AND
+      semantics across fields and OR semantics within a field, i.e. a match
+      occurs when ANY path matches AND ANY header matches and ANY method
+      matches.
   """
 
   notOperations = _messages.MessageField('AuthzPolicyAuthzRuleToRequestOperation', 1, repeated=True)
@@ -706,6 +706,18 @@ class CloneAddressGroupItemsRequest(_messages.Message):
 
   requestId = _messages.StringField(1)
   sourceAddressGroup = _messages.StringField(2)
+
+
+class CustomInterceptProfile(_messages.Message):
+  r"""CustomInterceptProfile defines the Packet Intercept Endpoint Group used
+  to intercept traffic to a third-party firewall in a Firewall rule.
+
+  Fields:
+    interceptEndpointGroup: Required. The InterceptEndpointGroup to which
+      traffic associated with the SP should be mirrored.
+  """
+
+  interceptEndpointGroup = _messages.StringField(1)
 
 
 class CustomMirroringProfile(_messages.Message):
@@ -3884,7 +3896,7 @@ class Rule(_messages.Message):
 
 class SecurityProfile(_messages.Message):
   r"""SecurityProfile is a resource that defines the behavior for one of many
-  ProfileTypes. Next ID: 12
+  ProfileTypes.
 
   Enums:
     TypeValueValuesEnum: Immutable. The single ProfileType that the
@@ -3895,6 +3907,8 @@ class SecurityProfile(_messages.Message):
 
   Fields:
     createTime: Output only. Resource creation timestamp.
+    customInterceptProfile: The custom TPPI configuration for the
+      SecurityProfile.
     customMirroringProfile: The custom Packet Mirroring v2 configuration for
       the SecurityProfile.
     description: Optional. An optional description of the profile. Max length
@@ -3921,10 +3935,12 @@ class SecurityProfile(_messages.Message):
       PROFILE_TYPE_UNSPECIFIED: Profile type not specified.
       THREAT_PREVENTION: Profile type for threat prevention.
       CUSTOM_MIRRORING: Profile type for packet mirroring v2
+      CUSTOM_INTERCEPT: Profile type for TPPI.
     """
     PROFILE_TYPE_UNSPECIFIED = 0
     THREAT_PREVENTION = 1
     CUSTOM_MIRRORING = 2
+    CUSTOM_INTERCEPT = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3951,25 +3967,28 @@ class SecurityProfile(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  customMirroringProfile = _messages.MessageField('CustomMirroringProfile', 2)
-  description = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  threatPreventionProfile = _messages.MessageField('ThreatPreventionProfile', 7)
-  type = _messages.EnumField('TypeValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
+  customInterceptProfile = _messages.MessageField('CustomInterceptProfile', 2)
+  customMirroringProfile = _messages.MessageField('CustomMirroringProfile', 3)
+  description = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  threatPreventionProfile = _messages.MessageField('ThreatPreventionProfile', 8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class SecurityProfileGroup(_messages.Message):
   r"""SecurityProfileGroup is a resource that defines the behavior for various
-  ProfileTypes. Next ID: 11
+  ProfileTypes.
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs.
 
   Fields:
     createTime: Output only. Resource creation timestamp.
+    customInterceptProfile: Optional. Reference to a SecurityProfile with the
+      CustomIntercept configuration.
     customMirroringProfile: Optional. Reference to a SecurityProfile with the
       CustomMirroring configuration.
     description: Optional. An optional description of the profile group. Max
@@ -4011,13 +4030,14 @@ class SecurityProfileGroup(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  customMirroringProfile = _messages.StringField(2)
-  description = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  threatPreventionProfile = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  customInterceptProfile = _messages.StringField(2)
+  customMirroringProfile = _messages.StringField(3)
+  description = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  threatPreventionProfile = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ServerTlsPolicy(_messages.Message):

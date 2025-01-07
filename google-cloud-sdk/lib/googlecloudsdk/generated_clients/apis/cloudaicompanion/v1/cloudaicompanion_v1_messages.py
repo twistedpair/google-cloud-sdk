@@ -14,16 +14,6 @@ from apitools.base.py import extra_types
 package = 'cloudaicompanion'
 
 
-class AttributionContext(_messages.Message):
-  r"""Represents citation and attribution context of the output.
-
-  Fields:
-    citationMetadata: Optional. Citation metadata of the output
-  """
-
-  citationMetadata = _messages.MessageField('CitationMetadata', 1)
-
-
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -85,56 +75,6 @@ class AuditLogConfig(_messages.Message):
 
   exemptedMembers = _messages.StringField(1, repeated=True)
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
-
-
-class BackendResourcesContext(_messages.Message):
-  r"""Represents ids of resources that the operation needs to reference or
-  target. E.g. for BigQuery SQL generation, this could reference the Dataset
-  or Table names (go/backend-resources-context-eg).
-
-  Messages:
-    AdditionalContextValue: Optional. Represents GCP product-specific backend
-      resources context.
-
-  Fields:
-    additionalContext: Optional. Represents GCP product-specific backend
-      resources context.
-    fullResourceNames: The full resource names
-      (https://cloud.google.com/apis/design/resource_names) of the GCP
-      resources that are referenced or relevant to the Duet query. For
-      example, a BigQuery SQL generation in the context of a particular
-      BigQuery table would set this to: `//bigquery.googleapis.com/bigquery/v2
-      /projects/{projectId}/datasets/{datasetId}/tables/{tableId}`
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AdditionalContextValue(_messages.Message):
-    r"""Optional. Represents GCP product-specific backend resources context.
-
-    Messages:
-      AdditionalProperty: An additional property for a AdditionalContextValue
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AdditionalContextValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  additionalContext = _messages.MessageField('AdditionalContextValue', 1)
-  fullResourceNames = _messages.StringField(2, repeated=True)
 
 
 class Binding(_messages.Message):
@@ -238,135 +178,6 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class CheckStatusRequest(_messages.Message):
-  r"""Request message for EntitlementService.CheckStatus.
-
-  Fields:
-    experienceContext: Required. Duet AI experience to check an entitlement
-      for.
-  """
-
-  experienceContext = _messages.MessageField('ExperienceContext', 1)
-
-
-class CheckStatusResponse(_messages.Message):
-  r"""Response message for EntitlementService.CheckStatus.
-
-  Fields:
-    entitled: Identifies whether the caller is eligible to access Duet AI.
-  """
-
-  entitled = _messages.BooleanField(1)
-
-
-class CheckUserLicenseRequest(_messages.Message):
-  r"""Request message for EntitlementService.CheckUserLicense.
-
-  Fields:
-    experienceContext: Duet AI experience to check an entitlement for.
-  """
-
-  experienceContext = _messages.MessageField('ExperienceContext', 1)
-
-
-class CheckUserLicenseResponse(_messages.Message):
-  r"""Response message for EntitlementService.CheckUserLicense.
-
-  Fields:
-    entitled: Identifies whether the caller is eligible to access Duet AI.
-  """
-
-  entitled = _messages.BooleanField(1)
-
-
-class CitationEntry(_messages.Message):
-  r"""Metadata of one citation. (named entry because of clash with code.proto)
-
-  Fields:
-    endIndex: Index in the prediction output where the citation ends
-      (exclusive). Must be > start_index and < len(output).
-    license: License associated with this recitation. If present, it refers to
-      the license of the source of this citation. Possible licenses include
-      code licenses, e.g., mit license.
-    publicationDate: Publication date associated with this citation. If
-      present, it refers to the date at which the source of this citation was
-      published. Possible formats are YYYY, YYYY-MM, YYYY-MM-DD.
-    startIndex: Index in the prediction output where the citation starts
-      (inclusive). Must be >= 0 and < end_index.
-    title: Title associated with this citation. If present, it refers to the
-      title of the source of this citation. Possible titles include news
-      titles, book titles, etc.
-    url: URL associated with this citation. If present, this URL links to the
-      webpage of the source of this citation. Possible URLs include news
-      websites, GitHub repos, etc.
-  """
-
-  endIndex = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  license = _messages.StringField(2)
-  publicationDate = _messages.StringField(3)
-  startIndex = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  title = _messages.StringField(5)
-  url = _messages.StringField(6)
-
-
-class CitationMetadata(_messages.Message):
-  r"""The schema of citations found in textual prediction outputs. Citations
-  originate from various sources and indicate that these contents should be
-  cited properly.
-
-  Fields:
-    citations: Metadata of all citations found in this prediction output.
-  """
-
-  citations = _messages.MessageField('CitationEntry', 1, repeated=True)
-
-
-class ClientContext(_messages.Message):
-  r"""Represents context about the UI client. Must NOT contain customer
-  content.
-
-  Messages:
-    AdditionalContextValue: Optional. Represents GCP product-specific
-      UI/client context.
-
-  Fields:
-    additionalContext: Optional. Represents GCP product-specific UI/client
-      context.
-    name: Optional. Name of the Duet plugin/UI running in the client space
-    version: Optional. Duet plugin/UI version
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AdditionalContextValue(_messages.Message):
-    r"""Optional. Represents GCP product-specific UI/client context.
-
-    Messages:
-      AdditionalProperty: An additional property for a AdditionalContextValue
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AdditionalContextValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  additionalContext = _messages.MessageField('AdditionalContextValue', 1)
-  name = _messages.StringField(2)
-  version = _messages.StringField(3)
-
-
 class CloudSchedulerConfig(_messages.Message):
   r"""Cloud Scheduler Trigger configuration
 
@@ -384,20 +195,6 @@ class CloudSchedulerConfig(_messages.Message):
   errorMessage = _messages.StringField(2)
   location = _messages.StringField(3)
   serviceAccountEmail = _messages.StringField(4)
-
-
-class CloudaicompanionProjectsCheckStatusRequest(_messages.Message):
-  r"""A CloudaicompanionProjectsCheckStatusRequest object.
-
-  Fields:
-    checkStatusRequest: A CheckStatusRequest resource to be passed as the
-      request body.
-    project: Required. Project name formatted as projects/{project_id} or
-      projects/{project_number}.
-  """
-
-  checkStatusRequest = _messages.MessageField('CheckStatusRequest', 1)
-  project = _messages.StringField(2, required=True)
 
 
 class CloudaicompanionProjectsLocationsCodeRepositoryIndexesCreateRequest(_messages.Message):
@@ -671,107 +468,6 @@ class CloudaicompanionProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class CloudaicompanionProjectsLocationsInstancesCompleteCodeRequest(_messages.Message):
-  r"""A CloudaicompanionProjectsLocationsInstancesCompleteCodeRequest object.
-
-  Fields:
-    codeCompletionRequest: A CodeCompletionRequest resource to be passed as
-      the request body.
-    instance: Required. The full name of the Instance resource for this
-      completion request. Format:
-      `projects/{project}/locations/{location}/instances/{instance}` Use the
-      special 'default' name to refer to the default instance.
-  """
-
-  codeCompletionRequest = _messages.MessageField('CodeCompletionRequest', 1)
-  instance = _messages.StringField(2, required=True)
-
-
-class CloudaicompanionProjectsLocationsInstancesCompleteTaskRequest(_messages.Message):
-  r"""A CloudaicompanionProjectsLocationsInstancesCompleteTaskRequest object.
-
-  Fields:
-    instance: Required. The full name of the Instance resource for this
-      generation request. Format:
-      `projects/{project}/locations/{location}/instances/{instance}` Use the
-      special 'default' name to refer to the default instance.
-    taskCompletionRequest: A TaskCompletionRequest resource to be passed as
-      the request body.
-  """
-
-  instance = _messages.StringField(1, required=True)
-  taskCompletionRequest = _messages.MessageField('TaskCompletionRequest', 2)
-
-
-class CloudaicompanionProjectsLocationsInstancesGenerateCodeRequest(_messages.Message):
-  r"""A CloudaicompanionProjectsLocationsInstancesGenerateCodeRequest object.
-
-  Fields:
-    codeGenerationRequest: A CodeGenerationRequest resource to be passed as
-      the request body.
-    instance: Required. The full name of the Instance resource for this
-      generation request. Format:
-      `projects/{project}/locations/{location}/instances/{instance}` Use the
-      special 'default' name to refer to the default instance.
-  """
-
-  codeGenerationRequest = _messages.MessageField('CodeGenerationRequest', 1)
-  instance = _messages.StringField(2, required=True)
-
-
-class CloudaicompanionProjectsLocationsInstancesGenerateTextRequest(_messages.Message):
-  r"""A CloudaicompanionProjectsLocationsInstancesGenerateTextRequest object.
-
-  Fields:
-    instance: Required. The full name of the Instance resource for this
-      generation request. Format:
-      `projects/{project}/locations/{location}/instances/{instance}` Use the
-      special 'default' name to refer to the default instance.
-    textGenerationRequest: A TextGenerationRequest resource to be passed as
-      the request body.
-  """
-
-  instance = _messages.StringField(1, required=True)
-  textGenerationRequest = _messages.MessageField('TextGenerationRequest', 2)
-
-
-class CloudaicompanionProjectsLocationsInstancesServerStreamingCompleteTaskRequest(_messages.Message):
-  r"""A
-  CloudaicompanionProjectsLocationsInstancesServerStreamingCompleteTaskRequest
-  object.
-
-  Fields:
-    name: Required. The full name of the Instance resource for this request.
-      Format: `projects/{project}/locations/{location}/instances/{instance}`
-      Use the special 'default' name to refer to the default instance.
-    serverStreamingCompleteTaskRequest: A ServerStreamingCompleteTaskRequest
-      resource to be passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  serverStreamingCompleteTaskRequest = _messages.MessageField('ServerStreamingCompleteTaskRequest', 2)
-
-
-class CloudaicompanionProjectsLocationsListRequest(_messages.Message):
-  r"""A CloudaicompanionProjectsLocationsListRequest object.
-
-  Fields:
-    filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like `"displayName=tokyo"`, and is
-      documented in more detail in [AIP-160](https://google.aip.dev/160).
-    name: The resource that owns the locations collection, if applicable.
-    pageSize: The maximum number of results to return. If not set, the service
-      selects a default.
-    pageToken: A page token received from the `next_page_token` field in the
-      response. Send that page token to receive the subsequent page.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-
-
 class CloudaicompanionProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A CloudaicompanionProjectsLocationsOperationsCancelRequest object.
 
@@ -819,141 +515,6 @@ class CloudaicompanionProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
-
-
-class CloudaicompanionProjectsSelfAssignLicenseRequest(_messages.Message):
-  r"""A CloudaicompanionProjectsSelfAssignLicenseRequest object.
-
-  Fields:
-    parent: Required. Project name formatted as projects/{project_id} or
-      projects/{project_number}.
-    selfAssignLicenseRequest: A SelfAssignLicenseRequest resource to be passed
-      as the request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  selfAssignLicenseRequest = _messages.MessageField('SelfAssignLicenseRequest', 2)
-
-
-class CodeCompletionInput(_messages.Message):
-  r"""Input format for Code Completion.
-
-  Fields:
-    prefix: Optional. The code/text snippet preceding the code completion
-      prediction result.
-    suffix: Optional. The code/text snippet following the end of code
-      completion prediction result.
-  """
-
-  prefix = _messages.StringField(1)
-  suffix = _messages.StringField(2)
-
-
-class CodeCompletionOutput(_messages.Message):
-  r"""Prediction output format for Code Completion.
-
-  Fields:
-    content: The generated text.
-  """
-
-  content = _messages.StringField(1)
-
-
-class CodeCompletionRequest(_messages.Message):
-  r"""Input to code completion.
-
-  Fields:
-    backendResourcesContext: The GCP resources that the code generation
-      process needs to reference
-    clientContext: Client context (e.g. IDE name, version, etc)
-    experienceContext: Duet product context -- required
-    input: Represents the raw input for inference. It will be modified as part
-      of prompt engineering and other transforms before it is consumed by the
-      LLM.
-    inputDataContext: Additional user content not captured in the `input`
-      field above
-  """
-
-  backendResourcesContext = _messages.MessageField('BackendResourcesContext', 1)
-  clientContext = _messages.MessageField('ClientContext', 2)
-  experienceContext = _messages.MessageField('ExperienceContext', 3)
-  input = _messages.MessageField('CodeCompletionInput', 4)
-  inputDataContext = _messages.MessageField('InputDataContext', 5)
-
-
-class CodeCompletionResponse(_messages.Message):
-  r"""Output of code completion.
-
-  Fields:
-    attributionContext: Attribution context
-    displayContext: Output display context
-    output: The generated code output.
-    outputDataContext: Additional generated data
-  """
-
-  attributionContext = _messages.MessageField('AttributionContext', 1)
-  displayContext = _messages.MessageField('DisplayContext', 2)
-  output = _messages.MessageField('CodeCompletionOutput', 3)
-  outputDataContext = _messages.MessageField('OutputDataContext', 4)
-
-
-class CodeGenerationInput(_messages.Message):
-  r"""Input format for Code Generation.
-
-  Fields:
-    prompt: Optional. The code/text snippet preceding the code generation
-      prediction result.
-  """
-
-  prompt = _messages.StringField(1)
-
-
-class CodeGenerationOutput(_messages.Message):
-  r"""Prediction output format for Code Generation.
-
-  Fields:
-    content: The generated text.
-  """
-
-  content = _messages.StringField(1)
-
-
-class CodeGenerationRequest(_messages.Message):
-  r"""Input to code generation.
-
-  Fields:
-    backendResourcesContext: The GCP resources that the code generation
-      process needs to reference
-    clientContext: Client context (e.g. IDE name, version, etc)
-    experienceContext: Duet product context -- required
-    input: Represents the raw input for inference. It will be modified as part
-      of prompt engineering and other transforms before it is consumed by the
-      LLM.
-    inputDataContext: Additional user content not captured in the `input`
-      field above
-  """
-
-  backendResourcesContext = _messages.MessageField('BackendResourcesContext', 1)
-  clientContext = _messages.MessageField('ClientContext', 2)
-  experienceContext = _messages.MessageField('ExperienceContext', 3)
-  input = _messages.MessageField('CodeGenerationInput', 4)
-  inputDataContext = _messages.MessageField('InputDataContext', 5)
-
-
-class CodeGenerationResponse(_messages.Message):
-  r"""Output of code generation.
-
-  Fields:
-    attributionContext: Attribution context
-    displayContext: Output display context
-    output: The generated code output.
-    outputDataContext: Additional generated data
-  """
-
-  attributionContext = _messages.MessageField('AttributionContext', 1)
-  displayContext = _messages.MessageField('DisplayContext', 2)
-  output = _messages.MessageField('CodeGenerationOutput', 3)
-  outputDataContext = _messages.MessageField('OutputDataContext', 4)
 
 
 class CodeRepositoryIndex(_messages.Message):
@@ -1023,47 +584,6 @@ class CodeRepositoryIndex(_messages.Message):
   updateTime = _messages.StringField(6)
 
 
-class DisplayContext(_messages.Message):
-  r"""Represents context about the display requirements of the output.
-
-  Messages:
-    AdditionalContextValue: Optional. Represents GCP product specific
-      UI/client context.
-
-  Fields:
-    additionalContext: Optional. Represents GCP product specific UI/client
-      context.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AdditionalContextValue(_messages.Message):
-    r"""Optional. Represents GCP product specific UI/client context.
-
-    Messages:
-      AdditionalProperty: An additional property for a AdditionalContextValue
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AdditionalContextValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  additionalContext = _messages.MessageField('AdditionalContextValue', 1)
-
-
 class DoubleParameterArray(_messages.Message):
   r"""This message only contains a field of double number array.
 
@@ -1124,21 +644,6 @@ class EventParameter(_messages.Message):
   value = _messages.MessageField('ValueType', 2)
 
 
-class ExperienceContext(_messages.Message):
-  r"""The specific Duet product and flow a request belongs to. E.g. Appsheet
-  code generation ("/appsheet/generate").
-
-  Fields:
-    agent: Optional. The Backend Agent to route this request to (if known).
-    experience: Required. The Duet experience that this request belongs to.
-    task: Optional. The backend Task(s) this request maps to (if known).
-  """
-
-  agent = _messages.StringField(1)
-  experience = _messages.StringField(2)
-  task = _messages.StringField(3)
-
-
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -1173,48 +678,6 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
-
-
-class InputDataContext(_messages.Message):
-  r"""Intended to hold customer content over and above what is present in the
-  `input` field.
-
-  Messages:
-    AdditionalContextValue: Optional. Represents GCP product-specific source
-      code context.
-
-  Fields:
-    additionalContext: Optional. Represents GCP product-specific source code
-      context.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AdditionalContextValue(_messages.Message):
-    r"""Optional. Represents GCP product-specific source code context.
-
-    Messages:
-      AdditionalProperty: An additional property for a AdditionalContextValue
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AdditionalContextValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  additionalContext = _messages.MessageField('AdditionalContextValue', 1)
 
 
 class IntParameterArray(_messages.Message):
@@ -1432,65 +895,6 @@ class IntegrationVersion(_messages.Message):
   triggerConfigs = _messages.MessageField('TriggerConfig', 6, repeated=True)
 
 
-class InvestigationInputDataContext(_messages.Message):
-  r"""This message should be used by all Investigation UI Titan clients and
-  will map to the InputDataContext.additional_context Any field.
-
-  Fields:
-    investigationRevision: The name of the investigation revision to retrieve.
-      Format: projects/{project}/locations/global/investigations/{investigatio
-      n}/revisions/{revision}
-    runInvestigation: If true, this request was triggered by the Run
-      investigation revision method.
-    runParameters: User parameters for running an investigation.
-  """
-
-  investigationRevision = _messages.StringField(1)
-  runInvestigation = _messages.BooleanField(2)
-  runParameters = _messages.MessageField('InvestigationRunParameters', 3)
-
-
-class InvestigationRunParameters(_messages.Message):
-  r"""Represents user parameters for running an investigation.
-
-  Messages:
-    AccessTokensValue: If populated, map of project to access token for TSE-
-      triggered investigations.
-
-  Fields:
-    accessTokens: If populated, map of project to access token for TSE-
-      triggered investigations.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AccessTokensValue(_messages.Message):
-    r"""If populated, map of project to access token for TSE-triggered
-    investigations.
-
-    Messages:
-      AdditionalProperty: An additional property for a AccessTokensValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type AccessTokensValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AccessTokensValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  accessTokens = _messages.MessageField('AccessTokensValue', 1)
-
-
 class JavascriptRecommendation(_messages.Message):
   r"""Individual Javascript recommendation containing the task config with the
   new code, integration parameters and the explanation.
@@ -1544,19 +948,6 @@ class ListCodeRepositoryIndexesResponse(_messages.Message):
   """
 
   codeRepositoryIndexes = _messages.MessageField('CodeRepositoryIndex', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
-class ListLocationsResponse(_messages.Message):
-  r"""The response message for Locations.ListLocations.
-
-  Fields:
-    locations: A list of locations that matches the specified filter in the
-      request.
-    nextPageToken: The standard List next-page token.
-  """
-
-  locations = _messages.MessageField('Location', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -1795,48 +1186,6 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
-class OutputDataContext(_messages.Message):
-  r"""Intended to hold LLM-generated content over and above what is present in
-  the `predictions` field. E.g. tooltip instructions.
-
-  Messages:
-    AdditionalContextValue: Optional. Represents GCP product specific source
-      code context.
-
-  Fields:
-    additionalContext: Optional. Represents GCP product specific source code
-      context.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AdditionalContextValue(_messages.Message):
-    r"""Optional. Represents GCP product specific source code context.
-
-    Messages:
-      AdditionalProperty: An additional property for a AdditionalContextValue
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AdditionalContextValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  additionalContext = _messages.MessageField('AdditionalContextValue', 1)
-
-
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
@@ -2015,63 +1364,6 @@ class RepositoryGroup(_messages.Message):
   updateTime = _messages.StringField(5)
 
 
-class SelfAssignLicenseRequest(_messages.Message):
-  r"""Request message for EntitlementService.SelfAssignLicense.
-
-  Fields:
-    experienceContext: Duet AI experience to use to assign license for.
-    validateOnly: Optional. The service validates the request without
-      performing any mutations. Clients can set this to check if the self-
-      assignment would succeed. The default is false. See
-      https://google.aip.dev/163.
-  """
-
-  experienceContext = _messages.MessageField('ExperienceContext', 1)
-  validateOnly = _messages.BooleanField(2)
-
-
-class SelfAssignLicenseResponse(_messages.Message):
-  r"""Response message for EntitlementService.SelfAssignLicense."""
-
-
-class ServerStreamingCompleteTaskRequest(_messages.Message):
-  r"""Input for task completion.
-
-  Fields:
-    backendResourcesContext: Optional. The GCP resources that the code
-      generation process needs to reference
-    clientContext: Optional. Client context (e.g. IDE name, version, etc)
-    experienceContext: Required. Duet product context -- required
-    input: Required. Represents the raw input for inference. It will be
-      modified as part of prompt engineering and other transforms before it is
-      consumed by the LLM.
-    inputDataContext: Optional. Additional user content not captured in the
-      `input` field above
-  """
-
-  backendResourcesContext = _messages.MessageField('BackendResourcesContext', 1)
-  clientContext = _messages.MessageField('ClientContext', 2)
-  experienceContext = _messages.MessageField('ExperienceContext', 3)
-  input = _messages.MessageField('TaskCompletionInput', 4)
-  inputDataContext = _messages.MessageField('InputDataContext', 5)
-
-
-class ServerStreamingCompleteTaskResponse(_messages.Message):
-  r"""Output of task completion.
-
-  Fields:
-    attributionContext: Attribution context.
-    displayContext: Output display context.
-    output: The task completion/chat output.
-    outputDataContext: Additional generated data.
-  """
-
-  attributionContext = _messages.MessageField('AttributionContext', 1)
-  displayContext = _messages.MessageField('DisplayContext', 2)
-  output = _messages.MessageField('TaskCompletionOutput', 3)
-  outputDataContext = _messages.MessageField('OutputDataContext', 4)
-
-
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -2213,80 +1505,6 @@ class StringParameterArray(_messages.Message):
   stringValues = _messages.StringField(1, repeated=True)
 
 
-class TaskCompletionInput(_messages.Message):
-  r"""Input format for Task completion/multi-turn chat coversation.
-
-  Fields:
-    messages: Optional. Chat messages between 2 users. The messages are
-      ordered by time with the zed value (0) being the oldest message.
-    preamble: Text that should be provided to the model first to ground the
-      response.
-  """
-
-  messages = _messages.MessageField('TaskCompletionMessage', 1, repeated=True)
-  preamble = _messages.StringField(2)
-
-
-class TaskCompletionMessage(_messages.Message):
-  r"""Represents a single message.
-
-  Fields:
-    author: Author tag for the turn.
-    content: Text content of the task completion/chat message.
-  """
-
-  author = _messages.StringField(1)
-  content = _messages.StringField(2)
-
-
-class TaskCompletionOutput(_messages.Message):
-  r"""Output format for task completion/multi-turn chat.
-
-  Fields:
-    messages: The task completion/chat result generated from given message.
-  """
-
-  messages = _messages.MessageField('TaskCompletionMessage', 1, repeated=True)
-
-
-class TaskCompletionRequest(_messages.Message):
-  r"""Input for task completion.
-
-  Fields:
-    backendResourcesContext: The GCP resources that the code generation
-      process needs to reference
-    clientContext: Client context (e.g. IDE name, version, etc)
-    experienceContext: Duet product context -- required
-    input: Represents the raw input for inference. It will be modified as part
-      of prompt engineering and other transforms before it is consumed by the
-      LLM.
-    inputDataContext: Additional user content not captured in the `input`
-      field above
-  """
-
-  backendResourcesContext = _messages.MessageField('BackendResourcesContext', 1)
-  clientContext = _messages.MessageField('ClientContext', 2)
-  experienceContext = _messages.MessageField('ExperienceContext', 3)
-  input = _messages.MessageField('TaskCompletionInput', 4)
-  inputDataContext = _messages.MessageField('InputDataContext', 5)
-
-
-class TaskCompletionResponse(_messages.Message):
-  r"""Output of task completion.
-
-  Fields:
-    attributionContext: Attribution context.
-    displayContext: Output display context.
-    output: The task completion/chat output.
-    outputDataContext: Additional generated data.
-  """
-
-  attributionContext = _messages.MessageField('AttributionContext', 1)
-  displayContext = _messages.MessageField('DisplayContext', 2)
-  output = _messages.MessageField('TaskCompletionOutput', 3)
-  outputDataContext = _messages.MessageField('OutputDataContext', 4)
-
-
 class TaskConfig(_messages.Message):
   r"""The task configuration details. This is not the implementation of Task.
   There might be multiple TaskConfigs for the same Task.
@@ -2417,64 +1635,6 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
-
-
-class TextGenerationInput(_messages.Message):
-  r"""Input format for Text Generation.
-
-  Fields:
-    prompt: The text snippet to make the predictions on.
-  """
-
-  prompt = _messages.StringField(1)
-
-
-class TextGenerationOutput(_messages.Message):
-  r"""Output format for Text Generation.
-
-  Fields:
-    content: The result generated from input text.
-  """
-
-  content = _messages.StringField(1)
-
-
-class TextGenerationRequest(_messages.Message):
-  r"""Input for text generation.
-
-  Fields:
-    backendResourcesContext: The GCP resources that the code generation
-      process needs to reference
-    clientContext: Client context (e.g. IDE name, version, etc)
-    experienceContext: Duet product context -- required
-    input: Represents the raw input for inference. It will be modified as part
-      of prompt engineering and other transforms before it is consumed by the
-      LLM.
-    inputDataContext: Additional user content not captured in the `input`
-      field above
-  """
-
-  backendResourcesContext = _messages.MessageField('BackendResourcesContext', 1)
-  clientContext = _messages.MessageField('ClientContext', 2)
-  experienceContext = _messages.MessageField('ExperienceContext', 3)
-  input = _messages.MessageField('TextGenerationInput', 4)
-  inputDataContext = _messages.MessageField('InputDataContext', 5)
-
-
-class TextGenerationResponse(_messages.Message):
-  r"""Output of text generation.
-
-  Fields:
-    attributionContext: Attribution context
-    displayContext: Output display context
-    output: The generated text output
-    outputDataContext: Additional generated data
-  """
-
-  attributionContext = _messages.MessageField('AttributionContext', 1)
-  displayContext = _messages.MessageField('DisplayContext', 2)
-  output = _messages.MessageField('TextGenerationOutput', 3)
-  outputDataContext = _messages.MessageField('OutputDataContext', 4)
 
 
 class TriggerConfig(_messages.Message):

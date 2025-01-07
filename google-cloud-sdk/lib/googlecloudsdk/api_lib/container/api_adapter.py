@@ -391,6 +391,7 @@ STATEFULSET = 'STATEFULSET'
 CADVISOR = 'CADVISOR'
 KUBELET = 'KUBELET'
 DCGM = 'DCGM'
+JOBSET = 'JOBSET'
 LOGGING_OPTIONS = [
     NONE,
     SYSTEM,
@@ -419,6 +420,7 @@ MONITORING_OPTIONS = [
     CADVISOR,
     KUBELET,
     DCGM,
+    JOBSET,
 ]
 PRIMARY_LOGS_OPTIONS = [
     APISERVER,
@@ -1216,6 +1218,7 @@ class UpdateClusterOptions(object):
       autoprovisioning_cgroup_mode=None,
       enable_ip_access=None,
       enable_authorized_networks_on_private_endpoint=None,
+      enable_autopilot_compatibility_auditing=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1403,6 +1406,9 @@ class UpdateClusterOptions(object):
     self.enable_ip_access = enable_ip_access
     self.enable_authorized_networks_on_private_endpoint = (
         enable_authorized_networks_on_private_endpoint
+    )
+    self.enable_autopilot_compatibility_auditing = (
+        enable_autopilot_compatibility_auditing
     )
 
 
@@ -1955,13 +1961,20 @@ class APIAdapter(object):
     """
 
     def _MustGetOperation():
-      """Gets the operation or throws an exception."""
-      try:
-        return self.GetOperation(operation_ref)
-      except apitools_exceptions.HttpError as error:
-        log.debug('GetOperation failed: %s', error)
-        if error.status_code == six.moves.http_client.FORBIDDEN:
-          raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+      """Gets the operation or throws an exception, with limited retries."""
+      # It's unusual for operation polling to fail, so retry a few times. It's
+      # a bit overly broad to retry all errors, but since it's so unusual to
+      # get an error at all, this is the simplest approach. The type of error
+      # that is most likely to be a true positive is a not found error, but
+      # that's also the most likely to be resolveable via retry.
+      for attempt in range(3):
+        try:
+          return self.GetOperation(operation_ref)
+        except apitools_exceptions.HttpError as error:
+          log.debug('GetOperation failed (attempt %d): %s', attempt+1, error)
+          time.sleep(poll_period_s)
+          if attempt == 2:
+            raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
 
     def _WaitForOperation():
       """Retries getting the operation until it finishes, times out or fails."""
@@ -1970,17 +1983,16 @@ class APIAdapter(object):
           message, autotick=True, detail_message_callback=lambda: detail_message
       ):
         start_time = time.time()
-        op = _MustGetOperation()  # Try and get the operation.
+        op = _MustGetOperation()
         while timeout_s > (time.time() - start_time):
           if self.IsOperationFinished(op):
-            # Report completion time and return
             duration = time.time() - start_time
             log.info(f'Operation {op} finished after {duration:.3} seconds')
             return op
+
           detail_message = op.detail
-          # Keep trying until we timeout in case error is transient.
           time.sleep(poll_period_s)
-          op = _MustGetOperation()  # Re-try getting the operation
+          op = _MustGetOperation()
 
         log.err.Print(f'Timed out waiting for operation {op}')
         raise util.Error(
@@ -4473,6 +4485,15 @@ class APIAdapter(object):
           desiredEnterpriseConfig=_GetDesiredEnterpriseConfig(
               options, self.messages
           )
+      )
+
+    if options.enable_autopilot_compatibility_auditing is not None:
+      workload_policies = self.messages.WorkloadPolicyConfig()
+      workload_policies.autopilotCompatibilityAuditingEnabled = (
+          options.enable_autopilot_compatibility_auditing
+      )
+      update = self.messages.ClusterUpdate(
+          desiredAutopilotWorkloadPolicyConfig=workload_policies
       )
 
     return update
@@ -8020,6 +8041,10 @@ def _GetMonitoringConfig(options, messages, is_update, is_prometheus_enabled):
       comp.enableComponents.append(
           messages.MonitoringComponentConfig
           .EnableComponentsValueListEntryValuesEnum.DCGM)
+    if JOBSET in options.monitoring:
+      comp.enableComponents.append(
+          messages.MonitoringComponentConfig
+          .EnableComponentsValueListEntryValuesEnum.JOBSET)
 
     config.componentConfig = comp
 

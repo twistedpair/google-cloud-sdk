@@ -37,7 +37,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_attr_os
 from googlecloudsdk.core.credentials import exceptions as creds_exceptions
-
 import six
 
 
@@ -52,8 +51,8 @@ def NewErrorFromCurrentException(error, *args):
   Args:
     error: The new error to create.
     *args: The standard args taken by the constructor of Exception for the new
-      exception that is created.  If None, the args from the exception
-      currently being handled will be used.
+      exception that is created.  If None, the args from the exception currently
+      being handled will be used.
 
   Returns:
     The generated error exception.
@@ -64,8 +63,9 @@ def NewErrorFromCurrentException(error, *args):
   # currently handling an exception.
   if current_exception:
     file_logger = log.file_only_logger
-    file_logger.error('Handling the source of a tool exception, '
-                      'original details follow.')
+    file_logger.error(
+        'Handling the source of a tool exception, original details follow.'
+    )
     file_logger.exception(current_exception)
 
   if args:
@@ -81,7 +81,7 @@ class ToolException(core_exceptions.Error):
 
   Attributes:
     command_name: The dotted group and command name for the command that threw
-        this exception. This value is set by calliope.
+      this exception. This value is set by calliope.
   """
 
   @staticmethod
@@ -103,8 +103,10 @@ class FailedSubCommand(core_exceptions.Error):
   def __init__(self, cmd, code):
     super(FailedSubCommand, self).__init__(
         'Failed command: [{0}] with exit code [{1}]'.format(
-            ' '.join(cmd), code),
-        exit_code=code)
+            ' '.join(cmd), code
+        ),
+        exit_code=code,
+    )
 
 
 def RaiseErrorInsteadOf(error, *error_types):
@@ -116,20 +118,24 @@ def RaiseErrorInsteadOf(error, *error_types):
   Args:
     error: Exception, The new exception to raise.
     *error_types: [Exception], A list of exception types that this decorator
-        will watch for.
+      will watch for.
 
   Returns:
     The decorated function.
   """
+
   def Wrap(func):
     """Wrapper function for the decorator."""
+
     @wraps(func)
     def TryFunc(*args, **kwargs):
       try:
         return func(*args, **kwargs)
       except error_types:
         core_exceptions.reraise(NewErrorFromCurrentException(error))
+
     return TryFunc
+
   return Wrap
 
 
@@ -183,11 +189,11 @@ def _TruncateToLineWidth(string, align, width, fill=''):
     return string
 
   if align > width:
-    string = fill + string[align-width+len(fill):]
+    string = fill + string[align - width + len(fill) :]
 
   if len(string) <= width:
     return string
-  string = string[:width-len(fill)] + fill
+  string = string[: width - len(fill)] + fill
   return string
 
 
@@ -214,7 +220,6 @@ def _NonAsciiIndex(s):
 # pylint: disable=g-doc-bad-indent
 def _FormatNonAsciiMarkerString(args):
   r"""Format a string that will mark the first non-ASCII character it contains.
-
 
   Example:
 
@@ -246,7 +251,8 @@ def _FormatNonAsciiMarkerString(args):
     pos += len(arg) + 1
   else:
     raise ValueError(
-        'The command line is composed entirely of ASCII characters.')
+        'The command line is composed entirely of ASCII characters.'
+    )
 
   # Make a string that, when printed in parallel, will point to the non-ASCII
   # character
@@ -254,8 +260,7 @@ def _FormatNonAsciiMarkerString(args):
 
   # Make sure that this will still print out nicely on an odd-sized screen
   align = len(marker_string)
-  args_string = ' '.join(
-      [console_attr.SafeText(arg) for arg in args])
+  args_string = ' '.join([console_attr.SafeText(arg) for arg in args])
   width, _ = console_attr_os.GetTermSize()
   fill = '...'
   if width < len(_MARKER) + len(fill):
@@ -279,8 +284,9 @@ def _FormatNonAsciiMarkerString(args):
   # ljust args_string to make it as long as marker_string before passing to
   # _TruncateToLineWidth, which will yield compatible truncations. rstrip at the
   # end to get rid of the new trailing spaces.
-  formatted_args_string = _TruncateToLineWidth(args_string.ljust(align), align,
-                                               width, fill=fill).rstrip()
+  formatted_args_string = _TruncateToLineWidth(
+      args_string.ljust(align), align, width, fill=fill
+  ).rstrip()
   formatted_marker_string = _TruncateToLineWidth(marker_string, align, width)
   return '\n'.join((formatted_args_string, formatted_marker_string))
 
@@ -300,7 +306,9 @@ class InvalidCharacterInArgException(ToolException):
         'not appear to be valid 7-bit ASCII.\n\n'
         '{1}'.format(
             console_attr.SafeText(self.invalid_arg),
-            _FormatNonAsciiMarkerString(args)))
+            _FormatNonAsciiMarkerString(args),
+        )
+    )
 
 
 class BadArgumentException(ToolException):
@@ -308,7 +316,8 @@ class BadArgumentException(ToolException):
 
   def __init__(self, argument_name, message):
     super(BadArgumentException, self).__init__(
-        'Invalid value for [{0}]: {1}'.format(argument_name, message))
+        'Invalid value for [{0}]: {1}'.format(argument_name, message)
+    )
     self.argument_name = argument_name
 
 
@@ -325,7 +334,8 @@ class InvalidArgumentException(ToolException):
 
   def __init__(self, parameter_name, message):
     super(InvalidArgumentException, self).__init__(
-        'Invalid value for [{0}]: {1}'.format(parameter_name, message))
+        'Invalid value for [{0}]: {1}'.format(parameter_name, message)
+    )
     self.parameter_name = parameter_name
 
 
@@ -334,7 +344,8 @@ class ConflictingArgumentsException(ToolException):
 
   def __init__(self, *parameter_names):
     super(ConflictingArgumentsException, self).__init__(
-        'arguments not allowed simultaneously: ' + ', '.join(parameter_names))
+        'arguments not allowed simultaneously: ' + ', '.join(parameter_names)
+    )
     self.parameter_names = parameter_names
 
 
@@ -343,28 +354,30 @@ class UnknownArgumentException(ToolException):
 
   def __init__(self, parameter_name, message):
     super(UnknownArgumentException, self).__init__(
-        'Unknown value for [{0}]: {1}'.format(parameter_name, message))
+        'Unknown value for [{0}]: {1}'.format(parameter_name, message)
+    )
     self.parameter_name = parameter_name
 
 
 class RequiredArgumentException(ToolException):
-  """An exception for when a usually optional argument is required in this case.
-  """
+  """An exception for when a usually optional argument is required in this case."""
 
   def __init__(self, parameter_name, message):
     super(RequiredArgumentException, self).__init__(
-        'Missing required argument [{0}]: {1}'.format(parameter_name, message))
+        'Missing required argument [{0}]: {1}'.format(parameter_name, message)
+    )
     self.parameter_name = parameter_name
 
 
 class OneOfArgumentsRequiredException(ToolException):
-  """An exception for when one of usually optional arguments is required.
-  """
+  """An exception for when one of usually optional arguments is required."""
 
   def __init__(self, parameters, message):
     super(OneOfArgumentsRequiredException, self).__init__(
         'One of arguments [{0}] is required: {1}'.format(
-            ', '.join(parameters), message))
+            ', '.join(parameters), message
+        )
+    )
     self.parameters = parameters
 
 
@@ -378,9 +391,9 @@ class MinimumArgumentException(ToolException):
       message = ''
     super(MinimumArgumentException, self).__init__(
         'One of [{0}] must be supplied{1}.'.format(
-            ', '.join(['{0}'.format(p) for p in parameter_names]),
-            message)
+            ', '.join(['{0}'.format(p) for p in parameter_names]), message
         )
+    )
 
 
 class BadFileException(ToolException):
@@ -400,57 +413,44 @@ class BadFileException(ToolException):
 # handle them.
 _KNOWN_ERRORS = {
     # Raised for "TooManyRequests" or 500s error codes.
-    'apitools.base.py.exceptions.BadStatusCodeError':
-        core_exceptions.NetworkIssueError,
-    'apitools.base.py.exceptions.HttpError':
-        HttpException,
-    'apitools.base.py.exceptions.RequestError':
-        core_exceptions.NetworkIssueError,
-    'apitools.base.py.exceptions.RetryAfterError':
-        core_exceptions.NetworkIssueError,
-    'apitools.base.py.exceptions.TransferRetryError':
-        core_exceptions.NetworkIssueError,
-    'google.auth.exceptions.GoogleAuthError':
-        creds_exceptions.TokenRefreshError,
-    'googlecloudsdk.calliope.parser_errors.ArgumentError':
-        lambda x: None,
-    'googlecloudsdk.core.util.files.Error':
-        lambda x: None,
-    'httplib.ResponseNotReady':
-        core_exceptions.NetworkIssueError,
-    'httplib.BadStatusLine':
-        core_exceptions.NetworkIssueError,
-    'httplib.IncompleteRead':
-        core_exceptions.NetworkIssueError,
+    'apitools.base.py.exceptions.BadStatusCodeError': (
+        core_exceptions.NetworkIssueError
+    ),
+    'apitools.base.py.exceptions.HttpError': HttpException,
+    'apitools.base.py.exceptions.RequestError': (
+        core_exceptions.NetworkIssueError
+    ),
+    'apitools.base.py.exceptions.RetryAfterError': (
+        core_exceptions.NetworkIssueError
+    ),
+    'apitools.base.py.exceptions.TransferRetryError': (
+        core_exceptions.NetworkIssueError
+    ),
+    'google.auth.exceptions.GoogleAuthError': (
+        creds_exceptions.TokenRefreshError
+    ),
+    'googlecloudsdk.calliope.parser_errors.ArgumentError': lambda x: None,
+    'googlecloudsdk.core.util.files.Error': lambda x: None,
+    'httplib.ResponseNotReady': core_exceptions.NetworkIssueError,
+    'httplib.BadStatusLine': core_exceptions.NetworkIssueError,
+    'httplib.IncompleteRead': core_exceptions.NetworkIssueError,
     # Same error but different location on PY3.
-    'http.client.ResponseNotReady':
-        core_exceptions.NetworkIssueError,
-    'http.client.BadStatusLine':
-        core_exceptions.NetworkIssueError,
-    'http.client.IncompleteRead':
-        core_exceptions.NetworkIssueError,
-    'oauth2client.client.AccessTokenRefreshError':
-        creds_exceptions.TokenRefreshError,
-    'ssl.SSLError':
-        core_exceptions.NetworkIssueError,
-    'socket.error':
-        core_exceptions.NetworkIssueError,
-    'socket.timeout':
-        core_exceptions.NetworkIssueError,
-    'urllib3.exceptions.PoolError':
-        core_exceptions.NetworkIssueError,
-    'urllib3.exceptions.ProtocolError':
-        core_exceptions.NetworkIssueError,
-    'urllib3.exceptions.SSLError':
-        core_exceptions.NetworkIssueError,
-    'urllib3.exceptions.TimeoutError':
-        core_exceptions.NetworkIssueError,
-    'builtins.ConnectionAbortedError':
-        core_exceptions.NetworkIssueError,
-    'builtins.ConnectionRefusedError':
-        core_exceptions.NetworkIssueError,
-    'builtins.ConnectionResetError':
-        core_exceptions.NetworkIssueError,
+    'http.client.ResponseNotReady': core_exceptions.NetworkIssueError,
+    'http.client.BadStatusLine': core_exceptions.NetworkIssueError,
+    'http.client.IncompleteRead': core_exceptions.NetworkIssueError,
+    'oauth2client.client.AccessTokenRefreshError': (
+        creds_exceptions.TokenRefreshError
+    ),
+    'ssl.SSLError': core_exceptions.NetworkIssueError,
+    'socket.error': core_exceptions.NetworkIssueError,
+    'socket.timeout': core_exceptions.NetworkIssueError,
+    'urllib3.exceptions.PoolError': core_exceptions.NetworkIssueError,
+    'urllib3.exceptions.ProtocolError': core_exceptions.NetworkIssueError,
+    'urllib3.exceptions.SSLError': core_exceptions.NetworkIssueError,
+    'urllib3.exceptions.TimeoutError': core_exceptions.NetworkIssueError,
+    'builtins.ConnectionAbortedError': core_exceptions.NetworkIssueError,
+    'builtins.ConnectionRefusedError': core_exceptions.NetworkIssueError,
+    'builtins.ConnectionResetError': core_exceptions.NetworkIssueError,
 }
 
 
@@ -460,12 +460,38 @@ def _GetExceptionName(cls):
 
 
 _SOCKET_ERRNO_NAMES = {
-    'EADDRINUSE', 'EADDRNOTAVAIL', 'EAFNOSUPPORT', 'EBADMSG', 'ECOMM',
-    'ECONNABORTED', 'ECONNREFUSED', 'ECONNRESET', 'EDESTADDRREQ', 'EHOSTDOWN',
-    'EHOSTUNREACH', 'EISCONN', 'EMSGSIZE', 'EMULTIHOP', 'ENETDOWN', 'ENETRESET',
-    'ENETUNREACH', 'ENOBUFS', 'ENOPROTOOPT', 'ENOTCONN', 'ENOTSOCK', 'ENOTUNIQ',
-    'EOPNOTSUPP', 'EPFNOSUPPORT', 'EPROTO', 'EPROTONOSUPPORT', 'EPROTOTYPE',
-    'EREMCHG', 'EREMOTEIO', 'ESHUTDOWN', 'ESOCKTNOSUPPORT', 'ETIMEDOUT',
+    'EADDRINUSE',
+    'EADDRNOTAVAIL',
+    'EAFNOSUPPORT',
+    'EBADMSG',
+    'ECOMM',
+    'ECONNABORTED',
+    'ECONNREFUSED',
+    'ECONNRESET',
+    'EDESTADDRREQ',
+    'EHOSTDOWN',
+    'EHOSTUNREACH',
+    'EISCONN',
+    'EMSGSIZE',
+    'EMULTIHOP',
+    'ENETDOWN',
+    'ENETRESET',
+    'ENETUNREACH',
+    'ENOBUFS',
+    'ENOPROTOOPT',
+    'ENOTCONN',
+    'ENOTSOCK',
+    'ENOTUNIQ',
+    'EOPNOTSUPP',
+    'EPFNOSUPPORT',
+    'EPROTO',
+    'EPROTONOSUPPORT',
+    'EPROTOTYPE',
+    'EREMCHG',
+    'EREMOTEIO',
+    'ESHUTDOWN',
+    'ESOCKTNOSUPPORT',
+    'ETIMEDOUT',
     'ETOOMANYREFS',
 }
 
@@ -515,8 +541,11 @@ def ConvertKnownError(exc):
     if known_err:
       break
 
-    bases = [bc for bc in cls.__bases__
-             if bc not in processed and issubclass(bc, Exception)]
+    bases = [
+        bc
+        for bc in cls.__bases__
+        if bc not in processed and issubclass(bc, Exception)
+    ]
     classes.extend([base for base in bases if base is not Exception])
 
   if not known_err:
@@ -562,9 +591,9 @@ class HttpExceptionAdditionalHelp(object):
 
   Attributes:
      known_exc: googlecloudsdk.api_lib.util.exceptions.HttpException, The
-      exception to handle.
-    error_msg_signature: string, The signature message to determine the
-      nature of the error.
+       exception to handle.
+    error_msg_signature: string, The signature message to determine the nature
+      of the error.
     additional_help: string, The additional help to print if error_msg_signature
       appears in the exception error message.
   """
@@ -577,8 +606,9 @@ class HttpExceptionAdditionalHelp(object):
   def Extend(self, msg):
     """Appends the additional help to the given msg."""
     if self.error_msg_signature in self.known_exc.message:
-      return '{0}\n\n{1}'.format(msg,
-                                 console_attr.SafeText(self.additional_help))
+      return '{0}\n\n{1}'.format(
+          msg, console_attr.SafeText(self.additional_help)
+      )
     else:
       return msg
 
@@ -588,19 +618,23 @@ def _BuildMissingServiceUsePermissionAdditionalHelp(known_exc):
 
   Args:
     known_exc: googlecloudsdk.api_lib.util.exceptions.HttpException, The
-     exception to handle.
+      exception to handle.
+
   Returns:
     A HttpExceptionAdditionalHelp object.
   """
   error_message_signature = (
       'Grant the caller the Owner or Editor role, or a '
-      'custom role with the serviceusage.services.use permission')
-  help_message = ('If you want to invoke the command from a project different '
-                  'from the target resource project, use `--billing-project` '
-                  'or `{}` property.'.format(
-                      properties.VALUES.billing.quota_project))
-  return HttpExceptionAdditionalHelp(known_exc, error_message_signature,
-                                     help_message)
+      'custom role with the serviceusage.services.use permission'
+  )
+  help_message = (
+      'If you want to invoke the command from a project different '
+      'from the target resource project, use `--billing-project` '
+      'or `{}` property.'.format(properties.VALUES.billing.quota_project)
+  )
+  return HttpExceptionAdditionalHelp(
+      known_exc, error_message_signature, help_message
+  )
 
 
 def _BuildMissingAuthScopesAdditionalHelp(known_exc):
@@ -614,30 +648,34 @@ def _BuildMissingAuthScopesAdditionalHelp(known_exc):
 
   Args:
     known_exc: googlecloudsdk.api_lib.util.exceptions.HttpException, The
-     exception to handle.
+      exception to handle.
+
   Returns:
     A HttpExceptionAdditionalHelp object.
   """
   error_message_signature = 'Request had insufficient authentication scopes'
   help_message = (
-      'If you are in a compute engine VM, it is likely that the specified '
-      'scopes during VM creation are not enough to run this command.\nSee '
-      'https://cloud.google.com/compute/docs/access/service-accounts#accesscopesiam'
-      ' for more information about access scopes.\nSee '
-      'https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances#changeserviceaccountandscopes'
-      ' for how to update access scopes of the VM.')
-  return HttpExceptionAdditionalHelp(known_exc, error_message_signature,
-                                     help_message)
+      'If you are in a compute engine VM, it is likely that the specified'
+      ' scopes during VM creation are not enough to run this command.\nSee'
+      ' https://cloud.google.com/compute/docs/access/service-accounts#accesscopesiam'
+      ' for more information about access scopes.\nSee'
+      ' https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances#changeserviceaccountandscopes'
+      ' for how to update access scopes of the VM.'
+  )
+  return HttpExceptionAdditionalHelp(
+      known_exc, error_message_signature, help_message
+  )
 
 
 def _LogKnownError(known_exc, command_path, print_error):
   """Logs the error message of the known exception."""
   msg = '({0}) {1}'.format(
-      console_attr.SafeText(command_path),
-      console_attr.SafeText(known_exc))
+      console_attr.SafeText(command_path), console_attr.SafeText(known_exc)
+  )
   if isinstance(known_exc, api_exceptions.HttpException):
     service_use_help = _BuildMissingServiceUsePermissionAdditionalHelp(
-        known_exc)
+        known_exc
+    )
     auth_scopes_help = _BuildMissingAuthScopesAdditionalHelp(known_exc)
     msg = service_use_help.Extend(msg)
     msg = auth_scopes_help.Extend(msg)

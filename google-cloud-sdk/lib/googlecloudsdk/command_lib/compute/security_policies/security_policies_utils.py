@@ -642,9 +642,7 @@ def CreateRecaptchaOptionsConfig(client, args,
   return recaptcha_options_config
 
 
-def CreateRateLimitOptions(
-    client, args, support_fairshare, support_multiple_rate_limit_keys
-):
+def CreateRateLimitOptions(client, args, support_fairshare):
   """Returns a SecurityPolicyRuleRateLimitOptions message."""
 
   messages = client.messages
@@ -689,9 +687,7 @@ def CreateRateLimitOptions(
     rate_limit_options.enforceOnKeyName = args.enforce_on_key_name
     is_updated = True
 
-  if support_multiple_rate_limit_keys and args.IsSpecified(
-      'enforce_on_key_configs'
-  ):
+  if args.IsSpecified('enforce_on_key_configs'):
     enforce_on_key_configs = []
     for k, v in args.enforce_on_key_configs.items():
       enforce_on_key_configs.append(
@@ -872,9 +868,7 @@ def CreateNetworkMatcher(client, args):
     update_mask.append('network_match.src_asns')
     is_updated = True
 
-  update_mask_str = ','.join(update_mask)
-
-  return (network_matcher, update_mask_str) if is_updated else (None, None)
+  return (network_matcher, update_mask) if is_updated else (None, [])
 
 
 def CreateUserDefinedField(client, args):

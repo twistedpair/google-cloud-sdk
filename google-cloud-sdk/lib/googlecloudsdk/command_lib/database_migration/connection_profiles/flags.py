@@ -112,6 +112,28 @@ def AddSslServerOnlyConfigGroup(parser):
   AddCaCertificateFlag(ssl_config, True)
 
 
+def AddSslServerOnlyOrRequiredConfigGroup(parser, hidden=False):
+  """Adds ssl server only & required config group to the given parser."""
+  ssl_config = parser.add_group(hidden=hidden)
+  AddSslTypeFlag(ssl_config)
+  AddCaCertificateFlag(ssl_config)
+
+
+def AddSslTypeFlag(parser, hidden=False):
+  """Adds --ssl-type flag to the given parser."""
+  help_text = """\
+    The type of SSL configuration.
+  """
+  choices = ['SERVER_ONLY', 'REQUIRED', 'NONE']
+  parser.add_argument(
+      '--ssl-type',
+      help=help_text,
+      choices=choices,
+      default='NONE',
+      hidden=hidden,
+  )
+
+
 def AddCaCertificateFlag(parser, required=False):
   """Adds --ca-certificate flag to the given parser."""
   help_text = """\
@@ -199,3 +221,10 @@ def AddProviderFlag(parser):
   """
   choices = ['RDS', 'CLOUDSQL']
   parser.add_argument('--provider', help=help_text, choices=choices)
+
+
+def AddRoleFlag(parser):
+  """Adds --role flag to the given parser."""
+  help_text = 'The role of the connection profile.'
+  choices = ['SOURCE', 'DESTINATION']
+  parser.add_argument('--role', help=help_text, choices=choices)

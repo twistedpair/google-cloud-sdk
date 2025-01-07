@@ -1411,21 +1411,40 @@ class PostgreSql(_messages.Message):
   r"""Settings for PostgreSQL data source.
 
   Enums:
+    SchemaMigrationValueValuesEnum: Optional. Configure how to perform
+      Postgresql schema migration.
     SchemaValidationValueValuesEnum: Optional. Configure how much Postgresql
-      schema validation to perform. Default to `STRICT` if not specified.
+      schema validation to perform.
 
   Fields:
     cloudSql: Cloud SQL configurations.
     database: Required. Name of the PostgreSQL database.
+    schemaMigration: Optional. Configure how to perform Postgresql schema
+      migration.
     schemaValidation: Optional. Configure how much Postgresql schema
-      validation to perform. Default to `STRICT` if not specified.
+      validation to perform.
     unlinked: No Postgres data source is linked. If set, don't allow
       `database` and `schema_validation` to be configured.
   """
 
+  class SchemaMigrationValueValuesEnum(_messages.Enum):
+    r"""Optional. Configure how to perform Postgresql schema migration.
+
+    Values:
+      SQL_SCHEMA_MIGRATION_UNSPECIFIED: Unspecified SQL schema migration.
+      MIGRATE_COMPATIBLE: Connect to the SQL database and identify any missing
+        SQL resources used in the given Firebase Data Connect Schema.
+        Automatically create necessary SQL resources (SQL table, column, etc)
+        before deploying the schema. During migration steps, the SQL Schema
+        must comply with the previous before_deploy setting in case the
+        migration is interrupted. Therefore, the previous before_deploy
+        setting must not be `schema_validation=STRICT`.
+    """
+    SQL_SCHEMA_MIGRATION_UNSPECIFIED = 0
+    MIGRATE_COMPATIBLE = 1
+
   class SchemaValidationValueValuesEnum(_messages.Enum):
     r"""Optional. Configure how much Postgresql schema validation to perform.
-    Default to `STRICT` if not specified.
 
     Values:
       SQL_SCHEMA_VALIDATION_UNSPECIFIED: Unspecified SQL schema validation.
@@ -1451,8 +1470,9 @@ class PostgreSql(_messages.Message):
 
   cloudSql = _messages.MessageField('CloudSqlInstance', 1)
   database = _messages.StringField(2)
-  schemaValidation = _messages.EnumField('SchemaValidationValueValuesEnum', 3)
-  unlinked = _messages.BooleanField(4)
+  schemaMigration = _messages.EnumField('SchemaMigrationValueValuesEnum', 3)
+  schemaValidation = _messages.EnumField('SchemaValidationValueValuesEnum', 4)
+  unlinked = _messages.BooleanField(5)
 
 
 class Schema(_messages.Message):

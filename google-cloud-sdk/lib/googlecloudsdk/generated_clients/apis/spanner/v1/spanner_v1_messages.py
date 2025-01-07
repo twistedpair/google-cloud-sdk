@@ -1064,16 +1064,48 @@ class CreateInstancePartitionRequest(_messages.Message):
 class CreateInstanceRequest(_messages.Message):
   r"""The request for CreateInstance.
 
+  Messages:
+    TagsValue: Optional. The resource tags that should be bound to the
+      instance upon creation.
+
   Fields:
     instance: Required. The instance to create. The name may be omitted, but
       if specified must be `/instances/`.
     instanceId: Required. The ID of the instance to create. Valid identifiers
       are of the form `a-z*[a-z0-9]` and must be between 2 and 64 characters
       in length.
+    tags: Optional. The resource tags that should be bound to the instance
+      upon creation.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. The resource tags that should be bound to the instance upon
+    creation.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   instance = _messages.MessageField('Instance', 1)
   instanceId = _messages.StringField(2)
+  tags = _messages.MessageField('TagsValue', 3)
 
 
 class CreateSessionRequest(_messages.Message):
@@ -1100,15 +1132,17 @@ class CrontabSpec(_messages.Message):
       version_time + `creation_window`.
     text: Required. Textual representation of the crontab. User can customize
       the backup frequency and the backup version time using the cron
-      expression. The version time must be in UTC timzeone. The backup will
+      expression. The version time must be in UTC timezone. The backup will
       contain an externally consistent copy of the database at the version
-      time. Allowed frequencies are 12 hour, 1 day, 1 week and 1 month.
-      Examples of valid cron specifications: * `0 2/12 * * * ` : every 12
-      hours at (2, 14) hours past midnight in UTC. * `0 2,14 * * * ` : every
-      12 hours at (2,14) hours past midnight in UTC. * `0 2 * * * ` : once a
-      day at 2 past midnight in UTC. * `0 2 * * 0 ` : once a week every Sunday
-      at 2 past midnight in UTC. * `0 2 8 * * ` : once a month on 8th day at 2
-      past midnight in UTC.
+      time. Full backups must be scheduled a minimum of 12 hours apart and
+      incremental backups must be scheduled a minimum of 4 hours apart.
+      Examples of valid cron specifications: * `0 2/12 * * *` : every 12 hours
+      at (2, 14) hours past midnight in UTC. * `0 2,14 * * *` : every 12 hours
+      at (2,14) hours past midnight in UTC. * `0 */4 * * *` : (incremental
+      backups only) every 4 hours at (0, 4, 8, 12, 16, 20) hours past midnight
+      in UTC. * `0 2 * * *` : once a day at 2 past midnight in UTC. * `0 2 * *
+      0` : once a week every Sunday at 2 past midnight in UTC. * `0 2 8 * *` :
+      once a month on 8th day at 2 past midnight in UTC.
     timeZone: Output only. The time zone of the times in `CrontabSpec.text`.
       Currently only UTC is supported.
   """
@@ -7366,10 +7400,14 @@ class Type(_messages.Message):
         of this type should be treated as PostgreSQL JSONB values. Currently
         this annotation is always needed for JSON when a client interacts with
         PostgreSQL-enabled Spanner databases.
+      PG_OID: PostgreSQL compatible OID type. This annotation can be used by a
+        client interacting with PostgreSQL-enabled Spanner database to specify
+        that a value should be treated using the semantics of the OID type.
     """
     TYPE_ANNOTATION_CODE_UNSPECIFIED = 0
     PG_NUMERIC = 1
     PG_JSONB = 2
+    PG_OID = 3
 
   arrayElementType = _messages.MessageField('Type', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)

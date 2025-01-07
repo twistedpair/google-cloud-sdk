@@ -9062,6 +9062,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetOperationalStatus(self, request, global_params=None):
+      r"""Returns the InterconnectAttachmentStatuses for the specified InterconnectAttachmentGroup resource.
+
+      Args:
+        request: (ComputeInterconnectAttachmentGroupsGetOperationalStatusRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectAttachmentGroupsGetOperationalStatusResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetOperationalStatus')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetOperationalStatus.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.interconnectAttachmentGroups.getOperationalStatus',
+        ordered_params=['project', 'interconnectAttachmentGroup'],
+        path_params=['interconnectAttachmentGroup', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/interconnectAttachmentGroups/{interconnectAttachmentGroup}/getOperationalStatus',
+        request_field='',
+        request_type_name='ComputeInterconnectAttachmentGroupsGetOperationalStatusRequest',
+        response_type_name='InterconnectAttachmentGroupsGetOperationalStatusResponse',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Creates a InterconnectAttachmentGroup in the specified project in the given scope using the parameters that are included in the request.
 
@@ -9547,6 +9573,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeInterconnectGroupsGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def GetOperationalStatus(self, request, global_params=None):
+      r"""Returns the interconnectStatuses for the specified InterconnectGroup.
+
+      Args:
+        request: (ComputeInterconnectGroupsGetOperationalStatusRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectGroupsGetOperationalStatusResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetOperationalStatus')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetOperationalStatus.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.interconnectGroups.getOperationalStatus',
+        ordered_params=['project', 'interconnectGroup'],
+        path_params=['interconnectGroup', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/interconnectGroups/{interconnectGroup}/getOperationalStatus',
+        request_field='',
+        request_type_name='ComputeInterconnectGroupsGetOperationalStatusRequest',
+        response_type_name='InterconnectGroupsGetOperationalStatusResponse',
         supports_download=False,
     )
 

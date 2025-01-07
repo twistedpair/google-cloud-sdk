@@ -159,7 +159,11 @@ class Backup(_messages.Message):
       backup size + sum(volume backup sizes)
     state: Output only. Current state of the Backup
     stateReason: Output only. Human-readable description of why the backup is
-      in the current `state`.
+      in the current `state`. This field is only meant for human readability
+      and should not be used programmatically as this field is not guaranteed
+      to be consistent.
+    troubleshootingInfo: Output only. Information about the troubleshooting
+      steps which will provide debugging information to the end users.
     uid: Output only. Server generated global unique identifier of
       [UUID4](https://en.wikipedia.org/wiki/Universally_unique_identifier)
     updateTime: Output only. The timestamp when this Backup resource was last
@@ -242,9 +246,10 @@ class Backup(_messages.Message):
   sizeBytes = _messages.IntegerField(25)
   state = _messages.EnumField('StateValueValuesEnum', 26)
   stateReason = _messages.StringField(27)
-  uid = _messages.StringField(28)
-  updateTime = _messages.StringField(29)
-  volumeCount = _messages.IntegerField(30, variant=_messages.Variant.INT32)
+  troubleshootingInfo = _messages.MessageField('TroubleshootingInfo', 28)
+  uid = _messages.StringField(29)
+  updateTime = _messages.StringField(30)
+  volumeCount = _messages.IntegerField(31, variant=_messages.Variant.INT32)
 
 
 class BackupChannel(_messages.Message):
@@ -264,6 +269,10 @@ class BackupChannel(_messages.Message):
       allowed to be stored. The format is `projects/{project}`. Currently,
       {project} can only be the project number. Support for project IDs will
       be added in the future.
+    destinationProjectId: Output only. The project_id where Backups are
+      allowed to be stored. Example Project ID: "my-project-id". This will be
+      an OUTPUT_ONLY field to return the project_id of the destination
+      project.
     etag: Output only. `etag` is used for optimistic concurrency control as a
       way to help prevent simultaneous updates of a BackupChannel from
       overwriting each other. It is strongly suggested that systems make use
@@ -310,11 +319,12 @@ class BackupChannel(_messages.Message):
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   destinationProject = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  destinationProjectId = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class BackupConfig(_messages.Message):
@@ -362,6 +372,9 @@ class BackupPlan(_messages.Message):
 
   Messages:
     LabelsValue: Optional. A set of custom labels supplied by user.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to the BackupPlan resource. For example: "123/environment":
+      "production", "123/costCenter": "marketing"
 
   Fields:
     backupChannel: Output only. The fully qualified name of the BackupChannel
@@ -375,6 +388,8 @@ class BackupPlan(_messages.Message):
     cluster: Required. Immutable. The source cluster from which Backups will
       be created via this BackupPlan. Valid formats: -
       `projects/*/locations/*/clusters/*` - `projects/*/zones/*/clusters/*`
+    clusterHash: Output only. The hash of the cluster from which Backups will
+      be created via this BackupPlan.
     createTime: Output only. The timestamp when this BackupPlan resource was
       created.
     deactivated: Optional. This flag indicates whether this BackupPlan has
@@ -414,7 +429,12 @@ class BackupPlan(_messages.Message):
       will be set to "DEACTIVATED" if the BackupPlan is deactivated on an
       Update
     stateReason: Output only. Human-readable description of why BackupPlan is
-      in the current `state`
+      in the current `state`. This field is only meant for human readability
+      and should not be used programmatically as this field is not guaranteed
+      to be consistent.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      the BackupPlan resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     uid: Output only. Server generated global unique identifier of
       [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier)
       format.
@@ -469,25 +489,53 @@ class BackupPlan(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to the
+    BackupPlan resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   backupChannel = _messages.StringField(1)
   backupConfig = _messages.MessageField('BackupConfig', 2)
   backupSchedule = _messages.MessageField('Schedule', 3)
   cluster = _messages.StringField(4)
-  createTime = _messages.StringField(5)
-  deactivated = _messages.BooleanField(6)
-  description = _messages.StringField(7)
-  etag = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  lastSuccessfulBackupTime = _messages.StringField(10)
-  name = _messages.StringField(11)
-  protectedPodCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  retentionPolicy = _messages.MessageField('RetentionPolicy', 13)
-  rpoRiskLevel = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  rpoRiskReason = _messages.StringField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  stateReason = _messages.StringField(17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
+  clusterHash = _messages.StringField(5)
+  createTime = _messages.StringField(6)
+  deactivated = _messages.BooleanField(7)
+  description = _messages.StringField(8)
+  etag = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  lastSuccessfulBackupTime = _messages.StringField(11)
+  name = _messages.StringField(12)
+  protectedPodCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  retentionPolicy = _messages.MessageField('RetentionPolicy', 14)
+  rpoRiskLevel = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  rpoRiskReason = _messages.StringField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  stateReason = _messages.StringField(18)
+  tags = _messages.MessageField('TagsValue', 19)
+  uid = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
 
 
 class BackupPlanAssociation(_messages.Message):
@@ -670,6 +718,8 @@ class ClusterMetadata(_messages.Message):
       created. Valid formats: - `projects/*/locations/*/clusters/*` -
       `projects/*/zones/*/clusters/*` This is inherited from the parent
       BackupPlan's cluster field.
+    clusterHash: Output only. The hash of the cluster from which this Backup
+      was created.
     gkeVersion: Output only. GKE version
     k8sVersion: Output only. The Kubernetes server version of the source
       cluster.
@@ -705,8 +755,9 @@ class ClusterMetadata(_messages.Message):
   anthosVersion = _messages.StringField(1)
   backupCrdVersions = _messages.MessageField('BackupCrdVersionsValue', 2)
   cluster = _messages.StringField(3)
-  gkeVersion = _messages.StringField(4)
-  k8sVersion = _messages.StringField(5)
+  clusterHash = _messages.StringField(4)
+  gkeVersion = _messages.StringField(5)
+  k8sVersion = _messages.StringField(6)
 
 
 class ClusterResourceRestoreScope(_messages.Message):
@@ -2746,8 +2797,9 @@ class OperationMetadata(_messages.Message):
     endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      successfully been cancelled have google.longrunning.Operation.error
+      value with a google.rpc.Status.code of 1, corresponding to
+      `Code.CANCELLED`.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
     target: Output only. Server-defined resource path for the target of the
@@ -2957,6 +3009,8 @@ class Restore(_messages.Message):
       restore data. Valid formats: - `projects/*/locations/*/clusters/*` -
       `projects/*/zones/*/clusters/*` Inherited from parent RestorePlan's
       cluster value.
+    clusterHash: Output only. The hash of the cluster from which this Restore
+      was created.
     completeTime: Output only. Timestamp of when the restore operation
       completed.
     createTime: Output only. The timestamp when this Restore resource was
@@ -2991,7 +3045,11 @@ class Restore(_messages.Message):
       parent RestorePlan's restore_config.
     state: Output only. The current state of the Restore.
     stateReason: Output only. Human-readable description of why the Restore is
-      in its current state.
+      in its current state. This field is only meant for human readability and
+      should not be used programmatically as this field is not guaranteed to
+      be consistent.
+    troubleshootingInfo: Output only. Information about the troubleshooting
+      steps which will provide debugging information to the end users.
     uid: Output only. Server generated global unique identifier of
       [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier)
       format.
@@ -3055,23 +3113,25 @@ class Restore(_messages.Message):
 
   backup = _messages.StringField(1)
   cluster = _messages.StringField(2)
-  completeTime = _messages.StringField(3)
-  createTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  filter = _messages.MessageField('Filter', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  resourcesExcludedCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  resourcesFailedCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  resourcesRestoredCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  restoreConfig = _messages.MessageField('RestoreConfig', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  stateReason = _messages.StringField(15)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
-  volumeDataRestorePolicyOverrides = _messages.MessageField('VolumeDataRestorePolicyOverride', 18, repeated=True)
-  volumesRestoredCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  clusterHash = _messages.StringField(3)
+  completeTime = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  description = _messages.StringField(6)
+  etag = _messages.StringField(7)
+  filter = _messages.MessageField('Filter', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  resourcesExcludedCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  resourcesFailedCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  resourcesRestoredCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  restoreConfig = _messages.MessageField('RestoreConfig', 14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  stateReason = _messages.StringField(16)
+  troubleshootingInfo = _messages.MessageField('TroubleshootingInfo', 17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  volumeDataRestorePolicyOverrides = _messages.MessageField('VolumeDataRestorePolicyOverride', 20, repeated=True)
+  volumesRestoredCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
 
 
 class RestoreChannel(_messages.Message):
@@ -3091,6 +3151,9 @@ class RestoreChannel(_messages.Message):
       backups will be restored. The format is `projects/{project}`. Currently,
       {project} can only be the project number. Support for project IDs will
       be added in the future.
+    destinationProjectId: Output only. The project_id where backups will be
+      restored. Example Project ID: "my-project-id". This will be an
+      OUTPUT_ONLY field to return the project_id of the destination project.
     etag: Output only. `etag` is used for optimistic concurrency control as a
       way to help prevent simultaneous updates of a RestoreChannel from
       overwriting each other. It is strongly suggested that systems make use
@@ -3137,11 +3200,12 @@ class RestoreChannel(_messages.Message):
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   destinationProject = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  destinationProjectId = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class RestoreConfig(_messages.Message):
@@ -3350,6 +3414,9 @@ class RestorePlan(_messages.Message):
 
   Messages:
     LabelsValue: Optional. A set of custom labels supplied by user.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to the RestorePlan resource. For example: "123/environment":
+      "production", "123/costCenter": "marketing"
 
   Fields:
     backupPlan: Required. Immutable. A reference to the BackupPlan from which
@@ -3359,6 +3426,8 @@ class RestorePlan(_messages.Message):
       created via this RestorePlan will restore data. NOTE: the cluster's
       region must be the same as the RestorePlan. Valid formats: -
       `projects/*/locations/*/clusters/*` - `projects/*/zones/*/clusters/*`
+    clusterHash: Output only. The hash of the cluster from which this
+      RestorePlan was created.
     createTime: Output only. The timestamp when this RestorePlan resource was
       created.
     description: Optional. User specified descriptive string for this
@@ -3383,7 +3452,12 @@ class RestorePlan(_messages.Message):
     state: Output only. State of the RestorePlan. This State field reflects
       the various stages a RestorePlan can be in during the Create operation.
     stateReason: Output only. Human-readable description of why RestorePlan is
-      in the current `state`
+      in the current `state`. This field is only meant for human readability
+      and should not be used programmatically as this field is not guaranteed
+      to be consistent.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      the RestorePlan resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     uid: Output only. Server generated global unique identifier of
       [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier)
       format.
@@ -3433,19 +3507,47 @@ class RestorePlan(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to the
+    RestorePlan resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   backupPlan = _messages.StringField(1)
   cluster = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  restoreChannel = _messages.StringField(8)
-  restoreConfig = _messages.MessageField('RestoreConfig', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  stateReason = _messages.StringField(11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  clusterHash = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  restoreChannel = _messages.StringField(9)
+  restoreConfig = _messages.MessageField('RestoreConfig', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  stateReason = _messages.StringField(12)
+  tags = _messages.MessageField('TagsValue', 13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class RestorePlanAssociation(_messages.Message):
@@ -3862,6 +3964,22 @@ class TransformationRuleAction(_messages.Message):
   value = _messages.StringField(4)
 
 
+class TroubleshootingInfo(_messages.Message):
+  r"""Stores information about troubleshooting doc for debugging a particular
+  state of an. This will be used by the end user to debug their operation
+  failure scenario easily.
+
+  Fields:
+    stateReasonCode: Output only. Unique code for each backup/restore
+      operation failure message which helps user identify the failure.
+    stateReasonUri: Output only. URL for the troubleshooting doc which will
+      help the user fix the failing backup/restore operation.
+  """
+
+  stateReasonCode = _messages.StringField(1)
+  stateReasonUri = _messages.StringField(2)
+
+
 class VolumeBackup(_messages.Message):
   r"""Represents the backup of a specific persistent volume as a component of
   a Backup - both the record of the operation and a pointer to the underlying
@@ -3892,7 +4010,9 @@ class VolumeBackup(_messages.Message):
       which this VolumeBackup was created.
     state: Output only. The current state of this VolumeBackup.
     stateMessage: Output only. A human readable message explaining why the
-      VolumeBackup is in its current state.
+      VolumeBackup is in its current state. This field is only meant for human
+      consumption and should not be used programmatically as this field is not
+      guaranteed to be consistent.
     storageBytes: Output only. The aggregate size of the underlying artifacts
       associated with this VolumeBackup in the backup storage. This may change
       over time when multiple backups of the same volume share the same backup

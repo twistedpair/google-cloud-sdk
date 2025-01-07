@@ -17,6 +17,12 @@ display-name:
   help_text: |
     display name of the Flink deployment.
 
+workload-identity:
+  api_field: deployment.deploymentSpec.workloadIdentity
+  arg_name: workload-identity
+  help_text: |
+    The workload identity to use for the deployment. Managed Flink Default Workload Identity will be used if not specified.
+
 network-config-vpc:
   api_field: deployment.deploymentSpec.networkConfig.vpc
   arg_name: network-config-vpc

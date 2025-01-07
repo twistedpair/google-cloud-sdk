@@ -188,7 +188,7 @@ If unspecified, Cloud Build uses a standard machine type.
       help="""\
 Size of the disk attached to the worker.
 
-If not given, Cloud Build will use a standard disk size.
+If unspecified, Cloud Build uses a standard disk size.
 """,
   )
 

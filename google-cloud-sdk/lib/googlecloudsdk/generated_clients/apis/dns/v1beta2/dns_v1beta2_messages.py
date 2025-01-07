@@ -1973,6 +1973,7 @@ class Policy(_messages.Message):
     description: A mutable string of at most 1024 characters associated with
       this resource for the user's convenience. Has no effect on the policy's
       function.
+    dns64Config: Configurations related to DNS64 for this Policy.
     enableInboundForwarding: Allows networks bound to this policy to receive
       DNS queries sent by VMs or applications over VPN connections. When
       enabled, a virtual IP address is allocated from each of the subnetworks
@@ -1989,12 +1990,13 @@ class Policy(_messages.Message):
 
   alternativeNameServerConfig = _messages.MessageField('PolicyAlternativeNameServerConfig', 1)
   description = _messages.StringField(2)
-  enableInboundForwarding = _messages.BooleanField(3)
-  enableLogging = _messages.BooleanField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default='dns#policy')
-  name = _messages.StringField(7)
-  networks = _messages.MessageField('PolicyNetwork', 8, repeated=True)
+  dns64Config = _messages.MessageField('PolicyDns64Config', 3)
+  enableInboundForwarding = _messages.BooleanField(4)
+  enableLogging = _messages.BooleanField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default='dns#policy')
+  name = _messages.StringField(8)
+  networks = _messages.MessageField('PolicyNetwork', 9, repeated=True)
 
 
 class PolicyAlternativeNameServerConfig(_messages.Message):
@@ -2054,6 +2056,31 @@ class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
   ipv4Address = _messages.StringField(2)
   ipv6Address = _messages.StringField(3)
   kind = _messages.StringField(4, default='dns#policyAlternativeNameServerConfigTargetNameServer')
+
+
+class PolicyDns64Config(_messages.Message):
+  r"""DNS64 policies
+
+  Fields:
+    kind: A string attribute.
+    scope: The scope to which DNS64 config will be applied to.
+  """
+
+  kind = _messages.StringField(1, default='dns#policyDns64Config')
+  scope = _messages.MessageField('PolicyDns64ConfigScope', 2)
+
+
+class PolicyDns64ConfigScope(_messages.Message):
+  r"""A PolicyDns64ConfigScope object.
+
+  Fields:
+    allQueries: Controls whether DNS64 is enabled globally at the network
+      level.
+    kind: A string attribute.
+  """
+
+  allQueries = _messages.BooleanField(1)
+  kind = _messages.StringField(2, default='dns#policyDns64ConfigScope')
 
 
 class PolicyNetwork(_messages.Message):

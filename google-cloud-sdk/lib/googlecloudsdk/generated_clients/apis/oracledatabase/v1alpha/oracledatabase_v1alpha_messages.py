@@ -1286,7 +1286,7 @@ class CloudVmClusterProperties(_messages.Message):
     state: Output only. State of the cluster.
     storageSizeGb: Output only. The storage allocation for the disk group, in
       gigabytes (GB).
-    systemVersion: Output only. Operating system version of the image.
+    systemVersion: Optional. Operating system version of the image.
     timeZone: Optional. Time zone of VM Cluster to set. Defaults to UTC if not
       specified.
   """
@@ -1735,11 +1735,13 @@ class Entitlement(_messages.Message):
       ACCOUNT_NOT_LINKED: Account not linked.
       ACCOUNT_NOT_ACTIVE: Account is linked but not active.
       ACTIVE: Entitlement and Account are active.
+      ACCOUNT_SUSPENDED: Account is suspended.
     """
     STATE_UNSPECIFIED = 0
     ACCOUNT_NOT_LINKED = 1
     ACCOUNT_NOT_ACTIVE = 2
     ACTIVE = 3
+    ACCOUNT_SUSPENDED = 4
 
   cloudAccountDetails = _messages.MessageField('CloudAccountDetails', 1)
   entitlementId = _messages.StringField(2)
@@ -1973,6 +1975,19 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListSystemVersionsResponse(_messages.Message):
+  r"""The response for `SystemVersion.List`.
+
+  Fields:
+    nextPageToken: A token identifying the next page of results to retrieve.
+      If empty/omitted, there are no more pages to retrieve.
+    systemVersions: The list of System Versions.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  systemVersions = _messages.MessageField('SystemVersion', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -2506,6 +2521,22 @@ class OracledatabaseProjectsLocationsAutonomousDatabasesListRequest(_messages.Me
   parent = _messages.StringField(5, required=True)
 
 
+class OracledatabaseProjectsLocationsAutonomousDatabasesRestartRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsAutonomousDatabasesRestartRequest
+  object.
+
+  Fields:
+    name: Required. The name of the Autonomous Database in the following
+      format: projects/{project}/locations/{location}/autonomousDatabases/{aut
+      onomous_database}.
+    restartAutonomousDatabaseRequest: A RestartAutonomousDatabaseRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  restartAutonomousDatabaseRequest = _messages.MessageField('RestartAutonomousDatabaseRequest', 2)
+
+
 class OracledatabaseProjectsLocationsAutonomousDatabasesRestoreRequest(_messages.Message):
   r"""A OracledatabaseProjectsLocationsAutonomousDatabasesRestoreRequest
   object.
@@ -2520,6 +2551,52 @@ class OracledatabaseProjectsLocationsAutonomousDatabasesRestoreRequest(_messages
 
   name = _messages.StringField(1, required=True)
   restoreAutonomousDatabaseRequest = _messages.MessageField('RestoreAutonomousDatabaseRequest', 2)
+
+
+class OracledatabaseProjectsLocationsAutonomousDatabasesStartRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsAutonomousDatabasesStartRequest object.
+
+  Fields:
+    name: Required. The name of the Autonomous Database in the following
+      format: projects/{project}/locations/{location}/autonomousDatabases/{aut
+      onomous_database}.
+    startAutonomousDatabaseRequest: A StartAutonomousDatabaseRequest resource
+      to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  startAutonomousDatabaseRequest = _messages.MessageField('StartAutonomousDatabaseRequest', 2)
+
+
+class OracledatabaseProjectsLocationsAutonomousDatabasesStopRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsAutonomousDatabasesStopRequest object.
+
+  Fields:
+    name: Required. The name of the Autonomous Database in the following
+      format: projects/{project}/locations/{location}/autonomousDatabases/{aut
+      onomous_database}.
+    stopAutonomousDatabaseRequest: A StopAutonomousDatabaseRequest resource to
+      be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  stopAutonomousDatabaseRequest = _messages.MessageField('StopAutonomousDatabaseRequest', 2)
+
+
+class OracledatabaseProjectsLocationsAutonomousDatabasesSwitchoverRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsAutonomousDatabasesSwitchoverRequest
+  object.
+
+  Fields:
+    name: Required. The name of the Autonomous Database in the following
+      format: projects/{project}/locations/{location}/autonomousDatabases/{aut
+      onomous_database}.
+    switchoverAutonomousDatabaseRequest: A SwitchoverAutonomousDatabaseRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  switchoverAutonomousDatabaseRequest = _messages.MessageField('SwitchoverAutonomousDatabaseRequest', 2)
 
 
 class OracledatabaseProjectsLocationsAutonomousDbVersionsGetRequest(_messages.Message):
@@ -3014,6 +3091,44 @@ class OracledatabaseProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class OracledatabaseProjectsLocationsSystemVersionsGetRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsSystemVersionsGetRequest object.
+
+  Fields:
+    name: Required. The name of the System Version in the following format:
+      projects/{project}/locations/{location}/systemVersions/{system_version}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OracledatabaseProjectsLocationsSystemVersionsListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsSystemVersionsListRequest object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+      Only the shape and gi_version fields are supported in this format:
+      `shape="{shape}" AND gi_version="{gi_version}"`.
+    pageSize: Optional. The maximum number of items to return. If unspecified,
+      a maximum of 50 System Versions will be returned. The maximum value is
+      1000; values above 1000 will be reset to 1000.
+    pageToken: Optional. A token identifying the requested page of results to
+      return. All fields except the filter should remain the same as in the
+      request that provided this page token.
+    parent: Required. The parent value for System Version in the following
+      format: Format: projects/{project}/locations/{location}.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class RestartAutonomousDatabaseRequest(_messages.Message):
+  r"""The request for `AutonomousDatabase.Restart`."""
+
+
 class RestoreAutonomousDatabaseRequest(_messages.Message):
   r"""The request for `AutonomousDatabase.Restore`.
 
@@ -3141,6 +3256,10 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class StartAutonomousDatabaseRequest(_messages.Message):
+  r"""The request for `AutonomousDatabase.Start`."""
+
+
 class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -3192,6 +3311,40 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class StopAutonomousDatabaseRequest(_messages.Message):
+  r"""The request for `AutonomousDatabase.Stop`."""
+
+
+class SwitchoverAutonomousDatabaseRequest(_messages.Message):
+  r"""The request for `AutonomousDatabase.Switchover`.
+
+  Fields:
+    peerAutonomousDatabase: Required. The peer database name to switch over
+      to.
+  """
+
+  peerAutonomousDatabase = _messages.StringField(1)
+
+
+class SystemVersion(_messages.Message):
+  r"""Details of the System version. https://docs.oracle.com/en-
+  us/iaas/api/#/en/database/20160918/datatypes/SystemVersionSummary
+
+  Fields:
+    giVersion: Output only. Oracle Grid Infrastructure (GI) version.
+    name: Identifier. The name of the System Version resource with the format:
+      projects/{project}/locations/{location}/systemVersions/{system_version}
+    shape: Output only. The Exadata shape.
+    systemVersions: Output only. Compatible Exadata system versions for a
+      given shape and GI version.
+  """
+
+  giVersion = _messages.StringField(1)
+  name = _messages.StringField(2)
+  shape = _messages.StringField(3)
+  systemVersions = _messages.StringField(4, repeated=True)
+
+
 class TimeOfDay(_messages.Message):
   r"""Represents a time of day. The date and time zone are either not
   significant or are specified elsewhere. An API may choose to allow leap
@@ -3221,8 +3374,9 @@ class TimeZone(_messages.Message):
   Database](https://www.iana.org/time-zones).
 
   Fields:
-    id: IANA Time Zone Database time zone, e.g. "America/New_York".
-    version: Optional. IANA Time Zone Database version number, e.g. "2019a".
+    id: IANA Time Zone Database time zone. For example "America/New_York".
+    version: Optional. IANA Time Zone Database version number. For example
+      "2019a".
   """
 
   id = _messages.StringField(1)

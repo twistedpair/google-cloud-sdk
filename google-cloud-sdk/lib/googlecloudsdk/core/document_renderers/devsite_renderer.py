@@ -39,20 +39,22 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
 
   def _Title(self):
     """Renders an HTML document title."""
-    self._out.write(
-        '<html devsite="">\n'
-        '<head>\n')
+    self._out.write('<html devsite="">\n')
+    self._out.write('<head>\n')
     if self._title:
-      self._out.write(
-          '<title>' + self._title + '</title>\n')
+      self._out.write('<title>' + self._title + '</title>\n')
     self._out.write(
         '<meta http-equiv="Content-Type" content="text/html; '
         'charset=UTF-8">\n'
         '<meta name="project_path" value="/sdk/docs/_project.yaml">\n'
-        '<meta name="book_path" value="/sdk/_book.yaml">\n')
+        '<meta name="book_path" value="/sdk/_book.yaml">\n'
+    )
     for comment, script in devsite_scripts.SCRIPTS:
-      self._out.write('<!-- {comment} -->\n{script}\n'.format(comment=comment,
-                                                              script=script))
+      self._out.write(
+          '<!-- {comment} -->\n{script}\n'.format(
+              comment=comment, script=script
+          )
+      )
 
   def _Heading(self, unused_level, heading):
     """Renders a DevSite heading.
@@ -68,10 +70,12 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
       self._out.write('{% dynamic if request.is_tpc %}')
       self._heading += '{% dynamic endif %}'
 
-    self._out.write('\n<section id="{document_id}">\n'
-                    '<dt>{heading}</dt>\n<dd class="sectionbody">\n'.format(
-                        document_id=self.GetDocumentID(heading),
-                        heading=heading))
+    self._out.write(
+        '\n<section id="{document_id}">\n'
+        '<dt>{heading}</dt>\n<dd class="sectionbody">\n'.format(
+            document_id=self.GetDocumentID(heading), heading=heading
+        )
+    )
 
   def _Flush(self):
     """Flushes the current collection of Fill() lines."""
@@ -130,7 +134,9 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
       else:
         self._out.write(
             '<pre class="prettyprint lang-{lang} wrap-code">\n'.format(
-                lang=self._lang))
+                lang=self._lang
+            )
+        )
     indent = len(line)
     line = line.lstrip()
     indent -= len(line)
@@ -161,10 +167,15 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
       The rendered link anchor and text.
     """
     if target != self.command[0] and (
-        '/' not in target or ':' in target or '#' in target or
-        target.startswith('www.') or target.endswith('/..')):
-      return '<a href="{target}">{text}</a>'.format(target=target,
-                                                    text=text or target)
+        '/' not in target
+        or ':' in target
+        or '#' in target
+        or target.startswith('www.')
+        or target.endswith('/..')
+    ):
+      return '<a href="{target}">{text}</a>'.format(
+          target=target, text=text or target
+      )
 
     # Massage the target href to match the DevSite layout.
     target_parts = target.split('/')
@@ -173,8 +184,10 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
     if len(target_parts) > 1 and target_parts[1] == 'meta':
       return target + ' --help'
     return '<a href="/sdk/{head}/{tail}">{text}</a>'.format(
-        head=target_parts[0], tail='/'.join(['reference'] + target_parts[1:]),
-        text=text or target)
+        head=target_parts[0],
+        tail='/'.join(['reference'] + target_parts[1:]),
+        text=text or target,
+    )
 
   def LinkGlobalFlags(self, line):
     """Add global flags links to line if any.
@@ -188,4 +201,7 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
     return re.sub(
         r'(--[-a-z]+)',
         r'<code><a href="/sdk/{}/reference/#\1">\1</a></code>'.format(
-            self.command[0]), line)
+            self.command[0]
+        ),
+        line,
+    )

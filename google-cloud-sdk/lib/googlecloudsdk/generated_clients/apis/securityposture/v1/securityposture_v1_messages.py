@@ -116,18 +116,39 @@ class CreatePredictionRequest(_messages.Message):
   predictionType = _messages.EnumField('PredictionTypeValueValuesEnum', 3)
 
 
-class CreateRemediationRequest(_messages.Message):
-  r"""Request message for creating a Remediation.
+class CreateRemediationIntentRequest(_messages.Message):
+  r"""Request message for creating a RemediationIntent.
+
+  Enums:
+    WorkflowTypeValueValuesEnum: Optional. Type of workflow for the
+      remediation intent. If not specified, the default workflow type is semi-
+      autonomous.
 
   Fields:
-    remediationData: Required. Files data
-    remediationIntentName: Required. Name of the remediation intent associated
-      with this remediation. Format:
-      organizations//locations/global/remediationIntents/
+    findingName: Optional. Canonical name of the finding for which the
+      remediation intent is created. Eg format for finding at project level: p
+      rojects/{project_id}/sources/{source}/locations/{location}/findings/{fin
+      ding_id}
+    workflowType: Optional. Type of workflow for the remediation intent. If
+      not specified, the default workflow type is semi-autonomous.
   """
 
-  remediationData = _messages.MessageField('RemediationData', 1)
-  remediationIntentName = _messages.StringField(2)
+  class WorkflowTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of workflow for the remediation intent. If not
+    specified, the default workflow type is semi-autonomous.
+
+    Values:
+      WORKFLOW_TYPE_UNSPECIFIED: Workflow type unspecified.
+      WORKFLOW_TYPE_MANUAL: Workflow type is manual.
+      WORKFLOW_TYPE_SEMI_AUTONOMOUS: Semi autonomous workflow type, triggered
+        periodically.
+    """
+    WORKFLOW_TYPE_UNSPECIFIED = 0
+    WORKFLOW_TYPE_MANUAL = 1
+    WORKFLOW_TYPE_SEMI_AUTONOMOUS = 2
+
+  findingName = _messages.StringField(1)
+  workflowType = _messages.EnumField('WorkflowTypeValueValuesEnum', 2)
 
 
 class CustomConfig(_messages.Message):
@@ -235,6 +256,18 @@ class EnvironmentOptions(_messages.Message):
   services = _messages.MessageField('GcpServices', 5, repeated=True)
 
 
+class ErrorDetails(_messages.Message):
+  r"""Error details in case of failure while generating remediation.
+
+  Fields:
+    errorCode: Optional. Error code.
+    reason: Optional. Reason for the error.
+  """
+
+  errorCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  reason = _messages.StringField(2)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -297,6 +330,38 @@ class FileData(_messages.Message):
 
   fileContent = _messages.StringField(1)
   filePath = _messages.StringField(2)
+
+
+class Finding(_messages.Message):
+  r"""Finding information relayed during remediation fixing process
+
+  Fields:
+    category: Optional. Category of the finding, like UNUSED_IAM_ROLE,
+      IAM_ROLE_HAS_EXCESSIVE_PERMISSIONS etc.
+    findingMetadata: Optional. Finding metadata of the finding associated with
+      this remediation intent.
+    findingName: Required. Finding canonical name, used to identify the
+      finding within an organization.
+    resourceName: Optional. Resource name on which the finding is present.
+  """
+
+  category = _messages.StringField(1)
+  findingMetadata = _messages.MessageField('FindingMetadata', 2)
+  findingName = _messages.StringField(3)
+  resourceName = _messages.StringField(4)
+
+
+class FindingMetadata(_messages.Message):
+  r"""Finding metadata of the finding associated with this remediation intent.
+
+  Fields:
+    iamBindings: Optional. List of IAM bindings of the finding associated with
+      this remediation intent. Example: [{"role": "roles/owner", "member":
+      ["user:test@gmail.com"], Action: "ADD"}] It will be used to fetch the TF
+      state of the finding.
+  """
+
+  iamBindings = _messages.MessageField('IAMBinding', 1, repeated=True)
 
 
 class GcpServices(_messages.Message):
@@ -496,6 +561,39 @@ class GoogleCloudSecuritypostureV1PolicyRuleStringValues(_messages.Message):
   deniedValues = _messages.StringField(2, repeated=True)
 
 
+class IAMBinding(_messages.Message):
+  r"""IAMBinding captures a member's role addition, removal, or state.
+
+  Enums:
+    ActionValueValuesEnum: Optional. The action that was performed on the IAM
+      binding.
+
+  Fields:
+    action: Optional. The action that was performed on the IAM binding.
+    member: Optional. The member to whom the role is assigned. For example,
+      `user:222larabrown@gmail.com`, `group:admins@example.com`, or
+      `domain:google.com`.
+    role: Optional. The role that is assigned to the member. For example,
+      `roles/viewer`, `roles/editor`, or `roles/owner`.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Optional. The action that was performed on the IAM binding.
+
+    Values:
+      ACTION_UNSPECIFIED: Unspecified.
+      ADD: Addition of an IAM binding.
+      REMOVE: Removal of an IAM binding.
+    """
+    ACTION_UNSPECIFIED = 0
+    ADD = 1
+    REMOVE = 2
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  member = _messages.StringField(2)
+  role = _messages.StringField(3)
+
+
 class IaC(_messages.Message):
   r"""Details of an infrastructure-as-code (IaC) configuration.
 
@@ -630,6 +728,21 @@ class ListPredictionsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   predictions = _messages.MessageField('Prediction', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListRemediationIntentsResponse(_messages.Message):
+  r"""Message for response to listing Remediation Intents.
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    remediationIntents: The list of Remediation Intents.
+    unreachable: Unreachable resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  remediationIntents = _messages.MessageField('RemediationIntent', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -890,6 +1003,17 @@ class OrgPolicyConstraintCustom(_messages.Message):
   policyRules = _messages.MessageField('GoogleCloudSecuritypostureV1PolicyRule', 2, repeated=True)
 
 
+class OutputData(_messages.Message):
+  r"""Output data for a remediation intent. This contains the output data for
+  the generated remediation which returns the updated terraform files.
+
+  Fields:
+    tfData: Optional. Output Terraform file information.
+  """
+
+  tfData = _messages.MessageField('TfData', 1)
+
+
 class Policy(_messages.Message):
   r"""The details of a policy, including the constraints that it includes.
 
@@ -898,6 +1022,8 @@ class Policy(_messages.Message):
       helps enforce.
     constraint: Required. The constraints that the policy includes.
     description: Optional. A description of the policy.
+    findingCategory: Output only. Finding category of the asset violation
+      findings that will be generated on the deployment of the policy.
     policyId: Required. A user-specified identifier for the policy. In a
       PolicySet, each policy must have a unique identifier.
   """
@@ -905,7 +1031,8 @@ class Policy(_messages.Message):
   complianceStandards = _messages.MessageField('ComplianceStandard', 1, repeated=True)
   constraint = _messages.MessageField('Constraint', 2)
   description = _messages.StringField(3)
-  policyId = _messages.StringField(4)
+  findingCategory = _messages.StringField(4)
+  policyId = _messages.StringField(5)
 
 
 class PolicyDetails(_messages.Message):
@@ -935,12 +1062,14 @@ class PolicyDetails(_messages.Message):
       SECURITY_HEALTH_ANALYTICS_MODULE: A built-in detector for Security
         Health Analytics.
       ORG_POLICY: A predefined organization policy constraint.
+      REGO_POLICY: A custom rego policy constraint.
     """
     CONSTRAINT_TYPE_UNSPECIFIED = 0
     SECURITY_HEALTH_ANALYTICS_CUSTOM_MODULE = 1
     ORG_POLICY_CUSTOM = 2
     SECURITY_HEALTH_ANALYTICS_MODULE = 3
     ORG_POLICY = 4
+    REGO_POLICY = 5
 
   complianceStandards = _messages.StringField(1, repeated=True)
   constraint = _messages.StringField(2)
@@ -1351,6 +1480,24 @@ class Property(_messages.Message):
   valueExpression = _messages.MessageField('Expr', 2)
 
 
+class PullRequest(_messages.Message):
+  r"""Pull request information.
+
+  Fields:
+    comments: Optional. Comments on the pull request.
+    modifiedFileOwners: Optional. Modified file owners.
+    modifiedFilePaths: Optional. Modified file paths.
+    remediationExplanation: Optional. Explanation of the remediation.
+    url: Optional. URL of the pull request.
+  """
+
+  comments = _messages.StringField(1)
+  modifiedFileOwners = _messages.StringField(2, repeated=True)
+  modifiedFilePaths = _messages.StringField(3, repeated=True)
+  remediationExplanation = _messages.StringField(4)
+  url = _messages.StringField(5)
+
+
 class RegoPolicy(_messages.Message):
   r"""Message for Rego policy constraint.
 
@@ -1363,6 +1510,8 @@ class RegoPolicy(_messages.Message):
       format. Total size of rego policy should not exceed 24KB.
     id: Required. The unique identifier (ID) for the rego policy. It should be
       unique across the posture. The regex pattern for id should be ^A-Za-z*$.
+      This field is also used as the finding category for all the asset
+      violation findings that the detector returns.
     nextSteps: Optional. Next steps required to fix an asset violation against
       this rego policy.
     severity: Optional. Severity of the asset violation against this rego
@@ -1392,14 +1541,137 @@ class RegoPolicy(_messages.Message):
   severity = _messages.EnumField('SeverityValueValuesEnum', 4)
 
 
-class RemediationData(_messages.Message):
-  r"""Data to be used for a remediation intent.
+class RemediationArtifacts(_messages.Message):
+  r"""Details related to artifacts produced for the intent eg PR info, and
+  owner identification.
 
   Fields:
-    tfData: Input Terraform file information.
+    prData: Raised pull request information.
   """
 
-  tfData = _messages.MessageField('TfData', 1)
+  prData = _messages.MessageField('PullRequest', 1)
+
+
+class RemediationInput(_messages.Message):
+  r"""Input data to be used for a remediation intent. Also contains error
+  message in case of failure.
+
+  Fields:
+    errorDetails: Output only. Error details in case of failure.
+    tfData: Optional. Input Terraform file information.
+  """
+
+  errorDetails = _messages.MessageField('ErrorDetails', 1)
+  tfData = _messages.MessageField('TfData', 2)
+
+
+class RemediationIntent(_messages.Message):
+  r"""Definition of the resource 'RemediationIntent'.
+
+  Enums:
+    IacTypeValueValuesEnum: Optional. Type of IAC for the remediation intent.
+    StateValueValuesEnum: Output only. State of the remediation intent.
+    WorkflowTypeValueValuesEnum: Required. Type of workflow for the
+      remediation intent.
+
+  Fields:
+    createTime: Output only. The timestamp when the remediation intent was
+      created.
+    errorDetails: Output only. Error details in case of failure.
+    etag: Optional. To prevent concurrent updates from overwriting each other,
+      always provide the `etag` when you update a remediation intent. You can
+      also provide the `etag` when you delete a remediation intent, to help
+      ensure that you're deleting the intended version of the remediation
+      intent.
+    findingData: Output only. SCC findings data, fields like finding name,
+      severity, category, resource etc.
+    iacType: Optional. Type of IAC for the remediation intent.
+    name: Required. Identifier. The name of this Remediation Intent resource,
+      in the format of
+      organizations/{organization}/locations/{location}/remediationIntents/.
+    remediatedOutput: Output only. Output remediated files data generated
+      using LLM having code fix.
+    remediationArtifacts: Output only. Details related to the artifacts
+      generated for the remediation, eg Pull Request.
+    remediationInput: Required. Input files data required for the remediation
+      of the intent.
+    repositoryData: Relevant repository data for which intent is created.
+    state: Output only. State of the remediation intent.
+    workflowType: Required. Type of workflow for the remediation intent.
+  """
+
+  class IacTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of IAC for the remediation intent.
+
+    Values:
+      IAC_TYPE_UNSPECIFIED: Unspecified IAC type.
+      IAC_TYPE_TERRAFORM: Terraform IAC type.
+    """
+    IAC_TYPE_UNSPECIFIED = 0
+    IAC_TYPE_TERRAFORM = 1
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the remediation intent.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified remediation intent state.
+      REMEDIATION_INTENT_ENQUEUED: Remediation intent is enqueued.
+      REMEDIATION_IN_PROGRESS: Remediation for the intent is in progress.
+      REMEDIATION_FAILED: Remediation for the intent process has failed.
+      REMEDIATION_SUCCESS: Remediation generation by LLM is successful.
+      PR_GENERATATION_SUCCESS: PR generated successfully.
+      PR_GENERATION_FAILED: PR generation failed, post remediation successful
+        creation.
+    """
+    STATE_UNSPECIFIED = 0
+    REMEDIATION_INTENT_ENQUEUED = 1
+    REMEDIATION_IN_PROGRESS = 2
+    REMEDIATION_FAILED = 3
+    REMEDIATION_SUCCESS = 4
+    PR_GENERATATION_SUCCESS = 5
+    PR_GENERATION_FAILED = 6
+
+  class WorkflowTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of workflow for the remediation intent.
+
+    Values:
+      WORKFLOW_TYPE_UNSPECIFIED: Workflow type unspecified.
+      WORKFLOW_TYPE_MANUAL: Workflow type is manual.
+      WORKFLOW_TYPE_SEMI_AUTONOMOUS: Semi autonomous workflow type, triggered
+        periodically.
+    """
+    WORKFLOW_TYPE_UNSPECIFIED = 0
+    WORKFLOW_TYPE_MANUAL = 1
+    WORKFLOW_TYPE_SEMI_AUTONOMOUS = 2
+
+  createTime = _messages.StringField(1)
+  errorDetails = _messages.MessageField('ErrorDetails', 2)
+  etag = _messages.StringField(3)
+  findingData = _messages.MessageField('Finding', 4)
+  iacType = _messages.EnumField('IacTypeValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  remediatedOutput = _messages.MessageField('RemediationOutput', 7)
+  remediationArtifacts = _messages.MessageField('RemediationArtifacts', 8)
+  remediationInput = _messages.MessageField('RemediationInput', 9)
+  repositoryData = _messages.MessageField('RepositoryData', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  workflowType = _messages.EnumField('WorkflowTypeValueValuesEnum', 12)
+
+
+class RemediationOutput(_messages.Message):
+  r"""Remediated output data for a remediation intent.
+
+  Fields:
+    outputData: Optional. Output data for the remediation intent. The field is
+      repeated to support multiple output data for a single remediation intent
+      for multiple iam bindings.
+    remediationExplanation: Optional. Explanation of the remediation. The
+      field is used to support multiple explanations for a single remediation
+      intent for multiple iam bindings.
+  """
+
+  outputData = _messages.MessageField('OutputData', 1, repeated=True)
+  remediationExplanation = _messages.StringField(2)
 
 
 class Report(_messages.Message):
@@ -1418,6 +1690,16 @@ class Report(_messages.Message):
   iacValidationReport = _messages.MessageField('IaCValidationReport', 2)
   name = _messages.StringField(3)
   updateTime = _messages.StringField(4)
+
+
+class RepositoryData(_messages.Message):
+  r"""Relevant repository related data for the intent.
+
+  Fields:
+    repositoryUrl: Required. Repository url.
+  """
+
+  repositoryUrl = _messages.StringField(1)
 
 
 class ResourceSelector(_messages.Message):
@@ -1457,9 +1739,10 @@ class SecurityHealthAnalyticsCustomModule(_messages.Message):
   Fields:
     config: Required. Configuration settings for the custom module.
     displayName: Optional. The display name of the custom module. This value
-      is used as the finding category for all findings that the custom module
-      returns. The display name must contain between 1 and 128 alphanumeric
-      characters or underscores, and it must start with a lowercase letter.
+      is used as the finding category for all the asset violation findings
+      that the custom module returns. The display name must contain between 1
+      and 128 alphanumeric characters or underscores, and it must start with a
+      lowercase letter.
     id: Output only. Immutable. The unique identifier for the custom module.
       Contains 1 to 20 digits.
     moduleEnablementState: Whether the custom module is enabled at a specified
@@ -1496,7 +1779,8 @@ class SecurityHealthAnalyticsModule(_messages.Message):
     moduleEnablementState: Whether the detector is enabled at a specified
       level of the resource hierarchy.
     moduleName: Required. The name of the detector. For example,
-      `BIGQUERY_TABLE_CMEK_DISABLED`.
+      `BIGQUERY_TABLE_CMEK_DISABLED`. This field is also used as the finding
+      category for all the asset violation findings that the detector returns.
   """
 
   class ModuleEnablementStateValueValuesEnum(_messages.Enum):
@@ -1866,18 +2150,95 @@ class SecuritypostureOrganizationsLocationsPredictionsListRequest(_messages.Mess
   parent = _messages.StringField(4, required=True)
 
 
-class SecuritypostureOrganizationsLocationsRemediationsCreateRequest(_messages.Message):
-  r"""A SecuritypostureOrganizationsLocationsRemediationsCreateRequest object.
+class SecuritypostureOrganizationsLocationsRemediationIntentsCreateRequest(_messages.Message):
+  r"""A SecuritypostureOrganizationsLocationsRemediationIntentsCreateRequest
+  object.
 
   Fields:
-    createRemediationRequest: A CreateRemediationRequest resource to be passed
-      as the request body.
+    createRemediationIntentRequest: A CreateRemediationIntentRequest resource
+      to be passed as the request body.
     parent: Required. The parent resource name. The format of this value is as
       follows: `organizations/{organization}/locations/{location}`
   """
 
-  createRemediationRequest = _messages.MessageField('CreateRemediationRequest', 1)
+  createRemediationIntentRequest = _messages.MessageField('CreateRemediationIntentRequest', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class SecuritypostureOrganizationsLocationsRemediationIntentsDeleteRequest(_messages.Message):
+  r"""A SecuritypostureOrganizationsLocationsRemediationIntentsDeleteRequest
+  object.
+
+  Fields:
+    etag: Optional. An opaque identifier for the current version of the
+      remediation intent. If you provide this value, then it must match the
+      existing value. If the values don't match, then the request fails with
+      an ABORTED error. If you omit this value, then the remediation intent is
+      deleted regardless of its current `etag` value.
+    name: Required. The name of the RemediationIntent, in the format `organiza
+      tions/{organization}/locations/global/remediationIntents/{remediationInt
+      ent_id}`.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class SecuritypostureOrganizationsLocationsRemediationIntentsGetRequest(_messages.Message):
+  r"""A SecuritypostureOrganizationsLocationsRemediationIntentsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource. The format of this value is as
+      follows: `organizations/{organization}/locations/{location}/remediationI
+      ntents/{intentID}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritypostureOrganizationsLocationsRemediationIntentsListRequest(_messages.Message):
+  r"""A SecuritypostureOrganizationsLocationsRemediationIntentsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filter to be applied on the resource, defined by EBNF
+      grammar https://google.aip.dev/assets/misc/ebnf-filtering.txt.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListRemediationIntentsRequest. The
+      format of this value is as follows:
+      `organizations/{organization}/locations/{location}`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class SecuritypostureOrganizationsLocationsRemediationIntentsPatchRequest(_messages.Message):
+  r"""A SecuritypostureOrganizationsLocationsRemediationIntentsPatchRequest
+  object.
+
+  Fields:
+    name: Required. Identifier. The name of this Remediation Intent resource,
+      in the format of
+      organizations/{organization}/locations/{location}/remediationIntents/.
+    remediationIntent: A RemediationIntent resource to be passed as the
+      request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Remediation Intent resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  remediationIntent = _messages.MessageField('RemediationIntent', 2)
+  updateMask = _messages.StringField(3)
 
 
 class SecuritypostureOrganizationsLocationsReportsCreateIaCValidationReportRequest(_messages.Message):
@@ -2077,7 +2438,7 @@ class Status(_messages.Message):
 
 
 class TfData(_messages.Message):
-  r"""Terraform data : tf state information and tf files
+  r"""Stores terraform data like tf state information and tf files
 
   Fields:
     fileData: Required. Terraform files data

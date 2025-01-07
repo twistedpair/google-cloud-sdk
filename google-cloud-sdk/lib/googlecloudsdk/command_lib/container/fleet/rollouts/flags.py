@@ -78,6 +78,17 @@ class RolloutFlags:
         type=arg_parsers.ArgDict(),
     )
 
+  def AddScheduledStartTime(self):
+    self.parser.add_argument(
+        '--start-time',
+        type=arg_parsers.Datetime.Parse,
+        help=textwrap.dedent("""\
+            Start time (in the future) of the rollout.
+
+            See $ gcloud topic datetimes for information on datetime formats.
+        """),
+    )
+
   def AddManagedRolloutConfig(self):
     managed_rollout_config_group = self.parser.add_group(
         help='Configurations for the Rollout. Waves are assigned automatically.'
@@ -284,6 +295,7 @@ class RolloutFlagParser:
     rollout.managedRolloutConfig = self._ManagedRolloutConfig()
     rollout.versionUpgrade = self._VersionUpgrade()
     rollout.feature = self._FeatureUpdate()
+    rollout.scheduledStartTime = self._ScheduledStartTime()
     return rollout
 
   def _DisplayName(self) -> str:
@@ -303,6 +315,19 @@ class RolloutFlagParser:
           )
       )
     return labels_value
+
+  def _ScheduledStartTime(self) -> str:
+    """Parses --start-time.
+
+    Accepts ISO 8601 datetime format. To read more,
+    https://cloud.google.com/sdk/gcloud/reference/topic/
+
+    Returns:
+      str, in ISO 8601 datetime format.
+    """
+    if '--start-time' not in self.args.GetSpecifiedArgs():
+      return None
+    return self.args.start_time.strftime('%Y-%m-%dT%H:%M:%SZ')
 
   def _ManagedRolloutConfig(self) -> fleet_messages.ManagedRolloutConfig:
     managed_rollout_config = fleet_messages.ManagedRolloutConfig()

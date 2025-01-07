@@ -615,8 +615,8 @@ class CloudidentityGroupsMembershipsGetMembershipGraphRequest(_messages.Message)
       name](https://cloud.google.com/apis/design/resource_names) of the group
       to search transitive memberships in. Format: `groups/{group_id}`, where
       `group_id` is the unique ID assigned to the Group to which the
-      Membership belongs to. group_id can be a wildcard collection id "-".
-      When a group_id is specified, the membership graph will be constrained
+      Membership belongs to. `group_id` can be a wildcard collection id "-".
+      When a `group_id` is specified, the membership graph will be constrained
       to paths between the member (defined in the query) and the parent. If a
       wildcard collection is provided, all membership paths connected to the
       member will be returned.
@@ -754,7 +754,7 @@ class CloudidentityGroupsMembershipsSearchDirectGroupsRequest(_messages.Message)
       order_by="group_key" or order_by="group_key asc". Sort by the descending
       group key: order_by="group_key desc".
     pageSize: The default page size is 200 (max 1000).
-    pageToken: The next_page_token value returned from a previous list
+    pageToken: The `next_page_token` value returned from a previous list
       request, if any
     parent: [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the group
@@ -782,7 +782,7 @@ class CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest(_messages.Mess
 
   Fields:
     pageSize: The default page size is 200 (max 1000).
-    pageToken: The next_page_token value returned from a previous list
+    pageToken: The `next_page_token` value returned from a previous list
       request, if any.
     parent: [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the group
@@ -801,7 +801,7 @@ class CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest(_messages.Mess
       within a particular customer, e.g. `parent ==
       'customers/{customer_id}'`. The `customer_id` must begin with "C" (for
       example, 'C046psxkn'). This filtering is only supported for Admins with
-      groups read permissons on the input customer. Example query:
+      groups read permissions on the input customer. Example query:
       `member_key_id == 'member_key_id_value' && in labels && parent ==
       'customers/C046psxkn'`
   """
@@ -818,7 +818,7 @@ class CloudidentityGroupsMembershipsSearchTransitiveMembershipsRequest(_messages
 
   Fields:
     pageSize: The default page size is 200 (max 1000).
-    pageToken: The next_page_token value returned from a previous list
+    pageToken: The `next_page_token` value returned from a previous list
       request, if any.
     parent: [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the group
@@ -1935,7 +1935,10 @@ class GoogleAppsCloudidentityDevicesV1Device(_messages.Message):
     name: Output only. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the Device
       in format: `devices/{device}`, where device is the unique id assigned to
-      the Device.
+      the Device. Important: Device API scopes require that you use domain-
+      wide delegation to access the API. For more information, see [Set up the
+      Devices API](https://cloud.google.com/identity/docs/how-to/setup-
+      devices).
     networkOperator: Output only. Mobile or network operator of device, if
       available.
     osVersion: Output only. OS version of the device. Example: Android 8.1.0.
@@ -2277,8 +2280,8 @@ class Group(_messages.Message):
 
   Messages:
     LabelsValue: Required. One or more label entries that apply to the Group.
-      Currently supported labels contain a key with an empty value. Google
-      Groups are the default type of group and have a label with a key of
+      Labels contain a key with an empty value. Google Groups are the default
+      type of group and have a label with a key of
       `cloudidentity.googleapis.com/groups.discussion_forum` and an empty
       value. Existing Google Groups can have an additional label with a key of
       `cloudidentity.googleapis.com/groups.security` and an empty value added
@@ -2286,7 +2289,11 @@ class Group(_messages.Message):
       removed once added.** Dynamic groups have a label with a key of
       `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups
       for Cloud Search have a label with a key of `system/groups/external` and
-      an empty value.
+      an empty value. (Beta) Google Groups can be
+      [locked](https://support.google.com/a?p=locked-groups). To lock a group,
+      add a label with a key of `cloudidentity.googleapis.com/groups.locked`
+      and an empty value. Doing so locks the group. To unlock the group,
+      remove this label.
 
   Fields:
     additionalGroupKeys: Output only. Additional group keys associated with
@@ -2298,8 +2305,8 @@ class Group(_messages.Message):
     dynamicGroupMetadata: Dynamic group metadata like queries and status.
     groupKey: Required. The `EntityKey` of the `Group`.
     labels: Required. One or more label entries that apply to the Group.
-      Currently supported labels contain a key with an empty value. Google
-      Groups are the default type of group and have a label with a key of
+      Labels contain a key with an empty value. Google Groups are the default
+      type of group and have a label with a key of
       `cloudidentity.googleapis.com/groups.discussion_forum` and an empty
       value. Existing Google Groups can have an additional label with a key of
       `cloudidentity.googleapis.com/groups.security` and an empty value added
@@ -2307,7 +2314,11 @@ class Group(_messages.Message):
       removed once added.** Dynamic groups have a label with a key of
       `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups
       for Cloud Search have a label with a key of `system/groups/external` and
-      an empty value.
+      an empty value. (Beta) Google Groups can be
+      [locked](https://support.google.com/a?p=locked-groups). To lock a group,
+      add a label with a key of `cloudidentity.googleapis.com/groups.locked`
+      and an empty value. Doing so locks the group. To unlock the group,
+      remove this label.
     name: Output only. The [resource
       name](https://cloud.google.com/apis/design/resource_names) of the
       `Group`. Shall be of the form `groups/{group_id}`.
@@ -2324,9 +2335,9 @@ class Group(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Required. One or more label entries that apply to the Group. Currently
-    supported labels contain a key with an empty value. Google Groups are the
-    default type of group and have a label with a key of
+    r"""Required. One or more label entries that apply to the Group. Labels
+    contain a key with an empty value. Google Groups are the default type of
+    group and have a label with a key of
     `cloudidentity.googleapis.com/groups.discussion_forum` and an empty value.
     Existing Google Groups can have an additional label with a key of
     `cloudidentity.googleapis.com/groups.security` and an empty value added to
@@ -2334,7 +2345,11 @@ class Group(_messages.Message):
     removed once added.** Dynamic groups have a label with a key of
     `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups for
     Cloud Search have a label with a key of `system/groups/external` and an
-    empty value.
+    empty value. (Beta) Google Groups can be
+    [locked](https://support.google.com/a?p=locked-groups). To lock a group,
+    add a label with a key of `cloudidentity.googleapis.com/groups.locked` and
+    an empty value. Doing so locks the group. To unlock the group, remove this
+    label.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2856,9 +2871,10 @@ class ModifyMembershipRolesRequest(_messages.Message):
       to delete a `Membership`, call MembershipsService.DeleteMembership
       instead. Must not contain `MEMBER`. Must not be set if
       `update_roles_params` is set.
-    updateRolesParams: The `MembershipRole`s to be updated. Updating roles in
-      the same request as adding or removing roles is not supported. Must not
-      be set if either `add_roles` or `remove_roles` is set.
+    updateRolesParams: (== disable_replacement_words add_roles,remove_roles
+      Updating roles in the same request as adding or removing roles is not
+      supported. Must not be set if either `add_roles` or `remove_roles` is
+      set.
   """
 
   addRoles = _messages.MessageField('MembershipRole', 1, repeated=True)

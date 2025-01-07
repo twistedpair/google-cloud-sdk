@@ -65,6 +65,112 @@ class EventarcpublishingProjectsLocationsMessageBusesPublishRequest(_messages.Me
   messageBus = _messages.StringField(2, required=True)
 
 
+class GoogleCloudEventarcPublishingV1CloudEvent(_messages.Message):
+  r"""CloudEvent represents a vendor-neutral specification for defining the
+  format of event data.
+
+  Messages:
+    AttributesValue: Optional. Used for Optional & Extension Attributes
+    ProtoDataValue: Optional. Proto data.
+
+  Fields:
+    attributes: Optional. Used for Optional & Extension Attributes
+    binaryData: Optional. Binary data.
+    id: Required. Identifies the event. Producers MUST ensure that source + id
+      is unique for each distinct event.
+    protoData: Optional. Proto data.
+    source: Required. Identifies the context in which an event happened. URI-
+      reference
+    specVersion: Required. The version of the CloudEvents specification which
+      the event uses.
+    textData: Optional. Text data.
+    type: Required. This attribute contains a value describing the type of
+      event related to the originating occurrence.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AttributesValue(_messages.Message):
+    r"""Optional. Used for Optional & Extension Attributes
+
+    Messages:
+      AdditionalProperty: An additional property for a AttributesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type AttributesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AttributesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A
+          GoogleCloudEventarcPublishingV1CloudEventCloudEventAttributeValue
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudEventarcPublishingV1CloudEventCloudEventAttributeValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ProtoDataValue(_messages.Message):
+    r"""Optional. Proto data.
+
+    Messages:
+      AdditionalProperty: An additional property for a ProtoDataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ProtoDataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  attributes = _messages.MessageField('AttributesValue', 1)
+  binaryData = _messages.BytesField(2)
+  id = _messages.StringField(3)
+  protoData = _messages.MessageField('ProtoDataValue', 4)
+  source = _messages.StringField(5)
+  specVersion = _messages.StringField(6)
+  textData = _messages.StringField(7)
+  type = _messages.StringField(8)
+
+
+class GoogleCloudEventarcPublishingV1CloudEventCloudEventAttributeValue(_messages.Message):
+  r"""The following abstract data types are available for use in attributes.
+
+  Fields:
+    ceBoolean: Boolean value.
+    ceBytes: Bytes value.
+    ceInteger: Integer value.
+    ceString: String value.
+    ceTimestamp: Timestamp value.
+    ceUri: URI value.
+    ceUriRef: URI-reference value.
+  """
+
+  ceBoolean = _messages.BooleanField(1)
+  ceBytes = _messages.BytesField(2)
+  ceInteger = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  ceString = _messages.StringField(4)
+  ceTimestamp = _messages.StringField(5)
+  ceUri = _messages.StringField(6)
+  ceUriRef = _messages.StringField(7)
+
+
 class GoogleCloudEventarcPublishingV1PublishChannelConnectionEventsRequest(_messages.Message):
   r"""The request message for the PublishChannelConnectionEvents method.
 
@@ -188,7 +294,7 @@ class GoogleCloudEventarcPublishingV1PublishRequest(_messages.Message):
   avroMessage = _messages.BytesField(1)
   jsonMessage = _messages.StringField(2)
   messageUid = _messages.StringField(3)
-  protoMessage = _messages.MessageField('IoCloudeventsV1CloudEvent', 4)
+  protoMessage = _messages.MessageField('GoogleCloudEventarcPublishingV1CloudEvent', 4)
 
 
 class GoogleCloudEventarcPublishingV1PublishResponse(_messages.Message):

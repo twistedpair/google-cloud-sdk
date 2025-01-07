@@ -88,6 +88,8 @@ class Cluster(_messages.Message):
       in this cluster. If unspecified, the Kubernetes default value will be
       used.
     endpoint: Output only. The IP address of the Kubernetes API server.
+    externalLoadBalancerAddressPools: Optional. External load balancer pools
+      for cluster.
     externalLoadBalancerIpv4AddressPools: Optional. IPv4 address pools for
       cluster data plane external load balancing.
     externalLoadBalancerIpv6AddressPools: Optional. IPv6 address pools for
@@ -182,23 +184,24 @@ class Cluster(_messages.Message):
   createTime = _messages.StringField(7)
   defaultMaxPodsPerNode = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   endpoint = _messages.StringField(9)
-  externalLoadBalancerIpv4AddressPools = _messages.StringField(10, repeated=True)
-  externalLoadBalancerIpv6AddressPools = _messages.StringField(11, repeated=True)
-  fleet = _messages.MessageField('Fleet', 12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 14, repeated=True)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 15)
-  name = _messages.StringField(16)
-  networking = _messages.MessageField('ClusterNetworking', 17)
-  nodeVersion = _messages.StringField(18)
-  port = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 20)
-  status = _messages.EnumField('StatusValueValuesEnum', 21)
-  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 22)
-  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 23)
-  targetVersion = _messages.StringField(24)
-  updateTime = _messages.StringField(25)
-  zoneStorageEncryption = _messages.MessageField('ZoneStorageEncryption', 26)
+  externalLoadBalancerAddressPools = _messages.MessageField('ExternalLoadBalancerPool', 10, repeated=True)
+  externalLoadBalancerIpv4AddressPools = _messages.StringField(11, repeated=True)
+  externalLoadBalancerIpv6AddressPools = _messages.StringField(12, repeated=True)
+  fleet = _messages.MessageField('Fleet', 13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 15, repeated=True)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 16)
+  name = _messages.StringField(17)
+  networking = _messages.MessageField('ClusterNetworking', 18)
+  nodeVersion = _messages.StringField(19)
+  port = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 21)
+  status = _messages.EnumField('StatusValueValuesEnum', 22)
+  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 23)
+  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 24)
+  targetVersion = _messages.StringField(25)
+  updateTime = _messages.StringField(26)
+  zoneStorageEncryption = _messages.MessageField('ZoneStorageEncryption', 27)
 
 
 class ClusterNetworking(_messages.Message):
@@ -784,6 +787,32 @@ class Empty(_messages.Message):
 
 
 
+class ExternalLoadBalancerPool(_messages.Message):
+  r"""External load balancer pool with custom config such as name, manual/auto
+  assign, non-overlapping ipv4 and optional ipv6 address range.
+
+  Fields:
+    addressPool: Optional. Name of the external load balancer pool.
+    avoidBuggyIps: Optional. If true, the pool omits IP addresses ending in .0
+      and .255. Some network hardware drops traffic to these special
+      addresses. Its default value is false.
+    ipv4Range: Required. Non-overlapping IPv4 address range of the external
+      load balancer pool.
+    ipv6Range: Optional. Non-overlapping IPv6 address range of the external
+      load balancer pool.
+    manualAssign: Optional. If true, addresses in this pool are not
+      automatically assigned to Kubernetes Services. If true, an IP address in
+      this pool is used only when it is specified explicitly by a service. Its
+      default value is false.
+  """
+
+  addressPool = _messages.StringField(1)
+  avoidBuggyIps = _messages.BooleanField(2)
+  ipv4Range = _messages.StringField(3, repeated=True)
+  ipv6Range = _messages.StringField(4, repeated=True)
+  manualAssign = _messages.BooleanField(5)
+
+
 class Fleet(_messages.Message):
   r"""Fleet related configuration. Fleets are a Google Cloud concept for
   logically organizing clusters, letting you use and manage multi-cluster
@@ -1168,6 +1197,10 @@ class Machine(_messages.Message):
   r"""A Google Distributed Cloud Edge machine capable of acting as a
   Kubernetes node.
 
+  Enums:
+    PurposeValueValuesEnum: The type of cluster the machine is used for.
+    StatusValueValuesEnum: Output only. The current status of the machine.
+
   Messages:
     LabelsValue: Labels associated with this resource.
 
@@ -1184,10 +1217,37 @@ class Machine(_messages.Message):
       /{node}".
     labels: Labels associated with this resource.
     name: Required. The resource name of the machine.
+    purpose: The type of cluster the machine is used for.
+    status: Output only. The current status of the machine.
     updateTime: Output only. The time when the node pool was last updated.
     version: Output only. The software version of the machine.
     zone: The Google Distributed Cloud Edge zone of this machine.
   """
+
+  class PurposeValueValuesEnum(_messages.Enum):
+    r"""The type of cluster the machine is used for.
+
+    Values:
+      PURPOSE_UNSPECIFIED: Unspecified purpose.
+      VIRTUALIZED_WORKLOAD: Machine is used for virtual workload.
+      BAREMETAL_CLUSTER: Machine is used for a baremetal user cluster.
+    """
+    PURPOSE_UNSPECIFIED = 0
+    VIRTUALIZED_WORKLOAD = 1
+    BAREMETAL_CLUSTER = 2
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Output only. The current status of the machine.
+
+    Values:
+      STATUS_UNSPECIFIED: Status unknown.
+      READY: The machine is ready to host a node. This is the default.
+      DISABLED_FOR_REPAIR: The machine has been disabled for repair by adding
+        1 or more disable claims.
+    """
+    STATUS_UNSPECIFIED = 0
+    READY = 1
+    DISABLED_FOR_REPAIR = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1218,9 +1278,11 @@ class Machine(_messages.Message):
   hostedNode = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
-  version = _messages.StringField(7)
-  zone = _messages.StringField(8)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 6)
+  status = _messages.EnumField('StatusValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
+  version = _messages.StringField(9)
+  zone = _messages.StringField(10)
 
 
 class MaintenanceEvent(_messages.Message):

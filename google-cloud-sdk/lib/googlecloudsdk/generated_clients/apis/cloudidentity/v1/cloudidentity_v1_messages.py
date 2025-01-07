@@ -895,7 +895,7 @@ class CloudidentityGroupsMembershipsSearchDirectGroupsRequest(_messages.Message)
       order_by="group_key" or order_by="group_key asc". Sort by the descending
       group key: order_by="group_key desc".
     pageSize: The default page size is 200 (max 1000).
-    pageToken: The next_page_token value returned from a previous list
+    pageToken: The `next_page_token` value returned from a previous list
       request, if any
     parent: [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the group
@@ -923,7 +923,7 @@ class CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest(_messages.Mess
 
   Fields:
     pageSize: The default page size is 200 (max 1000).
-    pageToken: The next_page_token value returned from a previous list
+    pageToken: The `next_page_token` value returned from a previous list
       request, if any.
     parent: [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the group
@@ -941,7 +941,7 @@ class CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest(_messages.Mess
       within a particular customer, e.g. `parent ==
       'customers/{customer_id}'`. The `customer_id` must begin with "C" (for
       example, 'C046psxkn'). This filtering is only supported for Admins with
-      groups read permissons on the input customer. Example query:
+      groups read permissions on the input customer. Example query:
       `member_key_id == 'member_key_id_value' && in labels && parent ==
       'customers/C046psxkn'`
   """
@@ -958,7 +958,7 @@ class CloudidentityGroupsMembershipsSearchTransitiveMembershipsRequest(_messages
 
   Fields:
     pageSize: The default page size is 200 (max 1000).
-    pageToken: The next_page_token value returned from a previous list
+    pageToken: The `next_page_token` value returned from a previous list
       request, if any.
     parent: [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the group
@@ -1259,6 +1259,50 @@ class CloudidentityInboundSsoAssignmentsPatchRequest(_messages.Message):
   inboundSsoAssignment = _messages.MessageField('InboundSsoAssignment', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class CloudidentityPoliciesGetRequest(_messages.Message):
+  r"""A CloudidentityPoliciesGetRequest object.
+
+  Fields:
+    name: Required. The name of the policy to retrieve. Format:
+      "policies/{policy}".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudidentityPoliciesListRequest(_messages.Message):
+  r"""A CloudidentityPoliciesListRequest object.
+
+  Fields:
+    filter: Optional. A CEL expression for filtering the results. Policies can
+      be filtered by application with this expression: setting.name =
+      'settings/gmail.*' Policies can be filtered by setting type with this
+      expression: setting.name = '*.service_status' A maximum of one of the
+      above setting.name clauses can be used. Policies can be filtered by
+      customer with this expression: customer = "customers/{customer}" Where
+      `customer` is the `id` from the [Admin SDK `Customer`
+      resource](https://developers.google.com/admin-
+      sdk/directory/reference/rest/v1/customers). You may use
+      `customers/my_customer` to specify your own organization. When no
+      customer is mentioned it will be default to customers/my_customer. A
+      maximum of one customer clause can be used. The above clauses can only
+      be combined together in a single filter expression with the `&&`
+      operator.
+    pageSize: Optional. The maximum number of results to return. The service
+      can return fewer than this number. If omitted or set to 0, the default
+      is 50 results per page. The maximum allowed value is 100. `page_size`
+      values greater than 100 default to 100.
+    pageToken: Optional. The pagination token received from a prior call to
+      PoliciesService.ListPolicies to retrieve the next page of results. When
+      paginating, all other parameters provided to `ListPoliciesRequest` must
+      match the call that provided the page token.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
 
 
 class CreateGroupMetadata(_messages.Message):
@@ -2073,7 +2117,10 @@ class GoogleAppsCloudidentityDevicesV1Device(_messages.Message):
     name: Output only. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the Device
       in format: `devices/{device}`, where device is the unique id assigned to
-      the Device.
+      the Device. Important: Device API scopes require that you use domain-
+      wide delegation to access the API. For more information, see [Set up the
+      Devices API](https://cloud.google.com/identity/docs/how-to/setup-
+      devices).
     networkOperator: Output only. Mobile or network operator of device, if
       available.
     osVersion: Output only. OS version of the device. Example: Android 8.1.0.
@@ -2848,6 +2895,19 @@ class ListMembershipsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListPoliciesResponse(_messages.Message):
+  r"""The response message for PoliciesService.ListPolicies.
+
+  Fields:
+    nextPageToken: The pagination token to retrieve the next page of results.
+      If this field is empty, there are no subsequent pages.
+    policies: The results
+  """
+
+  nextPageToken = _messages.StringField(1)
+  policies = _messages.MessageField('Policy', 2, repeated=True)
+
+
 class ListUserInvitationsResponse(_messages.Message):
   r"""Response message for UserInvitation listing request.
 
@@ -3028,8 +3088,8 @@ class MembershipAdjacencyList(_messages.Message):
   Fields:
     edges: Each edge contains information about the member that belongs to
       this group. Note: Fields returned here will help identify the specific
-      Membership resource (e.g name, preferred_member_key and role), but may
-      not be a comprehensive list of all fields.
+      Membership resource (e.g `name`, `preferred_member_key` and `role`), but
+      may not be a comprehensive list of all fields.
     group: Resource name of the group that the members belong to.
   """
 
@@ -3288,6 +3348,81 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class Policy(_messages.Message):
+  r"""A Policy resource binds an instance of a single Setting with the scope
+  of a PolicyQuery. The Setting instance will be applied to all entities that
+  satisfy the query.
+
+  Enums:
+    TypeValueValuesEnum: Output only. The type of the policy.
+
+  Fields:
+    customer: Immutable. Customer that the Policy belongs to. The value is in
+      the format 'customers/{customerId}'. The `customerId` must begin with
+      "C" To find your customer ID in Admin Console see
+      https://support.google.com/a/answer/10070793.
+    name: Output only. Identifier. The [resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Policy. Format: policies/{policy}.
+    policyQuery: Required. The PolicyQuery the Setting applies to.
+    setting: Required. The Setting configured by this Policy.
+    type: Output only. The type of the policy.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the policy.
+
+    Values:
+      POLICY_TYPE_UNSPECIFIED: Unspecified policy type.
+      SYSTEM: Policy type denoting the system-configured policies.
+      ADMIN: Policy type denoting the admin-configurable policies.
+    """
+    POLICY_TYPE_UNSPECIFIED = 0
+    SYSTEM = 1
+    ADMIN = 2
+
+  customer = _messages.StringField(1)
+  name = _messages.StringField(2)
+  policyQuery = _messages.MessageField('PolicyQuery', 3)
+  setting = _messages.MessageField('Setting', 4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
+
+
+class PolicyQuery(_messages.Message):
+  r"""PolicyQuery
+
+  Fields:
+    group: Immutable. The group that the query applies to. This field is only
+      set if there is a single value for group that satisfies all clauses of
+      the query. If no group applies, this will be the empty string.
+    orgUnit: Required. Immutable. Non-empty default. The OrgUnit the query
+      applies to. This field is only set if there is a single value for
+      org_unit that satisfies all clauses of the query.
+    query: Immutable. The CEL query that defines which entities the Policy
+      applies to (ex. a User entity). For details about CEL see
+      https://opensource.google.com/projects/cel. The OrgUnits the Policy
+      applies to are represented by a clause like so:
+      entity.org_units.exists(org_unit, org_unit.org_unit_id ==
+      orgUnitId('{orgUnitId}')) The Group the Policy applies to are
+      represented by a clause like so: entity.groups.exists(group,
+      group.group_id == groupId('{groupId}')) The Licenses the Policy applies
+      to are represented by a clause like so: entity.licenses.exists(license,
+      license in ['/product/{productId}/sku/{skuId}']) The above clauses can
+      be present in any combination, and used in conjunction with the &&, ||
+      and ! operators. The org_unit and group fields below are helper fields
+      that contain the corresponding value(s) as the query to make the query
+      easier to use.
+    sortOrder: Output only. The decimal sort order of this PolicyQuery. The
+      value is relative to all other policies with the same setting type for
+      the customer. (There are no duplicates within this set).
+  """
+
+  group = _messages.StringField(1)
+  orgUnit = _messages.StringField(2)
+  query = _messages.StringField(3)
+  sortOrder = _messages.FloatField(4)
+
+
 class RestrictionEvaluation(_messages.Message):
   r"""The evaluated state of this restriction.
 
@@ -3464,6 +3599,45 @@ class SendUserInvitationRequest(_messages.Message):
   UserInvitation.
   """
 
+
+
+class Setting(_messages.Message):
+  r"""Setting
+
+  Messages:
+    ValueValue: Required. The value of the Setting.
+
+  Fields:
+    type: Required. Immutable. The type of the Setting. .
+    value: Required. The value of the Setting.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ValueValue(_messages.Message):
+    r"""Required. The value of the Setting.
+
+    Messages:
+      AdditionalProperty: An additional property for a ValueValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ValueValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  type = _messages.StringField(1)
+  value = _messages.MessageField('ValueValue', 2)
 
 
 class SignInBehavior(_messages.Message):

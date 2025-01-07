@@ -148,8 +148,6 @@ class Instance(_messages.Message):
       Gibibytes (GiB). Allowed values are between 12000 and 100000, in
       multiples of 4000; e.g., 12000, 16000, 20000, ...
     createTime: Output only. The time when the instance was created.
-    daosVersion: Output only. The version of DAOS software running in the
-      instance.
     deploymentType: Optional. The deployment type of the instance. Allowed
       values are: * `SCRATCH`: the instance is a scratch instance. *
       `PERSISTENT`: the instance is a persistent instance.
@@ -251,6 +249,8 @@ class Instance(_messages.Message):
       DELETING: The instance is being deleted.
       FAILED: The instance is not usable.
       UPGRADING: The instance is being upgraded.
+      REPAIRING: The instance is being repaired. This should only be used by
+        instances using the `PERSISTENT` deployment type.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -258,6 +258,7 @@ class Instance(_messages.Message):
     DELETING = 3
     FAILED = 4
     UPGRADING = 5
+    REPAIRING = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -290,18 +291,17 @@ class Instance(_messages.Message):
   accessPoints = _messages.StringField(1, repeated=True)
   capacityGib = _messages.IntegerField(2)
   createTime = _messages.StringField(3)
-  daosVersion = _messages.StringField(4)
-  deploymentType = _messages.EnumField('DeploymentTypeValueValuesEnum', 5)
-  description = _messages.StringField(6)
-  directoryStripeLevel = _messages.EnumField('DirectoryStripeLevelValueValuesEnum', 7)
-  effectiveReservedIpRange = _messages.StringField(8)
-  fileStripeLevel = _messages.EnumField('FileStripeLevelValueValuesEnum', 9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  network = _messages.StringField(12)
-  reservedIpRange = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  updateTime = _messages.StringField(15)
+  deploymentType = _messages.EnumField('DeploymentTypeValueValuesEnum', 4)
+  description = _messages.StringField(5)
+  directoryStripeLevel = _messages.EnumField('DirectoryStripeLevelValueValuesEnum', 6)
+  effectiveReservedIpRange = _messages.StringField(7)
+  fileStripeLevel = _messages.EnumField('FileStripeLevelValueValuesEnum', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  reservedIpRange = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  updateTime = _messages.StringField(14)
 
 
 class ListInstancesResponse(_messages.Message):

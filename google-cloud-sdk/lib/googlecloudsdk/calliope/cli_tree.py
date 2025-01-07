@@ -755,9 +755,7 @@ def CliTreeConfigDir():
   else:
     raise SdkConfigNotFoundError(
         'CLI config directory [{}] not found for this installation. '
-        'CLI tree cannot be loaded or generated.'.format(
-            global_config_dir
-        )
+        'CLI tree cannot be loaded or generated.'.format(global_config_dir)
     )
   return cli_tree_config_dir
 

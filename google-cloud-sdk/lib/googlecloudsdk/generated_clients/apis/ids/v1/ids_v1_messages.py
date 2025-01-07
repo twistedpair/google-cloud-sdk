@@ -344,8 +344,10 @@ class Condition(_messages.Message):
         CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
         based on the *absence* of a credentials type, so the conditions can
         only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
-      CREDS_ASSERTION: EXPERIMENTAL -- DO NOT USE. The conditions can only be
-        used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+      CREDS_ASSERTION: Properties of the credentials supplied with this
+        request. See http://go/rpcsp-credential-assertions?polyglot=rpcsp-v1-0
+        The conditions can only be used in a "positive" context (e.g.,
+        ALLOW/IN or DENY/NOT_IN).
     """
     NO_ATTR = 0
     AUTHORITY = 1
@@ -2104,8 +2106,9 @@ class OperationMetadata(_messages.Message):
     endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      successfully been cancelled have google.longrunning.Operation.error
+      value with a google.rpc.Status.code of 1, corresponding to
+      `Code.CANCELLED`.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
     target: Output only. Server-defined resource path for the target of the

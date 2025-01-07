@@ -172,6 +172,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SYSTEMVERSIONS = (
+      'projects.locations.systemVersions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/systemVersions/'
+              '{systemVersionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_NETWORKS = (
       'projects.networks',
       'projects/{projectsId}/global/networks/{networksId}',

@@ -101,6 +101,8 @@ class AiplatformDatasetsDatasetVersionsPatchRequest(_messages.Message):
       GoogleCloudAiplatformV1beta1DatasetVersion resource to be passed as the
       request body.
     name: Output only. Identifier. The resource name of the DatasetVersion.
+      Format: `projects/{project}/locations/{location}/datasets/{dataset}/data
+      setVersions/{dataset_version}`
     updateMask: Required. The update mask applies to the resource. For the
       `FieldMask` definition, see google.protobuf.FieldMask. Updatable fields:
       * `display_name`
@@ -181,7 +183,8 @@ class AiplatformDatasetsPatchRequest(_messages.Message):
   Fields:
     googleCloudAiplatformV1beta1Dataset: A GoogleCloudAiplatformV1beta1Dataset
       resource to be passed as the request body.
-    name: Output only. Identifier. The resource name of the Dataset.
+    name: Output only. Identifier. The resource name of the Dataset. Format:
+      `projects/{project}/locations/{location}/datasets/{dataset}`
     updateMask: Required. The update mask applies to the resource. For the
       `FieldMask` definition, see google.protobuf.FieldMask. Updatable fields:
       * `display_name` * `description` * `labels`
@@ -1250,6 +1253,8 @@ class AiplatformProjectsLocationsDatasetsDatasetVersionsPatchRequest(_messages.M
       GoogleCloudAiplatformV1beta1DatasetVersion resource to be passed as the
       request body.
     name: Output only. Identifier. The resource name of the DatasetVersion.
+      Format: `projects/{project}/locations/{location}/datasets/{dataset}/data
+      setVersions/{dataset_version}`
     updateMask: Required. The update mask applies to the resource. For the
       `FieldMask` definition, see google.protobuf.FieldMask. Updatable fields:
       * `display_name`
@@ -1422,7 +1427,8 @@ class AiplatformProjectsLocationsDatasetsPatchRequest(_messages.Message):
   Fields:
     googleCloudAiplatformV1beta1Dataset: A GoogleCloudAiplatformV1beta1Dataset
       resource to be passed as the request body.
-    name: Output only. Identifier. The resource name of the Dataset.
+    name: Output only. Identifier. The resource name of the Dataset. Format:
+      `projects/{project}/locations/{location}/datasets/{dataset}`
     updateMask: Required. The update mask applies to the resource. For the
       `FieldMask` definition, see google.protobuf.FieldMask. Updatable fields:
       * `display_name` * `description` * `labels`
@@ -3189,6 +3195,32 @@ class AiplatformProjectsLocationsFeatureGroupsFeaturesPatchRequest(_messages.Mes
   updateMask = _messages.StringField(3)
 
 
+class AiplatformProjectsLocationsFeatureGroupsGetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeatureGroupsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsFeatureGroupsGetRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsFeatureGroupsGetRequest object.
 
@@ -3309,6 +3341,41 @@ class AiplatformProjectsLocationsFeatureGroupsPatchRequest(_messages.Message):
   googleCloudAiplatformV1beta1FeatureGroup = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureGroup', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsFeatureGroupsSetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeatureGroupsSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsFeatureGroupsTestIamPermissionsRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeatureGroupsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+  resource = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsFeatureOnlineStoresCreateRequest(_messages.Message):
@@ -11399,7 +11466,7 @@ class CloudAiLargeModelsVisionVideo(_messages.Message):
 
 
 class CloudAiPlatformCommonCreatePipelineJobApiErrorDetail(_messages.Message):
-  r"""Create API error message for Vertex Pipeline. Next Id: 3.
+  r"""Create API error message for Vertex Pipeline.
 
   Enums:
     ErrorCauseValueValuesEnum: The error root cause returned by
@@ -11434,8 +11501,8 @@ class CloudAiPlatformCommonCreatePipelineJobApiErrorDetail(_messages.Message):
       INVALID_RESOLVER_SPEC: Resolver spec is invalid.
       INVALID_RUNTIME_PARAMETERS: Runtime Parameters are invalid.
       CLOUD_API_NOT_ENABLED: Cloud API not enabled.
-      INVALID_GCS_INPUT_URI: Invalid GCS input uri
-      INVALID_GCS_OUTPUT_URI: Invalid GCS output uri
+      INVALID_GCS_INPUT_URI: Invalid Cloud Storage input uri
+      INVALID_GCS_OUTPUT_URI: Invalid Cloud Storage output uri
       INVALID_COMPONENT_SPEC: Component spec of pipeline is invalid.
       INVALID_DAG_OUTPUTS_SPEC: DagOutputsSpec is invalid.
       INVALID_DAG_SPEC: DagSpec is invalid.
@@ -11736,7 +11803,8 @@ class GoogleCloudAiplatformV1beta1AnnotationSpec(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1ApiAuth(_messages.Message):
-  r"""The generic reusable api auth config.
+  r"""The generic reusable api auth config. Deprecated. Please use AuthConfig
+  (google/cloud/aiplatform/master/auth.proto) instead.
 
   Fields:
     apiKeyConfig: The API secret.
@@ -12105,13 +12173,16 @@ class GoogleCloudAiplatformV1beta1AuthConfigApiKeyConfig(_messages.Message):
     HttpElementLocationValueValuesEnum: Required. The location of the API key.
 
   Fields:
-    apiKeySecret: Required. The name of the SecretManager secret version
+    apiKeySecret: Optional. The name of the SecretManager secret version
       resource storing the API key. Format:
-      `projects/{project}/secrets/{secrete}/versions/{version}` - If
-      specified, the `secretmanager.versions.access` permission should be
-      granted to Vertex AI Extension Service Agent
-      (https://cloud.google.com/vertex-ai/docs/general/access-control#service-
-      agents) on the specified resource.
+      `projects/{project}/secrets/{secrete}/versions/{version}` - If both
+      `api_key_secret` and `api_key_string` are specified, this field takes
+      precedence over `api_key_string`. - If specified, the
+      `secretmanager.versions.access` permission should be granted to Vertex
+      AI Extension Service Agent (https://cloud.google.com/vertex-
+      ai/docs/general/access-control#service-agents) on the specified
+      resource.
+    apiKeyString: Optional. The API key to be used in the request directly.
     httpElementLocation: Required. The location of the API key.
     name: Required. The parameter name of the API key. E.g. If the API request
       is "https://example.com/act?api_key=", "api_key" would be the parameter
@@ -12137,8 +12208,9 @@ class GoogleCloudAiplatformV1beta1AuthConfigApiKeyConfig(_messages.Message):
     HTTP_IN_COOKIE = 5
 
   apiKeySecret = _messages.StringField(1)
-  httpElementLocation = _messages.EnumField('HttpElementLocationValueValuesEnum', 2)
-  name = _messages.StringField(3)
+  apiKeyString = _messages.StringField(2)
+  httpElementLocation = _messages.EnumField('HttpElementLocationValueValuesEnum', 3)
+  name = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1beta1AuthConfigGoogleServiceAccountConfig(_messages.Message):
@@ -13060,8 +13132,7 @@ class GoogleCloudAiplatformV1beta1BleuSpec(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1Blob(_messages.Message):
-  r"""Content blob. It's preferred to send as text directly rather than raw
-  bytes.
+  r"""Content blob.
 
   Fields:
     data: Required. Raw bytes.
@@ -14935,7 +15006,8 @@ class GoogleCloudAiplatformV1beta1Dataset(_messages.Message):
       aiplatform/schema/dataset/metadata/.
     modelReference: Optional. Reference to the public base model last used by
       the dataset. Only set for prompt datasets.
-    name: Output only. Identifier. The resource name of the Dataset.
+    name: Output only. Identifier. The resource name of the Dataset. Format:
+      `projects/{project}/locations/{location}/datasets/{dataset}`
     satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     savedQueries: All SavedQueries belong to the Dataset will be returned in
@@ -15083,6 +15155,8 @@ class GoogleCloudAiplatformV1beta1DatasetVersion(_messages.Message):
     modelReference: Output only. Reference to the public base model last used
       by the dataset version. Only set for prompt dataset versions.
     name: Output only. Identifier. The resource name of the DatasetVersion.
+      Format: `projects/{project}/locations/{location}/datasets/{dataset}/data
+      setVersions/{dataset_version}`
     satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     updateTime: Output only. Timestamp when this DatasetVersion was last
@@ -15422,7 +15496,7 @@ class GoogleCloudAiplatformV1beta1DeployPublisherModelRequest(_messages.Message)
     model: Required. The name of the PublisherModel resource. Format:
       `publishers/{publisher}/models/{publisher_model}@{version_id}`, or
       `publishers/hf-{hugging-face-author}/models/{hugging-face-model-
-      name}@001`
+      name}@001` or Hugging Face model ID like `google/gemma-2-2b-it`.
     modelDisplayName: Optional. The user-specified display name of the
       uploaded model. If not set, a default name will be used.
   """
@@ -15903,13 +15977,13 @@ class GoogleCloudAiplatformV1beta1DistillationSpec(_messages.Message):
     baseTeacherModel: The base teacher model that is being distilled, e.g.,
       "gemini-1.0-pro-002".
     hyperParameters: Optional. Hyperparameters for Distillation.
-    pipelineRootDirectory: Required. Deprecated. A path in a Cloud Storage
-      bucket, which will be treated as the root output directory of the
-      distillation pipeline. It is used by the system to generate the paths of
-      output artifacts.
+    pipelineRootDirectory: Deprecated. A path in a Cloud Storage bucket, which
+      will be treated as the root output directory of the distillation
+      pipeline. It is used by the system to generate the paths of output
+      artifacts.
     studentModel: The student model that is being tuned, e.g.,
       "google/gemma-2b-1.1-it". Deprecated. Use base_model instead.
-    trainingDatasetUri: Required. Cloud Storage path to file containing
+    trainingDatasetUri: Deprecated. Cloud Storage path to file containing
       training dataset for tuning. The dataset must be formatted as a JSONL
       file.
     tunedTeacherModelSource: The resource name of the Tuned teacher model.
@@ -17997,6 +18071,30 @@ class GoogleCloudAiplatformV1beta1ExportModelRequestOutputConfig(_messages.Messa
 
 class GoogleCloudAiplatformV1beta1ExportModelResponse(_messages.Message):
   r"""Response message of ModelService.ExportModel operation."""
+
+
+class GoogleCloudAiplatformV1beta1ExportPublisherModelOperationMetadata(_messages.Message):
+  r"""Runtime operation information for
+  ModelGardenService.ExportPublisherModel.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1ExportPublisherModelResponse(_messages.Message):
+  r"""Response message for ModelGardenService.ExportPublisherModel.
+
+  Fields:
+    destinationUri: The destination uri of the model weights.
+    publisherModel: The name of the PublisherModel resource. Format:
+      `publishers/{publisher}/models/{publisher_model}@{version_id}`
+  """
+
+  destinationUri = _messages.StringField(1)
+  publisherModel = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1ExportTensorboardTimeSeriesDataRequest(_messages.Message):
@@ -20756,9 +20854,9 @@ class GoogleCloudAiplatformV1beta1GenerationConfig(_messages.Message):
   r"""Generation config.
 
   Enums:
-    ResponseModalitiesValueListEntryValuesEnum:
-    TokenResolutionValueValuesEnum: Optional. If specified, the token
+    MediaResolutionValueValuesEnum: Optional. If specified, the media
       resolution specified will be used.
+    ResponseModalitiesValueListEntryValuesEnum:
 
   Fields:
     audioTimestamp: Optional. If enabled, audio timestamp will be included in
@@ -20768,6 +20866,8 @@ class GoogleCloudAiplatformV1beta1GenerationConfig(_messages.Message):
     logprobs: Optional. Logit probabilities.
     maxOutputTokens: Optional. The maximum number of output tokens to generate
       per message.
+    mediaResolution: Optional. If specified, the media resolution specified
+      will be used.
     presencePenalty: Optional. Positive penalties.
     responseLogprobs: Optional. If true, export the logprobs results in
       response.
@@ -20785,13 +20885,27 @@ class GoogleCloudAiplatformV1beta1GenerationConfig(_messages.Message):
       `application/json`: Schema for JSON response.
     routingConfig: Optional. Routing configuration.
     seed: Optional. Seed.
+    speechConfig: Optional. The speech generation config.
     stopSequences: Optional. Stop sequences.
     temperature: Optional. Controls the randomness of predictions.
-    tokenResolution: Optional. If specified, the token resolution specified
-      will be used.
     topK: Optional. If specified, top-k sampling will be used.
     topP: Optional. If specified, nucleus sampling will be used.
   """
+
+  class MediaResolutionValueValuesEnum(_messages.Enum):
+    r"""Optional. If specified, the media resolution specified will be used.
+
+    Values:
+      MEDIA_RESOLUTION_UNSPECIFIED: Media resolution has not been set.
+      MEDIA_RESOLUTION_LOW: Media resolution set to low (64 tokens).
+      MEDIA_RESOLUTION_MEDIUM: Media resolution set to medium (256 tokens).
+      MEDIA_RESOLUTION_HIGH: Media resolution set to high (zoomed reframing
+        with 256 tokens).
+    """
+    MEDIA_RESOLUTION_UNSPECIFIED = 0
+    MEDIA_RESOLUTION_LOW = 1
+    MEDIA_RESOLUTION_MEDIUM = 2
+    MEDIA_RESOLUTION_HIGH = 3
 
   class ResponseModalitiesValueListEntryValuesEnum(_messages.Enum):
     r"""ResponseModalitiesValueListEntryValuesEnum enum type.
@@ -20807,38 +20921,24 @@ class GoogleCloudAiplatformV1beta1GenerationConfig(_messages.Message):
     IMAGE = 2
     AUDIO = 3
 
-  class TokenResolutionValueValuesEnum(_messages.Enum):
-    r"""Optional. If specified, the token resolution specified will be used.
-
-    Values:
-      TOKEN_RESOLUTION_UNSPECIFIED: Token resolution has not been set.
-      TOKEN_RESOLUTION_LOW: Token resolution set to low (64 tokens).
-      TOKEN_RESOLUTION_MEDIUM: Token resolution set to medium (256 tokens).
-      TOKEN_RESOLUTION_HIGH: Token resolution set to high (P&S with 256
-        tokens).
-    """
-    TOKEN_RESOLUTION_UNSPECIFIED = 0
-    TOKEN_RESOLUTION_LOW = 1
-    TOKEN_RESOLUTION_MEDIUM = 2
-    TOKEN_RESOLUTION_HIGH = 3
-
   audioTimestamp = _messages.BooleanField(1)
   candidateCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   frequencyPenalty = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
   logprobs = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   maxOutputTokens = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  presencePenalty = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
-  responseLogprobs = _messages.BooleanField(7)
-  responseMimeType = _messages.StringField(8)
-  responseModalities = _messages.EnumField('ResponseModalitiesValueListEntryValuesEnum', 9, repeated=True)
-  responseSchema = _messages.MessageField('GoogleCloudAiplatformV1beta1Schema', 10)
-  routingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1GenerationConfigRoutingConfig', 11)
-  seed = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  stopSequences = _messages.StringField(13, repeated=True)
-  temperature = _messages.FloatField(14, variant=_messages.Variant.FLOAT)
-  tokenResolution = _messages.EnumField('TokenResolutionValueValuesEnum', 15)
-  topK = _messages.FloatField(16, variant=_messages.Variant.FLOAT)
-  topP = _messages.FloatField(17, variant=_messages.Variant.FLOAT)
+  mediaResolution = _messages.EnumField('MediaResolutionValueValuesEnum', 6)
+  presencePenalty = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  responseLogprobs = _messages.BooleanField(8)
+  responseMimeType = _messages.StringField(9)
+  responseModalities = _messages.EnumField('ResponseModalitiesValueListEntryValuesEnum', 10, repeated=True)
+  responseSchema = _messages.MessageField('GoogleCloudAiplatformV1beta1Schema', 11)
+  routingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1GenerationConfigRoutingConfig', 12)
+  seed = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  speechConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SpeechConfig', 14)
+  stopSequences = _messages.StringField(15, repeated=True)
+  temperature = _messages.FloatField(16, variant=_messages.Variant.FLOAT)
+  topK = _messages.FloatField(17, variant=_messages.Variant.FLOAT)
+  topP = _messages.FloatField(18, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudAiplatformV1beta1GenerationConfigRoutingConfig(_messages.Message):
@@ -26610,8 +26710,8 @@ class GoogleCloudAiplatformV1beta1NotebookExecutionJob(_messages.Message):
       d}`
     notebookRuntimeTemplateResourceName: The NotebookRuntimeTemplate to source
       compute configuration from.
-    scheduleResourceName: Output only. The Schedule resource name if this job
-      is triggered by one. Format:
+    scheduleResourceName: The Schedule resource name if this job is triggered
+      by one. Format:
       `projects/{project_id}/locations/{location}/schedules/{schedule_id}`
     serviceAccount: The service account to run the execution as.
     status: Output only. Populated when the NotebookExecutionJob is completed.
@@ -27393,6 +27493,7 @@ class GoogleCloudAiplatformV1beta1Part(_messages.Message):
       is used as context to the model.
     inlineData: Optional. Inlined bytes data.
     text: Optional. Text part (can be code).
+    thought: Output only. Indicates if the part is thought from the model.
     videoMetadata: Optional. Video metadata. The metadata should only be
       specified while the video data is presented in inline_data or file_data.
   """
@@ -27404,7 +27505,8 @@ class GoogleCloudAiplatformV1beta1Part(_messages.Message):
   functionResponse = _messages.MessageField('GoogleCloudAiplatformV1beta1FunctionResponse', 5)
   inlineData = _messages.MessageField('GoogleCloudAiplatformV1beta1Blob', 6)
   text = _messages.StringField(7)
-  videoMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1VideoMetadata', 8)
+  thought = _messages.BooleanField(8)
+  videoMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1VideoMetadata', 9)
 
 
 class GoogleCloudAiplatformV1beta1PartnerModelTuningSpec(_messages.Message):
@@ -28476,6 +28578,16 @@ class GoogleCloudAiplatformV1beta1Port(_messages.Message):
   """
 
   containerPort = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1PrebuiltVoiceConfig(_messages.Message):
+  r"""The configuration for the prebuilt speaker to use.
+
+  Fields:
+    voiceName: The name of the preset voice to use.
+  """
+
+  voiceName = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1beta1PredefinedSplit(_messages.Message):
@@ -29976,12 +30088,14 @@ class GoogleCloudAiplatformV1beta1RagFileParsingConfig(_messages.Message):
   Fields:
     advancedParser: The Advanced Parser to use for RagFiles.
     layoutParser: The Layout Parser to use for RagFiles.
+    llmParser: The LLM Parser to use for RagFiles.
     useAdvancedPdfParsing: Whether to use advanced PDF parsing.
   """
 
   advancedParser = _messages.MessageField('GoogleCloudAiplatformV1beta1RagFileParsingConfigAdvancedParser', 1)
   layoutParser = _messages.MessageField('GoogleCloudAiplatformV1beta1RagFileParsingConfigLayoutParser', 2)
-  useAdvancedPdfParsing = _messages.BooleanField(3)
+  llmParser = _messages.MessageField('GoogleCloudAiplatformV1beta1RagFileParsingConfigLlmParser', 3)
+  useAdvancedPdfParsing = _messages.BooleanField(4)
 
 
 class GoogleCloudAiplatformV1beta1RagFileParsingConfigAdvancedParser(_messages.Message):
@@ -30014,6 +30128,26 @@ class GoogleCloudAiplatformV1beta1RagFileParsingConfigLayoutParser(_messages.Mes
 
   maxParsingRequestsPerMin = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   processorName = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1RagFileParsingConfigLlmParser(_messages.Message):
+  r"""Specifies the advanced parsing for RagFiles.
+
+  Fields:
+    customParsingPrompt: The prompt to use for parsing. If not specified, a
+      default prompt will be used.
+    maxParsingRequestsPerMin: The maximum number of requests the job is
+      allowed to make to the LLM model per minute. Consult
+      https://cloud.google.com/vertex-ai/generative-ai/docs/quotas and your
+      document size to set an appropriate value here. If unspecified, a
+      default value of 5000 QPM would be used.
+    modelName: The name of a LLM model used for parsing. Format:
+      `gemini-1.5-pro-002`
+  """
+
+  customParsingPrompt = _messages.StringField(1)
+  maxParsingRequestsPerMin = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  modelName = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1RagFileTransformationConfig(_messages.Message):
@@ -31007,6 +31141,18 @@ class GoogleCloudAiplatformV1beta1Retrieval(_messages.Message):
   disableAttribution = _messages.BooleanField(1)
   vertexAiSearch = _messages.MessageField('GoogleCloudAiplatformV1beta1VertexAISearch', 2)
   vertexRagStore = _messages.MessageField('GoogleCloudAiplatformV1beta1VertexRagStore', 3)
+
+
+class GoogleCloudAiplatformV1beta1RetrievalConfig(_messages.Message):
+  r"""Retrieval config.
+
+  Fields:
+    languageCode: The language code of the user.
+    latLng: The location of the user.
+  """
+
+  languageCode = _messages.StringField(1)
+  latLng = _messages.MessageField('GoogleTypeLatLng', 2)
 
 
 class GoogleCloudAiplatformV1beta1RetrievalMetadata(_messages.Message):
@@ -36586,6 +36732,16 @@ class GoogleCloudAiplatformV1beta1SpecialistPool(_messages.Message):
   specialistWorkerEmails = _messages.StringField(6, repeated=True)
 
 
+class GoogleCloudAiplatformV1beta1SpeechConfig(_messages.Message):
+  r"""The speech generation config.
+
+  Fields:
+    voiceConfig: The configuration for the speaker to use.
+  """
+
+  voiceConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1VoiceConfig', 1)
+
+
 class GoogleCloudAiplatformV1beta1StartNotebookRuntimeOperationMetadata(_messages.Message):
   r"""Metadata information for NotebookService.StartNotebookRuntime.
 
@@ -38541,9 +38697,11 @@ class GoogleCloudAiplatformV1beta1ToolConfig(_messages.Message):
 
   Fields:
     functionCallingConfig: Optional. Function calling config.
+    retrievalConfig: Optional. Retrieval config.
   """
 
   functionCallingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FunctionCallingConfig', 1)
+  retrievalConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1RetrievalConfig', 2)
 
 
 class GoogleCloudAiplatformV1beta1ToolGoogleSearch(_messages.Message):
@@ -40175,6 +40333,16 @@ class GoogleCloudAiplatformV1beta1VideoMetadata(_messages.Message):
   startOffset = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1beta1VoiceConfig(_messages.Message):
+  r"""The configuration for the voice to use.
+
+  Fields:
+    prebuiltVoiceConfig: The configuration for the prebuilt voice to use.
+  """
+
+  prebuiltVoiceConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1PrebuiltVoiceConfig', 1)
+
+
 class GoogleCloudAiplatformV1beta1WorkerPoolSpec(_messages.Message):
   r"""Represents the spec of a worker pool in a job.
 
@@ -40989,6 +41157,22 @@ class GoogleTypeInterval(_messages.Message):
   startTime = _messages.StringField(2)
 
 
+class GoogleTypeLatLng(_messages.Message):
+  r"""An object that represents a latitude/longitude pair. This is expressed
+  as a pair of doubles to represent degrees latitude and degrees longitude.
+  Unless specified otherwise, this object must conform to the WGS84 standard.
+  Values must be within normalized ranges.
+
+  Fields:
+    latitude: The latitude in degrees. It must be in the range [-90.0, +90.0].
+    longitude: The longitude in degrees. It must be in the range [-180.0,
+      +180.0].
+  """
+
+  latitude = _messages.FloatField(1)
+  longitude = _messages.FloatField(2)
+
+
 class GoogleTypeMoney(_messages.Message):
   r"""Represents an amount of money with its currency type.
 
@@ -41086,6 +41270,8 @@ encoding.AddCustomJsonFieldMapping(
     AiplatformProjectsLocationsDatasetsSearchDataItemsRequest, 'orderByAnnotation_savedQuery', 'orderByAnnotation.savedQuery')
 encoding.AddCustomJsonFieldMapping(
     AiplatformProjectsLocationsEndpointsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    AiplatformProjectsLocationsFeatureGroupsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     AiplatformProjectsLocationsFeatureGroupsFeaturesGetRequest, 'featureStatsAndAnomalySpec_latestStatsCount', 'featureStatsAndAnomalySpec.latestStatsCount')
 encoding.AddCustomJsonFieldMapping(

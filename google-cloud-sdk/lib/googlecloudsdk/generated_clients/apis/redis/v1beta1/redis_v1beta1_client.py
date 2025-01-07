@@ -240,24 +240,11 @@ class RedisV1beta1(base_api.BaseApiClient):
           }
 
     def Backup(self, request, global_params=None):
-      r"""Backup Redis Cluster.
-
-      If this is the first time a backup is being created, a backup collection
-      will be created at the backend, and this backup belongs to this
-      collection. Both collection and backup will have a resource name. Backup
-      will be executed for each shard. A replica (primary if nonHA) will be
-      selected to perform the execution. Backup call will be rejected if there
-      is an ongoing backup or update operation. Be aware that during preview, if
-      the cluster's internal software version is too old, critical update will
-      be performed before actual backup. Once the internal software version is
-      updated to the minimum version required by the backup feature, subsequent
-      backups will not require critical update. After preview, there will be no
-      critical update needed for backup.
+      r"""Backup Redis Cluster. If this is the first time a backup is being created, a backup collection will be created at the backend, and this backup belongs to this collection. Both collection and backup will have a resource name. Backup will be executed for each shard. A replica (primary if nonHA) will be selected to perform the execution. Backup call will be rejected if there is an ongoing backup or update operation. Be aware that during preview, if the cluster's internal software version is too old, critical update will be performed before actual backup. Once the internal software version is updated to the minimum version required by the backup feature, subsequent backups will not require critical update. After preview, there will be no critical update needed for backup.
 
       Args:
         request: (RedisProjectsLocationsClustersBackupRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (Operation) The response message.
       """
@@ -786,21 +773,11 @@ class RedisV1beta1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.
-
-      The server makes a best effort to cancel the operation, but success is not
-      guaranteed. If the server doesn't support this method, it returns
-      `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation
-      or other methods to check whether the cancellation succeeded or whether
-      the operation completed despite cancellation. On successful cancellation,
-      the operation is not deleted; instead, it becomes an operation with an
-      Operation.error value with a google.rpc.Status.code of `1`, corresponding
-      to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (RedisProjectsLocationsOperationsCancelRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (Empty) The response message.
       """

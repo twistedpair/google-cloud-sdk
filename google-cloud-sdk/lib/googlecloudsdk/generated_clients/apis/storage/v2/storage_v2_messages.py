@@ -423,7 +423,7 @@ class Cors(_messages.Message):
 class CustomPlacementConfig(_messages.Message):
   r"""Configuration for Custom Dual Regions. It should specify precisely two
   eligible regions within the same Multiregion. More information on regions
-  may be found https://cloud.google.com/storage/docs/locations.
+  may be found [here](https://cloud.google.com/storage/docs/locations).
 
   Fields:
     dataLocations: List of locations to use for data placement.

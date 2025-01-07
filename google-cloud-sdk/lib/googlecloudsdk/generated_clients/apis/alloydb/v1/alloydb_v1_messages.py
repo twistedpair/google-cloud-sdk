@@ -1762,8 +1762,7 @@ class ContinuousBackupSource(_messages.Message):
 
 
 class CsvExportOptions(_messages.Message):
-  r"""Options for exporting data in CSV format. For now, we only support a
-  query to get the data that needs to be exported.
+  r"""Options for exporting data in CSV format.
 
   Fields:
     escapeCharacter: Optional. Specifies the character that should appear
@@ -1776,7 +1775,7 @@ class CsvExportOptions(_messages.Message):
     quoteCharacter: Optional. Specifies the quoting character to be used when
       a data value is quoted. The default is double-quote. The value of this
       argument has to be a character in Hex ASCII Code.
-    selectQuery: Required. The select_query used to extract the data.
+    selectQuery: Required. The SELECT query used to extract the data.
   """
 
   escapeCharacter = _messages.StringField(1)
@@ -1846,9 +1845,9 @@ class ExportClusterRequest(_messages.Message):
   Fields:
     csvExportOptions: Options for exporting data in CSV format. Required field
       to be set for CSV file type.
-    database: Required. Name of the database where the query will be executed.
-      Note - Value provided should be the same as expected from `SELECT
-      current_database();` and NOT as a resource reference.
+    database: Required. Name of the database where the export command will be
+      executed. Note - Value provided should be the same as expected from
+      `SELECT current_database();` and NOT as a resource reference.
     gcsDestination: Required. Option to export data to cloud storage.
     sqlExportOptions: Options for exporting data in SQL format. Required field
       to be set for SQL file type.
@@ -1900,8 +1899,7 @@ class GcsDestination(_messages.Message):
   Fields:
     uri: Required. The path to the file in Google Cloud Storage where the
       export will be stored. The URI is in the form
-      `gs://bucketName/fileName`. If the file already exists, the request
-      succeeds, but the operation fails.
+      `gs://bucketName/fileName`.
   """
 
   uri = _messages.StringField(1)
@@ -2663,13 +2661,15 @@ class Node(_messages.Message):
   resize operations.
 
   Fields:
-    id: The identifier of the VM e.g. "test-read-0601-407e52be-ms3l".
-    ip: The private IP address of the VM e.g. "10.57.0.34".
-    state: Determined by state of the compute VM and postgres-service health.
-      Compute VM state can have values listed in
+    id: Output only. The identifier of the VM e.g. "test-read-0601-407e52be-
+      ms3l".
+    ip: Output only. The private IP address of the VM e.g. "10.57.0.34".
+    state: Output only. Determined by state of the compute VM and postgres-
+      service health. Compute VM state can have values listed in
       https://cloud.google.com/compute/docs/instances/instance-life-cycle and
       postgres-service health can have values: HEALTHY and UNHEALTHY.
-    zoneId: The Compute Engine zone of the VM e.g. "us-central1-b".
+    zoneId: Output only. The Compute Engine zone of the VM e.g. "us-
+      central1-b".
   """
 
   id = _messages.StringField(1)
@@ -3767,6 +3767,10 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
       SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET: Detects if
         database instance data exported to a Cloud Storage bucket that is
         owned by the organization and is publicly accessible.
+      SIGNAL_TYPE_WEAK_PASSWORD_HASH_ALGORITHM: Detects if a database instance
+        is using a weak password hash algorithm.
+      SIGNAL_TYPE_NO_USER_PASSWORD_POLICY: Detects if a database instance has
+        no user password policy set.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -3847,6 +3851,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     SIGNAL_TYPE_USER_GRANTED_ALL_PERMISSIONS = 76
     SIGNAL_TYPE_DATA_EXPORT_TO_EXTERNAL_CLOUD_STORAGE_BUCKET = 77
     SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET = 78
+    SIGNAL_TYPE_WEAK_PASSWORD_HASH_ALGORITHM = 79
+    SIGNAL_TYPE_NO_USER_PASSWORD_POLICY = 80
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -4372,6 +4378,10 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
       SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET: Detects if
         database instance data exported to a Cloud Storage bucket that is
         owned by the organization and is publicly accessible.
+      SIGNAL_TYPE_WEAK_PASSWORD_HASH_ALGORITHM: Detects if a database instance
+        is using a weak password hash algorithm.
+      SIGNAL_TYPE_NO_USER_PASSWORD_POLICY: Detects if a database instance has
+        no user password policy set.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -4452,6 +4462,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
     SIGNAL_TYPE_USER_GRANTED_ALL_PERMISSIONS = 76
     SIGNAL_TYPE_DATA_EXPORT_TO_EXTERNAL_CLOUD_STORAGE_BUCKET = 77
     SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET = 78
+    SIGNAL_TYPE_WEAK_PASSWORD_HASH_ALGORITHM = 79
+    SIGNAL_TYPE_NO_USER_PASSWORD_POLICY = 80
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
@@ -4560,16 +4572,20 @@ class StorageDatabasecenterPartnerapiV1mainMachineConfiguration(_messages.Messag
   to Database Resource.
 
   Fields:
-    cpuCount: The number of CPUs. TODO(b/342344482, b/342346271) add proto
-      validations again after bug fix.
+    cpuCount: The number of CPUs. Deprecated. Use vcpu_count instead.
+      TODO(b/342344482, b/342346271) add proto validations again after bug
+      fix.
     memorySizeInBytes: Memory size in bytes. TODO(b/342344482, b/342346271)
       add proto validations again after bug fix.
     shardCount: Optional. Number of shards (if applicable).
+    vcpuCount: Optional. The number of vCPUs. TODO(b/342344482, b/342346271)
+      add proto validations again after bug fix.
   """
 
   cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   memorySizeInBytes = _messages.IntegerField(2)
   shardCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  vcpuCount = _messages.FloatField(4)
 
 
 class StorageDatabasecenterPartnerapiV1mainObservabilityMetricData(_messages.Message):

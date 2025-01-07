@@ -145,6 +145,23 @@ client [kubectl]. To install, run
 
 _KUBECTL_COMPONENT_NAME = 'kubectl'
 
+CGROUPV1_DEPRECATED_MSG = (
+    'CGROUP_MODE_V1 is deprecated. Please use CGROUP_MODE_V2 instead. '
+    'For additional details, please refer to'
+    ' https://cloud.google.com/kubernetes-engine/docs/how-to/migrate-cgroupv2'
+)
+
+CGROUPV1_NODEPOOLS_MSG = (
+    'Node pool {0} is running cgroupv1 which is deprecated. Please use'
+    ' cgroupv2 instead. For additional details, please refer to'
+    ' https://cloud.google.com/kubernetes-engine/docs/how-to/migrate-cgroupv2'
+)
+
+CGROUPV1_CHECKING_FAILURE_MSG = (
+    'Problem checking cgroup mode of node pools:\n\n{}\n\n'
+    'Please make sure the node pools are running cgroupv2`.\n'
+)
+
 
 def _KubectlInstalledAsComponent():
   if config.Paths().sdk_root is not None:
@@ -418,6 +435,7 @@ class ClusterConfig(object):
     self.impersonate_service_account = kwargs.get(
         'impersonate_service_account'
     )
+    self.kubecontext_override = kwargs.get('kubecontext_override')
 
   def __str__(self):
     return 'ClusterConfig{project:%s, cluster:%s, zone:%s}' % (
@@ -438,7 +456,10 @@ class ClusterConfig(object):
   @property
   def kube_context(self):
     return ClusterConfig.KubeContext(
-        self.cluster_name, self.zone_id, self.project_id
+        self.cluster_name,
+        self.zone_id,
+        self.project_id,
+        self.kubecontext_override,
     )
 
   @property
@@ -475,7 +496,9 @@ class ClusterConfig(object):
     )
 
   @staticmethod
-  def KubeContext(cluster_name, zone_id, project_id):
+  def KubeContext(cluster_name, zone_id, project_id, override=None):
+    if override:
+      return override
     return ClusterConfig.KUBECONTEXT_FORMAT.format(
         project=project_id, cluster=cluster_name, zone=zone_id
     )
@@ -525,6 +548,7 @@ class ClusterConfig(object):
       use_private_fqdn=None,
       use_dns_endpoint=None,
       impersonate_service_account=None,
+      kubecontext_override=None,
   ):
     """Saves config data for the given cluster.
 
@@ -542,6 +566,7 @@ class ClusterConfig(object):
       use_dns_endpoint: whether to generate dns endpoint address.
       impersonate_service_account: the service account to impersonate when
         connecting to the cluster.
+      kubecontext_override: the path to the kubeconfig file to write to.
 
     Returns:
       ClusterConfig of the persisted data.
@@ -561,6 +586,7 @@ class ClusterConfig(object):
         'zone_id': cluster.zone,
         'project_id': project_id,
         'server': 'https://' + endpoint,
+        'kubecontext_override': kubecontext_override,
     }
     if use_dns_endpoint or (
         # TODO(b/365115169)
@@ -591,13 +617,14 @@ class ClusterConfig(object):
     return c_config
 
   @classmethod
-  def Load(cls, cluster_name, zone_id, project_id):
+  def Load(cls, cluster_name, zone_id, project_id, kubecontext_override):
     """Load and verify config for given cluster.
 
     Args:
       cluster_name: name of cluster to load config for.
       zone_id: compute zone the cluster is running in.
       project_id: project in which the cluster is running.
+      kubecontext_override: the path to the kubeconfig file to read from.
 
     Returns:
       ClusterConfig for the cluster, or None if config data is missing or
@@ -611,7 +638,9 @@ class ClusterConfig(object):
         project_id,
     )
     k = kconfig.Kubeconfig.Default()
-    key = cls.KubeContext(cluster_name, zone_id, project_id)
+    key = cls.KubeContext(
+        cluster_name, zone_id, project_id, kubecontext_override
+    )
     cluster = k.clusters.get(key) and k.clusters[key].get('cluster')
     user = k.users.get(key) and k.users[key].get('user')
     context = k.contexts.get(key) and k.contexts[key].get('context')
@@ -669,13 +698,15 @@ class ClusterConfig(object):
     return cls(**kwargs)
 
   @classmethod
-  def Purge(cls, cluster_name, zone_id, project_id):
+  def Purge(cls, cluster_name, zone_id, project_id, kubecontext_override):
     config_dir = cls.GetConfigDir(cluster_name, zone_id, project_id)
     if os.path.exists(config_dir):
       file_utils.RmTree(config_dir)
     # purge from kubeconfig
     kubeconfig = kconfig.Kubeconfig.Default()
-    kubeconfig.Clear(cls.KubeContext(cluster_name, zone_id, project_id))
+    kubeconfig.Clear(
+        cls.KubeContext(cluster_name, zone_id, project_id, kubecontext_override)
+    )
     kubeconfig.SaveToFile()
     log.debug('Purged cluster config from %s', config_dir)
 
@@ -830,6 +861,10 @@ def LoadSystemConfigFromYAML(
                 cgroup_mode_opts
             )
         )
+      # Warning if setting cgroup mode to V1.
+      elif cgroup_mode_opts == 'CGROUP_MODE_V1':
+        log.warning(CGROUPV1_DEPRECATED_MSG)
+
       node_config.linuxNodeConfig.cgroupMode = cgroup_mode_mapping[
           cgroup_mode_opts
       ]
@@ -843,6 +878,16 @@ def LoadSystemConfigFromYAML(
       hugepage_size1g = hugepage_opts.get(NC_HUGEPAGE_1G)
       if hugepage_size1g:
         node_config.linuxNodeConfig.hugepages.hugepageSize1g = hugepage_size1g
+
+
+def CheckForCgroupModeV1(pool):
+  """Check cgroup mode of the node pool and print a warning if it is V1."""
+  if hasattr(pool, 'config') and hasattr(pool.config, 'effectiveCgroupMode'):
+    if (
+        pool.config.effectiveCgroupMode
+        and pool.config.effectiveCgroupMode.name == 'EFFECTIVE_CGROUP_MODE_V1'
+    ):
+      log.warning(CGROUPV1_NODEPOOLS_MSG.format(pool.name))
 
 
 def LoadContainerdConfigFromYAML(containerd_config, content, messages):

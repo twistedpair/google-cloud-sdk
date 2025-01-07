@@ -151,10 +151,12 @@ class ClusterUpgradeUpgradeStatus(_messages.Message):
 
   Enums:
     CodeValueValuesEnum: Status code of the upgrade.
+    TypeValueValuesEnum: Type of the status.
 
   Fields:
     code: Status code of the upgrade.
     reason: Reason for this status.
+    type: Type of the status.
     updateTime: Last timestamp the status was updated.
   """
 
@@ -176,6 +178,8 @@ class ClusterUpgradeUpgradeStatus(_messages.Message):
         doesn't finish within a certain limit, despite it's actual status.
       COMPLETE: The upgrade has passed all post conditions (soaking). At the
         scope level, this means all eligible clusters are in COMPLETE status.
+      PAUSED: The upgrade is paused. At the scope level, this means the
+        upgrade is paused for all the clusters in the scope.
     """
     CODE_UNSPECIFIED = 0
     INELIGIBLE = 1
@@ -184,10 +188,38 @@ class ClusterUpgradeUpgradeStatus(_messages.Message):
     SOAKING = 4
     FORCED_SOAKING = 5
     COMPLETE = 6
+    PAUSED = 7
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the status.
+
+    Values:
+      TYPE_UNSPECIFIED: Required by https://linter.aip.dev/126/unspecified.
+      DISRUPTION_BUDGET: The upgrade is PAUSED due to the cluster's disruption
+        budget. Cluster is out of disruption budget. Once the cluster is back
+        in budget, the upgrade will resume.
+      MAINTENANCE_POLICY: The upgrade is PAUSED due to the cluster's
+        maintenance policy. The upgrade will resume once cluster's maintenance
+        window is open and/or maintenance exclusion is over.
+      SYSTEM_CONFIG: The upgrade is PAUSED due to the system config.
+      CLUSTER_STATUS: The upgrade is INELIGIBLE due to the cluster's status.
+      INCOMPATIBLE_VERSION: The upgrade is INELIGIBLE due to the cluster's
+        current version being incompatible with the target version.
+      DISABLED_BY_USER: The upgrade is INELIGIBLE due to the user disabling
+        auto upgrades. Applies to node upgrades only.
+    """
+    TYPE_UNSPECIFIED = 0
+    DISRUPTION_BUDGET = 1
+    MAINTENANCE_POLICY = 2
+    SYSTEM_CONFIG = 3
+    CLUSTER_STATUS = 4
+    INCOMPATIBLE_VERSION = 5
+    DISABLED_BY_USER = 6
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   reason = _messages.StringField(2)
-  updateTime = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  updateTime = _messages.StringField(4)
 
 
 class ConfigDeliveryArgoCDCondition(_messages.Message):
@@ -402,6 +434,7 @@ class ConfigManagementConfigSync(_messages.Message):
   Fields:
     allowVerticalScale: Set to true to allow the vertical scaling. Defaults to
       false which disallows vertical scaling. This field is deprecated.
+    deploymentOverrides: Optional. Configuration for deployment overrides.
     enabled: Enables the installation of ConfigSync. If set to true,
       ConfigSync resources will be created and the other ConfigSync fields
       will be applied if exist. If set to false, all other ConfigSync fields
@@ -430,13 +463,14 @@ class ConfigManagementConfigSync(_messages.Message):
   """
 
   allowVerticalScale = _messages.BooleanField(1)
-  enabled = _messages.BooleanField(2)
-  git = _messages.MessageField('ConfigManagementGitConfig', 3)
-  metricsGcpServiceAccountEmail = _messages.StringField(4)
-  oci = _messages.MessageField('ConfigManagementOciConfig', 5)
-  preventDrift = _messages.BooleanField(6)
-  sourceFormat = _messages.StringField(7)
-  stopSyncing = _messages.BooleanField(8)
+  deploymentOverrides = _messages.MessageField('ConfigManagementDeploymentOverride', 2, repeated=True)
+  enabled = _messages.BooleanField(3)
+  git = _messages.MessageField('ConfigManagementGitConfig', 4)
+  metricsGcpServiceAccountEmail = _messages.StringField(5)
+  oci = _messages.MessageField('ConfigManagementOciConfig', 6)
+  preventDrift = _messages.BooleanField(7)
+  sourceFormat = _messages.StringField(8)
+  stopSyncing = _messages.BooleanField(9)
 
 
 class ConfigManagementConfigSyncDeploymentState(_messages.Message):
@@ -769,6 +803,41 @@ class ConfigManagementConfigSyncVersion(_messages.Message):
   syncer = _messages.StringField(9)
 
 
+class ConfigManagementContainerOverride(_messages.Message):
+  r"""Configuration for a container override.
+
+  Fields:
+    containerName: Required. The name of the container.
+    cpuLimit: The cpu limit of the container.
+    cpuRequest: The cpu request of the container.
+    memoryLimit: The memory limit of the container.
+    memoryRequest: The memory request of the container.
+  """
+
+  containerName = _messages.StringField(1)
+  cpuLimit = _messages.StringField(2)
+  cpuRequest = _messages.StringField(3)
+  memoryLimit = _messages.StringField(4)
+  memoryRequest = _messages.StringField(5)
+
+
+class ConfigManagementDeploymentOverride(_messages.Message):
+  r"""Configuration for a deployment override.
+
+  Fields:
+    containers: Optional. The containers of the deployment resource to be
+      overridden.
+    deploymentName: Required. The name of the deployment resource to be
+      overridden.
+    deploymentNamespace: Required. The namespace of the deployment resource to
+      be overridden..
+  """
+
+  containers = _messages.MessageField('ConfigManagementContainerOverride', 1, repeated=True)
+  deploymentName = _messages.StringField(2)
+  deploymentNamespace = _messages.StringField(3)
+
+
 class ConfigManagementErrorResource(_messages.Message):
   r"""Model for a config file in the git repo with an associated Sync error.
 
@@ -866,9 +935,9 @@ class ConfigManagementGitConfig(_messages.Message):
     policyDir: The path within the Git repository that represents the top
       level of the repo to sync. Default: the root directory of the
       repository.
-    secretType: Type of secret configured for access to the Git repo. Must be
-      one of ssh, cookiefile, gcenode, token, gcpserviceaccount or none. The
-      validation of this is case-sensitive. Required.
+    secretType: Required. Type of secret configured for access to the Git
+      repo. Must be one of ssh, cookiefile, gcenode, token, gcpserviceaccount
+      or none. The validation of this is case-sensitive. Required.
     syncBranch: The branch of the repository to sync from. Default: master.
     syncRepo: The URL of the Git repository to use as the source of truth.
     syncRev: Git revision (tag or hash) to check out. Default HEAD.
@@ -2540,7 +2609,7 @@ class MembershipFeature(_messages.Message):
       }/features/{feature}`. Note that `membershipFeatures` is shortened to
       `features` in the resource name. (see http://go/aip/122#collection-
       identifiers)
-    spec: Spec of this membershipFeature.
+    spec: Optional. Spec of this membershipFeature.
     state: Output only. State of the this membershipFeature.
     updateTime: Output only. When the MembershipFeature resource was last
       updated.

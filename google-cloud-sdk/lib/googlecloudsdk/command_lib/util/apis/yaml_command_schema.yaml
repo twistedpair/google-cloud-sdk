@@ -81,10 +81,9 @@ definitions:
     items:
       type: object
       additionalProperties: false
-      required: [api_field]
       properties:
         api_field: {type: string}
-        arg_name: {type: string}
+        json_name: {type: string}
         help_text: {type: string}
         hidden: {type: boolean}
         # TODO(b/291130667): enable mutex for arg_object
@@ -330,6 +329,9 @@ definitions:
       # include '--' even if it will be a flag.
       # At least one of [api_field, arg_name] must be given.
       arg_name: {type: string}
+      # The name of the argument as it should appear in the JSON. If
+      # not given it will match the API field name.
+      json_name: {type: string}
       # The module path to a class that implements remote completion
       # for this argument.
       completer: {$ref: "#/definitions/python_hook"}
@@ -454,6 +456,18 @@ definitions:
           mutex: {type: boolean}
           # Whether the group is hidden or not.
           hidden: {type: boolean}
+          # Whether the group has an arg_object flag or not in addition to the params.
+          settable: {type: boolean}
+          # Whether the group has a clearable flag or not in addition to the params.
+          clearable: {type: boolean}
+          # Api field associated with the group.
+          # Only needed when clearable or settable flags are set to true.
+          api_field: {type: string}
+          # The name of the argument group as it should appear in the CLI.
+          # Only needed when clearable or settable flags are set to true.
+          arg_name: {type: string}
+          # How the argument group should be represented in JSON.
+          json_name: {type: string}
           # The group arguments.
           params:
             type: array

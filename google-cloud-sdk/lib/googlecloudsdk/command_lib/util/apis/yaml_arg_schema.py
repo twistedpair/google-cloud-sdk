@@ -184,6 +184,10 @@ class ArgumentGroup(YAMLArgument):
     required: True to make the group required.
     mutex: True to make the group mutually exclusive.
     hidden: True to make the group hidden.
+    arg_name: The name of the argument that will be generated.
+    clearable: True to automatically generate update flags such as `clear`
+    settable: True to automatically generate arg_object flag to set the value
+      of the whole argument argument group.
     arguments: The list of arguments in the group.
   """
 
@@ -201,23 +205,42 @@ class ArgumentGroup(YAMLArgument):
     Raises:
       InvalidSchemaError: if the YAML command is malformed.
     """
+    if data.get('settable', False):
+      settable_arg = SettableArgumentForGroup.FromData(data)
+    else:
+      settable_arg = None
+
+    if data.get('clearable', False):
+      clearable_arg = ClearableArgumentForGroup.FromData(data)
+    else:
+      clearable_arg = None
+
     return cls(
         help_text=data.get('help_text'),
         required=data.get('required', False),
         mutex=data.get('mutex', False),
         hidden=data.get('hidden', False),
+        api_field=data.get('api_field'),
+        arg_name=data.get('arg_name'),
         arguments=[YAMLArgument.FromData(item, api_version)
                    for item in data.get('params')],
+        settable_arg=settable_arg,
+        clearable_arg=clearable_arg,
     )
 
   def __init__(self, help_text=None, required=False, mutex=False, hidden=False,
-               arguments=None):
+               api_field=None, arg_name=None,
+               arguments=None, settable_arg=None, clearable_arg=None):
     super(ArgumentGroup, self).__init__()
     self.help_text = help_text
     self.required = required
     self.mutex = mutex
     self.hidden = hidden
+    self.arg_name = arg_name
     self.arguments = arguments
+    self._settable_arg = settable_arg
+    self._clearable_arg = clearable_arg
+    self._api_field = api_field
 
   @property
   def api_fields(self):
@@ -226,12 +249,58 @@ class ArgumentGroup(YAMLArgument):
       api_fields.extend(arg.api_fields)
     return api_fields
 
+  @property
+  def parent_api_field(self):
+    """Returns api field that is the parent of all api fields in the group."""
+    if self._api_field:
+      return self._api_field
+    else:
+      return arg_utils.GetSharedParent(self.api_fields)
+
+  def _SettableIsSpecified(self, namespace):
+    return (arg := self._settable_arg) and arg.IsApiFieldSpecified(namespace)
+
+  def _ClearableIsSpecified(self, namespace):
+    return (arg := self._clearable_arg) and arg.IsApiFieldSpecified(namespace)
+
   def IsApiFieldSpecified(self, namespace):
+    if (self._SettableIsSpecified(namespace) or
+        self._ClearableIsSpecified(namespace)):
+      return True
+
     for arg in self.arguments:
       if arg.IsApiFieldSpecified(namespace):
         return True
     else:
       return False
+
+  def _GenerateClearFlag(self, methods, shared_resource_flags):
+    """Returns the clear flag for the argument group if specified."""
+    return (self._clearable_arg and
+            self._clearable_arg.Generate(methods, shared_resource_flags))
+
+  def _GenerateSetFlag(self, methods, shared_resource_flags):
+    """Returns the set flag for the argument group if specified."""
+    return (self._settable_arg and
+            self._settable_arg.Generate(methods, shared_resource_flags))
+
+  def _GenerateMutexGroup(self, base_group, set_flag):
+    """Returns the mutex group for the argument group if specified."""
+    arg_names = (
+        arg.arg_name for arg in self.arguments if isinstance(arg, Argument))
+
+    mutex_group = base.ArgumentGroup(
+        mutex=True,
+        required=self.required,
+        hidden=self.hidden,
+        help=(
+            f'Set the value of {self._api_field} by using flag '
+            f'[{self._settable_arg.arg_name}] or flags '
+            f'[{", ".join(arg_names)}].'),
+    )
+    mutex_group.AddArgument(base_group)
+    mutex_group.AddArgument(set_flag)
+    return mutex_group
 
   def Generate(self, methods, shared_resource_flags=None):
     """Generates and returns the base argument group.
@@ -243,12 +312,25 @@ class ArgumentGroup(YAMLArgument):
     Returns:
       The base argument group.
     """
-    group = base.ArgumentGroup(
+    base_group = base.ArgumentGroup(
         mutex=self.mutex, required=self.required, help=self.help_text,
         hidden=self.hidden)
+    # Add arguments in group
     for arg in self.arguments:
-      group.AddArgument(arg.Generate(methods, shared_resource_flags))
-    return group
+      base_group.AddArgument(arg.Generate(methods, shared_resource_flags))
+
+    # Add clearable flag
+    if clear_flag := self._GenerateClearFlag(methods, shared_resource_flags):
+      base_group.AddArgument(clear_flag)
+
+    # Add settable flag
+    if set_flag := self._GenerateSetFlag(methods, shared_resource_flags):
+      if base_group.arguments:
+        return self._GenerateMutexGroup(base_group, set_flag)
+      else:
+        return set_flag
+    else:
+      return base_group
 
   def Parse(self, method, message, namespace, group_required=True):
     """Sets argument group message values, if any, from the parsed args.
@@ -260,6 +342,14 @@ class ArgumentGroup(YAMLArgument):
       group_required: bool, if true, then parent argument group is required
     """
     arg_utils.ClearUnspecifiedMutexFields(message, namespace, self)
+
+    # Remove values
+    if self._clearable_arg:
+      self._clearable_arg.Parse(method, message, namespace, group_required)
+
+    # Add values
+    if self._settable_arg:
+      self._settable_arg.Parse(method, message, namespace, group_required)
 
     for arg in self.arguments:
       arg.Parse(method, message, namespace, group_required and self.required)
@@ -490,6 +580,81 @@ class Argument(YAMLArgument):
         choices=util.Choice.ToChoiceMap(self.choices))
 
     arg_utils.SetFieldInMessage(message, self.api_field, value)
+
+
+class SettableArgumentForGroup(Argument):
+  """Encapsulates data used to generate arg_object flag for argument group."""
+
+  @classmethod
+  def FromData(cls, data):
+    """Gets the arg group definition from the spec data."""
+    try:
+      api_field = data['api_field']
+      arg_name = data['arg_name']
+    except KeyError:
+      raise util.InvalidSchemaError(
+          'Settable argument group must have api_field and arg_name set.')
+
+    return cls(
+        api_field=api_field,
+        arg_name=arg_name,
+        help_text=data.get('help_text'),
+        required=data.get('required', False),
+        hidden=data.get('hidden', False),
+        arg_type=util.ArgObject.FromData(data, disable_key_description=True),
+    )
+
+  def __init__(self, api_field, arg_name, help_text=None, required=False,
+               hidden=False, arg_type=None):
+    super(SettableArgumentForGroup, self).__init__(
+        api_field=api_field,
+        arg_name=arg_name,
+        help_text=help_text,
+        required=required,
+        hidden=hidden,
+        type=arg_type,
+    )
+
+
+class ClearableArgumentForGroup(Argument):
+  """Encapsulates data used to generate a clearable flag.
+
+  Clearable flag is specifically for clearing a message field corresponding to
+  the argument group.
+  """
+
+  @classmethod
+  def FromData(cls, data):
+    """Gets the arg group definition from the spec data."""
+    try:
+      api_field = data['api_field']
+      arg_name = data['arg_name']
+    except KeyError:
+      raise util.InvalidSchemaError(
+          'Clearable argument group must have api_field and arg_name set.')
+
+    return cls(
+        api_field=api_field,
+        arg_name=arg_name,
+        required=False,
+        hidden=data.get('hidden', False),
+    )
+
+  def __init__(self, api_field, arg_name, required=False, hidden=False):
+    super(ClearableArgumentForGroup, self).__init__(
+        api_field=api_field,
+        arg_name='-'.join(
+            (update_args.Prefix.CLEAR.value,
+             resource_util.KebabCase(arg_name))),
+        help_text=f'Set {api_field} back to default value.',
+        required=required,
+        hidden=hidden,
+        type=bool,
+    )
+
+  def Parse(self, method, message, namespace, group_required=True):
+    if arg_utils.GetFromNamespace(namespace, self.arg_name):
+      arg_utils.ResetFieldInMessage(message, self.api_field)
 
 
 def _GetAttributeNames(resource_spec):

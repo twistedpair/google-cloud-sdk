@@ -30,10 +30,14 @@ DEFAULT_ACTIONS = ["DEFAULT_ACTION", "ALLOW", "ALERT", "DENY"]
 DEFAULT_PROFILE_TYPES = ["THREAT_PREVENTION"]
 
 
-def AddSeverityorThreatIDArg(parser, required=True):
-  """Adds --severities or --threat-ids flag."""
-  severity_threatid_args = parser.add_group(mutex=True, required=required)
-  severity_threatid_args.add_argument(
+def AddSeverityorThreatIDorAntivirusArg(
+    parser, required=True, enable_antivirus=False
+):
+  """Adds --antivirus, --severities, or --threat-ids flag."""
+  severity_threatid_antivirus_args = parser.add_group(
+      mutex=True, required=required
+  )
+  severity_threatid_antivirus_args.add_argument(
       "--severities",
       type=arg_parsers.ArgList(),
       metavar="SEVERITY_LEVEL",
@@ -42,7 +46,7 @@ def AddSeverityorThreatIDArg(parser, required=True):
           " indicates the severity of the threat."
       ),
   )
-  severity_threatid_args.add_argument(
+  severity_threatid_antivirus_args.add_argument(
       "--threat-ids",
       type=arg_parsers.ArgList(),
       metavar="THREAT-ID",
@@ -52,16 +56,34 @@ def AddSeverityorThreatIDArg(parser, required=True):
           " type. "
       ),
   )
+  if enable_antivirus:
+    severity_threatid_antivirus_args.add_argument(
+        "--antivirus",
+        type=arg_parsers.ArgList(),
+        metavar="PROTOCOL",
+        help=(
+            "List of comma-separated protocols where each value in the list"
+            " indicates the protocol of the antivirus threat."
+        ),
+    )
 
 
-def AddActionArg(parser, actions=None, required=True):
+def AddActionArg(parser, actions=None, required=True, enable_antivirus=False):
   choices = actions or DEFAULT_ACTIONS
-  parser.add_argument(
-      "--action",
-      required=required,
-      choices=choices,
-      help="Action associated with severity or threat-id",
-  )
+  if enable_antivirus:
+    parser.add_argument(
+        "--action",
+        required=required,
+        choices=choices,
+        help="Action associated with antivirus, severity, or threat-id",
+    )
+  else:
+    parser.add_argument(
+        "--action",
+        required=required,
+        choices=choices,
+        help="Action associated with severity or threat-id",
+    )
 
 
 def AddProfileDescription(parser, required=False):

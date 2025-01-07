@@ -2074,7 +2074,9 @@ class AttachedDiskInitializeParams(_messages.Message):
       initializeParams.sourceImage or disks.source is required. To create a
       disk with a snapshot that you created, specify the snapshot name in the
       following format: global/snapshots/my-backup If the source snapshot is
-      deleted later, this field will not be set.
+      deleted later, this field will not be set. Note: You cannot create VMs
+      in bulk using a snapshot as the source. Use an image instead when you
+      create VMs using the bulk insert method.
     sourceSnapshotEncryptionKey: The customer-supplied encryption key of the
       source snapshot.
     storagePool: The storage pool in which the new disk is created. You can
@@ -35581,13 +35583,13 @@ class ErrorInfo(_messages.Message):
 
   Messages:
     MetadatasValue: Additional structured details about this error. Keys must
-      match /a-z+/ but should ideally be lowerCamelCase. Also they must be
-      limited to 64 characters in length. When identifying the current value
-      of an exceeded limit, the units should be contained in the key, not the
-      value. For example, rather than {"instanceLimit": "100/request"}, should
-      be returned as, {"instanceLimitPerRequest": "100"}, if the client
-      exceeds the number of instances that can be created in a single (batch)
-      request.
+      match a regular expression of `a-z+` but should ideally be
+      lowerCamelCase. Also, they must be limited to 64 characters in length.
+      When identifying the current value of an exceeded limit, the units
+      should be contained in the key, not the value. For example, rather than
+      `{"instanceLimit": "100/request"}`, should be returned as,
+      `{"instanceLimitPerRequest": "100"}`, if the client exceeds the number
+      of instances that can be created in a single (batch) request.
 
   Fields:
     domain: The logical grouping to which the "reason" belongs. The error
@@ -35597,12 +35599,13 @@ class ErrorInfo(_messages.Message):
       globally unique value that identifies the infrastructure. For Google API
       infrastructure, the error domain is "googleapis.com".
     metadatas: Additional structured details about this error. Keys must match
-      /a-z+/ but should ideally be lowerCamelCase. Also they must be limited
-      to 64 characters in length. When identifying the current value of an
-      exceeded limit, the units should be contained in the key, not the value.
-      For example, rather than {"instanceLimit": "100/request"}, should be
-      returned as, {"instanceLimitPerRequest": "100"}, if the client exceeds
-      the number of instances that can be created in a single (batch) request.
+      a regular expression of `a-z+` but should ideally be lowerCamelCase.
+      Also, they must be limited to 64 characters in length. When identifying
+      the current value of an exceeded limit, the units should be contained in
+      the key, not the value. For example, rather than `{"instanceLimit":
+      "100/request"}`, should be returned as, `{"instanceLimitPerRequest":
+      "100"}`, if the client exceeds the number of instances that can be
+      created in a single (batch) request.
     reason: The reason of the error. This is a constant value that identifies
       the proximate cause of the error. Error reasons are unique within a
       particular domain of errors. This should be at most 63 characters and
@@ -35612,13 +35615,14 @@ class ErrorInfo(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadatasValue(_messages.Message):
-    r"""Additional structured details about this error. Keys must match /a-z+/
-    but should ideally be lowerCamelCase. Also they must be limited to 64
-    characters in length. When identifying the current value of an exceeded
-    limit, the units should be contained in the key, not the value. For
-    example, rather than {"instanceLimit": "100/request"}, should be returned
-    as, {"instanceLimitPerRequest": "100"}, if the client exceeds the number
-    of instances that can be created in a single (batch) request.
+    r"""Additional structured details about this error. Keys must match a
+    regular expression of `a-z+` but should ideally be lowerCamelCase. Also,
+    they must be limited to 64 characters in length. When identifying the
+    current value of an exceeded limit, the units should be contained in the
+    key, not the value. For example, rather than `{"instanceLimit":
+    "100/request"}`, should be returned as, `{"instanceLimitPerRequest":
+    "100"}`, if the client exceeds the number of instances that can be created
+    in a single (batch) request.
 
     Messages:
       AdditionalProperty: An additional property for a MetadatasValue object.
@@ -47829,16 +47833,16 @@ class InterconnectAttachment(_messages.Message):
       Mbit/s - BPS_200M: 200 Mbit/s - BPS_300M: 300 Mbit/s - BPS_400M: 400
       Mbit/s - BPS_500M: 500 Mbit/s - BPS_1G: 1 Gbit/s - BPS_2G: 2 Gbit/s -
       BPS_5G: 5 Gbit/s - BPS_10G: 10 Gbit/s - BPS_20G: 20 Gbit/s - BPS_50G: 50
-      Gbit/s
-    EdgeAvailabilityDomainValueValuesEnum: Desired availability domain for the
-      attachment. Only available for type PARTNER, at creation time, and can
-      take one of the following values: - AVAILABILITY_DOMAIN_ANY -
-      AVAILABILITY_DOMAIN_1 - AVAILABILITY_DOMAIN_2 For improved reliability,
-      customers should configure a pair of attachments, one per availability
-      domain. The selected availability domain will be provided to the Partner
-      via the pairing key, so that the provisioned circuit will lie in the
-      specified domain. If not specified, the value will default to
-      AVAILABILITY_DOMAIN_ANY.
+      Gbit/s - BPS_100G: 100 Gbit/s
+    EdgeAvailabilityDomainValueValuesEnum: Input only. Desired availability
+      domain for the attachment. Only available for type PARTNER, at creation
+      time, and can take one of the following values: -
+      AVAILABILITY_DOMAIN_ANY - AVAILABILITY_DOMAIN_1 - AVAILABILITY_DOMAIN_2
+      For improved reliability, customers should configure a pair of
+      attachments, one per availability domain. The selected availability
+      domain will be provided to the Partner via the pairing key, so that the
+      provisioned circuit will lie in the specified domain. If not specified,
+      the value will default to AVAILABILITY_DOMAIN_ANY.
     EncryptionValueValuesEnum: Indicates the user-supplied encryption option
       of this VLAN attachment (interconnectAttachment). Can only be specified
       at attachment creation for PARTNER or DEDICATED attachments. Possible
@@ -47899,16 +47903,17 @@ class InterconnectAttachment(_messages.Message):
       following values: - BPS_50M: 50 Mbit/s - BPS_100M: 100 Mbit/s -
       BPS_200M: 200 Mbit/s - BPS_300M: 300 Mbit/s - BPS_400M: 400 Mbit/s -
       BPS_500M: 500 Mbit/s - BPS_1G: 1 Gbit/s - BPS_2G: 2 Gbit/s - BPS_5G: 5
-      Gbit/s - BPS_10G: 10 Gbit/s - BPS_20G: 20 Gbit/s - BPS_50G: 50 Gbit/s
+      Gbit/s - BPS_10G: 10 Gbit/s - BPS_20G: 20 Gbit/s - BPS_50G: 50 Gbit/s -
+      BPS_100G: 100 Gbit/s
     candidateIpv6Subnets: This field is not available.
-    candidateSubnets: Up to 16 candidate prefixes that can be used to restrict
-      the allocation of cloudRouterIpAddress and customerRouterIpAddress for
-      this attachment. All prefixes must be within link-local address space
-      (169.254.0.0/16) and must be /29 or shorter (/28, /27, etc). Google will
-      attempt to select an unused /29 from the supplied candidate prefix(es).
-      The request will fail if all possible /29s are in use on Google's edge.
-      If not supplied, Google will randomly select an unused /29 from all of
-      link-local space.
+    candidateSubnets: Input only. Up to 16 candidate prefixes that can be used
+      to restrict the allocation of cloudRouterIpAddress and
+      customerRouterIpAddress for this attachment. All prefixes must be within
+      link-local address space (169.254.0.0/16) and must be /29 or shorter
+      (/28, /27, etc). Google will attempt to select an unused /29 from the
+      supplied candidate prefix(es). The request will fail if all possible
+      /29s are in use on Google's edge. If not supplied, Google will randomly
+      select an unused /29 from all of link-local space.
     cloudRouterIpAddress: [Output Only] IPv4 address + prefix length to be
       configured on Cloud Router Interface for this interconnect attachment.
     cloudRouterIpv6Address: [Output Only] IPv6 address + prefix length to be
@@ -47930,14 +47935,14 @@ class InterconnectAttachment(_messages.Message):
       2 and higher. Absence of this field in the API output indicates that the
       Dataplane is version 1.
     description: An optional description of this resource.
-    edgeAvailabilityDomain: Desired availability domain for the attachment.
-      Only available for type PARTNER, at creation time, and can take one of
-      the following values: - AVAILABILITY_DOMAIN_ANY - AVAILABILITY_DOMAIN_1
-      - AVAILABILITY_DOMAIN_2 For improved reliability, customers should
-      configure a pair of attachments, one per availability domain. The
-      selected availability domain will be provided to the Partner via the
-      pairing key, so that the provisioned circuit will lie in the specified
-      domain. If not specified, the value will default to
+    edgeAvailabilityDomain: Input only. Desired availability domain for the
+      attachment. Only available for type PARTNER, at creation time, and can
+      take one of the following values: - AVAILABILITY_DOMAIN_ANY -
+      AVAILABILITY_DOMAIN_1 - AVAILABILITY_DOMAIN_2 For improved reliability,
+      customers should configure a pair of attachments, one per availability
+      domain. The selected availability domain will be provided to the Partner
+      via the pairing key, so that the provisioned circuit will lie in the
+      specified domain. If not specified, the value will default to
       AVAILABILITY_DOMAIN_ANY.
     encryption: Indicates the user-supplied encryption option of this VLAN
       attachment (interconnectAttachment). Can only be specified at attachment
@@ -48048,8 +48053,8 @@ class InterconnectAttachment(_messages.Message):
       deleted externally and is no longer functional. This could be because
       the associated Interconnect was removed, or because the other side of a
       Partner attachment was deleted.
-    subnetLength: Length of the IPv4 subnet mask. Allowed values: - 29
-      (default) - 30 The default value is 29, except for Cross-Cloud
+    subnetLength: Input only. Length of the IPv4 subnet mask. Allowed values:
+      - 29 (default) - 30 The default value is 29, except for Cross-Cloud
       Interconnect connections that use an InterconnectRemoteLocation with a
       constraints.subnetLengthRange.min equal to 30. For example, connections
       that use an Azure remote location fall into this category. In these
@@ -48074,9 +48079,10 @@ class InterconnectAttachment(_messages.Message):
     values: - BPS_50M: 50 Mbit/s - BPS_100M: 100 Mbit/s - BPS_200M: 200 Mbit/s
     - BPS_300M: 300 Mbit/s - BPS_400M: 400 Mbit/s - BPS_500M: 500 Mbit/s -
     BPS_1G: 1 Gbit/s - BPS_2G: 2 Gbit/s - BPS_5G: 5 Gbit/s - BPS_10G: 10
-    Gbit/s - BPS_20G: 20 Gbit/s - BPS_50G: 50 Gbit/s
+    Gbit/s - BPS_20G: 20 Gbit/s - BPS_50G: 50 Gbit/s - BPS_100G: 100 Gbit/s
 
     Values:
+      BPS_100G: 100 Gbit/s
       BPS_100M: 100 Mbit/s
       BPS_10G: 10 Gbit/s
       BPS_1G: 1 Gbit/s
@@ -48090,28 +48096,29 @@ class InterconnectAttachment(_messages.Message):
       BPS_50M: 50 Mbit/s
       BPS_5G: 5 Gbit/s
     """
-    BPS_100M = 0
-    BPS_10G = 1
-    BPS_1G = 2
-    BPS_200M = 3
-    BPS_20G = 4
-    BPS_2G = 5
-    BPS_300M = 6
-    BPS_400M = 7
-    BPS_500M = 8
-    BPS_50G = 9
-    BPS_50M = 10
-    BPS_5G = 11
+    BPS_100G = 0
+    BPS_100M = 1
+    BPS_10G = 2
+    BPS_1G = 3
+    BPS_200M = 4
+    BPS_20G = 5
+    BPS_2G = 6
+    BPS_300M = 7
+    BPS_400M = 8
+    BPS_500M = 9
+    BPS_50G = 10
+    BPS_50M = 11
+    BPS_5G = 12
 
   class EdgeAvailabilityDomainValueValuesEnum(_messages.Enum):
-    r"""Desired availability domain for the attachment. Only available for
-    type PARTNER, at creation time, and can take one of the following values:
-    - AVAILABILITY_DOMAIN_ANY - AVAILABILITY_DOMAIN_1 - AVAILABILITY_DOMAIN_2
-    For improved reliability, customers should configure a pair of
-    attachments, one per availability domain. The selected availability domain
-    will be provided to the Partner via the pairing key, so that the
-    provisioned circuit will lie in the specified domain. If not specified,
-    the value will default to AVAILABILITY_DOMAIN_ANY.
+    r"""Input only. Desired availability domain for the attachment. Only
+    available for type PARTNER, at creation time, and can take one of the
+    following values: - AVAILABILITY_DOMAIN_ANY - AVAILABILITY_DOMAIN_1 -
+    AVAILABILITY_DOMAIN_2 For improved reliability, customers should configure
+    a pair of attachments, one per availability domain. The selected
+    availability domain will be provided to the Partner via the pairing key,
+    so that the provisioned circuit will lie in the specified domain. If not
+    specified, the value will default to AVAILABILITY_DOMAIN_ANY.
 
     Values:
       AVAILABILITY_DOMAIN_1: <no description>
@@ -55639,6 +55646,8 @@ class NetworkRoutingConfig(_messages.Message):
       for handling inter-region cost in the selection process when using the
       STANDARD BGP best path selection algorithm. Can be DEFAULT or
       ADD_COST_TO_MED.
+    EffectiveBgpInterRegionCostValueValuesEnum: [Output Only] Effective value
+      of the bgp_inter_region_cost field.
     RoutingModeValueValuesEnum: The network-wide routing mode to use. If set
       to REGIONAL, this network's Cloud Routers will only advertise routes
       with subnets of this network in the same region as the router. If set to
@@ -55655,6 +55664,10 @@ class NetworkRoutingConfig(_messages.Message):
     bgpInterRegionCost: Allows to define a preferred approach for handling
       inter-region cost in the selection process when using the STANDARD BGP
       best path selection algorithm. Can be DEFAULT or ADD_COST_TO_MED.
+    effectiveBgpAlwaysCompareMed: [Output Only] Effective value of the
+      bgp_always_compare_med field.
+    effectiveBgpInterRegionCost: [Output Only] Effective value of the
+      bgp_inter_region_cost field.
     routingMode: The network-wide routing mode to use. If set to REGIONAL,
       this network's Cloud Routers will only advertise routes with subnets of
       this network in the same region as the router. If set to GLOBAL, this
@@ -55686,6 +55699,16 @@ class NetworkRoutingConfig(_messages.Message):
     ADD_COST_TO_MED = 0
     DEFAULT = 1
 
+  class EffectiveBgpInterRegionCostValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Effective value of the bgp_inter_region_cost field.
+
+    Values:
+      ADD_COST_TO_MED: <no description>
+      DEFAULT: <no description>
+    """
+    ADD_COST_TO_MED = 0
+    DEFAULT = 1
+
   class RoutingModeValueValuesEnum(_messages.Enum):
     r"""The network-wide routing mode to use. If set to REGIONAL, this
     network's Cloud Routers will only advertise routes with subnets of this
@@ -55703,7 +55726,9 @@ class NetworkRoutingConfig(_messages.Message):
   bgpAlwaysCompareMed = _messages.BooleanField(1)
   bgpBestPathSelectionMode = _messages.EnumField('BgpBestPathSelectionModeValueValuesEnum', 2)
   bgpInterRegionCost = _messages.EnumField('BgpInterRegionCostValueValuesEnum', 3)
-  routingMode = _messages.EnumField('RoutingModeValueValuesEnum', 4)
+  effectiveBgpAlwaysCompareMed = _messages.BooleanField(4)
+  effectiveBgpInterRegionCost = _messages.EnumField('EffectiveBgpInterRegionCostValueValuesEnum', 5)
+  routingMode = _messages.EnumField('RoutingModeValueValuesEnum', 6)
 
 
 class NetworksAddPeeringRequest(_messages.Message):
@@ -77161,11 +77186,12 @@ class TargetHttpsProxy(_messages.Message):
       should refer to a SSL Certificate resource or Certificate Manager
       Certificate resource. Mixing Classic Certificates and Certificate
       Manager Certificates is not allowed. Certificate Manager Certificates
-      must include the certificatemanager API. Certificate Manager
-      Certificates are not supported by Global external Application Load
-      Balancer or Classic Application Load Balancer, use certificate_map
-      instead. Currently, you may specify up to 15 Classic SSL Certificates.
-      Certificate Manager Certificates accepted formats are: -
+      must include the certificatemanager API namespace. Using Certificate
+      Manager Certificates in this field is not supported by Global external
+      Application Load Balancer or Classic Application Load Balancer, use
+      certificate_map instead. Currently, you may specify up to 15 Classic SSL
+      Certificates or up to 100 Certificate Manager Certificates. Certificate
+      Manager Certificates accepted formats are: -
       //certificatemanager.googleapis.com/projects/{project}/locations/{
       location}/certificates/{resourceName}. -
       https://certificatemanager.googleapis.com/v1alpha1/projects/{project

@@ -163,6 +163,8 @@ def SplitEndpointUrl(url):
   http(s)://{api}.googleapis.com/{api}/{version}/{resource-path}
   http(s)://{api}.googleapis.com/apis/{kube-api.name}/{version}/{resource-path}
   http(s)://{api}.googleapis.com/{version}/{resource-path}
+  http(s)://{api}.googleapis.com/{api}/{resource-path}
+  http(s)://{api}.googleapis.com/{resource-path}
   http(s)://googledomain/{api}
   # Non-Google API endpoints.
   http(s)://someotherdomain/{api}/{version}/{resource-path}
@@ -172,8 +174,6 @@ def SplitEndpointUrl(url):
 
   Returns:
     (str, str, str): The API name, version, resource_path.
-    For a malformed URL, the return value for API name is undefined, version is
-    None, and resource path is ''.
 
   Raises: InvalidEndpointException.
   """
@@ -181,8 +181,16 @@ def SplitEndpointUrl(url):
   version_index = _GetApiVersionIndex(tokens)
 
   domain = tokens[0]
-  if version_index < 1:
-    return _ExtractApiNameFromDomain(domain), None, ''
+  if version_index == -1:
+    api = _ExtractApiNameFromDomain(domain)
+    if len(tokens) > 1 and tokens[1] == api:
+      # domain/{api}/{resource-path}
+      # Some older APIs have this form e.g. compute.googleapis.com/compute/...
+      resource_index = 2
+    else:
+      # domain/{resource-path}
+      resource_index = 1
+    return api, None, '/'.join(tokens[resource_index:])
 
   version = tokens[version_index]
   resource_path = '/'.join(tokens[version_index + 1:])

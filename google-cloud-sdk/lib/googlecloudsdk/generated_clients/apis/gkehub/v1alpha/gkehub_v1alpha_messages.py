@@ -794,10 +794,12 @@ class ClusterUpgradeUpgradeStatus(_messages.Message):
 
   Enums:
     CodeValueValuesEnum: Status code of the upgrade.
+    TypeValueValuesEnum: Type of the status.
 
   Fields:
     code: Status code of the upgrade.
     reason: Reason for this status.
+    type: Type of the status.
     updateTime: Last timestamp the status was updated.
   """
 
@@ -819,6 +821,8 @@ class ClusterUpgradeUpgradeStatus(_messages.Message):
         doesn't finish within a certain limit, despite it's actual status.
       COMPLETE: The upgrade has passed all post conditions (soaking). At the
         scope level, this means all eligible clusters are in COMPLETE status.
+      PAUSED: The upgrade is paused. At the scope level, this means the
+        upgrade is paused for all the clusters in the scope.
     """
     CODE_UNSPECIFIED = 0
     INELIGIBLE = 1
@@ -827,10 +831,38 @@ class ClusterUpgradeUpgradeStatus(_messages.Message):
     SOAKING = 4
     FORCED_SOAKING = 5
     COMPLETE = 6
+    PAUSED = 7
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the status.
+
+    Values:
+      TYPE_UNSPECIFIED: Required by https://linter.aip.dev/126/unspecified.
+      DISRUPTION_BUDGET: The upgrade is PAUSED due to the cluster's disruption
+        budget. Cluster is out of disruption budget. Once the cluster is back
+        in budget, the upgrade will resume.
+      MAINTENANCE_POLICY: The upgrade is PAUSED due to the cluster's
+        maintenance policy. The upgrade will resume once cluster's maintenance
+        window is open and/or maintenance exclusion is over.
+      SYSTEM_CONFIG: The upgrade is PAUSED due to the system config.
+      CLUSTER_STATUS: The upgrade is INELIGIBLE due to the cluster's status.
+      INCOMPATIBLE_VERSION: The upgrade is INELIGIBLE due to the cluster's
+        current version being incompatible with the target version.
+      DISABLED_BY_USER: The upgrade is INELIGIBLE due to the user disabling
+        auto upgrades. Applies to node upgrades only.
+    """
+    TYPE_UNSPECIFIED = 0
+    DISRUPTION_BUDGET = 1
+    MAINTENANCE_POLICY = 2
+    SYSTEM_CONFIG = 3
+    CLUSTER_STATUS = 4
+    INCOMPATIBLE_VERSION = 5
+    DISABLED_BY_USER = 6
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   reason = _messages.StringField(2)
-  updateTime = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  updateTime = _messages.StringField(4)
 
 
 class CommonFeatureSpec(_messages.Message):
@@ -1641,10 +1673,10 @@ class ConfigManagementContainerOverride(_messages.Message):
 
   Fields:
     containerName: Required. The name of the container.
-    cpuLimit: Optional. The cpu limit of the container.
-    cpuRequest: Optional. The cpu request of the container.
-    memoryLimit: Optional. The memory limit of the container.
-    memoryRequest: Optional. The memory request of the container.
+    cpuLimit: The cpu limit of the container.
+    cpuRequest: The cpu request of the container.
+    memoryLimit: The memory limit of the container.
+    memoryRequest: The memory request of the container.
   """
 
   containerName = _messages.StringField(1)
@@ -1768,9 +1800,9 @@ class ConfigManagementGitConfig(_messages.Message):
     policyDir: The path within the Git repository that represents the top
       level of the repo to sync. Default: the root directory of the
       repository.
-    secretType: Type of secret configured for access to the Git repo. Must be
-      one of ssh, cookiefile, gcenode, token, gcpserviceaccount or none. The
-      validation of this is case-sensitive. Required.
+    secretType: Required. Type of secret configured for access to the Git
+      repo. Must be one of ssh, cookiefile, gcenode, token, gcpserviceaccount
+      or none. The validation of this is case-sensitive. Required.
     syncBranch: The branch of the repository to sync from. Default: master.
     syncRepo: The URL of the Git repository to use as the source of truth.
     syncRev: Git revision (tag or hash) to check out. Default HEAD.
@@ -8679,10 +8711,14 @@ class ValidationResult(_messages.Message):
         is still available.
       CROSS_PROJECT_PERMISSION: CROSS_PROJECT_PERMISSION validator validates
         that the cross-project role binding for the service agent is in place.
+      FLEET_ALLOWED_FOR_PROJECT_GUARDRAIL: FLEET_ALLOWED_FOR_PROJECT_GUARDRAIL
+        validator validates that the fleet project is allowed for the project
+        guardrail.
     """
     VALIDATOR_TYPE_UNSPECIFIED = 0
     MEMBERSHIP_ID = 1
     CROSS_PROJECT_PERMISSION = 2
+    FLEET_ALLOWED_FOR_PROJECT_GUARDRAIL = 3
 
   result = _messages.StringField(1)
   success = _messages.BooleanField(2)

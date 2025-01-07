@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://parametermanager.googleapis.com/v1/'
-DOCS_URL = 'www.google.com'
+DOCS_URL = 'https://cloud.google.com/secret-manager/parameter-manager/docs/overview'
 
 
 class Collections(enum.Enum):

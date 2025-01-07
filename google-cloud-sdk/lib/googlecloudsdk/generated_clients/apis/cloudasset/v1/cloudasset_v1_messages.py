@@ -1347,6 +1347,8 @@ class CloudassetOtherCloudConnectionsPatchRequest(_messages.Message):
       therCloudConnections/{other_cloud_connection_id} E.g. -
       `organizations/123/otherCloudConnections/aws` -
       `organizations/123/otherCloudConnections/azure`
+    optInFeatures_allEligibleFeatures: If true, all eligible features will be
+      considered for update.
     otherCloudConnection: A OtherCloudConnection resource to be passed as the
       request body.
     updateMask: Required. The list of fields to update. A field represent
@@ -1357,14 +1359,13 @@ class CloudassetOtherCloudConnectionsPatchRequest(_messages.Message):
       updated: - `name`, - `service_agent_id`, -
       `collect_aws_asset_setting.collector_role_name`, -
       `collect_aws_asset_setting.delegate_role_name`, -
-      `collect_azure_asset_setting.tenant_id`, -
-      `collect_azure_asset_setting.managed_identity_client_id`, -
-      `collect_azure_asset_setting.managed_identity_object_id`.
+      `collect_azure_asset_setting.tenant_id`.
   """
 
   name = _messages.StringField(1, required=True)
-  otherCloudConnection = _messages.MessageField('OtherCloudConnection', 2)
-  updateMask = _messages.StringField(3)
+  optInFeatures_allEligibleFeatures = _messages.BooleanField(2)
+  otherCloudConnection = _messages.MessageField('OtherCloudConnection', 3)
+  updateMask = _messages.StringField(4)
 
 
 class CloudassetQueryAssetsRequest(_messages.Message):
@@ -1806,28 +1807,28 @@ class CollectAzureAssetSetting(_messages.Message):
       resources-2022-12-01&tabs=HTTP#getlocationswithasubscriptionid Like
       eastus, eastus2. The location name list can be found at https://gist.git
       hub.com/ausfestivus/04e55c7d80229069bf3bc75870630ec8#results
-    managedIdentityClientId: Required. Immutable. The client ID of the Azure
-      User-assigned Managed Identity which the Google Cloud Service Agent will
-      be authenticated with. Refer [here] (https://learn.microsoft.com/en-
+    managedIdentityClientId: Required. The client ID of the Azure User-
+      assigned Managed Identity which the Google Cloud Service Agent will be
+      authenticated with. Refer [here] (https://learn.microsoft.com/en-
       us/entra/identity/managed-identities-azure-resources/how-manage-user-
       assigned-managed-identities) for the definition of a user-assigned
       managed identity. You can find its client ID following [these
       steps](https://learn.microsoft.com/en-us/entra/identity/managed-
       identities-azure-resources/how-managed-identities-work-vm#user-assigned-
       managed-identity)
-    managedIdentityObjectId: Required. Immutable. The object/principal ID of
-      the Azure User-assigned Managed Identity which the Google Cloud Service
-      Agent will be authenticated with. A service principal will be created
-      when a Managed Identity is enabled. This service principal
-      (object/principal ID) will be used to do role assignment to the Managed
-      Identity to access the Azure resources. Refer
-      [here](https://learn.microsoft.com/en-us/entra/identity/managed-
-      identities-azure-resources/how-to-view-managed-identity-service-
-      principal-portal) for detailed documentation about Managed Identity's
-      Service Principal. Managed Identity's Object/principal ID can be found
-      following [these steps](https://learn.microsoft.com/en-
-      us/entra/identity/managed-identities-azure-resources/how-managed-
-      identities-work-vm#user-assigned-managed-identity)
+    managedIdentityObjectId: Required. The object/principal ID of the Azure
+      User-assigned Managed Identity which the Google Cloud Service Agent will
+      be authenticated with. A service principal will be created when a
+      Managed Identity is enabled. This service principal (object/principal
+      ID) will be used to do role assignment to the Managed Identity to access
+      the Azure resources. Refer [here](https://learn.microsoft.com/en-
+      us/entra/identity/managed-identities-azure-resources/how-to-view-
+      managed-identity-service-principal-portal) for detailed documentation
+      about Managed Identity's Service Principal. Managed Identity's
+      Object/principal ID can be found following [these
+      steps](https://learn.microsoft.com/en-us/entra/identity/managed-
+      identities-azure-resources/how-managed-identities-work-vm#user-assigned-
+      managed-identity)
     sensitiveDataProtectionDiscoveryAzureSetting: Optional. Scan sensitive
       data setting.
     tenantId: Required. Immutable. The ID of the tenant where the data will be
@@ -3894,10 +3895,15 @@ class GoogleIdentityAccesscontextmanagerV1EgressPolicy(_messages.Message):
       EgressPolicy to apply.
     egressTo: Defines the conditions on the ApiOperation and destination
       resources that cause this EgressPolicy to apply.
+    title: Optional. Human-readable title for the egress rule. The title must
+      be unique within the perimeter and can not exceed 100 characters. Within
+      the access policy, the combined length of all rule titles must not
+      exceed 240,000 characters.
   """
 
   egressFrom = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1EgressFrom', 1)
   egressTo = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1EgressTo', 2)
+  title = _messages.StringField(3)
 
 
 class GoogleIdentityAccesscontextmanagerV1EgressSource(_messages.Message):
@@ -4018,10 +4024,15 @@ class GoogleIdentityAccesscontextmanagerV1IngressPolicy(_messages.Message):
       this IngressPolicy to apply.
     ingressTo: Defines the conditions on the ApiOperation and request
       destination that cause this IngressPolicy to apply.
+    title: Optional. Human-readable title for the ingress rule. The title must
+      be unique within the perimeter and can not exceed 100 characters. Within
+      the access policy, the combined length of all rule titles must not
+      exceed 240,000 characters.
   """
 
   ingressFrom = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1IngressFrom', 1)
   ingressTo = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1IngressTo', 2)
+  title = _messages.StringField(3)
 
 
 class GoogleIdentityAccesscontextmanagerV1IngressSource(_messages.Message):
@@ -4152,8 +4163,8 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
     description: Description of the `ServicePerimeter` and its use. Does not
       affect behavior.
     etag: Optional. An opaque identifier for the current version of the
-      `ServicePerimeter`. Clients should not expect this to be in any specific
-      format. If etag is not provided, the operation will be performed as if a
+      `ServicePerimeter`. This identifier does not follow any specific format.
+      If an etag is not provided, the operation will be performed as if a
       valid etag is provided.
     name: Identifier. Resource name for the `ServicePerimeter`. Format:
       `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`.
@@ -4645,14 +4656,15 @@ class InvalidCollectorAccount(_messages.Message):
   For Azure, this includes the details about an missing required role type.
 
   Enums:
-    AccountStatusCategoryValueValuesEnum: Optional. The account status
-      category.
+    AccountStatusCategoryValueValuesEnum: Optional. NOTE: Deprecated The
+      account status category.
     StatusCategoryValueValuesEnum: Optional. The status category.
 
   Fields:
     accountId: Required. The account id of the invalid AWS Collector account.
       This is only used for AWS.
-    accountStatusCategory: Optional. The account status category.
+    accountStatusCategory: Optional. NOTE: Deprecated The account status
+      category.
     cause: Optional. The detailed reason for the invalidity.
     role: Optional. For AWS, this is the invalid Collector Role name of the
       invalid AWS account. For Azure, this is the missing role types. It will
@@ -4666,7 +4678,7 @@ class InvalidCollectorAccount(_messages.Message):
   """
 
   class AccountStatusCategoryValueValuesEnum(_messages.Enum):
-    r"""Optional. The account status category.
+    r"""Optional. NOTE: Deprecated The account status category.
 
     Values:
       ACCOUNT_STATUS_CATEGORY_UNSPECIFIED: Unknown.
@@ -6798,16 +6810,30 @@ class ValidationResult(_messages.Message):
       assumed to an AWS delegated role. AWS_FAILED_TO_LIST_ACCOUNTS: The
       connection is invalid because the APS auto-discovery is enabled and the
       permission to allow the Delegated Role to list accounts in the
-      organization has not been set properly. AWS_INVALID_COLLECTOR_ACCOUNTS:
-      The connection has invalid Collector accounts. A predefined threshold of
-      the maximum number of invalid Collector accounts will be defined. When
-      the number of invalid Collector accounts exceeds this limit, the
-      validation will stop. The reason for one Collector account's invalidity
-      can be one of the following values. The detailed reason will be included
-      in the cause field. AWS_FAILED_TO_ASSUME_COLLECTOR_ROLE: The Delegated
-      Role can not be properly assumed to the AWS Collector Role in the
-      account. AWS_COLLECTOR_ROLE_POLICY_MISSING_REQUIRED_PERMISSION: The
-      Collector Role misses required policy settings.
+      organization has not been set properly.
+      AWS_ACTIVE_COLLECTOR_ACCOUNTS_NOT_FOUND: The connection is invalid
+      because ACTIVE Collector accounts are not found. More details about the
+      status of an AWS account can be found at https://docs.aws.amazon.com/org
+      anizations/latest/APIReference/API_Account.html#organizations-Type-
+      Account-Status AWS_INVALID_COLLECTOR_ACCOUNTS: The connection has
+      invalid Collector accounts. A predefined threshold of the maximum number
+      of invalid Collector accounts will be defined. When the number of
+      invalid Collector accounts exceeds this limit, the validation will stop.
+      The reason for one Collector account's invalidity can be one of the
+      following values. The detailed reason will be included in the cause
+      field. AWS_FAILED_TO_ASSUME_COLLECTOR_ROLE: The Delegated Role can not
+      be properly assumed to the AWS Collector Role in the account.
+      AWS_COLLECTOR_ROLE_POLICY_MISSING_REQUIRED_PERMISSION: The Collector
+      Role misses required policy settings.
+      AWS_FAILED_TO_CONNECT_TO_ORGNIZATIONS_SERVICE: The connection is invalid
+      because the connection cannot connect to the AWS Organizations Service.
+      This status is only applicable to connections with auto-discovery
+      disabled. AZURE_ENABLED_SUBSCRIPTIONS_NOT_FOUND: The connection is
+      invalid because Enabled subscriptions are not found in this connection.
+      More details about SubscriptionState can be found at
+      https://learn.microsoft.com/en-
+      us/rest/api/resources/subscriptions/list?view=rest-
+      resources-2022-12-01&tabs=HTTP#subscriptionstate
       AZURE_FAILED_TO_ASSUME_MANAGED_IDENTITY: Failed in assume the Azure
       Managed Identity with OCAI SA.
       AZURE_MANAGED_IDENTITY_MISSING_REQUIRED_PERMISSION: Azure Managed
@@ -7100,6 +7126,8 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetOtherCloudConnectionsPatchRequest, 'optInFeatures_allEligibleFeatures', 'optInFeatures.allEligibleFeatures')
 encoding.AddCustomJsonFieldMapping(
     CloudassetAnalyzeIamPolicyRequest, 'analysisQuery_accessSelector_permissions', 'analysisQuery.accessSelector.permissions')
 encoding.AddCustomJsonFieldMapping(

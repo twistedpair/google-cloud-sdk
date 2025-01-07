@@ -37,6 +37,7 @@ class InterconnectAttachment(object):
       'bps-10g': 'BPS_10G',
       'bps-20g': 'BPS_20G',
       'bps-50g': 'BPS_50G',
+      'bps-100g': 'BPS_100G',
       '50m': 'BPS_50M',
       '100m': 'BPS_100M',
       '200m': 'BPS_200M',
@@ -49,6 +50,7 @@ class InterconnectAttachment(object):
       '10g': 'BPS_10G',
       '20g': 'BPS_20G',
       '50g': 'BPS_50G',
+      '100g': 'BPS_100G',
   }
 
   _EDGE_AVAILABILITY_DOMAIN_CONVERSION = {

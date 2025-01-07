@@ -588,20 +588,18 @@ class ExplicitDecodingConfig(_messages.Message):
       recognition.
 
   Fields:
-    audioChannelCount: Number of channels present in the audio data sent for
-      recognition. Supported for the following encodings: * LINEAR16:
-      Headerless 16-bit signed little-endian PCM samples. * MULAW: Headerless
-      8-bit companded mulaw samples. * ALAW: Headerless 8-bit companded alaw
-      samples. The maximum allowed value is 8.
+    audioChannelCount: Optional. Number of channels present in the audio data
+      sent for recognition. Note that this field is marked as OPTIONAL for
+      backward compatibility reasons. It is (and has always been) effectively
+      REQUIRED. The maximum allowed value is 8.
     encoding: Required. Encoding of the audio data sent for recognition.
-    sampleRateHertz: Sample rate in Hertz of the audio data sent for
+    sampleRateHertz: Optional. Sample rate in Hertz of the audio data sent for
       recognition. Valid values are: 8000-48000. 16000 is optimal. For best
       results, set the sampling rate of the audio source to 16000 Hz. If
       that's not possible, use the native sample rate of the audio source
-      (instead of re-sampling). Supported for the following encodings: *
-      LINEAR16: Headerless 16-bit signed little-endian PCM samples. * MULAW:
-      Headerless 8-bit companded mulaw samples. * ALAW: Headerless 8-bit
-      companded alaw samples.
+      (instead of re-sampling). Note that this field is marked as OPTIONAL for
+      backward compatibility reasons. It is (and has always been) effectively
+      REQUIRED.
   """
 
   class EncodingValueValuesEnum(_messages.Enum):
@@ -612,11 +610,29 @@ class ExplicitDecodingConfig(_messages.Message):
       LINEAR16: Headerless 16-bit signed little-endian PCM samples.
       MULAW: Headerless 8-bit companded mulaw samples.
       ALAW: Headerless 8-bit companded alaw samples.
+      AMR: AMR frames with an rfc4867.5 header.
+      AMR_WB: AMR-WB frames with an rfc4867.5 header.
+      FLAC: FLAC frames in the "native FLAC" container format.
+      MP3: MPEG audio frames with optional (ignored) ID3 metadata.
+      OGG_OPUS: Opus audio frames in an Ogg container.
+      WEBM_OPUS: Opus audio frames in a WebM container.
+      MP4_AAC: AAC audio frames in an MP4 container.
+      M4A_AAC: AAC audio frames in an M4A container.
+      MOV_AAC: AAC audio frames in an MOV container.
     """
     AUDIO_ENCODING_UNSPECIFIED = 0
     LINEAR16 = 1
     MULAW = 2
     ALAW = 3
+    AMR = 4
+    AMR_WB = 5
+    FLAC = 6
+    MP3 = 7
+    OGG_OPUS = 8
+    WEBM_OPUS = 9
+    MP4_AAC = 10
+    M4A_AAC = 11
+    MOV_AAC = 12
 
   audioChannelCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   encoding = _messages.EnumField('EncodingValueValuesEnum', 2)

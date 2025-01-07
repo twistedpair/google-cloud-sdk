@@ -74,9 +74,10 @@ class Client:
 
   def CreateDeploymentGroup(
       self,
-      deployment_group_id,
-      parent,
-      network,
+      deployment_group_id: str,
+      parent: str,
+      network: str,
+      description: str,
       labels=None,
   ):
     """Calls the CreateDeploymentGroup API.
@@ -85,6 +86,7 @@ class Client:
       deployment_group_id: str, the id of the intercept deployment group.
       parent: str, the parent resource name.
       network: str, the network used for all group deployments.
+      description: str, The description of the Endpoint Group.
       labels: LabelsValue, optional labels as key-value pairs.
 
     Returns:
@@ -94,6 +96,10 @@ class Client:
         labels=labels,
         network=network,
     )
+    # TODO(b/381836581): Remove this check once the field is
+    # available in V1.
+    if hasattr(deployment_group, 'description'):
+      deployment_group.description = description
     create_request = self.messages.NetworksecurityProjectsLocationsInterceptDeploymentGroupsCreateRequest(
         interceptDeploymentGroup=deployment_group,
         interceptDeploymentGroupId=deployment_group_id,
@@ -118,12 +124,14 @@ class Client:
   def UpdateDeploymentGroup(
       self,
       name,
+      description,
       update_fields,
   ):
     """Calls the UpdateDeploymentGroup API.
 
     Args:
       name: str, the name of the intercept deployment group.
+      description: str, the description of the intercept deployment group.
       update_fields: A dictionary of fields to update mapped to their new
         values.
 
@@ -133,6 +141,12 @@ class Client:
     dg = self.messages.InterceptDeploymentGroup(
         labels=update_fields.get('labels', None),
     )
+
+    # TODO(b/381836581): Remove this check once the field is
+    # available in V1.
+    if hasattr(dg, 'description'):
+      dg.description = description
+
     update_request = self.messages.NetworksecurityProjectsLocationsInterceptDeploymentGroupsPatchRequest(
         name=name,
         interceptDeploymentGroup=dg,

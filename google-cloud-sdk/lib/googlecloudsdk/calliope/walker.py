@@ -36,8 +36,9 @@ class Walker(object):
     _progress_callback: The progress bar function to call to update progress.
   """
 
-  def __init__(self, cli, progress_callback=None, ignore_load_errors=False,
-               restrict=None):
+  def __init__(
+      self, cli, progress_callback=None, ignore_load_errors=False, restrict=None
+  ):
     """Constructor.
 
     Args:
@@ -65,15 +66,18 @@ class Walker(object):
       with progress_tracker.ProgressTracker('Loading CLI Tree'):
         for root in self._roots:
           self._num_nodes += 1.0 + root.LoadAllSubElements(
-              recursive=True, ignore_load_errors=ignore_load_errors)
+              recursive=True, ignore_load_errors=ignore_load_errors
+          )
     else:
       for root in self._roots:
         self._num_nodes += 1.0 + root.LoadAllSubElements(
-            recursive=True, ignore_load_errors=ignore_load_errors)
+            recursive=True, ignore_load_errors=ignore_load_errors
+        )
 
     self._num_visited = 0
-    self._progress_callback = (progress_callback or
-                               console_io.DefaultProgressBarCallback)
+    self._progress_callback = (
+        progress_callback or console_io.DefaultProgressBarCallback
+    )
 
   def _GetSubElement(self, top_element, path):
     parts = path.split('.')[1:]
@@ -103,6 +107,7 @@ class Walker(object):
     Returns:
       The return value of the top level Visit() call.
     """
+
     def _IsUniverseCompatible(command: Any) -> bool:
       """Determines if a command is universe compatible.
 

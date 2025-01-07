@@ -223,7 +223,7 @@ def ConstructList(title, items):
 
 # pylint: disable=g-doc-return-or-yield
 @contextlib.contextmanager
-def TemporaryKubeconfig(location_id, cluster_id):
+def TemporaryKubeconfig(location_id, cluster_id, kubecontext_override=None):
   """Context manager that manages a temporary kubeconfig file for a GKE cluster.
 
   The kubeconfig file will be automatically created and destroyed and will
@@ -236,6 +236,7 @@ def TemporaryKubeconfig(location_id, cluster_id):
   Args:
     location_id: string, the id of the location to which the cluster belongs
     cluster_id: string, the id of the cluster
+    kubecontext_override: string, the kubecontext override
 
   Raises:
     Error: If unable to get credentials for kubernetes cluster.
@@ -261,7 +262,11 @@ def TemporaryKubeconfig(location_id, cluster_id):
       if missing_creds and not gke_util.ClusterConfig.UseGCPAuthProvider():
         raise Error('Unable to get cluster credentials. User must have edit '
                     'permission on {}'.format(cluster_ref.projectId))
-      gke_util.ClusterConfig.Persist(cluster, cluster_ref.projectId)
+      gke_util.ClusterConfig.Persist(
+          cluster,
+          cluster_ref.projectId,
+          kubecontext_override=kubecontext_override,
+      )
       yield kubeconfig
     finally:
       encoding.SetEncodedValue(os.environ, KUBECONFIG_ENV_VAR_NAME,

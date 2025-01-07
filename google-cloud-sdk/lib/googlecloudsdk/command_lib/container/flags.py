@@ -1974,6 +1974,21 @@ def AddPlacementPolicyFlag(parser, hidden=False):
   parser.add_argument('--placement-policy', help=help_text, hidden=hidden)
 
 
+def AddKubecontextOverrideFlag(parser):
+  """Adds a --kubecontext-override flag to parser.
+
+  Args:
+    parser: A given parser.
+  """
+  help_text = textwrap.dedent("""\
+    Name of kubectl context to use.
+
+    $ {command} cluster-1 --kubecontext-override=my-kubecontext
+      """)
+
+  parser.add_argument('--kubecontext-override', help=help_text, hidden=True)
+
+
 def AddQueuedProvisioningFlag(parser, hidden=False):
   """Adds a --enable-queued-provisioning flag to parser."""
   parser.add_argument(
@@ -6998,4 +7013,22 @@ traffic reaching cluster's control plane via private IP.
       default=None,
       action='store_true',
       help=help_text,
+  )
+
+
+def AddEnableAutopilotCompatibilityAuditingFlag(parser, hidden=True):
+  help_text = """\
+        Enables the Autopilot Compatibility Auditing Feature. See
+        https://cloud.google.com/sdk/gcloud/reference/container/clusters/check-autopilot-compatibility.
+
+        To disable in an existing cluster, explicitly set flag to
+        --no-enable-autopilot-compatibility-auditing.
+    """
+
+  parser.add_argument(
+      '--enable-autopilot-compatibility-auditing',
+      action='store_true',
+      default=None,
+      help=help_text,
+      hidden=hidden,
   )

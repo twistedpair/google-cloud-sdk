@@ -821,6 +821,17 @@ class AppengineProjectsLocationsApplicationsAuthorizedDomainsListRequest(_messag
   parent = _messages.StringField(3, required=True)
 
 
+class AppengineProjectsLocationsApplicationsServicesDeleteRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsApplicationsServicesDeleteRequest object.
+
+  Fields:
+    name: Name of the resource requested. Example:
+      apps/myapp/services/default.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class AppengineProjectsLocationsApplicationsServicesMigrationCheckGen1appIdRequest(_messages.Message):
   r"""A
   AppengineProjectsLocationsApplicationsServicesMigrationCheckGen1appIdRequest
@@ -2900,6 +2911,24 @@ class RequestUtilization(_messages.Message):
 
   targetConcurrentRequests = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   targetRequestCountPerSecond = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class ResourceEvent(_messages.Message):
+  r"""The request that is passed to CLH during per-resource events. The
+  request will be sent with update semantics in all cases except for data
+  governance purge events. These events will be sent with delete semantics and
+  the CLH is expected to delete the resource receiving this event.
+
+  Fields:
+    eventId: The unique ID for this per-resource event. CLHs can use this
+      value to dedup repeated calls. required
+    name: The name of the resource for which this event is. required
+    state: The state of the project that led to this event.
+  """
+
+  eventId = _messages.StringField(1)
+  name = _messages.StringField(2)
+  state = _messages.MessageField('ContainerState', 3)
 
 
 class ResourceRecord(_messages.Message):

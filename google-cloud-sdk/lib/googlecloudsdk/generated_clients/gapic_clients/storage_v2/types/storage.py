@@ -53,6 +53,7 @@ __protobuf__ = proto.module(
         'QueryWriteStatusResponse',
         'RewriteObjectRequest',
         'RewriteResponse',
+        'MoveObjectRequest',
         'StartResumableWriteRequest',
         'StartResumableWriteResponse',
         'UpdateObjectRequest',
@@ -1338,8 +1339,8 @@ class BidiWriteObjectRequest(proto.Message):
         object_checksums (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ObjectChecksums):
             Checksums for the complete object. If the checksums computed
             by the service don't match the specified checksums the call
-            will fail. May only be provided in last request (with
-            finish_write set).
+            will fail. May only be provided in the first request or the
+            last request (with finish_write set).
         state_lookup (bool):
             For each BidiWriteObjectRequest where state_lookup is
             ``true`` or the client closes the stream, the service will
@@ -1954,22 +1955,167 @@ class RewriteResponse(proto.Message):
     )
 
 
+class MoveObjectRequest(proto.Message):
+    r"""Request message for MoveObject.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        bucket (str):
+            Required. Name of the bucket in which the
+            object resides.
+        source_object (str):
+            Required. Name of the source object.
+        destination_object (str):
+            Required. Name of the destination object.
+        if_source_generation_match (int):
+            Optional. Makes the operation conditional on whether the
+            source object's current generation matches the given value.
+            ``if_source_generation_match`` and
+            ``if_source_generation_not_match`` conditions are mutually
+            exclusive: it's an error for both of them to be set in the
+            request.
+
+            This field is a member of `oneof`_ ``_if_source_generation_match``.
+        if_source_generation_not_match (int):
+            Optional. Makes the operation conditional on whether the
+            source object's current generation does not match the given
+            value. ``if_source_generation_match`` and
+            ``if_source_generation_not_match`` conditions are mutually
+            exclusive: it's an error for both of them to be set in the
+            request.
+
+            This field is a member of `oneof`_ ``_if_source_generation_not_match``.
+        if_source_metageneration_match (int):
+            Optional. Makes the operation conditional on whether the
+            source object's current metageneration matches the given
+            value. ``if_source_metageneration_match`` and
+            ``if_source_metageneration_not_match`` conditions are
+            mutually exclusive: it's an error for both of them to be set
+            in the request.
+
+            This field is a member of `oneof`_ ``_if_source_metageneration_match``.
+        if_source_metageneration_not_match (int):
+            Optional. Makes the operation conditional on whether the
+            source object's current metageneration does not match the
+            given value. ``if_source_metageneration_match`` and
+            ``if_source_metageneration_not_match`` conditions are
+            mutually exclusive: it's an error for both of them to be set
+            in the request.
+
+            This field is a member of `oneof`_ ``_if_source_metageneration_not_match``.
+        if_generation_match (int):
+            Optional. Makes the operation conditional on whether the
+            destination object's current generation matches the given
+            value. Setting to 0 makes the operation succeed only if
+            there are no live versions of the object.
+            ``if_generation_match`` and ``if_generation_not_match``
+            conditions are mutually exclusive: it's an error for both of
+            them to be set in the request.
+
+            This field is a member of `oneof`_ ``_if_generation_match``.
+        if_generation_not_match (int):
+            Optional. Makes the operation conditional on whether the
+            destination object's current generation does not match the
+            given value. If no live object exists, the precondition
+            fails. Setting to 0 makes the operation succeed only if
+            there is a live version of the object.
+            ``if_generation_match`` and ``if_generation_not_match``
+            conditions are mutually exclusive: it's an error for both of
+            them to be set in the request.
+
+            This field is a member of `oneof`_ ``_if_generation_not_match``.
+        if_metageneration_match (int):
+            Optional. Makes the operation conditional on whether the
+            destination object's current metageneration matches the
+            given value. ``if_metageneration_match`` and
+            ``if_metageneration_not_match`` conditions are mutually
+            exclusive: it's an error for both of them to be set in the
+            request.
+
+            This field is a member of `oneof`_ ``_if_metageneration_match``.
+        if_metageneration_not_match (int):
+            Optional. Makes the operation conditional on whether the
+            destination object's current metageneration does not match
+            the given value. ``if_metageneration_match`` and
+            ``if_metageneration_not_match`` conditions are mutually
+            exclusive: it's an error for both of them to be set in the
+            request.
+
+            This field is a member of `oneof`_ ``_if_metageneration_not_match``.
+    """
+
+    bucket: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    source_object: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    destination_object: str = proto.Field(
+        proto.STRING,
+        number=3,
+    )
+    if_source_generation_match: int = proto.Field(
+        proto.INT64,
+        number=4,
+        optional=True,
+    )
+    if_source_generation_not_match: int = proto.Field(
+        proto.INT64,
+        number=5,
+        optional=True,
+    )
+    if_source_metageneration_match: int = proto.Field(
+        proto.INT64,
+        number=6,
+        optional=True,
+    )
+    if_source_metageneration_not_match: int = proto.Field(
+        proto.INT64,
+        number=7,
+        optional=True,
+    )
+    if_generation_match: int = proto.Field(
+        proto.INT64,
+        number=8,
+        optional=True,
+    )
+    if_generation_not_match: int = proto.Field(
+        proto.INT64,
+        number=9,
+        optional=True,
+    )
+    if_metageneration_match: int = proto.Field(
+        proto.INT64,
+        number=10,
+        optional=True,
+    )
+    if_metageneration_not_match: int = proto.Field(
+        proto.INT64,
+        number=11,
+        optional=True,
+    )
+
+
 class StartResumableWriteRequest(proto.Message):
     r"""Request message StartResumableWrite.
 
     Attributes:
         write_object_spec (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.WriteObjectSpec):
-            Required. The destination bucket, object, and
-            metadata, as well as any preconditions.
+            Required. Contains the information necessary
+            to start a resumable write.
         common_object_request_params (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CommonObjectRequestParams):
             A set of parameters common to Storage API
-            requests concerning an object.
+            requests related to an object.
         object_checksums (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ObjectChecksums):
-            The checksums of the complete object. This will be used to
+            The checksums of the complete object. This is used to
             validate the uploaded object. For each upload,
-            object_checksums can be provided with either
-            StartResumableWriteRequest or the WriteObjectRequest with
-            finish_write set to ``true``.
+            ``object_checksums`` can be provided when initiating a
+            resumable upload with\ ``StartResumableWriteRequest`` or
+            when completing a write with ``WriteObjectRequest`` with
+            ``finish_write`` set to ``true``.
     """
 
     write_object_spec: 'WriteObjectSpec' = proto.Field(
@@ -1994,9 +2140,12 @@ class StartResumableWriteResponse(proto.Message):
 
     Attributes:
         upload_id (str):
-            The upload_id of the newly started resumable write
-            operation. This value should be copied into the
-            ``WriteObjectRequest.upload_id`` field.
+            A unique identifier for the initiated resumable write
+            operation. As the ID grants write access, you should keep it
+            confidential during the upload to prevent unauthorized
+            access and data tampering during your upload. This ID should
+            be included in subsequent ``WriteObject`` requests to upload
+            the object data.
     """
 
     upload_id: str = proto.Field(
@@ -3303,6 +3452,9 @@ class Object(proto.Message):
             Output only. If this object is noncurrent,
             this is the time when the object became
             noncurrent.
+        finalize_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. The time when the object was
+            finalized.
         content_type (str):
             Content-Type of the object data, matching
             [https://tools.ietf.org/html/rfc7231#section-3.1.1.5][RFC
@@ -3462,6 +3614,11 @@ class Object(proto.Message):
     delete_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=12,
+        message=timestamp_pb2.Timestamp,
+    )
+    finalize_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=36,
         message=timestamp_pb2.Timestamp,
     )
     content_type: str = proto.Field(

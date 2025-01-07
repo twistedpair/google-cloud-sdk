@@ -92,6 +92,19 @@ def AddNetworkConfigArgs(parser):
   )
 
 
+def AddWorkloadIdentityArgument(parser):
+  """Adds workload identity argument."""
+  parser.add_argument(
+      '--workload-identity',
+      metavar='WORKLOAD_IDENTITY',
+      dest='workload_identity',
+      help=(
+          'The workload identity to use for the job. Managed Flink'
+          ' Default Workload Identity will be used if not specified.'
+      ),
+  )
+
+
 def AddLocationArgument(parser):
   """Creates location argument."""
   base.Argument(

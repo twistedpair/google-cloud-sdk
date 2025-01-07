@@ -60,7 +60,6 @@ import re
 
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.document_renderers import renderer
-
 from prompt_toolkit.token import Token
 
 
@@ -71,9 +70,9 @@ class TokenRenderer(renderer.Renderer):
     _attr: console_attr.ConsoleAttr object.
     _bullet: List of bullet characters indexed by list level modulo #bullets.
     _compact: Compact representation if True. Saves rendering real estate.
-    _csi: The control sequence indicator character. Token does not
-      have control sequences. This renderer uses them internally to manage
-      font styles and attributes (bold, code, italic).
+    _csi: The control sequence indicator character. Token does not have control
+      sequences. This renderer uses them internally to manage font styles and
+      attributes (bold, code, italic).
     _current_token_type: current default Token.Markdown.* type
     _fill: The number of characters in the current output line.
     _height: The height of the output window, 0 to disable height checks.
@@ -86,6 +85,7 @@ class TokenRenderer(renderer.Renderer):
     _truncated: The number of output lines exceeded the output height.
     _rows: current rows in table
   """
+
   # Internal inline embellishments are 2 character sequences
   # <CSI><EMBELLISHMENT>. The embellishment must be an alpha character
   # to make the display width helpers work properly.
@@ -132,9 +132,9 @@ class TokenRenderer(renderer.Renderer):
     """Injects a truncation indicator token and rejects subsequent tokens.
 
     Args:
-      tokens: The last line of tokens at the output height. The part of the
-        line within the output width will be visible, modulo the trailing
-        truncation marker token added here.
+      tokens: The last line of tokens at the output height. The part of the line
+        within the output width will be visible, modulo the trailing truncation
+        marker token added here.
       overflow: If not None then this is a (word, available) tuple from Fill()
         where word caused the line width overflow and available is the number of
         characters available in the current line before ' '+word would be
@@ -154,7 +154,7 @@ class TokenRenderer(renderer.Renderer):
         pass
       elif (marker_width + 1) <= available:
         # The marker can replace the trailing characters in the overflow word.
-        word = ' ' + self._UnFormat(word)[:available-marker_width-1]
+        word = ' ' + self._UnFormat(word)[: available - marker_width - 1]
         tokens.append((self._current_token_type, word))
       else:
         # Truncate the token list so the marker token can fit.
@@ -190,8 +190,10 @@ class TokenRenderer(renderer.Renderer):
       return
     if self._lines:
       # Delete trailing space.
-      while (self._lines[-1] and
-             self._lines[-1][-1][self.TOKEN_TEXT_INDEX].isspace()):
+      while (
+          self._lines[-1]
+          and self._lines[-1][-1][self.TOKEN_TEXT_INDEX].isspace()
+      ):
         self._lines[-1] = self._lines[-1][:-1]
     if self._height and (len(self._lines) + int(bool(tokens))) >= self._height:
       tokens = self._Truncate(tokens, overflow)
@@ -201,8 +203,10 @@ class TokenRenderer(renderer.Renderer):
     """Merges text if the previous token_type matches or appends a new token."""
     if not text:
       return
-    if (not self._tokens or
-        self._tokens[-1][self.TOKEN_TYPE_INDEX] != token_type):
+    if (
+        not self._tokens
+        or self._tokens[-1][self.TOKEN_TYPE_INDEX] != token_type
+    ):
       self._tokens.append((token_type, text))
     elif self._tokens[-1][self.TOKEN_TYPE_INDEX] == Token.Markdown.Section:
       # A section header with no content.
@@ -217,8 +221,10 @@ class TokenRenderer(renderer.Renderer):
         self._NewLine()
         self._tokens.append((token_type, text))
     else:
-      self._tokens[-1] = (token_type,
-                          self._tokens[-1][self.TOKEN_TEXT_INDEX] + text)
+      self._tokens[-1] = (
+          token_type,
+          self._tokens[-1][self.TOKEN_TEXT_INDEX] + text,
+      )
 
   def _AddToken(self, text, token_type=None):
     """Appends a (token_type, text) tuple to the current line."""
@@ -281,10 +287,8 @@ class TokenRenderer(renderer.Renderer):
       indent: int, The new indentation.
       second_line_indent: int, The second line indentation. This is subtracted
         from the prevailing indent to decrease the indentation of the next input
-        line for this effect:
-            SECOND LINE INDENT ON THE NEXT LINE
-               PREVAILING INDENT
-               ON SUBSEQUENT LINES
+        line for this effect: SECOND LINE INDENT ON THE NEXT LINE PREVAILING
+        INDENT ON SUBSEQUENT LINES
     """
     if self._level < level:
       # The level can increase by 1 or more. Loop through each so that
@@ -295,15 +299,19 @@ class TokenRenderer(renderer.Renderer):
         if self._level >= len(self._indent):
           self._indent.append(self.Indent())
         self._indent[self._level].indent = (
-            self._indent[prev_level].indent + indent)
-        if (self._level > 1 and
-            self._indent[prev_level].second_line_indent ==
-            self._indent[prev_level].indent):
+            self._indent[prev_level].indent + indent
+        )
+        if (
+            self._level > 1
+            and self._indent[prev_level].second_line_indent
+            == self._indent[prev_level].indent
+        ):
           # Bump the indent by 1 char for nested indentation. Top level looks
           # fine (aesthetically) without it.
           self._indent[self._level].indent += 1
-        self._indent[self._level].second_line_indent = (
-            self._indent[self._level].indent)
+
+        value = self._indent[self._level].indent
+        self._indent[self._level].second_line_indent = value
         if second_line_indent is not None:
           # Adjust the second line indent if specified.
           self._indent[self._level].second_line_indent -= second_line_indent
@@ -313,7 +321,8 @@ class TokenRenderer(renderer.Renderer):
       if second_line_indent is not None:
         # Change second line indent on existing level.
         self._indent[self._level].indent = (
-            self._indent[self._level].second_line_indent + second_line_indent)
+            self._indent[self._level].second_line_indent + second_line_indent
+        )
 
   def Example(self, line):
     """Displays line as an indented example.
@@ -379,9 +388,9 @@ class TokenRenderer(renderer.Renderer):
     else:
       mask = 1 << attr
       self._font ^= mask
-    font = self._font & ((1 << renderer.BOLD) |
-                         (1 << renderer.CODE) |
-                         (1 << renderer.ITALIC))
+    font = self._font & (
+        (1 << renderer.BOLD) | (1 << renderer.CODE) | (1 << renderer.ITALIC)
+    )
     if font & (1 << renderer.CODE):
       embellishment = 'C'
     elif font == ((1 << renderer.BOLD) | (1 << renderer.ITALIC)):
@@ -459,8 +468,10 @@ class TokenRenderer(renderer.Renderer):
       # Bullet list item.
       indent = 2 if level > 1 else 4
       self._SetIndent(level, indent=indent, second_line_indent=2)
-      self._AddToken(' ' * self._indent[level].second_line_indent +
-                     self._bullet[(level - 1) % len(self._bullet)])
+      self._AddToken(
+          ' ' * self._indent[level].second_line_indent
+          + self._bullet[(level - 1) % len(self._bullet)]
+      )
       self._fill = self._indent[level].indent + 1
       self._ignore_width = True
 
@@ -540,12 +551,16 @@ class TokenRenderer(renderer.Renderer):
       for delimiter in (' | ', ' : ', ' ', ','):
         part, _, remainder = group.partition(delimiter)
         w = self._attr.DisplayWidth(part)
-        if ((running_width + len(prev_delimiter) + w) >= self._width or
-            prev_delimiter != ',' and delimiter == ','):
-          if delimiter != ',' and (indent +
-                                   self.SPLIT_INDENT +
-                                   len(prev_delimiter) +
-                                   w) >= self._width:
+        if (
+            (running_width + len(prev_delimiter) + w) >= self._width
+            or prev_delimiter != ','
+            and delimiter == ','
+        ):
+          if (
+              delimiter != ','
+              and (indent + self.SPLIT_INDENT + len(prev_delimiter) + w)
+              >= self._width
+          ):
             # The next delimiter may produce a smaller first part.
             continue
           if prev_delimiter == ',':
@@ -610,7 +625,8 @@ class TokenRenderer(renderer.Renderer):
         if (running_width + w) >= self._width:
           # The group is wider than the available width and must be split.
           running_width = self._SplitWideSynopsisGroup(
-              group, indent, running_width)
+              group, indent, running_width
+          )
           continue
       self._AddToken(' ' + group)
       running_width += w

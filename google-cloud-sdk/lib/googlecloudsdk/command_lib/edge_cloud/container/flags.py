@@ -236,25 +236,18 @@ def AddExternalLoadBalancerAddressPools(parser):
 
       For example,
 
+      ```
       {
-
         "externalLoadBalancerAddressPools": [
-
           {
-
             "addressPool": "MyLoadBalancerPool",
-
             "ipv4Range": ["10.200.0.200-10.200.0.204","10.200.0.300/30"],
-
             "avoidBuggyIps": "false",
-
             "manualAssign": "true"
-
           }
-
         ]
-
       }
+      ```
 
       *address_pool*::: Optional. A name that identifies an address pool. If a name is not specified, an auto-generated one will be used.
 

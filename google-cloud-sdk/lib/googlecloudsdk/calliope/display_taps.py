@@ -64,7 +64,8 @@ class Filterer(peek_iterable.Tap):
       defaults: The resource format and filter default projection.
     """
     self._compiled_expression = resource_filter.Compile(
-        expression, defaults=defaults)
+        expression, defaults=defaults
+    )
     self._missing_keys = resource_filter.GetAllKeys(self._compiled_expression)
 
   def Tap(self, resource):
@@ -156,7 +157,8 @@ class Flattener(peek_iterable.Tap):
       parent = self._resource
     parent[self._child_name] = item
     return peek_iterable.TapInjector(
-        resource_projector.MakeSerializable(self._resource))
+        resource_projector.MakeSerializable(self._resource)
+    )
 
 
 class Limiter(peek_iterable.Tap):

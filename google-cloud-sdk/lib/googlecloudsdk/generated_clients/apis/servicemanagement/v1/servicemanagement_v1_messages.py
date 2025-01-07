@@ -1082,6 +1082,9 @@ class Documentation(_messages.Message):
   documented together with service config validation.
 
   Fields:
+    additionalIamInfo: Optional information about the IAM configuration. This
+      is typically used to link to documentation about a product's IAM roles
+      and permissions.
     documentationRootUrl: The URL to the root of documentation.
     overview: Declares a single overview page. For example: documentation:
       summary: ... overview: (== include overview.md ==) This is a shortcut
@@ -1105,13 +1108,14 @@ class Documentation(_messages.Message):
       `description`.
   """
 
-  documentationRootUrl = _messages.StringField(1)
-  overview = _messages.StringField(2)
-  pages = _messages.MessageField('Page', 3, repeated=True)
-  rules = _messages.MessageField('DocumentationRule', 4, repeated=True)
-  sectionOverrides = _messages.MessageField('Page', 5, repeated=True)
-  serviceRootUrl = _messages.StringField(6)
-  summary = _messages.StringField(7)
+  additionalIamInfo = _messages.StringField(1)
+  documentationRootUrl = _messages.StringField(2)
+  overview = _messages.StringField(3)
+  pages = _messages.MessageField('Page', 4, repeated=True)
+  rules = _messages.MessageField('DocumentationRule', 5, repeated=True)
+  sectionOverrides = _messages.MessageField('Page', 6, repeated=True)
+  serviceRootUrl = _messages.StringField(7)
+  summary = _messages.StringField(8)
 
 
 class DocumentationRule(_messages.Message):
@@ -1808,11 +1812,50 @@ class GetPolicyOptions(_messages.Message):
 class GoSettings(_messages.Message):
   r"""Settings for Go client libraries.
 
+  Messages:
+    RenamedServicesValue: Map of service names to renamed services. Keys are
+      the package relative service names and values are the name to be used
+      for the service client and call options. publishing: go_settings:
+      renamed_services: Publisher: TopicAdmin
+
   Fields:
     common: Some settings.
+    renamedServices: Map of service names to renamed services. Keys are the
+      package relative service names and values are the name to be used for
+      the service client and call options. publishing: go_settings:
+      renamed_services: Publisher: TopicAdmin
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RenamedServicesValue(_messages.Message):
+    r"""Map of service names to renamed services. Keys are the package
+    relative service names and values are the name to be used for the service
+    client and call options. publishing: go_settings: renamed_services:
+    Publisher: TopicAdmin
+
+    Messages:
+      AdditionalProperty: An additional property for a RenamedServicesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type RenamedServicesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RenamedServicesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   common = _messages.MessageField('CommonLanguageSettings', 1)
+  renamedServices = _messages.MessageField('RenamedServicesValue', 2)
 
 
 class Http(_messages.Message):

@@ -517,6 +517,26 @@ class CloudaicompanionProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class CloudaicompanionProjectsLocationsQueryEffectiveSettingBindingsRequest(_messages.Message):
+  r"""A CloudaicompanionProjectsLocationsQueryEffectiveSettingBindingsRequest
+  object.
+
+  Fields:
+    name: Required. Instance for QueryEffectiveSettingBindingsRequest. Format:
+      projects/{project}/locations/{location}/instances/{instance} Format:
+      projects/{project}/locations/{location}/topics/{instance} Format:
+      projects/{project}/locations/{location}
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
 class CodeRepositoryIndex(_messages.Message):
   r"""Message describing CodeRepositoryIndex object
 
@@ -1289,6 +1309,19 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class QueryEffectiveSettingBindingsResponse(_messages.Message):
+  r"""Message for response to querying effective SettingBindings
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    settingBindingNames: The list of names of effective SettingBindings.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  settingBindingNames = _messages.StringField(2, repeated=True)
 
 
 class ReplaceTaskRequest(_messages.Message):

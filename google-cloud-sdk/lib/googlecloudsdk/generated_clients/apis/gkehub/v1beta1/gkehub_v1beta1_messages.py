@@ -111,6 +111,11 @@ class Authority(_messages.Message):
       format (RFC 7517). When this field is set, OIDC discovery will NOT be
       performed on `issuer`, and instead OIDC tokens will be validated using
       this field.
+    scopeTenancyIdentityProvider: Optional. Output only. The identity provider
+      for the scope-tenancy workload identity pool.
+    scopeTenancyWorkloadIdentityPool: Optional. Output only. The name of the
+      scope-tenancy workload identity pool. This pool is set in the fleet-
+      level feature.
     workloadIdentityPool: Output only. The name of the workload identity pool
       in which `issuer` will be recognized. There is a single Workload
       Identity Pool per Hub that is shared between all Memberships that belong
@@ -122,7 +127,9 @@ class Authority(_messages.Message):
   identityProvider = _messages.StringField(1)
   issuer = _messages.StringField(2)
   oidcJwks = _messages.BytesField(3)
-  workloadIdentityPool = _messages.StringField(4)
+  scopeTenancyIdentityProvider = _messages.StringField(4)
+  scopeTenancyWorkloadIdentityPool = _messages.StringField(5)
+  workloadIdentityPool = _messages.StringField(6)
 
 
 class AuthorizationLoggingOptions(_messages.Message):
@@ -372,8 +379,10 @@ class Condition(_messages.Message):
         CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
         based on the *absence* of a credentials type, so the conditions can
         only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
-      CREDS_ASSERTION: EXPERIMENTAL -- DO NOT USE. The conditions can only be
-        used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+      CREDS_ASSERTION: Properties of the credentials supplied with this
+        request. See http://go/rpcsp-credential-assertions?polyglot=rpcsp-v1-0
+        The conditions can only be used in a "positive" context (e.g.,
+        ALLOW/IN or DENY/NOT_IN).
     """
     NO_ATTR = 0
     AUTHORITY = 1

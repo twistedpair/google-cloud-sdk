@@ -286,6 +286,29 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_MULTICASTGROUPRANGEACTIVATIONS = (
+      'projects.locations.multicastGroupRangeActivations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'multicastGroupRangeActivations/'
+              '{multicastGroupRangeActivationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MULTICASTGROUPRANGES = (
+      'projects.locations.multicastGroupRanges',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'multicastGroupRanges/{multicastGroupRangesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MULTICASTGROUPS = (
       'projects.locations.multicastGroups',
       '{+name}',

@@ -14,6 +14,38 @@ from apitools.base.py import extra_types
 package = 'dataplex'
 
 
+class DataplexOrganizationsLocationsEncryptionConfigsCreateRequest(_messages.Message):
+  r"""A DataplexOrganizationsLocationsEncryptionConfigsCreateRequest object.
+
+  Fields:
+    encryptionConfigId: Required. The ID of the EncryptionConfig to create.
+      The ID must contain only letters (a-z, A-Z), numbers (0-9), and hyphens
+      (-). The maximum size is 63 characters. The first character must be a
+      letter. The last character must be a letter or a number.
+    googleCloudDataplexV1EncryptionConfig: A
+      GoogleCloudDataplexV1EncryptionConfig resource to be passed as the
+      request body.
+    parent: Required. The location at which the EncryptionConfig is to be
+      created.
+  """
+
+  encryptionConfigId = _messages.StringField(1)
+  googleCloudDataplexV1EncryptionConfig = _messages.MessageField('GoogleCloudDataplexV1EncryptionConfig', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DataplexOrganizationsLocationsEncryptionConfigsDeleteRequest(_messages.Message):
+  r"""A DataplexOrganizationsLocationsEncryptionConfigsDeleteRequest object.
+
+  Fields:
+    etag: Optional. Etag of the EncryptionConfig. This is a strong etag.
+    name: Required. The name of the EncryptionConfig to delete.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
 class DataplexOrganizationsLocationsEncryptionConfigsGetIamPolicyRequest(_messages.Message):
   r"""A DataplexOrganizationsLocationsEncryptionConfigsGetIamPolicyRequest
   object.
@@ -37,6 +69,71 @@ class DataplexOrganizationsLocationsEncryptionConfigsGetIamPolicyRequest(_messag
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class DataplexOrganizationsLocationsEncryptionConfigsGetRequest(_messages.Message):
+  r"""A DataplexOrganizationsLocationsEncryptionConfigsGetRequest object.
+
+  Fields:
+    name: Required. The name of the EncryptionConfig to fetch.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexOrganizationsLocationsEncryptionConfigsListRequest(_messages.Message):
+  r"""A DataplexOrganizationsLocationsEncryptionConfigsListRequest object.
+
+  Fields:
+    filter: Optional. Filter the EncryptionConfigs to be returned. Using bare
+      literals: (These values will be matched anywhere it may appear in the
+      object's field values) * filter=some_value Using fields: (These values
+      will be matched only in the specified field) *
+      filter=some_field=some_value Supported fields: * name, key, create_time,
+      update_time, encryption_state Example: *
+      filter=name=organizations/123/locations/us-
+      central1/encryptionConfigs/test-config conjunctions: (AND, OR, NOT) *
+      filter=name=organizations/123/locations/us-
+      central1/encryptionConfigs/test-config AND mode=CMEK logical operators:
+      (>, <, >=, <=, !=, =, :), * filter=create_time>2024-05-01T00:00:00.000Z
+    orderBy: Optional. Order by fields for the result.
+    pageSize: Optional. Maximum number of EncryptionConfigs to return. The
+      service may return fewer than this value. If unspecified, at most 10
+      EncryptionConfigs will be returned. The maximum value is 1000; values
+      above 1000 will be coerced to 1000.
+    pageToken: Optional. Page token received from a previous
+      ListEncryptionConfigs call. Provide this to retrieve the subsequent
+      page. When paginating, the parameters - filter and order_by provided to
+      ListEncryptionConfigs must match the call that provided the page token.
+    parent: Required. The location for which the EncryptionConfig is to be
+      listed.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class DataplexOrganizationsLocationsEncryptionConfigsPatchRequest(_messages.Message):
+  r"""A DataplexOrganizationsLocationsEncryptionConfigsPatchRequest object.
+
+  Fields:
+    googleCloudDataplexV1EncryptionConfig: A
+      GoogleCloudDataplexV1EncryptionConfig resource to be passed as the
+      request body.
+    name: Identifier. The resource name of the EncryptionConfig. Format: organ
+      izations/{organization}/locations/{location}/encryptionConfigs/{encrypti
+      on_config} Global location is not supported.
+    updateMask: Optional. Mask of fields to update. The service treats an
+      omitted field mask as an implied field mask equivalent to all fields
+      that are populated (have a non-empty value).
+  """
+
+  googleCloudDataplexV1EncryptionConfig = _messages.MessageField('GoogleCloudDataplexV1EncryptionConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class DataplexOrganizationsLocationsEncryptionConfigsSetIamPolicyRequest(_messages.Message):
@@ -465,13 +562,17 @@ class DataplexProjectsLocationsDataScansDeleteRequest(_messages.Message):
   r"""A DataplexProjectsLocationsDataScansDeleteRequest object.
 
   Fields:
+    force: Optional. If set to true, any child resources of this data scan
+      will also be deleted. (Otherwise, the request will only work if the data
+      scan has no child resources.)
     name: Required. The resource name of the dataScan:
       projects/{project}/locations/{location_id}/dataScans/{data_scan_id}
       where project refers to a project_id or project_number and location_id
       refers to a GCP region.
   """
 
-  name = _messages.StringField(1, required=True)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class DataplexProjectsLocationsDataScansGenerateDataQualityRulesRequest(_messages.Message):
@@ -662,11 +763,12 @@ class DataplexProjectsLocationsDataScansPatchRequest(_messages.Message):
   Fields:
     googleCloudDataplexV1DataScan: A GoogleCloudDataplexV1DataScan resource to
       be passed as the request body.
-    name: Output only. The relative resource name of the scan, of the form:
+    name: Output only. Identifier. The relative resource name of the scan, of
+      the form:
       projects/{project}/locations/{location_id}/dataScans/{datascan_id},
       where project refers to a project_id or project_number and location_id
       refers to a GCP region.
-    updateMask: Required. Mask of fields to update.
+    updateMask: Optional. Mask of fields to update.
     validateOnly: Optional. Only validate the request, but do not perform
       mutations. The default is false.
   """
@@ -1196,7 +1298,7 @@ class DataplexProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Message)
       given type and empty path. @path - matches an aspect of the given type
       and specified path. For example, to attach an aspect to a field that is
       specified by the schema aspect, the path should have the format Schema..
-      * - matches aspects of the given type for all paths. *@path - matches
+      @* - matches aspects of the given type for all paths. *@path - matches
       aspects of all types on the given path.The service will not remove
       existing aspects matching the syntax unless delete_missing_aspects is
       set to true.If this field is left empty, the service treats it as
@@ -3774,14 +3876,17 @@ class DataplexProjectsLocationsSearchEntriesRequest(_messages.Message):
   Fields:
     name: Required. The project to which the request should be attributed in
       the following form: projects/{project}/locations/{location}.
-    orderBy: Optional. Specifies the ordering of results.
+    orderBy: Optional. Specifies the ordering of results. Supported values
+      are: relevance (default) last_modified_timestamp last_modified_timestamp
+      asc
     pageSize: Optional. Number of results in the search page. If <=0, then
       defaults to 10. Max limit for page_size is 1000. Throws an invalid
       argument for page_size > 1000.
     pageToken: Optional. Page token received from a previous SearchEntries
       call. Provide this to retrieve the subsequent page.
     query: Required. The query against which entries in scope should be
-      matched.
+      matched. The query syntax is defined in Search syntax for Dataplex
+      Catalog (https://cloud.google.com/dataplex/docs/search-syntax).
     scope: Optional. The scope under which the search should be operating. It
       must either be organizations/ or projects/. If it is unspecified, it
       defaults to the organization where the project provided in name is
@@ -5956,7 +6061,8 @@ class GoogleCloudDataplexV1DataScan(_messages.Message):
       fields in it will use their default values.
     executionStatus: Output only. Status of the data scan execution.
     labels: Optional. User-defined labels for the scan.
-    name: Output only. The relative resource name of the scan, of the form:
+    name: Output only. Identifier. The relative resource name of the scan, of
+      the form:
       projects/{project}/locations/{location_id}/dataScans/{datascan_id},
       where project refers to a project_id or project_number and location_id
       refers to a GCP region.
@@ -6374,8 +6480,9 @@ class GoogleCloudDataplexV1DataScanExecutionStatus(_messages.Message):
   Fields:
     latestJobCreateTime: Optional. The time when the DataScanJob execution was
       created.
-    latestJobEndTime: The time when the latest DataScanJob ended.
-    latestJobStartTime: The time when the latest DataScanJob started.
+    latestJobEndTime: Optional. The time when the latest DataScanJob ended.
+    latestJobStartTime: Optional. The time when the latest DataScanJob
+      started.
   """
 
   latestJobCreateTime = _messages.StringField(1)
@@ -6400,10 +6507,10 @@ class GoogleCloudDataplexV1DataScanJob(_messages.Message):
     dataQualitySpec: Output only. Settings for a data quality scan.
     endTime: Output only. The time when the DataScanJob ended.
     message: Output only. Additional information about the current state.
-    name: Output only. The relative resource name of the DataScanJob, of the
-      form: projects/{project}/locations/{location_id}/dataScans/{datascan_id}
-      /jobs/{job_id}, where project refers to a project_id or project_number
-      and location_id refers to a GCP region.
+    name: Output only. Identifier. The relative resource name of the
+      DataScanJob, of the form: projects/{project}/locations/{location_id}/dat
+      aScans/{datascan_id}/jobs/{job_id}, where project refers to a project_id
+      or project_number and location_id refers to a GCP region.
     startTime: Output only. The time when the DataScanJob was started.
     state: Output only. Execution state for the DataScanJob.
     type: Output only. The type of the parent DataScan.
@@ -6753,6 +6860,87 @@ class GoogleCloudDataplexV1DiscoveryEventTableDetails(_messages.Message):
 
   table = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class GoogleCloudDataplexV1EncryptionConfig(_messages.Message):
+  r"""A Resource designed to manage encryption configurations for customers to
+  support Customer Managed Encryption Keys (CMEK).
+
+  Enums:
+    EncryptionStateValueValuesEnum: Output only. The state of encryption of
+      the databases.
+
+  Fields:
+    createTime: Output only. The time when the Encryption configuration was
+      created.
+    encryptionState: Output only. The state of encryption of the databases.
+    etag: Etag of the EncryptionConfig. This is a strong etag.
+    failureDetails: Output only. Details of the failure if anything related to
+      Cmek db fails.
+    key: Optional. If a key is chosen, it means that the customer is using
+      CMEK. If a key is not chosen, it means that the customer is using Google
+      managed encryption.
+    name: Identifier. The resource name of the EncryptionConfig. Format: organ
+      izations/{organization}/locations/{location}/encryptionConfigs/{encrypti
+      on_config} Global location is not supported.
+    updateTime: Output only. The time when the Encryption configuration was
+      last updated.
+  """
+
+  class EncryptionStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of encryption of the databases.
+
+    Values:
+      ENCRYPTION_STATE_UNSPECIFIED: State is not specified.
+      ENCRYPTING: The encryption state of the database when the
+        EncryptionConfig is created or updated. If the encryption fails, it is
+        retried indefinitely and the state is shown as ENCRYPTING.
+      COMPLETED: The encryption of data has completed successfully.
+      FAILED: The encryption of data has failed. The state is set to FAILED
+        when the encryption fails due to reasons like permission issues,
+        invalid key etc.
+    """
+    ENCRYPTION_STATE_UNSPECIFIED = 0
+    ENCRYPTING = 1
+    COMPLETED = 2
+    FAILED = 3
+
+  createTime = _messages.StringField(1)
+  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 2)
+  etag = _messages.StringField(3)
+  failureDetails = _messages.MessageField('GoogleCloudDataplexV1EncryptionConfigFailureDetails', 4)
+  key = _messages.StringField(5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+
+
+class GoogleCloudDataplexV1EncryptionConfigFailureDetails(_messages.Message):
+  r"""Details of the failure if anything related to Cmek db fails.
+
+  Enums:
+    ErrorCodeValueValuesEnum: Output only. The error code for the failure.
+
+  Fields:
+    errorCode: Output only. The error code for the failure.
+    errorMessage: Output only. The error message will be shown to the user.
+      Set only if the error code is REQUIRE_USER_ACTION.
+  """
+
+  class ErrorCodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The error code for the failure.
+
+    Values:
+      UNKNOWN: The error code is not specified
+      INTERNAL_ERROR: Error because of internal server error, will be retried
+        automatically..
+      REQUIRE_USER_ACTION: User action is required to resolve the error.
+    """
+    UNKNOWN = 0
+    INTERNAL_ERROR = 1
+    REQUIRE_USER_ACTION = 2
+
+  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
+  errorMessage = _messages.StringField(2)
 
 
 class GoogleCloudDataplexV1Entity(_messages.Message):
@@ -7901,10 +8089,10 @@ class GoogleCloudDataplexV1ImportItem(_messages.Message):
       {aspect_type_reference}: matches aspects that belong to the specified
       aspect type and are attached directly to the entry.
       {aspect_type_reference}@{path}: matches aspects that belong to the
-      specified aspect type and path. {aspect_type_reference}@*: matches
-      aspects that belong to the specified aspect type for all paths.Replace
-      {aspect_type_reference} with a reference to the aspect type, in the
-      format {project_id_or_number}.{location_id}.{aspect_type_id}.If you
+      specified aspect type and path. @* : matches aspects of the given type
+      for all paths. *@path : matches aspects of all types on the given path.
+      Replace {aspect_type_reference} with a reference to the aspect type, in
+      the format {project_id_or_number}.{location_id}.{aspect_type_id}.If you
       leave this field empty, it is treated as specifying exactly those
       aspects that are present within the specified entry.In FULL entry sync
       mode, Dataplex implicitly adds the keys for all of the required aspects
@@ -8393,6 +8581,22 @@ class GoogleCloudDataplexV1ListDataTaxonomiesResponse(_messages.Message):
   """
 
   dataTaxonomies = _messages.MessageField('GoogleCloudDataplexV1DataTaxonomy', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachableLocations = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudDataplexV1ListEncryptionConfigsResponse(_messages.Message):
+  r"""List EncryptionConfigs Response
+
+  Fields:
+    encryptionConfigs: The list of EncryptionConfigs under the given parent
+      location.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    unreachableLocations: Locations that could not be reached.
+  """
+
+  encryptionConfigs = _messages.MessageField('GoogleCloudDataplexV1EncryptionConfig', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachableLocations = _messages.StringField(3, repeated=True)
 

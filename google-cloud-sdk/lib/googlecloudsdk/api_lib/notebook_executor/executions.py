@@ -15,6 +15,7 @@
 """Notebook-executor executions api helper."""
 
 from googlecloudsdk.api_lib.colab_enterprise import runtime_templates as runtime_templates_util
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 
@@ -66,6 +67,26 @@ def GetExecutionResourceName(args):
     projects/{project}/locations/{location}/notebookExecutionJobs/{execution_job_id}.
   """
   return args.CONCEPTS.execution.Parse().RelativeName()
+
+
+def ValidateIsWorkbenchExecution(args, messages, service):
+  """Checks that the execution is a Workbench execution.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the aiplatform API.
+    service: The service to use for the API call.
+
+  """
+  execution = service.Get(
+      CreateExecutionGetRequest(args, messages)
+  )
+  if execution.kernelName is None:
+    raise exceptions.InvalidArgumentException(
+        'EXECUTION',
+        'Execution is not of Workbench type. To manage Colab Enterprise'
+        ' executions use `gcloud colab` instead.',
+    )
 
 
 def GetDataformRepositorySourceFromArgs(args, messages):

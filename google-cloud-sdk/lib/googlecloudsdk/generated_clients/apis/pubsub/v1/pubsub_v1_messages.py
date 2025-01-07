@@ -26,8 +26,9 @@ class AcknowledgeRequest(_messages.Message):
 
 
 class AnalyticsHubSubscriptionInfo(_messages.Message):
-  r"""Information about an associated Analytics Hub subscription
-  (https://cloud.google.com/bigquery/docs/analytics-hub-manage-subscriptions).
+  r"""Information about an associated [Analytics Hub
+  subscription](https://cloud.google.com/bigquery/docs/analytics-hub-manage-
+  subscriptions).
 
   Fields:
     listing: Optional. The name of the associated Analytics Hub listing
@@ -211,14 +212,18 @@ class AzureEventHubs(_messages.Message):
       STATE_UNSPECIFIED: Default value. This value is unused.
       ACTIVE: Ingestion is active.
       EVENT_HUBS_PERMISSION_DENIED: Permission denied encountered while
-        consuming data from Event Hubs. This can happen when `client_id`,
-        `tenant_id`, or `subscription_id` are invalid, or the right
-        permissions haven't been granted.
+        consuming data from Event Hubs. This can happen when `client_id`, or
+        `tenant_id` are invalid. Or the right permissions haven't been
+        granted.
       PUBLISH_PERMISSION_DENIED: Permission denied encountered while
         publishing to the topic.
       NAMESPACE_NOT_FOUND: The provided Event Hubs namespace couldn't be
         found.
       EVENT_HUB_NOT_FOUND: The provided Event Hub couldn't be found.
+      SUBSCRIPTION_NOT_FOUND: The provided Event Hubs subscription couldn't be
+        found.
+      RESOURCE_GROUP_NOT_FOUND: The provided Event Hubs resource group
+        couldn't be found.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -226,6 +231,8 @@ class AzureEventHubs(_messages.Message):
     PUBLISH_PERMISSION_DENIED = 3
     NAMESPACE_NOT_FOUND = 4
     EVENT_HUB_NOT_FOUND = 5
+    SUBSCRIPTION_NOT_FOUND = 6
+    RESOURCE_GROUP_NOT_FOUND = 7
 
   clientId = _messages.StringField(1)
   eventHub = _messages.StringField(2)

@@ -24,7 +24,6 @@ import io
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core.resource import resource_printer
-
 import six
 from six.moves import range  # pylint: disable=redefined-builtin
 
@@ -68,7 +67,8 @@ class TableAttributes(object):
     if label:
       self.heading += 1
     self.columns.append(
-        TableColumnAttributes(align=align, label=label, width=width))
+        TableColumnAttributes(align=align, label=label, width=width)
+    )
 
   def GetPrintFormat(self, margin=0, width=0):
     """Constructs and returns a resource_printer print format.
@@ -96,8 +96,11 @@ class TableAttributes(object):
     for index, column in enumerate(self.columns):
       if index:
         fmt.append(',')
-      fmt.append('[{}]:label={}:align={}'.format(
-          index, repr(column.label or '').lstrip('u'), column.align))
+      fmt.append(
+          '[{}]:label={}:align={}'.format(
+              index, repr(column.label or '').lstrip('u'), column.align
+          )
+      )
       if column.width:
         fmt.append(':width={}'.format(column.width))
     if margin:
@@ -119,8 +122,8 @@ class Renderer(object):
     _command: The command split into component names.
     _font: The font attribute bitmask.
     _indent: List of left indentations in characters indexed by _level.
-    _lang: ```lang\n...\n``` code block language. None if not in code block,
-      '' if in code block with no explicit lang specified.
+    _lang: ```lang\n...\n``` code block language. None if not in code block, ''
+      if in code block with no explicit lang specified.
     _level: The section or list level counting from 0.
     _out: The output stream.
     _title: The document title.
@@ -129,8 +132,14 @@ class Renderer(object):
     command_node: The command object that the document is being rendered for.
   """
 
-  def __init__(self, out=None, title=None, width=80, command_metadata=None,
-               command_node=None):
+  def __init__(
+      self,
+      out=None,
+      title=None,
+      width=80,
+      command_metadata=None,
+      command_node=None,
+  ):
     self._blank = True
     self._command = ['gcloud']  # use command[0] instead of literal 'gcloud'
     self._font = 0
@@ -277,9 +286,8 @@ class Renderer(object):
     margin = indent if any([True for r in rows if ' ' in r[-1]]) else 0
     buf = io.StringIO()
     resource_printer.Print(
-        rows,
-        table.GetPrintFormat(margin=margin, width=self._width),
-        out=buf)
+        rows, table.GetPrintFormat(margin=margin, width=self._width), out=buf
+    )
     for line in buf.getvalue().split('\n')[:-1]:
       self.TableLine(line, indent=indent)
     self.Content()

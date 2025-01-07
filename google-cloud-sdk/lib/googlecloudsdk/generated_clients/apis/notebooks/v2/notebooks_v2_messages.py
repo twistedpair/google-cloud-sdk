@@ -41,6 +41,9 @@ class AcceleratorConfig(_messages.Message):
       NVIDIA_TESLA_A100: Accelerator type is Nvidia Tesla A100 - 40GB.
       NVIDIA_A100_80GB: Accelerator type is Nvidia Tesla A100 - 80GB.
       NVIDIA_L4: Accelerator type is Nvidia Tesla L4.
+      NVIDIA_H100_80GB: Accelerator type is Nvidia Tesla H100 - 80GB.
+      NVIDIA_H100_MEGA_80GB: Accelerator type is Nvidia Tesla H100 - MEGA
+        80GB.
       NVIDIA_TESLA_T4_VWS: Accelerator type is NVIDIA Tesla T4 Virtual
         Workstations.
       NVIDIA_TESLA_P100_VWS: Accelerator type is NVIDIA Tesla P100 Virtual
@@ -56,9 +59,11 @@ class AcceleratorConfig(_messages.Message):
     NVIDIA_TESLA_A100 = 5
     NVIDIA_A100_80GB = 6
     NVIDIA_L4 = 7
-    NVIDIA_TESLA_T4_VWS = 8
-    NVIDIA_TESLA_P100_VWS = 9
-    NVIDIA_TESLA_P4_VWS = 10
+    NVIDIA_H100_80GB = 8
+    NVIDIA_H100_MEGA_80GB = 9
+    NVIDIA_TESLA_T4_VWS = 10
+    NVIDIA_TESLA_P100_VWS = 11
+    NVIDIA_TESLA_P4_VWS = 12
 
   coreCount = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -243,6 +248,40 @@ class CheckInstanceUpgradabilityResponse(_messages.Message):
   upgradeInfo = _messages.StringField(2)
   upgradeVersion = _messages.StringField(3)
   upgradeable = _messages.BooleanField(4)
+
+
+class ConfidentialInstanceConfig(_messages.Message):
+  r"""A set of Confidential Instance options.
+
+  Enums:
+    ConfidentialInstanceTypeValueValuesEnum: Optional. Defines the type of
+      technology used by the confidential instance.
+
+  Fields:
+    confidentialInstanceType: Optional. Defines the type of technology used by
+      the confidential instance.
+    enableConfidentialCompute: Optional. Defines whether the instance should
+      have confidential compute enabled.
+  """
+
+  class ConfidentialInstanceTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Defines the type of technology used by the confidential
+    instance.
+
+    Values:
+      CONFIDENTIAL_INSTANCE_TYPE_UNSPECIFIED: No type specified. Do not use
+        this value.
+      SEV: AMD Secure Encrypted Virtualization.
+      SEV_SNP: AMD Secure Encrypted Virtualization - Secure Nested Paging.
+      TDX: Intel Trust Domain eXtension.
+    """
+    CONFIDENTIAL_INSTANCE_TYPE_UNSPECIFIED = 0
+    SEV = 1
+    SEV_SNP = 2
+    TDX = 3
+
+  confidentialInstanceType = _messages.EnumField('ConfidentialInstanceTypeValueValuesEnum', 1)
+  enableConfidentialCompute = _messages.BooleanField(2)
 
 
 class Config(_messages.Message):
@@ -537,6 +576,7 @@ class GceSetup(_messages.Message):
       selected](https://cloud.google.com/compute/docs/gpus/#gpus-list).
       Currently supports only one accelerator configuration.
     bootDisk: Optional. The boot disk for the VM.
+    confidentialInstanceConfig: Optional. Confidential instance configuration.
     containerImage: Optional. Use a container image to start the notebook
       instance.
     dataDisks: Optional. Data disks attached to the VM instance. Currently
@@ -556,7 +596,7 @@ class GceSetup(_messages.Message):
     networkInterfaces: Optional. The network interfaces for the VM. Supports
       only one interface.
     reservationAffinity: Optional. Specifies the reservations that this
-      instance can consume from. Next ID: 17
+      instance can consume from.
     serviceAccounts: Optional. The service account that serves as an identity
       for the VM instance. Currently supports only one service account.
     shieldedInstanceConfig: Optional. Shielded VM configuration. [Images using
@@ -596,20 +636,21 @@ class GceSetup(_messages.Message):
 
   acceleratorConfigs = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
   bootDisk = _messages.MessageField('BootDisk', 2)
-  containerImage = _messages.MessageField('ContainerImage', 3)
-  dataDisks = _messages.MessageField('DataDisk', 4, repeated=True)
-  disablePublicIp = _messages.BooleanField(5)
-  enableIpForwarding = _messages.BooleanField(6)
-  gpuDriverConfig = _messages.MessageField('GPUDriverConfig', 7)
-  machineType = _messages.StringField(8)
-  metadata = _messages.MessageField('MetadataValue', 9)
-  minCpuPlatform = _messages.StringField(10)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 11, repeated=True)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 12)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 13, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 14)
-  tags = _messages.StringField(15, repeated=True)
-  vmImage = _messages.MessageField('VmImage', 16)
+  confidentialInstanceConfig = _messages.MessageField('ConfidentialInstanceConfig', 3)
+  containerImage = _messages.MessageField('ContainerImage', 4)
+  dataDisks = _messages.MessageField('DataDisk', 5, repeated=True)
+  disablePublicIp = _messages.BooleanField(6)
+  enableIpForwarding = _messages.BooleanField(7)
+  gpuDriverConfig = _messages.MessageField('GPUDriverConfig', 8)
+  machineType = _messages.StringField(9)
+  metadata = _messages.MessageField('MetadataValue', 10)
+  minCpuPlatform = _messages.StringField(11)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 12, repeated=True)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 13)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 14, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 15)
+  tags = _messages.StringField(16, repeated=True)
+  vmImage = _messages.MessageField('VmImage', 17)
 
 
 class ImageRelease(_messages.Message):
@@ -646,6 +687,8 @@ class Instance(_messages.Message):
       CreateInstance request.
     disableProxyAccess: Optional. If true, the notebook instance will not
       register with the proxy.
+    enableThirdPartyIdentity: Optional. Flag that specifies that a notebook
+      can be accessed with third party identity provider.
     gceSetup: Optional. Compute Engine setup for the notebook. Uses notebook-
       defined fields.
     healthInfo: Output only. Additional information about instance health.
@@ -777,20 +820,21 @@ class Instance(_messages.Message):
   createTime = _messages.StringField(1)
   creator = _messages.StringField(2)
   disableProxyAccess = _messages.BooleanField(3)
-  gceSetup = _messages.MessageField('GceSetup', 4)
-  healthInfo = _messages.MessageField('HealthInfoValue', 5)
-  healthState = _messages.EnumField('HealthStateValueValuesEnum', 6)
-  id = _messages.StringField(7)
-  instanceOwners = _messages.StringField(8, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  proxyUri = _messages.StringField(11)
-  satisfiesPzi = _messages.BooleanField(12)
-  satisfiesPzs = _messages.BooleanField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  thirdPartyProxyUrl = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
-  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 17, repeated=True)
+  enableThirdPartyIdentity = _messages.BooleanField(4)
+  gceSetup = _messages.MessageField('GceSetup', 5)
+  healthInfo = _messages.MessageField('HealthInfoValue', 6)
+  healthState = _messages.EnumField('HealthStateValueValuesEnum', 7)
+  id = _messages.StringField(8)
+  instanceOwners = _messages.StringField(9, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  proxyUri = _messages.StringField(12)
+  satisfiesPzi = _messages.BooleanField(13)
+  satisfiesPzs = _messages.BooleanField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  thirdPartyProxyUrl = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
+  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 18, repeated=True)
 
 
 class ListInstancesResponse(_messages.Message):

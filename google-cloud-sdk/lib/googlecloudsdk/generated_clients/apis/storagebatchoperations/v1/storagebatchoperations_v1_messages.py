@@ -551,7 +551,7 @@ class Prefix(_messages.Message):
   r"""Describes prefix of objects to be transformed.
 
   Fields:
-    bucket: Required. Bucket name on which batch ops is being performed Note:
+    bucket: Optional. Bucket name on which batch ops is being performed Note:
       Only one bucket is supported for v1. For future versions we will extend
       this to multi bucket.
     objectPrefix: Optional. object must be in the `bucket`. * Supports full
@@ -567,7 +567,9 @@ class PrefixList(_messages.Message):
   r"""Describes prefixes of objects to be transformed.
 
   Fields:
-    prefixes: Required. Prefixes of the objects to be transformed.
+    prefixes: Optional. Prefixes of the objects to be transformed. This field
+      does not support multiple prefixes. Use `included_object_prefixes`
+      instead to specify multiple prefixes.
   """
 
   prefixes = _messages.MessageField('Prefix', 1, repeated=True)

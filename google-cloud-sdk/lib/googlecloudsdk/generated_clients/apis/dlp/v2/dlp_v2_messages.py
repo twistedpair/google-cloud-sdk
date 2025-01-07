@@ -3680,6 +3680,7 @@ class GooglePrivacyDlpV2ByteContentItem(_messages.Message):
       AUDIO: Audio file types. Only used for profiling.
       VIDEO: Video file types. Only used for profiling.
       EXECUTABLE: Executable file types. Only used for profiling.
+      AI_MODEL: AI model file types. Only used for profiling.
     """
     BYTES_TYPE_UNSPECIFIED = 0
     IMAGE = 1
@@ -3698,6 +3699,7 @@ class GooglePrivacyDlpV2ByteContentItem(_messages.Message):
     AUDIO = 14
     VIDEO = 15
     EXECUTABLE = 16
+    AI_MODEL = 17
 
   data = _messages.BytesField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -4727,7 +4729,8 @@ class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
   will be skipped. See https://cloud.google.com/sensitive-data-
   protection/docs/pseudonymization to learn more. Note: We recommend using
   CryptoDeterministicConfig for all use cases which do not require preserving
-  the input alphabet space and size, plus warrant referential integrity.
+  the input alphabet space and size, plus warrant referential integrity. FPE
+  incurs significant latency costs.
 
   Enums:
     CommonAlphabetValueValuesEnum: Common alphabets.
@@ -6535,15 +6538,28 @@ class GooglePrivacyDlpV2Export(_messages.Message):
   your choice whenever updated.
 
   Fields:
-    profileTable: Store all table and column profiles in an existing table or
-      a new table in an existing dataset. Each re-generation will result in
-      new rows in BigQuery. Data is inserted using [streaming
+    profileTable: Store all profiles to BigQuery. * The system will create a
+      new dataset and table for you if none are are provided. The dataset will
+      be named `sensitive_data_protection_discovery` and table will be named
+      `discovery_profiles`. This table will be placed in the same project as
+      the container project running the scan. The configuration will be
+      updated with the fields set after the first profile is generated and the
+      dataset and table are created. * See [Analyze data profiles stored in
+      BigQuery](https://cloud.google.com/sensitive-data-
+      protection/docs/analyze-data-profiles) * See [Sample queries for your
+      BigQuery table](https://cloud.google.com/sensitive-data-
+      protection/docs/analyze-data-profiles#sample_sql_queries). * Data is
+      inserted using [streaming
       insert](https://cloud.google.com/blog/products/bigquery/life-of-a-
       bigquery-streaming-insert) and so data may be in the buffer for a period
-      of time after the profile has finished. The Pub/Sub notification is sent
-      before the streaming buffer is guaranteed to be written, so data may not
-      be instantly visible to queries by the time your topic receives the
-      Pub/Sub notification.
+      of time after the profile has finished. * The Pub/Sub notification is
+      sent before the streaming buffer is guaranteed to be written, so data
+      may not be instantly visible to queries by the time your topic receives
+      the Pub/Sub notification. * The best practice is to use the same table
+      for an entire organization so that you can take advantage of the
+      provided Looker reports. If you use VPC Service Controls to define
+      security perimeters, then you must use a separate table for each
+      boundary.
   """
 
   profileTable = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 1)
@@ -6628,9 +6644,9 @@ class GooglePrivacyDlpV2FileClusterSummary(_messages.Message):
       no files were seen. File extensions can be derived from the file name or
       the file content.
     fileStoreInfoTypeSummaries: InfoTypes detected in this cluster.
-    noFilesExist: True if no files exist in this cluster. If the bucket had
-      more files than could be listed, this will be false even if no files for
-      this cluster were seen and file_extensions_seen is empty.
+    noFilesExist: True if no files exist in this cluster. If the file store
+      had more files than could be listed, this will be false even if no files
+      for this cluster were seen and file_extensions_seen is empty.
     sensitivityScore: The sensitivity score of this cluster. The score will be
       SENSITIVITY_LOW if nothing has been scanned.
   """
@@ -6669,6 +6685,7 @@ class GooglePrivacyDlpV2FileClusterType(_messages.Message):
       CLUSTER_ARCHIVE: Archives and containers like .zip, .tar etc.
       CLUSTER_MULTIMEDIA: Multimedia like .mp4, .avi etc.
       CLUSTER_EXECUTABLE: Executable files like .exe, .class, .apk etc.
+      CLUSTER_AI_MODEL: AI models like .tflite etc.
     """
     CLUSTER_UNSPECIFIED = 0
     CLUSTER_UNKNOWN = 1
@@ -6680,6 +6697,7 @@ class GooglePrivacyDlpV2FileClusterType(_messages.Message):
     CLUSTER_ARCHIVE = 7
     CLUSTER_MULTIMEDIA = 8
     CLUSTER_EXECUTABLE = 9
+    CLUSTER_AI_MODEL = 10
 
   cluster = _messages.EnumField('ClusterValueValuesEnum', 1)
 
@@ -6768,8 +6786,8 @@ class GooglePrivacyDlpV2FileStoreDataProfile(_messages.Message):
       pis.com/organizations/{org_id}/otherCloudConnections/aws/arn:aws:s3:::{b
       ucket_name}`
     lastModifiedTime: The time the file store was last modified.
-    locationType: The location type of the bucket (region, dual-region, multi-
-      region, etc). If dual-region, expect data_storage_locations to be
+    locationType: The location type of the file store (region, dual-region,
+      multi-region, etc). If dual-region, expect data_storage_locations to be
       populated.
     name: The name of the profile.
     profileLastGenerated: The last time the profile was generated.
@@ -7619,6 +7637,7 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
     description: Description of the infotype. Translated when language is
       provided in the request.
     displayName: Human readable form of the infoType name.
+    example: A sample true positive for this infoType.
     name: Internal name of the infoType.
     sensitivityScore: The default sensitivity of the infoType.
     supportedBy: Which parts of the API supports this InfoType.
@@ -7640,10 +7659,11 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
   categories = _messages.MessageField('GooglePrivacyDlpV2InfoTypeCategory', 1, repeated=True)
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
-  name = _messages.StringField(4)
-  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 5)
-  supportedBy = _messages.EnumField('SupportedByValueListEntryValuesEnum', 6, repeated=True)
-  versions = _messages.MessageField('GooglePrivacyDlpV2VersionDescription', 7, repeated=True)
+  example = _messages.StringField(4)
+  name = _messages.StringField(5)
+  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 6)
+  supportedBy = _messages.EnumField('SupportedByValueListEntryValuesEnum', 7, repeated=True)
+  versions = _messages.MessageField('GooglePrivacyDlpV2VersionDescription', 8, repeated=True)
 
 
 class GooglePrivacyDlpV2InfoTypeLikelihood(_messages.Message):
@@ -8892,7 +8912,9 @@ class GooglePrivacyDlpV2PrimitiveTransformation(_messages.Message):
     characterMaskConfig: Mask
     cryptoDeterministicConfig: Deterministic Crypto
     cryptoHashConfig: Crypto
-    cryptoReplaceFfxFpeConfig: Ffx-Fpe
+    cryptoReplaceFfxFpeConfig: Ffx-Fpe. Strongly discouraged, consider using
+      CryptoDeterministicConfig instead. Fpe is computationally expensive
+      incurring latency costs.
     dateShiftConfig: Date Shift
     fixedSizeBucketingConfig: Fixed size bucketing
     redactConfig: Redact

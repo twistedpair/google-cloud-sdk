@@ -43,12 +43,14 @@ def GetPolicyIDFlag():
       'attached.')
 
 
-# etag is only used in DeletePolicy
 def GetEtagFlag():
   return base.Argument(
       '--etag',
-      help='Etag that identifies the version of the existing policy. If omitted'
-      ', the policy is deleted regardless of its current etag.')
+      help='Etag that identifies the version of the existing policy. It can be '
+      'obtained by running `gcloud iam policies get`. When '
+      'deleting a policy, if the etag is omitted, the policy is deleted '
+      'regardless of its current etag. When updating a policy, if the etag is '
+      'omitted, the update uses the etag provided in the policy file.')
 
 
 def GetPolicyFileFlag():

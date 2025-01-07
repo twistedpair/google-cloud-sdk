@@ -130,6 +130,8 @@ class Backup(_messages.Message):
       Any database writes after this time aren't available.
     backupKind: Output only. Specifies the kind of backup, PHYSICAL or
       DEFAULT_SNAPSHOT.
+    backupRun: Output only. The mapping to backup run resource used for IAM
+      validations.
     description: The description of this backup.
     error: Output only. Information about why the backup operation fails (for
       example, when the backup state fails).
@@ -213,23 +215,24 @@ class Backup(_messages.Message):
 
   backupInterval = _messages.MessageField('Interval', 1)
   backupKind = _messages.EnumField('BackupKindValueValuesEnum', 2)
-  description = _messages.StringField(3)
-  error = _messages.MessageField('OperationError', 4)
-  expiryTime = _messages.StringField(5)
-  instance = _messages.StringField(6)
-  instanceDeletionTime = _messages.StringField(7)
-  instanceSettings = _messages.MessageField('DatabaseInstance', 8)
-  kind = _messages.StringField(9)
-  kmsKey = _messages.StringField(10)
-  kmsKeyVersion = _messages.StringField(11)
-  location = _messages.StringField(12)
-  maxChargeableBytes = _messages.IntegerField(13)
-  name = _messages.StringField(14)
-  selfLink = _messages.StringField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  timeZone = _messages.StringField(17)
-  ttlDays = _messages.IntegerField(18)
-  type = _messages.EnumField('TypeValueValuesEnum', 19)
+  backupRun = _messages.StringField(3)
+  description = _messages.StringField(4)
+  error = _messages.MessageField('OperationError', 5)
+  expiryTime = _messages.StringField(6)
+  instance = _messages.StringField(7)
+  instanceDeletionTime = _messages.StringField(8)
+  instanceSettings = _messages.MessageField('DatabaseInstance', 9)
+  kind = _messages.StringField(10)
+  kmsKey = _messages.StringField(11)
+  kmsKeyVersion = _messages.StringField(12)
+  location = _messages.StringField(13)
+  maxChargeableBytes = _messages.IntegerField(14)
+  name = _messages.StringField(15)
+  selfLink = _messages.StringField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  timeZone = _messages.StringField(18)
+  ttlDays = _messages.IntegerField(19)
+  type = _messages.EnumField('TypeValueValuesEnum', 20)
 
 
 class BackupConfiguration(_messages.Message):
@@ -555,6 +558,9 @@ class CloneContext(_messages.Message):
     preferredZone: Optional. Copy clone and point-in-time recovery clone of an
       instance to the specified zone. If no zone is specified, clone to the
       same primary zone as the source instance.
+    sourceInstanceDeletionTime: The timestamp used to identify the time when
+      the source instance is deleted. If this instance is deleted, then you
+      must set the timestamp.
   """
 
   allocatedIpRange = _messages.StringField(1)
@@ -566,6 +572,7 @@ class CloneContext(_messages.Message):
   pointInTime = _messages.StringField(7)
   preferredSecondaryZone = _messages.StringField(8)
   preferredZone = _messages.StringField(9)
+  sourceInstanceDeletionTime = _messages.StringField(10)
 
 
 class ConnectSettings(_messages.Message):
@@ -911,6 +918,12 @@ class DatabaseInstance(_messages.Message):
 
   Messages:
     FailoverReplicaValue: The name and status of the failover replica.
+    TagsValue: Optional. Input only. Immutable. Tag keys and tag values that
+      are bound to this instance. You must represent each item in the map as:
+      `"" : ""`. For example, a single resource can have the following tags:
+      ``` "123/environment": "production", "123/costCenter": "marketing", ```
+      For more information on tag creation and management, see
+      https://cloud.google.com/resource-manager/docs/tags/tags-overview.
 
   Fields:
     availableMaintenanceVersions: Output only. List all maintenance versions
@@ -986,7 +999,7 @@ class DatabaseInstance(_messages.Message):
     replicationCluster: A primary instance and disaster recovery (DR) replica
       pair. A DR replica is a cross-region replica that you designate for
       failover in the event that the primary instance experiences regional
-      failure. Only applicable to MySQL.
+      failure. Applicable to MySQL and PostgreSQL.
     rootPassword: Initial root password. Use only on creation. You must set
       root passwords before you can connect to PostgreSQL instances.
     satisfiesPzi: Output only. This status indicates whether the instance
@@ -1011,6 +1024,12 @@ class DatabaseInstance(_messages.Message):
     switchTransactionLogsToCloudStorageEnabled: Input only. Whether Cloud SQL
       is enabled to switch storing point-in-time recovery log files from a
       data disk to Cloud Storage.
+    tags: Optional. Input only. Immutable. Tag keys and tag values that are
+      bound to this instance. You must represent each item in the map as: `""
+      : ""`. For example, a single resource can have the following tags: ```
+      "123/environment": "production", "123/costCenter": "marketing", ``` For
+      more information on tag creation and management, see
+      https://cloud.google.com/resource-manager/docs/tags/tags-overview.
     upgradableDatabaseVersions: Output only. All database versions that are
       available for upgrade.
     writeEndpoint: Output only. The dns name of the primary instance in a
@@ -1372,6 +1391,35 @@ class DatabaseInstance(_messages.Message):
     available = _messages.BooleanField(1)
     name = _messages.StringField(2)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys and tag values that are
+    bound to this instance. You must represent each item in the map as: `"" :
+    ""`. For example, a single resource can have the following tags: ```
+    "123/environment": "production", "123/costCenter": "marketing", ``` For
+    more information on tag creation and management, see
+    https://cloud.google.com/resource-manager/docs/tags/tags-overview.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   availableMaintenanceVersions = _messages.StringField(1, repeated=True)
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 2)
   connectionName = _messages.StringField(3)
@@ -1419,8 +1467,9 @@ class DatabaseInstance(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 45)
   suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 46, repeated=True)
   switchTransactionLogsToCloudStorageEnabled = _messages.BooleanField(47)
-  upgradableDatabaseVersions = _messages.MessageField('AvailableDatabaseVersion', 48, repeated=True)
-  writeEndpoint = _messages.StringField(49)
+  tags = _messages.MessageField('TagsValue', 48)
+  upgradableDatabaseVersions = _messages.MessageField('AvailableDatabaseVersion', 49, repeated=True)
+  writeEndpoint = _messages.StringField(50)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -2474,7 +2523,13 @@ class InstancesRestoreBackupRequest(_messages.Message):
   Fields:
     backup: The name of the backup that's used to restore a Cloud SQL
       instance: Format: projects/{project-id}/backups/{backup-uid}. Only one
-      of restore_backup_context or backup can be passed to the input.
+      of restore_backup_context, backup, backupdr_backup can be passed to the
+      input.
+    backupdrBackup: The name of the backup that's used to restore a Cloud SQL
+      instance: Format: "projects/{project-id}/locations/{location}/backupVaul
+      ts/{backupvault}/dataSources/{datasource}/backups/{backup-uid}". Only
+      one of restore_backup_context, backup, backupdr_backup can be passed to
+      the input.
     restoreBackupContext: Parameters required to perform the restore backup
       operation.
     restoreInstanceSettings: By using this parameter, Cloud SQL overrides any
@@ -2485,8 +2540,9 @@ class InstancesRestoreBackupRequest(_messages.Message):
   """
 
   backup = _messages.StringField(1)
-  restoreBackupContext = _messages.MessageField('RestoreBackupContext', 2)
-  restoreInstanceSettings = _messages.MessageField('DatabaseInstance', 3)
+  backupdrBackup = _messages.StringField(2)
+  restoreBackupContext = _messages.MessageField('RestoreBackupContext', 3)
+  restoreInstanceSettings = _messages.MessageField('DatabaseInstance', 4)
 
 
 class InstancesRotateServerCaRequest(_messages.Message):
@@ -2983,7 +3039,7 @@ class Operation(_messages.Message):
       `2012-11-15T16:19:00.094Z`.
     status: The status of an operation.
     subOperationType: Optional. The sub operation based on the operation type.
-    targetId: Name of the database instance related to this operation.
+    targetId: A string attribute.
     targetLink: A string attribute.
     targetProject: The project ID of the target instance related to this
       operation.
@@ -3388,7 +3444,8 @@ class ReplicaConfiguration(_messages.Message):
 class ReplicationCluster(_messages.Message):
   r"""A primary instance and disaster recovery (DR) replica pair. A DR replica
   is a cross-region replica that you designate for failover in the event that
-  the primary instance has regional failure. Only applicable to MySQL.
+  the primary instance has regional failure. Applicable to MySQL and
+  PostgreSQL.
 
   Fields:
     drReplica: Output only. Read-only field that indicates whether the replica
@@ -3400,14 +3457,14 @@ class ReplicationCluster(_messages.Message):
       instances. If the instance is a read replica, then the field is not set.
       Set this field to a replica name to designate a DR replica for a primary
       instance. Remove the replica name to remove the DR replica designation.
-    psaWriteEndpoint: Output only. If set, it indicates this instance has a
-      private service access (PSA) dns endpoint that is pointing to the
-      primary instance of the cluster. If this instance is the primary, the
-      dns should be pointing to this instance. After Switchover or Replica
-      failover, this DNS endpoint points to the promoted instance. This is a
-      read-only field, returned to the user as information. This field can
-      exist even if a standalone instance does not yet have a replica, or had
-      a DR replica that was deleted.
+    psaWriteEndpoint: Output only. If set, this field indicates this instance
+      has a private service access (PSA) DNS endpoint that is pointing to the
+      primary instance of the cluster. If this instance is the primary, then
+      the DNS endpoint points to this instance. After a switchover or replica
+      failover operation, this DNS endpoint points to the promoted instance.
+      This is a read-only field, returned to the user as information. This
+      field can exist even if a standalone instance doesn't have a DR replica
+      yet or the DR replica is deleted.
   """
 
   drReplica = _messages.BooleanField(1)
@@ -4604,12 +4661,12 @@ class SqlInstancesPromoteReplicaRequest(_messages.Message):
   r"""A SqlInstancesPromoteReplicaRequest object.
 
   Fields:
-    failover: Set to true to invoke a replica failover to the designated DR
-      replica. As part of replica failover, the promote operation attempts to
-      add the original primary instance as a replica of the promoted DR
-      replica when the original primary instance comes back online. If set to
-      false or not specified, then the original primary instance becomes an
-      independent Cloud SQL primary instance. Only applicable to MySQL.
+    failover: Set to true to invoke a replica failover to the DR replica. As
+      part of replica failover, the promote operation attempts to add the
+      original primary instance as a replica of the promoted DR replica when
+      the original primary instance comes back online. If set to false or not
+      specified, then the original primary instance becomes an independent
+      Cloud SQL primary instance.
     instance: Cloud SQL read replica instance name.
     project: ID of the project that contains the read replica.
   """
@@ -4671,7 +4728,14 @@ class SqlInstancesRescheduleMaintenanceRequestBody(_messages.Message):
 
 
 class SqlInstancesResetReplicaSizeRequest(_messages.Message):
-  r"""Instance reset replica size request."""
+  r"""Instance reset replica size request.
+
+  Fields:
+    forceReduceDataDiskPerformance: Optional. Flag to force reduce data disk
+      performance if it will be invalidated by replica disk shrink.
+  """
+
+  forceReduceDataDiskPerformance = _messages.BooleanField(1)
 
 
 class SqlInstancesResetSslConfigRequest(_messages.Message):
@@ -4852,9 +4916,9 @@ class SqlInstancesSwitchoverRequest(_messages.Message):
   r"""A SqlInstancesSwitchoverRequest object.
 
   Fields:
-    dbTimeout: Optional. (MySQL only) Cloud SQL instance operations timeout,
-      which is a sum of all database operations. Default value is 10 minutes
-      and can be modified to a maximum value of 24 hours.
+    dbTimeout: Optional. (MySQL and PostgreSQL only) Cloud SQL instance
+      operations timeout, which is a sum of all database operations. Default
+      value is 10 minutes and can be modified to a maximum value of 24 hours.
     instance: Cloud SQL read replica instance name.
     project: ID of the project that contains the replica.
   """

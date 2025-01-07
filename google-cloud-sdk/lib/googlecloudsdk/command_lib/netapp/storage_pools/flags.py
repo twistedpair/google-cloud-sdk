@@ -96,6 +96,22 @@ def GetStoragePoolServiceLevelArg(messages, required=True):
   return service_level_arg
 
 
+def GetDirectoryServiceTypeEnumFromArg(choice, messages):
+  """Returns the Choice Enum for Directory Service Type.
+
+  Args:
+    choice: The choice for directory service type as string
+    messages: The messages module.
+
+  Returns:
+    the directory service type enum.
+  """
+  return arg_utils.ChoiceToEnum(
+      choice=choice,
+      enum_type=messages.ValidateDirectoryServiceRequest.DirectoryServiceTypeValueValuesEnum,
+  )
+
+
 def AddStoragePoolServiceLevelArg(
     parser, messages, required=False
 ):
@@ -198,6 +214,15 @@ def AddStoragePoolReplicaZoneArg(parser):
       help="""String indicating replica zone for the Storage Pool""",
   )
 
+
+def AddStoragePoolDirectoryServiceTypeArg(parser):
+  """Adds the Directory Service Type arg to the arg parser."""
+  parser.add_argument(
+      '--directory-service-type',
+      type=str,
+      help="""String indicating directory service type for the Storage Pool""",
+  )
+
 ## Helper functions to combine Storage Pools args / flags for gcloud commands ##
 
 
@@ -252,3 +277,12 @@ def AddStoragePoolSwitchArg(parser):
       flags.GetStoragePoolPresentationSpec('The Storage Pool to switch.')
   ]).AddToParser(parser)
   flags.AddResourceAsyncFlag(parser)
+
+
+def AddStoragePoolValidateDirectoryServiceArg(parser):
+  """Add args for validating directory service of a Storage Pool."""
+  concept_parsers.ConceptParser([
+      flags.GetStoragePoolPresentationSpec('The Storage Pool to validate.')
+  ]).AddToParser(parser)
+  flags.AddResourceAsyncFlag(parser)
+  AddStoragePoolDirectoryServiceTypeArg(parser)

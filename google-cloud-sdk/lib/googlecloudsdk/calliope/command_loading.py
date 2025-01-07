@@ -28,7 +28,6 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import command_release_tracks
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import pkg_resources
-
 from ruamel import yaml
 import six
 
@@ -44,7 +43,9 @@ class CommandLoadFailure(Exception):
     self.root_exception = root_exception
     super(CommandLoadFailure, self).__init__(
         'Problem loading {command}: {issue}.'.format(
-            command=command, issue=six.text_type(root_exception)))
+            command=command, issue=six.text_type(root_exception)
+        )
+    )
 
 
 class LayoutException(Exception):
@@ -52,8 +53,7 @@ class LayoutException(Exception):
 
 
 class ReleaseTrackNotImplementedException(Exception):
-  """An exception for when a command or group does not support a release track.
-  """
+  """An exception for when a command or group does not support a release track."""
 
 
 class YamlCommandTranslator(six.with_metaclass(abc.ABCMeta, object)):
@@ -68,8 +68,8 @@ class YamlCommandTranslator(six.with_metaclass(abc.ABCMeta, object)):
         with respect to the CLI itself.  This path should be used for things
         like error reporting when a specific element in the tree needs to be
         referenced.
-      command_data: dict, The parsed contents of the command spec from the
-        yaml file that corresponds to the release track being loaded.
+      command_data: dict, The parsed contents of the command spec from the yaml
+        file that corresponds to the release track being loaded.
 
     Returns:
       calliope.base.Command, A command class (not instance) that
@@ -85,8 +85,8 @@ def FindSubElements(impl_paths, path):
     impl_paths: [str], A list of file paths to the command implementation for
       this group.
     path: [str], A list of group names that got us down to this command group
-      with respect to the CLI itself.  This path should be used for things
-      like error reporting when a specific element in the tree needs to be
+      with respect to the CLI itself.  This path should be used for things like
+      error reporting when a specific element in the tree needs to be
       referenced.
 
   Raises:
@@ -102,12 +102,16 @@ def FindSubElements(impl_paths, path):
   if len(impl_paths) > 1:
     raise CommandLoadFailure(
         '.'.join(path),
-        Exception('Command groups cannot be implemented in yaml'))
+        Exception('Command groups cannot be implemented in yaml'),
+    )
   impl_path = impl_paths[0]
   groups, commands = pkg_resources.ListPackage(
-      impl_path, extra_extensions=['.yaml'])
-  return (_GenerateElementInfo(impl_path, groups),
-          _GenerateElementInfo(impl_path, commands))
+      impl_path, extra_extensions=['.yaml']
+  )
+  return (
+      _GenerateElementInfo(impl_path, groups),
+      _GenerateElementInfo(impl_path, commands),
+  )
 
 
 def _GenerateElementInfo(impl_path, names):
@@ -129,7 +133,8 @@ def _GenerateElementInfo(impl_path, names):
   for name in names:
     if re.search('[A-Z]', name):
       raise LayoutException(
-          'Commands and groups cannot have capital letters: {0}.'.format(name))
+          'Commands and groups cannot have capital letters: {0}.'.format(name)
+      )
     cli_name = name[:-5] if name.endswith('.yaml') else name
     sub_path = os.path.join(impl_path, name)
 
@@ -138,20 +143,26 @@ def _GenerateElementInfo(impl_path, names):
   return elements
 
 
-def LoadCommonType(impl_paths, path, release_track,
-                   construction_id, is_command, yaml_command_translator=None):
+def LoadCommonType(
+    impl_paths,
+    path,
+    release_track,
+    construction_id,
+    is_command,
+    yaml_command_translator=None,
+):
   """Loads a calliope command or group from a file.
 
   Args:
     impl_paths: [str], A list of file paths to the command implementation for
       this group or command.
     path: [str], A list of group names that got us down to this command group
-      with respect to the CLI itself.  This path should be used for things
-      like error reporting when a specific element in the tree needs to be
+      with respect to the CLI itself.  This path should be used for things like
+      error reporting when a specific element in the tree needs to be
       referenced.
     release_track: ReleaseTrack, The release track that we should load.
-    construction_id: str, A unique identifier for the CLILoader that is
-      being constructed.
+    construction_id: str, A unique identifier for the CLILoader that is being
+      constructed.
     is_command: bool, True if we are loading a command, False to load a group.
     yaml_command_translator: YamlCommandTranslator, An instance of a translator
       to use to load the yaml data.
@@ -163,13 +174,16 @@ def LoadCommonType(impl_paths, path, release_track,
     The base._Common class for the command or group.
   """
   implementations = _GetAllImplementations(
-      impl_paths, path, construction_id, is_command, yaml_command_translator)
+      impl_paths, path, construction_id, is_command, yaml_command_translator
+  )
   return _ExtractReleaseTrackImplementation(
-      impl_paths[0], release_track, implementations)()
+      impl_paths[0], release_track, implementations
+  )()
 
 
 def Cache(func):
   cached_results = {}
+
   def ReturnCachedOrCallFunc(*args):
     try:
       return cached_results[args]
@@ -177,6 +191,7 @@ def Cache(func):
       result = func(*args)
       cached_results[args] = result
       return result
+
   return ReturnCachedOrCallFunc
 
 
@@ -190,8 +205,9 @@ def _CustomLoadYamlFile(path):
   return CreateYamlLoader(path).load(pkg_resources.GetResourceFromFile(path))
 
 
-def _GetAllImplementations(impl_paths, path, construction_id, is_command,
-                           yaml_command_translator):
+def _GetAllImplementations(
+    impl_paths, path, construction_id, is_command, yaml_command_translator
+):
   """Gets all the release track command implementations.
 
   Can load both python and yaml modules.
@@ -200,11 +216,11 @@ def _GetAllImplementations(impl_paths, path, construction_id, is_command,
     impl_paths: [str], A list of file paths to the command implementation for
       this group or command.
     path: [str], A list of group names that got us down to this command group
-      with respect to the CLI itself.  This path should be used for things
-      like error reporting when a specific element in the tree needs to be
+      with respect to the CLI itself.  This path should be used for things like
+      error reporting when a specific element in the tree needs to be
       referenced.
-    construction_id: str, A unique identifier for the CLILoader that is
-      being constructed.
+    construction_id: str, A unique identifier for the CLILoader that is being
+      constructed.
     is_command: bool, True if we are loading a command, False to load a group.
     yaml_command_translator: YamlCommandTranslator, An instance of a translator
       to use to load the yaml data.
@@ -225,18 +241,24 @@ def _GetAllImplementations(impl_paths, path, construction_id, is_command,
       if not is_command:
         raise CommandLoadFailure(
             '.'.join(path),
-            Exception('Command groups cannot be implemented in yaml'))
+            Exception('Command groups cannot be implemented in yaml'),
+        )
       if _IsCommandWithPartials(impl_file, path):
         data = _LoadCommandWithPartials(impl_file, path)
       else:
         data = _CustomLoadYamlFile(impl_file)
-      implementations.extend((_ImplementationsFromYaml(
-          path, data, yaml_command_translator)))
+      implementations.extend(
+          (_ImplementationsFromYaml(path, data, yaml_command_translator))
+      )
     else:
       module = _GetModuleFromPath(impl_file, path, construction_id)
-      implementations.extend(_ImplementationsFromModule(
-          module.__file__, list(module.__dict__.values()),
-          is_command=is_command))
+      implementations.extend(
+          _ImplementationsFromModule(
+              module.__file__,
+              list(module.__dict__.values()),
+              is_command=is_command,
+          )
+      )
   return implementations
 
 
@@ -246,8 +268,8 @@ def _IsCommandWithPartials(impl_file, path):
   Args:
     impl_file: file path to the main YAML command implementation.
     path: [str], A list of group names that got us down to this command group
-      with respect to the CLI itself.  This path should be used for things
-      like error reporting when a specific element in the tree needs to be
+      with respect to the CLI itself.  This path should be used for things like
+      error reporting when a specific element in the tree needs to be
       referenced.
 
   Raises:
@@ -292,8 +314,8 @@ def _LoadCommandWithPartials(impl_file, path):
   Args:
     impl_file: file path to the main YAML command implementation.
     path: [str], A list of group names that got us down to this command group
-      with respect to the CLI itself.  This path should be used for things
-      like error reporting when a specific element in the tree needs to be
+      with respect to the CLI itself.  This path should be used for things like
+      error reporting when a specific element in the tree needs to be
       referenced.
 
   Returns:
@@ -319,8 +341,8 @@ def _ValidateCommandWithPartials(command_data_list, path):
   Args:
     command_data_list: List with data loaded from all YAML partials.
     path: [str], A list of group names that got us down to this command group
-      with respect to the CLI itself.  This path should be used for things
-      like error reporting when a specific element in the tree needs to be
+      with respect to the CLI itself.  This path should be used for things like
+      error reporting when a specific element in the tree needs to be
       referenced.
 
   Raises:
@@ -335,7 +357,8 @@ def _ValidateCommandWithPartials(command_data_list, path):
             Exception(
                 'Command with partials cannot have duplicated release tracks.'
                 f' Found multiple [{release_track}s]'
-            ))
+            ),
+        )
       else:
         release_tracks.add(release_track)
 
@@ -426,10 +449,12 @@ def CreateYamlLoader(impl_path):
 
     def construct_mapping(self, *args, **kwargs):
       data = super(Constructor, self).construct_mapping(*args, **kwargs)
-      data = self._ConstructMappingHelper(Constructor.MERGE_COMMON_MACRO,
-                                          self._GetCommonData, data)
-      return self._ConstructMappingHelper(Constructor.MERGE_REF_MACRO,
-                                          self._GetRefData, data)
+      data = self._ConstructMappingHelper(
+          Constructor.MERGE_COMMON_MACRO, self._GetCommonData, data
+      )
+      return self._ConstructMappingHelper(
+          Constructor.MERGE_REF_MACRO, self._GetRefData, data
+      )
 
     def _ConstructMappingHelper(self, macro, source_func, data):
       attribute_path = data.pop(macro, None)
@@ -445,16 +470,18 @@ def CreateYamlLoader(impl_path):
 
     def construct_sequence(self, *args, **kwargs):
       data = super(Constructor, self).construct_sequence(*args, **kwargs)
-      data = self._ConstructSequenceHelper(Constructor.MERGE_COMMON_MACRO,
-                                           self._GetCommonData, data)
-      return self._ConstructSequenceHelper(Constructor.MERGE_REF_MACRO,
-                                           self._GetRefData, data)
+      data = self._ConstructSequenceHelper(
+          Constructor.MERGE_COMMON_MACRO, self._GetCommonData, data
+      )
+      return self._ConstructSequenceHelper(
+          Constructor.MERGE_REF_MACRO, self._GetRefData, data
+      )
 
     def _ConstructSequenceHelper(self, macro, source_func, data):
       new_list = []
       for i in data:
         if isinstance(i, six.string_types) and i.startswith(macro):
-          attribute_path = i[len(macro):]
+          attribute_path = i[len(macro) :]
           for path in attribute_path.split(','):
             new_list.extend(source_func(path))
         else:
@@ -473,7 +500,8 @@ def CreateYamlLoader(impl_path):
       if not common_data:
         raise LayoutException(
             'Command [{}] references [common command] data but it does not '
-            'exist.'.format(impl_path))
+            'exist.'.format(impl_path)
+        )
       return self._GetAttribute(common_data, attribute_path, 'common command')
 
     def _GetRefData(self, path):
@@ -483,8 +511,8 @@ def CreateYamlLoader(impl_path):
       file to extract.
 
       Args:
-        path: str, The path of the YAML file to import. It must be in the
-          form of: package.module:attribute.attribute, where the module path is
+        path: str, The path of the YAML file to import. It must be in the form
+          of package.module:attribute.attribute, where the module path is
           separated from the sub attributes within the YAML by a ':'.
 
       Raises:
@@ -497,16 +525,22 @@ def CreateYamlLoader(impl_path):
       if len(parts) != 2:
         raise LayoutException(
             'Invalid Yaml reference: [{}]. References must be in the format: '
-            'path(.path)+:attribute(.attribute)*'.format(path))
+            'path(.path)+:attribute(.attribute)*'.format(path)
+        )
       path_segments = parts[0].split('.')
       try:
         root_module = importlib.import_module(path_segments[0])
-        yaml_path = os.path.join(
-            os.path.dirname(root_module.__file__), *path_segments[1:]) + '.yaml'
+        yaml_path = (
+            os.path.join(
+                os.path.dirname(root_module.__file__), *path_segments[1:]
+            )
+            + '.yaml'
+        )
         data = _SafeLoadYamlFile(yaml_path)
       except (ImportError, IOError) as e:
         raise LayoutException(
-            'Failed to load Yaml reference file [{}]: {}'.format(parts[0], e))
+            'Failed to load Yaml reference file [{}]: {}'.format(parts[0], e)
+        )
 
       return self._GetAttribute(data, parts[1], yaml_path)
 
@@ -517,16 +551,20 @@ def CreateYamlLoader(impl_path):
         if not value:
           raise LayoutException(
               'Command [{}] references [{}] data attribute [{}] in '
-              'path [{}] but it does not exist.'
-              .format(impl_path, location, attribute, attribute_path))
+              'path [{}] but it does not exist.'.format(
+                  impl_path, location, attribute, attribute_path
+              )
+          )
       return value
 
   loader = yaml.YAML()
   loader.Constructor = Constructor
-  loader.constructor.add_constructor(Constructor.INCLUDE_COMMON_MACRO,
-                                     Constructor.IncludeCommon)
-  loader.constructor.add_constructor(Constructor.INCLUDE_REF_MACRO,
-                                     Constructor.IncludeRef)
+  loader.constructor.add_constructor(
+      Constructor.INCLUDE_COMMON_MACRO, Constructor.IncludeCommon
+  )
+  loader.constructor.add_constructor(
+      Constructor.INCLUDE_REF_MACRO, Constructor.IncludeRef
+  )
   return loader
 
 
@@ -540,11 +578,11 @@ def _GetModuleFromPath(impl_file, path, construction_id):
     impl_file: str, The path to the file this was loaded from (for error
       reporting).
     path: [str], A list of group names that got us down to this command group
-      with respect to the CLI itself.  This path should be used for things
-      like error reporting when a specific element in the tree needs to be
+      with respect to the CLI itself.  This path should be used for things like
+      error reporting when a specific element in the tree needs to be
       referenced.
-    construction_id: str, A unique identifier for the CLILoader that is
-      being constructed.
+    construction_id: str, A unique identifier for the CLILoader that is being
+      constructed.
 
   Returns:
     The imported module.
@@ -552,8 +590,8 @@ def _GetModuleFromPath(impl_file, path, construction_id):
   # Make sure this module name never collides with any real module name.
   # Use the CLI naming path, so values are always unique.
   name_to_give = '__calliope__command__.{construction_id}.{name}'.format(
-      construction_id=construction_id,
-      name='.'.join(path).replace('-', '_'))
+      construction_id=construction_id, name='.'.join(path).replace('-', '_')
+  )
   try:
     return pkg_resources.GetModuleFromPath(name_to_give, impl_file)
   # pylint:disable=broad-except, We really do want to catch everything here,
@@ -567,8 +605,8 @@ def _ImplementationsFromModule(mod_file, module_attributes, is_command):
   """Gets all the release track command implementations from the module.
 
   Args:
-    mod_file: str, The __file__ attribute of the module resulting from
-      importing the file containing a command.
+    mod_file: str, The __file__ attribute of the module resulting from importing
+      the file containing a command.
     module_attributes: The __dict__.values() of the module.
     is_command: bool, True if we are loading a command, False to load a group.
 
@@ -596,23 +634,28 @@ def _ImplementationsFromModule(mod_file, module_attributes, is_command):
     if groups:
       # Ensure that there are no groups if we are expecting a command.
       raise LayoutException(
-          'You cannot define groups [{0}] in a command file: [{1}]'
-          .format(', '.join([g.__name__ for g in groups]), mod_file))
+          'You cannot define groups [{0}] in a command file: [{1}]'.format(
+              ', '.join([g.__name__ for g in groups]), mod_file
+          )
+      )
     if not commands:
       # Make sure we found a command.
-      raise LayoutException('No commands defined in file: [{0}]'.format(
-          mod_file))
+      raise LayoutException(
+          'No commands defined in file: [{0}]'.format(mod_file)
+      )
     commands_or_groups = commands
   else:
     # Ensure that there are no commands if we are expecting a group.
     if commands:
       raise LayoutException(
           'You cannot define commands [{0}] in a command group file: [{1}]'
-          .format(', '.join([c.__name__ for c in commands]), mod_file))
+          .format(', '.join([c.__name__ for c in commands]), mod_file)
+      )
     if not groups:
       # Make sure we found a group.
-      raise LayoutException('No command groups defined in file: [{0}]'.format(
-          mod_file))
+      raise LayoutException(
+          'No command groups defined in file: [{0}]'.format(mod_file)
+      )
     commands_or_groups = groups
 
   # pylint:disable=undefined-loop-variable, Linter is just wrong here.
@@ -627,8 +670,8 @@ def _ImplementationsFromYaml(path, data, yaml_command_translator):
 
   Args:
     path: [str], A list of group names that got us down to this command group
-      with respect to the CLI itself.  This path should be used for things
-      like error reporting when a specific element in the tree needs to be
+      with respect to the CLI itself.  This path should be used for things like
+      error reporting when a specific element in the tree needs to be
       referenced.
     data: dict, The loaded yaml data.
     yaml_command_translator: YamlCommandTranslator, An instance of a translator
@@ -647,21 +690,26 @@ def _ImplementationsFromYaml(path, data, yaml_command_translator):
   if not yaml_command_translator:
     raise CommandLoadFailure(
         '.'.join(path),
-        Exception('No yaml command translator has been registered'))
+        Exception('No yaml command translator has been registered'),
+    )
 
   # pylint:disable=undefined-loop-variable, Linter is just wrong here.
   # We need to use a default param on the lambda so that it captures the value
   # of the variable at the time in the loop or else the closure will just have
   # the last value that was iterated on.
   implementations = [
-      (lambda i=i: yaml_command_translator.Translate(path, i),
-       {base.ReleaseTrack.FromId(t) for t in i.get('release_tracks', [])})
-      for i in command_release_tracks.SeparateDeclarativeCommandTracks(data)]
+      (
+          lambda i=i: yaml_command_translator.Translate(path, i),
+          {base.ReleaseTrack.FromId(t) for t in i.get('release_tracks', [])},
+      )
+      for i in command_release_tracks.SeparateDeclarativeCommandTracks(data)
+  ]
   return implementations
 
 
 def _ExtractReleaseTrackImplementation(
-    impl_file, expected_track, implementations):
+    impl_file, expected_track, implementations
+):
   """Validates and extracts the correct implementation of the command or group.
 
   Args:
@@ -669,9 +717,9 @@ def _ExtractReleaseTrackImplementation(
       reporting).
     expected_track: base.ReleaseTrack, The release track we are trying to load.
     implementations: [(func->base._Common, [base.ReleaseTrack])], A list of
-    tuples where each item in this list represents a command implementation. The
-    first element is a function that returns the implementation, and the second
-    element is a list of release tracks it is valid for.
+      tuples where each item in this list represents a command implementation.
+      The first element is a function that returns the implementation, and the
+      second element is a list of release tracks it is valid for.
 
   Raises:
     LayoutException: If there is not exactly one type inheriting
@@ -690,8 +738,10 @@ def _ExtractReleaseTrackImplementation(
     if not valid_tracks or expected_track in valid_tracks:
       return impl
     raise ReleaseTrackNotImplementedException(
-        'No implementation for release track [{0}] for element: [{1}]'
-        .format(expected_track.id, impl_file))
+        'No implementation for release track [{0}] for element: [{1}]'.format(
+            expected_track.id, impl_file
+        )
+    )
 
   # There was more than one thing found, make sure there are no conflicts.
   implemented_release_tracks = set()
@@ -701,21 +751,28 @@ def _ExtractReleaseTrackImplementation(
     if not valid_tracks:
       raise LayoutException(
           'Multiple implementations defined for element: [{0}]. Each must '
-          'explicitly declare valid release tracks.'.format(impl_file))
+          'explicitly declare valid release tracks.'.format(impl_file)
+      )
     # Make sure no two classes define the same track.
     duplicates = implemented_release_tracks & valid_tracks
     if duplicates:
       raise LayoutException(
           'Multiple definitions for release tracks [{0}] for element: [{1}]'
-          .format(', '.join([six.text_type(d) for d in duplicates]), impl_file))
+          .format(', '.join([six.text_type(d) for d in duplicates]), impl_file)
+      )
     implemented_release_tracks |= valid_tracks
 
-  valid_commands_or_groups = [impl for impl, valid_tracks in implementations
-                              if expected_track in valid_tracks]
+  valid_commands_or_groups = [
+      impl
+      for impl, valid_tracks in implementations
+      if expected_track in valid_tracks
+  ]
   # We know there is at most 1 because of the above check.
   if len(valid_commands_or_groups) != 1:
     raise ReleaseTrackNotImplementedException(
-        'No implementation for release track [{0}] for element: [{1}]'
-        .format(expected_track.id, impl_file))
+        'No implementation for release track [{0}] for element: [{1}]'.format(
+            expected_track.id, impl_file
+        )
+    )
 
   return valid_commands_or_groups[0]

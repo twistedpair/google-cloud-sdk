@@ -39,6 +39,7 @@ _BANDWIDTH_CHOICES = collections.OrderedDict([
     ('10g', '10 Gbit/s'),
     ('20g', '20 Gbit/s'),
     ('50g', '50 Gbit/s'),
+    ('100g', '100 Gbit/s'),
 ])
 
 _EDGE_AVAILABILITY_DOMAIN_CHOICES = {

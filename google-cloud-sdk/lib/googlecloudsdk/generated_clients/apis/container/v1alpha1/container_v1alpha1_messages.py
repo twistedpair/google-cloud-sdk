@@ -1414,8 +1414,8 @@ class ClusterUpdate(_messages.Message):
       NetworkConfig.default_enable_private_nodes
     desiredDefaultSnatStatus: The desired status of whether to disable default
       sNAT for this cluster.
-    desiredDisableL4LbFirewallReconciliation: Desired L4 LB firewall
-      disablement
+    desiredDisableL4LbFirewallReconciliation: Enable/Disable L4 LB VPC
+      firewall reconciliation for the cluster.
     desiredDnsConfig: DNSConfig contains clusterDNS config for this cluster.
     desiredEnableCiliumClusterwideNetworkPolicy: Enable/Disable Cilium
       Clusterwide Network Policy for the cluster.
@@ -3034,6 +3034,7 @@ class EphemeralStorageLocalSsdConfig(_messages.Message):
   ephemeral storage using Local SSDs.
 
   Fields:
+    dataCacheCount: Number of local SSDs to use for Datacache.
     localSsdCount: Number of local SSDs to use to back ephemeral storage. Uses
       NVMe interfaces. A zero (or unset) value has different meanings
       depending on machine type being used: 1. For pre-Gen3 machines, which
@@ -3050,7 +3051,8 @@ class EphemeralStorageLocalSsdConfig(_messages.Message):
       ssd#choose_number_local_ssds for more info.
   """
 
-  localSsdCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  dataCacheCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  localSsdCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class FastSocket(_messages.Message):
@@ -4566,8 +4568,8 @@ class NetworkConfig(_messages.Message):
       set to false, default IP masquerade rules will be applied to the nodes
       to prevent sNAT on cluster internal traffic. Deprecated. Use
       default_snat_status instead
-    disableL4LbFirewallReconciliation: Disable L4 load balancer firewalls to
-      enable firewall policies.
+    disableL4LbFirewallReconciliation: Disable L4 load balancer VPC firewalls
+      to enable firewall policies.
     dnsConfig: DNSConfig contains clusterDNS config for this cluster.
     enableCiliumClusterwideNetworkPolicy: Whether
       CiliumClusterWideNetworkPolicy is enabled on this cluster.
@@ -4886,6 +4888,7 @@ class NodeConfig(_messages.Message):
       boot disk. This field is functionally equivalent to the
       ephemeral_storage_config
     fastSocket: Enable or disable NCCL fast socket for the node pool.
+    flexStart: Flex Start flag for enabling Flex Start VM.
     gcfsConfig: GCFS (Google Container File System) configs.
     gpuDirectConfig: The configuration for GPU Direct
     gvnic: Enable or disable gvnic on the node pool.
@@ -5143,43 +5146,44 @@ class NodeConfig(_messages.Message):
   ephemeralStorageConfig = _messages.MessageField('EphemeralStorageConfig', 10)
   ephemeralStorageLocalSsdConfig = _messages.MessageField('EphemeralStorageLocalSsdConfig', 11)
   fastSocket = _messages.MessageField('FastSocket', 12)
-  gcfsConfig = _messages.MessageField('GcfsConfig', 13)
-  gpuDirectConfig = _messages.MessageField('GPUDirectConfig', 14)
-  gvnic = _messages.MessageField('VirtualNIC', 15)
-  hostMaintenancePolicy = _messages.MessageField('HostMaintenancePolicy', 16)
-  imageType = _messages.StringField(17)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 18)
-  labels = _messages.MessageField('LabelsValue', 19)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 20)
-  localNvmeSsdBlockConfig = _messages.MessageField('LocalNvmeSsdBlockConfig', 21)
-  localSsdCount = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  localSsdEncryptionMode = _messages.EnumField('LocalSsdEncryptionModeValueValuesEnum', 23)
-  localSsdVolumeConfigs = _messages.MessageField('LocalSsdVolumeConfig', 24, repeated=True)
-  loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 25)
-  machineType = _messages.StringField(26)
-  maxRunDuration = _messages.StringField(27)
-  metadata = _messages.MessageField('MetadataValue', 28)
-  minCpuPlatform = _messages.StringField(29)
-  nodeGroup = _messages.StringField(30)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 31)
-  oauthScopes = _messages.StringField(32, repeated=True)
-  preemptible = _messages.BooleanField(33)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 34)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 35)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 36)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 37)
-  secondaryBootDiskUpdateStrategy = _messages.MessageField('SecondaryBootDiskUpdateStrategy', 38)
-  secondaryBootDisks = _messages.MessageField('SecondaryBootDisk', 39, repeated=True)
-  serviceAccount = _messages.StringField(40)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 41)
-  soleTenantConfig = _messages.MessageField('SoleTenantConfig', 42)
-  spot = _messages.BooleanField(43)
-  stableFleetConfig = _messages.MessageField('StableFleetConfig', 44)
-  storagePools = _messages.StringField(45, repeated=True)
-  tags = _messages.StringField(46, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 47, repeated=True)
-  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 48)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 49)
+  flexStart = _messages.BooleanField(13)
+  gcfsConfig = _messages.MessageField('GcfsConfig', 14)
+  gpuDirectConfig = _messages.MessageField('GPUDirectConfig', 15)
+  gvnic = _messages.MessageField('VirtualNIC', 16)
+  hostMaintenancePolicy = _messages.MessageField('HostMaintenancePolicy', 17)
+  imageType = _messages.StringField(18)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 19)
+  labels = _messages.MessageField('LabelsValue', 20)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 21)
+  localNvmeSsdBlockConfig = _messages.MessageField('LocalNvmeSsdBlockConfig', 22)
+  localSsdCount = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  localSsdEncryptionMode = _messages.EnumField('LocalSsdEncryptionModeValueValuesEnum', 24)
+  localSsdVolumeConfigs = _messages.MessageField('LocalSsdVolumeConfig', 25, repeated=True)
+  loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 26)
+  machineType = _messages.StringField(27)
+  maxRunDuration = _messages.StringField(28)
+  metadata = _messages.MessageField('MetadataValue', 29)
+  minCpuPlatform = _messages.StringField(30)
+  nodeGroup = _messages.StringField(31)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 32)
+  oauthScopes = _messages.StringField(33, repeated=True)
+  preemptible = _messages.BooleanField(34)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 35)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 36)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 37)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 38)
+  secondaryBootDiskUpdateStrategy = _messages.MessageField('SecondaryBootDiskUpdateStrategy', 39)
+  secondaryBootDisks = _messages.MessageField('SecondaryBootDisk', 40, repeated=True)
+  serviceAccount = _messages.StringField(41)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 42)
+  soleTenantConfig = _messages.MessageField('SoleTenantConfig', 43)
+  spot = _messages.BooleanField(44)
+  stableFleetConfig = _messages.MessageField('StableFleetConfig', 45)
+  storagePools = _messages.StringField(46, repeated=True)
+  tags = _messages.StringField(47, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 48, repeated=True)
+  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 49)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 50)
 
 
 class NodeConfigDefaults(_messages.Message):
@@ -8002,6 +8006,7 @@ class UpdateNodePoolRequest(_messages.Message):
       not match the current etag of the node pool, update will be blocked and
       an ABORTED error will be returned.
     fastSocket: Enable or disable NCCL fast socket for the node pool.
+    flexStart: Flex Start flag for enabling Flex Start VM.
     gcfsConfig: GCFS config.
     gvnic: Enable or disable gvnic on the node pool.
     image: The desired name of the image name to use for this node. This is
@@ -8085,34 +8090,35 @@ class UpdateNodePoolRequest(_messages.Message):
   diskType = _messages.StringField(6)
   etag = _messages.StringField(7)
   fastSocket = _messages.MessageField('FastSocket', 8)
-  gcfsConfig = _messages.MessageField('GcfsConfig', 9)
-  gvnic = _messages.MessageField('VirtualNIC', 10)
-  image = _messages.StringField(11)
-  imageProject = _messages.StringField(12)
-  imageType = _messages.StringField(13)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 14)
-  labels = _messages.MessageField('NodeLabels', 15)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 16)
-  locations = _messages.StringField(17, repeated=True)
-  loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 18)
-  machineType = _messages.StringField(19)
-  maxRunDuration = _messages.StringField(20)
-  name = _messages.StringField(21)
-  nodeNetworkConfig = _messages.MessageField('NodeNetworkConfig', 22)
-  nodePoolId = _messages.StringField(23)
-  nodeVersion = _messages.StringField(24)
-  projectId = _messages.StringField(25)
-  queuedProvisioning = _messages.MessageField('QueuedProvisioning', 26)
-  resourceLabels = _messages.MessageField('ResourceLabels', 27)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 28)
-  storagePools = _messages.StringField(29, repeated=True)
-  tags = _messages.MessageField('NetworkTags', 30)
-  taints = _messages.MessageField('NodeTaints', 31)
-  updatedNodePool = _messages.MessageField('NodePool', 32)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 33)
-  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 34)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 35)
-  zone = _messages.StringField(36)
+  flexStart = _messages.BooleanField(9)
+  gcfsConfig = _messages.MessageField('GcfsConfig', 10)
+  gvnic = _messages.MessageField('VirtualNIC', 11)
+  image = _messages.StringField(12)
+  imageProject = _messages.StringField(13)
+  imageType = _messages.StringField(14)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 15)
+  labels = _messages.MessageField('NodeLabels', 16)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 17)
+  locations = _messages.StringField(18, repeated=True)
+  loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 19)
+  machineType = _messages.StringField(20)
+  maxRunDuration = _messages.StringField(21)
+  name = _messages.StringField(22)
+  nodeNetworkConfig = _messages.MessageField('NodeNetworkConfig', 23)
+  nodePoolId = _messages.StringField(24)
+  nodeVersion = _messages.StringField(25)
+  projectId = _messages.StringField(26)
+  queuedProvisioning = _messages.MessageField('QueuedProvisioning', 27)
+  resourceLabels = _messages.MessageField('ResourceLabels', 28)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 29)
+  storagePools = _messages.StringField(30, repeated=True)
+  tags = _messages.MessageField('NetworkTags', 31)
+  taints = _messages.MessageField('NodeTaints', 32)
+  updatedNodePool = _messages.MessageField('NodePool', 33)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 34)
+  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 35)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 36)
+  zone = _messages.StringField(37)
 
 
 class UpgradeDetails(_messages.Message):
@@ -8229,13 +8235,18 @@ class UpgradeSettings(_messages.Message):
         and max_unavailable determines the level of upgrade parallelism.
       QUEUED_PROVISIONING: QUEUED_PROVISIONING is the dedicated upgrade
         strategy for QueuedProvisioning nodepools scaled up only by enqueueing
-        to the Dynamic Workload Scheduler (DWS).
+        to the Dynamic Workload Scheduler (DWS). Deprecated; Use SHORT_LIVED
+        instead.
+      SHORT_LIVED: SHORT_LIVED is the dedicated upgrade strategy for
+        QueuedProvisioning and flex start nodepools scaled up only by
+        enqueueing to the Dynamic Workload Scheduler (DWS).
     """
     NODE_POOL_UPDATE_STRATEGY_UNSPECIFIED = 0
     ROLLING = 1
     BLUE_GREEN = 2
     SURGE = 3
     QUEUED_PROVISIONING = 4
+    SHORT_LIVED = 5
 
   blueGreenSettings = _messages.MessageField('BlueGreenSettings', 1)
   maxSurge = _messages.IntegerField(2, variant=_messages.Variant.INT32)

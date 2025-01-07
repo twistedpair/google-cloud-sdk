@@ -1272,7 +1272,7 @@ class CloudVmClusterProperties(_messages.Message):
     state: Output only. State of the cluster.
     storageSizeGb: Output only. The storage allocation for the disk group, in
       gigabytes (GB).
-    systemVersion: Output only. Operating system version of the image.
+    systemVersion: Optional. Operating system version of the image.
     timeZone: Optional. Time zone of VM Cluster to set. Defaults to UTC if not
       specified.
   """
@@ -1721,11 +1721,13 @@ class Entitlement(_messages.Message):
       ACCOUNT_NOT_LINKED: Account not linked.
       ACCOUNT_NOT_ACTIVE: Account is linked but not active.
       ACTIVE: Entitlement and Account are active.
+      ACCOUNT_SUSPENDED: Account is suspended.
     """
     STATE_UNSPECIFIED = 0
     ACCOUNT_NOT_LINKED = 1
     ACCOUNT_NOT_ACTIVE = 2
     ACTIVE = 3
+    ACCOUNT_SUSPENDED = 4
 
   cloudAccountDetails = _messages.MessageField('CloudAccountDetails', 1)
   entitlementId = _messages.StringField(2)
@@ -3049,8 +3051,9 @@ class TimeZone(_messages.Message):
   Database](https://www.iana.org/time-zones).
 
   Fields:
-    id: IANA Time Zone Database time zone, e.g. "America/New_York".
-    version: Optional. IANA Time Zone Database version number, e.g. "2019a".
+    id: IANA Time Zone Database time zone. For example "America/New_York".
+    version: Optional. IANA Time Zone Database version number. For example
+      "2019a".
   """
 
   id = _messages.StringField(1)

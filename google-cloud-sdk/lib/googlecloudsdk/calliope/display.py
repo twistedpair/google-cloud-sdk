@@ -113,14 +113,17 @@ class Displayer(object):
       self._defaults = resource_projection_spec.ProjectionSpec(
           defaults=self._defaults,
           symbols=display_info.transforms,
-          aliases=display_info.aliases)
+          aliases=display_info.aliases,
+      )
       self._format = display_info.format
       self._flatten = display_info.flatten
       self._filter = display_info.filter
     self._transform_uri = self._defaults.symbols.get(
-        'uri', resource_transform.TransformUri)
+        'uri', resource_transform.TransformUri
+    )
     self._defaults.symbols[
-        resource_transform.GetTypeDataName('conditionals')] = args
+        resource_transform.GetTypeDataName('conditionals')
+    ] = args
 
   def _GetFlag(self, flag_name):
     """Returns the value of flag_name in args, None if it is unknown or unset.
@@ -147,17 +150,23 @@ class Displayer(object):
 
     if not self._cache_updater:
       # pylint: disable=protected-access
-      if not isinstance(self._command,
-                        (base.CreateCommand,
-                         base.DeleteCommand,
-                         base.ListCommand,
-                         base.RestoreCommand)):
+      if not isinstance(
+          self._command,
+          (
+              base.CreateCommand,
+              base.DeleteCommand,
+              base.ListCommand,
+              base.RestoreCommand,
+          ),
+      ):
         return
       if 'AddCacheUpdater' in properties.VALUES.core.lint.Get():
         # pylint: disable=protected-access
         raise CommandNeedsAddCacheUpdater(
             '`{}` needs a parser.display_info.AddCacheUpdater() call.'.format(
-                ' '.join(self._args._GetCommand().GetPath())))
+                ' '.join(self._args._GetCommand().GetPath())
+            )
+        )
       return
 
     if any([self._GetFlag(flag) for flag in self._CORRUPT_FLAGS]):
@@ -175,7 +184,9 @@ class Displayer(object):
           'Cache updater [{}] not expected for [{}] `{}`.'.format(
               module_util.GetModulePath(self._cache_updater),
               module_util.GetModulePath(self._args._GetCommand()),
-              ' '.join(self._args._GetCommand().GetPath())))
+              ' '.join(self._args._GetCommand().GetPath()),
+          )
+      )
 
     tap = display_taps.UriCacher(cache_update_op, self._transform_uri)
     self._resources = peek_iterable.Tapper(self._resources, tap)
@@ -211,6 +222,7 @@ class Displayer(object):
       reverse: Sort by the keys in descending order if True, otherwise
         ascending.
     """
+
     def _GetKey(r, key):
       """Returns the value for key in r that can be compared with None."""
       value = resource_property.Get(r, key, None)
@@ -225,7 +237,8 @@ class Displayer(object):
     self._resources = sorted(
         self._resources,
         key=lambda r: [_GetKey(r, k) for k in keys],
-        reverse=reverse)
+        reverse=reverse,
+    )
 
   def _AddSortByTap(self):
     """Sorts the resources using the --sort-by keys."""
@@ -330,8 +343,10 @@ class Displayer(object):
       return self._defaults
     return resource_projection_spec.ProjectionSpec(
         defaults=resource_projection_spec.CombineDefaults(
-            [self._info.defaults, self._defaults]),
-        symbols=symbols)
+            [self._info.defaults, self._defaults]
+        ),
+        symbols=symbols,
+    )
 
   def _GetExplicitFormat(self):
     """Determines the explicit format.
@@ -414,8 +429,11 @@ class Displayer(object):
     orders = []
     for order, (key, reverse) in enumerate(sort_keys, start=1):
       attr = ':reverse' if reverse else ''
-      orders.append('{name}:sort={order}{attr}'.format(
-          name=resource_lex.GetKeyName(key), order=order, attr=attr))
+      orders.append(
+          '{name}:sort={order}{attr}'.format(
+              name=resource_lex.GetKeyName(key), order=order, attr=attr
+          )
+      )
     fmt += ':({orders})'.format(orders=','.join(orders))
     return fmt
 
@@ -435,7 +453,8 @@ class Displayer(object):
     # Instantiate a printer if output is enabled.
     if self._format:
       self._printer = resource_printer.Printer(
-          self._format, defaults=self._defaults, out=log.out)
+          self._format, defaults=self._defaults, out=log.out
+      )
       if self._printer:
         self._defaults = self._printer.column_attributes
 
@@ -445,14 +464,15 @@ class Displayer(object):
     return resource_reference.GetReferencedKeyNames(
         filter_string=self._GetFilter(),
         printer=self._printer,
-        defaults=self._defaults)
+        defaults=self._defaults,
+    )
 
   def _AddDisplayTaps(self):
     """Adds each of the standard display taps, if needed.
 
-       The taps must be included in this order in order to generate the correct
-       results. For example, limiting should not happen until after filtering is
-       complete, and pagination should only happen on the fully trimmed results.
+    The taps must be included in this order in order to generate the correct
+    results. For example, limiting should not happen until after filtering is
+    complete, and pagination should only happen on the fully trimmed results.
     """
     self._AddUriCacheTap()
     self._AddFlattenTap()

@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import datetime
 
 from apitools.base.py import encoding
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.ai import operations
 from googlecloudsdk.api_lib.ai.models import client as client_models
 from googlecloudsdk.api_lib.monitoring import metric
@@ -33,6 +34,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import requests
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.console import console_io
 
 
 _MAX_LABEL_VALUE_LENGTH = 63
@@ -217,17 +219,27 @@ def GetDeployConfig(args, publisher_model):
     )
 
   deploy_config = None
-  if args.machine_type:
+  if args.machine_type or args.accelerator_type:
     for deploy in multi_deploy:
-      if deploy.dedicatedResources.machineSpec.machineType == args.machine_type:
-        deploy_config = deploy
-        break
-    if deploy_config is None:
+      if (
+          args.machine_type
+          and deploy.dedicatedResources.machineSpec.machineType
+          != args.machine_type
+      ) or (
+          args.accelerator_type
+          and str(deploy.dedicatedResources.machineSpec.acceleratorType)
+          != args.accelerator_type.upper()
+      ):
+        continue
+      deploy_config = deploy
+      break
+
+    if not deploy_config:
       raise core_exceptions.Error(
-          f'Machine type "{args.machine_type}" is not supported by the'
-          ' model. You can use the `gcloud ai model-garden models'
-          ' list-deployment-config` command to find the supported machine'
-          ' types.'
+          'The machine type and/or accelerator type is not supported by the'
+          ' model. You can use `gcloud ai model-garden models'
+          ' list-deployment-config` command to find the supported'
+          ' configurations'
       )
   else:
     # Default to use the first config.
@@ -236,7 +248,9 @@ def GetDeployConfig(args, publisher_model):
   machine_spec = deploy_config.dedicatedResources.machineSpec
   log.status.Print(
       'Using the {} deployment configuration:'.format(
-          'selected' if args.machine_type else 'default'
+          'selected'
+          if (args.machine_type or args.accelerator_type)
+          else 'default'
       )
   )
   if machine_spec.machineType:
@@ -458,4 +472,75 @@ def DeployModel(
       ' of the deployment long-running operation\n3) Use `gcloud ai'
       f' endpoints describe {endpoint_id} --region={args.region}` command'
       " to check the endpoint's metadata."
+  )
+
+
+def DeployPublisherModel(
+    args, machine_spec, endpoint_name, model, operation_client, mg_client
+):
+  """Deploys the publisher model to a Vertex endpoint."""
+  try:
+    deploy_op = mg_client.DeployPublisherModel(
+        project=properties.VALUES.core.project.GetOrFail(),
+        location=args.region,
+        model=model,
+        accept_eula=args.accept_eula,
+        accelerator_type=machine_spec.acceleratorType,
+        accelerator_count=machine_spec.acceleratorCount,
+        machine_type=machine_spec.machineType,
+        endpoint_display_name=endpoint_name,
+        hugging_face_access_token=args.hugging_face_access_token,
+    )
+  except apitools_exceptions.HttpBadRequestError as e:
+    # Keep prompting for HF token if the error is due to missing HF token.
+    if (
+        e.status_code == 400
+        and 'provide a valid Hugging Face access token' in e.content
+        and args.hugging_face_access_token is None
+    ):
+      while not args.hugging_face_access_token:
+        args.hugging_face_access_token = console_io.PromptPassword(
+            'Please enter your Hugging Face read access token: '
+        )
+      DeployPublisherModel(
+          args,
+          machine_spec,
+          endpoint_name,
+          model,
+          operation_client,
+          mg_client,
+      )
+      return
+    else:
+      raise e
+
+  deploy_op_id = deploy_op.name.split('/')[-1]
+  log.status.Print(
+      'Deploying the model to the endpoint. To check the deployment'
+      ' status, you can try one of the following methods:\n1) Look for'
+      f' endpoint `{endpoint_name}` at the [Vertex AI] -> [Online'
+      ' prediction] tab in Cloud Console\n2) Use `gcloud ai operations'
+      f' describe {deploy_op_id} --region={args.region}` to find the status'
+      ' of the deployment long-running operation\n'
+  )
+  operations_util.WaitForOpMaybe(
+      operation_client,
+      deploy_op,
+      ParseOperation(deploy_op.name),
+      asynchronous=args.asynchronous,
+  )
+
+
+def ParseOperation(operation_name):
+  """Parse operation resource to the operation reference object.
+
+  Args:
+    operation_name: The operation resource to wait on
+
+  Returns:
+    The operation reference object
+  """
+  return resources.REGISTRY.ParseRelativeName(
+      operation_name,
+      collection='aiplatform.projects.locations.operations',
   )

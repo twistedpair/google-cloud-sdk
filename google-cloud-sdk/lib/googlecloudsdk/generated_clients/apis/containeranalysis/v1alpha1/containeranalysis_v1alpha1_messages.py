@@ -4060,9 +4060,12 @@ class Hash(_messages.Message):
     Values:
       NONE: No hash requested.
       SHA256: A sha256 hash.
+      GO_MODULE_H1: Dirhash of a Go module's source code which is then hex-
+        encoded.
     """
     NONE = 0
     SHA256 = 1
+    GO_MODULE_H1 = 2
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
   value = _messages.BytesField(2)

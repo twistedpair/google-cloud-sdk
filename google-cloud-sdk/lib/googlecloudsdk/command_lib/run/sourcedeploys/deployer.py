@@ -36,6 +36,7 @@ from googlecloudsdk.core import resources
 _BUILD_NAME_PATTERN = re.compile(
     'projects/(?P<projectId>[^/]*)/locations/(?P<location>[^/]*)/builds/(?P<build>[^/]*)'
 )
+_DEFAULT_IMAGE_REPOSITORY_NAME = '/cloud-run-source-deploy'
 
 
 # TODO(b/383160656): Bundle these "build_" variables into an object
@@ -75,9 +76,11 @@ def CreateImage(
     # upload the source code then call the new
     # builds API.
     tracker.StartStage(stages.UPLOAD_SOURCE)
-    if kms_key and base.ReleaseTrack.ALPHA:
+    if kms_key and release_track != base.ReleaseTrack.GA:
       tracker.UpdateHeaderMessage('Using the source from the specified bucket.')
-      _ValidateCmekDeployment(build_source, kms_key, release_track)
+      _ValidateCmekDeployment(
+          build_source, build_image, kms_key, release_track
+      )
       source = sources.GetGcsObject(build_source)
     else:
       tracker.UpdateHeaderMessage('Uploading sources.')
@@ -270,9 +273,11 @@ def _PrepareBuildConfig(
   return build_messages, build_config
 
 
-def _ValidateCmekDeployment(source: str, kms_key: str, release_track) -> None:
+def _ValidateCmekDeployment(
+    source: str, image_repository: str, kms_key: str, release_track
+) -> None:
   """Validate the CMEK parameters of the deployment."""
-  if not kms_key or release_track != base.ReleaseTrack.ALPHA:
+  if not kms_key or release_track == base.ReleaseTrack.GA:
     return
 
   if not sources.IsGcsObject(source):
@@ -283,7 +288,18 @@ def _ValidateCmekDeployment(source: str, kms_key: str, release_track) -> None:
         ' expect the source to be passed in a pre-configured Cloud Storage'
         ' bucket.'
     )
-   # TODO: b/378907596 - Validate the BYO repository, once supported.
+  if not image_repository:
+    raise exceptions.ArgumentError(
+        'Deployments encrypted with a customer-managed encryption key (CMEK)'
+        ' require a pre-configured Artifact Registry repository to be passed'
+        ' via the `--image` flag.'
+    )
+  if _IsDefaultImageRepository(image_repository):
+    raise exceptions.ArgumentError(
+        'The default Artifact Registry repository can not be used when'
+        ' deploying with a customer-managed encryption key (CMEK). Please'
+        ' provide a pre-configured repository using the `--image` flag.'
+    )
 
 
 def _BuildFromSource(
@@ -342,6 +358,7 @@ def _PrepareSubmitBuildRequest(
   if build_pack:
     # submit a buildpacks build
     function_target = None
+    project_descriptor = build_pack[0].get('project_descriptor', None)
     for env in build_pack[0].get('envs', []):
       if env.startswith('GOOGLE_FUNCTION_TARGET'):
         function_target = env.split('=')[1]
@@ -365,6 +382,7 @@ def _PrepareSubmitBuildRequest(
                 functionTarget=function_target,
                 environmentVariables=build_env_vars,
                 enableAutomaticUpdates=enable_automatic_updates,
+                projectDescriptor=project_descriptor,
             ),
             dockerBuild=None,
             tags=tags,
@@ -454,3 +472,8 @@ def _GetBuildRegion(build_name):
   if match:
     return match.group('location')
   raise ValueError(f'Invalid build name: {build_name}')
+
+
+def _IsDefaultImageRepository(image_repository: str) -> bool:
+  """Checks if the image repository is the default one."""
+  return _DEFAULT_IMAGE_REPOSITORY_NAME in image_repository

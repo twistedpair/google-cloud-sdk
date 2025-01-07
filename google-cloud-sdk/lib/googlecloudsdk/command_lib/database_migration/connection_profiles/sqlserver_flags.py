@@ -25,16 +25,15 @@ def AddCpDetailsFlag(parser):
   """Adds the source and destination parameters to the given parser."""
 
   cp_params_group = parser.add_group(required=True, mutex=True)
-  AddSourceDetailsFlag(cp_params_group)
-  AddDestinationDetailsFlag(cp_params_group)
+  AddHomogeneousSourceDetailsFlag(cp_params_group)
+  AddDestinationOrHeterogeneousSourceDetailsFlag(cp_params_group)
 
 
-def AddDestinationDetailsFlag(parser):
+def AddDestinationOrHeterogeneousSourceDetailsFlag(parser):
   """Adds the destination connection profile parameters to the given parser."""
-  destination_cp_params_group = parser.add_group()
-  cp_flags.AddCloudSQLInstanceFlag(destination_cp_params_group, required=True)
+  cp_params_group = parser.add_group()
   cp_flags.AddUsernameFlag(
-      destination_cp_params_group,
+      cp_params_group,
       required=True,
       help_text="""\
           Username that Database Migration Service uses to connect to the
@@ -43,11 +42,17 @@ def AddDestinationDetailsFlag(parser):
           the value when storing it.
       """,
   )
-  cp_flags.AddPasswordFlagGroup(destination_cp_params_group, required=True)
+  cp_flags.AddPasswordFlagGroup(cp_params_group, required=True)
+  dest_or_hetero_cp_params_group = cp_params_group.add_group(
+      required=True, mutex=True
+  )
+  cp_flags.AddCloudSQLInstanceFlag(dest_or_hetero_cp_params_group)
+  hetero_cp_params_group = dest_or_hetero_cp_params_group.add_group(hidden=True)
+  cp_flags.AddHostFlag(hetero_cp_params_group, required=True)
+  cp_flags.AddPortFlag(hetero_cp_params_group, required=True)
 
 
-def AddSourceDetailsFlag(parser):
-  """Adds the source connection profile parameters to the given parser."""
+def AddHomogeneousSourceDetailsFlag(parser):
   source_cp_params_group = parser.add_group()
   AddGcsBucket(source_cp_params_group)
   AddGcsPrefix(source_cp_params_group)

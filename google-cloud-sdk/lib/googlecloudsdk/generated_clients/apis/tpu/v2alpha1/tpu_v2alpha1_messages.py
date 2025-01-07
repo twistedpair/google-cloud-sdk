@@ -783,9 +783,14 @@ class Node(_messages.Message):
     multisliceNode: Output only. Whether the Node belongs to a Multislice
       group.
     name: Output only. Immutable. The name of the TPU.
-    networkConfig: Network configurations for the TPU node.
+    networkConfig: Network configurations for the TPU node. network_config and
+      network_configs are mutually exclusive, you can only specify one of
+      them. If both are specified, an error will be returned.
     networkConfigs: Optional. Repeated network configurations for the TPU
-      node.
+      node. This field is used to specify multiple networks configs for the
+      TPU node. network_config and network_configs are mutually exclusive, you
+      can only specify one of them. If both are specified, an error will be
+      returned.
     networkEndpoints: Output only. The network endpoints where TPU workers can
       be accessed and sent work. It is recommended that runtime clients of the
       node reach out to the 0th entry in this map first.

@@ -2508,6 +2508,9 @@ class PrivateCloud(_messages.Message):
         process can be cancelled by using the corresponding undelete method.
       PURGING: The private cloud is irreversibly deleted and is being removed
         from the system.
+      SOFT_DELETED: The private cloud is soft deleted.
+      SOFT_DELETION_IN_PROGRESS: The private cloud is in soft deletion in
+        progress.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -2516,6 +2519,8 @@ class PrivateCloud(_messages.Message):
     FAILED = 4
     DELETED = 5
     PURGING = 6
+    SOFT_DELETED = 7
+    SOFT_DELETION_IN_PROGRESS = 8
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Optional. Type of the private cloud. Defaults to STANDARD.

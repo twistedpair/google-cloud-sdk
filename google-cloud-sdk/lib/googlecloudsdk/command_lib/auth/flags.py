@@ -104,8 +104,8 @@ def AddQuotaProjectFlags(parser):
 
 def AddNoBrowserFlag(parser, auth_target, auth_command):
   parser.add_argument(
-      '--no-browser',
-      default=False,
+      '--browser',
+      default=True,
       action='store_true',
       help="""\
       If you want to authorize the {0} on a machine that doesn't
@@ -129,8 +129,8 @@ def AddNoBrowserFlag(parser, auth_target, auth_command):
       5.  Paste the long URL back to the first machine under the prompt,
           "Enter the output of the above command", and press Enter to complete
           the authorization.
-      """.format(auth_target, auth_command)
-      )
+      """.format(auth_target, auth_command),
+  )
 
 
 def AddRemoteBootstrapFlag(parser):

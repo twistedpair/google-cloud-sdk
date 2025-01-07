@@ -45,7 +45,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     self.organizations_locations_postureTemplates = self.OrganizationsLocationsPostureTemplatesService(self)
     self.organizations_locations_postures = self.OrganizationsLocationsPosturesService(self)
     self.organizations_locations_predictions = self.OrganizationsLocationsPredictionsService(self)
-    self.organizations_locations_remediations = self.OrganizationsLocationsRemediationsService(self)
+    self.organizations_locations_remediationIntents = self.OrganizationsLocationsRemediationIntentsService(self)
     self.organizations_locations_reports = self.OrganizationsLocationsReportsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
@@ -98,7 +98,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsOperationsCancelRequest) input message
@@ -704,21 +704,21 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class OrganizationsLocationsRemediationsService(base_api.BaseApiService):
-    """Service class for the organizations_locations_remediations resource."""
+  class OrganizationsLocationsRemediationIntentsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_remediationIntents resource."""
 
-    _NAME = 'organizations_locations_remediations'
+    _NAME = 'organizations_locations_remediationIntents'
 
     def __init__(self, client):
-      super(SecuritypostureV1alpha.OrganizationsLocationsRemediationsService, self).__init__(client)
+      super(SecuritypostureV1alpha.OrganizationsLocationsRemediationIntentsService, self).__init__(client)
       self._upload_configs = {
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a Remediation resource. Used to create a remediation for a given remediation intent.
+      r"""Creates a RemediationIntent resource. Used to create a remediationIntent for a given scc finding.
 
       Args:
-        request: (SecuritypostureOrganizationsLocationsRemediationsCreateRequest) input message
+        request: (SecuritypostureOrganizationsLocationsRemediationIntentsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -728,15 +728,123 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/remediations:Create',
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/remediationIntents:Create',
         http_method='POST',
-        method_id='securityposture.organizations.locations.remediations.create',
+        method_id='securityposture.organizations.locations.remediationIntents.create',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=[],
-        relative_path='v1alpha/{+parent}/remediations:Create',
-        request_field='createRemediationRequest',
-        request_type_name='SecuritypostureOrganizationsLocationsRemediationsCreateRequest',
+        relative_path='v1alpha/{+parent}/remediationIntents:Create',
+        request_field='createRemediationIntentRequest',
+        request_type_name='SecuritypostureOrganizationsLocationsRemediationIntentsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single RemediationIntent resource. The resource can only be deleted if it's state is among [REMEDIATION_INTENT_ENQUEUED, REMEDIATION_FAILED, PR_GENERATION_FAILED].
+
+      Args:
+        request: (SecuritypostureOrganizationsLocationsRemediationIntentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/remediationIntents/{remediationIntentsId}',
+        http_method='DELETE',
+        method_id='securityposture.organizations.locations.remediationIntents.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='SecuritypostureOrganizationsLocationsRemediationIntentsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a Remediation Intent in a given organization and location.
+
+      Args:
+        request: (SecuritypostureOrganizationsLocationsRemediationIntentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RemediationIntent) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/remediationIntents/{remediationIntentsId}',
+        http_method='GET',
+        method_id='securityposture.organizations.locations.remediationIntents.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='SecuritypostureOrganizationsLocationsRemediationIntentsGetRequest',
+        response_type_name='RemediationIntent',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Remediation Intents in a given organization and location.
+
+      Args:
+        request: (SecuritypostureOrganizationsLocationsRemediationIntentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRemediationIntentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/remediationIntents',
+        http_method='GET',
+        method_id='securityposture.organizations.locations.remediationIntents.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/remediationIntents',
+        request_field='',
+        request_type_name='SecuritypostureOrganizationsLocationsRemediationIntentsListRequest',
+        response_type_name='ListRemediationIntentsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single RemediationIntent resource. To prevent concurrent updates from overwriting each other, always follow the read-modify-write pattern when you update a remediation intent: 1. Call GetRemediationIntent to get the current version of the remediation intent. 2. Update the fields in the remediation intent as needed. 3. Call UpdateRemediationIntent to update the remediation intent. Ensure that your request includes the `etag` value from the GetRemediationIntent response. **Important:** If you omit the `etag` when you call UpdateRemediationIntent, then the updated remediation intent unconditionally overwrites the existin.
+
+      Args:
+        request: (SecuritypostureOrganizationsLocationsRemediationIntentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/remediationIntents/{remediationIntentsId}',
+        http_method='PATCH',
+        method_id='securityposture.organizations.locations.remediationIntents.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='remediationIntent',
+        request_type_name='SecuritypostureOrganizationsLocationsRemediationIntentsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

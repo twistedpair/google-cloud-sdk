@@ -1392,8 +1392,6 @@ class _SectionApiEndpointOverrides(_Section):
     self.seclm = self._Add(
         'seclm', command='gcloud seclm', hidden=True)
     self.secrets = self._Add('secretmanager', command='gcloud secrets')
-    self.securedlandingzone = self._Add(
-        'securedlandingzone', hidden=True, command='gcloud scc slz-overwatch')
     self.securesourcemanager = self._Add('securesourcemanager', hidden=True)
     self.securitycentermanagement = self._Add(
         'securitycentermanagement', command='gcloud scc manage', hidden=True

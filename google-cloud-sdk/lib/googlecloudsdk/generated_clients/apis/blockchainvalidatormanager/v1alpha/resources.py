@@ -60,6 +60,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_BLOCKCHAINVALIDATORTEMPLATES = (
+      'projects.locations.blockchainValidatorTemplates',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'blockchainValidatorTemplates/{blockchainValidatorTemplatesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

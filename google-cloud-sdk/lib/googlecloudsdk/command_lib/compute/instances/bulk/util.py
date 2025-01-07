@@ -62,6 +62,7 @@ class SupportedFeatures:
       support_custom_hostnames,
       support_specific_then_x_affinity,
       support_watchdog_timer,
+      support_graceful_shutdown,
   ):
     self.support_rsa_encrypted = support_rsa_encrypted
     self.support_secure_tags = support_secure_tags
@@ -98,6 +99,7 @@ class SupportedFeatures:
     self.support_specific_then_x_affinity = support_specific_then_x_affinity
     self.support_watchdog_timer = support_watchdog_timer
     self.support_replica_zones = True
+    self.support_graceful_shutdown = support_graceful_shutdown
 
 
 def _GetSourceInstanceTemplate(args, resources, instance_template_resource):
@@ -284,10 +286,11 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
       skip_defaults,
       support_node_affinity=False,
       support_min_node_cpu=supported_features.support_min_node_cpu,
-      support_host_error_timeout_seconds=supported_features
-      .support_host_error_timeout_seconds,
+      support_host_error_timeout_seconds=supported_features.support_host_error_timeout_seconds,
       support_max_run_duration=supported_features.support_max_run_duration,
-      support_local_ssd_recovery_timeout=supported_features.support_local_ssd_recovery_timeout)
+      support_local_ssd_recovery_timeout=supported_features.support_local_ssd_recovery_timeout,
+      support_graceful_shutdown=supported_features.support_graceful_shutdown,
+  )
   tags = instance_utils.GetTags(args, compute_client)
   labels = instance_utils.GetLabels(
       args, compute_client, instance_properties=True)

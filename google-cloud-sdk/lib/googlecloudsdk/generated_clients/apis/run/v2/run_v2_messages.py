@@ -2549,6 +2549,9 @@ class GoogleCloudRunV2ServiceScaling(_messages.Message):
       manual scaling mode. This number of instances is divided among all
       revisions with specified traffic based on the percent of traffic they
       are receiving.
+    maxInstanceCount: Optional. total max instances for the service. This
+      number of instances is divided among all revisions with specified
+      traffic based on the percent of traffic they are receiving.
     minInstanceCount: Optional. total min instances for the service. This
       number of instances is divided among all revisions with specified
       traffic based on the percent of traffic they are receiving.
@@ -2568,8 +2571,9 @@ class GoogleCloudRunV2ServiceScaling(_messages.Message):
     MANUAL = 2
 
   manualInstanceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  minInstanceCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  scalingMode = _messages.EnumField('ScalingModeValueValuesEnum', 3)
+  maxInstanceCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  minInstanceCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  scalingMode = _messages.EnumField('ScalingModeValueValuesEnum', 4)
 
 
 class GoogleCloudRunV2StorageSource(_messages.Message):
@@ -6419,9 +6423,11 @@ class UtilStatusProto(_messages.Message):
     code: Numeric code drawn from the space specified below. Often, this is
       the canonical error space, and code is drawn from
       google3/util/task/codes.proto
-    message: Detail message
+    message: Detail message copybara:strip_begin(b/383363683)
+      copybara:strip_end_and_replace optional string message = 3;
     messageSet: message_set associates an arbitrary proto message with the
-      status.
+      status. copybara:strip_begin(b/383363683) copybara:strip_end_and_replace
+      optional proto2.bridge.MessageSet message_set = 5;
     space: The following are usually only present when code != 0 Space to
       which this status belongs
   """

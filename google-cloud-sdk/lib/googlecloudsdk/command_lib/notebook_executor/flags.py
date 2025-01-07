@@ -26,24 +26,25 @@ from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
 
 
-def GetRegionAttributeConfig(for_workbench=False):
+def _GetRegionAttributeConfig(for_workbench=False):
   if (for_workbench):
-    fallthrough = None
+    fallthroughs = []
   else:
-    fallthrough = deps.PropertyFallthrough(properties.VALUES.colab.region)
+    fallthroughs = [deps.PropertyFallthrough(properties.VALUES.colab.region)]
   return concepts.ResourceParameterAttributeConfig(
       name='region',
       help_text='Cloud region for the {resource}.',
-      fallthroughs=[fallthrough],
+      fallthroughs=fallthroughs,
   )
 
 
-def AddExecutionResourceArg(parser, verb):
+def _AddExecutionResourceArg(parser, verb, for_workbench=False):
   """Add a resource argument for an execution to the parser.
 
   Args:
     parser: argparse parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
+    for_workbench: bool, whether the flag is added for a workbench execution.
   """
 
   def GetExecutionResourceSpec(resource_name='notebook execution job'):
@@ -51,7 +52,7 @@ def AddExecutionResourceArg(parser, verb):
         'aiplatform.projects.locations.notebookExecutionJobs',
         resource_name=resource_name,
         projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-        locationsId=GetRegionAttributeConfig(),
+        locationsId=_GetRegionAttributeConfig(for_workbench),
     )
 
   concept_parsers.ConceptParser.ForResource(
@@ -84,7 +85,7 @@ def AddScheduleResourceArg(parser, verb):
         'aiplatform.projects.locations.schedules',
         resource_name=resource_name,
         projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-        locationsId=GetRegionAttributeConfig(),
+        locationsId=_GetRegionAttributeConfig(),
     )
 
   concept_parsers.ConceptParser.ForResource(
@@ -107,7 +108,7 @@ def AddDataformRepositoryResourceArg(parser):
         'dataform.projects.locations.repositories',
         resource_name=resource_name,
         projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-        locationsId=GetRegionAttributeConfig(),
+        locationsId=_GetRegionAttributeConfig(),
     )
 
   dataform_repository_resource = presentation_specs.ResourcePresentationSpec(
@@ -129,7 +130,7 @@ def AddDataformRepositoryResourceArg(parser):
   ).AddToParser(parser)
 
 
-def AddRegionResourceArg(parser, verb, for_workbench=False):
+def _AddRegionResourceArg(parser, verb, for_workbench=False):
   """Add a resource argument for a Vertex AI region to the parser.
 
   Args:
@@ -141,7 +142,7 @@ def AddRegionResourceArg(parser, verb, for_workbench=False):
   region_resource_spec = concepts.ResourceSpec(
       'aiplatform.projects.locations',
       resource_name='region',
-      locationsId=GetRegionAttributeConfig(for_workbench),
+      locationsId=_GetRegionAttributeConfig(for_workbench),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
   )
 
@@ -153,7 +154,7 @@ def AddRegionResourceArg(parser, verb, for_workbench=False):
   ).AddToParser(parser)
 
 
-def AddRuntimeTemplateResourceArg(parser):
+def _AddRuntimeTemplateResourceArg(parser):
   """Add a resource argument for a runtime template to the parser.
 
   Args:
@@ -165,7 +166,7 @@ def AddRuntimeTemplateResourceArg(parser):
         'aiplatform.projects.locations.notebookRuntimeTemplates',
         resource_name=resource_name,
         projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-        locationsId=GetRegionAttributeConfig(),
+        locationsId=_GetRegionAttributeConfig(),
     )
 
   runtime_template_resource = presentation_specs.ResourcePresentationSpec(
@@ -202,7 +203,7 @@ def AddCreateExecutionFlags(parser, is_schedule=False, for_workbench=False):
         required=True,
     )
   else:
-    AddRegionResourceArg(parser, 'to create')
+    _AddRegionResourceArg(parser, 'to create', for_workbench)
     execution_group.add_argument(
         '--display-name',
         help='The display name of the execution.',
@@ -275,7 +276,10 @@ def AddCreateExecutionFlags(parser, is_schedule=False, for_workbench=False):
       default='24h',
   )
   if for_workbench:
-    colab_flags.AddCustomEnvSpecFlags(execution_group)
+    custom_env_spec_group = execution_group.add_group(
+        help='Compute configuration of the execution job.',
+    )
+    colab_flags.AddCustomEnvSpecFlags(custom_env_spec_group)
     colab_flags.AddKmsKeyResourceArg(
         execution_group,
         'The Cloud KMS encryption key (customer-managed encryption key) used to'
@@ -289,10 +293,11 @@ def AddCreateExecutionFlags(parser, is_schedule=False, for_workbench=False):
     )
     execution_group.add_argument(
         '--service-account',
-        help='The service account to run the execution as'
+        help='The service account to run the execution as',
+        required=True,
     )
   else:
-    AddRuntimeTemplateResourceArg(execution_group)
+    _AddRuntimeTemplateResourceArg(execution_group)
     execution_identity_group = execution_group.add_group(
         help='Identity to run the execution as.',
         mutex=True,
@@ -318,20 +323,31 @@ def AddCreateExecutionFlags(parser, is_schedule=False, for_workbench=False):
   )
 
 
-def AddDeleteExecutionFlags(parser):
-  """Adds flags for deleting an execution to the parser."""
-  AddExecutionResourceArg(parser, 'to delete')
+def AddDeleteExecutionFlags(parser, for_workbench=False):
+  """Adds flags for deleting an execution to the parser.
+
+  Args:
+    parser: argparse parser for the command.
+    for_workbench: bool, whether the flags are for a workbench execution.
+
+  """
+  _AddExecutionResourceArg(parser, 'to delete', for_workbench)
   base.ASYNC_FLAG.AddToParser(parser)
 
 
-def AddDescribeExecutionFlags(parser):
-  """Adds flags for describing an execution to the parser."""
-  AddExecutionResourceArg(parser, 'to describe')
+def AddDescribeExecutionFlags(parser, for_workbench=False):
+  """Adds flags for describing an execution to the parser.
+
+  Args:
+    parser: argparse parser for the command.
+    for_workbench: bool, whether the flag is added for a workbench execution.
+  """
+  _AddExecutionResourceArg(parser, 'to describe', for_workbench)
 
 
 def AddListExecutionsFlags(parser):
   """Construct groups and arguments specific to listing executions."""
-  AddRegionResourceArg(parser, 'for which to list all executions')
+  _AddRegionResourceArg(parser, 'for which to list all executions')
   parser.display_info.AddUriFunc(executions_util.GetExecutionUri)
 
 
@@ -369,7 +385,7 @@ def AddResumeScheduleFlags(parser):
 
 def AddListSchedulesFlags(parser):
   """Construct groups and arguments specific to listing schedules."""
-  AddRegionResourceArg(parser, 'for which to list all schedules')
+  _AddRegionResourceArg(parser, 'for which to list all schedules')
   parser.display_info.AddUriFunc(schedules_util.GetScheduleUri)
 
 
@@ -385,7 +401,7 @@ def AddCreateOrUpdateScheduleFlags(parser, is_update):
       required=True,
   )
   if not is_update:
-    AddRegionResourceArg(parser, 'to create')
+    _AddRegionResourceArg(parser, 'to create')
     # TODO: b/369896947 - Add support for updating execution once schedules API
     # supports partial updates to NotebookExecutionJobCreateRequest.
     AddCreateExecutionFlags(

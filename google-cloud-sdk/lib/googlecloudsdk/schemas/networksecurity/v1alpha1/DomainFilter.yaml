@@ -1,0 +1,44 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networksecurity v1alpha1 DomainFilter export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- domains
+- filteringAction
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  domains:
+    description: |-
+      The list of strings that a domain name must match with for this filter to
+      be applied.
+    type: array
+    items:
+      type: string
+  filteringAction:
+    description: The action taken when this filter is applied.
+    type: string
+    enum:
+    - ALLOW
+    - DENY
+    - DOMAIN_FILTERING_ACTION_UNSPECIFIED

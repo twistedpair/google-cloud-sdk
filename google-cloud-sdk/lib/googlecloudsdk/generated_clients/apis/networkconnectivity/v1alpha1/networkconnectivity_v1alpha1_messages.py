@@ -14,6 +14,60 @@ from apitools.base.py import extra_types
 package = 'networkconnectivity'
 
 
+class AllocationOptions(_messages.Message):
+  r"""Range auto-allocation options, to be optionally used when CIDR block is
+  not explicitly set.
+
+  Enums:
+    AllocationStrategyValueValuesEnum: Optional. Allocation strategy Not
+      setting this field when the allocation is requested means an
+      implementation defined strategy is used.
+
+  Fields:
+    allocationStrategy: Optional. Allocation strategy Not setting this field
+      when the allocation is requested means an implementation defined
+      strategy is used.
+    firstAvailableRangesLookupSize: Optional. This field must be set only when
+      allocation_strategy is set to RANDOM_FIRST_N_AVAILABLE. The value should
+      be the maximum expected parallelism of range creation requests issued to
+      the same space of peered netwroks.
+  """
+
+  class AllocationStrategyValueValuesEnum(_messages.Enum):
+    r"""Optional. Allocation strategy Not setting this field when the
+    allocation is requested means an implementation defined strategy is used.
+
+    Values:
+      ALLOCATION_STRATEGY_UNSPECIFIED: Unspecified strategy must be used when
+        the range is specified explicitly using ip_cidr_range field.
+        Othherwise unspefified means using the default strategy.
+      RANDOM: Random strategy, the legacy algorithm, used for backwards
+        compatibility. This allocation strategy remains efficient in the case
+        of concurrent allocation requests in the same peered network space and
+        doesn't require providing the level of concurrency in an explicit
+        parameter, but it is prone to fragmenting available address space.
+      FIRST_AVAILABLE: Pick the first available address range. This strategy
+        is deterministic and the result is easy to predict.
+      RANDOM_FIRST_N_AVAILABLE: Pick an arbitrary range out of the first N
+        available ones. The N will be set in the
+        first_available_ranges_lookup_size field. This strategy should be used
+        when concurrent allocation requests are made in the same space of
+        peered networks while the fragmentation of the addrress space is
+        reduced.
+      FIRST_SMALLEST_FITTING: Pick the smallest but fitting available range.
+        This deterministic strategy minimizes fragmentation of the address
+        space.
+    """
+    ALLOCATION_STRATEGY_UNSPECIFIED = 0
+    RANDOM = 1
+    FIRST_AVAILABLE = 2
+    RANDOM_FIRST_N_AVAILABLE = 3
+    FIRST_SMALLEST_FITTING = 4
+
+  allocationStrategy = _messages.EnumField('AllocationStrategyValueValuesEnum', 1)
+  firstAvailableRangesLookupSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -466,7 +520,7 @@ class Hub(_messages.Message):
 class InternalRange(_messages.Message):
   r"""The internal range resource for IPAM operations within a VPC network.
   Used to represent a private address range along with behavioral
-  characterstics of that range (its usage and peering behavior). Networking
+  characteristics of that range (its usage and peering behavior). Networking
   resources can link to this range if they are created as belonging to it.
 
   Enums:
@@ -478,8 +532,14 @@ class InternalRange(_messages.Message):
     LabelsValue: User-defined labels.
 
   Fields:
+    allocationOptions: Optional. Range auto-allocation options, may be set
+      only when auto-allocation is selected by not setting ip_cidr_range (and
+      setting prefix_length).
     createTime: Time when the internal range was created.
     description: A description of this resource.
+    excludeCidrRanges: Optional. ExcludeCidrRanges flag. Specifies a set of
+      CIDR blocks that allows exclusion of particular CIDR ranges from the
+      auto-allocation process, without having to reserve these blocks
     immutable: Optional. Immutable ranges cannot have their fields modified,
       except for labels and description.
     ipCidrRange: IP range that this internal range defines. NOTE: IPv6 ranges
@@ -616,21 +676,23 @@ class InternalRange(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  immutable = _messages.BooleanField(3)
-  ipCidrRange = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  migration = _messages.MessageField('Migration', 6)
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  overlaps = _messages.EnumField('OverlapsValueListEntryValuesEnum', 9, repeated=True)
-  peering = _messages.EnumField('PeeringValueValuesEnum', 10)
-  prefixLength = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  targetCidrRange = _messages.StringField(12, repeated=True)
-  updateTime = _messages.StringField(13)
-  usage = _messages.EnumField('UsageValueValuesEnum', 14)
-  users = _messages.StringField(15, repeated=True)
+  allocationOptions = _messages.MessageField('AllocationOptions', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  excludeCidrRanges = _messages.StringField(4, repeated=True)
+  immutable = _messages.BooleanField(5)
+  ipCidrRange = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  migration = _messages.MessageField('Migration', 8)
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  overlaps = _messages.EnumField('OverlapsValueListEntryValuesEnum', 11, repeated=True)
+  peering = _messages.EnumField('PeeringValueValuesEnum', 12)
+  prefixLength = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  targetCidrRange = _messages.StringField(14, repeated=True)
+  updateTime = _messages.StringField(15)
+  usage = _messages.EnumField('UsageValueValuesEnum', 16)
+  users = _messages.StringField(17, repeated=True)
 
 
 class ListHubsResponse(_messages.Message):

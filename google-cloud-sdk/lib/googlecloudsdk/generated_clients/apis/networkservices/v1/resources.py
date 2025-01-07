@@ -241,17 +241,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_MULTICASTGROUPDEFINITIONS = (
-      'projects.locations.multicastGroupDefinitions',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'multicastGroupDefinitions/{multicastGroupDefinitionsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_MULTICASTGROUPPRODUCERACTIVATIONS = (
       'projects.locations.multicastGroupProducerActivations',
       '{+name}',
@@ -264,13 +253,25 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_MULTICASTGROUPS = (
-      'projects.locations.multicastGroups',
+  PROJECTS_LOCATIONS_MULTICASTGROUPRANGEACTIVATIONS = (
+      'projects.locations.multicastGroupRangeActivations',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/{locationsId}/multicastGroups/'
-              '{multicastGroupsId}',
+              'projects/{projectsId}/locations/{locationsId}/'
+              'multicastGroupRangeActivations/'
+              '{multicastGroupRangeActivationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MULTICASTGROUPRANGES = (
+      'projects.locations.multicastGroupRanges',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'multicastGroupRanges/{multicastGroupRangesId}',
       },
       ['name'],
       True
@@ -338,17 +339,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/tlsRoutes/'
               '{tlsRoutesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_WASMACTIONS = (
-      'projects.locations.wasmActions',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/wasmActions/'
-              '{wasmActionsId}',
       },
       ['name'],
       True

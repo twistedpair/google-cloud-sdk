@@ -41,11 +41,9 @@ class CloudaicompanionV1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_codeRepositoryIndexes_repositoryGroups = self.ProjectsLocationsCodeRepositoryIndexesRepositoryGroupsService(self)
     self.projects_locations_codeRepositoryIndexes = self.ProjectsLocationsCodeRepositoryIndexesService(self)
-    self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
-    self.v1 = self.V1Service(self)
 
   class ProjectsLocationsCodeRepositoryIndexesRepositoryGroupsService(base_api.BaseApiService):
     """Service class for the projects_locations_codeRepositoryIndexes_repositoryGroups resource."""
@@ -418,151 +416,6 @@ class CloudaicompanionV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsInstancesService(base_api.BaseApiService):
-    """Service class for the projects_locations_instances resource."""
-
-    _NAME = 'projects_locations_instances'
-
-    def __init__(self, client):
-      super(CloudaicompanionV1.ProjectsLocationsInstancesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def CompleteCode(self, request, global_params=None):
-      r"""Low latency code completion based on a prompt and some context.
-
-      Args:
-        request: (CloudaicompanionProjectsLocationsInstancesCompleteCodeRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CodeCompletionResponse) The response message.
-      """
-      config = self.GetMethodConfig('CompleteCode')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    CompleteCode.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:completeCode',
-        http_method='POST',
-        method_id='cloudaicompanion.projects.locations.instances.completeCode',
-        ordered_params=['instance'],
-        path_params=['instance'],
-        query_params=[],
-        relative_path='v1/{+instance}:completeCode',
-        request_field='codeCompletionRequest',
-        request_type_name='CloudaicompanionProjectsLocationsInstancesCompleteCodeRequest',
-        response_type_name='CodeCompletionResponse',
-        supports_download=False,
-    )
-
-    def CompleteTask(self, request, global_params=None):
-      r"""Completes a task based on some specification and context.
-
-      Args:
-        request: (CloudaicompanionProjectsLocationsInstancesCompleteTaskRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TaskCompletionResponse) The response message.
-      """
-      config = self.GetMethodConfig('CompleteTask')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    CompleteTask.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:completeTask',
-        http_method='POST',
-        method_id='cloudaicompanion.projects.locations.instances.completeTask',
-        ordered_params=['instance'],
-        path_params=['instance'],
-        query_params=[],
-        relative_path='v1/{+instance}:completeTask',
-        request_field='taskCompletionRequest',
-        request_type_name='CloudaicompanionProjectsLocationsInstancesCompleteTaskRequest',
-        response_type_name='TaskCompletionResponse',
-        supports_download=False,
-    )
-
-    def GenerateCode(self, request, global_params=None):
-      r"""Generate code based on a prompt and some context. This RPC has different latency profiles than code completion, if you need low latency code completion - consider using CompleteCode() instead.
-
-      Args:
-        request: (CloudaicompanionProjectsLocationsInstancesGenerateCodeRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CodeGenerationResponse) The response message.
-      """
-      config = self.GetMethodConfig('GenerateCode')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GenerateCode.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:generateCode',
-        http_method='POST',
-        method_id='cloudaicompanion.projects.locations.instances.generateCode',
-        ordered_params=['instance'],
-        path_params=['instance'],
-        query_params=[],
-        relative_path='v1/{+instance}:generateCode',
-        request_field='codeGenerationRequest',
-        request_type_name='CloudaicompanionProjectsLocationsInstancesGenerateCodeRequest',
-        response_type_name='CodeGenerationResponse',
-        supports_download=False,
-    )
-
-    def GenerateText(self, request, global_params=None):
-      r"""Generates text based on a prompt and some context.
-
-      Args:
-        request: (CloudaicompanionProjectsLocationsInstancesGenerateTextRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TextGenerationResponse) The response message.
-      """
-      config = self.GetMethodConfig('GenerateText')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GenerateText.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:generateText',
-        http_method='POST',
-        method_id='cloudaicompanion.projects.locations.instances.generateText',
-        ordered_params=['instance'],
-        path_params=['instance'],
-        query_params=[],
-        relative_path='v1/{+instance}:generateText',
-        request_field='textGenerationRequest',
-        request_type_name='CloudaicompanionProjectsLocationsInstancesGenerateTextRequest',
-        response_type_name='TextGenerationResponse',
-        supports_download=False,
-    )
-
-    def ServerStreamingCompleteTask(self, request, global_params=None):
-      r"""Completes a task based on some specification and context using response streaming.
-
-      Args:
-        request: (CloudaicompanionProjectsLocationsInstancesServerStreamingCompleteTaskRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ServerStreamingCompleteTaskResponse) The response message.
-      """
-      config = self.GetMethodConfig('ServerStreamingCompleteTask')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ServerStreamingCompleteTask.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:serverStreamingCompleteTask',
-        http_method='POST',
-        method_id='cloudaicompanion.projects.locations.instances.serverStreamingCompleteTask',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:serverStreamingCompleteTask',
-        request_field='serverStreamingCompleteTaskRequest',
-        request_type_name='CloudaicompanionProjectsLocationsInstancesServerStreamingCompleteTaskRequest',
-        response_type_name='ServerStreamingCompleteTaskResponse',
-        supports_download=False,
-    )
-
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
@@ -574,7 +427,7 @@ class CloudaicompanionV1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (CloudaicompanionProjectsLocationsOperationsCancelRequest) input message
@@ -718,33 +571,6 @@ class CloudaicompanionV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def List(self, request, global_params=None):
-      r"""Lists information about the supported locations for this service.
-
-      Args:
-        request: (CloudaicompanionProjectsLocationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListLocationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations',
-        http_method='GET',
-        method_id='cloudaicompanion.projects.locations.list',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1/{+name}/locations',
-        request_field='',
-        request_type_name='CloudaicompanionProjectsLocationsListRequest',
-        response_type_name='ListLocationsResponse',
-        supports_download=False,
-    )
-
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -754,93 +580,3 @@ class CloudaicompanionV1(base_api.BaseApiClient):
       super(CloudaicompanionV1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def CheckStatus(self, request, global_params=None):
-      r"""Performs check for entitlement status.
-
-      Args:
-        request: (CloudaicompanionProjectsCheckStatusRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CheckStatusResponse) The response message.
-      """
-      config = self.GetMethodConfig('CheckStatus')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    CheckStatus.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}:checkStatus',
-        http_method='POST',
-        method_id='cloudaicompanion.projects.checkStatus',
-        ordered_params=['project'],
-        path_params=['project'],
-        query_params=[],
-        relative_path='v1/{+project}:checkStatus',
-        request_field='checkStatusRequest',
-        request_type_name='CloudaicompanionProjectsCheckStatusRequest',
-        response_type_name='CheckStatusResponse',
-        supports_download=False,
-    )
-
-    def SelfAssignLicense(self, request, global_params=None):
-      r"""Assigns a license to the user, if available.
-
-      Args:
-        request: (CloudaicompanionProjectsSelfAssignLicenseRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (SelfAssignLicenseResponse) The response message.
-      """
-      config = self.GetMethodConfig('SelfAssignLicense')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SelfAssignLicense.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}:selfAssignLicense',
-        http_method='POST',
-        method_id='cloudaicompanion.projects.selfAssignLicense',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1/{+parent}:selfAssignLicense',
-        request_field='selfAssignLicenseRequest',
-        request_type_name='CloudaicompanionProjectsSelfAssignLicenseRequest',
-        response_type_name='SelfAssignLicenseResponse',
-        supports_download=False,
-    )
-
-  class V1Service(base_api.BaseApiService):
-    """Service class for the v1 resource."""
-
-    _NAME = 'v1'
-
-    def __init__(self, client):
-      super(CloudaicompanionV1.V1Service, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def CheckUserLicense(self, request, global_params=None):
-      r"""Checks if the user has a license for the given experience.
-
-      Args:
-        request: (CheckUserLicenseRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CheckUserLicenseResponse) The response message.
-      """
-      config = self.GetMethodConfig('CheckUserLicense')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    CheckUserLicense.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='cloudaicompanion.checkUserLicense',
-        ordered_params=[],
-        path_params=[],
-        query_params=[],
-        relative_path='v1:checkUserLicense',
-        request_field='<request>',
-        request_type_name='CheckUserLicenseRequest',
-        response_type_name='CheckUserLicenseResponse',
-        supports_download=False,
-    )

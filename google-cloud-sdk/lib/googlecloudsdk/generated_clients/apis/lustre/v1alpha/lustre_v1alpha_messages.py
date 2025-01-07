@@ -87,9 +87,13 @@ class Instance(_messages.Message):
     description: Optional. Description
     filesystem: Required. Immutable. Filesystem Name for Lustre.
     labels: Optional. Labels as key value pairs
-    mountPoint: Output only. Mount point IP address
+    mountPoint: Output only. Mount point of the instance given by IP address
+      and filesystem name and is in the format of
+      {ip_address}@tcp:/{filesystem}.
     name: Identifier. name of resource
-    network: Required. Immutable. VPC Network name
+    network: Required. Immutable. VPC Network full name. Must be in a form
+      'projects/{project}/global/networks/{network}'. {project} is a project
+      number, as in '12345' {network} is network name.
     state: Output only. State of the instance
     updateTime: Output only. [Output only] Update time stamp
   """
@@ -104,6 +108,7 @@ class Instance(_messages.Message):
       DELETING: Instance State is Deleting
       UPGRADING: Instance State is Upgrading
       REPAIRING: Instance State is Repairing
+      STOPPED: Instance State is Stopped
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -111,6 +116,7 @@ class Instance(_messages.Message):
     DELETING = 3
     UPGRADING = 4
     REPAIRING = 5
+    STOPPED = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

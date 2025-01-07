@@ -40,6 +40,7 @@ def _SetValuesForTrack(obj, track):
   Args:
     obj: The object to modify.
     track: The track to extract the values for.
+
   Returns:
     The modified object
   Raises:
@@ -92,6 +93,7 @@ def SeparateDeclarativeCommandTracks(command_impls):
 
   Args:
     command_impls: A single or list of declarative command implementation(s).
+
   Yields:
     One implementation for each distinct track implmentation in a file.
   """

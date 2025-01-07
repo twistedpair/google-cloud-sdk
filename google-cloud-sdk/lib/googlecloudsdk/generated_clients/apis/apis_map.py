@@ -3607,18 +3607,6 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
-    'securedlandingzone': {
-        'v1beta':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.securedlandingzone.v1beta',
-                    client_classpath='securedlandingzone_v1beta_client.SecuredlandingzoneV1beta',
-                    base_url='https://securedlandingzone.googleapis.com/',
-                    messages_modulepath='securedlandingzone_v1beta_messages'),
-                default_version=True,
-                enable_mtls=True,
-                mtls_endpoint_override='https://securedlandingzone.mtls.googleapis.com/'),
-    },
     'securesourcemanager': {
         'v1':
             APIDef(

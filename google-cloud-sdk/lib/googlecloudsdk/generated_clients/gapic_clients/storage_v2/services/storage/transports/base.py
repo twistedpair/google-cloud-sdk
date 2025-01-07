@@ -234,6 +234,11 @@ class StorageTransport(abc.ABC):
                 default_timeout=None,
                 client_info=client_info,
             ),
+            self.move_object: gapic_v1.method.wrap_method(
+                self.move_object,
+                default_timeout=None,
+                client_info=client_info,
+            ),
          }
 
     def close(self):
@@ -440,6 +445,15 @@ class StorageTransport(abc.ABC):
             Union[
                 storage.QueryWriteStatusResponse,
                 Awaitable[storage.QueryWriteStatusResponse]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def move_object(self) -> Callable[
+            [storage.MoveObjectRequest],
+            Union[
+                storage.Object,
+                Awaitable[storage.Object]
             ]]:
         raise NotImplementedError()
 

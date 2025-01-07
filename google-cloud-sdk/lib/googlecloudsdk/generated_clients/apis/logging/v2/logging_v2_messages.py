@@ -958,6 +958,96 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class FilterExpression(_messages.Message):
+  r"""Ex: { field: json_payload.message.error_code, value: 400, comparator:
+  EQUAL_TO} The field will be schema field that is selected using the .
+  annotation to display the drill down value. The value will be the user
+  inputted text that the filter is comparing against.
+
+  Enums:
+    ComparatorValueValuesEnum: The comparison type to use for the filter.
+
+  Fields:
+    booleanFilterValue: The boolean value to use for the filter. Set if the
+      field is a boolean type.
+    comparator: The comparison type to use for the filter.
+    field: The field to use for the filter. This will be the field that is
+      selected using the . annotation to display the drill down value.
+    numericFilterValue: The numeric value to use for the filter. Set if the
+      field is a numeric type.
+    stringFilterValue: The string value to use for the filter. Set if the
+      field is a string type.
+  """
+
+  class ComparatorValueValuesEnum(_messages.Enum):
+    r"""The comparison type to use for the filter.
+
+    Values:
+      COMPARATOR_UNSPECIFIED: Invalid value, do not use.
+      EQUALS: The value is equal to the inputted value.
+      NOT_EQUALS: The value is not equal to the inputted value.
+      MATCHES_REGEXP: The value is equal to the inputted regex value.
+      NOT_MATCHES_REGEXP: The value is not equal to the inputted regex value.
+      GREATER_THAN: The value is greater than the inputted value.
+      LESS_THAN: The value is less than the inputted value.
+      GREATER_THAN_EQUALS: The value is greater than or equal to the inputted
+        value.
+      LESS_THAN_EQUALS: The value is less than or equal to the inputted value.
+      IS_NOT_NULL: IS_NOT_NULL will be slightly different in the fact that it
+        will not require the value field to be inputted. For simplicity, the
+        value field will be set to an empty string when IS_NOT_NULL is used
+    """
+    COMPARATOR_UNSPECIFIED = 0
+    EQUALS = 1
+    NOT_EQUALS = 2
+    MATCHES_REGEXP = 3
+    NOT_MATCHES_REGEXP = 4
+    GREATER_THAN = 5
+    LESS_THAN = 6
+    GREATER_THAN_EQUALS = 7
+    LESS_THAN_EQUALS = 8
+    IS_NOT_NULL = 9
+
+  booleanFilterValue = _messages.BooleanField(1)
+  comparator = _messages.EnumField('ComparatorValueValuesEnum', 2)
+  field = _messages.StringField(3)
+  numericFilterValue = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  stringFilterValue = _messages.StringField(5)
+
+
+class FilterPredicate(_messages.Message):
+  r"""A filter for a query. This equates to the WHERE clause in SQL.
+
+  Enums:
+    OperatorTypeValueValuesEnum: The operator type for the filter. Currently
+      there is no support for multiple levels of nesting, so this will be a
+      single value with no joining of different operator types
+
+  Fields:
+    expressions: The expressions to use for the filter.
+    operatorType: The operator type for the filter. Currently there is no
+      support for multiple levels of nesting, so this will be a single value
+      with no joining of different operator types
+  """
+
+  class OperatorTypeValueValuesEnum(_messages.Enum):
+    r"""The operator type for the filter. Currently there is no support for
+    multiple levels of nesting, so this will be a single value with no joining
+    of different operator types
+
+    Values:
+      OPERATOR_TYPE_UNSPECIFIED: Invalid value, do not use.
+      AND: AND will be the default operator type.
+      OR: OR operator type.
+    """
+    OPERATOR_TYPE_UNSPECIFIED = 0
+    AND = 1
+    OR = 2
+
+  expressions = _messages.MessageField('FilterExpression', 1, repeated=True)
+  operatorType = _messages.EnumField('OperatorTypeValueValuesEnum', 2)
+
+
 class GetIamPolicyRequest(_messages.Message):
   r"""Request message for GetIamPolicy method.
 
@@ -8517,6 +8607,8 @@ class OpsAnalyticsQuery(_messages.Message):
   subject to change before final release.
 
   Fields:
+    queryBuilder: Optional. A logs analytics query builder, which is used to
+      build the SQL query that is then executed.
     queryExecutionRules: Optional. The query execution rules for the query
       request.
     sqlQueryText: Required. A logs analytics SQL query, which generally
@@ -8524,8 +8616,9 @@ class OpsAnalyticsQuery(_messages.Message):
       Analytics UI's query editor.
   """
 
-  queryExecutionRules = _messages.MessageField('OpsAnalyticsQueryExecutionRules', 1)
-  sqlQueryText = _messages.StringField(2)
+  queryBuilder = _messages.MessageField('QueryBuilderConfig', 1)
+  queryExecutionRules = _messages.MessageField('OpsAnalyticsQueryExecutionRules', 2)
+  sqlQueryText = _messages.StringField(3)
 
 
 class OpsAnalyticsQueryExecutionRules(_messages.Message):
@@ -8627,6 +8720,112 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class ProjectedField(_messages.Message):
+  r"""One of the selected fields in a query. This equates to a single field in
+  the SELECT clause in SQL.
+
+  Enums:
+    OperationValueValuesEnum: The setting for the field.
+
+  Fields:
+    aggregationFunction: The aggregation function for the field. This can be
+      one of: - SUM - MAX - MIN - COUNT - COUNT_DISTINCT -
+      COUNT_DISTINCT_APPROXIMATE - AVERAGE - PERCENTILE - PERCENTILE_99 -
+      PERCENTILE_95
+    alias: The alias name for the field. Valid alias examples are: - single
+      word alias: TestAlias - numbers in an alias: Alias123 - multi word alias
+      should be enclosed in quotes: "Test Alias" Invalid alias examples are: -
+      alias containing keywords: WHERE, SELECT, FROM, etc. - alias starting
+      with a number: 1stAlias
+    cast: The cast for the field. This can any SQL cast type. Examples: -
+      STRING - CHAR - DATE - TIMESTAMP - DATETIME - INT - FLOAT
+    field: The field name. This will be the field that is selected using the .
+      annotation to display the drill down value.
+    operation: The setting for the field.
+    regexExtraction: The re2 extraction for the field. This will be used to
+      extract the value from the field using REGEXP_EXTRACT. More information
+      on re2 can be found here: https://github.com/google/re2/wiki/Syntax.
+      Meta characters like +?()| will need to be escaped. Examples: -
+      ".(autoscaler.*)$" will be converted to
+      REGEXP_EXTRACT(JSON_VALUE(field),"request(.*(autoscaler.*)$)")in SQL. -
+      "\(test_value\)$" will be converted to
+      REGEXP_EXTRACT(JSON_VALUE(field),"request(\(test_value\)$)") in SQL.
+  """
+
+  class OperationValueValuesEnum(_messages.Enum):
+    r"""The setting for the field.
+
+    Values:
+      FIELD_OPERATION_UNSPECIFIED: Invalid value, do not use.
+      NO_SETTING: No settings will be applied.
+      GROUP_BY: The field will be grouped by.
+      AGGREGATE: The field will be aggregated.
+    """
+    FIELD_OPERATION_UNSPECIFIED = 0
+    NO_SETTING = 1
+    GROUP_BY = 2
+    AGGREGATE = 3
+
+  aggregationFunction = _messages.StringField(1)
+  alias = _messages.StringField(2)
+  cast = _messages.StringField(3)
+  field = _messages.StringField(4)
+  operation = _messages.EnumField('OperationValueValuesEnum', 5)
+  regexExtraction = _messages.StringField(6)
+
+
+class QueryBuilderConfig(_messages.Message):
+  r"""Used to build a query in place of SQL. This query builder format will be
+  converted to BigQuery SQL query syntax to retrieve data and chart
+  visualizations.
+
+  Fields:
+    fields: The fields to select in the query. This equates to the SELECT
+      clause in SQL.
+    filter: The filter to use for the query. This equates to the WHERE clause
+      in SQL.
+    limit: The limit to use for the query. This equates to the LIMIT clause in
+      SQL. A limit of 0 will be treated as not enabled.
+    orderBys: The sort orders to use for the query. This equates to the ORDER
+      BY clause in SQL.
+    resourceNames: Required. The view/resource to query. For now only a single
+      view/resource will be sent, but there are plans to allow multiple views
+      in the future. Marking as repeated for that purpose. Example: -
+      "projects/123/locations/global/buckets/456/views/_Default" -
+      "projects/123/locations/global/metricBuckets/456/views/_Default"
+    searchTerm: The plain text search to use for the query. There is no
+      support for multiple search terms. This uses the SEARCH functionality in
+      BigQuery. For example, a search_term = 'ERROR' would result in the
+      following SQL:SELECT * FROM resource WHERE SEARCH(resource, 'ERROR')
+      LIMIT 100
+  """
+
+  fields = _messages.MessageField('ProjectedField', 1, repeated=True)
+  filter = _messages.MessageField('FilterPredicate', 2)
+  limit = _messages.IntegerField(3)
+  orderBys = _messages.MessageField('SortOrderParameter', 4, repeated=True)
+  resourceNames = _messages.StringField(5, repeated=True)
+  searchTerm = _messages.StringField(6)
+
+
+class QueryBuilderQueryStep(_messages.Message):
+  r"""A query step that builds an Analytics query from a query builder.
+
+  Fields:
+    parameters: Optional. Parameters to be injected into the query at
+      execution time.
+    queryBuilder: Required. The query builder to use. This is a proto
+      containing a query builder definition that will be converted to BigQuery
+      SQL syntax.
+    queryRestriction: Optional. Restrictions being requested, e.g. timerange
+      restrictions.
+  """
+
+  parameters = _messages.MessageField('QueryParameter', 1, repeated=True)
+  queryBuilder = _messages.MessageField('QueryBuilderConfig', 2)
+  queryRestriction = _messages.MessageField('QueryRestriction', 3)
 
 
 class QueryDataLocalRequest(_messages.Message):
@@ -8756,7 +8955,8 @@ class QueryDataRequest(_messages.Message):
       lowercase letters, numeric characters, underscores and dashes. Spaces
       are not allowed.
     query: Optional. The contents of the query. If this field is populated,
-      query_steps will be ignored.
+      query_steps will be ignored. For QueryDataSync the query must consist of
+      a single SqlQueryStep.
     resourceNames: Required. Names of one or more views to run a SQL
       query.Example: projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BU
       CKET_ID]/views/[VIEW_ID]Requires appropriate permissions on each
@@ -8767,8 +8967,12 @@ class QueryDataRequest(_messages.Message):
       corresponding log view in the SQL query requires the
       logging.buckets.listLinks permission on the bucket owning the
       view.Example: projects/[PROJECT_ID]
-    timeout: Optional. The timeout for the query. BigQuery will terminate the
-      job if this duration is exceeded. If not set, the default is 5 minutes.
+    timeout: Optional. For queries made through QueryData, query will be
+      terminated if it is not completed by the time this duration is exceeded.
+      If not set, the default is 5 minutes.For queries made through
+      QueryDataSync, defines a timeout after which query will fall back to
+      asynchronous execution. If not set, the synchronous query timeout is set
+      to the request's deadline.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -8858,16 +9062,14 @@ class QueryParameter(_messages.Message):
 
 class QueryRestriction(_messages.Message):
   r"""Specifies query restrictions to apply. This allows UI to provide common
-  filter needs (e.g. timestamps) without having the user to write them in
-  SQL.Note: Each restriction is independent of the others and can be used in
-  any combination. For example, you can use either timerange or
-  receive_timerange or both to combine the two restrictions.
+  filter needs (e.g. timestamps) without having the user to write them in SQL.
 
   Fields:
     receiveTimerange: Optional. This restriction is a TIME_RANGE restriction
       type in the QueryRestrictionConflict based on the receive_timestamp log
       field. Range is [start_time, end_time). Granularity: down to
-      milliseconds (not nanoseconds)
+      milliseconds (not nanoseconds)Note: This restriction also includes a 15
+      minute buffer on either side of the timerange on the timestamp column.
     timerange: Optional. This restriction is the TIME_RANGE restriction type
       in the QueryRestrictionConflict based on the primary timestamp column
       (ex. 'timestamp' for log entries, 'start_time' for spans). Range is
@@ -8948,6 +9150,9 @@ class QueryRestrictionConflict(_messages.Message):
         a valid timestamp. Analytics views must have a column named timestamp
         of type timestamp, non-repeated to be considered as having a valid
         timestamp column.
+      RECEIVE_TIME_RANGE: This type means that the query conflicts with the
+        receive_timerange restriction, e.g. query used the receive_timestamp
+        field to filter.
     """
     RESTRICTION_TYPE_UNSPECIFIED = 0
     TIME_RANGE = 1
@@ -8956,6 +9161,7 @@ class QueryRestrictionConflict(_messages.Message):
     CUSTOMER_PROJECT_SLOT_RESERVATION = 4
     BQ_NATIVE_TABLE = 5
     NO_VALID_TIMESTAMP_COLUMNS = 6
+    RECEIVE_TIME_RANGE = 7
 
   column = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   confidence = _messages.EnumField('ConfidenceValueValuesEnum', 2)
@@ -8964,7 +9170,7 @@ class QueryRestrictionConflict(_messages.Message):
 
 
 class QueryResults(_messages.Message):
-  r"""Results of a SQL query over logs. Next ID: 13
+  r"""Results of a SQL query over logs. Next ID: 14
 
   Enums:
     IndexUsageValueValuesEnum: The type of search index usage in the query.
@@ -8982,12 +9188,19 @@ class QueryResults(_messages.Message):
       the rows, total_rows, and execution_time fields will not be populated.
       The client needs to poll on ReadQueryResults specifying the
       result_reference and wait for results.
+    resourceNames: The resources that were used while serving the request,
+      e.g. projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/v
+      iews/[VIEW_ID] for any Views read or projects/[PROJECT_ID]/locations/[LO
+      CATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID] for any Links for any
+      linked dataset resolved.
     restrictionConflicts: Conflicts between the query and the restrictions
       that were requested. Any restrictions present here were ignored when
       executing the query.
     resultReference: An opaque string that can be used as a reference to this
       query result. This result reference can be used in the ReadQueryResults
-      query to fetch this result up to 24 hours in the future.
+      query to fetch this result up to 24 hours in the future.For
+      QueryDataSync this is populated only if the query cannot be executed
+      synchronously within the requested deadline.
     rows: Query result rows. The number of rows returned depends upon the page
       size requested. To get any additional rows, you can call
       ReadQueryResults and specify the result_reference and the page_token.The
@@ -9049,13 +9262,14 @@ class QueryResults(_messages.Message):
   jobLocation = _messages.StringField(3)
   nextPageToken = _messages.StringField(4)
   queryComplete = _messages.BooleanField(5)
-  restrictionConflicts = _messages.MessageField('QueryRestrictionConflict', 6, repeated=True)
-  resultReference = _messages.StringField(7)
-  rows = _messages.MessageField('RowsValueListEntry', 8, repeated=True)
-  schema = _messages.MessageField('TableSchema', 9)
-  totalBytesProcessed = _messages.IntegerField(10)
-  totalRows = _messages.IntegerField(11)
-  totalSlotMs = _messages.IntegerField(12)
+  resourceNames = _messages.StringField(6, repeated=True)
+  restrictionConflicts = _messages.MessageField('QueryRestrictionConflict', 7, repeated=True)
+  resultReference = _messages.StringField(8)
+  rows = _messages.MessageField('RowsValueListEntry', 9, repeated=True)
+  schema = _messages.MessageField('TableSchema', 10)
+  totalBytesProcessed = _messages.IntegerField(11)
+  totalRows = _messages.IntegerField(12)
+  totalSlotMs = _messages.IntegerField(13)
 
 
 class QueryStep(_messages.Message):
@@ -9075,6 +9289,8 @@ class QueryStep(_messages.Message):
     outputNotRequired: Optional. Set this flag to indicate that you don't
       intend to retrieve the results for this query step. No handle will be
       generated for the step in the QueryDataResponse message.
+    queryBuilderQueryStep: A query step that builds a SQL query from a query
+      builder.
     sqlQueryStep: A query step containing a SQL query.
   """
 
@@ -9082,7 +9298,8 @@ class QueryStep(_messages.Message):
   chartingQueryStep = _messages.MessageField('ChartingQueryStep', 2)
   handleQueryStep = _messages.MessageField('HandleQueryStep', 3)
   outputNotRequired = _messages.BooleanField(4)
-  sqlQueryStep = _messages.MessageField('SqlQueryStep', 5)
+  queryBuilderQueryStep = _messages.MessageField('QueryBuilderQueryStep', 5)
+  sqlQueryStep = _messages.MessageField('SqlQueryStep', 6)
 
 
 class QueryStepAggregation(_messages.Message):
@@ -9536,6 +9753,38 @@ class Settings(_messages.Message):
   loggingServiceAccountId = _messages.StringField(6)
   name = _messages.StringField(7)
   storageLocation = _messages.StringField(8)
+
+
+class SortOrderParameter(_messages.Message):
+  r"""A sort order for a query based on a column. LINT.IfChange
+
+  Enums:
+    SortOrderDirectionValueValuesEnum: The sort order to use for the query.
+
+  Fields:
+    field: The field to use for the element. This will be the field that is
+      selected using the . annotation to display the drill down value.
+    sortOrderDirection: The sort order to use for the query.
+  """
+
+  class SortOrderDirectionValueValuesEnum(_messages.Enum):
+    r"""The sort order to use for the query.
+
+    Values:
+      SORT_ORDER_DIRECTION_UNSPECIFIED: Invalid value, do not use.
+      SORT_ORDER_NONE: No sorting will be applied. This is used to determine
+        if the query is in pass thru mode. To correctly chart a query in pass
+        thru mode, NONE will need to be sent
+      ASCENDING: The lowest-valued entries will be selected.
+      DESCENDING: The highest-valued entries will be selected.
+    """
+    SORT_ORDER_DIRECTION_UNSPECIFIED = 0
+    SORT_ORDER_NONE = 1
+    ASCENDING = 2
+    DESCENDING = 3
+
+  field = _messages.StringField(1)
+  sortOrderDirection = _messages.EnumField('SortOrderDirectionValueValuesEnum', 2)
 
 
 class Sorting(_messages.Message):

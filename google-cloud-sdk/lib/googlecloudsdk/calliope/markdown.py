@@ -36,6 +36,7 @@ _SECTION_INDENT = 8  # Section or list within section indent.
 _FIRST_INDENT = 2  # First line indent.
 _SUBSEQUENT_INDENT = 6  # Subsequent line indent.
 _SECOND_LINE_OFFSET = 2  # Used to create 2nd line indentation using markdown.
+_GCLOUD_ROOT_SURFACES = frozenset(['gcloud', 'gcloud alpha', 'gcloud beta'])
 
 
 def _GetIndexFromCapsule(capsule):
@@ -184,9 +185,11 @@ def NormalizeExampleSection(doc):
     Modified help text.
   """
   example_sec_until_next_sec = re.compile(
-      r'^## EXAMPLES\n(.+?)(\n+## )', flags=re.M | re.DOTALL)
+      r'^## EXAMPLES\n(.+?)(\n+## )', flags=re.M | re.DOTALL
+  )
   example_sec_until_end = re.compile(
-      r'^## EXAMPLES\n(.+)', flags=re.M | re.DOTALL)
+      r'^## EXAMPLES\n(.+)', flags=re.M | re.DOTALL
+  )
   match_example_sec = example_sec_until_next_sec.search(doc)
   match_example_sec_to_end = example_sec_until_end.search(doc)
   # no EXAMPLES section
@@ -196,9 +199,9 @@ def NormalizeExampleSection(doc):
     selected_match = match_example_sec
   else:
     selected_match = match_example_sec_to_end
-  doc_before_examples = doc[:selected_match.start(1)]
-  example_section = doc[selected_match.start(1):selected_match.end(1)]
-  doc_after_example = doc[selected_match.end(1):]
+  doc_before_examples = doc[: selected_match.start(1)]
+  example_section = doc[selected_match.start(1) : selected_match.end(1)]
+  doc_after_example = doc[selected_match.end(1) :]
 
   pat_example_line = re.compile(r'^ *(\$ .*)$', re.M)
   pat_code_block = re.compile(r'^ *```sh(.+?```)', re.M | re.DOTALL)
@@ -213,23 +216,24 @@ def NormalizeExampleSection(doc):
       # If it found an example command line and a code block, pick the one
       # closer to the starting point.
       if match_code_block.start(1) > match_example_line.start(1):
-        example, next_pos = UnifyExampleLine(example_section,
-                                             match_example_line.start(1))
-        res += (example_section[pos:match_example_line.start(1)] + example)
+        example, next_pos = UnifyExampleLine(
+            example_section, match_example_line.start(1)
+        )
+        res += example_section[pos : match_example_line.start(1)] + example
         pos = next_pos
       else:
-        res += example_section[pos:match_code_block.end(1)]
+        res += example_section[pos : match_code_block.end(1)]
         pos = match_code_block.end(1)
     elif match_code_block:
-      res += example_section[pos:match_code_block.end(1)]
+      res += example_section[pos : match_code_block.end(1)]
       pos = match_code_block.end(1)
     else:
-      example, next_pos = UnifyExampleLine(example_section,
-                                           match_example_line.start(1))
-      res += (example_section[pos:match_example_line.start(1)] + example)
+      example, next_pos = UnifyExampleLine(
+          example_section, match_example_line.start(1)
+      )
+      res += example_section[pos : match_example_line.start(1)] + example
       pos = next_pos
-  return (doc_before_examples + (res + example_section[pos:]) +
-          doc_after_example)
+  return doc_before_examples + (res + example_section[pos:]) + doc_after_example
 
 
 def UnifyExampleLine(example_doc, pos):
@@ -241,19 +245,22 @@ def UnifyExampleLine(example_doc, pos):
 
   Args:
     example_doc: str, Example section of the help text.
-    pos: int, Position to start. pos will be the starting position of an
-     example line.
+    pos: int, Position to start. pos will be the starting position of an example
+      line.
 
   Returns:
     normalized example command, next starting position to search
   """
-  pat_match_next_command = re.compile(r'\$\s+(.+?)(\n +\$\s+)',
-                                      re.DOTALL)  # match consecutive commands.
-  pat_match_empty_line_after_command = re.compile(r'\$\s+(.+?)(\n\s*\n|\n\+\n)',
-                                                  re.DOTALL)
+  pat_match_next_command = re.compile(
+      r'\$\s+(.+?)(\n +\$\s+)', re.DOTALL
+  )  # match consecutive commands.
+  pat_match_empty_line_after_command = re.compile(
+      r'\$\s+(.+?)(\n\s*\n|\n\+\n)', re.DOTALL
+  )
   match_next_command = pat_match_next_command.match(example_doc, pos)
   match_empty_line_after_command = pat_match_empty_line_after_command.match(
-      example_doc, pos)
+      example_doc, pos
+  )
   # reached to the end
   if not match_next_command and not match_empty_line_after_command:
     new_doc = example_doc.rstrip()
@@ -266,14 +273,17 @@ def UnifyExampleLine(example_doc, pos):
     return '$ ' + example, len(new_doc)
   elif match_next_command and match_empty_line_after_command:
     if len(match_next_command.group(1)) > len(
-        match_empty_line_after_command.group(1)):
+        match_empty_line_after_command.group(1)
+    ):
       selected_match = match_empty_line_after_command
     else:
       selected_match = match_next_command
   else:
     selected_match = (
         match_next_command
-        if match_next_command else match_empty_line_after_command)
+        if match_next_command
+        else match_empty_line_after_command
+    )
   example = selected_match.group(1)
   pat = re.compile(r'\\\n\s*')
   example = pat.sub('', example)
@@ -298,8 +308,7 @@ def RemoveSpacesLineBreaksFromExample(example):
   preceding backslash though. If the spaces and line breaks are within quote,
   they are not touched.
 
-  Args:
-    example, str: Example line to process.
+  Args: example, str: Example line to process.
   """
   res = []
   example = example.strip()
@@ -326,9 +335,9 @@ def RemoveSpacesLineBreaksFromExample(example):
       res.append(example[pos])
       pos += 1
       # proceed until seeing a closing double quote or exhausting example.
-      while (
-          pos < len(example) and
-          not (example[pos] == '"' and _PrecedingBackslashCount(res) % 2 == 0)):
+      while pos < len(example) and not (
+          example[pos] == '"' and _PrecedingBackslashCount(res) % 2 == 0
+      ):
         res.append(example[pos])
         pos += 1
       if pos < len(example):  # see closing double quote
@@ -455,13 +464,17 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
   @property
   def is_topic(self):
     """Returns True if this node is a topic command."""
-    if (len(self._command_path) >= 3 and
-        self._command_path[1] == self._release_track.prefix):
+    if (
+        len(self._command_path) >= 3
+        and self._command_path[1] == self._release_track.prefix
+    ):
       command_index = 2
     else:
       command_index = 1
-    return (len(self._command_path) >= (command_index + 1) and
-            self._command_path[command_index] == 'topic')
+    return (
+        len(self._command_path) >= (command_index + 1)
+        and self._command_path[command_index] == 'topic'
+    )
 
   def _ExpandHelpText(self, text):
     """Expand command {...} references in text.
@@ -480,15 +493,18 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
         parent_command=' '.join(self._command_path[:-1]),
         grandparent_command=' '.join(self._command_path[:-2]),
         index=self._capsule,
-        **self._sections
+        **self._sections,
     )
 
   def _SetArgSections(self):
     """Sets self._arg_sections in document order."""
     if self._arg_sections is None:
       self._arg_sections, self._global_flags = usage_text.GetArgSections(
-          self.GetArguments(), self.is_root, self.is_group,
-          self.sort_top_level_args)
+          self.GetArguments(),
+          self.is_root,
+          self.is_group,
+          self.sort_top_level_args,
+      )
 
   def _SplitCommandFromArgs(self, cmd):
     """Splits cmd into command and args lists.
@@ -524,13 +540,21 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     Returns:
       The msg string with embedded user input markdown.
     """
-    return (base.MARKDOWN_CODE + base.MARKDOWN_ITALIC +
-            msg +
-            base.MARKDOWN_ITALIC + base.MARKDOWN_CODE)
+    return (
+        base.MARKDOWN_CODE
+        + base.MARKDOWN_ITALIC
+        + msg
+        + base.MARKDOWN_ITALIC
+        + base.MARKDOWN_CODE
+    )
 
   def _ArgTypeName(self, arg):
     """Returns the argument type name for arg."""
     return 'positional' if arg.is_positional else 'flag'
+
+  def _IsGcloudSurfaceCommand(self):
+    """Returns True if the command is the gcloud command."""
+    return self._command_name in _GCLOUD_ROOT_SURFACES
 
   def PrintSectionHeader(self, name, sep=True):
     """Prints the section header markdown for name.
@@ -563,7 +587,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     code = base.MARKDOWN_CODE
     em = base.MARKDOWN_ITALIC
 
-    if self._command.IsUniverseCompatible():
+    if self._command.IsUniverseCompatible() or self._IsGcloudSurfaceCommand():
       info_body = (
           f'{code}{self._command_name}{code} is supported in universe domain '
           f'{em}{properties.GetUniverseDomain()}{em}; however, some of the '
@@ -590,9 +614,12 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     """
     if not disable_header:
       self.PrintSectionHeader('NAME')
-    self._out('{command} - {index}\n'.format(
-        command=self._command_name,
-        index=_GetIndexFromCapsule(self._capsule)))
+    self._out(
+        '{command} - {index}\n'.format(
+            command=self._command_name,
+            index=_GetIndexFromCapsule(self._capsule),
+        )
+    )
 
   def PrintSynopsisSection(self, disable_header=False):
     """Prints the command line synopsis section.
@@ -608,8 +635,9 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     em = base.MARKDOWN_ITALIC
     if not disable_header:
       self.PrintSectionHeader('SYNOPSIS')
-    self._out('{code}{command}{code}'.format(code=code,
-                                             command=self._command_name))
+    self._out(
+        '{code}{command}{code}'.format(code=code, command=self._command_name)
+    )
 
     if self._subcommands and self._subgroups:
       self._out(' ' + em + 'GROUP' + em + ' | ' + em + 'COMMAND' + em)
@@ -622,8 +650,14 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     remainder_usage = []
     for section in self._arg_sections:
       self._out(' ')
-      self._out(usage_text.GetArgUsage(section.args, markdown=True, top=True,
-                                       remainder_usage=remainder_usage))
+      self._out(
+          usage_text.GetArgUsage(
+              section.args,
+              markdown=True,
+              top=True,
+              remainder_usage=remainder_usage,
+          )
+      )
     if self._global_flags:
       self._out(' [' + em + self._top.upper() + '_WIDE_FLAG ...' + em + ']')
     if remainder_usage:
@@ -637,13 +671,16 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     usage = usage_text.GetArgUsage(arg, definition=True, markdown=True)
     if not usage:
       return
-    self._out('\n{usage}{depth}\n'.format(
-        usage=usage, depth=':' * (depth + _SECOND_LINE_OFFSET)))
+    self._out(
+        '\n{usage}{depth}\n'.format(
+            usage=usage, depth=':' * (depth + _SECOND_LINE_OFFSET)
+        )
+    )
     if arg.is_required and depth and not single:
       modal = (
           '\n+\nThis {arg_type} argument must be specified if any of the other '
-          'arguments in this group are specified.').format(
-              arg_type=self._ArgTypeName(arg))
+          'arguments in this group are specified.'
+      ).format(arg_type=self._ArgTypeName(arg))
     else:
       modal = ''
     details = self.GetArgDetails(arg, depth=depth).replace('\n\n', '\n+\n')
@@ -653,7 +690,9 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     """Prints an arg group definition list at depth."""
     args = (
         sorted(arg.arguments, key=usage_text.GetArgSortKey)
-        if arg.sort_args else arg.arguments)
+        if arg.sort_args
+        else arg.arguments
+    )
     heading = []
     if arg.help or arg.is_mutex or arg.is_required:
       if arg.help:
@@ -698,9 +737,12 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
         self._PrintArgDefinition(a, depth=depth, single=single)
 
   def PrintPositionalDefinition(self, arg, depth=0):
-    self._out('\n{usage}{depth}\n'.format(
-        usage=usage_text.GetPositionalUsage(arg, markdown=True),
-        depth=':' * (depth + _SECOND_LINE_OFFSET)))
+    self._out(
+        '\n{usage}{depth}\n'.format(
+            usage=usage_text.GetPositionalUsage(arg, markdown=True),
+            depth=':' * (depth + _SECOND_LINE_OFFSET),
+        )
+    )
     self._out('\n{arghelp}\n'.format(arghelp=self.GetArgDetails(arg)))
 
   def PrintFlagDefinition(self, flag, disable_header=False, depth=0):
@@ -713,9 +755,12 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     """
     if not disable_header:
       self._out('\n')
-    self._out('{usage}{depth}\n'.format(
-        usage=usage_text.GetFlagUsage(flag, markdown=True),
-        depth=':' * (depth + _SECOND_LINE_OFFSET)))
+    self._out(
+        '{usage}{depth}\n'.format(
+            usage=usage_text.GetFlagUsage(flag, markdown=True),
+            depth=':' * (depth + _SECOND_LINE_OFFSET),
+        )
+    )
     self._out('\n{arghelp}\n'.format(arghelp=self.GetArgDetails(flag)))
 
   def PrintFlagSection(self, heading, arg, disable_header=False):
@@ -743,17 +788,21 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     # List the sections in order.
     for section in self._arg_sections:
       self.PrintFlagSection(
-          section.heading, section.args, disable_header=disable_header)
+          section.heading, section.args, disable_header=disable_header
+      )
 
     if self._global_flags:
       if not disable_header:
         self.PrintSectionHeader(
-            '{} WIDE FLAGS'.format(self._top.upper()), sep=False)
+            '{} WIDE FLAGS'.format(self._top.upper()), sep=False
+        )
       # NOTE: We need two newlines before 'Run' for a paragraph break.
-      self._out('\nThese flags are available to all commands: {}.'
-                '\n\nRun *$ {} help* for details.\n'
-                .format(', '.join(sorted(self._global_flags)),
-                        self._top))
+      self._out(
+          '\nThese flags are available to all commands: {}.'
+          '\n\nRun *$ {} help* for details.\n'.format(
+              ', '.join(sorted(self._global_flags)), self._top
+          )
+      )
 
   def PrintSubGroups(self, disable_header=False):
     """Prints the subgroup section if there are subgroups.
@@ -762,8 +811,9 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
       disable_header: Disable printing the section header if True.
     """
     if self._subgroups:
-      self.PrintCommandSection('GROUP', self._subgroups,
-                               disable_header=disable_header)
+      self.PrintCommandSection(
+          'GROUP', self._subgroups, disable_header=disable_header
+      )
 
   def PrintSubCommands(self, disable_header=False):
     """Prints the subcommand section if there are subcommands.
@@ -773,11 +823,16 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     """
     if self._subcommands:
       if self.is_topic:
-        self.PrintCommandSection('TOPIC', self._subcommands, is_topic=True,
-                                 disable_header=disable_header)
+        self.PrintCommandSection(
+            'TOPIC',
+            self._subcommands,
+            is_topic=True,
+            disable_header=disable_header,
+        )
       else:
-        self.PrintCommandSection('COMMAND', self._subcommands,
-                                 disable_header=disable_header)
+        self.PrintCommandSection(
+            'COMMAND', self._subcommands, disable_header=disable_header
+        )
 
   def PrintSectionIfExists(self, name, default=None, disable_header=False):
     """Print a section name if it exists.
@@ -798,8 +853,9 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
       help_message = help_stuff
     if not disable_header:
       self.PrintSectionHeader(name)
-    self._out('{message}\n'.format(
-        message=textwrap.dedent(help_message).strip()))
+    self._out(
+        '{message}\n'.format(message=textwrap.dedent(help_message).strip())
+    )
 
   def PrintExtraSections(self, disable_header=False):
     """Print extra sections not in excluded_sections.
@@ -811,7 +867,8 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
       disable_header: Disable printing the section header if True.
     """
     excluded_sections = set(
-        self._final_sections + ['NOTES', 'UNIVERSE ADDITIONAL INFO'])
+        self._final_sections + ['NOTES', 'UNIVERSE ADDITIONAL INFO']
+    )
     for section in sorted(self._sections):
       if section.isupper() and section not in excluded_sections:
         self.PrintSectionIfExists(section, disable_header=disable_header)
@@ -826,8 +883,9 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
       self.PrintSectionIfExists(section, disable_header=disable_header)
     self.PrintNotesSection(disable_header=disable_header)
 
-  def PrintCommandSection(self, name, subcommands, is_topic=False,
-                          disable_header=False):
+  def PrintCommandSection(
+      self, name, subcommands, is_topic=False, disable_header=False
+  ):
     """Prints a group or command section.
 
     Args:
@@ -845,15 +903,17 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
         content += '\n*link:{ref}[{cmd}]*::\n\n{txt}\n'.format(
             ref='/'.join(self._command_path + [subcommand]),
             cmd=subcommand,
-            txt=help_info.help_text)
+            txt=help_info.help_text,
+        )
     if content:
       if not disable_header:
         self.PrintSectionHeader(name + 'S')
       if is_topic:
         self._out('The supplementary help topics are:\n')
       else:
-        self._out('{cmd} is one of the following:\n'.format(
-            cmd=self._UserInput(name)))
+        self._out(
+            '{cmd} is one of the following:\n'.format(cmd=self._UserInput(name))
+        )
       self._out(content)
 
   def GetNotes(self):
@@ -878,7 +938,8 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     if getattr(arg, 'detailed_help', None):
       raise ValueError(
           '{}: Use add_argument(help=...) instead of detailed_help="""{}""".'
-          .format(self._command_name, getattr(arg, 'detailed_help')))
+          .format(self._command_name, getattr(arg, 'detailed_help'))
+      )
     return usage_text.GetArgDetails(arg, depth=depth)
 
   def _ExpandFormatReferences(self, doc):
@@ -887,16 +948,18 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     doc = NormalizeExampleSection(doc)
 
     # Split long $ ... example lines.
-    pat = re.compile(r'^ *(\$ .{%d,})$' % (
-        _SPLIT - _FIRST_INDENT - _SECTION_INDENT), re.M)
+    pat = re.compile(
+        r'^ *(\$ .{%d,})$' % (_SPLIT - _FIRST_INDENT - _SECTION_INDENT), re.M
+    )
     pos = 0
     rep = ''
     while True:
       match = pat.search(doc, pos)
       if not match:
         break
-      rep += (doc[pos:match.start(1)] + ExampleCommandLineSplitter().Split(
-          doc[match.start(1):match.end(1)]))
+      rep += doc[pos : match.start(1)] + ExampleCommandLineSplitter().Split(
+          doc[match.start(1) : match.end(1)]
+      )
       pos = match.end(1)
     if rep:
       doc = rep + doc[pos:]
@@ -915,9 +978,8 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     Args:
       doc: str, the doc to find examples in.
       pat: the compiled regexp pattern to match against (the "command" match
-          group).
-      with_args: bool, whether the examples are valid if they also have
-          args.
+        group).
+      with_args: bool, whether the examples are valid if they also have args.
 
     Returns:
       (str) The final representation of the doc.
@@ -931,11 +993,11 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
       cmd, args = self._SplitCommandFromArgs(match.group('command').split(' '))
       lnk = self.FormatExample(cmd, args, with_args=with_args)
       if self._IsNotThisCommand(cmd) and lnk:
-        rep += doc[pos:match.start('command')] + lnk
+        rep += doc[pos : match.start('command')] + lnk
       else:
         # Skip invalid commands.
-        rep += doc[pos:match.end('command')]
-      rep += doc[match.end('command'):match.end('end')]
+        rep += doc[pos : match.end('command')]
+      rep += doc[match.end('command') : match.end('end')]
       pos = match.end('end')
     if rep:
       doc = rep + doc[pos:]
@@ -956,8 +1018,10 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     # SYNOPSIS sections and as the first line in a paragraph.
     return (
         r'(?<!\n\n)(?<!\*\(ALPHA\)\* )(?<!\*\(BETA\)\* )(?<!\*\(PREVIEW\)\* )'
-        r'([`*])(?P<command>{top}( [a-z][-a-z0-9]*)*)(?P<end>\1)'
-        .format(top=re.escape(self._top)))
+        r'([`*])(?P<command>{top}( [a-z][-a-z0-9]*)*)(?P<end>\1)'.format(
+            top=re.escape(self._top)
+        )
+    )
 
   def _AddCommandLinkMarkdown(self, doc):
     r"""Add ([`*])command ...\1 link markdown to doc."""
@@ -985,8 +1049,10 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     # like ``... run $ <top> foo bar.'' at the end of a sentence.
     # The <end> group ends at the same place as the command group, without
     # the punctuation or newlines.
-    return (r'\$ (?P<end>(?P<command>{top}((?: (?!(example|my|sample)-)'
-            r'[a-z][-a-z0-9]*)*))).?[ `\n]'.format(top=re.escape(self._top)))
+    return (
+        r'\$ (?P<end>(?P<command>{top}((?: (?!(example|my|sample)-)'
+        r'[a-z][-a-z0-9]*)*))).?[ `\n]'.format(top=re.escape(self._top))
+    )
 
   def _AddCommandLineLinkMarkdown(self, doc):
     """Add $ command ... link markdown to doc."""
@@ -1010,7 +1076,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
       cmd = match.group(2).replace('_', ' ')
       ref = cmd.replace(' ', '/')
       lnk = '*link:' + ref + '[' + cmd + ']*'
-      rep += doc[pos:match.start(2)] + lnk
+      rep += doc[pos : match.start(2)] + lnk
       pos = match.end(1)
     if rep:
       doc = rep + doc[pos:]
@@ -1032,16 +1098,18 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
         quoted_string = self._UserInput(match.group(2))
       else:
         quoted_string = match.group(1)
-      rep += doc[pos:match.start(1)] + quoted_string
+      rep += doc[pos : match.start(1)] + quoted_string
       pos = match.end(1)
     if rep:
       doc = rep + doc[pos:]
     return doc
 
   def _IsUniverseCompatible(self):
-    return (not properties.IsDefaultUniverse()
-            and not isinstance(self._command, dict)
-            and self._command.IsUniverseCompatible())
+    return (
+        not properties.IsDefaultUniverse()
+        and not isinstance(self._command, dict)
+        and self._command.IsUniverseCompatible()
+    )
 
   def _ReplaceGDULinksWithUniverseLinks(self, doc):
     """Replace static GDU Links with Universe Links."""
@@ -1049,8 +1117,9 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     # Replace links only for other universes and
     # command is available in the universe.
     if self._IsUniverseCompatible():
-      doc = re.sub(r'cloud.google.com',
-                   properties.GetUniverseDocumentDomain(), doc)
+      doc = re.sub(
+          r'cloud.google.com', properties.GetUniverseDocumentDomain(), doc
+      )
 
     return doc
 
@@ -1119,9 +1188,8 @@ class CommandMarkdownGenerator(MarkdownGenerator):
     # pylint: disable=protected-access
     self._root_command = command._TopCLIElement()
     super(CommandMarkdownGenerator, self).__init__(
-        command.GetPath(),
-        command.ReleaseTrack(),
-        command.IsHidden())
+        command.GetPath(), command.ReleaseTrack(), command.IsHidden()
+    )
     self._capsule = self._command.short_help
     self._docstring = self._command.long_help
     self._ExtractSectionsFromDocstring(self._docstring)

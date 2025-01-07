@@ -104,34 +104,38 @@ class RevisionPrinter(cp.CustomPrinterBase):
     return record.annotations.get(revision.SESSION_AFFINITY_ANNOTATION, '')
 
   @staticmethod
-  def TransformSpec(record: revision.Revision) -> cp.Lines:
-    return cp.Lines([
-        container_util.GetContainers(record),
-        cp.Labeled([
-            ('Service account', record.spec.serviceAccountName),
-            ('Concurrency', record.concurrency),
-            ('Min Instances', RevisionPrinter.GetMinInstances(record)),
-            ('Max Instances', RevisionPrinter.GetMaxInstances(record)),
-            (
-                'SQL connections',
-                k8s_util.GetCloudSqlInstances(record.annotations),
-            ),
-            ('Timeout', RevisionPrinter.GetTimeout(record)),
-            ('VPC access', k8s_util.GetVpcNetwork(record.annotations)),
-            ('CMEK', RevisionPrinter.GetCMEK(record)),
-            ('HTTP/2 Enabled', RevisionPrinter.GetHttp2Enabled(record)),
-            ('CPU Allocation', RevisionPrinter.GetCpuAllocation(record)),
-            (
-                'Execution Environment',
-                RevisionPrinter.GetExecutionEnv(record),
-            ),
-            (
-                'Session Affinity',
-                RevisionPrinter.GetSessionAffinity(record),
-            ),
-            ('Volumes', container_util.GetVolumes(record)),
-        ]),
+  def TransformSpec(
+      record: revision.Revision, manual_scaling_enabled=False
+  ) -> cp.Lines:
+    labels = [
+        ('Service account', record.spec.serviceAccountName),
+        ('Concurrency', record.concurrency)]
+    if not manual_scaling_enabled:
+      labels.extend([
+          ('Min instances', RevisionPrinter.GetMinInstances(record)),
+          ('Max instances', RevisionPrinter.GetMaxInstances(record)),
+      ])
+    labels.extend([
+        (
+            'SQL connections',
+            k8s_util.GetCloudSqlInstances(record.annotations),
+        ),
+        ('Timeout', RevisionPrinter.GetTimeout(record)),
+        ('VPC access', k8s_util.GetVpcNetwork(record.annotations)),
+        ('CMEK', RevisionPrinter.GetCMEK(record)),
+        ('HTTP/2 Enabled', RevisionPrinter.GetHttp2Enabled(record)),
+        ('CPU Allocation', RevisionPrinter.GetCpuAllocation(record)),
+        (
+            'Execution Environment',
+            RevisionPrinter.GetExecutionEnv(record),
+        ),
+        (
+            'Session Affinity',
+            RevisionPrinter.GetSessionAffinity(record),
+        ),
+        ('Volumes', container_util.GetVolumes(record)),
     ])
+    return cp.Lines([container_util.GetContainers(record), cp.Labeled(labels)])
 
   @staticmethod
   def CurrentMinInstances(record):

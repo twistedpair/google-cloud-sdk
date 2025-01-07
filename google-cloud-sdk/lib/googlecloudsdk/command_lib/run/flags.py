@@ -154,15 +154,24 @@ def AddImageArg(
 
 
 def ImageArg(
-    required=True, image='us-docker.pkg.dev/cloudrun/container/hello:latest'
+    required=True,
+    image='us-docker.pkg.dev/cloudrun/container/hello:latest',
+    mutex=True,
 ):
   """Image resource arg."""
+  help_text = 'Name of the container image to deploy (e.g. `{image}`).'.format(
+      image=image
+  )
+  if not mutex:
+    help_text += (
+        ' When used with --source, the image must be the URI of an Artifact '
+        'Registry Docker repository in the Docker format '
+        '($REGION-docker.pkg.dev/$PROJECT/$REPOSITORY").'
+    )
   return base.Argument(
       '--image',
       required=required,
-      help='Name of the container image to deploy (e.g. `{image}`).'.format(
-          image=image
-      ),
+      help=help_text,
   )
 
 
@@ -4535,17 +4544,20 @@ def SourceArg():
 
 
 def AddSourceAndImageFlags(
-    parser, image='us-docker.pkg.dev/cloudrun/container/hello:latest'
+    parser,
+    image='us-docker.pkg.dev/cloudrun/container/hello:latest',
+    mutex=True
 ):
   """Add deploy source flags, an image or a source for build."""
-  SourceAndImageFlags(image=image).AddToParser(parser)
+  SourceAndImageFlags(image=image, mutex=mutex).AddToParser(parser)
 
 
 def SourceAndImageFlags(
     image='us-docker.pkg.dev/cloudrun/container/hello:latest',
+    mutex=True
 ):
-  group = base.ArgumentGroup(mutex=True)
-  group.AddArgument(ImageArg(required=False, image=image))
+  group = base.ArgumentGroup(mutex=mutex)
+  group.AddArgument(ImageArg(required=False, image=image, mutex=mutex))
   group.AddArgument(SourceArg())
   return group
 

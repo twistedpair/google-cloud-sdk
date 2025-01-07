@@ -206,8 +206,7 @@ class BuildConfig(_messages.Message):
       named 'gcf-artifacts' for every deployed region. It must match the
       pattern
       `projects/{project}/locations/{location}/repositories/{repository}`.
-      Cross-project repositories are not supported. Cross-location
-      repositories are not supported. Repository format must be 'DOCKER'.
+      Repository format must be 'DOCKER'.
     entryPoint: The name of the function (as defined in source code) that will
       be executed. Defaults to the resource name suffix, if not specified. For
       backward compatibility, if function with given name is not found, then
@@ -1052,6 +1051,7 @@ class GoogleCloudFunctionsV2betaOperationMetadata(_messages.Message):
       SETUP_FUNCTION_UPGRADE_CONFIG: SetupFunctionUpgradeConfig
       ABORT_FUNCTION_UPGRADE: AbortFunctionUpgrade
       COMMIT_FUNCTION_UPGRADE: CommitFunctionUpgrade
+      DETACH_FUNCTION: DetachFunction
     """
     OPERATIONTYPE_UNSPECIFIED = 0
     CREATE_FUNCTION = 1
@@ -1062,6 +1062,7 @@ class GoogleCloudFunctionsV2betaOperationMetadata(_messages.Message):
     SETUP_FUNCTION_UPGRADE_CONFIG = 6
     ABORT_FUNCTION_UPGRADE = 7
     COMMIT_FUNCTION_UPGRADE = 8
+    DETACH_FUNCTION = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RequestResourceValue(_messages.Message):

@@ -826,3 +826,21 @@ def WriteResourceInCommentBlock(serialized_resource, title, buf):
       buf.write('   ')
       buf.write(line)
       buf.write('\n')
+
+
+def IsDefaultUniverse():
+  """Outputs whether it is running against default universe."""
+  return (
+      properties.VALUES.core.universe_domain.Get()
+      == properties.VALUES.core.universe_domain.default
+  )
+
+
+def SupportNetworkConnectivityTest():
+  """Outputs whether connectivity is supported."""
+  return IsDefaultUniverse()
+
+
+def SupportIAP():
+  """Outputs whether IAP is supported."""
+  return IsDefaultUniverse()

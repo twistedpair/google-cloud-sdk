@@ -224,7 +224,7 @@ def AddCreateInstanceFlags(parser):
       'NVIDIA_TESLA_V100', 'NVIDIA_TESLA_P4', 'NVIDIA_TESLA_T4',
       'NVIDIA_TESLA_A100', 'NVIDIA_A100_80GB',
       'NVIDIA_TESLA_T4_VWS', 'NVIDIA_TESLA_P100_VWS', 'NVIDIA_TESLA_P4_VWS',
-      'NVIDIA_L4'
+      'NVIDIA_L4', 'NVIDIA_H100_80GB', 'NVIDIA_H100_MEGA_80GB'
   ]
   disk_choices = ['PD_STANDARD', 'PD_SSD', 'PD_BALANCED', 'PD_EXTREME']
   encryption_choices = ['GMEK', 'CMEK']
@@ -423,6 +423,16 @@ def AddCreateInstanceFlags(parser):
       ),
       type=str)
 
+  gce_setup_group.add_argument(
+      '--confidential-compute-type',
+      help=(
+          'String. VM instance with CC (Confidential Compute) of type. '
+          'Supported values: `SEV`.'
+      ),
+      type=str,
+      hidden=True,
+  )
+
   gpu_group = gce_setup_group.add_group(help='GPU driver configurations.')
   gpu_group.add_argument(
       '--install-gpu-driver',
@@ -534,6 +544,15 @@ def AddCreateInstanceFlags(parser):
   )
 
   parser.add_argument(
+      '--enable-third-party-identity',
+      action='store_true',
+      dest='enable_third_party_identity',
+      help=(
+          'If true, the notebook instance provide a proxy endpoint which allows'
+          ' for third party identity.'
+      ),
+  )
+  parser.add_argument(
       '--labels',
       help=(
           'Labels to apply to this instance. These can be later modified '
@@ -613,7 +632,7 @@ def AddUpdateInstanceFlags(parser):
       'NVIDIA_TESLA_V100', 'NVIDIA_TESLA_P4', 'NVIDIA_TESLA_T4',
       'NVIDIA_TESLA_A100', 'NVIDIA_A100_80GB',
       'NVIDIA_TESLA_T4_VWS', 'NVIDIA_TESLA_P100_VWS', 'NVIDIA_TESLA_P4_VWS',
-      'NVIDIA_L4'
+      'NVIDIA_L4', 'NVIDIA_H100_80GB', 'NVIDIA_H100_MEGA_80GB'
   ]
   AddInstanceResource(parser)
   gce_setup_group = parser.add_group(
@@ -681,6 +700,13 @@ def AddUpdateInstanceFlags(parser):
           'The '
           '[Compute Engine machine type](https://cloud.google.com/sdk/gcloud/reference/compute/machine-types) '  # pylint: disable=line-too-long
           'of this instance.'))
+  gce_setup_group.add_argument(
+      '--tags',
+      help='Tags to apply to this instance.',
+      type=arg_parsers.ArgList(),
+      metavar='TAGS',
+      hidden=True,
+  )
 
 
 def AddDiagnoseInstanceFlags(parser):

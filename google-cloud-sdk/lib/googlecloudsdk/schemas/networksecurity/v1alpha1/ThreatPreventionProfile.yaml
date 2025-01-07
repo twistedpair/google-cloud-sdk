@@ -25,16 +25,29 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  antivirusOverrides:
+    description: Configuration for overriding antivirus actions per protocol.
+    type: array
+    items:
+      $ref: AntivirusOverride.yaml
+  antivirusThreatOverrides:
+    description: |-
+      Configuration for overriding VIRUS threat actions per protocol.
+    type: array
+    items:
+      $ref: AntivirusThreatOverride.yaml
   severityOverrides:
-    description: Configuration for overriding threats actions by severity match.
+    description: |-
+      Configuration for overriding threats actions by severity match.
     type: array
     items:
       $ref: SeverityOverride.yaml
   threatOverrides:
     description: |-
-      Configuration for overriding threats actions by threat_id match. If a
-      threat is matched both by configuration provided in severity_overrides
-      and threat_overrides, the threat_overrides action is applied.
+      Configuration for overriding threats actions by threat_id
+      match. If a threat is matched both by configuration provided
+      in severity_overrides and threat_overrides, the
+      threat_overrides action is applied.
     type: array
     items:
       $ref: ThreatOverride.yaml

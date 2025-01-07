@@ -60,6 +60,7 @@ SETTING_RESOURCE_TYPE_ENUM = (
     COMPUTE_RESOURCE_TYPE,
     ORG_RESOURCE_TYPE,
     FOLDER_RESOURCE_TYPE,
+    BACKEND_SERVICES_RESOURCE_TYPE,
 )
 SETTING_RESOURCE_TYPE_ENUM_ALPHA = (
     APP_ENGINE_RESOURCE_TYPE,
@@ -69,6 +70,7 @@ SETTING_RESOURCE_TYPE_ENUM_ALPHA = (
     FOLDER_RESOURCE_TYPE,
     FORWARDING_RULE_RESOURCE_TYPE,
     CLOUD_RUN_RESOURCE_TYPE,
+    BACKEND_SERVICES_RESOURCE_TYPE,
 )
 SETTING_RESOURCE_TYPE_ENUM_BETA = (
     APP_ENGINE_RESOURCE_TYPE,
@@ -77,6 +79,7 @@ SETTING_RESOURCE_TYPE_ENUM_BETA = (
     ORG_RESOURCE_TYPE,
     FOLDER_RESOURCE_TYPE,
     FORWARDING_RULE_RESOURCE_TYPE,
+    BACKEND_SERVICES_RESOURCE_TYPE,
 )
 
 
@@ -272,20 +275,27 @@ def AddIapSettingArg(
         help=(
             'Resource type of the IAP resource. `--resource-type=cloud-run` is'
             ' private priview feature and reach out to cloud-run team if you'
-            ' want to test it.'
+            ' want to test it. For Backend Services, you can use both `compute`'
+            ' and `backend-services` as resource type.'
         ),
     )
   elif support_forwarding_rule:
     group.add_argument(
         '--resource-type',
         choices=SETTING_RESOURCE_TYPE_ENUM_BETA,
-        help='Resource type of the IAP resource.',
+        help=(
+            'Resource type of the IAP resource. For Backend Services, you can'
+            ' use both `compute` and `backend-services` as resource type.'
+        ),
     )
   else:
     group.add_argument(
         '--resource-type',
         choices=SETTING_RESOURCE_TYPE_ENUM,
-        help='Resource type of the IAP resource.',
+        help=(
+            'Resource type of the IAP resource. For Backend Services, you can'
+            ' use both `compute` and `backend-services` as resource type.'
+        ),
     )
 
   group.add_argument(
@@ -667,7 +677,10 @@ def ParseIapSettingsResource(
                     args.project, args.project, args.service
                 ),
             )
-      elif args.resource_type == COMPUTE_RESOURCE_TYPE:
+      elif (
+          args.resource_type == COMPUTE_RESOURCE_TYPE
+          or args.resource_type == BACKEND_SERVICES_RESOURCE_TYPE
+      ):
         path = ['projects', args.project, 'iap_web']
         if args.region:
           path.append('compute-{}'.format(args.region))

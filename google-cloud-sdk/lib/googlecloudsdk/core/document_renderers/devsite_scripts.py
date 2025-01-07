@@ -26,4 +26,4 @@ from __future__ import unicode_literals
 
 SCRIPTS = (
     # Each element is a (comment, script) tuple.
-    )
+)

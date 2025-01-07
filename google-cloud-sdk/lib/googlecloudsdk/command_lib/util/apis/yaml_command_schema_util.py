@@ -42,6 +42,7 @@ REL_NAME_FORMAT_KEY = '__relative_name__'
 RESOURCE_TYPE_FORMAT_KEY = '__resource_type__'
 KEY, VALUE = 'key', 'value'
 ARG_OBJECT, ARG_DICT, ARG_LIST = 'arg_object', 'arg_dict', 'arg_list'
+SPEC, PARAMS, GROUP = 'spec', 'params', 'group'
 FILE_TYPE = 'file_type'
 
 
@@ -273,7 +274,7 @@ def ParseType(data):
   Returns:
     The type to use as argparse accepts it.
   """
-  contains_spec = 'spec' in data
+  contains_spec = any(key in data for key in (SPEC, PARAMS, GROUP))
   if specified_type := data.get('type'):
     arg_type = specified_type
   elif contains_spec:
@@ -573,32 +574,91 @@ class ArgObject(arg_utils.ArgObjectType):
   """A wrapper to bind an ArgObject argument to a message or field."""
 
   @classmethod
-  def FromData(cls, data=None):
+  def _FieldTypeFromData(cls, data):
     """Creates ArgObject from yaml data."""
-
-    spec = data.get('spec')
     if (data_type := data.get('type')) and data_type != ARG_OBJECT:
-      field_type = ParseType(data)
+      return ParseType(data)
     else:
-      field_type = None
+      return None
+
+  @classmethod
+  def _SpecFromData(cls, params_data, api_field, parent_field):
+    """Creates ArgObject types from yaml spec data."""
+    spec = []
+    for field_data in params_data:
+      arg_object = ArgObject.FromData(
+          field_data, parent_field=api_field or parent_field)
+      # Flatten specs that do not have an api_field associated with them.
+      # This supports the use case where there is a mutex arg group that does
+      # not have an api_field associated with it.
+      if not arg_object.api_field and arg_object.spec:
+        spec.extend(arg_object.spec)
+      else:
+        spec.append(arg_object)
+    return spec
+
+  @classmethod
+  def _RelativeApiField(cls, api_field, parent_field=None):
+    """Creates ArgObject from yaml data."""
+    # Api field is either relative to the parent field or the root message.
+    # If the field is relative to the root field, we remove the parent field
+    # to make it relative to the parent message.
+    if not parent_field or not api_field:
+      return api_field
+
+    prefix = f'{parent_field}.'
+    if api_field.startswith(prefix):
+      return api_field[len(prefix):]
+    else:
+      return api_field
+
+  @classmethod
+  def FromData(cls, data, disable_key_description=False, parent_field=None):
+    """Creates ArgObject from yaml data."""
+    if group := data.get(GROUP):
+      group_data = group
+    else:
+      group_data = data
+
+    api_field = group_data.get('api_field')
+
+    if params := group_data.get(PARAMS) or group_data.get(SPEC):
+      spec = cls._SpecFromData(params, api_field, parent_field)
+    else:
+      spec = None
+
+    # The only time it's possible to generate an ArgObject without an api
+    # field is when it's part of a mutex group. In which case, it will use
+    # the parent api field.
+    json_name = group_data.get('json_name')
+    if not group_data.get('mutex') and not api_field:
+      arg_name = group_data.get('arg_name') or json_name
+      raise InvalidSchemaError(
+          f'api_field is required for {arg_name}: '
+          f'Add api_field to {arg_name} to generate a valid ArgObject.'
+      )
+
     return cls(
-        api_field=data['api_field'],
-        arg_name=data.get('arg_name'),
-        help_text=data.get('help_text'),
-        hidden=data.get('hidden'),
-        field_type=field_type,
-        spec=[ArgObject.FromData(f) for f in spec] if spec is not None else None
+        api_field=cls._RelativeApiField(api_field, parent_field),
+        json_name=json_name,
+        help_text=group_data.get('help_text'),
+        hidden=group_data.get('hidden'),
+        field_type=cls._FieldTypeFromData(group_data),
+        spec=spec,
+        disable_key_description=disable_key_description,
     )
 
-  def __init__(self, api_field=None, arg_name=None, help_text=None,
-               hidden=None, field_type=None, spec=None):
+  def __init__(self, api_field=None, json_name=None, help_text=None,
+               hidden=None, field_type=None, spec=None,
+               disable_key_description=False):
     # Represents user specified yaml data
     self.api_field = api_field
-    self.arg_name = arg_name
+    self.json_name = json_name
     self.help_text = help_text
     self.hidden = hidden
     self.field_type = field_type
     self.spec = spec
+    self.disable_key_description = disable_key_description
 
   def Action(self, field):
     """Returns the correct argument action.
@@ -615,7 +675,8 @@ class ArgObject(arg_utils.ArgObjectType):
 
   def _GetFieldTypeFromSpec(self, api_field):
     """Returns first spec field that matches the api_field."""
-    default_type = ArgObject()
+    default_type = ArgObject(
+        disable_key_description=self.disable_key_description)
     spec = self.spec or []
     return next((f for f in spec if f.api_field == api_field), default_type)
 
@@ -670,7 +731,7 @@ class ArgObject(arg_utils.ArgObjectType):
 
     is_label_field = field_spec.arg_name == 'labels'
     props_field_spec = _FieldSpec.FromUserData(
-        additional_props_field, arg_name=self.arg_name)
+        additional_props_field, arg_name=self.json_name)
     key_type = self._GenerateSubFieldType(
         additional_props_field.type, KEY, is_label_field=is_label_field)
     value_type = self._GenerateSubFieldType(
@@ -682,7 +743,8 @@ class ArgObject(arg_utils.ArgObjectType):
         value_type=value_type,
         help_text=self.help_text,
         hidden=field_spec.hidden,
-        enable_shorthand=is_root)
+        enable_shorthand=is_root,
+        disable_key_description=self.disable_key_description)
 
     additional_prop_spec_type = _AdditionalPropsType(
         arg_type=arg_obj,
@@ -737,7 +799,8 @@ class ArgObject(arg_utils.ArgObjectType):
         required_keys=required,
         repeated=field_spec.repeated,
         hidden=field_spec.hidden,
-        enable_shorthand=is_root)
+        enable_shorthand=is_root,
+        disable_key_description=self.disable_key_description)
 
     return _MessageFieldType(
         arg_type=arg_obj,
@@ -773,7 +836,8 @@ class ArgObject(arg_utils.ArgObjectType):
         hidden=field_spec.hidden,
         enable_shorthand=False,
         enable_file_upload=(
-            not isinstance(value_type, arg_parsers.FileContents))
+            not isinstance(value_type, arg_parsers.FileContents)),
+        disable_key_description=self.disable_key_description
     )
     return _FieldType(
         arg_type=arg_obj,
@@ -794,7 +858,7 @@ class ArgObject(arg_utils.ArgObjectType):
       instance or list of instances from string value.
     """
     field_spec = _FieldSpec.FromUserData(
-        field, arg_name=self.arg_name, field_type=self.field_type,
+        field, arg_name=self.json_name, field_type=self.field_type,
         api_field=self.api_field, hidden=self.hidden)
     field_variation = arg_utils.GetFieldType(field)
     if field_variation == arg_utils.FieldType.MAP:

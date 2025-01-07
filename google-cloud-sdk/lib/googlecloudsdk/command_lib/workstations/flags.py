@@ -80,6 +80,48 @@ def AddDisallowUnauthenticatedCorsPreflightRequestsToggleFlag(parser):
   )
 
 
+def AddDisableLocalhostReplacementFlag(parser):
+  """Adds a --disable-localhost-replacement flag to the given parser."""
+  help_text = """\
+    By default, the workstations service replaces references to localhost,
+    127.0.0.1, and 0.0.0.0 with the workstation's hostname in http responses
+    from the workstation so that applications under development run properly
+    on the workstation. This may intefere with some applications, and so
+    this option allows that behavior to be disabled.
+  """
+  parser.add_argument(
+      '--disable-localhost-replacement',
+      action='store_true',
+      help=help_text,
+  )
+
+
+def AddDisableLocalhostReplacementToggleFlag(parser):
+  """Adds a --enable-localhost-replacement flag to the given parser."""
+  help_text = """\
+    By default, the workstations service replaces references to localhost,
+    127.0.0.1, and 0.0.0.0 with the workstation's hostname in http responses
+    from the workstation so that applications under development run properly
+    on the workstation. This may intefere with some applications, and so
+    this option allows that behavior to be disabled.
+  """
+
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument(
+      '--disable-localhost-replacement',
+      action='store_true',
+      help=help_text,
+  )
+
+  help_text = """\
+  If set, requires that all requests to the workstation are authenticated."""
+  group.add_argument(
+      '--enable-localhost-replacement',
+      action='store_true',
+      help=help_text,
+  )
+
+
 def AddAllowedPortsFlag(parser):
   """Adds a --allowed-ports flag to the given parser."""
   help_text = """\

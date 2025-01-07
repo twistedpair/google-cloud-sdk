@@ -351,6 +351,7 @@ class ServerlessOperations(object):
     try:
       with metrics.RecordDuration(metric_names.WAIT_OPERATION):
         poller = op_pollers.WaitOperationPoller(
+            self.messages_module,
             self._client.projects_locations_services,
             self._client.projects_locations_operations,
         )

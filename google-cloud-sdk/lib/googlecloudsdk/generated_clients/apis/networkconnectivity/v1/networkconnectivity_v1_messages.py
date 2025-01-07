@@ -68,6 +68,60 @@ class ActivateSpokeRequest(_messages.Message):
   requestId = _messages.StringField(1)
 
 
+class AllocationOptions(_messages.Message):
+  r"""Range auto-allocation options, to be optionally used when CIDR block is
+  not explicitly set.
+
+  Enums:
+    AllocationStrategyValueValuesEnum: Optional. Allocation strategy Not
+      setting this field when the allocation is requested means an
+      implementation defined strategy is used.
+
+  Fields:
+    allocationStrategy: Optional. Allocation strategy Not setting this field
+      when the allocation is requested means an implementation defined
+      strategy is used.
+    firstAvailableRangesLookupSize: Optional. This field must be set only when
+      allocation_strategy is set to RANDOM_FIRST_N_AVAILABLE. The value should
+      be the maximum expected parallelism of range creation requests issued to
+      the same space of peered netwroks.
+  """
+
+  class AllocationStrategyValueValuesEnum(_messages.Enum):
+    r"""Optional. Allocation strategy Not setting this field when the
+    allocation is requested means an implementation defined strategy is used.
+
+    Values:
+      ALLOCATION_STRATEGY_UNSPECIFIED: Unspecified strategy must be used when
+        the range is specified explicitly using ip_cidr_range field.
+        Othherwise unspefified means using the default strategy.
+      RANDOM: Random strategy, the legacy algorithm, used for backwards
+        compatibility. This allocation strategy remains efficient in the case
+        of concurrent allocation requests in the same peered network space and
+        doesn't require providing the level of concurrency in an explicit
+        parameter, but it is prone to fragmenting available address space.
+      FIRST_AVAILABLE: Pick the first available address range. This strategy
+        is deterministic and the result is easy to predict.
+      RANDOM_FIRST_N_AVAILABLE: Pick an arbitrary range out of the first N
+        available ones. The N will be set in the
+        first_available_ranges_lookup_size field. This strategy should be used
+        when concurrent allocation requests are made in the same space of
+        peered networks while the fragmentation of the addrress space is
+        reduced.
+      FIRST_SMALLEST_FITTING: Pick the smallest but fitting available range.
+        This deterministic strategy minimizes fragmentation of the address
+        space.
+    """
+    ALLOCATION_STRATEGY_UNSPECIFIED = 0
+    RANDOM = 1
+    FIRST_AVAILABLE = 2
+    RANDOM_FIRST_N_AVAILABLE = 3
+    FIRST_SMALLEST_FITTING = 4
+
+  allocationStrategy = _messages.EnumField('AllocationStrategyValueValuesEnum', 1)
+  firstAvailableRangesLookupSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -140,9 +194,9 @@ class AutoAccept(_messages.Message):
   hub administrator.
 
   Fields:
-    autoAcceptProjects: A list of project ids or project numbers for which you
-      want to enable auto-accept. The auto-accept setting is applied to spokes
-      being created or updated in these projects.
+    autoAcceptProjects: Optional. A list of project ids or project numbers for
+      which you want to enable auto-accept. The auto-accept setting is applied
+      to spokes being created or updated in these projects.
   """
 
   autoAcceptProjects = _messages.StringField(1, repeated=True)
@@ -807,13 +861,13 @@ class GoogleRpcErrorInfo(_messages.Message):
 
   Messages:
     MetadataValue: Additional structured details about this error. Keys must
-      match /a-z+/ but should ideally be lowerCamelCase. Also they must be
-      limited to 64 characters in length. When identifying the current value
-      of an exceeded limit, the units should be contained in the key, not the
-      value. For example, rather than {"instanceLimit": "100/request"}, should
-      be returned as, {"instanceLimitPerRequest": "100"}, if the client
-      exceeds the number of instances that can be created in a single (batch)
-      request.
+      match a regular expression of `a-z+` but should ideally be
+      lowerCamelCase. Also, they must be limited to 64 characters in length.
+      When identifying the current value of an exceeded limit, the units
+      should be contained in the key, not the value. For example, rather than
+      `{"instanceLimit": "100/request"}`, should be returned as,
+      `{"instanceLimitPerRequest": "100"}`, if the client exceeds the number
+      of instances that can be created in a single (batch) request.
 
   Fields:
     domain: The logical grouping to which the "reason" belongs. The error
@@ -823,12 +877,13 @@ class GoogleRpcErrorInfo(_messages.Message):
       globally unique value that identifies the infrastructure. For Google API
       infrastructure, the error domain is "googleapis.com".
     metadata: Additional structured details about this error. Keys must match
-      /a-z+/ but should ideally be lowerCamelCase. Also they must be limited
-      to 64 characters in length. When identifying the current value of an
-      exceeded limit, the units should be contained in the key, not the value.
-      For example, rather than {"instanceLimit": "100/request"}, should be
-      returned as, {"instanceLimitPerRequest": "100"}, if the client exceeds
-      the number of instances that can be created in a single (batch) request.
+      a regular expression of `a-z+` but should ideally be lowerCamelCase.
+      Also, they must be limited to 64 characters in length. When identifying
+      the current value of an exceeded limit, the units should be contained in
+      the key, not the value. For example, rather than `{"instanceLimit":
+      "100/request"}`, should be returned as, `{"instanceLimitPerRequest":
+      "100"}`, if the client exceeds the number of instances that can be
+      created in a single (batch) request.
     reason: The reason of the error. This is a constant value that identifies
       the proximate cause of the error. Error reasons are unique within a
       particular domain of errors. This should be at most 63 characters and
@@ -838,13 +893,14 @@ class GoogleRpcErrorInfo(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Additional structured details about this error. Keys must match /a-z+/
-    but should ideally be lowerCamelCase. Also they must be limited to 64
-    characters in length. When identifying the current value of an exceeded
-    limit, the units should be contained in the key, not the value. For
-    example, rather than {"instanceLimit": "100/request"}, should be returned
-    as, {"instanceLimitPerRequest": "100"}, if the client exceeds the number
-    of instances that can be created in a single (batch) request.
+    r"""Additional structured details about this error. Keys must match a
+    regular expression of `a-z+` but should ideally be lowerCamelCase. Also,
+    they must be limited to 64 characters in length. When identifying the
+    current value of an exceeded limit, the units should be contained in the
+    key, not the value. For example, rather than `{"instanceLimit":
+    "100/request"}`, should be returned as, `{"instanceLimitPerRequest":
+    "100"}`, if the client exceeds the number of instances that can be created
+    in a single (batch) request.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -1052,7 +1108,7 @@ class Hub(_messages.Message):
 
   Fields:
     createTime: Output only. The time the hub was created.
-    description: An optional description of the hub.
+    description: Optional. An optional description of the hub.
     exchangePupi: Optional. Whether Privately Used Public IP (PUPI) exchange
       is enabled for the hub. If true, PUPI exchange will be allowed in VPC
       spokes attached to the hub. The default value is false.
@@ -1203,13 +1259,16 @@ class Hub(_messages.Message):
 
 
 class HubStatusEntry(_messages.Message):
-  r"""The hub status entry.
+  r"""A hub status entry represents the status of a set of propagated Private
+  Service Connect connections grouped by certain fields.
 
   Fields:
-    count: The number of status. If group_by is not set in the request, the
-      default is 1.
-    groupBy: The same group_by field from the request.
-    pscPropagationStatus: The PSC propagation status.
+    count: The number of propagated Private Service Connect connections with
+      this status. If the `group_by` field was not set in the request message,
+      the value of this field is 1.
+    groupBy: The fields that this entry is grouped by. This has the same value
+      as the `group_by` field in the request message.
+    pscPropagationStatus: The Private Service Connect propagation status.
   """
 
   count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1232,7 +1291,7 @@ class InterconnectAttachment(_messages.Message):
 class InternalRange(_messages.Message):
   r"""The internal range resource for IPAM operations within a VPC network.
   Used to represent a private address range along with behavioral
-  characterstics of that range (its usage and peering behavior). Networking
+  characteristics of that range (its usage and peering behavior). Networking
   resources can link to this range if they are created as belonging to it.
 
   Enums:
@@ -1244,8 +1303,14 @@ class InternalRange(_messages.Message):
     LabelsValue: User-defined labels.
 
   Fields:
+    allocationOptions: Optional. Range auto-allocation options, may be set
+      only when auto-allocation is selected by not setting ip_cidr_range (and
+      setting prefix_length).
     createTime: Time when the internal range was created.
     description: A description of this resource.
+    excludeCidrRanges: Optional. ExcludeCidrRanges flag. Specifies a set of
+      CIDR blocks that allows exclusion of particular CIDR ranges from the
+      auto-allocation process, without having to reserve these blocks
     immutable: Optional. Immutable ranges cannot have their fields modified,
       except for labels and description.
     ipCidrRange: The IP range that this internal range defines. NOTE: IPv6
@@ -1382,21 +1447,23 @@ class InternalRange(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  immutable = _messages.BooleanField(3)
-  ipCidrRange = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  migration = _messages.MessageField('Migration', 6)
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  overlaps = _messages.EnumField('OverlapsValueListEntryValuesEnum', 9, repeated=True)
-  peering = _messages.EnumField('PeeringValueValuesEnum', 10)
-  prefixLength = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  targetCidrRange = _messages.StringField(12, repeated=True)
-  updateTime = _messages.StringField(13)
-  usage = _messages.EnumField('UsageValueValuesEnum', 14)
-  users = _messages.StringField(15, repeated=True)
+  allocationOptions = _messages.MessageField('AllocationOptions', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  excludeCidrRanges = _messages.StringField(4, repeated=True)
+  immutable = _messages.BooleanField(5)
+  ipCidrRange = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  migration = _messages.MessageField('Migration', 8)
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  overlaps = _messages.EnumField('OverlapsValueListEntryValuesEnum', 11, repeated=True)
+  peering = _messages.EnumField('PeeringValueValuesEnum', 12)
+  prefixLength = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  targetCidrRange = _messages.StringField(14, repeated=True)
+  updateTime = _messages.StringField(15)
+  usage = _messages.EnumField('UsageValueValuesEnum', 16)
+  users = _messages.StringField(17, repeated=True)
 
 
 class IpRangeReservation(_messages.Message):
@@ -2248,26 +2315,27 @@ class NetworkconnectivityProjectsLocationsGlobalHubsQueryStatusRequest(_messages
   Fields:
     filter: Optional. An expression that filters the list of results. The
       filter can be used to filter the results by the following fields: *
-      psc_propagation_status.source_spoke *
-      psc_propagation_status.source_group *
-      psc_propagation_status.source_forwarding_rule *
-      psc_propagation_status.target_spoke *
-      psc_propagation_status.target_group * psc_propagation_status.code *
-      psc_propagation_status.message
-    groupBy: Optional. A field that counts are grouped by. A comma-separated
-      list of any of these fields: * psc_propagation_status.source_spoke *
-      psc_propagation_status.source_group *
-      psc_propagation_status.source_forwarding_rule *
-      psc_propagation_status.target_spoke *
-      psc_propagation_status.target_group * psc_propagation_status.code
+      `psc_propagation_status.source_spoke` *
+      `psc_propagation_status.source_group` *
+      `psc_propagation_status.source_forwarding_rule` *
+      `psc_propagation_status.target_spoke` *
+      `psc_propagation_status.target_group` * `psc_propagation_status.code` *
+      `psc_propagation_status.message`
+    groupBy: Optional. Aggregate the results by the specified fields. A comma-
+      separated list of any of these fields: *
+      `psc_propagation_status.source_spoke` *
+      `psc_propagation_status.source_group` *
+      `psc_propagation_status.source_forwarding_rule` *
+      `psc_propagation_status.target_spoke` *
+      `psc_propagation_status.target_group` * `psc_propagation_status.code`
     name: Required. The name of the hub.
-    orderBy: Optional. Sort the results in the ascending order by specific
-      fields returned in the response. A comma-separated list of any of these
-      fields: * psc_propagation_status.source_spoke *
-      psc_propagation_status.source_group *
-      psc_propagation_status.source_forwarding_rule *
-      psc_propagation_status.target_spoke *
-      psc_propagation_status.target_group * psc_propagation_status.code If
+    orderBy: Optional. Sort the results in ascending order by the specified
+      fields. A comma-separated list of any of these fields: *
+      `psc_propagation_status.source_spoke` *
+      `psc_propagation_status.source_group` *
+      `psc_propagation_status.source_forwarding_rule` *
+      `psc_propagation_status.target_spoke` *
+      `psc_propagation_status.target_group` * `psc_propagation_status.code` If
       `group_by` is set, the value of the `order_by` field must be the same as
       or a subset of the `group_by` field.
     pageSize: Optional. The maximum number of results to return per page.
@@ -4135,15 +4203,16 @@ class PscConnection(_messages.Message):
 
 
 class PscPropagationStatus(_messages.Message):
-  r"""The PSC propagation status in a hub.
+  r"""The status of one or more propagated Private Service Connect connections
+  in a hub.
 
   Enums:
     CodeValueValuesEnum: The propagation status.
 
   Fields:
     code: The propagation status.
-    message: The human-readable summary of the PSC connection propagation
-      status.
+    message: The human-readable summary of the Private Service Connect
+      connection propagation status.
     sourceForwardingRule: The name of the forwarding rule exported to the hub.
     sourceGroup: The name of the group that the source spoke belongs to.
     sourceSpoke: The name of the spoke that the source forwarding rule belongs
@@ -4158,22 +4227,27 @@ class PscPropagationStatus(_messages.Message):
 
     Values:
       CODE_UNSPECIFIED: The code is unspecified.
-      READY: The propagated PSC connection is ready.
-      PROPAGATING: PSC connection is propagating. This is a transient state.
-      ERROR_PRODUCER_PROPAGATED_CONNECTION_LIMIT_EXCEEDED: The PSC connection
-        propagation failed because the VPC network or the project of the
-        target spoke has exceeded the connection limit set by the producer.
-      ERROR_PRODUCER_NAT_IP_SPACE_EXHAUSTED: The PSC connection propagation
-        failed because the NAT IP subnet space has been exhausted. It is
-        equivalent to the `Needs attention` status of the PSC connection. See
+      READY: The propagated Private Service Connect connection is ready.
+      PROPAGATING: The Private Service Connect connection is propagating. This
+        is a transient state.
+      ERROR_PRODUCER_PROPAGATED_CONNECTION_LIMIT_EXCEEDED: The Private Service
+        Connect connection propagation failed because the VPC network or the
+        project of the target spoke has exceeded the connection limit set by
+        the producer.
+      ERROR_PRODUCER_NAT_IP_SPACE_EXHAUSTED: The Private Service Connect
+        connection propagation failed because the NAT IP subnet space has been
+        exhausted. It is equivalent to the `Needs attention` status of the
+        Private Service Connect connection. See
         https://cloud.google.com/vpc/docs/about-accessing-vpc-hosted-services-
         endpoints#connection-statuses.
-      ERROR_PRODUCER_QUOTA_EXCEEDED: PSC connection propagation failed because
-        the `PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK` quota in
-        the producer VPC network has been exceeded.
-      ERROR_CONSUMER_QUOTA_EXCEEDED: The PSC connection propagation failed
-        because the `PSC_PROPAGATED_CONNECTIONS_PER_VPC_NETWORK` quota in the
-        consumer VPC network has been exceeded.
+      ERROR_PRODUCER_QUOTA_EXCEEDED: The Private Service Connect connection
+        propagation failed because the
+        `PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK` quota in the
+        producer VPC network has been exceeded.
+      ERROR_CONSUMER_QUOTA_EXCEEDED: The Private Service Connect connection
+        propagation failed because the
+        `PSC_PROPAGATED_CONNECTIONS_PER_VPC_NETWORK` quota in the consumer VPC
+        network has been exceeded.
     """
     CODE_UNSPECIFIED = 0
     READY = 1
@@ -4700,7 +4774,7 @@ class ServiceConnectionMap(_messages.Message):
     serviceClassUri: Output only. The service class uri this
       ServiceConnectionMap is for.
     token: The token provided by the consumer. This token authenticates that
-      the consumer can create a connecton within the specified project and
+      the consumer can create a connection within the specified project and
       network.
     updateTime: Output only. Time when the ServiceConnectionMap was updated.
   """
@@ -4942,7 +5016,7 @@ class Spoke(_messages.Message):
 
   Fields:
     createTime: Output only. The time the spoke was created.
-    description: An optional description of the spoke.
+    description: Optional. An optional description of the spoke.
     gateway: Optional. This is a gateway that can apply specialized processing
       to traffic going through it.
     group: Optional. The name of the group that this spoke is associated with.
@@ -4951,14 +5025,15 @@ class Spoke(_messages.Message):
       about labels, see [Requirements for
       labels](https://cloud.google.com/resource-manager/docs/creating-
       managing-labels#requirements).
-    linkedInterconnectAttachments: VLAN attachments that are associated with
-      the spoke.
+    linkedInterconnectAttachments: Optional. VLAN attachments that are
+      associated with the spoke.
     linkedProducerVpcNetwork: Optional. The linked producer VPC that is
       associated with the spoke.
-    linkedRouterApplianceInstances: Router appliance instances that are
-      associated with the spoke.
+    linkedRouterApplianceInstances: Optional. Router appliance instances that
+      are associated with the spoke.
     linkedVpcNetwork: Optional. VPC network that is associated with the spoke.
-    linkedVpnTunnels: VPN tunnels that are associated with the spoke.
+    linkedVpnTunnels: Optional. VPN tunnels that are associated with the
+      spoke.
     name: Immutable. The name of the spoke. Spoke names must be unique. They
       use the following form:
       `projects/{project_number}/locations/{region}/spokes/{spoke_id}`

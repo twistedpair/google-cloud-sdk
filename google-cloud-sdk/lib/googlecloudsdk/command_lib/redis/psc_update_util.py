@@ -61,6 +61,7 @@ def _ExtractAllPSCIDs(endpoint):
   return set(
       connection.pscConnection.pscConnectionId
       for connection in endpoint.connections
+      if connection.pscConnection is not None
   )
 
 

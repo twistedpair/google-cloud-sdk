@@ -1543,7 +1543,7 @@ class Topic(_messages.Message):
 
 class UserManaged(_messages.Message):
   r"""A replication policy that replicates the Secret payload into the
-  locations specified in Secret.replication.user_managed.replicas
+  locations specified in Replication.UserManaged.replicas
 
   Fields:
     replicas: Required. The list of Replicas for this Secret. Cannot be empty.

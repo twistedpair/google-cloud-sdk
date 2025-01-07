@@ -25,18 +25,28 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  customInterceptProfile:
+    description: The custom TPPI configuration for the SecurityProfile.
+    $ref: CustomInterceptProfile.yaml
+  customMirroringProfile:
+    description: |-
+      The custom Packet Mirroring v2 configuration for the SecurityProfile.
+    $ref: CustomMirroringProfile.yaml
   description:
     description: |-
       An optional description of the profile. Max length 512 characters.
     type: string
+  domainFilteringProfile:
+    description: A DomainFilteringProfile attribute.
+    $ref: DomainFilteringProfile.yaml
   labels:
     description: Labels as key value pairs.
     $ref: LabelsValue.yaml
   name:
     description: |-
-      Immutable. Name of the SecurityProfile resource. It matches pattern
-      `projects|organizations/*/locations/{location}/securityProfiles/{securit
-      y_profile}`.
+      Immutable. Identifier. Name of the SecurityProfile resource. It matches
+      pattern `projects|organizations/*/locations/{location}/securityP
+      rofiles/{security_profile}`.
     type: string
   threatPreventionProfile:
     description: The threat prevention configuration for the SecurityProfile.
@@ -47,5 +57,12 @@ properties:
       configures.
     type: string
     enum:
+    - CUSTOM_INTERCEPT
+    - CUSTOM_MIRRORING
+    - DOMAIN_FILTERING
     - PROFILE_TYPE_UNSPECIFIED
     - THREAT_PREVENTION
+    - URL_FILTERING
+  urlFilteringProfile:
+    description: The URL filtering configuration for the SecurityProfile.
+    $ref: UrlFilteringProfile.yaml

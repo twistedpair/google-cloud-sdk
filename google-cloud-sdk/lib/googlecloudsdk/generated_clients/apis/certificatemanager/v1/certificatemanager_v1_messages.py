@@ -125,13 +125,15 @@ class Certificate(_messages.Message):
     r"""Optional. Immutable. The scope of the certificate.
 
     Values:
-      DEFAULT: Certificates with default scope are served from core Google
-        data centers. If unsure, choose this option.
-      EDGE_CACHE: Certificates with scope EDGE_CACHE are special-purposed
-        certificates, served from Edge Points of Presence. See
-        https://cloud.google.com/vpc/docs/edge-locations.
-      ALL_REGIONS: Certificates with ALL_REGIONS scope are served from all
-        Google Cloud regions. See
+      DEFAULT: Use the DEFAULT scope if you plan to use the certificate with
+        global external Application Load Balancer, global external proxy
+        Network Load Balancer, or any of the regional Google Cloud services.
+      EDGE_CACHE: Use the EDGE_CACHE scope if you plan to use the certificate
+        with Media CDN. The certificates are served from Edge Points of
+        Presence. See https://cloud.google.com/vpc/docs/edge-locations.
+      ALL_REGIONS: Use the ALL_REGIONS scope if you plan to use the
+        certificate with cross-region internal Application Load Balancer. The
+        certificates are served from all Google Cloud regions. See
         https://cloud.google.com/compute/docs/regions-zones.
     """
     DEFAULT = 0
@@ -1572,8 +1574,8 @@ class OperationMetadata(_messages.Message):
     endTime: The time the operation finished running.
     requestedCancellation: Identifies whether the user has requested
       cancellation of the operation. Operations that have successfully been
-      cancelled have Operation.error value with a google.rpc.Status.code of 1,
-      corresponding to `Code.CANCELLED`.
+      cancelled have google.longrunning.Operation.error value with a
+      google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
     statusMessage: Human-readable status of the operation, if any.
     target: Server-defined resource path for the target of the operation.
     verb: Name of the verb executed by the operation.

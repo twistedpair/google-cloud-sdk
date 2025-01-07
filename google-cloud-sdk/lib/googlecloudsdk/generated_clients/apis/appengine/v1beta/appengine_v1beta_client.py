@@ -1488,6 +1488,33 @@ class AppengineV1beta(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified service and all enclosed versions.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsServicesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/services/{servicesId}',
+        http_method='DELETE',
+        method_id='appengine.projects.locations.applications.services.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='AppengineProjectsLocationsApplicationsServicesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsApplicationsService(base_api.BaseApiService):
     """Service class for the projects_locations_applications resource."""
 

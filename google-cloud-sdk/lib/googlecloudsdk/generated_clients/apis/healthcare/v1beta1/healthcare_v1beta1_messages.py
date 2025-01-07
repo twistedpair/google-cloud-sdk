@@ -3563,6 +3563,15 @@ class GoogleCloudHealthcareV1beta1FhirBigQueryDestination(_messages.Message):
       parameter is ignored.
 
   Fields:
+    changeDataCaptureConfig: Optional. Setting this field will enable
+      BigQuery's Change Data Capture (CDC) on the destination tables. Use this
+      field if you: - Want to only keep the latest version of each resource.
+      Updates and deletes to an existing resource will overwrite the
+      corresponding row. - Have a store with enabled history modifications and
+      want to keep the entire history of resource versions but want the
+      history to be mutable. Updates and deletes to a specific resource
+      version will overwrite the corresponding row. See
+      https://cloud.google.com/bigquery/docs/change-data-capture for details.
     datasetUri: BigQuery URI to an existing dataset, up to 2000 characters
       long, in the format `bq://projectId.bqDatasetId`.
     force: Use `write_disposition` instead. If `write_disposition` is
@@ -3593,10 +3602,49 @@ class GoogleCloudHealthcareV1beta1FhirBigQueryDestination(_messages.Message):
     WRITE_TRUNCATE = 2
     WRITE_APPEND = 3
 
-  datasetUri = _messages.StringField(1)
-  force = _messages.BooleanField(2)
-  schemaConfig = _messages.MessageField('SchemaConfig', 3)
-  writeDisposition = _messages.EnumField('WriteDispositionValueValuesEnum', 4)
+  changeDataCaptureConfig = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirChangeDataCaptureConfig', 1)
+  datasetUri = _messages.StringField(2)
+  force = _messages.BooleanField(3)
+  schemaConfig = _messages.MessageField('SchemaConfig', 4)
+  writeDisposition = _messages.EnumField('WriteDispositionValueValuesEnum', 5)
+
+
+class GoogleCloudHealthcareV1beta1FhirChangeDataCaptureConfig(_messages.Message):
+  r"""BigQuery Change Data Capture configuration.
+
+  Enums:
+    HistoryModeValueValuesEnum: Optional. Configures how historical versions
+      of FHIR resources will be reflected in the destination table through
+      updates and deletes. Defaults to `HistoryMode.KEEP_LATEST_VERSION` if
+      unspecified.
+
+  Fields:
+    historyMode: Optional. Configures how historical versions of FHIR
+      resources will be reflected in the destination table through updates and
+      deletes. Defaults to `HistoryMode.KEEP_LATEST_VERSION` if unspecified.
+  """
+
+  class HistoryModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Configures how historical versions of FHIR resources will be
+    reflected in the destination table through updates and deletes. Defaults
+    to `HistoryMode.KEEP_LATEST_VERSION` if unspecified.
+
+    Values:
+      HISTORY_MODE_UNSPECIFIED: Default behavior is the same as
+        KEEP_LATEST_VERSION.
+      KEEP_LATEST_VERSION: The table will have a unique entry for each
+        resource ID. Updates and deletes will overwrite the row matching the
+        resource ID if it exists in the table.
+      KEEP_ALL_VERSIONS: Historical versions of resources will be maintained.
+        However, history mutation is allowed. Updates will overwrite the row
+        matching the resource ID and version if it exists in the table. This
+        option is only supported for stores with history enabled.
+    """
+    HISTORY_MODE_UNSPECIFIED = 0
+    KEEP_LATEST_VERSION = 1
+    KEEP_ALL_VERSIONS = 2
+
+  historyMode = _messages.EnumField('HistoryModeValueValuesEnum', 1)
 
 
 class GoogleCloudHealthcareV1beta1FhirExportResourcesResponse(_messages.Message):
@@ -6074,7 +6122,7 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirResourceValidateRequest(_
     httpBody: A HttpBody resource to be passed as the request body.
     parent: Required. The name of the FHIR store that holds the profiles being
       used for validation.
-    profile: Required. The canonical URL of a profile that this resource
+    profile: Optional. The canonical URL of a profile that this resource
       should be validated against. For example, to validate a Patient resource
       against the US Core Patient profile this parameter would be
       `http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient`. A
@@ -6113,7 +6161,7 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirSearchTypeRequest(_messag
 
   Fields:
     parent: Required. Name of the FHIR store to retrieve resources from.
-    resourceType: Required. The FHIR resource type to search, such as Patient
+    resourceType: Optional. The FHIR resource type to search, such as Patient
       or Observation. For a complete list, see the FHIR Resource Index ([DSTU2
       ](https://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
       [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),
@@ -9046,7 +9094,7 @@ class SearchResourcesRequest(_messages.Message):
   r"""Request to search the resources in the specified FHIR store.
 
   Fields:
-    resourceType: Required. The FHIR resource type to search, such as Patient
+    resourceType: Optional. The FHIR resource type to search, such as Patient
       or Observation. For a complete list, see the FHIR Resource Index ([DSTU2
       ](https://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
       [STU3](https://hl7.org/implement/standards/fhir/STU3/resourcelist.html),

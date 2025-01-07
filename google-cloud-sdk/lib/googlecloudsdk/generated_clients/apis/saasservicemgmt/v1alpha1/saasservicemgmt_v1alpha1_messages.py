@@ -581,10 +581,20 @@ class Release(_messages.Message):
   configuration packages) via artifact registry.
 
   Messages:
+    AnnotationsValue: Optional. Annotations is an unstructured key-value map
+      stored with a resource that may be set by external tools to store and
+      retrieve arbitrary metadata. They are not queryable and should be
+      preserved when modifying objects. More info:
+      https://kubernetes.io/docs/user-guide/annotations
     LabelsValue: Optional. The labels on the resource, which can be used for
       categorization. similar to Kubernetes resource labels.
 
   Fields:
+    annotations: Optional. Annotations is an unstructured key-value map stored
+      with a resource that may be set by external tools to store and retrieve
+      arbitrary metadata. They are not queryable and should be preserved when
+      modifying objects. More info: https://kubernetes.io/docs/user-
+      guide/annotations
     blueprint: Optional. Blueprints are OCI Images that contain all of the
       artifacts needed to provision a unit.
     createTime: Output only. The timestamp when the resource was created.
@@ -617,6 +627,34 @@ class Release(_messages.Message):
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Annotations is an unstructured key-value map stored with a
+    resource that may be set by external tools to store and retrieve arbitrary
+    metadata. They are not queryable and should be preserved when modifying
+    objects. More info: https://kubernetes.io/docs/user-guide/annotations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. The labels on the resource, which can be used for
     categorization. similar to Kubernetes resource labels.
@@ -641,18 +679,19 @@ class Release(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  blueprint = _messages.MessageField('Blueprint', 1)
-  createTime = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  inputVariableDefaults = _messages.MessageField('UnitVariable', 4, repeated=True)
-  inputVariables = _messages.MessageField('UnitVariable', 5, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  outputVariables = _messages.MessageField('UnitVariable', 8, repeated=True)
-  releaseRequirements = _messages.MessageField('ReleaseRequirements', 9)
-  uid = _messages.StringField(10)
-  unitKind = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  blueprint = _messages.MessageField('Blueprint', 2)
+  createTime = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  inputVariableDefaults = _messages.MessageField('UnitVariable', 5, repeated=True)
+  inputVariables = _messages.MessageField('UnitVariable', 6, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  outputVariables = _messages.MessageField('UnitVariable', 9, repeated=True)
+  releaseRequirements = _messages.MessageField('ReleaseRequirements', 10)
+  uid = _messages.StringField(11)
+  unitKind = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class ReleaseRequirements(_messages.Message):
@@ -668,13 +707,48 @@ class ReleaseRequirements(_messages.Message):
   upgradeableFromReleases = _messages.StringField(1, repeated=True)
 
 
+class RetryPolicy(_messages.Message):
+  r"""The policy to use for retrying failed units. The policy will only be
+  used to tell whether we should retry failed units on resuming a paused
+  rollout.
+
+  Enums:
+    StrategyValueValuesEnum: The strategy to use for retrying failed units.
+
+  Fields:
+    strategy: The strategy to use for retrying failed units.
+  """
+
+  class StrategyValueValuesEnum(_messages.Enum):
+    r"""The strategy to use for retrying failed units.
+
+    Values:
+      RETRY_STRATEGY_UNSPECIFIED: Unspecified retry strategy.
+      RETRY_STRATEGY_RETRY_ONCE: Always retry all failed units.
+      RETRY_STRATEGY_NEVER_RETRY: Never retry any failed units.
+    """
+    RETRY_STRATEGY_UNSPECIFIED = 0
+    RETRY_STRATEGY_RETRY_ONCE = 1
+    RETRY_STRATEGY_NEVER_RETRY = 2
+
+  strategy = _messages.EnumField('StrategyValueValuesEnum', 1)
+
+
 class Rollout(_messages.Message):
   r"""Represents a single rollout execution and its results
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the rollout.
+    TargetStateValueValuesEnum: Optional. Specifies the state that the users
+      want the rollout to be in. The state field will finally be reconciled by
+      the system to be the same as the target_state.
 
   Messages:
+    AnnotationsValue: Optional. Annotations is an unstructured key-value map
+      stored with a resource that may be set by external tools to store and
+      retrieve arbitrary metadata. They are not queryable and should be
+      preserved when modifying objects. More info:
+      https://kubernetes.io/docs/user-guide/annotations
     LabelsValue: Optional. The labels on the resource, which can be used for
       categorization. similar to Kubernetes resource labels.
 
@@ -683,6 +757,11 @@ class Rollout(_messages.Message):
     activityReason: Optional. When performing a specific activity like
       pause/resume/cancel, users can choose to provide the activity reason
       which can be populated into the given activity.
+    annotations: Optional. Annotations is an unstructured key-value map stored
+      with a resource that may be set by external tools to store and retrieve
+      arbitrary metadata. They are not queryable and should be preserved when
+      modifying objects. More info: https://kubernetes.io/docs/user-
+      guide/annotations
     cancel: Optional. Specifies whether the rollout should be canceled or not.
       Once set to true, it can't be reverted back to false. Cancellation while
       best-effort is a terminal state.
@@ -694,24 +773,38 @@ class Rollout(_messages.Message):
     etag: Output only. An opaque value that uniquely identifies a version or
       generation of a resource. It can be used to confirm that the client and
       server agree on the ordering of a resource being written.
+    flagRelease: Optional. Immutable. Name of the FlagRelease to be rolled out
+      to the target Units. Release and FlagRelease are mutually exclusive.
     labels: Optional. The labels on the resource, which can be used for
       categorization. similar to Kubernetes resource labels.
     name: Identifier. The resource name (full URI of the resource) following
       the standard naming scheme:
       "projects/{project}/locations/{location}/rollout/{rollout_id}"
+    parentRollout: Optional. Output only. The direct parent rollout that this
+      rollout is stemming from. The resource name (full URI of the resource)
+      following the standard naming scheme:
+      "projects/{project}/locations/{location}/rollouts/{rollout_id}"
     pause: Optional. Specifies whether the rollout should pause and pause the
       execution or not.
-    release: Required. Immutable. Name of the Release that gets rolled out to
-      target Units.
+    release: Optional. Immutable. Name of the Release that gets rolled out to
+      target Units. Release and FlagRelease are mutually exclusive.
     results: Output only. Information about progress of rollouts such as
       number of units identified, upgraded, pending etc. Note: this can be
       expanded to include finer-grain per-scope (e.g. per location) results as
       well as the top level aggregated ones listed here.
+    retryPolicy: Optional. The policy to use for retrying failed units. It
+      will only be used when user wants to resume a paused rollout, to decide
+      whether to retry the failed units. If not set, the default behavior is
+      to retry all failed units.
     rolloutStrategy: Optional. The strategy to use for executing this rollout.
       By default, the strategy from Rollout Type will be used, If not provided
       at creation time of the rollout. (immutable once created)
     rolloutType: Required. Immutable. Name of the RolloutType this rollout is
       stemming from and adhering to.
+    rootRollout: Optional. Output only. The root rollout that this rollout is
+      stemming from. The resource name (full URI of the resource) following
+      the standard naming scheme:
+      "projects/{project}/locations/{location}/rollouts/{rollout_id}"
     startTime: Optional. Output only. The time when the rollout started
       executing. Will be empty if the rollout hasn't started yet.
     state: Output only. Current state of the rollout.
@@ -719,11 +812,20 @@ class Rollout(_messages.Message):
       the last state transition.
     stateTransitionTime: Optional. Output only. The time when the rollout
       transitioned into its current state.
+    strategy: Optional. The strategy to use for executing this rollout. If not
+      provided, the strategy from Rollout Type will be used.
+    targetState: Optional. Specifies the state that the users want the rollout
+      to be in. The state field will finally be reconciled by the system to be
+      the same as the target_state.
     uid: Output only. The unique identifier of the resource. UID is unique in
       the time and space for this resource within the scope of the service. It
       is typically generated by the server on successful creation of a
       resource and must not be changed. UID is used to uniquely identify
       resources with resource name reuses. This should be a UUID4.
+    unitFilter: Optional. AIP/160 formatted filter string against Unit. The
+      filter will be applied to determine the eligible unit population. This
+      filter can only reduce, but not expand the scope of the rollout. If not
+      provided, the unit_filter from the RolloutType will be used.
     updateTime: Output only. The timestamp when the resource was last updated.
       Any change to the resource made by users must refresh this value.
       Changes to a resource made by the service should refresh this value.
@@ -739,6 +841,11 @@ class Rollout(_messages.Message):
       ROLLOUT_STATE_SUCCEEDED: Rollout completed successfully.
       ROLLOUT_STATE_FAILED: Rollout has failed.
       ROLLOUT_STATE_CANCELED: Rollout has been canceled.
+      ROLLOUT_STATE_WAITING: Rollout is waiting for some condition to be met
+        before starting.
+      ROLLOUT_STATE_CANCELING: Rollout is being canceled.
+      ROLLOUT_STATE_RESUMING: Rollout is being resumed.
+      ROLLOUT_STATE_PAUSING: Rollout is being paused.
     """
     ROLLOUT_STATE_UNSPECIFIED = 0
     ROLLOUT_STATE_RUNNING = 1
@@ -746,6 +853,67 @@ class Rollout(_messages.Message):
     ROLLOUT_STATE_SUCCEEDED = 3
     ROLLOUT_STATE_FAILED = 4
     ROLLOUT_STATE_CANCELED = 5
+    ROLLOUT_STATE_WAITING = 6
+    ROLLOUT_STATE_CANCELING = 7
+    ROLLOUT_STATE_RESUMING = 8
+    ROLLOUT_STATE_PAUSING = 9
+
+  class TargetStateValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the state that the users want the rollout to be
+    in. The state field will finally be reconciled by the system to be the
+    same as the target_state.
+
+    Values:
+      ROLLOUT_STATE_UNSPECIFIED: Unspecified state.
+      ROLLOUT_STATE_RUNNING: Rollout is in progress.
+      ROLLOUT_STATE_PAUSED: Rollout has been paused.
+      ROLLOUT_STATE_SUCCEEDED: Rollout completed successfully.
+      ROLLOUT_STATE_FAILED: Rollout has failed.
+      ROLLOUT_STATE_CANCELED: Rollout has been canceled.
+      ROLLOUT_STATE_WAITING: Rollout is waiting for some condition to be met
+        before starting.
+      ROLLOUT_STATE_CANCELING: Rollout is being canceled.
+      ROLLOUT_STATE_RESUMING: Rollout is being resumed.
+      ROLLOUT_STATE_PAUSING: Rollout is being paused.
+    """
+    ROLLOUT_STATE_UNSPECIFIED = 0
+    ROLLOUT_STATE_RUNNING = 1
+    ROLLOUT_STATE_PAUSED = 2
+    ROLLOUT_STATE_SUCCEEDED = 3
+    ROLLOUT_STATE_FAILED = 4
+    ROLLOUT_STATE_CANCELED = 5
+    ROLLOUT_STATE_WAITING = 6
+    ROLLOUT_STATE_CANCELING = 7
+    ROLLOUT_STATE_RESUMING = 8
+    ROLLOUT_STATE_PAUSING = 9
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Annotations is an unstructured key-value map stored with a
+    resource that may be set by external tools to store and retrieve arbitrary
+    metadata. They are not queryable and should be preserved when modifying
+    objects. More info: https://kubernetes.io/docs/user-guide/annotations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -774,23 +942,31 @@ class Rollout(_messages.Message):
 
   activityLog = _messages.MessageField('Activity', 1, repeated=True)
   activityReason = _messages.StringField(2)
-  cancel = _messages.BooleanField(3)
-  createTime = _messages.StringField(4)
-  endTime = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  pause = _messages.BooleanField(9)
-  release = _messages.StringField(10)
-  results = _messages.MessageField('RolloutResults', 11)
-  rolloutStrategy = _messages.MessageField('RolloutStrategy', 12)
-  rolloutType = _messages.StringField(13)
-  startTime = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  stateMessage = _messages.StringField(16)
-  stateTransitionTime = _messages.StringField(17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
+  annotations = _messages.MessageField('AnnotationsValue', 3)
+  cancel = _messages.BooleanField(4)
+  createTime = _messages.StringField(5)
+  endTime = _messages.StringField(6)
+  etag = _messages.StringField(7)
+  flagRelease = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  parentRollout = _messages.StringField(11)
+  pause = _messages.BooleanField(12)
+  release = _messages.StringField(13)
+  results = _messages.MessageField('RolloutResults', 14)
+  retryPolicy = _messages.MessageField('RetryPolicy', 15)
+  rolloutStrategy = _messages.MessageField('RolloutStrategy', 16)
+  rolloutType = _messages.StringField(17)
+  rootRollout = _messages.StringField(18)
+  startTime = _messages.StringField(19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  stateMessage = _messages.StringField(21)
+  stateTransitionTime = _messages.StringField(22)
+  strategy = _messages.StringField(23)
+  targetState = _messages.EnumField('TargetStateValueValuesEnum', 24)
+  uid = _messages.StringField(25)
+  unitFilter = _messages.StringField(26)
+  updateTime = _messages.StringField(27)
 
 
 class RolloutResults(_messages.Message):
@@ -867,17 +1043,35 @@ class RolloutType(_messages.Message):
   r"""An object that describes various settings of Rollout execution. Includes
   built-in policies across GCP and GDC, and customizable policies.
 
+  Enums:
+    MaintenancePolicyEnforcementValueValuesEnum:
+    UpdateUnitKindStrategyValueValuesEnum: Optional. The config for updating
+      the unit kind. By default, the unit kind will be updated on the rollout
+      start.
+
   Messages:
+    AnnotationsValue: Optional. Annotations is an unstructured key-value map
+      stored with a resource that may be set by external tools to store and
+      retrieve arbitrary metadata. They are not queryable and should be
+      preserved when modifying objects. More info:
+      https://kubernetes.io/docs/user-guide/annotations
     LabelsValue: Optional. The labels on the resource, which can be used for
       categorization. similar to Kubernetes resource labels.
 
   Fields:
+    annotations: Optional. Annotations is an unstructured key-value map stored
+      with a resource that may be set by external tools to store and retrieve
+      arbitrary metadata. They are not queryable and should be preserved when
+      modifying objects. More info: https://kubernetes.io/docs/user-
+      guide/annotations
     createTime: Output only. The timestamp when the resource was created.
     etag: Output only. An opaque value that uniquely identifies a version or
       generation of a resource. It can be used to confirm that the client and
       server agree on the ordering of a resource being written.
     labels: Optional. The labels on the resource, which can be used for
       categorization. similar to Kubernetes resource labels.
+    maintenancePolicyEnforcement: A
+      MaintenancePolicyEnforcementValueValuesEnum attribute.
     name: Identifier. The resource name (full URI of the resource) following
       the standard naming scheme:
       "projects/{project}/locations/{location}/rolloutTypes/{rollout_type_id}"
@@ -887,11 +1081,15 @@ class RolloutType(_messages.Message):
       (initially a small set of predefined strategies are used but possible to
       expand on settings and introduction of custom defined strategies in
       future).
+    strategy: Optional. The strategy to use for executing rollouts.
     uid: Output only. The unique identifier of the resource. UID is unique in
       the time and space for this resource within the scope of the service. It
       is typically generated by the server on successful creation of a
       resource and must not be changed. UID is used to uniquely identify
       resources with resource name reuses. This should be a UUID4.
+    unitFilter: Optional. AIP/160 formatted filter string against Unit. The
+      filter will be applied to determine the eligible unit population. This
+      filter can only reduce, but not expand the scope of the rollout.
     unitKind: Required. Immutable. UnitKind that this rollout type corresponds
       to. Rollouts stemming from this rollout type will target the units of
       this unit kind. In other words, this defines the population of target
@@ -899,7 +1097,65 @@ class RolloutType(_messages.Message):
     updateTime: Output only. The timestamp when the resource was last updated.
       Any change to the resource made by users must refresh this value.
       Changes to a resource made by the service should refresh this value.
+    updateUnitKindStrategy: Optional. The config for updating the unit kind.
+      By default, the unit kind will be updated on the rollout start.
   """
+
+  class MaintenancePolicyEnforcementValueValuesEnum(_messages.Enum):
+    r"""MaintenancePolicyEnforcementValueValuesEnum enum type.
+
+    Values:
+      MAINTENANCE_POLICY_ENFORCEMENT_UNSPECIFIED: <no description>
+      MAINTENANCE_POLICY_ENFORCEMENT_STRICT: <no description>
+      MAINTENANCE_POLICY_ENFORCEMENT_IGNORED: <no description>
+      MAINTENANCE_POLICY_ENFORCEMENT_SKIPPED: <no description>
+    """
+    MAINTENANCE_POLICY_ENFORCEMENT_UNSPECIFIED = 0
+    MAINTENANCE_POLICY_ENFORCEMENT_STRICT = 1
+    MAINTENANCE_POLICY_ENFORCEMENT_IGNORED = 2
+    MAINTENANCE_POLICY_ENFORCEMENT_SKIPPED = 3
+
+  class UpdateUnitKindStrategyValueValuesEnum(_messages.Enum):
+    r"""Optional. The config for updating the unit kind. By default, the unit
+    kind will be updated on the rollout start.
+
+    Values:
+      UPDATE_UNIT_KIND_STRATEGY_UNSPECIFIED: Strategy unspecified.
+      UPDATE_UNIT_KIND_STRATEGY_ON_START: Update the unit kind strategy on the
+        rollout start.
+      UPDATE_UNIT_KIND_STRATEGY_NEVER: Never update the unit kind.
+    """
+    UPDATE_UNIT_KIND_STRATEGY_UNSPECIFIED = 0
+    UPDATE_UNIT_KIND_STRATEGY_ON_START = 1
+    UPDATE_UNIT_KIND_STRATEGY_NEVER = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Annotations is an unstructured key-value map stored with a
+    resource that may be set by external tools to store and retrieve arbitrary
+    metadata. They are not queryable and should be preserved when modifying
+    objects. More info: https://kubernetes.io/docs/user-guide/annotations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -926,25 +1182,40 @@ class RolloutType(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  etag = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  ongoingRollouts = _messages.StringField(5, repeated=True)
-  rolloutStrategy = _messages.MessageField('RolloutStrategy', 6)
-  uid = _messages.StringField(7)
-  unitKind = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  maintenancePolicyEnforcement = _messages.EnumField('MaintenancePolicyEnforcementValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  ongoingRollouts = _messages.StringField(7, repeated=True)
+  rolloutStrategy = _messages.MessageField('RolloutStrategy', 8)
+  strategy = _messages.StringField(9)
+  uid = _messages.StringField(10)
+  unitFilter = _messages.StringField(11)
+  unitKind = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
+  updateUnitKindStrategy = _messages.EnumField('UpdateUnitKindStrategyValueValuesEnum', 14)
 
 
 class SaasType(_messages.Message):
   r"""SaasType is a representation of a SaaS service managed by the Producer.
 
   Messages:
+    AnnotationsValue: Optional. Annotations is an unstructured key-value map
+      stored with a resource that may be set by external tools to store and
+      retrieve arbitrary metadata. They are not queryable and should be
+      preserved when modifying objects. More info:
+      https://kubernetes.io/docs/user-guide/annotations
     LabelsValue: Optional. The labels on the resource, which can be used for
       categorization. similar to Kubernetes resource labels.
 
   Fields:
+    annotations: Optional. Annotations is an unstructured key-value map stored
+      with a resource that may be set by external tools to store and retrieve
+      arbitrary metadata. They are not queryable and should be preserved when
+      modifying objects. More info: https://kubernetes.io/docs/user-
+      guide/annotations
     createTime: Output only. The timestamp when the resource was created.
     etag: Output only. An opaque value that uniquely identifies a version or
       generation of a resource. It can be used to confirm that the client and
@@ -967,6 +1238,34 @@ class SaasType(_messages.Message):
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Annotations is an unstructured key-value map stored with a
+    resource that may be set by external tools to store and retrieve arbitrary
+    metadata. They are not queryable and should be preserved when modifying
+    objects. More info: https://kubernetes.io/docs/user-guide/annotations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. The labels on the resource, which can be used for
     categorization. similar to Kubernetes resource labels.
@@ -991,13 +1290,14 @@ class SaasType(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  etag = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  locations = _messages.MessageField('Location', 4, repeated=True)
-  name = _messages.StringField(5)
-  uid = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  locations = _messages.MessageField('Location', 5, repeated=True)
+  name = _messages.StringField(6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class SaasservicemgmtProjectsLocationsGetRequest(_messages.Message):
@@ -2315,10 +2615,20 @@ class Tenant(_messages.Message):
   "projects/gshoe/locations/loc/shoes/black-shoe"
 
   Messages:
+    AnnotationsValue: Optional. Annotations is an unstructured key-value map
+      stored with a resource that may be set by external tools to store and
+      retrieve arbitrary metadata. They are not queryable and should be
+      preserved when modifying objects. More info:
+      https://kubernetes.io/docs/user-guide/annotations
     LabelsValue: Optional. The labels on the resource, which can be used for
       categorization. similar to Kubernetes resource labels.
 
   Fields:
+    annotations: Optional. Annotations is an unstructured key-value map stored
+      with a resource that may be set by external tools to store and retrieve
+      arbitrary metadata. They are not queryable and should be preserved when
+      modifying objects. More info: https://kubernetes.io/docs/user-
+      guide/annotations
     consumerResource: Optional. Immutable. A reference to the consumer
       resource this SaaS Tenant is representing. The relationship with a
       consumer resource can be used by EasySaaS for retrieving consumer-
@@ -2342,6 +2652,34 @@ class Tenant(_messages.Message):
       Any change to the resource made by users must refresh this value.
       Changes to a resource made by the service should refresh this value.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Annotations is an unstructured key-value map stored with a
+    resource that may be set by external tools to store and retrieve arbitrary
+    metadata. They are not queryable and should be preserved when modifying
+    objects. More info: https://kubernetes.io/docs/user-guide/annotations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2368,13 +2706,14 @@ class Tenant(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  consumerResource = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  uid = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  consumerResource = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class ToMapping(_messages.Message):
@@ -2411,10 +2750,20 @@ class Unit(_messages.Message):
       system managed state of the unit.
 
   Messages:
+    AnnotationsValue: Optional. Annotations is an unstructured key-value map
+      stored with a resource that may be set by external tools to store and
+      retrieve arbitrary metadata. They are not queryable and should be
+      preserved when modifying objects. More info:
+      https://kubernetes.io/docs/user-guide/annotations
     LabelsValue: Optional. The labels on the resource, which can be used for
       categorization. similar to Kubernetes resource labels.
 
   Fields:
+    annotations: Optional. Annotations is an unstructured key-value map stored
+      with a resource that may be set by external tools to store and retrieve
+      arbitrary metadata. They are not queryable and should be preserved when
+      modifying objects. More info: https://kubernetes.io/docs/user-
+      guide/annotations
     blueprint: Optional. Blueprints are OCI Images that contain all of the
       artifacts needed to provision a unit.
     conditions: Optional. Output only. A set of conditions which indicate the
@@ -2427,6 +2776,7 @@ class Unit(_messages.Message):
     etag: Output only. An opaque value that uniquely identifies a version or
       generation of a resource. It can be used to confirm that the client and
       server agree on the ordering of a resource being written.
+    flagRevisions: Optional. Flag revisions used by this Unit.
     inputVariables: Optional. Output only. Indicates the current input
       variables deployed by the unit
     labels: Optional. The labels on the resource, which can be used for
@@ -2564,6 +2914,34 @@ class Unit(_messages.Message):
     SYSTEM_MANAGED_STATE_DECOMMISSIONED = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Annotations is an unstructured key-value map stored with a
+    resource that may be set by external tools to store and retrieve arbitrary
+    metadata. They are not queryable and should be preserved when modifying
+    objects. More info: https://kubernetes.io/docs/user-guide/annotations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. The labels on the resource, which can be used for
     categorization. similar to Kubernetes resource labels.
@@ -2588,33 +2966,35 @@ class Unit(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  blueprint = _messages.MessageField('Blueprint', 1)
-  conditions = _messages.MessageField('UnitCondition', 2, repeated=True)
-  createTime = _messages.StringField(3)
-  dependencies = _messages.MessageField('UnitDependency', 4, repeated=True)
-  dependents = _messages.MessageField('UnitDependency', 5, repeated=True)
-  etag = _messages.StringField(6)
-  inputVariables = _messages.MessageField('UnitVariable', 7, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 8)
-  maintenance = _messages.MessageField('MaintenanceSettings', 9)
-  managementMode = _messages.EnumField('ManagementModeValueValuesEnum', 10)
-  name = _messages.StringField(11)
-  nextMaintenance = _messages.MessageField('UnitMaintenanceSchedule', 12)
-  ongoingOperations = _messages.StringField(13, repeated=True)
-  operationMode = _messages.EnumField('OperationModeValueValuesEnum', 14)
-  outputVariables = _messages.MessageField('UnitVariable', 15, repeated=True)
-  pendingOperations = _messages.StringField(16, repeated=True)
-  release = _messages.StringField(17)
-  scheduledOperations = _messages.StringField(18, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  systemCleanupAt = _messages.StringField(20)
-  systemManagedState = _messages.EnumField('SystemManagedStateValueValuesEnum', 21)
-  targetInputVariables = _messages.MessageField('UnitVariable', 22, repeated=True)
-  targetRelease = _messages.StringField(23)
-  tenant = _messages.StringField(24)
-  uid = _messages.StringField(25)
-  unitKind = _messages.StringField(26)
-  updateTime = _messages.StringField(27)
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  blueprint = _messages.MessageField('Blueprint', 2)
+  conditions = _messages.MessageField('UnitCondition', 3, repeated=True)
+  createTime = _messages.StringField(4)
+  dependencies = _messages.MessageField('UnitDependency', 5, repeated=True)
+  dependents = _messages.MessageField('UnitDependency', 6, repeated=True)
+  etag = _messages.StringField(7)
+  flagRevisions = _messages.StringField(8, repeated=True)
+  inputVariables = _messages.MessageField('UnitVariable', 9, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 10)
+  maintenance = _messages.MessageField('MaintenanceSettings', 11)
+  managementMode = _messages.EnumField('ManagementModeValueValuesEnum', 12)
+  name = _messages.StringField(13)
+  nextMaintenance = _messages.MessageField('UnitMaintenanceSchedule', 14)
+  ongoingOperations = _messages.StringField(15, repeated=True)
+  operationMode = _messages.EnumField('OperationModeValueValuesEnum', 16)
+  outputVariables = _messages.MessageField('UnitVariable', 17, repeated=True)
+  pendingOperations = _messages.StringField(18, repeated=True)
+  release = _messages.StringField(19)
+  scheduledOperations = _messages.StringField(20, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  systemCleanupAt = _messages.StringField(22)
+  systemManagedState = _messages.EnumField('SystemManagedStateValueValuesEnum', 23)
+  targetInputVariables = _messages.MessageField('UnitVariable', 24, repeated=True)
+  targetRelease = _messages.StringField(25)
+  tenant = _messages.StringField(26)
+  uid = _messages.StringField(27)
+  unitKind = _messages.StringField(28)
+  updateTime = _messages.StringField(29)
 
 
 class UnitCondition(_messages.Message):
@@ -2691,11 +3071,24 @@ class UnitKind(_messages.Message):
   versions etc.) and are typically rolled out together.
 
   Messages:
+    AnnotationsValue: Optional. Annotations is an unstructured key-value map
+      stored with a resource that may be set by external tools to store and
+      retrieve arbitrary metadata. They are not queryable and should be
+      preserved when modifying objects. More info:
+      https://kubernetes.io/docs/user-guide/annotations
     LabelsValue: Optional. The labels on the resource, which can be used for
       categorization. similar to Kubernetes resource labels.
 
   Fields:
+    annotations: Optional. Annotations is an unstructured key-value map stored
+      with a resource that may be set by external tools to store and retrieve
+      arbitrary metadata. They are not queryable and should be preserved when
+      modifying objects. More info: https://kubernetes.io/docs/user-
+      guide/annotations
     createTime: Output only. The timestamp when the resource was created.
+    defaultFlagRevisions: Optional. Default revisions of flags for this
+      UnitKind. Newly created units will use the flag default_flag_revisions
+      present at the time of creation.
     defaultRelease: Optional. A reference to the Release object to use as
       default for creating new units of this UnitKind (optional). If not
       specified, a new unit must explicitly reference which release to use for
@@ -2730,6 +3123,34 @@ class UnitKind(_messages.Message):
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Annotations is an unstructured key-value map stored with a
+    resource that may be set by external tools to store and retrieve arbitrary
+    metadata. They are not queryable and should be preserved when modifying
+    objects. More info: https://kubernetes.io/docs/user-guide/annotations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. The labels on the resource, which can be used for
     categorization. similar to Kubernetes resource labels.
@@ -2754,17 +3175,19 @@ class UnitKind(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  defaultRelease = _messages.StringField(2)
-  dependencies = _messages.MessageField('Dependency', 3, repeated=True)
-  etag = _messages.StringField(4)
-  inputVariableMappings = _messages.MessageField('VariableMapping', 5, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  outputVariableMappings = _messages.MessageField('VariableMapping', 8, repeated=True)
-  saasType = _messages.StringField(9)
-  uid = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  defaultFlagRevisions = _messages.StringField(3, repeated=True)
+  defaultRelease = _messages.StringField(4)
+  dependencies = _messages.MessageField('Dependency', 5, repeated=True)
+  etag = _messages.StringField(6)
+  inputVariableMappings = _messages.MessageField('VariableMapping', 7, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  outputVariableMappings = _messages.MessageField('VariableMapping', 10, repeated=True)
+  saasType = _messages.StringField(11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class UnitMaintenanceSchedule(_messages.Message):
@@ -2795,10 +3218,20 @@ class UnitOperation(_messages.Message):
       the current state of the unit operation.
 
   Messages:
+    AnnotationsValue: Optional. Annotations is an unstructured key-value map
+      stored with a resource that may be set by external tools to store and
+      retrieve arbitrary metadata. They are not queryable and should be
+      preserved when modifying objects. More info:
+      https://kubernetes.io/docs/user-guide/annotations
     LabelsValue: Optional. The labels on the resource, which can be used for
       categorization. similar to Kubernetes resource labels.
 
   Fields:
+    annotations: Optional. Annotations is an unstructured key-value map stored
+      with a resource that may be set by external tools to store and retrieve
+      arbitrary metadata. They are not queryable and should be preserved when
+      modifying objects. More info: https://kubernetes.io/docs/user-
+      guide/annotations
     cancel: Optional. When true, attempt to cancel the operation. Cancellation
       may fail if the operation is already executing. (Optional)
     conditions: Optional. Output only. A set of conditions which indicate the
@@ -2894,6 +3327,34 @@ class UnitOperation(_messages.Message):
     UNIT_OPERATION_STATE_CANCELED = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Annotations is an unstructured key-value map stored with a
+    resource that may be set by external tools to store and retrieve arbitrary
+    metadata. They are not queryable and should be preserved when modifying
+    objects. More info: https://kubernetes.io/docs/user-guide/annotations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. The labels on the resource, which can be used for
     categorization. similar to Kubernetes resource labels.
@@ -2918,26 +3379,27 @@ class UnitOperation(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  cancel = _messages.BooleanField(1)
-  conditions = _messages.MessageField('UnitOperationCondition', 2, repeated=True)
-  createTime = _messages.StringField(3)
-  deprovision = _messages.MessageField('Deprovision', 4)
-  engineState = _messages.StringField(5)
-  errorCategory = _messages.EnumField('ErrorCategoryValueValuesEnum', 6)
-  etag = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  nextWindow = _messages.MessageField('MaintenanceWindow', 10)
-  parentUnitOperation = _messages.StringField(11)
-  provision = _messages.MessageField('Provision', 12)
-  respectMaintenancePolicy = _messages.BooleanField(13)
-  rollout = _messages.StringField(14)
-  schedule = _messages.MessageField('Schedule', 15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  uid = _messages.StringField(17)
-  unit = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  upgrade = _messages.MessageField('Upgrade', 20)
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  cancel = _messages.BooleanField(2)
+  conditions = _messages.MessageField('UnitOperationCondition', 3, repeated=True)
+  createTime = _messages.StringField(4)
+  deprovision = _messages.MessageField('Deprovision', 5)
+  engineState = _messages.StringField(6)
+  errorCategory = _messages.EnumField('ErrorCategoryValueValuesEnum', 7)
+  etag = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  nextWindow = _messages.MessageField('MaintenanceWindow', 11)
+  parentUnitOperation = _messages.StringField(12)
+  provision = _messages.MessageField('Provision', 13)
+  respectMaintenancePolicy = _messages.BooleanField(14)
+  rollout = _messages.StringField(15)
+  schedule = _messages.MessageField('Schedule', 16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  uid = _messages.StringField(18)
+  unit = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
+  upgrade = _messages.MessageField('Upgrade', 21)
 
 
 class UnitOperationCondition(_messages.Message):

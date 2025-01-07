@@ -23,8 +23,9 @@ from __future__ import unicode_literals
 class CrossSiteNetwork(object):
   """Abstracts Cross Site Network resource."""
 
-  def __init__(self, ref, compute_client=None, resources=None):
+  def __init__(self, ref, project, compute_client=None, resources=None):
     self.ref = ref
+    self.project = project
     self._compute_client = compute_client
     self._resources = resources
 
@@ -38,13 +39,11 @@ class CrossSiteNetwork(object):
 
   def _MakeCreateRequestTuple(
       self,
-      project,
       description,
   ):
     """Make a tuple for cross site network insert request.
 
     Args:
-      project: project for the Cross Site Network resource.
       description: String that represents the description of the Cloud
         Cross Site Network resource.
     Returns:
@@ -55,7 +54,7 @@ class CrossSiteNetwork(object):
         self._client.crossSiteNetworks,
         'Insert',
         messages.ComputeCrossSiteNetworksInsertRequest(
-            project=project,
+            project=self.project,
             crossSiteNetwork=messages.CrossSiteNetwork(
                 name=self.ref.Name(),
                 description=description,
@@ -63,16 +62,38 @@ class CrossSiteNetwork(object):
         ),
     )
 
+  def _MakePatchRequestTuple(self, **kwargs):
+    """Make a tuple for cross site network patch request."""
+    messages = self._messages
+    return (
+        self._client.crossSiteNetworks,
+        'Patch',
+        messages.ComputeCrossSiteNetworksPatchRequest(
+            project=self.project,
+            crossSiteNetwork=self.ref.Name(),
+            crossSiteNetworkResource=messages.CrossSiteNetwork(
+                **kwargs
+            ),
+        ),
+    )
+
+  def _MakeDeleteRequestTuple(self):
+    return (
+        self._client.crossSiteNetworks,
+        'Delete',
+        self._messages.ComputeCrossSiteNetworksDeleteRequest(
+            project=self.project, crossSiteNetwork=self.ref.Name(),
+        ),
+    )
+
   def Create(
       self,
-      project,
       description=None,
       only_generate_request=False,
   ):
     """Create a cross site network."""
     requests = [
         self._MakeCreateRequestTuple(
-            project,
             description,
         )
     ]
@@ -80,3 +101,18 @@ class CrossSiteNetwork(object):
       resources = self._compute_client.MakeRequests(requests)
       return resources[0]
     return requests
+
+  def Patch(self, only_generate_request=False, **kwargs):
+    """Patch description of a cross site network."""
+    requests = [self._MakePatchRequestTuple(**kwargs)]
+    if not only_generate_request:
+      resources = self._compute_client.MakeRequests(requests)
+      return resources[0]
+    return requests
+
+  def Delete(self, only_generate_request=False):
+    requests = [self._MakeDeleteRequestTuple()]
+    if not only_generate_request:
+      return self._compute_client.MakeRequests(requests)
+    return requests
+

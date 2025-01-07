@@ -415,7 +415,7 @@ class AutomationResourceSelector(_messages.Message):
   resources to which an Automation is going to be applied.
 
   Fields:
-    targets: Contains attributes about a target.
+    targets: Optional. Contains attributes about a target.
   """
 
   targets = _messages.MessageField('TargetAttribute', 1, repeated=True)
@@ -708,9 +708,9 @@ class BuildArtifact(_messages.Message):
   r"""Description of an a image to use during Skaffold rendering.
 
   Fields:
-    image: Image name in Skaffold configuration.
-    tag: Image tag to use. This will generally be the full path to an image,
-      such as "gcr.io/my-project/busybox:1.2.3" or "gcr.io/my-
+    image: Optional. Image name in Skaffold configuration.
+    tag: Optional. Image tag to use. This will generally be the full path to
+      an image, such as "gcr.io/my-project/busybox:1.2.3" or "gcr.io/my-
       project/busybox@sha256:abc123".
   """
 
@@ -722,11 +722,11 @@ class Canary(_messages.Message):
   r"""Canary represents the canary deployment strategy.
 
   Fields:
-    canaryDeployment: Configures the progressive based deployment for a
-      Target.
-    customCanaryDeployment: Configures the progressive based deployment for a
-      Target, but allows customizing at the phase level where a phase
-      represents each of the percentage deployments.
+    canaryDeployment: Optional. Configures the progressive based deployment
+      for a Target.
+    customCanaryDeployment: Optional. Configures the progressive based
+      deployment for a Target, but allows customizing at the phase level where
+      a phase represents each of the percentage deployments.
     runtimeConfig: Optional. Runtime specific configurations for the
       deployment strategy. The runtime configuration is used to determine how
       Cloud Deploy will split traffic to enable a progressive deployment.
@@ -751,7 +751,8 @@ class CanaryDeployment(_messages.Message):
     predeploy: Optional. Configuration for the predeploy job of the first
       phase. If this is not configured, there will be no predeploy job for
       this phase.
-    verify: Whether to run verify tests after each percentage deployment.
+    verify: Optional. Whether to run verify tests after each percentage
+      deployment.
   """
 
   percentages = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
@@ -803,10 +804,10 @@ class CloudRunConfig(_messages.Message):
   r"""CloudRunConfig contains the Cloud Run runtime configuration.
 
   Fields:
-    automaticTrafficControl: Whether Cloud Deploy should update the traffic
-      stanza in a Cloud Run Service on the user's behalf to facilitate traffic
-      splitting. This is required to be true for CanaryDeployments, but
-      optional for CustomCanaryDeployments.
+    automaticTrafficControl: Optional. Whether Cloud Deploy should update the
+      traffic stanza in a Cloud Run Service on the user's behalf to facilitate
+      traffic splitting. This is required to be true for CanaryDeployments,
+      but optional for CustomCanaryDeployments.
     canaryRevisionTags: Optional. A list of tags that are added to the canary
       revision while the canary phase is in progress.
     priorRevisionTags: Optional. A list of tags that are added to the prior
@@ -1007,8 +1008,8 @@ class ClouddeployProjectsLocationsCustomTargetTypesPatchRequest(_messages.Messag
       does not exist will result in the creation of a new `CustomTargetType`.
     customTargetType: A CustomTargetType resource to be passed as the request
       body.
-    name: Optional. Name of the `CustomTargetType`. Format is `projects/{proje
-      ct}/locations/{location}/customTargetTypes/{customTargetType}`. The
+    name: Identifier. Name of the `CustomTargetType`. Format is `projects/{pro
+      ject}/locations/{location}/customTargetTypes/{customTargetType}`. The
       `customTargetType` component must match
       `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
     requestId: Optional. A request ID to identify requests. Specify a unique
@@ -1403,8 +1404,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesPatchRequest(_messages.Messag
       does not exist will result in the creation of a new `DeliveryPipeline`.
     deliveryPipeline: A DeliveryPipeline resource to be passed as the request
       body.
-    name: Optional. Name of the `DeliveryPipeline`. Format is `projects/{proje
-      ct}/locations/{location}/deliveryPipelines/{deliveryPipeline}`. The
+    name: Identifier. Name of the `DeliveryPipeline`. Format is `projects/{pro
+      ject}/locations/{location}/deliveryPipelines/{deliveryPipeline}`. The
       `deliveryPipeline` component must match
       `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
     requestId: Optional. A request ID to identify requests. Specify a unique
@@ -1861,6 +1862,32 @@ class ClouddeployProjectsLocationsDeployPoliciesDeleteRequest(_messages.Message)
   validateOnly = _messages.BooleanField(5)
 
 
+class ClouddeployProjectsLocationsDeployPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsDeployPoliciesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class ClouddeployProjectsLocationsDeployPoliciesGetRequest(_messages.Message):
   r"""A ClouddeployProjectsLocationsDeployPoliciesGetRequest object.
 
@@ -1937,6 +1964,22 @@ class ClouddeployProjectsLocationsDeployPoliciesPatchRequest(_messages.Message):
   requestId = _messages.StringField(4)
   updateMask = _messages.StringField(5)
   validateOnly = _messages.BooleanField(6)
+
+
+class ClouddeployProjectsLocationsDeployPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsDeployPoliciesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
 class ClouddeployProjectsLocationsGetConfigRequest(_messages.Message):
@@ -2161,7 +2204,7 @@ class ClouddeployProjectsLocationsTargetsPatchRequest(_messages.Message):
   Fields:
     allowMissing: Optional. If set to true, updating a `Target` that does not
       exist will result in the creation of a new `Target`.
-    name: Optional. Name of the `Target`. Format is
+    name: Identifier. Name of the `Target`. Format is
       `projects/{project}/locations/{location}/targets/{target}`. The `target`
       component must match `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
     requestId: Optional. A request ID to identify requests. Specify a unique
@@ -2381,8 +2424,8 @@ class CustomTargetType(_messages.Message):
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     createTime: Output only. Time at which the `CustomTargetType` was created.
-    customActions: Configures render and deploy for the `CustomTargetType`
-      using Skaffold custom actions.
+    customActions: Optional. Configures render and deploy for the
+      `CustomTargetType` using Skaffold custom actions.
     customTargetTypeId: Output only. Resource id of the `CustomTargetType`.
     description: Optional. Description of the `CustomTargetType`. Max length
       is 255 characters.
@@ -2397,8 +2440,8 @@ class CustomTargetType(_messages.Message):
       start with a lowercase letter or international character. * Each
       resource is limited to a maximum of 64 labels. Both keys and values are
       additionally constrained to be <= 128 bytes.
-    name: Optional. Name of the `CustomTargetType`. Format is `projects/{proje
-      ct}/locations/{location}/customTargetTypes/{customTargetType}`. The
+    name: Identifier. Name of the `CustomTargetType`. Format is `projects/{pro
+      ject}/locations/{location}/customTargetTypes/{customTargetType}`. The
       `customTargetType` component must match
       `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
     uid: Output only. Unique identifier of the `CustomTargetType`.
@@ -2575,8 +2618,8 @@ class DeliveryPipeline(_messages.Message):
   can progress.
 
   Messages:
-    AnnotationsValue: User annotations. These attributes can only be set and
-      used by the user, and not by Cloud Deploy.
+    AnnotationsValue: Optional. User annotations. These attributes can only be
+      set and used by the user, and not by Cloud Deploy.
     LabelsValue: Labels are attributes that can be set and used by both the
       user and by Cloud Deploy. Labels must meet the following constraints: *
       Keys and values can contain only lowercase letters, numeric characters,
@@ -2587,13 +2630,13 @@ class DeliveryPipeline(_messages.Message):
       to be <= 128 bytes.
 
   Fields:
-    annotations: User annotations. These attributes can only be set and used
-      by the user, and not by Cloud Deploy.
+    annotations: Optional. User annotations. These attributes can only be set
+      and used by the user, and not by Cloud Deploy.
     condition: Output only. Information around the state of the Delivery
       Pipeline.
     createTime: Output only. Time at which the pipeline was created.
-    description: Description of the `DeliveryPipeline`. Max length is 255
-      characters.
+    description: Optional. Description of the `DeliveryPipeline`. Max length
+      is 255 characters.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
@@ -2605,14 +2648,14 @@ class DeliveryPipeline(_messages.Message):
       letter or international character. * Each resource is limited to a
       maximum of 64 labels. Both keys and values are additionally constrained
       to be <= 128 bytes.
-    name: Optional. Name of the `DeliveryPipeline`. Format is `projects/{proje
-      ct}/locations/{location}/deliveryPipelines/{deliveryPipeline}`. The
+    name: Identifier. Name of the `DeliveryPipeline`. Format is `projects/{pro
+      ject}/locations/{location}/deliveryPipelines/{deliveryPipeline}`. The
       `deliveryPipeline` component must match
       `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
-    serialPipeline: SerialPipeline defines a sequential set of stages for a
-      `DeliveryPipeline`.
-    suspended: When suspended, no new releases or rollouts can be created, but
-      in-progress ones will complete.
+    serialPipeline: Optional. SerialPipeline defines a sequential set of
+      stages for a `DeliveryPipeline`.
+    suspended: Optional. When suspended, no new releases or rollouts can be
+      created, but in-progress ones will complete.
     uid: Output only. Unique identifier of the `DeliveryPipeline`.
     updateTime: Output only. Most recent time at which the pipeline was
       updated.
@@ -2620,8 +2663,8 @@ class DeliveryPipeline(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""User annotations. These attributes can only be set and used by the
-    user, and not by Cloud Deploy.
+    r"""Optional. User annotations. These attributes can only be set and used
+    by the user, and not by Cloud Deploy.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -2695,9 +2738,9 @@ class DeliveryPipelineAttribute(_messages.Message):
     LabelsValue: DeliveryPipeline labels.
 
   Fields:
-    id: ID of the `DeliveryPipeline`. The value of this field could be one of
-      the following: * The last segment of a pipeline name * "*", all delivery
-      pipelines in a location
+    id: Optional. ID of the `DeliveryPipeline`. The value of this field could
+      be one of the following: * The last segment of a pipeline name * "*",
+      all delivery pipelines in a location
     labels: DeliveryPipeline labels.
   """
 
@@ -2950,9 +2993,9 @@ class DeployPolicy(_messages.Message):
   Target.
 
   Messages:
-    AnnotationsValue: User annotations. These attributes can only be set and
-      used by the user, and not by Cloud Deploy. Annotations must meet the
-      following constraints: * Annotations are key/value pairs. * Valid
+    AnnotationsValue: Optional. User annotations. These attributes can only be
+      set and used by the user, and not by Cloud Deploy. Annotations must meet
+      the following constraints: * Annotations are key/value pairs. * Valid
       annotation keys have two segments: an optional prefix and name,
       separated by a slash (`/`). * The name segment is required and must be
       63 characters or less, beginning and ending with an alphanumeric
@@ -2973,8 +3016,8 @@ class DeployPolicy(_messages.Message):
       to be <= 128 bytes.
 
   Fields:
-    annotations: User annotations. These attributes can only be set and used
-      by the user, and not by Cloud Deploy. Annotations must meet the
+    annotations: Optional. User annotations. These attributes can only be set
+      and used by the user, and not by Cloud Deploy. Annotations must meet the
       following constraints: * Annotations are key/value pairs. * Valid
       annotation keys have two segments: an optional prefix and name,
       separated by a slash (`/`). * The name segment is required and must be
@@ -2987,8 +3030,8 @@ class DeployPolicy(_messages.Message):
       https://kubernetes.io/docs/concepts/overview/working-with-
       objects/annotations/#syntax-and-character-set for more details.
     createTime: Output only. Time at which the deploy policy was created.
-    description: Description of the `DeployPolicy`. Max length is 255
-      characters.
+    description: Optional. Description of the `DeployPolicy`. Max length is
+      255 characters.
     etag: The weak etag of the `Automation` resource. This checksum is
       computed by the server based on the value of other fields, and may be
       sent on update and delete requests to ensure the client has an up-to-
@@ -3011,8 +3054,8 @@ class DeployPolicy(_messages.Message):
       resource the policy applies. For example, if there are two selectors and
       the action being attempted matches one of them, the policy will apply to
       that action.
-    suspended: When suspended, the policy will not prevent actions from
-      occurring, even if the action violates the policy.
+    suspended: Optional. When suspended, the policy will not prevent actions
+      from occurring, even if the action violates the policy.
     uid: Output only. Unique identifier of the `DeployPolicy`.
     updateTime: Output only. Most recent time at which the deploy policy was
       updated.
@@ -3020,8 +3063,8 @@ class DeployPolicy(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""User annotations. These attributes can only be set and used by the
-    user, and not by Cloud Deploy. Annotations must meet the following
+    r"""Optional. User annotations. These attributes can only be set and used
+    by the user, and not by Cloud Deploy. Annotations must meet the following
     constraints: * Annotations are key/value pairs. * Valid annotation keys
     have two segments: an optional prefix and name, separated by a slash
     (`/`). * The name segment is required and must be 63 characters or less,
@@ -3414,7 +3457,7 @@ class GkeCluster(_messages.Message):
     cluster: Optional. Information specifying a GKE Cluster. Format is
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`.
     dnsEndpoint: Optional. If set, the cluster will be accessed using the DNS
-      endpoint. Note that `dns_endpoint` and `internal_ip` cannot both be set
+      endpoint. Note that both `dns_endpoint` and `internal_ip` cannot be set
       to true.
     internalIp: Optional. If true, `cluster` is accessed using the private IP
       address of the control plane endpoint. Otherwise, the default IP address
@@ -3531,9 +3574,9 @@ class JobRun(_messages.Message):
       value of other fields, and may be sent on update and delete requests to
       ensure the client has an up-to-date value before proceeding.
     jobId: Output only. ID of the `Rollout` job this `JobRun` corresponds to.
-    name: Optional. Name of the `JobRun`. Format is `projects/{project}/locati
-      ons/{location}/deliveryPipelines/{deliveryPipeline}/releases/{releases}/
-      rollouts/{rollouts}/jobRuns/{uuid}`.
+    name: Identifier. Name of the `JobRun`. Format is `projects/{project}/loca
+      tions/{location}/deliveryPipelines/{deliveryPipeline}/releases/{releases
+      }/rollouts/{rollouts}/jobRuns/{uuid}`.
     phaseId: Output only. ID of the `Rollout` phase this `JobRun` belongs in.
     postdeployJobRun: Output only. Information specific to a postdeploy
       `JobRun`.
@@ -3642,8 +3685,9 @@ class KubernetesConfig(_messages.Message):
   r"""KubernetesConfig contains the Kubernetes runtime configuration.
 
   Fields:
-    gatewayServiceMesh: Kubernetes Gateway API service mesh configuration.
-    serviceNetworking: Kubernetes Service networking configuration.
+    gatewayServiceMesh: Optional. Kubernetes Gateway API service mesh
+      configuration.
+    serviceNetworking: Optional. Kubernetes Service networking configuration.
   """
 
   gatewayServiceMesh = _messages.MessageField('GatewayServiceMesh', 1)
@@ -4151,10 +4195,10 @@ class PhaseConfig(_messages.Message):
       phase.
     predeploy: Optional. Configuration for the predeploy job of this phase. If
       this is not configured, there will be no predeploy job for this phase.
-    profiles: Skaffold profiles to use when rendering the manifest for this
-      phase. These are in addition to the profiles list specified in the
-      `DeliveryPipeline` stage.
-    verify: Whether to run verify tests after the deployment.
+    profiles: Optional. Skaffold profiles to use when rendering the manifest
+      for this phase. These are in addition to the profiles list specified in
+      the `DeliveryPipeline` stage.
+    verify: Optional. Whether to run verify tests after the deployment.
   """
 
   percentage = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -4280,7 +4324,7 @@ class PolicyRule(_messages.Message):
   r"""Deploy Policy rule.
 
   Fields:
-    rolloutRestriction: Rollout restrictions.
+    rolloutRestriction: Optional. Rollout restrictions.
   """
 
   rolloutRestriction = _messages.MessageField('RolloutRestriction', 1)
@@ -4530,8 +4574,8 @@ class Release(_messages.Message):
       operation.
 
   Messages:
-    AnnotationsValue: User annotations. These attributes can only be set and
-      used by the user, and not by Cloud Deploy. See
+    AnnotationsValue: Optional. User annotations. These attributes can only be
+      set and used by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     DeployParametersValue: Optional. The deploy parameters to use for all
@@ -4551,11 +4595,12 @@ class Release(_messages.Message):
 
   Fields:
     abandoned: Output only. Indicates whether this is an abandoned release.
-    annotations: User annotations. These attributes can only be set and used
-      by the user, and not by Cloud Deploy. See
+    annotations: Optional. User annotations. These attributes can only be set
+      and used by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
-    buildArtifacts: List of artifacts to pass through to Skaffold command.
+    buildArtifacts: Optional. List of artifacts to pass through to Skaffold
+      command.
     condition: Output only. Information around the state of the Release.
     createTime: Output only. Time at which the `Release` was created.
     customTargetTypeSnapshots: Output only. Snapshot of the custom target
@@ -4564,7 +4609,8 @@ class Release(_messages.Message):
       taken at release creation time.
     deployParameters: Optional. The deploy parameters to use for all targets
       in this release.
-    description: Description of the `Release`. Max length is 255 characters.
+    description: Optional. Description of the `Release`. Max length is 255
+      characters.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
@@ -4576,16 +4622,16 @@ class Release(_messages.Message):
       letter or international character. * Each resource is limited to a
       maximum of 64 labels. Both keys and values are additionally constrained
       to be <= 128 bytes.
-    name: Optional. Name of the `Release`. Format is `projects/{project}/locat
-      ions/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}`
-      . The `release` component must match `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
+    name: Identifier. Name of the `Release`. Format is `projects/{project}/loc
+      ations/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release
+      }`. The `release` component must match `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
     renderEndTime: Output only. Time at which the render completed.
     renderStartTime: Output only. Time at which the render began.
     renderState: Output only. Current state of the render operation.
-    skaffoldConfigPath: Filepath of the Skaffold config inside of the config
-      URI.
-    skaffoldConfigUri: Cloud Storage URI of tar.gz archive containing Skaffold
-      configuration.
+    skaffoldConfigPath: Optional. Filepath of the Skaffold config inside of
+      the config URI.
+    skaffoldConfigUri: Optional. Cloud Storage URI of tar.gz archive
+      containing Skaffold configuration.
     skaffoldVersion: Optional. The Skaffold version to use when operating on
       this release, such as "1.20.0". Not all versions are valid; Cloud Deploy
       supports a specific set of versions. If unset, the most recent supported
@@ -4616,9 +4662,10 @@ class Release(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""User annotations. These attributes can only be set and used by the
-    user, and not by Cloud Deploy. See https://google.aip.dev/128#annotations
-    for more details such as format and size limitations.
+    r"""Optional. User annotations. These attributes can only be set and used
+    by the user, and not by Cloud Deploy. See
+    https://google.aip.dev/128#annotations for more details such as format and
+    size limitations.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -5268,8 +5315,8 @@ class Rollout(_messages.Message):
     StateValueValuesEnum: Output only. Current state of the `Rollout`.
 
   Messages:
-    AnnotationsValue: User annotations. These attributes can only be set and
-      used by the user, and not by Cloud Deploy. See
+    AnnotationsValue: Optional. User annotations. These attributes can only be
+      set and used by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     LabelsValue: Labels are attributes that can be set and used by both the
@@ -5284,8 +5331,8 @@ class Rollout(_messages.Message):
   Fields:
     activeRepairAutomationRun: Output only. The AutomationRun actively
       repairing the rollout.
-    annotations: User annotations. These attributes can only be set and used
-      by the user, and not by Cloud Deploy. See
+    annotations: Optional. User annotations. These attributes can only be set
+      and used by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     approvalState: Output only. Approval state of the `Rollout`.
@@ -5303,8 +5350,8 @@ class Rollout(_messages.Message):
     deployingBuild: Output only. The resource name of the Cloud Build `Build`
       object that is used to deploy the Rollout. Format is
       `projects/{project}/locations/{location}/builds/{build}`.
-    description: Description of the `Rollout` for user purposes. Max length is
-      255 characters.
+    description: Optional. Description of the `Rollout` for user purposes. Max
+      length is 255 characters.
     enqueueTime: Output only. Time at which the `Rollout` was enqueued.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
@@ -5320,9 +5367,9 @@ class Rollout(_messages.Message):
       maximum of 64 labels. Both keys and values are additionally constrained
       to be <= 128 bytes.
     metadata: Output only. Metadata contains information about the rollout.
-    name: Optional. Name of the `Rollout`. Format is `projects/{project}/locat
-      ions/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}/
-      rollouts/{rollout}`. The `rollout` component must match
+    name: Identifier. Name of the `Rollout`. Format is `projects/{project}/loc
+      ations/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release
+      }/rollouts/{rollout}`. The `rollout` component must match
       `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
     phases: Output only. The phases that represent the workflows of this
       `Rollout`.
@@ -5416,9 +5463,10 @@ class Rollout(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""User annotations. These attributes can only be set and used by the
-    user, and not by Cloud Deploy. See https://google.aip.dev/128#annotations
-    for more details such as format and size limitations.
+    r"""Optional. User annotations. These attributes can only be set and used
+    by the user, and not by Cloud Deploy. See
+    https://google.aip.dev/128#annotations for more details such as format and
+    size limitations.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -5729,8 +5777,8 @@ class RuntimeConfig(_messages.Message):
   deployment strategy.
 
   Fields:
-    cloudRun: Cloud Run runtime configuration.
-    kubernetes: Kubernetes runtime configuration.
+    cloudRun: Optional. Cloud Run runtime configuration.
+    kubernetes: Optional. Kubernetes runtime configuration.
   """
 
   cloudRun = _messages.MessageField('CloudRunConfig', 1)
@@ -5742,8 +5790,8 @@ class SerialPipeline(_messages.Message):
   `DeliveryPipeline`.
 
   Fields:
-    stages: Each stage specifies configuration for a `Target`. The ordering of
-      this list defines the promotion flow.
+    stages: Optional. Each stage specifies configuration for a `Target`. The
+      ordering of this list defines the promotion flow.
   """
 
   stages = _messages.MessageField('Stage', 1, repeated=True)
@@ -5841,11 +5889,12 @@ class SkaffoldModules(_messages.Message):
   Fields:
     configs: Optional. The Skaffold Config modules to use from the specified
       source.
-    git: Remote git repository containing the Skaffold Config modules.
-    googleCloudBuildRepo: Cloud Build V2 repository containing the Skaffold
-      Config modules.
-    googleCloudStorage: Cloud Storage bucket containing the Skaffold Config
+    git: Optional. Remote git repository containing the Skaffold Config
       modules.
+    googleCloudBuildRepo: Optional. Cloud Build V2 repository containing the
+      Skaffold Config modules.
+    googleCloudStorage: Optional. Cloud Storage bucket containing the Skaffold
+      Config modules.
   """
 
   configs = _messages.StringField(1, repeated=True)
@@ -5920,12 +5969,12 @@ class Stage(_messages.Message):
   Fields:
     deployParameters: Optional. The deploy parameters to use for the target in
       this stage.
-    profiles: Skaffold profiles to use when rendering the manifest for this
-      stage's `Target`.
+    profiles: Optional. Skaffold profiles to use when rendering the manifest
+      for this stage's `Target`.
     strategy: Optional. The strategy to use for a `Rollout` to this stage.
-    targetId: The target_id to which this stage points. This field refers
-      exclusively to the last segment of a target name. For example, this
-      field would just be `my-target` (rather than
+    targetId: Optional. The target_id to which this stage points. This field
+      refers exclusively to the last segment of a target name. For example,
+      this field would just be `my-target` (rather than
       `projects/project/locations/location/targets/my-target`). The location
       of the `Target` is inferred to be the same as the location of the
       `DeliveryPipeline` that contains this `Stage`.
@@ -5945,7 +5994,7 @@ class Standard(_messages.Message):
       configured, postdeploy job will not be present.
     predeploy: Optional. Configuration for the predeploy job. If this is not
       configured, predeploy job will not be present.
-    verify: Whether to verify a deployment.
+    verify: Optional. Whether to verify a deployment.
   """
 
   postdeploy = _messages.MessageField('Postdeploy', 1)
@@ -6071,10 +6120,10 @@ class Strategy(_messages.Message):
   r"""Strategy contains deployment strategy information.
 
   Fields:
-    canary: Canary deployment strategy provides progressive percentage based
-      deployments to a Target.
-    standard: Standard deployment strategy executes a single deploy and allows
-      verifying the deployment.
+    canary: Optional. Canary deployment strategy provides progressive
+      percentage based deployments to a Target.
+    standard: Optional. Standard deployment strategy executes a single deploy
+      and allows verifying the deployment.
   """
 
   canary = _messages.MessageField('Canary', 1)
@@ -6133,13 +6182,13 @@ class Target(_messages.Message):
     etag: Optional. This checksum is computed by the server based on the value
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
-    executionConfigs: Configurations for all execution that relates to this
-      `Target`. Each `ExecutionEnvironmentUsage` value may only be used in a
-      single configuration; using the same value multiple times is an error.
-      When one or more configurations are specified, they must include the
-      `RENDER` and `DEPLOY` `ExecutionEnvironmentUsage` values. When no
-      configurations are specified, execution will use the default specified
-      in `DefaultPool`.
+    executionConfigs: Optional. Configurations for all execution that relates
+      to this `Target`. Each `ExecutionEnvironmentUsage` value may only be
+      used in a single configuration; using the same value multiple times is
+      an error. When one or more configurations are specified, they must
+      include the `RENDER` and `DEPLOY` `ExecutionEnvironmentUsage` values.
+      When no configurations are specified, execution will use the default
+      specified in `DefaultPool`.
     gke: Optional. Information specifying a GKE Cluster.
     labels: Optional. Labels are attributes that can be set and used by both
       the user and by Cloud Deploy. Labels must meet the following
@@ -6150,7 +6199,7 @@ class Target(_messages.Message):
       resource is limited to a maximum of 64 labels. Both keys and values are
       additionally constrained to be <= 128 bytes.
     multiTarget: Optional. Information specifying a multiTarget.
-    name: Optional. Name of the `Target`. Format is
+    name: Identifier. Name of the `Target`. Format is
       `projects/{project}/locations/{location}/targets/{target}`. The `target`
       component must match `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
     requireApproval: Optional. Whether or not the `Target` requires approval.
@@ -6358,9 +6407,9 @@ class TargetAttribute(_messages.Message):
     LabelsValue: Target labels.
 
   Fields:
-    id: ID of the `Target`. The value of this field could be one of the
-      following: * The last segment of a target name * "*", all targets in a
-      location
+    id: Optional. ID of the `Target`. The value of this field could be one of
+      the following: * The last segment of a target name * "*", all targets in
+      a location
     labels: Target labels.
   """
 
@@ -6825,5 +6874,7 @@ encoding.AddCustomJsonFieldMapping(
     ClouddeployProjectsLocationsCustomTargetTypesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     ClouddeployProjectsLocationsDeliveryPipelinesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    ClouddeployProjectsLocationsDeployPoliciesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     ClouddeployProjectsLocationsTargetsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

@@ -1144,10 +1144,10 @@ class ContainerOverride(_messages.Message):
 
   Fields:
     containerName: Required. The name of the container.
-    cpuLimit: Optional. The cpu limit of the container.
-    cpuRequest: Optional. The cpu request of the container.
-    memoryLimit: Optional. The memory limit of the container.
-    memoryRequest: Optional. The memory request of the container.
+    cpuLimit: The cpu limit of the container.
+    cpuRequest: The cpu request of the container.
+    memoryLimit: The memory limit of the container.
+    memoryRequest: The memory request of the container.
   """
 
   containerName = _messages.StringField(1)
@@ -2141,7 +2141,8 @@ class GitConfig(_messages.Message):
     policyDir: The path within the Git repository that represents the top
       level of the repo to sync. Default: the root directory of the
       repository.
-    secretType: Type of secret configured for access to the Git repo.
+    secretType: Required. Type of secret configured for access to the Git
+      repo.
     syncBranch: The branch of the repository to sync from. Default: master.
     syncRepo: The URL of the Git repository to use as the source of truth.
     syncRev: Git revision (tag or hash) to check out. Default HEAD.

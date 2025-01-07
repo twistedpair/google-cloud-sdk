@@ -286,7 +286,7 @@ class MessageBusClientV1(base.EventarcClientBase):
         or event_data is None
     ):
       return None
-    return self._publishing_messages.IoCloudeventsV1CloudEvent(
+    return self._publishing_messages.GoogleCloudEventarcPublishingV1CloudEvent(
         id=event_id,
         type=event_type,
         source=event_source,
@@ -298,11 +298,11 @@ class MessageBusClientV1(base.EventarcClientBase):
   def _BuildCloudEventAttributes(self, event_attributes):
     if event_attributes is None:
       return None
-    return self._publishing_messages.IoCloudeventsV1CloudEvent.AttributesValue(
+    return self._publishing_messages.GoogleCloudEventarcPublishingV1CloudEvent.AttributesValue(
         additionalProperties=[
-            self._publishing_messages.IoCloudeventsV1CloudEvent.AttributesValue.AdditionalProperty(
+            self._publishing_messages.GoogleCloudEventarcPublishingV1CloudEvent.AttributesValue.AdditionalProperty(
                 key=key,
-                value=self._publishing_messages.IoCloudeventsV1CloudEventCloudEventAttributeValue(
+                value=self._publishing_messages.GoogleCloudEventarcPublishingV1CloudEventCloudEventAttributeValue(
                     ceString=value
                 ),
             )

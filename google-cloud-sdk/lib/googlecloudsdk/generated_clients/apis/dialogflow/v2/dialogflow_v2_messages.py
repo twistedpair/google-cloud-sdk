@@ -10336,10 +10336,10 @@ class GoogleCloudDialogflowV2AnalyzeContentResponse(_messages.Message):
 
   Fields:
     automatedAgentReply: Only set if a Dialogflow automated agent has
-      responded. Note that:
-      AutomatedAgentReply.detect_intent_response.output_audio and
-      AutomatedAgentReply.detect_intent_response.output_audio_config are
-      always empty, use reply_audio instead.
+      responded. Note that in AutomatedAgentReply.DetectIntentResponse,
+      Sessions.DetectIntentResponse.output_audio and
+      Sessions.DetectIntentResponse.output_audio_config are always empty, use
+      reply_audio instead.
     dtmfParameters: Indicates the parameters of DTMF.
     endUserSuggestionResults: The suggestions for end user. The order is the
       same as HumanAgentAssistantConfig.SuggestionConfig.feature_configs of
@@ -10453,8 +10453,8 @@ class GoogleCloudDialogflowV2AnswerRecord(_messages.Message):
   is: 1. For human agent assistant, customers get suggestion via
   ListSuggestions API. Together with the answers, AnswerRecord.name are
   returned to the customers. 2. The customer uses the AnswerRecord.name to
-  call the UpdateAnswerRecord method to send feedback about a specific answer
-  that they believe is wrong.
+  call the AnswerRecords.UpdateAnswerRecord method to send feedback about a
+  specific answer that they believe is wrong.
 
   Fields:
     agentAssistantRecord: Output only. The record for human agent assistant.
@@ -10835,7 +10835,7 @@ class GoogleCloudDialogflowV2BatchUpdateIntentsResponse(_messages.Message):
 
 
 class GoogleCloudDialogflowV2ClearSuggestionFeatureConfigOperationMetadata(_messages.Message):
-  r"""Metadata for a ConversationProfile.ClearSuggestionFeatureConfig
+  r"""Metadata for a ConversationProfiles.ClearSuggestionFeatureConfig
   operation.
 
   Enums:
@@ -10898,7 +10898,8 @@ class GoogleCloudDialogflowV2ClearSuggestionFeatureConfigOperationMetadata(_mess
 
 
 class GoogleCloudDialogflowV2ClearSuggestionFeatureConfigRequest(_messages.Message):
-  r"""The request message for ConversationProfiles.ClearFeature.
+  r"""The request message for
+  ConversationProfiles.ClearSuggestionFeatureConfig.
 
   Enums:
     ParticipantRoleValueValuesEnum: Required. The participant role to remove
@@ -11090,6 +11091,8 @@ class GoogleCloudDialogflowV2Conversation(_messages.Message):
     phoneNumber: Output only. It will not be empty if the conversation is to
       be connected over telephony.
     startTime: Output only. The time the conversation was started.
+    telephonyConnectionInfo: Output only. The telephony connection
+      information.
   """
 
   class ConversationStageValueValuesEnum(_messages.Enum):
@@ -11135,6 +11138,7 @@ class GoogleCloudDialogflowV2Conversation(_messages.Message):
   name = _messages.StringField(5)
   phoneNumber = _messages.MessageField('GoogleCloudDialogflowV2ConversationPhoneNumber', 6)
   startTime = _messages.StringField(7)
+  telephonyConnectionInfo = _messages.MessageField('GoogleCloudDialogflowV2ConversationTelephonyConnectionInfo', 8)
 
 
 class GoogleCloudDialogflowV2ConversationContext(_messages.Message):
@@ -11198,6 +11202,7 @@ class GoogleCloudDialogflowV2ConversationEvent(_messages.Message):
     errorStatus: More detailed information about an error. Only set for type
       UNRECOVERABLE_ERROR_IN_PHONE_CALL.
     newMessagePayload: Payload of NEW_MESSAGE event.
+    newRecognitionResultPayload: Payload of NEW_RECOGNITION_RESULT event.
     type: The type of the event that this notification refers to.
   """
 
@@ -11217,6 +11222,10 @@ class GoogleCloudDialogflowV2ConversationEvent(_messages.Message):
       NEW_MESSAGE: An existing conversation has received a new message, either
         from API or telephony. It is configured in
         ConversationProfile.new_message_event_notification_config
+      NEW_RECOGNITION_RESULT: An existing conversation has received a new
+        speech recognition result. This is mainly for delivering intermediate
+        transcripts. The notification is configured in
+        ConversationProfile.new_recognition_event_notification_config.
       UNRECOVERABLE_ERROR: Unrecoverable error during a telephone call. In
         general non-recoverable errors only occur if something was
         misconfigured in the ConversationProfile corresponding to the call.
@@ -11229,12 +11238,14 @@ class GoogleCloudDialogflowV2ConversationEvent(_messages.Message):
     CONVERSATION_FINISHED = 2
     HUMAN_INTERVENTION_NEEDED = 3
     NEW_MESSAGE = 4
-    UNRECOVERABLE_ERROR = 5
+    NEW_RECOGNITION_RESULT = 5
+    UNRECOVERABLE_ERROR = 6
 
   conversation = _messages.StringField(1)
   errorStatus = _messages.MessageField('GoogleRpcStatus', 2)
   newMessagePayload = _messages.MessageField('GoogleCloudDialogflowV2Message', 3)
-  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  newRecognitionResultPayload = _messages.MessageField('GoogleCloudDialogflowV2StreamingRecognitionResult', 4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class GoogleCloudDialogflowV2ConversationInfo(_messages.Message):
@@ -11357,11 +11368,13 @@ class GoogleCloudDialogflowV2ConversationPhoneNumber(_messages.Message):
   connecting a particular conversation over telephony.
 
   Fields:
+    countryCode: Output only. Desired country code for the phone number.
     phoneNumber: Output only. The phone number to connect to this
       conversation.
   """
 
-  phoneNumber = _messages.StringField(1)
+  countryCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  phoneNumber = _messages.StringField(2)
 
 
 class GoogleCloudDialogflowV2ConversationProfile(_messages.Message):
@@ -11388,6 +11401,11 @@ class GoogleCloudDialogflowV2ConversationProfile(_messages.Message):
       `projects//locations//conversationProfiles/`.
     newMessageEventNotificationConfig: Configuration for publishing new
       message events. Event will be sent in format of ConversationEvent
+    newRecognitionResultNotificationConfig: Optional. Configuration for
+      publishing transcription intermediate results. Event will be sent in
+      format of ConversationEvent. If configured, the following information
+      will be populated as ConversationEvent Pub/Sub message attributes: -
+      "participant_id" - "participant_role" - "message_id"
     notificationConfig: Configuration for publishing conversation lifecycle
       events.
     securitySettings: Name of the CX SecuritySettings reference for the agent.
@@ -11412,16 +11430,62 @@ class GoogleCloudDialogflowV2ConversationProfile(_messages.Message):
   loggingConfig = _messages.MessageField('GoogleCloudDialogflowV2LoggingConfig', 7)
   name = _messages.StringField(8)
   newMessageEventNotificationConfig = _messages.MessageField('GoogleCloudDialogflowV2NotificationConfig', 9)
-  notificationConfig = _messages.MessageField('GoogleCloudDialogflowV2NotificationConfig', 10)
-  securitySettings = _messages.StringField(11)
-  sttConfig = _messages.MessageField('GoogleCloudDialogflowV2SpeechToTextConfig', 12)
-  timeZone = _messages.StringField(13)
-  ttsConfig = _messages.MessageField('GoogleCloudDialogflowV2SynthesizeSpeechConfig', 14)
-  updateTime = _messages.StringField(15)
+  newRecognitionResultNotificationConfig = _messages.MessageField('GoogleCloudDialogflowV2NotificationConfig', 10)
+  notificationConfig = _messages.MessageField('GoogleCloudDialogflowV2NotificationConfig', 11)
+  securitySettings = _messages.StringField(12)
+  sttConfig = _messages.MessageField('GoogleCloudDialogflowV2SpeechToTextConfig', 13)
+  timeZone = _messages.StringField(14)
+  ttsConfig = _messages.MessageField('GoogleCloudDialogflowV2SynthesizeSpeechConfig', 15)
+  updateTime = _messages.StringField(16)
+
+
+class GoogleCloudDialogflowV2ConversationTelephonyConnectionInfo(_messages.Message):
+  r"""The information about phone calls connected via phone gateway to the
+  conversation.
+
+  Fields:
+    dialedNumber: Output only. The number dialed to connect this call in E.164
+      format.
+    extraMimeContents: Output only. The mime content from the initial SIP
+      INVITE.
+    sdp: Optional. SDP of the call. It's initially the SDP answer to the
+      endpoint, but maybe later updated for the purpose of making the link
+      active, etc.
+    sipHeaders: Output only. The SIP headers from the initial SIP INVITE.
+  """
+
+  dialedNumber = _messages.StringField(1)
+  extraMimeContents = _messages.MessageField('GoogleCloudDialogflowV2ConversationTelephonyConnectionInfoMimeContent', 2, repeated=True)
+  sdp = _messages.StringField(3)
+  sipHeaders = _messages.MessageField('GoogleCloudDialogflowV2ConversationTelephonyConnectionInfoSipHeader', 4, repeated=True)
+
+
+class GoogleCloudDialogflowV2ConversationTelephonyConnectionInfoMimeContent(_messages.Message):
+  r"""The mime content from the initial SIP INVITE.
+
+  Fields:
+    content: Optional. The content payload.
+    mimeType: Optional. The mime type of the content.
+  """
+
+  content = _messages.BytesField(1)
+  mimeType = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2ConversationTelephonyConnectionInfoSipHeader(_messages.Message):
+  r"""The SIP headers from the initial SIP INVITE.
+
+  Fields:
+    name: Optional. The name of the header.
+    value: Optional. The value of the header.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class GoogleCloudDialogflowV2CreateConversationDatasetOperationMetadata(_messages.Message):
-  r"""Metadata for ConversationDatasets.
+  r"""Metadata for CreateConversationDataset.
 
   Fields:
     conversationDataset: The resource name of the conversation dataset that
@@ -11526,7 +11590,7 @@ class GoogleCloudDialogflowV2CreateConversationModelOperationMetadata(_messages.
 
 
 class GoogleCloudDialogflowV2DeleteConversationDatasetOperationMetadata(_messages.Message):
-  r"""Metadata for ConversationDatasets."""
+  r"""Metadata for DeleteConversationDataset."""
 
 
 class GoogleCloudDialogflowV2DeleteConversationModelOperationMetadata(_messages.Message):
@@ -12521,10 +12585,10 @@ class GoogleCloudDialogflowV2GenerateStatelessSummaryResponse(_messages.Message)
   r"""The response message for Conversations.GenerateStatelessSummary.
 
   Fields:
-    contextSize: Number of messages prior to and including
-      last_conversation_message used to compile the suggestion. It may be
-      smaller than the GenerateStatelessSummaryRequest.context_size field in
-      the request if there weren't that many messages in the conversation.
+    contextSize: Number of messages prior to and including latest_message used
+      to compile the suggestion. It may be smaller than the
+      GenerateStatelessSummaryRequest.max_context_size field in the request if
+      there weren't that many messages in the conversation.
     latestMessage: The name of the latest conversation message used as context
       for compiling suggestion. The format is specific to the user and the
       names of the messages provided.
@@ -15669,7 +15733,7 @@ class GoogleCloudDialogflowV2SearchKnowledgeRequestSearchConfigBoostSpecs(_messa
       applied. The full names of the referenced data stores. Formats: `project
       s/{project}/locations/{location}/collections/{collection}/dataStores/{da
       ta_store}`
-      `projects/{project}/locations/{location}/dataStores/{data_store}
+      `projects/{project}/locations/{location}/dataStores/{data_store}`
     spec: Optional. A list of boosting specifications.
   """
 
@@ -15876,10 +15940,10 @@ class GoogleCloudDialogflowV2SentimentAnalysisRequestConfig(_messages.Message):
 class GoogleCloudDialogflowV2SentimentAnalysisResult(_messages.Message):
   r"""The result of sentiment analysis. Sentiment analysis inspects user input
   and identifies the prevailing subjective opinion, especially to determine a
-  user's attitude as positive, negative, or neutral. For
-  Participants.DetectIntent, it needs to be configured in
-  DetectIntentRequest.query_params. For Participants.StreamingDetectIntent, it
-  needs to be configured in StreamingDetectIntentRequest.query_params. And for
+  user's attitude as positive, negative, or neutral. For DetectIntent, it
+  needs to be configured in DetectIntentRequest.query_params. For
+  StreamingDetectIntent, it needs to be configured in
+  StreamingDetectIntentRequest.query_params. And for
   Participants.AnalyzeContent and Participants.StreamingAnalyzeContent, it
   needs to be configured in ConversationProfile.human_agent_assistant_config
 
@@ -15947,7 +16011,8 @@ class GoogleCloudDialogflowV2SessionEntityType(_messages.Message):
 
 
 class GoogleCloudDialogflowV2SetSuggestionFeatureConfigOperationMetadata(_messages.Message):
-  r"""Metadata for a ConversationProfile.SetSuggestionFeatureConfig operation.
+  r"""Metadata for a ConversationProfiles.SetSuggestionFeatureConfig
+  operation.
 
   Enums:
     ParticipantRoleValueValuesEnum: Required. The participant role to add or
@@ -16010,7 +16075,7 @@ class GoogleCloudDialogflowV2SetSuggestionFeatureConfigOperationMetadata(_messag
 
 
 class GoogleCloudDialogflowV2SetSuggestionFeatureConfigRequest(_messages.Message):
-  r"""The request message for ConversationProfiles.SetSuggestionFeature.
+  r"""The request message for ConversationProfiles.SetSuggestionFeatureConfig.
 
   Enums:
     ParticipantRoleValueValuesEnum: Required. The participant role to add or
@@ -16297,6 +16362,110 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
   useTimeoutBasedEndpointing = _messages.BooleanField(8)
 
 
+class GoogleCloudDialogflowV2SpeechWordInfo(_messages.Message):
+  r"""Information for a word recognized by the speech recognizer.
+
+  Fields:
+    confidence: The Speech confidence between 0.0 and 1.0 for this word. A
+      higher number indicates an estimated greater likelihood that the
+      recognized word is correct. The default of 0.0 is a sentinel value
+      indicating that confidence was not set. This field is not guaranteed to
+      be fully stable over time for the same audio input. Users should also
+      not rely on it to always be provided.
+    endOffset: Time offset relative to the beginning of the audio that
+      corresponds to the end of the spoken word. This is an experimental
+      feature and the accuracy of the time offset can vary.
+    startOffset: Time offset relative to the beginning of the audio that
+      corresponds to the start of the spoken word. This is an experimental
+      feature and the accuracy of the time offset can vary.
+    word: The word this info is for.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  endOffset = _messages.StringField(2)
+  startOffset = _messages.StringField(3)
+  word = _messages.StringField(4)
+
+
+class GoogleCloudDialogflowV2StreamingRecognitionResult(_messages.Message):
+  r"""Contains a speech recognition result corresponding to a portion of the
+  audio that is currently being processed or an indication that this is the
+  end of the single requested utterance. While end-user audio is being
+  processed, Dialogflow sends a series of results. Each result may contain a
+  `transcript` value. A transcript represents a portion of the utterance.
+  While the recognizer is processing audio, transcript values may be interim
+  values or finalized values. Once a transcript is finalized, the `is_final`
+  value is set to true and processing continues for the next transcript. If
+  `StreamingDetectIntentRequest.query_input.audio_config.single_utterance` was
+  true, and the recognizer has completed processing audio, the `message_type`
+  value is set to `END_OF_SINGLE_UTTERANCE and the following (last) result
+  contains the last finalized transcript. The complete end-user utterance is
+  determined by concatenating the finalized transcript values received for the
+  series of results. In the following example, single utterance is enabled. In
+  the case where single utterance is not enabled, result 7 would not occur.
+  ``` Num | transcript | message_type | is_final --- | -----------------------
+  | ----------------------- | -------- 1 | "tube" | TRANSCRIPT | false 2 | "to
+  be a" | TRANSCRIPT | false 3 | "to be" | TRANSCRIPT | false 4 | "to be or
+  not to be" | TRANSCRIPT | true 5 | "that's" | TRANSCRIPT | false 6 | "that
+  is | TRANSCRIPT | false 7 | unset | END_OF_SINGLE_UTTERANCE | unset 8 | "
+  that is the question" | TRANSCRIPT | true ``` Concatenating the finalized
+  transcripts with `is_final` set to true, the complete utterance becomes "to
+  be or not to be that is the question".
+
+  Enums:
+    MessageTypeValueValuesEnum: Type of the result message.
+
+  Fields:
+    confidence: The Speech confidence between 0.0 and 1.0 for the current
+      portion of audio. A higher number indicates an estimated greater
+      likelihood that the recognized words are correct. The default of 0.0 is
+      a sentinel value indicating that confidence was not set. This field is
+      typically only provided if `is_final` is true and you should not rely on
+      it being accurate or even set.
+    isFinal: If `false`, the `StreamingRecognitionResult` represents an
+      interim result that may change. If `true`, the recognizer will not
+      return any further hypotheses about this piece of the audio. May only be
+      populated for `message_type` = `TRANSCRIPT`.
+    languageCode: Detected language code for the transcript.
+    messageType: Type of the result message.
+    speechEndOffset: Time offset of the end of this Speech recognition result
+      relative to the beginning of the audio. Only populated for
+      `message_type` = `TRANSCRIPT`.
+    speechWordInfo: Word-specific information for the words recognized by
+      Speech in transcript. Populated if and only if `message_type` =
+      `TRANSCRIPT` and [InputAudioConfig.enable_word_info] is set.
+    transcript: Transcript text representing the words that the user spoke.
+      Populated if and only if `message_type` = `TRANSCRIPT`.
+  """
+
+  class MessageTypeValueValuesEnum(_messages.Enum):
+    r"""Type of the result message.
+
+    Values:
+      MESSAGE_TYPE_UNSPECIFIED: Not specified. Should never be used.
+      TRANSCRIPT: Message contains a (possibly partial) transcript.
+      END_OF_SINGLE_UTTERANCE: This event indicates that the server has
+        detected the end of the user's speech utterance and expects no
+        additional inputs. Therefore, the server will not process additional
+        audio (although it may subsequently return additional results). The
+        client should stop sending additional audio data, half-close the gRPC
+        connection, and wait for any additional results until the server
+        closes the gRPC connection. This message is only sent if
+        `single_utterance` was set to `true`, and is not used otherwise.
+    """
+    MESSAGE_TYPE_UNSPECIFIED = 0
+    TRANSCRIPT = 1
+    END_OF_SINGLE_UTTERANCE = 2
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  isFinal = _messages.BooleanField(2)
+  languageCode = _messages.StringField(3)
+  messageType = _messages.EnumField('MessageTypeValueValuesEnum', 4)
+  speechEndOffset = _messages.StringField(5)
+  speechWordInfo = _messages.MessageField('GoogleCloudDialogflowV2SpeechWordInfo', 6, repeated=True)
+  transcript = _messages.StringField(7)
+
+
 class GoogleCloudDialogflowV2SuggestArticlesRequest(_messages.Message):
   r"""The request message for Participants.SuggestArticles.
 
@@ -16357,10 +16526,10 @@ class GoogleCloudDialogflowV2SuggestConversationSummaryResponse(_messages.Messag
   r"""The response message for Conversations.SuggestConversationSummary.
 
   Fields:
-    contextSize: Number of messages prior to and including
-      last_conversation_message used to compile the suggestion. It may be
-      smaller than the SuggestSummaryRequest.context_size field in the request
-      if there weren't that many messages in the conversation.
+    contextSize: Number of messages prior to and including latest_message used
+      to compile the suggestion. It may be smaller than the
+      SuggestConversationSummaryRequest.context_size field in the request if
+      there weren't that many messages in the conversation.
     latestMessage: The name of the latest conversation message used as context
       for compiling suggestion. Format:
       `projects//locations//conversations//messages/`.
@@ -17419,6 +17588,7 @@ class GoogleCloudDialogflowV2beta1ConversationEvent(_messages.Message):
     errorStatus: Optional. More detailed information about an error. Only set
       for type UNRECOVERABLE_ERROR_IN_PHONE_CALL.
     newMessagePayload: Payload of NEW_MESSAGE event.
+    newRecognitionResultPayload: Payload of NEW_RECOGNITION_RESULT event.
     type: Required. The type of the event that this notification refers to.
   """
 
@@ -17438,6 +17608,10 @@ class GoogleCloudDialogflowV2beta1ConversationEvent(_messages.Message):
       NEW_MESSAGE: An existing conversation has received a new message, either
         from API or telephony. It is configured in
         ConversationProfile.new_message_event_notification_config
+      NEW_RECOGNITION_RESULT: An existing conversation has received a new
+        speech recognition result. This is mainly for delivering intermediate
+        transcripts. The notification is configured in
+        ConversationProfile.new_recognition_event_notification_config.
       UNRECOVERABLE_ERROR: Unrecoverable error during a telephone call. In
         general non-recoverable errors only occur if something was
         misconfigured in the ConversationProfile corresponding to the call.
@@ -17450,12 +17624,14 @@ class GoogleCloudDialogflowV2beta1ConversationEvent(_messages.Message):
     CONVERSATION_FINISHED = 2
     HUMAN_INTERVENTION_NEEDED = 3
     NEW_MESSAGE = 4
-    UNRECOVERABLE_ERROR = 5
+    NEW_RECOGNITION_RESULT = 5
+    UNRECOVERABLE_ERROR = 6
 
   conversation = _messages.StringField(1)
   errorStatus = _messages.MessageField('GoogleRpcStatus', 2)
   newMessagePayload = _messages.MessageField('GoogleCloudDialogflowV2beta1Message', 3)
-  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  newRecognitionResultPayload = _messages.MessageField('GoogleCloudDialogflowV2beta1StreamingRecognitionResult', 4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class GoogleCloudDialogflowV2beta1DialogflowAssistAnswer(_messages.Message):
@@ -19855,6 +20031,127 @@ class GoogleCloudDialogflowV2beta1SmartReplyAnswer(_messages.Message):
   reply = _messages.StringField(3)
 
 
+class GoogleCloudDialogflowV2beta1SpeechWordInfo(_messages.Message):
+  r"""Information for a word recognized by the speech recognizer.
+
+  Fields:
+    confidence: The Speech confidence between 0.0 and 1.0 for this word. A
+      higher number indicates an estimated greater likelihood that the
+      recognized word is correct. The default of 0.0 is a sentinel value
+      indicating that confidence was not set. This field is not guaranteed to
+      be fully stable over time for the same audio input. Users should also
+      not rely on it to always be provided.
+    endOffset: Time offset relative to the beginning of the audio that
+      corresponds to the end of the spoken word. This is an experimental
+      feature and the accuracy of the time offset can vary.
+    startOffset: Time offset relative to the beginning of the audio that
+      corresponds to the start of the spoken word. This is an experimental
+      feature and the accuracy of the time offset can vary.
+    word: The word this info is for.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  endOffset = _messages.StringField(2)
+  startOffset = _messages.StringField(3)
+  word = _messages.StringField(4)
+
+
+class GoogleCloudDialogflowV2beta1StreamingRecognitionResult(_messages.Message):
+  r"""Contains a speech recognition result corresponding to a portion of the
+  audio that is currently being processed or an indication that this is the
+  end of the single requested utterance. While end-user audio is being
+  processed, Dialogflow sends a series of results. Each result may contain a
+  `transcript` value. A transcript represents a portion of the utterance.
+  While the recognizer is processing audio, transcript values may be interim
+  values or finalized values. Once a transcript is finalized, the `is_final`
+  value is set to true and processing continues for the next transcript. If
+  `StreamingDetectIntentRequest.query_input.audio_config.single_utterance` was
+  true, and the recognizer has completed processing audio, the `message_type`
+  value is set to `END_OF_SINGLE_UTTERANCE and the following (last) result
+  contains the last finalized transcript. The complete end-user utterance is
+  determined by concatenating the finalized transcript values received for the
+  series of results. In the following example, single utterance is enabled. In
+  the case where single utterance is not enabled, result 7 would not occur.
+  ``` Num | transcript | message_type | is_final --- | -----------------------
+  | ----------------------- | -------- 1 | "tube" | TRANSCRIPT | false 2 | "to
+  be a" | TRANSCRIPT | false 3 | "to be" | TRANSCRIPT | false 4 | "to be or
+  not to be" | TRANSCRIPT | true 5 | "that's" | TRANSCRIPT | false 6 | "that
+  is | TRANSCRIPT | false 7 | unset | END_OF_SINGLE_UTTERANCE | unset 8 | "
+  that is the question" | TRANSCRIPT | true ``` Concatenating the finalized
+  transcripts with `is_final` set to true, the complete utterance becomes "to
+  be or not to be that is the question".
+
+  Enums:
+    MessageTypeValueValuesEnum: Type of the result message.
+
+  Fields:
+    confidence: The Speech confidence between 0.0 and 1.0 for the current
+      portion of audio. A higher number indicates an estimated greater
+      likelihood that the recognized words are correct. The default of 0.0 is
+      a sentinel value indicating that confidence was not set. This field is
+      typically only provided if `is_final` is true and you should not rely on
+      it being accurate or even set.
+    dtmfDigits: DTMF digits. Populated if and only if `message_type` =
+      `DTMF_DIGITS`.
+    isFinal: If `false`, the `StreamingRecognitionResult` represents an
+      interim result that may change. If `true`, the recognizer will not
+      return any further hypotheses about this piece of the audio. May only be
+      populated for `message_type` = `TRANSCRIPT`.
+    languageCode: Detected language code for the transcript.
+    messageType: Type of the result message.
+    speechEndOffset: Time offset of the end of this Speech recognition result
+      relative to the beginning of the audio. Only populated for
+      `message_type` = `TRANSCRIPT`.
+    speechWordInfo: Word-specific information for the words recognized by
+      Speech in transcript. Populated if and only if `message_type` =
+      `TRANSCRIPT` and [InputAudioConfig.enable_word_info] is set.
+    stability: An estimate of the likelihood that the speech recognizer will
+      not change its guess about this interim recognition result: * If the
+      value is unspecified or 0.0, Dialogflow didn't compute the stability. In
+      particular, Dialogflow will only provide stability for `TRANSCRIPT`
+      results with `is_final = false`. * Otherwise, the value is in (0.0, 1.0]
+      where 0.0 means completely unstable and 1.0 means completely stable.
+    transcript: Transcript text representing the words that the user spoke.
+      Populated if and only if `message_type` = `TRANSCRIPT`.
+  """
+
+  class MessageTypeValueValuesEnum(_messages.Enum):
+    r"""Type of the result message.
+
+    Values:
+      MESSAGE_TYPE_UNSPECIFIED: Not specified. Should never be used.
+      TRANSCRIPT: Message contains a (possibly partial) transcript.
+      DTMF_DIGITS: Message contains DTMF digits.
+      END_OF_SINGLE_UTTERANCE: This event indicates that the server has
+        detected the end of the user's speech utterance and expects no
+        additional speech. Therefore, the server will not process additional
+        audio (although it may subsequently return additional results). The
+        client should stop sending additional audio data, half-close the gRPC
+        connection, and wait for any additional results until the server
+        closes the gRPC connection. This message is only sent if
+        `single_utterance` was set to `true`, and is not used otherwise.
+      PARTIAL_DTMF_DIGITS: Message contains DTMF digits. Before a message with
+        DTMF_DIGITS is sent, a message with PARTIAL_DTMF_DIGITS may be sent
+        with DTMF digits collected up to the time of sending, which represents
+        an intermediate result.
+    """
+    MESSAGE_TYPE_UNSPECIFIED = 0
+    TRANSCRIPT = 1
+    DTMF_DIGITS = 2
+    END_OF_SINGLE_UTTERANCE = 3
+    PARTIAL_DTMF_DIGITS = 4
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  dtmfDigits = _messages.MessageField('GoogleCloudDialogflowV2beta1TelephonyDtmfEvents', 2)
+  isFinal = _messages.BooleanField(3)
+  languageCode = _messages.StringField(4)
+  messageType = _messages.EnumField('MessageTypeValueValuesEnum', 5)
+  speechEndOffset = _messages.StringField(6)
+  speechWordInfo = _messages.MessageField('GoogleCloudDialogflowV2beta1SpeechWordInfo', 7, repeated=True)
+  stability = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  transcript = _messages.StringField(9)
+
+
 class GoogleCloudDialogflowV2beta1SuggestArticlesResponse(_messages.Message):
   r"""The response message for Participants.SuggestArticles.
 
@@ -19978,6 +20275,60 @@ class GoogleCloudDialogflowV2beta1SuggestionResult(_messages.Message):
   suggestFaqAnswersResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestFaqAnswersResponse', 5)
   suggestKnowledgeAssistResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestKnowledgeAssistResponse', 6)
   suggestSmartRepliesResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestSmartRepliesResponse', 7)
+
+
+class GoogleCloudDialogflowV2beta1TelephonyDtmfEvents(_messages.Message):
+  r"""A wrapper of repeated TelephonyDtmf digits.
+
+  Enums:
+    DtmfEventsValueListEntryValuesEnum:
+
+  Fields:
+    dtmfEvents: A sequence of TelephonyDtmf digits.
+  """
+
+  class DtmfEventsValueListEntryValuesEnum(_messages.Enum):
+    r"""DtmfEventsValueListEntryValuesEnum enum type.
+
+    Values:
+      TELEPHONY_DTMF_UNSPECIFIED: Not specified. This value may be used to
+        indicate an absent digit.
+      DTMF_ONE: Number: '1'.
+      DTMF_TWO: Number: '2'.
+      DTMF_THREE: Number: '3'.
+      DTMF_FOUR: Number: '4'.
+      DTMF_FIVE: Number: '5'.
+      DTMF_SIX: Number: '6'.
+      DTMF_SEVEN: Number: '7'.
+      DTMF_EIGHT: Number: '8'.
+      DTMF_NINE: Number: '9'.
+      DTMF_ZERO: Number: '0'.
+      DTMF_A: Letter: 'A'.
+      DTMF_B: Letter: 'B'.
+      DTMF_C: Letter: 'C'.
+      DTMF_D: Letter: 'D'.
+      DTMF_STAR: Asterisk/star: '*'.
+      DTMF_POUND: Pound/diamond/hash/square/gate/octothorpe: '#'.
+    """
+    TELEPHONY_DTMF_UNSPECIFIED = 0
+    DTMF_ONE = 1
+    DTMF_TWO = 2
+    DTMF_THREE = 3
+    DTMF_FOUR = 4
+    DTMF_FIVE = 5
+    DTMF_SIX = 6
+    DTMF_SEVEN = 7
+    DTMF_EIGHT = 8
+    DTMF_NINE = 9
+    DTMF_ZERO = 10
+    DTMF_A = 11
+    DTMF_B = 12
+    DTMF_C = 13
+    DTMF_D = 14
+    DTMF_STAR = 15
+    DTMF_POUND = 16
+
+  dtmfEvents = _messages.EnumField('DtmfEventsValueListEntryValuesEnum', 1, repeated=True)
 
 
 class GoogleCloudDialogflowV2beta1WebhookRequest(_messages.Message):

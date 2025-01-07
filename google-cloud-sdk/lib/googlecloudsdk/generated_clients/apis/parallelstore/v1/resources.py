@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://parallelstore.googleapis.com/v1/'
-DOCS_URL = 'https://cloud.google.com/'
+DOCS_URL = 'https://cloud.google.com/parallelstore'
 
 
 class Collections(enum.Enum):

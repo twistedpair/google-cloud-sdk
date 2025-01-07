@@ -88,8 +88,7 @@ class ArgumentCompleter(object):
     else:
       completer_name = self._completer_class.__name__
     return self._MakeCompletionErrorMessages([
-        '{}ERROR: {} resource completer failed.'.format(
-            prefix, completer_name),
+        '{}ERROR: {} resource completer failed.'.format(prefix, completer_name),
         '{}REASON: {}'.format(prefix, six.text_type(exception)),
     ])
 
@@ -103,7 +102,8 @@ class ArgumentCompleter(object):
     with self._progress_tracker():
       with resource_cache.ResourceCache() as cache:
         return self._CompleteFromCompleterClass(
-            prefix=prefix, cache=cache, parsed_args=parsed_args)
+            prefix=prefix, cache=cache, parsed_args=parsed_args
+        )
 
   def _CompleteFromFunction(self, prefix=''):
     """Helper to complete from a function completer."""
@@ -119,22 +119,26 @@ class ArgumentCompleter(object):
       completer = self._completer_class()
       return completer(prefix=prefix)
     except BaseException as e:  # pylint: disable=broad-except, e shall not pass
-      return self._HandleCompleterException(e, prefix=prefix,
-                                            completer=completer)
+      return self._HandleCompleterException(
+          e, prefix=prefix, completer=completer
+      )
 
-  def _CompleteFromCompleterClass(self, prefix='', cache=None,
-                                  parsed_args=None):
+  def _CompleteFromCompleterClass(
+      self, prefix='', cache=None, parsed_args=None
+  ):
     """Helper to complete from a class."""
-    if parsed_args and len(
-        parsed_args._GetCommand().ai.positional_completers) > 1:  # pylint: disable=protected-access
+    if (
+        parsed_args
+        and len(parsed_args._GetCommand().ai.positional_completers) > 1
+    ):  # pylint: disable=protected-access
       qualified_parameter_names = {'collection'}
     else:
       qualified_parameter_names = set()
     completer = None
     try:
       completer = self._completer_class(
-          cache=cache,
-          qualified_parameter_names=qualified_parameter_names)
+          cache=cache, qualified_parameter_names=qualified_parameter_names
+      )
       parameter_info = completer.ParameterInfo(parsed_args, self._argument)
       return completer.Complete(prefix, parameter_info)
     except BaseException as e:  # pylint: disable=broad-except, e shall not pass
@@ -142,4 +146,5 @@ class ArgumentCompleter(object):
         # This isn't a cache completer.
         return self._CompleteFromGenericCompleterClass(prefix=prefix)
       return self._HandleCompleterException(
-          e, prefix=prefix, completer=completer)
+          e, prefix=prefix, completer=completer
+      )

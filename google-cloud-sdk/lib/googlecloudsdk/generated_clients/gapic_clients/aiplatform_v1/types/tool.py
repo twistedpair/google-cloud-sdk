@@ -37,6 +37,7 @@ __protobuf__ = proto.module(
         'DynamicRetrievalConfig',
         'ToolConfig',
         'FunctionCallingConfig',
+        'RagRetrievalConfig',
     },
 )
 
@@ -56,23 +57,34 @@ class Tool(proto.Message):
             declarations to be passed to the model along with the
             current user query. Model may decide to call a subset of
             these functions by populating
-            [FunctionCall][content.part.function_call] in the response.
-            User should provide a
-            [FunctionResponse][content.part.function_response] for each
-            function call in the next turn. Based on the function
-            responses, Model will generate the final response back to
-            the user. Maximum 128 function declarations can be provided.
+            [FunctionCall][google.cloud.aiplatform.v1.Part.function_call]
+            in the response. User should provide a
+            [FunctionResponse][google.cloud.aiplatform.v1.Part.function_response]
+            for each function call in the next turn. Based on the
+            function responses, Model will generate the final response
+            back to the user. Maximum 128 function declarations can be
+            provided.
         retrieval (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.Retrieval):
             Optional. Retrieval tool type.
             System will always execute the provided
             retrieval tool(s) to get external knowledge to
             answer the prompt. Retrieval results are
             presented to the model for generation.
+        google_search (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.Tool.GoogleSearch):
+            Optional. GoogleSearch tool type.
+            Tool to support Google Search in Model. Powered
+            by Google.
         google_search_retrieval (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.GoogleSearchRetrieval):
             Optional. GoogleSearchRetrieval tool type.
             Specialized retrieval tool that is powered by
             Google search.
     """
+
+    class GoogleSearch(proto.Message):
+        r"""GoogleSearch tool type.
+        Tool to support Google Search in Model. Powered by Google.
+
+        """
 
     function_declarations: MutableSequence['FunctionDeclaration'] = proto.RepeatedField(
         proto.MESSAGE,
@@ -83,6 +95,11 @@ class Tool(proto.Message):
         proto.MESSAGE,
         number=2,
         message='Retrieval',
+    )
+    google_search: GoogleSearch = proto.Field(
+        proto.MESSAGE,
+        number=7,
+        message=GoogleSearch,
     )
     google_search_retrieval: 'GoogleSearchRetrieval' = proto.Field(
         proto.MESSAGE,
@@ -270,8 +287,6 @@ class VertexRagStore(proto.Message):
     .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
     Attributes:
-        rag_corpora (MutableSequence[str]):
-            Optional. Deprecated. Please use rag_resources instead.
         rag_resources (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.VertexRagStore.RagResource]):
             Optional. The representation of the rag
             source. It can be used to specify corpus only or
@@ -288,6 +303,9 @@ class VertexRagStore(proto.Message):
             distance smaller than the threshold.
 
             This field is a member of `oneof`_ ``_vector_distance_threshold``.
+        rag_retrieval_config (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.RagRetrievalConfig):
+            Optional. The retrieval config for the Rag
+            query.
     """
 
     class RagResource(proto.Message):
@@ -311,10 +329,6 @@ class VertexRagStore(proto.Message):
             number=2,
         )
 
-    rag_corpora: MutableSequence[str] = proto.RepeatedField(
-        proto.STRING,
-        number=1,
-    )
     rag_resources: MutableSequence[RagResource] = proto.RepeatedField(
         proto.MESSAGE,
         number=4,
@@ -329,6 +343,11 @@ class VertexRagStore(proto.Message):
         proto.DOUBLE,
         number=3,
         optional=True,
+    )
+    rag_retrieval_config: 'RagRetrievalConfig' = proto.Field(
+        proto.MESSAGE,
+        number=6,
+        message='RagRetrievalConfig',
     )
 
 
@@ -470,6 +489,67 @@ class FunctionCallingConfig(proto.Message):
     allowed_function_names: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,
         number=2,
+    )
+
+
+class RagRetrievalConfig(proto.Message):
+    r"""Specifies the context retrieval config.
+
+    Attributes:
+        top_k (int):
+            Optional. The number of contexts to retrieve.
+        filter (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1.types.RagRetrievalConfig.Filter):
+            Optional. Config for filters.
+    """
+
+    class Filter(proto.Message):
+        r"""Config for filters.
+
+        This message has `oneof`_ fields (mutually exclusive fields).
+        For each oneof, at most one member field can be set at the same time.
+        Setting any member of the oneof automatically clears all other
+        members.
+
+        .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+        Attributes:
+            vector_distance_threshold (float):
+                Optional. Only returns contexts with vector
+                distance smaller than the threshold.
+
+                This field is a member of `oneof`_ ``vector_db_threshold``.
+            vector_similarity_threshold (float):
+                Optional. Only returns contexts with vector
+                similarity larger than the threshold.
+
+                This field is a member of `oneof`_ ``vector_db_threshold``.
+            metadata_filter (str):
+                Optional. String for metadata filtering.
+        """
+
+        vector_distance_threshold: float = proto.Field(
+            proto.DOUBLE,
+            number=3,
+            oneof='vector_db_threshold',
+        )
+        vector_similarity_threshold: float = proto.Field(
+            proto.DOUBLE,
+            number=4,
+            oneof='vector_db_threshold',
+        )
+        metadata_filter: str = proto.Field(
+            proto.STRING,
+            number=2,
+        )
+
+    top_k: int = proto.Field(
+        proto.INT32,
+        number=1,
+    )
+    filter: Filter = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        message=Filter,
     )
 
 

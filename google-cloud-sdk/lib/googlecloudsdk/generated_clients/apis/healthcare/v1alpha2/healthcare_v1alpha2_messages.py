@@ -2026,6 +2026,15 @@ class GoogleCloudHealthcareV1alpha2FhirBigQueryDestination(_messages.Message):
       parameter is ignored.
 
   Fields:
+    changeDataCaptureConfig: Optional. Setting this field will enable
+      BigQuery's Change Data Capture (CDC) on the destination tables. Use this
+      field if you: - Want to only keep the latest version of each resource.
+      Updates and deletes to an existing resource will overwrite the
+      corresponding row. - Have a store with enabled history modifications and
+      want to keep the entire history of resource versions but want the
+      history to be mutable. Updates and deletes to a specific resource
+      version will overwrite the corresponding row. See
+      https://cloud.google.com/bigquery/docs/change-data-capture for details.
     datasetUri: BigQuery URI to an existing dataset, up to 2000 characters
       long, in the format `bq://projectId.bqDatasetId`.
     force: Use `write_disposition` instead. If `write_disposition` is
@@ -2056,10 +2065,49 @@ class GoogleCloudHealthcareV1alpha2FhirBigQueryDestination(_messages.Message):
     WRITE_TRUNCATE = 2
     WRITE_APPEND = 3
 
-  datasetUri = _messages.StringField(1)
-  force = _messages.BooleanField(2)
-  schemaConfig = _messages.MessageField('SchemaConfig', 3)
-  writeDisposition = _messages.EnumField('WriteDispositionValueValuesEnum', 4)
+  changeDataCaptureConfig = _messages.MessageField('GoogleCloudHealthcareV1alpha2FhirChangeDataCaptureConfig', 1)
+  datasetUri = _messages.StringField(2)
+  force = _messages.BooleanField(3)
+  schemaConfig = _messages.MessageField('SchemaConfig', 4)
+  writeDisposition = _messages.EnumField('WriteDispositionValueValuesEnum', 5)
+
+
+class GoogleCloudHealthcareV1alpha2FhirChangeDataCaptureConfig(_messages.Message):
+  r"""BigQuery Change Data Capture configuration.
+
+  Enums:
+    HistoryModeValueValuesEnum: Optional. Configures how historical versions
+      of FHIR resources will be reflected in the destination table through
+      updates and deletes. Defaults to `HistoryMode.KEEP_LATEST_VERSION` if
+      unspecified.
+
+  Fields:
+    historyMode: Optional. Configures how historical versions of FHIR
+      resources will be reflected in the destination table through updates and
+      deletes. Defaults to `HistoryMode.KEEP_LATEST_VERSION` if unspecified.
+  """
+
+  class HistoryModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Configures how historical versions of FHIR resources will be
+    reflected in the destination table through updates and deletes. Defaults
+    to `HistoryMode.KEEP_LATEST_VERSION` if unspecified.
+
+    Values:
+      HISTORY_MODE_UNSPECIFIED: Default behavior is the same as
+        KEEP_LATEST_VERSION.
+      KEEP_LATEST_VERSION: The table will have a unique entry for each
+        resource ID. Updates and deletes will overwrite the row matching the
+        resource ID if it exists in the table.
+      KEEP_ALL_VERSIONS: Historical versions of resources will be maintained.
+        However, history mutation is allowed. Updates will overwrite the row
+        matching the resource ID and version if it exists in the table. This
+        option is only supported for stores with history enabled.
+    """
+    HISTORY_MODE_UNSPECIFIED = 0
+    KEEP_LATEST_VERSION = 1
+    KEEP_ALL_VERSIONS = 2
+
+  historyMode = _messages.EnumField('HistoryModeValueValuesEnum', 1)
 
 
 class GoogleCloudHealthcareV1alpha2FhirExportResourcesResponse(_messages.Message):

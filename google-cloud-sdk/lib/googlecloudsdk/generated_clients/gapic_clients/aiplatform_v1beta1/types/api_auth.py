@@ -30,6 +30,9 @@ __protobuf__ = proto.module(
 
 class ApiAuth(proto.Message):
     r"""The generic reusable api auth config.
+    Deprecated. Please use AuthConfig
+    (google/cloud/aiplatform/master/auth.proto) instead.
+
 
     .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 

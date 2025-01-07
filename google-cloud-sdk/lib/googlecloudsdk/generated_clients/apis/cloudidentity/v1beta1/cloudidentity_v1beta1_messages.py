@@ -1184,7 +1184,7 @@ class CloudidentityGroupsMembershipsGetMembershipGraphRequest(_messages.Message)
       to search transitive memberships in. Format: `groups/{group_id}`, where
       `group_id` is the unique ID assigned to the Group to which the
       Membership belongs to. group_id can be a wildcard collection id "-".
-      When a group_id is specified, the membership graph will be constrained
+      When `group_id` is specified, the membership graph will be constrained
       to paths between the member (defined in the query) and the parent. If a
       wildcard collection is provided, all membership paths connected to the
       member will be returned.
@@ -1305,7 +1305,7 @@ class CloudidentityGroupsMembershipsSearchDirectGroupsRequest(_messages.Message)
       group key: order_by="group_key desc".
     pageSize: The default page size is 200 (max 1000).
     pageToken: The next_page_token value returned from a previous list
-      request, if any
+      request, if any.
     parent: [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the group
       to search transitive memberships in. Format: groups/{group_id}, where
@@ -1332,7 +1332,7 @@ class CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest(_messages.Mess
 
   Fields:
     pageSize: The default page size is 200 (max 1000).
-    pageToken: The next_page_token value returned from a previous list
+    pageToken: The `next_page_token` value returned from a previous list
       request, if any.
     parent: [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the group
@@ -1350,7 +1350,7 @@ class CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest(_messages.Mess
       within a particular customer, e.g. `parent ==
       'customers/{customer_id}'`. The `customer_id` must begin with "C" (for
       example, 'C046psxkn'). This filtering is only supported for Admins with
-      groups read permissons on the input customer. Example query:
+      groups read permissions on the input customer. Example query:
       `member_key_id == 'member_key_id_value' && in labels && parent ==
       'customers/C046psxkn'`
   """
@@ -1764,12 +1764,12 @@ class CloudidentityPoliciesListRequest(_messages.Message):
       `customers/my_customer` to specify your own organization. When no
       customer is mentioned it will be default to customers/my_customer. A
       maximum of one customer clause can be used. The above clauses can only
-      be combined together in a single filter expression with the AND
+      be combined together in a single filter expression with the `&&`
       operator.
     pageSize: Optional. The maximum number of results to return. The service
-      may return fewer than this value. If omitted (or defaulted to zero) the
-      server will default to 50. The maximum allowed value is 100, though
-      requests with page_size greater than that will be interpreted as 100.
+      can return fewer than this number. If omitted or set to 0, the default
+      is 50 results per page. The maximum allowed value is 100. `page_size`
+      values greater than 100 default to 100.
     pageToken: Optional. The pagination token received from a prior call to
       PoliciesService.ListPolicies to retrieve the next page of results. When
       paginating, all other parameters provided to `ListPoliciesRequest` must
@@ -1862,7 +1862,10 @@ class DeleteInboundSsoAssignmentOperationMetadata(_messages.Message):
 class Device(_messages.Message):
   r"""A Device within the Cloud Identity Devices API. Represents a Device
   known to Google Cloud, independent of the device ownership, type, and
-  whether it is assigned or in use by a user.
+  whether it is assigned or in use by a user. Important: Device API scopes
+  require that you use domain-wide delegation to access the API. For more
+  information, see [Set up the Devices
+  API](https://cloud.google.com/identity/docs/how-to/setup-devices).
 
   Enums:
     ClientTypesValueListEntryValuesEnum:
@@ -2906,7 +2909,10 @@ class GoogleAppsCloudidentityDevicesV1Device(_messages.Message):
     name: Output only. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the Device
       in format: `devices/{device}`, where device is the unique id assigned to
-      the Device.
+      the Device. Important: Device API scopes require that you use domain-
+      wide delegation to access the API. For more information, see [Set up the
+      Devices API](https://cloud.google.com/identity/docs/how-to/setup-
+      devices).
     networkOperator: Output only. Mobile or network operator of device, if
       available.
     osVersion: Output only. OS version of the device. Example: Android 8.1.0.
@@ -3249,8 +3255,8 @@ class Group(_messages.Message):
 
   Messages:
     LabelsValue: Required. One or more label entries that apply to the Group.
-      Currently supported labels contain a key with an empty value. Google
-      Groups are the default type of group and have a label with a key of
+      Labels contain a key with an empty value. Google Groups are the default
+      type of group and have a label with a key of
       `cloudidentity.googleapis.com/groups.discussion_forum` and an empty
       value. Existing Google Groups can have an additional label with a key of
       `cloudidentity.googleapis.com/groups.security` and an empty value added
@@ -3258,7 +3264,11 @@ class Group(_messages.Message):
       removed once added.** Dynamic groups have a label with a key of
       `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups
       for Cloud Search have a label with a key of `system/groups/external` and
-      an empty value.
+      an empty value. (Beta) Google Groups can be
+      [locked](https://support.google.com/a?p=locked-groups). To lock a group,
+      add a label with a key of `cloudidentity.googleapis.com/groups.locked`
+      and an empty value. Doing so locks the group. To unlock the group,
+      remove this label.
 
   Fields:
     additionalGroupKeys: Output only. Additional group keys associated with
@@ -3271,8 +3281,8 @@ class Group(_messages.Message):
       status.
     groupKey: Required. The `EntityKey` of the `Group`.
     labels: Required. One or more label entries that apply to the Group.
-      Currently supported labels contain a key with an empty value. Google
-      Groups are the default type of group and have a label with a key of
+      Labels contain a key with an empty value. Google Groups are the default
+      type of group and have a label with a key of
       `cloudidentity.googleapis.com/groups.discussion_forum` and an empty
       value. Existing Google Groups can have an additional label with a key of
       `cloudidentity.googleapis.com/groups.security` and an empty value added
@@ -3280,7 +3290,11 @@ class Group(_messages.Message):
       removed once added.** Dynamic groups have a label with a key of
       `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups
       for Cloud Search have a label with a key of `system/groups/external` and
-      an empty value.
+      an empty value. (Beta) Google Groups can be
+      [locked](https://support.google.com/a?p=locked-groups). To lock a group,
+      add a label with a key of `cloudidentity.googleapis.com/groups.locked`
+      and an empty value. Doing so locks the group. To unlock the group,
+      remove this label.
     name: Output only. The [resource
       name](https://cloud.google.com/apis/design/resource_names) of the
       `Group`. Shall be of the form `groups/{group_id}`.
@@ -3297,9 +3311,9 @@ class Group(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Required. One or more label entries that apply to the Group. Currently
-    supported labels contain a key with an empty value. Google Groups are the
-    default type of group and have a label with a key of
+    r"""Required. One or more label entries that apply to the Group. Labels
+    contain a key with an empty value. Google Groups are the default type of
+    group and have a label with a key of
     `cloudidentity.googleapis.com/groups.discussion_forum` and an empty value.
     Existing Google Groups can have an additional label with a key of
     `cloudidentity.googleapis.com/groups.security` and an empty value added to
@@ -3307,7 +3321,11 @@ class Group(_messages.Message):
     removed once added.** Dynamic groups have a label with a key of
     `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups for
     Cloud Search have a label with a key of `system/groups/external` and an
-    empty value.
+    empty value. (Beta) Google Groups can be
+    [locked](https://support.google.com/a?p=locked-groups). To lock a group,
+    add a label with a key of `cloudidentity.googleapis.com/groups.locked` and
+    an empty value. Doing so locks the group. To unlock the group, remove this
+    label.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -3862,8 +3880,8 @@ class MembershipAdjacencyList(_messages.Message):
   Fields:
     edges: Each edge contains information about the member that belongs to
       this group. Note: Fields returned here will help identify the specific
-      Membership resource (e.g name, preferred_member_key and role), but may
-      not be a comprehensive list of all fields.
+      Membership resource (e.g `name`, `preferred_member_key` and `role`), but
+      may not be a comprehensive list of all fields.
     group: Resource name of the group that the members belong to.
   """
 
@@ -4257,8 +4275,8 @@ class PolicyQuery(_messages.Message):
       that contain the corresponding value(s) as the query to make the query
       easier to use.
     sortOrder: Output only. The decimal sort order of this PolicyQuery. The
-      value is relative to all other policies with the same setting type
-      within the whole customer. (there are no duplicates within this set).
+      value is relative to all other policies with the same setting type for
+      the customer. (There are no duplicates within this set).
   """
 
   group = _messages.StringField(1)

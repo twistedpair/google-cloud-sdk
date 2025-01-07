@@ -37,9 +37,20 @@ class CrossSiteNetworksCompleter(compute_completers.ListCommandCompleter):
 
 def CrossSiteNetworkArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
-      resource_name='cross site network',
+      resource_name='crossSiteNetwork',
       completer=CrossSiteNetworksCompleter,
       plural=plural,
+      required=required,
+      global_collection='compute.crossSiteNetworks',
+  )
+
+
+def CrossSiteNetworkArgumentForOtherResource(required=True):
+  return compute_flags.ResourceArgument(
+      name='--cross-site-network',
+      resource_name='crossSiteNetwork',
+      completer=CrossSiteNetworksCompleter,
+      plural=False,
       required=required,
       global_collection='compute.crossSiteNetworks',
   )
@@ -50,13 +61,4 @@ def AddDescription(parser):
   parser.add_argument(
       '--description',
       help='An optional, textual description for the cross site network.',
-  )
-
-
-def AddProject(parser):
-  """Adds project flag to the argparse.ArgumentParser."""
-  parser.add_argument(
-      '--project',
-      required=True,
-      help='A project for the cross site network.',
   )

@@ -89,6 +89,12 @@ def MakeFutureReservationMessageFromArgs(messages, resources, args,
         messages, getattr(args, 'scheduling_type', None)
     )
 
+  reservation_mode = None
+  if args.IsKnownAndSpecified('reservation_mode'):
+    reservation_mode = MakeReservationMode(
+        messages, getattr(args, 'reservation_mode', None)
+    )
+
   return MakeFutureReservationMessage(
       messages,
       future_reservation_ref.Name(),
@@ -104,6 +110,7 @@ def MakeFutureReservationMessageFromArgs(messages, resources, args,
       deployment_type,
       commitment_info,
       scheduling_type,
+      reservation_mode
   )
 
 
@@ -260,6 +267,16 @@ def MakeSchedulingType(messages, scheduling_type):
   return None
 
 
+def MakeReservationMode(messages, reservation_mode):
+  """Constructs the reservation mode enum value."""
+  if reservation_mode:
+    if reservation_mode == 'CALENDAR':
+      return messages.FutureReservation.ReservationModeValueValuesEnum.CALENDAR
+    if reservation_mode == 'DEFAULT':
+      return messages.FutureReservation.ReservationModeValueValuesEnum.DEFAULT
+  return None
+
+
 def MakeFutureReservationMessage(
     messages,
     future_reservation_name,
@@ -275,6 +292,7 @@ def MakeFutureReservationMessage(
     deployment_type=None,
     commitment_info=None,
     scheduling_type=None,
+    reservation_mode=None,
 ):
   """Constructs a future reservation message object."""
   future_reservation_message = messages.FutureReservation(
@@ -311,4 +329,7 @@ def MakeFutureReservationMessage(
     future_reservation_message.commitmentInfo = commitment_info
   if scheduling_type is not None:
     future_reservation_message.schedulingType = scheduling_type
+  if reservation_mode is not None:
+    future_reservation_message.reservationMode = reservation_mode
+
   return future_reservation_message

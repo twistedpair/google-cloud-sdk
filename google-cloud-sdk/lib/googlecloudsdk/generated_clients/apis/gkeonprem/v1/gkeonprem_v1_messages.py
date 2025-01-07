@@ -6282,8 +6282,12 @@ class VmwareAdminMetalLbConfig(_messages.Message):
   r"""VmwareAdminMetalLbConfig represents configuration parameters for a
   MetalLB load balancer. For admin clusters, currently no configurations is
   needed.
+
+  Fields:
+    enabled: Whether MetalLB is enabled.
   """
 
+  enabled = _messages.BooleanField(1)
 
 
 class VmwareAdminNetworkConfig(_messages.Message):

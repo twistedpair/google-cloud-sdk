@@ -130,6 +130,11 @@ def AddLocationResourceArg(
   ).AddToParser(parser)
 
 
+def AddDescriptionArg(parser, help_text="Description of the deployment group."):
+  """Adds a resource argument for Google Cloud description."""
+  parser.add_argument("--description", required=False, help=help_text)
+
+
 def AddNetworkResource(parser):
   """Adds network resource."""
   resource_spec = concepts.ResourceSpec(

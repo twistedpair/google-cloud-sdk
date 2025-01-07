@@ -32,8 +32,8 @@ class DisplayInfo(object):
     (2) handle it in AddLowerDisplayInfo()
 
   Attributes:
-    cache_updater: A resource_cache.Updater class that will be instantiated
-      and called to update the cache to reflect the resources returned by the
+    cache_updater: A resource_cache.Updater class that will be instantiated and
+      called to update the cache to reflect the resources returned by the
       calling command.
     filter: The default filter string. args.filter takes precedence.
     flatten: The default flatten string. args.flatten takes precedence.
@@ -119,9 +119,10 @@ class DisplayInfo(object):
     """Adds a uri transform to the display info using uri_func.
 
     Args:
-      uri_func: func(resource), A function that returns the uri for a
-        resource object.
+      uri_func: func(resource), A function that returns the uri for a resource
+        object.
     """
+
     def _TransformUri(resource, undefined=None):
       try:
         return uri_func(resource) or undefined

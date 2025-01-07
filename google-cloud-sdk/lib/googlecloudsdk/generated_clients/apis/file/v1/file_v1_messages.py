@@ -26,9 +26,14 @@ class Backup(_messages.Message):
 
   Messages:
     LabelsValue: Resource labels to represent user provided metadata.
-    TagsValue: Optional. Input only. Immutable. Tag key-value pairs are bound
-      to this resource. For example: "123/environment": "production",
-      "123/costCenter": "marketing"
+    TagsValue: Optional. Input only. Immutable. Tag key-value pairs bound to
+      this resource. Each key must be a namespaced name and each value a short
+      name. Example: "123456789012/environment" : "production",
+      "123456789013/costCenter" : "marketing" See the documentation for more
+      information: - Namespaced name: https://cloud.google.com/resource-
+      manager/docs/tags/tags-creating-and-managing#retrieving_tag_key - Short
+      name: https://cloud.google.com/resource-manager/docs/tags/tags-creating-
+      and-managing#retrieving_tag_value
 
   Fields:
     capacityGb: Output only. Capacity of the source file share when the backup
@@ -58,9 +63,14 @@ class Backup(_messages.Message):
     storageBytes: Output only. The size of the storage used by the backup. As
       backups share storage, this number is expected to change with backup
       creation/deletion.
-    tags: Optional. Input only. Immutable. Tag key-value pairs are bound to
-      this resource. For example: "123/environment": "production",
-      "123/costCenter": "marketing"
+    tags: Optional. Input only. Immutable. Tag key-value pairs bound to this
+      resource. Each key must be a namespaced name and each value a short
+      name. Example: "123456789012/environment" : "production",
+      "123456789013/costCenter" : "marketing" See the documentation for more
+      information: - Namespaced name: https://cloud.google.com/resource-
+      manager/docs/tags/tags-creating-and-managing#retrieving_tag_key - Short
+      name: https://cloud.google.com/resource-manager/docs/tags/tags-creating-
+      and-managing#retrieving_tag_value
   """
 
   class FileSystemProtocolValueValuesEnum(_messages.Enum):
@@ -157,9 +167,14 @@ class Backup(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TagsValue(_messages.Message):
-    r"""Optional. Input only. Immutable. Tag key-value pairs are bound to this
-    resource. For example: "123/environment": "production", "123/costCenter":
-    "marketing"
+    r"""Optional. Input only. Immutable. Tag key-value pairs bound to this
+    resource. Each key must be a namespaced name and each value a short name.
+    Example: "123456789012/environment" : "production",
+    "123456789013/costCenter" : "marketing" See the documentation for more
+    information: - Namespaced name: https://cloud.google.com/resource-
+    manager/docs/tags/tags-creating-and-managing#retrieving_tag_key - Short
+    name: https://cloud.google.com/resource-manager/docs/tags/tags-creating-
+    and-managing#retrieving_tag_value
 
     Messages:
       AdditionalProperty: An additional property for a TagsValue object.
@@ -1272,9 +1287,14 @@ class Instance(_messages.Message):
 
   Messages:
     LabelsValue: Resource labels to represent user provided metadata.
-    TagsValue: Optional. Input only. Immutable. Tag key-value pairs are bound
-      to this resource. For example: "123/environment": "production",
-      "123/costCenter": "marketing"
+    TagsValue: Optional. Input only. Immutable. Tag key-value pairs bound to
+      this resource. Each key must be a namespaced name and each value a short
+      name. Example: "123456789012/environment" : "production",
+      "123456789013/costCenter" : "marketing" See the documentation for more
+      information: - Namespaced name: https://cloud.google.com/resource-
+      manager/docs/tags/tags-creating-and-managing#retrieving_tag_key - Short
+      name: https://cloud.google.com/resource-manager/docs/tags/tags-creating-
+      and-managing#retrieving_tag_value
 
   Fields:
     configurablePerformanceEnabled: Output only. Indicates whether this
@@ -1309,9 +1329,14 @@ class Instance(_messages.Message):
       state, if available.
     suspensionReasons: Output only. Field indicates all the reasons the
       instance is in "SUSPENDED" state.
-    tags: Optional. Input only. Immutable. Tag key-value pairs are bound to
-      this resource. For example: "123/environment": "production",
-      "123/costCenter": "marketing"
+    tags: Optional. Input only. Immutable. Tag key-value pairs bound to this
+      resource. Each key must be a namespaced name and each value a short
+      name. Example: "123456789012/environment" : "production",
+      "123456789013/costCenter" : "marketing" See the documentation for more
+      information: - Namespaced name: https://cloud.google.com/resource-
+      manager/docs/tags/tags-creating-and-managing#retrieving_tag_key - Short
+      name: https://cloud.google.com/resource-manager/docs/tags/tags-creating-
+      and-managing#retrieving_tag_value
     tier: The service tier of the instance.
   """
 
@@ -1434,9 +1459,14 @@ class Instance(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TagsValue(_messages.Message):
-    r"""Optional. Input only. Immutable. Tag key-value pairs are bound to this
-    resource. For example: "123/environment": "production", "123/costCenter":
-    "marketing"
+    r"""Optional. Input only. Immutable. Tag key-value pairs bound to this
+    resource. Each key must be a namespaced name and each value a short name.
+    Example: "123456789012/environment" : "production",
+    "123456789013/costCenter" : "marketing" See the documentation for more
+    information: - Namespaced name: https://cloud.google.com/resource-
+    manager/docs/tags/tags-creating-and-managing#retrieving_tag_key - Short
+    name: https://cloud.google.com/resource-manager/docs/tags/tags-creating-
+    and-managing#retrieving_tag_value
 
     Messages:
       AdditionalProperty: An additional property for a TagsValue object.
@@ -1494,7 +1524,7 @@ class ListBackupsResponse(_messages.Message):
       locations.
     nextPageToken: The token you can use to retrieve the next page of results.
       Not returned if there are no more results in the list.
-    unreachable: Locations that could not be reached.
+    unreachable: Unordered list. Locations that could not be reached.
   """
 
   backups = _messages.MessageField('Backup', 1, repeated=True)
@@ -1514,7 +1544,7 @@ class ListInstancesResponse(_messages.Message):
       locations.
     nextPageToken: The token you can use to retrieve the next page of results.
       Not returned if there are no more results in the list.
-    unreachable: Locations that could not be reached.
+    unreachable: Unordered list. Locations that could not be reached.
   """
 
   instances = _messages.MessageField('Instance', 1, repeated=True)
@@ -1555,7 +1585,7 @@ class ListSnapshotsResponse(_messages.Message):
     nextPageToken: The token you can use to retrieve the next page of results.
       Not returned if there are no more results in the list.
     snapshots: A list of snapshots in the project for the specified instance.
-    unreachable: Locations that could not be reached.
+    unreachable: Unordered list. Locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -2222,9 +2252,14 @@ class Snapshot(_messages.Message):
 
   Messages:
     LabelsValue: Resource labels to represent user provided metadata.
-    TagsValue: Optional. Input only. Immutable. Tag key-value pairs are bound
-      to this resource. For example: "123/environment": "production",
-      "123/costCenter": "marketing"
+    TagsValue: Optional. Input only. Immutable. Tag key-value pairs bound to
+      this resource. Each key must be a namespaced name and each value a short
+      name. Example: "123456789012/environment" : "production",
+      "123456789013/costCenter" : "marketing" See the documentation for more
+      information: - Namespaced name: https://cloud.google.com/resource-
+      manager/docs/tags/tags-creating-and-managing#retrieving_tag_key - Short
+      name: https://cloud.google.com/resource-manager/docs/tags/tags-creating-
+      and-managing#retrieving_tag_value
 
   Fields:
     createTime: Output only. The time when the snapshot was created.
@@ -2237,9 +2272,14 @@ class Snapshot(_messages.Message):
       cts/{project_id}/locations/{location_id}/instances/{instance_id}/snapsho
       ts/{snapshot_id}`.
     state: Output only. The snapshot state.
-    tags: Optional. Input only. Immutable. Tag key-value pairs are bound to
-      this resource. For example: "123/environment": "production",
-      "123/costCenter": "marketing"
+    tags: Optional. Input only. Immutable. Tag key-value pairs bound to this
+      resource. Each key must be a namespaced name and each value a short
+      name. Example: "123456789012/environment" : "production",
+      "123456789013/costCenter" : "marketing" See the documentation for more
+      information: - Namespaced name: https://cloud.google.com/resource-
+      manager/docs/tags/tags-creating-and-managing#retrieving_tag_key - Short
+      name: https://cloud.google.com/resource-manager/docs/tags/tags-creating-
+      and-managing#retrieving_tag_value
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -2282,9 +2322,14 @@ class Snapshot(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TagsValue(_messages.Message):
-    r"""Optional. Input only. Immutable. Tag key-value pairs are bound to this
-    resource. For example: "123/environment": "production", "123/costCenter":
-    "marketing"
+    r"""Optional. Input only. Immutable. Tag key-value pairs bound to this
+    resource. Each key must be a namespaced name and each value a short name.
+    Example: "123456789012/environment" : "production",
+    "123456789013/costCenter" : "marketing" See the documentation for more
+    information: - Namespaced name: https://cloud.google.com/resource-
+    manager/docs/tags/tags-creating-and-managing#retrieving_tag_key - Short
+    name: https://cloud.google.com/resource-manager/docs/tags/tags-creating-
+    and-managing#retrieving_tag_value
 
     Messages:
       AdditionalProperty: An additional property for a TagsValue object.

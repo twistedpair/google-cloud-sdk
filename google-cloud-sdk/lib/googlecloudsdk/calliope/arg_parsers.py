@@ -1528,7 +1528,8 @@ class ArgObject(ArgDict):
 
   def __init__(self, key_type=None, value_type=None, spec=None,
                required_keys=None, help_text=None, repeated=False,
-               hidden=None, enable_shorthand=True, enable_file_upload=True):
+               hidden=None, enable_shorthand=True, enable_file_upload=True,
+               disable_key_description=False):
     # Disable arg_dict syntax for nested values
     if value_type:
       self._DisableShorthand(value_type)
@@ -1549,6 +1550,7 @@ class ArgObject(ArgDict):
     self._hidden = hidden
     self.enable_shorthand = enable_shorthand
     self.enable_file_upload = enable_file_upload
+    self._disable_key_description = disable_key_description
 
     if self.required_keys and not self._keyed_values:
       raise InvalidTypeError(
@@ -1722,7 +1724,7 @@ class ArgObject(ArgDict):
     # See method descriptor above.
     format_as_shorthand = not (is_json_obj or is_array)
 
-    if self.spec:
+    if self.spec is not None:
       comma = ',' if format_as_shorthand else ', '
       example = (
           usage_text.GetNestedKeyValueExample(key, value, format_as_shorthand)
@@ -1780,6 +1782,25 @@ class ArgObject(ArgDict):
     else:
       return root_help_text
 
+  def _GetKeyValueUsageHelpText(self):
+    """Returns a string of help text for the flag."""
+    result = []
+    if self.spec:
+      items = (
+          usage_text.GetNestedUsageHelpText(key, val, key in self.required_keys)
+          for key, val in sorted(self.spec.items()))
+      result.extend(items)
+
+    elif self.key_type:
+      # Keys can be None but values are parsed as string
+      # by default in ArgObject
+      result.append(
+          usage_text.GetNestedUsageHelpText('KEY', self.key_type))
+      result.append(
+          usage_text.GetNestedUsageHelpText('VALUE', self.value_type or str))
+
+    return result
+
   def GetUsageHelpText(self, field_name, required, flag_name=None):
     """Returns a string of usage help text.
 
@@ -1818,22 +1839,14 @@ class ArgObject(ArgDict):
       return None
 
     result = []
+    # Adds this node's help text.
     result.append(self._FormatRootHelpText(field_name, required))
 
-    if self.spec:
-      items = (
-          usage_text.GetNestedUsageHelpText(key, val, key in self.required_keys)
-          for key, val in sorted(self.spec.items()))
-      result.extend(items)
+    # Recursively adds the help text for each key/value pair nodes.
+    if not self._disable_key_description:
+      result.extend(self._GetKeyValueUsageHelpText())
 
-    elif self.key_type:
-      # Keys can be None but values are parsed as string
-      # by default in ArgObject
-      result.append(
-          usage_text.GetNestedUsageHelpText('KEY', self.key_type))
-      result.append(
-          usage_text.GetNestedUsageHelpText('VALUE', self.value_type or str))
-
+    # Adds code examples if flag_name is not None.
     if flag_name:
       # Reset indentation back to root level
       result.append(usage_text.ASCII_INDENT + self._GetCodeExamples(flag_name))

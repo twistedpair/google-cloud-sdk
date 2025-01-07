@@ -70,6 +70,11 @@
                 "lock_bucket_retention_policy"
               ]
             },
+            "MoveObject": {
+              "methods": [
+                "move_object"
+              ]
+            },
             "QueryWriteStatus": {
               "methods": [
                 "query_write_status"
@@ -185,6 +190,11 @@
                 "lock_bucket_retention_policy"
               ]
             },
+            "MoveObject": {
+              "methods": [
+                "move_object"
+              ]
+            },
             "QueryWriteStatus": {
               "methods": [
                 "query_write_status"
@@ -298,6 +308,11 @@
             "LockBucketRetentionPolicy": {
               "methods": [
                 "lock_bucket_retention_policy"
+              ]
+            },
+            "MoveObject": {
+              "methods": [
+                "move_object"
               ]
             },
             "QueryWriteStatus": {

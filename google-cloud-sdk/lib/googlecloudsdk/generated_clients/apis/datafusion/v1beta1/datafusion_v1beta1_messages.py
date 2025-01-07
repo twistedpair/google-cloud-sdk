@@ -820,6 +820,7 @@ class Instance(_messages.Message):
     labels: The resource labels for instance to use to annotate any related
       underlying resources such as Compute Engine VMs. The character '=' is
       not allowed to be used within the labels.
+    maintenanceEvents: Output only. The maintenance events for this instance.
     maintenancePolicy: Optional. Configure the maintenance policy for this
       instance.
     name: Output only. The name of this instance is in the form of
@@ -1009,25 +1010,26 @@ class Instance(_messages.Message):
   eventPublishConfig = _messages.MessageField('EventPublishConfig', 15)
   gcsBucket = _messages.StringField(16)
   labels = _messages.MessageField('LabelsValue', 17)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 18)
-  name = _messages.StringField(19)
-  networkConfig = _messages.MessageField('NetworkConfig', 20)
-  options = _messages.MessageField('OptionsValue', 21)
-  p4ServiceAccount = _messages.StringField(22)
-  patchRevision = _messages.StringField(23)
-  privateInstance = _messages.BooleanField(24)
-  satisfiesPzs = _messages.BooleanField(25)
-  serviceAccount = _messages.StringField(26)
-  serviceEndpoint = _messages.StringField(27)
-  state = _messages.EnumField('StateValueValuesEnum', 28)
-  stateMessage = _messages.StringField(29)
-  tags = _messages.MessageField('TagsValue', 30)
-  tenantProjectId = _messages.StringField(31)
-  type = _messages.EnumField('TypeValueValuesEnum', 32)
-  updateTime = _messages.StringField(33)
-  version = _messages.StringField(34)
-  workforceIdentityServiceEndpoint = _messages.StringField(35)
-  zone = _messages.StringField(36)
+  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 18, repeated=True)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 19)
+  name = _messages.StringField(20)
+  networkConfig = _messages.MessageField('NetworkConfig', 21)
+  options = _messages.MessageField('OptionsValue', 22)
+  p4ServiceAccount = _messages.StringField(23)
+  patchRevision = _messages.StringField(24)
+  privateInstance = _messages.BooleanField(25)
+  satisfiesPzs = _messages.BooleanField(26)
+  serviceAccount = _messages.StringField(27)
+  serviceEndpoint = _messages.StringField(28)
+  state = _messages.EnumField('StateValueValuesEnum', 29)
+  stateMessage = _messages.StringField(30)
+  tags = _messages.MessageField('TagsValue', 31)
+  tenantProjectId = _messages.StringField(32)
+  type = _messages.EnumField('TypeValueValuesEnum', 33)
+  updateTime = _messages.StringField(34)
+  version = _messages.StringField(35)
+  workforceIdentityServiceEndpoint = _messages.StringField(36)
+  zone = _messages.StringField(37)
 
 
 class ListAvailableVersionsResponse(_messages.Message):
@@ -1191,6 +1193,42 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class MaintenanceEvent(_messages.Message):
+  r"""Represents a maintenance event.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the maintenance event.
+
+  Fields:
+    endTime: Output only. The end time of the maintenance event provided in
+      [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format. Example:
+      "2024-01-02T12:04:06-06:00" This field will be empty if the maintenance
+      event is not yet complete.
+    startTime: Output only. The start time of the maintenance event provided
+      in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format. Example:
+      "2024-01-01T12:04:06-04:00"
+    state: Output only. The state of the maintenance event.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the maintenance event.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the maintenance event is unspecified.
+      SCHEDULED: The maintenance is scheduled but has not started.
+      STARTED: The maintenance has been started.
+      COMPLETED: The maintenance has been completed.
+    """
+    STATE_UNSPECIFIED = 0
+    SCHEDULED = 1
+    STARTED = 2
+    COMPLETED = 3
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class MaintenancePolicy(_messages.Message):

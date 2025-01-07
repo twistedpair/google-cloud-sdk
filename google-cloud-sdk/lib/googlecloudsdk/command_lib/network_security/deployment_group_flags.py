@@ -72,6 +72,13 @@ def AddMaxWait(
   )
 
 
+def AddDescriptionArg(
+    parser, help_text="Description of the mirroring deployment group"
+):
+  """Adds a resource argument for Google Cloud description."""
+  parser.add_argument("--description", required=False, help=help_text)
+
+
 def MakeGetUriFunc(release_track):
   return lambda x: api.GetEffectiveApiEndpoint(release_track) + x.name
 

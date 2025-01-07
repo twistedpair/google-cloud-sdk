@@ -1045,7 +1045,7 @@ class IamLocationsWorkforcePoolsInstalledAppsPatchRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsInstalledAppsPatchRequest object.
 
   Fields:
-    name: Immutable. The resource name of the workforce pool installed app.
+    name: Identifier. The resource name of the workforce pool installed app.
       Format: `locations/{location}/workforcePools/{workforce_pool}/installedA
       pps/{installed_app}`
     updateMask: Required. The list of fields to update.
@@ -1110,7 +1110,7 @@ class IamLocationsWorkforcePoolsPatchRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsPatchRequest object.
 
   Fields:
-    name: Output only. The resource name of the pool. Format:
+    name: Identifier. The resource name of the pool. Format:
       `locations/{location}/workforcePools/{workforce_pool_id}`
     updateMask: Required. The list of fields to update.
     workforcePool: A WorkforcePool resource to be passed as the request body.
@@ -1280,8 +1280,8 @@ class IamLocationsWorkforcePoolsProvidersPatchRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsProvidersPatchRequest object.
 
   Fields:
-    name: Output only. The resource name of the provider. Format: `locations/{
-      location}/workforcePools/{workforce_pool_id}/providers/{provider_id}`
+    name: Identifier. The resource name of the provider. Format: `locations/{l
+      ocation}/workforcePools/{workforce_pool_id}/providers/{provider_id}`
     updateMask: Required. The list of fields to update.
     workforcePoolProvider: A WorkforcePoolProvider resource to be passed as
       the request body.
@@ -1699,9 +1699,9 @@ class IamProjectsLocationsOauthClientsCredentialsPatchRequest(_messages.Message)
   r"""A IamProjectsLocationsOauthClientsCredentialsPatchRequest object.
 
   Fields:
-    name: Immutable. The resource name of the OauthClientCredential. Format: `
-      projects/{project}/locations/{location}/oauthClients/{oauth_client}/cred
-      entials/{credential}`
+    name: Immutable. Identifier. The resource name of the
+      OauthClientCredential. Format: `projects/{project}/locations/{location}/
+      oauthClients/{oauth_client}/credentials/{credential}`
     oauthClientCredential: A OauthClientCredential resource to be passed as
       the request body.
     updateMask: Required. The list of fields to update.
@@ -1760,8 +1760,8 @@ class IamProjectsLocationsOauthClientsPatchRequest(_messages.Message):
   r"""A IamProjectsLocationsOauthClientsPatchRequest object.
 
   Fields:
-    name: Immutable. The resource name of the OauthClient. Format:`projects/{p
-      roject}/locations/{location}/oauthClients/{oauth_client}`.
+    name: Immutable. Identifier. The resource name of the OauthClient. Format:
+      `projects/{project}/locations/{location}/oauthClients/{oauth_client}`.
     oauthClient: A OauthClient resource to be passed as the request body.
     updateMask: Required. The list of fields to update.
   """
@@ -4268,8 +4268,8 @@ class OauthClient(_messages.Message):
       Cannot exceed 32 characters.
     expireTime: Output only. Time after which the OauthClient will be
       permanently purged and cannot be recovered.
-    name: Immutable. The resource name of the OauthClient. Format:`projects/{p
-      roject}/locations/{location}/oauthClients/{oauth_client}`.
+    name: Immutable. Identifier. The resource name of the OauthClient. Format:
+      `projects/{project}/locations/{location}/oauthClients/{oauth_client}`.
     state: Output only. The state of the OauthClient.
   """
 
@@ -4344,9 +4344,9 @@ class OauthClientCredential(_messages.Message):
       cannot use a disabled OauthClientCredential.
     displayName: Optional. A user-specified display name of the
       OauthClientCredential. Cannot exceed 32 characters.
-    name: Immutable. The resource name of the OauthClientCredential. Format: `
-      projects/{project}/locations/{location}/oauthClients/{oauth_client}/cred
-      entials/{credential}`
+    name: Immutable. Identifier. The resource name of the
+      OauthClientCredential. Format: `projects/{project}/locations/{location}/
+      oauthClients/{oauth_client}/credentials/{credential}`
     updateTime: Output only. The timestamp for the last update of the
       OauthClientCredential. If no updates have been made, the creation time
       will serve as the designated value.
@@ -4364,15 +4364,15 @@ class Oidc(_messages.Message):
   r"""Represents an OpenId Connect 1.0 identity provider.
 
   Fields:
-    allowedAudiences: Acceptable values for the `aud` field (audience) in the
-      OIDC token. Token exchange requests are rejected if the token audience
-      does not match one of the configured values. Each audience may be at
-      most 256 characters. A maximum of 10 audiences may be configured. If
-      this list is empty, the OIDC token audience must be equal to the full
-      canonical resource name of the WorkloadIdentityPoolProvider, with or
-      without the HTTPS prefix. For example: ``` //iam.googleapis.com/projects
-      //locations//workloadIdentityPools//providers/ https://iam.googleapis.co
-      m/projects//locations//workloadIdentityPools//providers/ ```
+    allowedAudiences: Optional. Acceptable values for the `aud` field
+      (audience) in the OIDC token. Token exchange requests are rejected if
+      the token audience does not match one of the configured values. Each
+      audience may be at most 256 characters. A maximum of 10 audiences may be
+      configured. If this list is empty, the OIDC token audience must be equal
+      to the full canonical resource name of the WorkloadIdentityPoolProvider,
+      with or without the HTTPS prefix. For example: ``` //iam.googleapis.com/
+      projects//locations//workloadIdentityPools//providers/ https://iam.googl
+      eapis.com/projects//locations//workloadIdentityPools//providers/ ```
     issuerUri: Required. The OIDC issuer URL. Must be an HTTPS endpoint.
     jwksJson: Optional. OIDC JWKs in JSON String format. For details on the
       definition of a JWK, see https://tools.ietf.org/html/rfc7517. If not
@@ -5585,7 +5585,7 @@ class WorkforcePool(_messages.Message):
       Cloud Console. Cannot exceed 32 characters.
     expireTime: Output only. Time after which the workforce pool will be
       permanently purged and cannot be recovered.
-    name: Output only. The resource name of the pool. Format:
+    name: Identifier. The resource name of the pool. Format:
       `locations/{location}/workforcePools/{workforce_pool_id}`
     parent: Immutable. The resource name of the parent. Format:
       `organizations/{org-id}`.
@@ -5650,7 +5650,7 @@ class WorkforcePoolInstalledApp(_messages.Message):
       installed app Cannot exceed 32 characters.
     expireTime: Output only. Time after which the workforce pool installed app
       will be permanently purged and cannot be recovered.
-    name: Immutable. The resource name of the workforce pool installed app.
+    name: Identifier. The resource name of the workforce pool installed app.
       Format: `locations/{location}/workforcePools/{workforce_pool}/installedA
       pps/{installed_app}`
     state: Output only. The state of the workforce pool installed app.
@@ -5817,8 +5817,8 @@ class WorkforcePoolProvider(_messages.Message):
       client used to get the additional user attributes. This should be used
       when users can't get the desired claims in authentication credentials.
       Currently this configuration is only supported with OIDC protocol.
-    name: Output only. The resource name of the provider. Format: `locations/{
-      location}/workforcePools/{workforce_pool_id}/providers/{provider_id}`
+    name: Identifier. The resource name of the provider. Format: `locations/{l
+      ocation}/workforcePools/{workforce_pool_id}/providers/{provider_id}`
     oidc: An OpenId Connect 1.0 identity provider configuration.
     saml: A SAML identity provider configuration.
     state: Output only. The state of the provider.
@@ -5938,7 +5938,9 @@ class WorkforcePoolProviderKey(_messages.Message):
       deleted and cannot be recovered. Note that the key may get purged before
       this time if the total limit of keys per provider is exceeded.
     keyData: Immutable. Public half of the asymmetric key.
-    name: Output only. The resource name of the key.
+    name: Identifier. The resource name of the key. Format: `locations/{locati
+      on}/workforcePools/{workforce_pool_id}/providers/{provider_id}/keys/{key
+      _id}`
     state: Output only. The state of the key.
     use: Required. The purpose of the key.
   """
@@ -5983,11 +5985,14 @@ class WorkloadIdentityPool(_messages.Message):
     StateValueValuesEnum: Output only. The state of the pool.
 
   Fields:
-    description: A description of the pool. Cannot exceed 256 characters.
-    disabled: Whether the pool is disabled. You cannot use a disabled pool to
-      exchange tokens, or use existing tokens to access resources. If the pool
-      is re-enabled, existing tokens grant access again.
-    displayName: A display name for the pool. Cannot exceed 32 characters.
+    description: Optional. A description of the pool. Cannot exceed 256
+      characters.
+    disabled: Optional. Whether the pool is disabled. You cannot use a
+      disabled pool to exchange tokens, or use existing tokens to access
+      resources. If the pool is re-enabled, existing tokens grant access
+      again.
+    displayName: Optional. A display name for the pool. Cannot exceed 32
+      characters.
     expireTime: Output only. Time after which the workload identity pool will
       be permanently purged and cannot be recovered.
     inlineCertificateIssuanceConfig: Optional. Defines the Certificate
@@ -6160,13 +6165,13 @@ class WorkloadIdentityPoolProvider(_messages.Message):
     StateValueValuesEnum: Output only. The state of the provider.
 
   Messages:
-    AttributeMappingValue:  Maps attributes from authentication credentials
-      issued by an external identity provider to Google Cloud attributes, such
-      as `subject` and `segment`. Each key must be a string specifying the
-      Google Cloud IAM attribute to map to. The following keys are supported:
-      * `google.subject`: The principal IAM is authenticating. You can
-      reference this value in IAM bindings. This is also the subject that
-      appears in Cloud Logging logs. Cannot exceed 127 bytes. *
+    AttributeMappingValue: Optional. Maps attributes from authentication
+      credentials issued by an external identity provider to Google Cloud
+      attributes, such as `subject` and `segment`. Each key must be a string
+      specifying the Google Cloud IAM attribute to map to. The following keys
+      are supported: * `google.subject`: The principal IAM is authenticating.
+      You can reference this value in IAM bindings. This is also the subject
+      that appears in Cloud Logging logs. Cannot exceed 127 bytes. *
       `google.groups`: Groups the external identity belongs to. You can grant
       groups access to resources using an IAM `principalSet` binding; access
       applies to all members of the group. You can also provide custom
@@ -6203,7 +6208,7 @@ class WorkloadIdentityPoolProvider(_messages.Message):
       token: ``` {"google.subject": "assertion.sub"} ```
 
   Fields:
-    attributeCondition: [A Common Expression
+    attributeCondition: Optional. [A Common Expression
       Language](https://opensource.google/projects/cel) expression, in plain
       text, to restrict what otherwise valid authentication credentials issued
       by the provider should not be accepted. The expression must output a
@@ -6217,39 +6222,39 @@ class WorkloadIdentityPoolProvider(_messages.Message):
       valid authentication credential are accepted. The following example
       shows how to only allow credentials with a mapped `google.groups` value
       of `admins`: ``` "'admins' in google.groups" ```
-    attributeMapping:  Maps attributes from authentication credentials issued
-      by an external identity provider to Google Cloud attributes, such as
-      `subject` and `segment`. Each key must be a string specifying the Google
-      Cloud IAM attribute to map to. The following keys are supported: *
-      `google.subject`: The principal IAM is authenticating. You can reference
-      this value in IAM bindings. This is also the subject that appears in
-      Cloud Logging logs. Cannot exceed 127 bytes. * `google.groups`: Groups
-      the external identity belongs to. You can grant groups access to
-      resources using an IAM `principalSet` binding; access applies to all
-      members of the group. You can also provide custom attributes by
-      specifying `attribute.{custom_attribute}`, where `{custom_attribute}` is
-      the name of the custom attribute to be mapped. You can define a maximum
-      of 50 custom attributes. The maximum length of a mapped attribute key is
-      100 characters, and the key may only contain the characters [a-z0-9_].
-      You can reference these attributes in IAM policies to define fine-
-      grained access for a workload to Google Cloud resources. For example: *
-      `google.subject`: `principal://iam.googleapis.com/projects/{project}/loc
-      ations/{location}/workloadIdentityPools/{pool}/subject/{value}` *
-      `google.groups`: `principalSet://iam.googleapis.com/projects/{project}/l
-      ocations/{location}/workloadIdentityPools/{pool}/group/{value}` *
-      `attribute.{custom_attribute}`: `principalSet://iam.googleapis.com/proje
-      cts/{project}/locations/{location}/workloadIdentityPools/{pool}/attribut
-      e.{custom_attribute}/{value}` Each value must be a [Common Expression
-      Language] (https://opensource.google/projects/cel) function that maps an
-      identity provider credential to the normalized attribute specified by
-      the corresponding map key. You can use the `assertion` keyword in the
-      expression to access a JSON representation of the authentication
-      credential issued by the provider. The maximum length of an attribute
-      mapping expression is 2048 characters. When evaluated, the total size of
-      all mapped attributes must not exceed 8KB. For AWS providers, if no
-      attribute mapping is defined, the following default mapping applies: ```
-      { "google.subject":"assertion.arn", "attribute.aws_role":
-      "assertion.arn.contains('assumed-role')" " ?
+    attributeMapping: Optional. Maps attributes from authentication
+      credentials issued by an external identity provider to Google Cloud
+      attributes, such as `subject` and `segment`. Each key must be a string
+      specifying the Google Cloud IAM attribute to map to. The following keys
+      are supported: * `google.subject`: The principal IAM is authenticating.
+      You can reference this value in IAM bindings. This is also the subject
+      that appears in Cloud Logging logs. Cannot exceed 127 bytes. *
+      `google.groups`: Groups the external identity belongs to. You can grant
+      groups access to resources using an IAM `principalSet` binding; access
+      applies to all members of the group. You can also provide custom
+      attributes by specifying `attribute.{custom_attribute}`, where
+      `{custom_attribute}` is the name of the custom attribute to be mapped.
+      You can define a maximum of 50 custom attributes. The maximum length of
+      a mapped attribute key is 100 characters, and the key may only contain
+      the characters [a-z0-9_]. You can reference these attributes in IAM
+      policies to define fine-grained access for a workload to Google Cloud
+      resources. For example: * `google.subject`: `principal://iam.googleapis.
+      com/projects/{project}/locations/{location}/workloadIdentityPools/{pool}
+      /subject/{value}` * `google.groups`: `principalSet://iam.googleapis.com/
+      projects/{project}/locations/{location}/workloadIdentityPools/{pool}/gro
+      up/{value}` * `attribute.{custom_attribute}`: `principalSet://iam.google
+      apis.com/projects/{project}/locations/{location}/workloadIdentityPools/{
+      pool}/attribute.{custom_attribute}/{value}` Each value must be a [Common
+      Expression Language] (https://opensource.google/projects/cel) function
+      that maps an identity provider credential to the normalized attribute
+      specified by the corresponding map key. You can use the `assertion`
+      keyword in the expression to access a JSON representation of the
+      authentication credential issued by the provider. The maximum length of
+      an attribute mapping expression is 2048 characters. When evaluated, the
+      total size of all mapped attributes must not exceed 8KB. For AWS
+      providers, if no attribute mapping is defined, the following default
+      mapping applies: ``` { "google.subject":"assertion.arn",
+      "attribute.aws_role": "assertion.arn.contains('assumed-role')" " ?
       assertion.arn.extract('{account_arn}assumed-role/')" " + 'assumed-
       role/'" " + assertion.arn.extract('assumed-role/{role_name}/')" " :
       assertion.arn", } ``` If any custom attribute mappings are defined, they
@@ -6259,11 +6264,13 @@ class WorkloadIdentityPoolProvider(_messages.Message):
       claim of the incoming credential to the `subject` attribute on a Google
       token: ``` {"google.subject": "assertion.sub"} ```
     aws: An Amazon Web Services identity provider.
-    description: A description for the provider. Cannot exceed 256 characters.
-    disabled: Whether the provider is disabled. You cannot use a disabled
-      provider to exchange tokens. However, existing tokens still grant
-      access.
-    displayName: A display name for the provider. Cannot exceed 32 characters.
+    description: Optional. A description for the provider. Cannot exceed 256
+      characters.
+    disabled: Optional. Whether the provider is disabled. You cannot use a
+      disabled provider to exchange tokens. However, existing tokens still
+      grant access.
+    displayName: Optional. A display name for the provider. Cannot exceed 32
+      characters.
     expireTime: Output only. Time after which the workload identity pool
       provider will be permanently purged and cannot be recovered.
     name: Output only. The resource name of the provider.
@@ -6292,9 +6299,9 @@ class WorkloadIdentityPoolProvider(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AttributeMappingValue(_messages.Message):
-    r""" Maps attributes from authentication credentials issued by an external
-    identity provider to Google Cloud attributes, such as `subject` and
-    `segment`. Each key must be a string specifying the Google Cloud IAM
+    r"""Optional. Maps attributes from authentication credentials issued by an
+    external identity provider to Google Cloud attributes, such as `subject`
+    and `segment`. Each key must be a string specifying the Google Cloud IAM
     attribute to map to. The following keys are supported: * `google.subject`:
     The principal IAM is authenticating. You can reference this value in IAM
     bindings. This is also the subject that appears in Cloud Logging logs.

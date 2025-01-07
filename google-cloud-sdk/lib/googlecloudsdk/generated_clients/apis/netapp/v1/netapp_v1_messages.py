@@ -146,6 +146,8 @@ class Backup(_messages.Message):
     LabelsValue: Resource labels to represent user provided metadata.
 
   Fields:
+    backupRegion: Output only. Region in which backup is stored. Format:
+      `projects/{project_id}/locations/{location}`
     backupType: Output only. Type of backup, manually created or created by a
       backup policy.
     chainStorageBytes: Output only. Total size of all backups in a chain in
@@ -166,6 +168,8 @@ class Backup(_messages.Message):
     sourceVolume: Volume full name of this backup belongs to. Format:
       `projects/{projects_id}/locations/{location}/volumes/{volume_id}`
     state: Output only. The backup state.
+    volumeRegion: Output only. Region of the volume from which the backup was
+      created. Format: `projects/{project_id}/locations/{location}`
     volumeUsageBytes: Output only. Size of the file system when the backup was
       created. When creating a new volume from the backup, the volume capacity
       will have to be at least as big.
@@ -232,18 +236,20 @@ class Backup(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  backupType = _messages.EnumField('BackupTypeValueValuesEnum', 1)
-  chainStorageBytes = _messages.IntegerField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  satisfiesPzi = _messages.BooleanField(7)
-  satisfiesPzs = _messages.BooleanField(8)
-  sourceSnapshot = _messages.StringField(9)
-  sourceVolume = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  volumeUsageBytes = _messages.IntegerField(12)
+  backupRegion = _messages.StringField(1)
+  backupType = _messages.EnumField('BackupTypeValueValuesEnum', 2)
+  chainStorageBytes = _messages.IntegerField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  satisfiesPzi = _messages.BooleanField(8)
+  satisfiesPzs = _messages.BooleanField(9)
+  sourceSnapshot = _messages.StringField(10)
+  sourceVolume = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  volumeRegion = _messages.StringField(13)
+  volumeUsageBytes = _messages.IntegerField(14)
 
 
 class BackupConfig(_messages.Message):
@@ -356,19 +362,45 @@ class BackupVault(_messages.Message):
   r"""A NetApp BackupVault.
 
   Enums:
+    BackupVaultTypeValueValuesEnum: Optional. Type of backup vault to be
+      created. Default is IN_REGION.
     StateValueValuesEnum: Output only. The backup vault state.
 
   Messages:
     LabelsValue: Resource labels to represent user provided metadata.
 
   Fields:
+    backupRegion: Optional. Region where the backups are stored. Format:
+      `projects/{project_id}/locations/{location}`
+    backupVaultType: Optional. Type of backup vault to be created. Default is
+      IN_REGION.
     createTime: Output only. Create time of the backup vault.
     description: Description of the backup vault.
+    destinationBackupVault: Output only. Name of the Backup vault created in
+      backup region. Format: `projects/{project_id}/locations/{location}/backu
+      pVaults/{backup_vault_id}`
     labels: Resource labels to represent user provided metadata.
     name: Identifier. The resource name of the backup vault. Format: `projects
       /{project_id}/locations/{location}/backupVaults/{backup_vault_id}`.
+    sourceBackupVault: Output only. Name of the Backup vault created in source
+      region. Format: `projects/{project_id}/locations/{location}/backupVaults
+      /{backup_vault_id}`
+    sourceRegion: Output only. Region in which the backup vault is created.
+      Format: `projects/{project_id}/locations/{location}`
     state: Output only. The backup vault state.
   """
+
+  class BackupVaultTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of backup vault to be created. Default is IN_REGION.
+
+    Values:
+      BACKUP_VAULT_TYPE_UNSPECIFIED: BackupVault type not set.
+      IN_REGION: BackupVault type is IN_REGION.
+      CROSS_REGION: BackupVault type is CROSS_REGION.
+    """
+    BACKUP_VAULT_TYPE_UNSPECIFIED = 0
+    IN_REGION = 1
+    CROSS_REGION = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The backup vault state.
@@ -412,11 +444,16 @@ class BackupVault(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  backupRegion = _messages.StringField(1)
+  backupVaultType = _messages.EnumField('BackupVaultTypeValueValuesEnum', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  destinationBackupVault = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  sourceBackupVault = _messages.StringField(8)
+  sourceRegion = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -448,6 +485,7 @@ class DestinationVolumeParameters(_messages.Message):
     shareName: Destination volume's share name. If not specified, source
       volume's share name will be used.
     storagePool: Required. Existing destination StoragePool name.
+    tieringPolicy: Optional. Tiering policy for the volume.
     volumeId: Desired destination volume resource id. If not specified, source
       volume's resource id will be used. This value must start with a
       lowercase letter followed by up to 62 lowercase letters, numbers, or
@@ -457,7 +495,8 @@ class DestinationVolumeParameters(_messages.Message):
   description = _messages.StringField(1)
   shareName = _messages.StringField(2)
   storagePool = _messages.StringField(3)
-  volumeId = _messages.StringField(4)
+  tieringPolicy = _messages.MessageField('TieringPolicy', 4)
+  volumeId = _messages.StringField(5)
 
 
 class EncryptVolumesRequest(_messages.Message):
@@ -795,6 +834,21 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListQuotaRulesResponse(_messages.Message):
+  r"""ListQuotaRulesResponse is the response to a ListQuotaRulesRequest.
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    quotaRules: List of quota rules
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  quotaRules = _messages.MessageField('QuotaRule', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListReplicationsResponse(_messages.Message):
   r"""ListReplicationsResponse is the result of ListReplicationsRequest.
 
@@ -995,6 +1049,7 @@ class MountOption(_messages.Message):
     export: Export string
     exportFull: Full export string
     instructions: Instructions for mounting
+    ipAddress: Output only. IP Address.
     protocol: Protocol to mount with.
   """
 
@@ -1015,7 +1070,8 @@ class MountOption(_messages.Message):
   export = _messages.StringField(1)
   exportFull = _messages.StringField(2)
   instructions = _messages.StringField(3)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 4)
+  ipAddress = _messages.StringField(4)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 5)
 
 
 class NetappProjectsLocationsActiveDirectoriesCreateRequest(_messages.Message):
@@ -1025,9 +1081,9 @@ class NetappProjectsLocationsActiveDirectoriesCreateRequest(_messages.Message):
     activeDirectory: A ActiveDirectory resource to be passed as the request
       body.
     activeDirectoryId: Required. ID of the active directory to create. Must be
-      unique within the parent resource. Must contain only letters, numbers,
-      underscore and hyphen, with the first character a letter or underscore,
-      the last a letter or underscore or a number, and a 63 character maximum.
+      unique within the parent resource. Must contain only letters, numbers
+      and hyphen, with the first character a letter , the last a letter or a
+      number, and a 63 character maximum.
     parent: Required. Value for parent.
   """
 
@@ -1103,9 +1159,8 @@ class NetappProjectsLocationsBackupPoliciesCreateRequest(_messages.Message):
     backupPolicy: A BackupPolicy resource to be passed as the request body.
     backupPolicyId: Required. The ID to use for the backup policy. The ID must
       be unique within the specified location. Must contain only letters,
-      numbers, underscore and hyphen, with the first character a letter or
-      underscore, the last a letter or underscore or a number, and a 63
-      character maximum.
+      numbers and hyphen, with the first character a letter, the last a letter
+      or a number, and a 63 character maximum.
     parent: Required. The location to create the backup policies of, in the
       format `projects/{project_id}/locations/{location}`
   """
@@ -1181,9 +1236,9 @@ class NetappProjectsLocationsBackupVaultsBackupsCreateRequest(_messages.Message)
   Fields:
     backup: A Backup resource to be passed as the request body.
     backupId: Required. The ID to use for the backup. The ID must be unique
-      within the specified backupVault. Must contain only letters, numbers,
-      underscore and hyphen, with the first character a letter or underscore,
-      the last a letter or underscore or a number, and a 63 character maximum.
+      within the specified backupVault. Must contain only letters, numbers and
+      hyphen, with the first character a letter, the last a letter or a
+      number, and a 63 character maximum.
     parent: Required. The NetApp backupVault to create the backups of, in the
       format `projects/*/locations/*/backupVaults/{backup_vault_id}`
   """
@@ -1273,10 +1328,9 @@ class NetappProjectsLocationsBackupVaultsCreateRequest(_messages.Message):
   Fields:
     backupVault: A BackupVault resource to be passed as the request body.
     backupVaultId: Required. The ID to use for the backupVault. The ID must be
-      unique within the specified location. Must contain only letters,
-      numbers, underscore and hyphen, with the first character a letter or
-      underscore, the last a letter or underscore or a number, and a 63
-      character maximum.
+      unique within the specified location. Must contain only letters, numbers
+      and hyphen, with the first character a letter, the last a letter or a
+      number, and a 63 character maximum.
     parent: Required. The location to create the backup vaults, in the format
       `projects/{project_id}/locations/{location}`
   """
@@ -1364,9 +1418,9 @@ class NetappProjectsLocationsKmsConfigsCreateRequest(_messages.Message):
   Fields:
     kmsConfig: A KmsConfig resource to be passed as the request body.
     kmsConfigId: Required. Id of the requesting KmsConfig. Must be unique
-      within the parent resource. Must contain only letters, numbers,
-      underscore and hyphen, with the first character a letter or underscore,
-      the last a letter or underscore or a number, and a 63 character maximum.
+      within the parent resource. Must contain only letters, numbers and
+      hyphen, with the first character a letter, the last a letter or a
+      number, and a 63 character maximum.
     parent: Required. Value for parent.
   """
 
@@ -1535,9 +1589,9 @@ class NetappProjectsLocationsStoragePoolsCreateRequest(_messages.Message):
     parent: Required. Value for parent.
     storagePool: A StoragePool resource to be passed as the request body.
     storagePoolId: Required. Id of the requesting storage pool. Must be unique
-      within the parent resource. Must contain only letters, numbers,
-      underscore and hyphen, with the first character a letter or underscore,
-      the last a letter or underscore or a number, and a 63 character maximum.
+      within the parent resource. Must contain only letters, numbers and
+      hyphen, with the first character a letter, the last a letter or a
+      number, and a 63 character maximum.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1637,9 +1691,9 @@ class NetappProjectsLocationsVolumesCreateRequest(_messages.Message):
     parent: Required. Value for parent.
     volume: A Volume resource to be passed as the request body.
     volumeId: Required. Id of the requesting volume. Must be unique within the
-      parent resource. Must contain only letters, numbers, underscore and
-      hyphen, with the first character a letter or underscore, the last a
-      letter or underscore or a number, and a 63 character maximum.
+      parent resource. Must contain only letters, numbers and hyphen, with the
+      first character a letter, the last a letter or a number, and a 63
+      character maximum.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1708,6 +1762,84 @@ class NetappProjectsLocationsVolumesPatchRequest(_messages.Message):
   volume = _messages.MessageField('Volume', 3)
 
 
+class NetappProjectsLocationsVolumesQuotaRulesCreateRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesQuotaRulesCreateRequest object.
+
+  Fields:
+    parent: Required. Parent value for CreateQuotaRuleRequest
+    quotaRule: A QuotaRule resource to be passed as the request body.
+    quotaRuleId: Required. ID of the quota rule to create. Must be unique
+      within the parent resource. Must contain only letters, numbers,
+      underscore and hyphen, with the first character a letter or underscore,
+      the last a letter or underscore or a number, and a 63 character maximum.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  quotaRule = _messages.MessageField('QuotaRule', 2)
+  quotaRuleId = _messages.StringField(3)
+
+
+class NetappProjectsLocationsVolumesQuotaRulesDeleteRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesQuotaRulesDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the quota rule.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetappProjectsLocationsVolumesQuotaRulesGetRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesQuotaRulesGetRequest object.
+
+  Fields:
+    name: Required. Name of the quota rule
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetappProjectsLocationsVolumesQuotaRulesListRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesQuotaRulesListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, the server will pick an appropriate
+      default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListQuotaRulesRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetappProjectsLocationsVolumesQuotaRulesPatchRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesQuotaRulesPatchRequest object.
+
+  Fields:
+    name: Identifier. The resource name of the active directory. Format: `proj
+      ects/{project_number}/locations/{location_id}/quotaRules/{quota_rule_id}
+      `.
+    quotaRule: A QuotaRule resource to be passed as the request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Quota Rule resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  quotaRule = _messages.MessageField('QuotaRule', 2)
+  updateMask = _messages.StringField(3)
+
+
 class NetappProjectsLocationsVolumesReplicationsCreateRequest(_messages.Message):
   r"""A NetappProjectsLocationsVolumesReplicationsCreateRequest object.
 
@@ -1716,9 +1848,9 @@ class NetappProjectsLocationsVolumesReplicationsCreateRequest(_messages.Message)
       format `projects/{project_id}/locations/{location}/volumes/{volume_id}`
     replication: A Replication resource to be passed as the request body.
     replicationId: Required. ID of the replication to create. Must be unique
-      within the parent resource. Must contain only letters, numbers,
-      underscore and hyphen, with the first character a letter or underscore,
-      the last a letter or underscore or a number, and a 63 character maximum.
+      within the parent resource. Must contain only letters, numbers and
+      hyphen, with the first character a letter, the last a letter or a
+      number, and a 63 character maximum.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1887,9 +2019,9 @@ class NetappProjectsLocationsVolumesSnapshotsCreateRequest(_messages.Message):
       format `projects/{project_id}/locations/{location}/volumes/{volume_id}`
     snapshot: A Snapshot resource to be passed as the request body.
     snapshotId: Required. ID of the snapshot to create. Must be unique within
-      the parent resource. Must contain only letters, numbers, underscore and
-      hyphen, with the first character a letter or underscore, the last a
-      letter or underscore or a number, and a 63 character maximum.
+      the parent resource. Must contain only letters, numbers and hyphen, with
+      the first character a letter, the last a letter or a number, and a 63
+      character maximum.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -2091,6 +2223,102 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class QuotaRule(_messages.Message):
+  r"""QuotaRule specifies the maximum disk space a user or group can use
+  within a volume. They can be used for creating default and individual quota
+  rules.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the quota rule
+    TypeValueValuesEnum: Required. The type of quota rule.
+
+  Messages:
+    LabelsValue: Optional. Labels of the quota rule
+
+  Fields:
+    createTime: Output only. Create time of the quota rule
+    description: Optional. Description of the quota rule
+    diskLimitMib: Required. The maximum allowed disk space in MiB.
+    labels: Optional. Labels of the quota rule
+    name: Identifier. The resource name of the active directory. Format: `proj
+      ects/{project_number}/locations/{location_id}/quotaRules/{quota_rule_id}
+      `.
+    state: Output only. State of the quota rule
+    stateDetails: Output only. State details of the quota rule
+    target: Optional. The quota rule applies to the specified user or group,
+      identified by a Unix UID/GID, Windows SID, or null for default.
+    type: Required. The type of quota rule.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the quota rule
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state for quota rule
+      CREATING: Quota rule is creating
+      UPDATING: Quota rule is updating
+      DELETING: Quota rule is deleting
+      READY: Quota rule is ready
+      ERROR: Quota rule is in error state.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    UPDATING = 2
+    DELETING = 3
+    READY = 4
+    ERROR = 5
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of quota rule.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified type for quota rule
+      INDIVIDUAL_USER_QUOTA: Individual user quota rule
+      INDIVIDUAL_GROUP_QUOTA: Individual group quota rule
+      DEFAULT_USER_QUOTA: Default user quota rule
+      DEFAULT_GROUP_QUOTA: Default group quota rule
+    """
+    TYPE_UNSPECIFIED = 0
+    INDIVIDUAL_USER_QUOTA = 1
+    INDIVIDUAL_GROUP_QUOTA = 2
+    DEFAULT_USER_QUOTA = 3
+    DEFAULT_GROUP_QUOTA = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels of the quota rule
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  diskLimitMib = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  stateDetails = _messages.StringField(7)
+  target = _messages.StringField(8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
 
 
 class Replication(_messages.Message):

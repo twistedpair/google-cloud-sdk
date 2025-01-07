@@ -476,6 +476,7 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
       HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT: Healthcare and Life
         Science Controls with US Support
       IRS_1075: Internal Revenue Service 1075 controls
+      CANADA_CONTROLLED_GOODS: Canada Controlled Goods
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -501,6 +502,7 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
     HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS = 21
     HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT = 22
     IRS_1075 = 23
+    CANADA_CONTROLLED_GOODS = 24
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -1069,6 +1071,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT: Healthcare and Life
         Science Controls with US Support
       IRS_1075: Internal Revenue Service 1075 controls
+      CANADA_CONTROLLED_GOODS: Canada Controlled Goods
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -1094,6 +1097,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS = 21
     HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT = 22
     IRS_1075 = 23
+    CANADA_CONTROLLED_GOODS = 24
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given
@@ -1226,15 +1230,15 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadEkmProvisioningResponse(_message
       error if any.
     EkmProvisioningErrorMappingValueValuesEnum: Detailed error message if Ekm
       provisioning fails
-    EkmProvisioningStateValueValuesEnum: Indicates Ekm enrollment Provisioning
-      of a given workload.
+    EkmProvisioningStateValueValuesEnum: Output only. Indicates Ekm enrollment
+      Provisioning of a given workload.
 
   Fields:
     ekmProvisioningErrorDomain: Indicates Ekm provisioning error if any.
     ekmProvisioningErrorMapping: Detailed error message if Ekm provisioning
       fails
-    ekmProvisioningState: Indicates Ekm enrollment Provisioning of a given
-      workload.
+    ekmProvisioningState: Output only. Indicates Ekm enrollment Provisioning
+      of a given workload.
   """
 
   class EkmProvisioningErrorDomainValueValuesEnum(_messages.Enum):
@@ -1275,7 +1279,8 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadEkmProvisioningResponse(_message
     MISSING_EKM_CONNECTION_ADMIN_PERMISSION = 3
 
   class EkmProvisioningStateValueValuesEnum(_messages.Enum):
-    r"""Indicates Ekm enrollment Provisioning of a given workload.
+    r"""Output only. Indicates Ekm enrollment Provisioning of a given
+    workload.
 
     Values:
       EKM_PROVISIONING_STATE_UNSPECIFIED: Default State for Ekm Provisioning
@@ -1351,8 +1356,8 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadPartnerPermissions(_messages.Mes
       support case details for an AXT log
     assuredWorkloadsMonitoring: Optional. Allow partner to view violation
       alerts.
-    dataLogsViewer: Allow the partner to view inspectability logs and
-      monitoring violations.
+    dataLogsViewer: Optional. Allow the partner to view inspectability logs
+      and monitoring violations.
     serviceAccessApprover: Optional. Allow partner to view access approval
       logs.
   """
@@ -1370,8 +1375,8 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo(_messages.Message):
     ResourceTypeValueValuesEnum: Indicates the type of resource.
 
   Fields:
-    resourceId: Resource identifier. For a project this represents
-      project_number.
+    resourceId: Output only. Resource identifier. For a project this
+      represents project_number.
     resourceType: Indicates the type of resource.
   """
 
@@ -1447,12 +1452,13 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadSaaEnrollmentResponse(_messages.
 
   Enums:
     SetupErrorsValueListEntryValuesEnum:
-    SetupStatusValueValuesEnum: Indicates SAA enrollment status of a given
-      workload.
+    SetupStatusValueValuesEnum: Output only. Indicates SAA enrollment status
+      of a given workload.
 
   Fields:
     setupErrors: Indicates SAA enrollment setup error if any.
-    setupStatus: Indicates SAA enrollment status of a given workload.
+    setupStatus: Output only. Indicates SAA enrollment status of a given
+      workload.
   """
 
   class SetupErrorsValueListEntryValuesEnum(_messages.Enum):
@@ -1477,7 +1483,7 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadSaaEnrollmentResponse(_messages.
     ERROR_SETUP_CHECK_FAILED = 4
 
   class SetupStatusValueValuesEnum(_messages.Enum):
-    r"""Indicates SAA enrollment status of a given workload.
+    r"""Output only. Indicates SAA enrollment status of a given workload.
 
     Values:
       SETUP_STATE_UNSPECIFIED: Unspecified.

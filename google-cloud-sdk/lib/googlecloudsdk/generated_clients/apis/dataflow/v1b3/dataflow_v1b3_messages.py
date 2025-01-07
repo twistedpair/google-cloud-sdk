@@ -894,6 +894,18 @@ class DataflowFlexTemplateConfig(_messages.Message):
   transformNameMappings = _messages.MessageField('TransformNameMappingsValue', 5)
 
 
+class DataflowGaugeValue(_messages.Message):
+  r"""The gauge value of a metric.
+
+  Fields:
+    measuredTime: The timestamp when the gauge was recorded.
+    value: The value of the gauge.
+  """
+
+  measuredTime = _messages.StringField(1)
+  value = _messages.IntegerField(2)
+
+
 class DataflowHistogramValue(_messages.Message):
   r"""Summary statistics for a population of values. HistogramValue contains a
   sequence of buckets and gives a count of values that fall into each bucket.
@@ -4898,6 +4910,7 @@ class MetricValue(_messages.Message):
   Fields:
     metric: Base name for this metric.
     metricLabels: Optional. Set of metric labels for this metric.
+    valueGauge64: Non-cumulative int64 value of this metric.
     valueHistogram: Histogram value of this metric.
     valueInt64: Integer value of this metric.
   """
@@ -4929,8 +4942,9 @@ class MetricValue(_messages.Message):
 
   metric = _messages.StringField(1)
   metricLabels = _messages.MessageField('MetricLabelsValue', 2)
-  valueHistogram = _messages.MessageField('DataflowHistogramValue', 3)
-  valueInt64 = _messages.IntegerField(4)
+  valueGauge64 = _messages.MessageField('DataflowGaugeValue', 3)
+  valueHistogram = _messages.MessageField('DataflowHistogramValue', 4)
+  valueInt64 = _messages.IntegerField(5)
 
 
 class ModifyTemplateVersionLabelRequest(_messages.Message):

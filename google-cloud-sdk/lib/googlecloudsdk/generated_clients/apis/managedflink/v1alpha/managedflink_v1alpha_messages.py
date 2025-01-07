@@ -63,6 +63,8 @@ class Deployment(_messages.Message):
       TERMINATING: Deployment is terminating.
       TERMINATED: Deployment has terminated.
       FAILED: Deployment is in failed state.
+      DELETING: Deployment is being deleted.
+      FAILED_TO_DELETE: Deployment failed to delete.
     """
     STATE_UNSPECIFIED = 0
     INITIALIZING = 1
@@ -71,6 +73,8 @@ class Deployment(_messages.Message):
     TERMINATING = 4
     TERMINATED = 5
     FAILED = 6
+    DELETING = 7
+    FAILED_TO_DELETE = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -113,11 +117,14 @@ class DeploymentSpec(_messages.Message):
     networkConfig: Optional. Network configuration for the deployment.
     secretsPaths: Optional. The list of secrets paths to be shared among all
       jobs in the deployment.
+    workloadIdentity: Optional. Workload identity service account for the
+      deployment. If not set, the default workload identity will be used.
   """
 
   limits = _messages.MessageField('Limits', 1)
   networkConfig = _messages.MessageField('NetworkConfig', 2)
   secretsPaths = _messages.StringField(3, repeated=True)
+  workloadIdentity = _messages.StringField(4)
 
 
 class DisplayGraph(_messages.Message):
@@ -290,6 +297,9 @@ class JobSpec(_messages.Message):
     networkConfig: Optional. Network configuration for the job.
     secretsPaths: Optional. The list of secrets paths to be used by an on-
       demand deployment job.
+    workloadIdentity: Optional. Workload identity service account for the job.
+      If not set, the default workload identity will be used. This is only
+      used for on-demand jobs.
   """
 
   artifactUris = _messages.StringField(1, repeated=True)
@@ -302,6 +312,7 @@ class JobSpec(_messages.Message):
   managedKafkaConfig = _messages.MessageField('ManagedKafkaConfig', 8)
   networkConfig = _messages.MessageField('NetworkConfig', 9)
   secretsPaths = _messages.StringField(10, repeated=True)
+  workloadIdentity = _messages.StringField(11)
 
 
 class Limits(_messages.Message):

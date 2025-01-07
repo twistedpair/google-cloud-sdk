@@ -168,7 +168,8 @@ class GkemulticloudProjectsLocationsAttachedClustersPatchRequest(_messages.Messa
       `monitoring_config.managed_prometheus_config.enabled`. *
       `platform_version`. * `proxy_config.kubernetes_secret.name`. *
       `proxy_config.kubernetes_secret.namespace`. *
-      `security_posture_config.vulnerability_mode`
+      `security_posture_config.vulnerability_mode` *
+      `monitoring_config.cloud_monitoring_config.enabled`
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -1067,12 +1068,14 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
       alphanumerics, with dashes (-), underscores (_), dots (.), and
       alphanumerics between.
     TagsValue: Optional. Input only. Tag keys/values directly bound to this
-      resource. The short name of a tag key or value can have a maximum length
-      of 256 characters. The permitted character set for the short name
-      includes UTF-8 encoded Unicode characters except single quotes ('),
-      double quotes ("), backslashes (\), and forward slashes (/). See
-      [Tags](http://cloud/resource-manager/docs/tags/tags-overview) for more
-      details on Google Cloud Platform tags.
+      resource. Tag key must be specified in the format / where the tag
+      namespace is the ID of the organization or name of the project that the
+      tag key is defined in. The short name of a tag key or value can have a
+      maximum length of 256 characters. The permitted character set for the
+      short name includes UTF-8 encoded Unicode characters except single
+      quotes ('), double quotes ("), backslashes (\), and forward slashes (/).
+      See [Tags](https://cloud.google.com/resource-manager/docs/tags/tags-
+      overview) for more details on Google Cloud Platform tags.
 
   Fields:
     annotations: Optional. Annotations on the cluster. This field has the same
@@ -1117,12 +1120,14 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
       cluster.
     state: Output only. The current state of the cluster.
     tags: Optional. Input only. Tag keys/values directly bound to this
-      resource. The short name of a tag key or value can have a maximum length
-      of 256 characters. The permitted character set for the short name
-      includes UTF-8 encoded Unicode characters except single quotes ('),
-      double quotes ("), backslashes (\), and forward slashes (/). See
-      [Tags](http://cloud/resource-manager/docs/tags/tags-overview) for more
-      details on Google Cloud Platform tags.
+      resource. Tag key must be specified in the format / where the tag
+      namespace is the ID of the organization or name of the project that the
+      tag key is defined in. The short name of a tag key or value can have a
+      maximum length of 256 characters. The permitted character set for the
+      short name includes UTF-8 encoded Unicode characters except single
+      quotes ('), double quotes ("), backslashes (\), and forward slashes (/).
+      See [Tags](https://cloud.google.com/resource-manager/docs/tags/tags-
+      overview) for more details on Google Cloud Platform tags.
     uid: Output only. A globally unique identifier for the cluster.
     updateTime: Output only. The time at which this cluster was last updated.
     workloadIdentityConfig: Output only. Workload Identity settings.
@@ -1188,12 +1193,14 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TagsValue(_messages.Message):
     r"""Optional. Input only. Tag keys/values directly bound to this resource.
-    The short name of a tag key or value can have a maximum length of 256
+    Tag key must be specified in the format / where the tag namespace is the
+    ID of the organization or name of the project that the tag key is defined
+    in. The short name of a tag key or value can have a maximum length of 256
     characters. The permitted character set for the short name includes UTF-8
     encoded Unicode characters except single quotes ('), double quotes ("),
     backslashes (\), and forward slashes (/). See
-    [Tags](http://cloud/resource-manager/docs/tags/tags-overview) for more
-    details on Google Cloud Platform tags.
+    [Tags](https://cloud.google.com/resource-manager/docs/tags/tags-overview)
+    for more details on Google Cloud Platform tags.
 
     Messages:
       AdditionalProperty: An additional property for a TagsValue object.
@@ -3086,6 +3093,18 @@ class GoogleCloudGkemulticloudV1BinaryAuthorization(_messages.Message):
   evaluationMode = _messages.EnumField('EvaluationModeValueValuesEnum', 1)
 
 
+class GoogleCloudGkemulticloudV1CloudMonitoringConfig(_messages.Message):
+  r"""CloudMonitoringConfig defines the configuration for built-in Cloud
+  Logging and Monitoring. Only for Attached Clusters.
+
+  Fields:
+    enabled: Enable GKE-native logging and metrics. Only for Attached
+      Clusters.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class GoogleCloudGkemulticloudV1Fleet(_messages.Message):
   r"""Fleet related configuration. Fleets are a Google Cloud concept for
   logically organizing clusters, letting you use and manage multi-cluster
@@ -3472,6 +3491,8 @@ class GoogleCloudGkemulticloudV1MonitoringConfig(_messages.Message):
   r"""Parameters that describe the Monitoring configuration in a cluster.
 
   Fields:
+    cloudMonitoringConfig: Optionally enable GKE metrics. Only for Attached
+      Clusters.
     kubernetesMetadataEndpointOverride: Optional. Override of the default
       (prod) Kubernetes metadata endpoint. Only supported for Attached
       clusters now.
@@ -3479,8 +3500,9 @@ class GoogleCloudGkemulticloudV1MonitoringConfig(_messages.Message):
       Prometheus in the cluster.
   """
 
-  kubernetesMetadataEndpointOverride = _messages.StringField(1)
-  managedPrometheusConfig = _messages.MessageField('GoogleCloudGkemulticloudV1ManagedPrometheusConfig', 2)
+  cloudMonitoringConfig = _messages.MessageField('GoogleCloudGkemulticloudV1CloudMonitoringConfig', 1)
+  kubernetesMetadataEndpointOverride = _messages.StringField(2)
+  managedPrometheusConfig = _messages.MessageField('GoogleCloudGkemulticloudV1ManagedPrometheusConfig', 3)
 
 
 class GoogleCloudGkemulticloudV1NodeKubeletConfig(_messages.Message):
@@ -3571,8 +3593,9 @@ class GoogleCloudGkemulticloudV1OperationMetadata(_messages.Message):
       during the operation.
     requestedCancellation: Output only. Identifies whether it has been
       requested cancellation for the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      successfully been cancelled have google.longrunning.Operation.error
+      value with a google.rpc.Status.code of 1, corresponding to
+      `Code.CANCELLED`.
     statusDetail: Output only. Human-readable status of the operation, if any.
     target: Output only. The name of the resource associated to this
       operation.

@@ -459,6 +459,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_RAGCORPORA = (
+      'projects.locations.ragCorpora',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/ragCorpora/'
+              '{ragCorporaId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_RAGCORPORA_RAGFILES = (
+      'projects.locations.ragCorpora.ragFiles',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/ragCorpora/'
+              '{ragCorporaId}/ragFiles/{ragFilesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SCHEDULES = (
       'projects.locations.schedules',
       '{+name}',

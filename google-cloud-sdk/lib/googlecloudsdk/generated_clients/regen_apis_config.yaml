@@ -81,6 +81,8 @@ apis:
       discovery_doc: aiplatform_v1beta1.json
       gcloud_gapic_library: google/cloud/aiplatform/v1beta1:aiplatform_v1beta1_py
       resources:
+        projects.locations:
+          path: projects/{projectsId}/locations/{locationsId}
         projects.locations.models.operations:
           path: projects/{projectsId}/locations/{locationsId}/models/{modelsId}/operations/{operationsId}
         projects.locations.indexes.operations:
@@ -1392,11 +1394,6 @@ apis:
       default: true
     v1beta2:
       discovery_doc: secretmanager_v1beta2.json
-  securedlandingzone:
-    v1beta:
-      discovery_doc: securedlandingzone_v1beta.json
-      mtls_endpoint_override: https://securedlandingzone.mtls.googleapis.com/
-      default: true
   securitycenter:
     v1beta2:
       discovery_doc: securitycenter_v1beta2.json
@@ -2302,10 +2299,6 @@ canonical_surfaces:
   secrets:
     name: secretmanager
     command: secrets
-  securedlandingzone:
-    name: securedlandingzone
-    command: scc slz-overwatch
-    hidden: true
   securityposture:
     name: securityposture
     hidden: true

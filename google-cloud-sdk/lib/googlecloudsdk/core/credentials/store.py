@@ -1541,12 +1541,27 @@ def _RefreshServiceAccountIdTokenGoogleAuth(cred, request_client):
 
   try:
     id_token_cred.refresh(request_client)
-  except google_auth_exceptions.RefreshError:
+  except google_auth_exceptions.RefreshError as e:
     # ID token refresh does not work in testgaia because the Cloud SDK
     # client ID (http://shortn/_BVYwsLLdaJ) is not set up to work with this
     # environment. The running command should not break because of this and
     # should proceed without a new ID token.
-    return None
+
+    # The refresh error's args[1] is the 2nd part (the json with 'error').
+    # It is a AIP-193 format error message. In the code below we refer to
+    # the json part with 'error' as the "AIP-193 error message".
+    error = e.args[1].get('error', '') if len(e.args) > 1 else ''
+    if (
+        'message' in error
+        and 'iam.serviceAccounts.getOpenIdToken' in error['message']
+    ):
+      steps = (
+          'You can find step-by-step instructions here:'
+          ' https://cloud.google.com/iam/docs/create-short-lived-credentials-direct#sa-credentials-oidc'
+          ' on how to resolve this error.'
+      )
+      log.error('%s %s', error['message'], steps)
+      return None
 
   return id_token_cred.token
 

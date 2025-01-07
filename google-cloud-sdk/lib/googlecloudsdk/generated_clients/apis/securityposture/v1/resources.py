@@ -93,6 +93,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_REMEDIATIONINTENTS = (
+      'organizations.locations.remediationIntents',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'remediationIntents/{remediationIntentsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_REPORTS = (
       'organizations.locations.reports',
       '{+name}',

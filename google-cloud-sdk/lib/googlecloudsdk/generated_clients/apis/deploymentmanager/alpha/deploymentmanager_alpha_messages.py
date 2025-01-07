@@ -1621,13 +1621,13 @@ class ErrorInfo(_messages.Message):
 
   Messages:
     MetadatasValue: Additional structured details about this error. Keys must
-      match /a-z+/ but should ideally be lowerCamelCase. Also they must be
-      limited to 64 characters in length. When identifying the current value
-      of an exceeded limit, the units should be contained in the key, not the
-      value. For example, rather than {"instanceLimit": "100/request"}, should
-      be returned as, {"instanceLimitPerRequest": "100"}, if the client
-      exceeds the number of instances that can be created in a single (batch)
-      request.
+      match a regular expression of `a-z+` but should ideally be
+      lowerCamelCase. Also, they must be limited to 64 characters in length.
+      When identifying the current value of an exceeded limit, the units
+      should be contained in the key, not the value. For example, rather than
+      `{"instanceLimit": "100/request"}`, should be returned as,
+      `{"instanceLimitPerRequest": "100"}`, if the client exceeds the number
+      of instances that can be created in a single (batch) request.
 
   Fields:
     domain: The logical grouping to which the "reason" belongs. The error
@@ -1637,12 +1637,13 @@ class ErrorInfo(_messages.Message):
       globally unique value that identifies the infrastructure. For Google API
       infrastructure, the error domain is "googleapis.com".
     metadatas: Additional structured details about this error. Keys must match
-      /a-z+/ but should ideally be lowerCamelCase. Also they must be limited
-      to 64 characters in length. When identifying the current value of an
-      exceeded limit, the units should be contained in the key, not the value.
-      For example, rather than {"instanceLimit": "100/request"}, should be
-      returned as, {"instanceLimitPerRequest": "100"}, if the client exceeds
-      the number of instances that can be created in a single (batch) request.
+      a regular expression of `a-z+` but should ideally be lowerCamelCase.
+      Also, they must be limited to 64 characters in length. When identifying
+      the current value of an exceeded limit, the units should be contained in
+      the key, not the value. For example, rather than `{"instanceLimit":
+      "100/request"}`, should be returned as, `{"instanceLimitPerRequest":
+      "100"}`, if the client exceeds the number of instances that can be
+      created in a single (batch) request.
     reason: The reason of the error. This is a constant value that identifies
       the proximate cause of the error. Error reasons are unique within a
       particular domain of errors. This should be at most 63 characters and
@@ -1652,13 +1653,14 @@ class ErrorInfo(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadatasValue(_messages.Message):
-    r"""Additional structured details about this error. Keys must match /a-z+/
-    but should ideally be lowerCamelCase. Also they must be limited to 64
-    characters in length. When identifying the current value of an exceeded
-    limit, the units should be contained in the key, not the value. For
-    example, rather than {"instanceLimit": "100/request"}, should be returned
-    as, {"instanceLimitPerRequest": "100"}, if the client exceeds the number
-    of instances that can be created in a single (batch) request.
+    r"""Additional structured details about this error. Keys must match a
+    regular expression of `a-z+` but should ideally be lowerCamelCase. Also,
+    they must be limited to 64 characters in length. When identifying the
+    current value of an exceeded limit, the units should be contained in the
+    key, not the value. For example, rather than `{"instanceLimit":
+    "100/request"}`, should be returned as, `{"instanceLimitPerRequest":
+    "100"}`, if the client exceeds the number of instances that can be created
+    in a single (batch) request.
 
     Messages:
       AdditionalProperty: An additional property for a MetadatasValue object.
@@ -2195,12 +2197,14 @@ class Operation(_messages.Message):
         RESOURCE_USES_GLOBAL_DNS: Indicates that a VM is using global DNS. Can
           also be used to indicate that a resource has attributes that could
           result in the creation of a VM that uses global DNS.
-        RESERVED_ENTRY_134: Reserved entries for quickly adding new warnings
+        RATE_LIMIT_EXCEEDED: Resource can't be retrieved due to api quota
+          exceeded.
+        RESERVED_ENTRY_135: Reserved entries for quickly adding new warnings
           without breaking dependent clients.
-        RESERVED_ENTRY_135: <no description>
         RESERVED_ENTRY_136: <no description>
         RESERVED_ENTRY_139: <no description>
         RESERVED_ENTRY_141: <no description>
+        RESERVED_ENTRY_142: <no description>
       """
       DEPRECATED_RESOURCE_USED = 0
       NO_RESULTS_ON_PAGE = 1
@@ -2236,11 +2240,12 @@ class Operation(_messages.Message):
       LIST_OVERHEAD_QUOTA_EXCEED = 31
       QUOTA_INFO_UNAVAILABLE = 32
       RESOURCE_USES_GLOBAL_DNS = 33
-      RESERVED_ENTRY_134 = 34
+      RATE_LIMIT_EXCEEDED = 34
       RESERVED_ENTRY_135 = 35
       RESERVED_ENTRY_136 = 36
       RESERVED_ENTRY_139 = 37
       RESERVED_ENTRY_141 = 38
+      RESERVED_ENTRY_142 = 39
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -2638,12 +2643,14 @@ class Resource(_messages.Message):
         RESOURCE_USES_GLOBAL_DNS: Indicates that a VM is using global DNS. Can
           also be used to indicate that a resource has attributes that could
           result in the creation of a VM that uses global DNS.
-        RESERVED_ENTRY_134: Reserved entries for quickly adding new warnings
+        RATE_LIMIT_EXCEEDED: Resource can't be retrieved due to api quota
+          exceeded.
+        RESERVED_ENTRY_135: Reserved entries for quickly adding new warnings
           without breaking dependent clients.
-        RESERVED_ENTRY_135: <no description>
         RESERVED_ENTRY_136: <no description>
         RESERVED_ENTRY_139: <no description>
         RESERVED_ENTRY_141: <no description>
+        RESERVED_ENTRY_142: <no description>
       """
       DEPRECATED_RESOURCE_USED = 0
       NO_RESULTS_ON_PAGE = 1
@@ -2679,11 +2686,12 @@ class Resource(_messages.Message):
       LIST_OVERHEAD_QUOTA_EXCEED = 31
       QUOTA_INFO_UNAVAILABLE = 32
       RESOURCE_USES_GLOBAL_DNS = 33
-      RESERVED_ENTRY_134 = 34
+      RATE_LIMIT_EXCEEDED = 34
       RESERVED_ENTRY_135 = 35
       RESERVED_ENTRY_136 = 36
       RESERVED_ENTRY_139 = 37
       RESERVED_ENTRY_141 = 38
+      RESERVED_ENTRY_142 = 39
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -2978,12 +2986,14 @@ class ResourceUpdate(_messages.Message):
         RESOURCE_USES_GLOBAL_DNS: Indicates that a VM is using global DNS. Can
           also be used to indicate that a resource has attributes that could
           result in the creation of a VM that uses global DNS.
-        RESERVED_ENTRY_134: Reserved entries for quickly adding new warnings
+        RATE_LIMIT_EXCEEDED: Resource can't be retrieved due to api quota
+          exceeded.
+        RESERVED_ENTRY_135: Reserved entries for quickly adding new warnings
           without breaking dependent clients.
-        RESERVED_ENTRY_135: <no description>
         RESERVED_ENTRY_136: <no description>
         RESERVED_ENTRY_139: <no description>
         RESERVED_ENTRY_141: <no description>
+        RESERVED_ENTRY_142: <no description>
       """
       DEPRECATED_RESOURCE_USED = 0
       NO_RESULTS_ON_PAGE = 1
@@ -3019,11 +3029,12 @@ class ResourceUpdate(_messages.Message):
       LIST_OVERHEAD_QUOTA_EXCEED = 31
       QUOTA_INFO_UNAVAILABLE = 32
       RESOURCE_USES_GLOBAL_DNS = 33
-      RESERVED_ENTRY_134 = 34
+      RATE_LIMIT_EXCEEDED = 34
       RESERVED_ENTRY_135 = 35
       RESERVED_ENTRY_136 = 36
       RESERVED_ENTRY_139 = 37
       RESERVED_ENTRY_141 = 38
+      RESERVED_ENTRY_142 = 39
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.

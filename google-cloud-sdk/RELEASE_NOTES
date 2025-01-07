@@ -1,6 +1,129 @@
 # Google Cloud CLI - Release Notes
 
-Copyright 2014-2024 Google Inc. All rights reserved.
+Copyright 2014-2025 Google Inc. All rights reserved.
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
+## 505.0.0 (2025-01-07)
+
+### AlloyDB
+
+* Added flag `--enable-connection-pooling` to enable/disable Managed Connection Pooling.
+* Added flag `--connection-pooling-pool-mode` to configure pooling mode.
+* Added flag `--connection-pooling-min-pool-size` to configure min pool size.
+* Added flag `--connection-pooling-max-pool-size` to configure max pool size.
+* Added flag `--connection-pooling-max-client-connections` to configure max client connections.
+* Added flag `--connection-pooling-server-idle-timeout` to configure server connection idle timeouts.
+* Added flag `--connection-pooling-query-wait-timeout` to configure query wait timeouts.
+* Added flag `--connection-pooling-stats-users` to configure database users with access to stats.
+* Added flag `--connection-pooling-ignore-startup-parameters` to configure startup parameters to ignore.
+
+### Cloud Build
+
+* Rewrote flag descriptions for `--worker-disk-size` in `gcloud builds worker-pools`.
+
+### Cloud Composer
+
+* Fixed `--uri` flag behavior for `gcloud composer environments list` command.
+* Fixed `--uri` flag behavior for `gcloud composer operations list` command.
+
+### Cloud Filestore
+
+* Removed MAX_IOPS column from `gcloud beta filestore instances list` and
+`gcloud filestore instances list`.
+
+### Cloud Identity-Aware Proxy
+
+* Modified acceptable argument types for `gcloud iap settings` to support backend-services.
+
+### Cloud Run
+
+* Added build with lifecycle binary support when project.toml is not
+provided to `gcloud beta run deploy`.
+* Promoted `--base-image` and `--clear-base-image` flags for
+  `gcloud beta run services update` command.
+* Added support for customer-managed encryption keys (CMEK)
+  for source-based deployments in the beta track.
+
+### Cloud Workstations
+
+* Adding support for disabling local host replacement in the `beta workstations configs create` and `beta workstations configs update` commands.
+
+### Compute Engine
+
+* Added `--require-specific-reservation` flag to
+  `gcloud beta compute reservations create` and
+  `gcloud beta compute reservations update`.
+* Added `--reservation-name` flag to
+  `gcloud beta compute reservations create` and
+  `gcloud beta compute reservations update`.
+* Added `--deployment-type` flag to
+  `gcloud beta compute reservations create` and
+  `gcloud beta compute reservations update`.
+* Added `--scheduling-type` flag to
+  `gcloud beta compute reservations create` and
+  `gcloud beta compute reservations update`.
+* Support `--provisioning-model=reservation-bound` in beta for `gcloud compute instances create`, `gcloud compute instances bulk create`, and `gcloud compute instance-templates create` commands.
+* Added `CA_ENTERPRISE_ANNUAL` as an additional option for `--cloud-armor-tier` of `gcloud compute project-info update`.
+* Added `CAMP_PLUS_ANNUAL` as an additional option for `--managed-protection-tier` of `gcloud compute project-info update`.
+* Promoted Standby Policy flags for `gcloud compute instance-groups managed create` to v1.
+* Promoted Standby Policy flags for `gcloud compute instance-groups managed update` to v1.
+* Promoted `gcloud compute instance-groups managed suspend-instances` to v1.
+* Promoted `gcloud compute instance-groups managed resume-instances` to v1.
+* Promoted `gcloud compute instance-groups managed stop-instances` to v1.
+* Promoted `gcloud compute instance-groups managed start-instances` to 1.
+* Added `--project-number` flag to `gcloud beta compute org-security-policies associations create`.
+* Added `100g` as an additional option for `--bandwidth` of
+  `gcloud compute interconnects attachments dedicated create` and
+  `gcloud compute interconnects attachments dedicated update`.
+
+### Database Migration
+
+* Added `--role` flag to `gcloud database-migration connection-profiles create`.
+* Fixed an issue where `gcloud database-migration connection-profiles update`
+  would not update correctly `--ca-certificate` or `--database-service` flags
+  for oracle connection profiles.
+
+### GKE Hub
+
+* Fixed a bug in `gcloud beta container fleet config-management unmanage` when sending empty payload would fail validation. This was introduced in Google Cloud CLI version 498.0.0.
+* Added `gcloud container fleet policycontroller enable --no-content` flag to install managed Policy Controller without any constraint template libraries.
+
+### Gcloud Machines List
+
+* Changed default output of `gcloud edge-cloud container machines list`
+commands to include purpose (what type of cluster the
+machine is being used for).
+
+### Identity and Access Management
+
+* Added `etag` flag for `gcloud beta iam policies update` command. The command will use the `etag` in the policy file if the `etag` flag is not specified.
+
+### Kubernetes Engine
+
+* Improved error handling of long running operation polling.
+
+### Network Management
+
+* Added `gcloud network-management vpc-flow-logs-configs` command group
+ which manages the VPC Flow Logs configurations.
+* Added `--round-trip` flag to `gcloud network-management connectivity-tests`
+  to allow executing Connectivity Tests in round-trip mode that calculates
+  return traces from the destination to the source in addition to traces from
+  the source to the destination.
+
+### Network Security
+
+* Added `--description` flag to `network-security intercept-deployments create` and `update` commands.
+
+### Workbench
+
+* Added `--enable-third-party-identity` flag to `gcloud workbench instances create`.
+* Added `NVIDIA_H100_80GB` and `NVIDIA_H100_MEGA_80GB`
+option to `--accelerator-type` flag of `gcloud workbench instances create`
+and `gcloud workbench instances update`.
+
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
@@ -9,7 +132,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Google Cloud CLI
 
-* Rebuilt gcloud with certifi 2024.08.30 which fixed CVE-2024-3968.
+* Rebuilt gcloud with certifi 2024.08.30 which fixed CVE-2024-39689.
 
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
@@ -16974,7 +17097,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * Added `--authentication` flag to `gcloud events init` command.
 * Added `--authentication` flag to `gcloud events namespaces init` command.
 * Added `workload-identity-gsa` support to `--authentication` flag for `gcloud events init` command.
-* Modifed `gcloud events namespaces init` command to create namespace if it is missing.
+* Modified `gcloud events namespaces init` command to create namespace if it is missing.
 
 ### Identity Groups
 
@@ -18860,8 +18983,8 @@ Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are
 
 ### Cloud Build
 
-* Modifed the command group `gcloud beta builds worker-pools` such that all underlying commands now use a regional Cloud Build API endpoint (instead of the global one).
-* Modifed the command group `gcloud builds` such that all underlying commands may optionally use a regional Cloud Build API endpoint (instead of the global one). This is controlled by the new flag `--region`, as well as the configuration of submitted builds.
+* Modified the command group `gcloud beta builds worker-pools` such that all underlying commands now use a regional Cloud Build API endpoint (instead of the global one).
+* Modified the command group `gcloud builds` such that all underlying commands may optionally use a regional Cloud Build API endpoint (instead of the global one). This is controlled by the new flag `--region`, as well as the configuration of submitted builds.
 
 ### Cloud Composer
 

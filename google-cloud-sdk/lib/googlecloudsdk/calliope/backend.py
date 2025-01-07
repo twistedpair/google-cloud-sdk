@@ -16,7 +16,6 @@
 """Backend stuff for the calliope.cli module.
 
 Not to be used by mortals.
-
 """
 
 from __future__ import absolute_import
@@ -78,13 +77,21 @@ class CommandCommon(object):
   validation, since this is always the same for groups and commands.
   """
 
-  def __init__(self, common_type, path, release_track, cli_generator,
-               parser_group, allow_positional_args, parent_group):
+  def __init__(
+      self,
+      common_type,
+      path,
+      release_track,
+      cli_generator,
+      parser_group,
+      allow_positional_args,
+      parent_group,
+  ):
     """Create a new CommandCommon.
 
     Args:
-      common_type: base._Common, The actual loaded user written command or
-        group class.
+      common_type: base._Common, The actual loaded user written command or group
+        class.
       path: [str], A list of group names that got us down to this command group
         with respect to the CLI itself.  This path should be used for things
         like error reporting when a specific element in the tree needs to be
@@ -124,11 +131,15 @@ class CommandCommon(object):
       if parent_group.IsHidden():
         self._common_type._is_hidden = True
       # Propagate down the universe compatible attribute.
-      if (parent_group.IsUniverseCompatible() and
-          self._common_type._universe_compatible is None):
+      if (
+          parent_group.IsUniverseCompatible()
+          and self._common_type._universe_compatible is None
+      ):
         self._common_type._universe_compatible = True
-      if (not parent_group.IsDefaultUniverseCompatible() or
-          self._common_type._default_universe_compatible is None):
+      if (
+          not parent_group.IsDefaultUniverseCompatible()
+          or self._common_type._default_universe_compatible is None
+      ):
         self._common_type._default_universe_compatible = False
       # Propagate down the unicode supported attribute.
       if parent_group.IsUnicodeSupported():
@@ -142,8 +153,8 @@ class CommandCommon(object):
     self._ExtractHelpStrings(self._common_type.__doc__)
 
     self._AssignParser(
-        parser_group=parser_group,
-        allow_positional_args=allow_positional_args)
+        parser_group=parser_group, allow_positional_args=allow_positional_args
+    )
 
   def Notices(self):
     """Gets the notices of this command or group."""
@@ -202,14 +213,15 @@ class CommandCommon(object):
 
     # Append any notice messages to command description and long_help
     if self.Notices():
-      all_notices = ('\n\n' +
-                     '\n\n'.join(sorted(self.Notices().values())) +
-                     '\n\n')
+      all_notices = (
+          '\n\n' + '\n\n'.join(sorted(self.Notices().values())) + '\n\n'
+      )
       description = self.detailed_help.get('DESCRIPTION')
       if description:
         self.detailed_help = dict(self.detailed_help)  # make a shallow copy
-        self.detailed_help['DESCRIPTION'] = (all_notices +
-                                             textwrap.dedent(description))
+        self.detailed_help['DESCRIPTION'] = all_notices + textwrap.dedent(
+            description
+        )
       if self.short_help == self.long_help:
         self.long_help += all_notices
       else:
@@ -243,11 +255,13 @@ class CommandCommon(object):
       # No need to tag DESCRIPTION if it starts with {description} or {index}
       # because they are already tagged.
       description = self.detailed_help.get('DESCRIPTION')
-      if description and not re.match(r'^[ \n]*\{(description|index)\}',
-                                      description):
+      if description and not re.match(
+          r'^[ \n]*\{(description|index)\}', description
+      ):
         self.detailed_help = dict(self.detailed_help)  # make a shallow copy
         self.detailed_help['DESCRIPTION'] = _InsertTag(
-            textwrap.dedent(description))
+            textwrap.dedent(description)
+        )
 
   def GetNotesHelpSection(self, contents=None):
     """Returns the NOTES section with explicit and generated help."""
@@ -255,14 +269,20 @@ class CommandCommon(object):
       contents = self.detailed_help.get('NOTES')
     notes = _Notes(contents)
     if self.IsHidden():
-      notes.AddLine('This command is an internal implementation detail and may '
-                    'change or disappear without notice.')
+      notes.AddLine(
+          'This command is an internal implementation detail and may '
+          'change or disappear without notice.'
+      )
     notes.AddLine(self.ReleaseTrack().help_note)
     alternates = self.GetExistingAlternativeReleaseTracks()
     if alternates:
-      notes.AddLine('{} also available:'.format(
-          text.Pluralize(
-              len(alternates), 'This variant is', 'These variants are')))
+      notes.AddLine(
+          '{} also available:'.format(
+              text.Pluralize(
+                  len(alternates), 'This variant is', 'These variants are'
+              )
+          )
+      )
       notes.AddLine('')
       for alternate in alternates:
         notes.AddLine('  $ ' + alternate)
@@ -274,10 +294,9 @@ class CommandCommon(object):
 
     Args:
       parser_group: argparse._ArgumentGroup, the group that will model this
-          command or group's arguments.
+        command or group's arguments.
       allow_positional_args: bool, Whether to allow positional args for this
-          group or not.
-
+        group or not.
     """
     if not parser_group:
       # This is the root of the command tree, so we create the first parser.
@@ -285,7 +304,8 @@ class CommandCommon(object):
           description=self.long_help,
           add_help=False,
           prog=self.dotted_name,
-          calliope_command=self)
+          calliope_command=self,
+      )
     else:
       # This is a normal sub group, so just add a new subparser to the existing
       # one.
@@ -295,7 +315,8 @@ class CommandCommon(object):
           description=self.long_help,
           add_help=False,
           prog=self.dotted_name,
-          calliope_command=self)
+          calliope_command=self,
+      )
 
     self._sub_parser = None
 
@@ -303,26 +324,33 @@ class CommandCommon(object):
         parser=self._parser,
         is_global=not parser_group,
         cli_generator=self._cli_generator,
-        allow_positional=allow_positional_args)
+        allow_positional=allow_positional_args,
+    )
 
     self.ai.add_argument(
-        '-h', action=actions.ShortHelpAction(self),
+        '-h',
+        action=actions.ShortHelpAction(self),
         is_replicated=True,
         category=base.COMMONLY_USED_FLAGS,
-        help='Print a summary help and exit.')
+        help='Print a summary help and exit.',
+    )
     self.ai.add_argument(
-        '--help', action=actions.RenderDocumentAction(self, '--help'),
+        '--help',
+        action=actions.RenderDocumentAction(self, '--help'),
         is_replicated=True,
         category=base.COMMONLY_USED_FLAGS,
-        help='Display detailed help.')
+        help='Display detailed help.',
+    )
     self.ai.add_argument(
-        '--document', action=actions.RenderDocumentAction(self),
+        '--document',
+        action=actions.RenderDocumentAction(self),
         is_replicated=True,
         nargs=1,
         metavar='ATTRIBUTES',
         type=arg_parsers.ArgDict(),
         hidden=True,
-        help='THIS TEXT SHOULD BE HIDDEN')
+        help='THIS TEXT SHOULD BE HIDDEN',
+    )
 
     self._AcquireArgs()
 
@@ -367,8 +395,9 @@ class CommandCommon(object):
     """
     return 0
 
-  def LoadSubElement(self, name, allow_empty=False,
-                     release_track_override=None):
+  def LoadSubElement(
+      self, name, allow_empty=False, release_track_override=None
+  ):
     """Load a specific sub group or command.
 
     Args:
@@ -376,8 +405,8 @@ class CommandCommon(object):
       allow_empty: bool, True to allow creating this group as empty to start
         with.
       release_track_override: base.ReleaseTrack, Load the given sub-element
-        under the given track instead of that of the parent. This should only
-        be used when specifically creating the top level release track groups.
+        under the given track instead of that of the parent. This should only be
+        used when specifically creating the top level release track groups.
 
     Returns:
       _CommandCommon, The loaded sub element, or None if it did not exist.
@@ -430,14 +459,18 @@ class CommandCommon(object):
         if not self.ai.concept_handler:
           self.ai.add_concepts(handlers.RuntimeHandler())
         # pylint: disable=protected-access
-        for concept_details in self._parent_group.ai.concept_handler._all_concepts:
+        for (
+            concept_details
+        ) in self._parent_group.ai.concept_handler._all_concepts:
           try:
             self.ai.concept_handler.AddConcept(**concept_details)
           except handlers.RepeatedConceptName:
             raise parser_errors.ArgumentException(
                 'repeated concept in {command}: {concept_name}'.format(
                     command=self.dotted_name,
-                    concept_name=concept_details['name']))
+                    concept_name=concept_details['name'],
+                )
+            )
       # Add parent flags to children, if they aren't represented already
       for flag in self._parent_group.GetAllAvailableFlags():
         if flag.is_replicated:
@@ -457,11 +490,13 @@ class CommandCommon(object):
         except argparse.ArgumentError:
           raise parser_errors.ArgumentException(
               'repeated flag in {command}: {flag}'.format(
-                  command=self.dotted_name,
-                  flag=flag.option_strings))
+                  command=self.dotted_name, flag=flag.option_strings
+              )
+          )
       # Update parent display_info in children, children take precedence.
       self.ai.display_info.AddLowerDisplayInfo(
-          self._parent_group.ai.display_info)
+          self._parent_group.ai.display_info
+      )
 
   def GetAllAvailableFlags(self, include_global=True, include_hidden=True):
     flags = self.ai.flag_args + self.ai.ancestor_flag_args
@@ -472,9 +507,12 @@ class CommandCommon(object):
     # and the mutant scanner can't detect those in a reasonable amount of time.
     if include_global and include_hidden:
       return flags
-    return [f for f in flags if
-            (include_global or not f.is_global) and
-            (include_hidden or not f.is_hidden)]
+    return [
+        f
+        for f in flags
+        if (include_global or not f.is_global)
+        and (include_hidden or not f.is_hidden)
+    ]
 
   def GetSpecificFlags(self, include_hidden=True):
     flags = self.ai.flag_args
@@ -501,8 +539,9 @@ class CommandCommon(object):
     if alternates:
       top_element = self._TopCLIElement()
       # Pre-sort by the release track prefix so GA commands always list first.
-      for _, command_path in sorted(six.iteritems(alternates),
-                                    key=lambda x: x[0].prefix or ''):
+      for _, command_path in sorted(
+          six.iteritems(alternates), key=lambda x: x[0].prefix or ''
+      ):
         alternative_cmd = top_element.LoadSubElementByPath(command_path[1:])
         if alternative_cmd and not alternative_cmd.IsHidden():
           existing_alternatives.append(' '.join(command_path))
@@ -512,9 +551,17 @@ class CommandCommon(object):
 class CommandGroup(CommandCommon):
   """A class to encapsulate a group of commands."""
 
-  def __init__(self, impl_paths, path, release_track, construction_id,
-               cli_generator, parser_group, parent_group=None,
-               allow_empty=False):
+  def __init__(
+      self,
+      impl_paths,
+      path,
+      release_track,
+      construction_id,
+      cli_generator,
+      parser_group,
+      parent_group=None,
+      allow_empty=False,
+  ):
     """Create a new command group.
 
     Args:
@@ -541,7 +588,8 @@ class CommandGroup(CommandCommon):
       LayoutException: if the module has no sub groups or commands
     """
     common_type = command_loading.LoadCommonType(
-        impl_paths, path, release_track, construction_id, is_command=False)
+        impl_paths, path, release_track, construction_id, is_command=False
+    )
     super(CommandGroup, self).__init__(
         common_type,
         path=path,
@@ -549,7 +597,8 @@ class CommandGroup(CommandCommon):
         cli_generator=cli_generator,
         allow_positional_args=False,
         parser_group=parser_group,
-        parent_group=parent_group)
+        parent_group=parent_group,
+    )
 
     self._construction_id = construction_id
 
@@ -560,16 +609,21 @@ class CommandGroup(CommandCommon):
     self._commands_to_load = {}
     self._unloadable_elements = set()
 
-    group_infos, command_infos = command_loading.FindSubElements(impl_paths,
-                                                                 path)
+    group_infos, command_infos = command_loading.FindSubElements(
+        impl_paths, path
+    )
     self._RemoveInitExtensionsFileIfNeeded(command_infos)
     self._groups_to_load.update(group_infos)
     self._commands_to_load.update(command_infos)
 
-    if (not allow_empty and
-        not self._groups_to_load and not self._commands_to_load):
+    if (
+        not allow_empty
+        and not self._groups_to_load
+        and not self._commands_to_load
+    ):
       raise command_loading.LayoutException(
-          'Group {0} has no subgroups or commands'.format(self.dotted_name))
+          'Group {0} has no subgroups or commands'.format(self.dotted_name)
+      )
     # Initialize the sub-parser so sub groups can be found.
     self.SubParser()
 
@@ -581,14 +635,16 @@ class CommandGroup(CommandCommon):
       ignore: set(str), Names of elements not to copy.
     """
     # pylint: disable=protected-access, This is the same class.
-    other_group._groups_to_load.update(
-        {name: impl_paths
-         for name, impl_paths in six.iteritems(self._groups_to_load)
-         if name not in ignore})
-    other_group._commands_to_load.update(
-        {name: impl_paths
-         for name, impl_paths in six.iteritems(self._commands_to_load)
-         if name not in ignore})
+    other_group._groups_to_load.update({
+        name: impl_paths
+        for name, impl_paths in six.iteritems(self._groups_to_load)
+        if name not in ignore
+    })
+    other_group._commands_to_load.update({
+        name: impl_paths
+        for name, impl_paths in six.iteritems(self._commands_to_load)
+        if name not in ignore
+    })
 
   def SubParser(self):
     """Gets or creates the argparse sub parser for this group.
@@ -600,8 +656,8 @@ class CommandGroup(CommandCommon):
     if not self._sub_parser:
       # pylint: disable=protected-access
       self._sub_parser = self._parser.add_subparsers(
-          action=parser_extensions.CommandGroupAction,
-          calliope_command=self)
+          action=parser_extensions.CommandGroupAction, calliope_command=self
+      )
     return self._sub_parser
 
   def AllSubElements(self):
@@ -610,8 +666,7 @@ class CommandGroup(CommandCommon):
     Returns:
       set(str), The names of all sub groups or commands under this group.
     """
-    return (set(self._groups_to_load.keys()) |
-            set(self._commands_to_load.keys()))
+    return set(self._groups_to_load.keys()) | set(self._commands_to_load.keys())
 
   def IsValidSubElement(self, name):
     """Determines if the given name is a valid sub group or command.
@@ -650,11 +705,13 @@ class CommandGroup(CommandCommon):
           raise
       if element and recursive:
         total += element.LoadAllSubElements(
-            recursive=recursive, ignore_load_errors=ignore_load_errors)
+            recursive=recursive, ignore_load_errors=ignore_load_errors
+        )
     return total
 
-  def LoadSubElement(self, name, allow_empty=False,
-                     release_track_override=None):
+  def LoadSubElement(
+      self, name, allow_empty=False, release_track_override=None
+  ):
     """Load a specific sub group or command.
 
     Args:
@@ -662,8 +719,8 @@ class CommandGroup(CommandCommon):
       allow_empty: bool, True to allow creating this group as empty to start
         with.
       release_track_override: base.ReleaseTrack, Load the given sub-element
-        under the given track instead of that of the parent. This should only
-        be used when specifically creating the top level release track groups.
+        under the given track instead of that of the parent. This should only be
+        used when specifically creating the top level release track groups.
 
     Returns:
       _CommandCommon, The loaded sub element, or None if it did not exist.
@@ -683,17 +740,26 @@ class CommandGroup(CommandCommon):
     try:
       if name in self._groups_to_load:
         element = CommandGroup(
-            self._groups_to_load[name], self._path + [name],
+            self._groups_to_load[name],
+            self._path + [name],
             release_track_override or self.ReleaseTrack(),
-            self._construction_id, self._cli_generator, self.SubParser(),
-            parent_group=self, allow_empty=allow_empty)
+            self._construction_id,
+            self._cli_generator,
+            self.SubParser(),
+            parent_group=self,
+            allow_empty=allow_empty,
+        )
         self.groups[element.name] = element
       elif name in self._commands_to_load:
         element = Command(
-            self._commands_to_load[name], self._path + [name],
+            self._commands_to_load[name],
+            self._path + [name],
             release_track_override or self.ReleaseTrack(),
-            self._construction_id, self._cli_generator, self.SubParser(),
-            parent_group=self)
+            self._construction_id,
+            self._cli_generator,
+            self.SubParser(),
+            parent_group=self,
+        )
         self.commands[element.name] = element
     except command_loading.ReleaseTrackNotImplementedException as e:
       self._unloadable_elements.add(name)
@@ -702,19 +768,29 @@ class CommandGroup(CommandCommon):
 
   def GetSubCommandHelps(self):
     return dict(
-        (item.cli_name,
-         usage_text.HelpInfo(help_text=item.short_help,
-                             is_hidden=item.IsHidden(),
-                             release_track=item.ReleaseTrack))
-        for item in self.commands.values())
+        (
+            item.cli_name,
+            usage_text.HelpInfo(
+                help_text=item.short_help,
+                is_hidden=item.IsHidden(),
+                release_track=item.ReleaseTrack,
+            ),
+        )
+        for item in self.commands.values()
+    )
 
   def GetSubGroupHelps(self):
     return dict(
-        (item.cli_name,
-         usage_text.HelpInfo(help_text=item.short_help,
-                             is_hidden=item.IsHidden(),
-                             release_track=item.ReleaseTrack()))
-        for item in self.groups.values())
+        (
+            item.cli_name,
+            usage_text.HelpInfo(
+                help_text=item.short_help,
+                is_hidden=item.IsHidden(),
+                release_track=item.ReleaseTrack(),
+            ),
+        )
+        for item in self.groups.values()
+    )
 
   def RunGroupFilter(self, context, args):
     """Constructs and runs the Filter() method of all parent groups.
@@ -732,7 +808,8 @@ class CommandGroup(CommandCommon):
 
   def GetCategoricalUsage(self):
     return usage_text.GetCategoricalUsage(
-        self, self._GroupSubElementsByCategory())
+        self, self._GroupSubElementsByCategory()
+    )
 
   def GetUncategorizedUsage(self):
     return usage_text.GetUncategorizedUsage(self)
@@ -756,10 +833,10 @@ class CommandGroup(CommandCommon):
 
     self.LoadAllSubElements()
     categories = {}
-    categories['command'] = (
-        _GroupSubElementsOfSameTypeByCategory(self.commands))
-    categories['command_group'] = (
-        _GroupSubElementsOfSameTypeByCategory(self.groups))
+    categories['command'] = _GroupSubElementsOfSameTypeByCategory(self.commands)
+    categories['command_group'] = _GroupSubElementsOfSameTypeByCategory(
+        self.groups
+    )
 
     return categories
 
@@ -771,8 +848,8 @@ class CommandGroup(CommandCommon):
     an __init__.py file by allowing to add no-auto-generated custom code.
 
     Args:
-      command_infos: dict, A dictionary of command names to a list of file
-        paths that implement that command.
+      command_infos: dict, A dictionary of command names to a list of file paths
+        that implement that command.
     """
     init_extensions_file = '_init_extensions'
     if init_extensions_file in command_infos:
@@ -782,8 +859,16 @@ class CommandGroup(CommandCommon):
 class Command(CommandCommon):
   """A class that encapsulates the configuration for a single command."""
 
-  def __init__(self, impl_paths, path, release_track, construction_id,
-               cli_generator, parser_group, parent_group=None):
+  def __init__(
+      self,
+      impl_paths,
+      path,
+      release_track,
+      construction_id,
+      cli_generator,
+      parser_group,
+      parent_group=None,
+  ):
     """Create a new command.
 
     Args:
@@ -803,8 +888,13 @@ class Command(CommandCommon):
       parent_group: CommandGroup, The parent of this command.
     """
     common_type = command_loading.LoadCommonType(
-        impl_paths, path, release_track, construction_id, is_command=True,
-        yaml_command_translator=cli_generator.yaml_command_translator)
+        impl_paths,
+        path,
+        release_track,
+        construction_id,
+        is_command=True,
+        yaml_command_translator=cli_generator.yaml_command_translator,
+    )
     super(Command, self).__init__(
         common_type,
         path=path,
@@ -812,7 +902,8 @@ class Command(CommandCommon):
         cli_generator=cli_generator,
         allow_positional_args=True,
         parser_group=parser_group,
-        parent_group=parent_group)
+        parent_group=parent_group,
+    )
 
     self._parser.set_defaults(calliope_command=self, command_path=self._path)
 
@@ -841,8 +932,9 @@ class Command(CommandCommon):
 
     base.LogCommand(self.dotted_name, args)
     resources = command_instance.Run(args)
-    resources = display.Displayer(command_instance, args, resources,
-                                  display_info=self.ai.display_info).Display()
+    resources = display.Displayer(
+        command_instance, args, resources, display_info=self.ai.display_info
+    ).Display()
     metrics.Ran()
 
     if command_instance.exit_code != 0:

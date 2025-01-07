@@ -63,7 +63,9 @@ def RepoRegion(args, cluster_location=None):
       '"gcloud config set run/region REGION".')
 
 
-def ShouldCreateRepository(repo, skip_activation_prompt=False):
+def ShouldCreateRepository(repo,
+                           skip_activation_prompt=False,
+                           skip_console_prompt=False):
   """Checks for the existence of the provided repository.
 
   If the provided repository does not exist, the user will be prompted
@@ -74,6 +76,8 @@ def ShouldCreateRepository(repo, skip_activation_prompt=False):
       the repository.
     skip_activation_prompt: bool determining if the client should prompt if the
       API isn't activated.
+    skip_console_prompt: bool determining if the client should prompt the
+      user if the repository doesn't exist.
 
   Returns:
     A boolean indicating whether a repository needs to be created.
@@ -89,6 +93,8 @@ def ShouldCreateRepository(repo, skip_activation_prompt=False):
     log.error('Error in retrieving repository from Artifact Registry.')
     raise
   except base_exceptions.HttpNotFoundError:
+    if skip_console_prompt:
+      return True
     message = ('Deploying from source requires an Artifact Registry Docker '
                'repository to store built containers. A repository named '
                '[{name}] in region [{location}] will be created.'.format(

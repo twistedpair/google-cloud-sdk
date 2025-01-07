@@ -8058,7 +8058,9 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
     clientIpResolutionConfig: Optional. The algorithm to resolve IP. This will
       affect Analytics, API Security, and other features that use the client
       ip. To remove a client ip resolution config, update the field to an
-      empty value. Example: '{ "clientIpResolutionConfig" = {} }'
+      empty value. Example: '{ "clientIpResolutionConfig" = {} }' For more
+      information, see: https://cloud.google.com/apigee/docs/api-
+      platform/system-administration/client-ip-resolution.
     createdAt: Output only. Creation time of this environment as milliseconds
       since epoch.
     deploymentType: Optional. Deployment type supported by the environment.
@@ -8818,6 +8820,9 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
     lastModifiedAt: Output only. Time the instance was last modified in
       milliseconds since epoch.
     location: Required. Compute Engine location where the instance resides.
+    maintenanceUpdatePolicy: Optional. Apigee customers can set the preferred
+      window to perform maintenance on the instance (day of the week and time
+      of day).
     name: Required. Resource ID of the instance. Values must match the regular
       expression `^a-z{0,30}[a-z\d]$`.
     nodeConfig: Optional. NodeConfig of the instance.
@@ -8829,6 +8834,10 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
     runtimeVersion: Output only. Version of the runtime system running in the
       instance. The runtime system is the set of components that serve the API
       Proxy traffic in your Environments.
+    scheduledMaintenance: Output only. Time and date of the scheduled
+      maintenance for this instance. This field is only populated for
+      instances that have opted into Maintenance Window and if there is an
+      upcoming maintenance. Cleared once the maintenance is complete.
     serviceAttachment: Output only. Resource name of the service attachment
       created for the instance in the format:
       `projects/*/regions/*/serviceAttachments/*` Apigee customers can
@@ -8916,13 +8925,15 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 11)
   lastModifiedAt = _messages.IntegerField(12)
   location = _messages.StringField(13)
-  name = _messages.StringField(14)
-  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 15)
-  peeringCidrRange = _messages.EnumField('PeeringCidrRangeValueValuesEnum', 16)
-  port = _messages.StringField(17)
-  runtimeVersion = _messages.StringField(18)
-  serviceAttachment = _messages.StringField(19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
+  maintenanceUpdatePolicy = _messages.MessageField('GoogleCloudApigeeV1MaintenanceUpdatePolicy', 14)
+  name = _messages.StringField(15)
+  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 16)
+  peeringCidrRange = _messages.EnumField('PeeringCidrRangeValueValuesEnum', 17)
+  port = _messages.StringField(18)
+  runtimeVersion = _messages.StringField(19)
+  scheduledMaintenance = _messages.MessageField('GoogleCloudApigeeV1ScheduledMaintenance', 20)
+  serviceAttachment = _messages.StringField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
 
 
 class GoogleCloudApigeeV1InstanceAttachment(_messages.Message):
@@ -9631,6 +9642,59 @@ class GoogleCloudApigeeV1ListTraceConfigOverridesResponse(_messages.Message):
   traceConfigOverrides = _messages.MessageField('GoogleCloudApigeeV1TraceConfigOverride', 2, repeated=True)
 
 
+class GoogleCloudApigeeV1MaintenanceUpdatePolicy(_messages.Message):
+  r"""MaintenanceUpdatePolicy specifies the preferred window to perform
+  maintenance on the instance (day of the week and time of day).
+
+  Fields:
+    maintenanceWindows: Optional. Preferred windows to perform maintenance.
+      Currently limited to 1.
+  """
+
+  maintenanceWindows = _messages.MessageField('GoogleCloudApigeeV1MaintenanceUpdatePolicyMaintenanceWindow', 1, repeated=True)
+
+
+class GoogleCloudApigeeV1MaintenanceUpdatePolicyMaintenanceWindow(_messages.Message):
+  r"""MaintenanceWindow specifies the preferred day of the week and time of
+  day to perform maintenance.
+
+  Enums:
+    DayValueValuesEnum: Required. Preferred day of the week for maintenance,
+      e.g. MONDAY, TUESDAY, etc.
+
+  Fields:
+    day: Required. Preferred day of the week for maintenance, e.g. MONDAY,
+      TUESDAY, etc.
+    startTime: Required. The start time (UTC) of the maintenance window.
+  """
+
+  class DayValueValuesEnum(_messages.Enum):
+    r"""Required. Preferred day of the week for maintenance, e.g. MONDAY,
+    TUESDAY, etc.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  day = _messages.EnumField('DayValueValuesEnum', 1)
+  startTime = _messages.MessageField('GoogleTypeTimeOfDay', 2)
+
+
 class GoogleCloudApigeeV1Metadata(_messages.Message):
   r"""Encapsulates additional information about query execution.
 
@@ -10130,7 +10194,15 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       infrastructure/docs/service-networking/getting-started). Valid only when
       [RuntimeType](#RuntimeType) is set to `CLOUD`. The value must be set
       before the creation of a runtime instance and can be updated only when
-      there are no runtime instances. For example: `default`. Apigee also
+      there are no runtime instances. For example: `default`. When changing
+      authorizedNetwork, you must reconfigure VPC peering. After VPC peering
+      with previous network is deleted, [run the following
+      command](https://cloud.google.com/sdk/gcloud/reference/services/vpc-
+      peerings/delete): `gcloud services vpc-peerings delete
+      --network=NETWORK`, where `NETWORK` is the name of the previous network.
+      This will delete the previous Service Networking. Otherwise, you will
+      get the following error: `The resource 'projects/...-tp' is already
+      linked to another shared VPC host 'projects/...-tp`. Apigee also
       supports shared VPC (that is, the host network project is not the same
       as the one that is peering with Apigee). See [Shared VPC
       overview](https://cloud.google.com/vpc/docs/shared-vpc). To use a shared
@@ -11516,6 +11588,16 @@ class GoogleCloudApigeeV1RuntimeTraceSamplingConfig(_messages.Message):
 
   sampler = _messages.EnumField('SamplerValueValuesEnum', 1)
   samplingRate = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudApigeeV1ScheduledMaintenance(_messages.Message):
+  r"""Scheduled maintenance information for an instance.
+
+  Fields:
+    startTime: Output only. The start time (UTC) of the scheduled maintenance.
+  """
+
+  startTime = _messages.StringField(1)
 
 
 class GoogleCloudApigeeV1Schema(_messages.Message):
@@ -13828,6 +13910,30 @@ class GoogleTypeMoney(_messages.Message):
   currencyCode = _messages.StringField(1)
   nanos = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   units = _messages.IntegerField(3)
+
+
+class GoogleTypeTimeOfDay(_messages.Message):
+  r"""Represents a time of day. The date and time zone are either not
+  significant or are specified elsewhere. An API may choose to allow leap
+  seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
+
+  Fields:
+    hours: Hours of a day in 24 hour format. Must be greater than or equal to
+      0 and typically must be less than or equal to 23. An API may choose to
+      allow the value "24:00:00" for scenarios like business closing time.
+    minutes: Minutes of an hour. Must be greater than or equal to 0 and less
+      than or equal to 59.
+    nanos: Fractions of seconds, in nanoseconds. Must be greater than or equal
+      to 0 and less than or equal to 999,999,999.
+    seconds: Seconds of a minute. Must be greater than or equal to 0 and
+      typically must be less than or equal to 59. An API may allow the value
+      60 if it allows leap-seconds.
+  """
+
+  hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):

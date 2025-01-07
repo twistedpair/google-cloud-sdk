@@ -146,6 +146,8 @@ class Backup(_messages.Message):
     LabelsValue: Resource labels to represent user provided metadata.
 
   Fields:
+    backupRegion: Output only. Region in which backup is stored. Format:
+      `projects/{project_id}/locations/{location}`
     backupType: Output only. Type of backup, manually created or created by a
       backup policy.
     chainStorageBytes: Output only. Total size of all backups in a chain in
@@ -166,6 +168,8 @@ class Backup(_messages.Message):
     sourceVolume: Volume full name of this backup belongs to. Format:
       `projects/{projects_id}/locations/{location}/volumes/{volume_id}`
     state: Output only. The backup state.
+    volumeRegion: Output only. Region of the volume from which the backup was
+      created. Format: `projects/{project_id}/locations/{location}`
     volumeUsageBytes: Output only. Size of the file system when the backup was
       created. When creating a new volume from the backup, the volume capacity
       will have to be at least as big.
@@ -232,18 +236,20 @@ class Backup(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  backupType = _messages.EnumField('BackupTypeValueValuesEnum', 1)
-  chainStorageBytes = _messages.IntegerField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  satisfiesPzi = _messages.BooleanField(7)
-  satisfiesPzs = _messages.BooleanField(8)
-  sourceSnapshot = _messages.StringField(9)
-  sourceVolume = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  volumeUsageBytes = _messages.IntegerField(12)
+  backupRegion = _messages.StringField(1)
+  backupType = _messages.EnumField('BackupTypeValueValuesEnum', 2)
+  chainStorageBytes = _messages.IntegerField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  satisfiesPzi = _messages.BooleanField(8)
+  satisfiesPzs = _messages.BooleanField(9)
+  sourceSnapshot = _messages.StringField(10)
+  sourceVolume = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  volumeRegion = _messages.StringField(13)
+  volumeUsageBytes = _messages.IntegerField(14)
 
 
 class BackupConfig(_messages.Message):
@@ -356,19 +362,45 @@ class BackupVault(_messages.Message):
   r"""A NetApp BackupVault.
 
   Enums:
+    BackupVaultTypeValueValuesEnum: Optional. Type of backup vault to be
+      created. Default is IN_REGION.
     StateValueValuesEnum: Output only. The backup vault state.
 
   Messages:
     LabelsValue: Resource labels to represent user provided metadata.
 
   Fields:
+    backupRegion: Optional. Region where the backups are stored. Format:
+      `projects/{project_id}/locations/{location}`
+    backupVaultType: Optional. Type of backup vault to be created. Default is
+      IN_REGION.
     createTime: Output only. Create time of the backup vault.
     description: Description of the backup vault.
+    destinationBackupVault: Output only. Name of the Backup vault created in
+      backup region. Format: `projects/{project_id}/locations/{location}/backu
+      pVaults/{backup_vault_id}`
     labels: Resource labels to represent user provided metadata.
     name: Identifier. The resource name of the backup vault. Format: `projects
       /{project_id}/locations/{location}/backupVaults/{backup_vault_id}`.
+    sourceBackupVault: Output only. Name of the Backup vault created in source
+      region. Format: `projects/{project_id}/locations/{location}/backupVaults
+      /{backup_vault_id}`
+    sourceRegion: Output only. Region in which the backup vault is created.
+      Format: `projects/{project_id}/locations/{location}`
     state: Output only. The backup vault state.
   """
+
+  class BackupVaultTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of backup vault to be created. Default is IN_REGION.
+
+    Values:
+      BACKUP_VAULT_TYPE_UNSPECIFIED: BackupVault type not set.
+      IN_REGION: BackupVault type is IN_REGION.
+      CROSS_REGION: BackupVault type is CROSS_REGION.
+    """
+    BACKUP_VAULT_TYPE_UNSPECIFIED = 0
+    IN_REGION = 1
+    CROSS_REGION = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The backup vault state.
@@ -412,11 +444,16 @@ class BackupVault(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  backupRegion = _messages.StringField(1)
+  backupVaultType = _messages.EnumField('BackupVaultTypeValueValuesEnum', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  destinationBackupVault = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  sourceBackupVault = _messages.StringField(8)
+  sourceRegion = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
 class CancelOperationRequest(_messages.Message):

@@ -1529,8 +1529,34 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def QuerySync(self, request, global_params=None):
+      r"""Attempts to run the query synchronously and return all query results. If the query cannot be executed synchronously, returns query handle that can be used to fetch the results via ReadQueryResults. All tables must be referenced in the form of Observability Views.
+
+      Args:
+        request: (QueryDataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryResults) The response message.
+      """
+      config = self.GetMethodConfig('QuerySync')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QuerySync.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='logging.data.querySync',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v2/data:querySync',
+        request_field='<request>',
+        request_type_name='QueryDataRequest',
+        response_type_name='QueryResults',
+        supports_download=False,
+    )
+
     def ReadQueryResults(self, request, global_params=None):
-      r"""Retrieves the results from a single step of a previous call to QueryData or QueryDataLocal. If retrieving results from QueryDataLocal, then the same credentials must be used that were provided in the previous call.
+      r"""Retrieves the results from a single step of a previous call to QueryData, QueryDataSync or QueryDataLocal. If retrieving results from QueryDataLocal, then the same credentials must be used that were provided in the previous call.
 
       Args:
         request: (ReadQueryResultsRequest) input message

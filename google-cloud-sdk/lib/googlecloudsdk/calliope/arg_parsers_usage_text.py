@@ -18,8 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-
 import abc
+
 import six
 
 
@@ -48,8 +48,8 @@ class DefaultArgTypeWrapper(ArgTypeUsage):
   """Base class for processing arg_type output but maintaining usage help text.
 
   Attributes:
-    arg_type: type function used to parse input string into correct type
-      ie ArgObject(value_type=int, repeating=true), int, bool, etc
+    arg_type: type function used to parse input string into correct type ie
+      ArgObject(value_type=int, repeating=true), int, bool, etc
   """
 
   def __init__(self, arg_type):
@@ -279,14 +279,17 @@ def GetNestedUsageHelpText(field_name, arg_type, required=False):
   if isinstance(arg_type, ArgTypeUsage) and arg_type.hidden:
     usage = None
   elif isinstance(arg_type, ArgTypeUsage) and not arg_type.hidden:
-    usage = (arg_type.GetUsageHelpText(field_name, required=required)
-             or default_usage)
+    usage = (
+        arg_type.GetUsageHelpText(field_name, required=required)
+        or default_usage
+    )
   else:
     usage = default_usage
 
   # Shift (indent) nested content over to the right by one
   if usage:
     return '*{}*{}{}'.format(
-        field_name, ASCII_INDENT, IndentAsciiDoc(usage, depth=1))
+        field_name, ASCII_INDENT, IndentAsciiDoc(usage, depth=1)
+    )
   else:
     return None

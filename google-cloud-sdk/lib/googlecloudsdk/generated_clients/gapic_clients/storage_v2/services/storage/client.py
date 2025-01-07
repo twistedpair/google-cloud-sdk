@@ -1841,13 +1841,28 @@ class StorageClient(metaclass=StorageClientMeta):
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
-        r"""Deletes an object and its metadata.
+        r"""Deletes an object and its metadata. Deletions are permanent if
+        versioning is not enabled for the bucket, or if the generation
+        parameter is used, or if `soft
+        delete <https://cloud.google.com/storage/docs/soft-delete>`__ is
+        not enabled for the bucket. When this API is used to delete an
+        object from a bucket that has soft delete policy enabled, the
+        object becomes soft deleted, and the ``softDeleteTime`` and
+        ``hardDeleteTime`` properties are set on the object. This API
+        cannot be used to permanently delete soft-deleted objects.
+        Soft-deleted objects are permanently deleted according to their
+        ``hardDeleteTime``.
 
-        Deletions are normally permanent when versioning is
-        disabled or whenever the generation parameter is used.
-        However, if soft delete is enabled for the bucket,
-        deleted objects can be restored using RestoreObject
-        until the soft delete retention period has passed.
+        You can use the
+        [``RestoreObject``][google.storage.v2.Storage.RestoreObject] API
+        to restore soft-deleted objects until the soft delete retention
+        period has passed.
+
+        **IAM Permissions**:
+
+        Requires ``storage.objects.delete`` `IAM
+        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
+        on the bucket.
 
         .. code-block:: python
 
@@ -2207,7 +2222,14 @@ class StorageClient(metaclass=StorageClientMeta):
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.Object:
-        r"""Retrieves an object's metadata.
+        r"""Retrieves object metadata.
+
+        **IAM Permissions**:
+
+        Requires ``storage.objects.get`` `IAM
+        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
+        on the bucket. To return object ACLs, the authenticated user
+        must also have the ``storage.objects.getIamPolicy`` permission.
 
         .. code-block:: python
 
@@ -2330,7 +2352,13 @@ class StorageClient(metaclass=StorageClientMeta):
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> Iterable[storage.ReadObjectResponse]:
-        r"""Reads an object's data.
+        r"""Retrieves object data.
+
+        **IAM Permissions**:
+
+        Requires ``storage.objects.get`` `IAM
+        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
+        on the bucket.
 
         .. code-block:: python
 
@@ -2642,12 +2670,18 @@ class StorageClient(metaclass=StorageClientMeta):
         whether the service views the object as complete.
 
         Attempting to resume an already finalized object will result in
-        an OK status, with a WriteObjectResponse containing the
+        an OK status, with a ``WriteObjectResponse`` containing the
         finalized object's metadata.
 
         Alternatively, the BidiWriteObject operation may be used to
         write an object with controls over flushing and the ability to
         fetch the ability to determine the current persisted size.
+
+        **IAM Permissions**:
+
+        Requires ``storage.objects.create`` `IAM
+        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
+        on the bucket.
 
         .. code-block:: python
 
@@ -2822,6 +2856,14 @@ class StorageClient(metaclass=StorageClientMeta):
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> pagers.ListObjectsPager:
         r"""Retrieves a list of objects matching the criteria.
+
+        **IAM Permissions**:
+
+        The authenticated user requires ``storage.objects.list`` `IAM
+        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
+        to use this method. To return object ACLs, the authenticated
+        user must also have the ``storage.objects.getIamPolicy``
+        permission.
 
         .. code-block:: python
 
@@ -3039,9 +3081,19 @@ class StorageClient(metaclass=StorageClientMeta):
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.StartResumableWriteResponse:
-        r"""Starts a resumable write. How long the write
-        operation remains valid, and what happens when the write
-        operation becomes invalid, are service-dependent.
+        r"""Starts a resumable write operation. This method is part of the
+        `Resumable
+        upload <https://cloud.google.com/storage/docs/resumable-uploads>`__
+        feature. This allows you to upload large objects in multiple
+        chunks, which is more resilient to network interruptions than a
+        single upload. The validity duration of the write operation, and
+        the consequences of it becoming invalid, are service-dependent.
+
+        **IAM Permissions**:
+
+        Requires ``storage.objects.create`` `IAM
+        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
+        on the bucket.
 
         .. code-block:: python
 
@@ -3125,20 +3177,23 @@ class StorageClient(metaclass=StorageClientMeta):
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.QueryWriteStatusResponse:
-        r"""Determines the ``persisted_size`` for an object that is being
-        written, which can then be used as the ``write_offset`` for the
-        next ``Write()`` call.
+        r"""Determines the ``persisted_size`` of an object that is being
+        written. This method is part of the `resumable
+        upload <https://cloud.google.com/storage/docs/resumable-uploads>`__
+        feature. The returned value is the size of the object that has
+        been persisted so far. The value can be used as the
+        ``write_offset`` for the next ``Write()`` call.
 
-        If the object does not exist (i.e., the object has been deleted,
-        or the first ``Write()`` has not yet reached the service), this
-        method returns the error ``NOT_FOUND``.
+        If the object does not exist, meaning if it was deleted, or the
+        first ``Write()`` has not yet reached the service, this method
+        returns the error ``NOT_FOUND``.
 
-        The client **may** call ``QueryWriteStatus()`` at any time to
-        determine how much data has been processed for this object. This
-        is useful if the client is buffering data and needs to know
-        which data can be safely evicted. For any sequence of
+        This method is useful for clients that buffer data and need to
+        know which data can be safely evicted. The client can call
+        ``QueryWriteStatus()`` at any time to determine how much data
+        has been logged for this object. For any sequence of
         ``QueryWriteStatus()`` calls for a given object name, the
-        sequence of returned ``persisted_size`` values will be
+        sequence of returned ``persisted_size`` values are
         non-decreasing.
 
         .. code-block:: python
@@ -3213,6 +3268,130 @@ class StorageClient(metaclass=StorageClientMeta):
 
         routing_param_regex = re.compile('^(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?$')
         regex_match = routing_param_regex.match(request.upload_id)
+        if regex_match and regex_match.group("bucket"):
+            header_params["bucket"] = regex_match.group("bucket")
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
+
+        # Validate the universe domain.
+        self._validate_universe_domain()
+
+        # Send the request.
+        response = rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    def move_object(self,
+            request: Optional[Union[storage.MoveObjectRequest, dict]] = None,
+            *,
+            bucket: Optional[str] = None,
+            source_object: Optional[str] = None,
+            destination_object: Optional[str] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> storage.Object:
+        r"""Moves the source object to the destination object in
+        the same bucket.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import storage_v2
+
+            def sample_move_object():
+                # Create a client
+                client = storage_v2.StorageClient()
+
+                # Initialize request argument(s)
+                request = storage_v2.MoveObjectRequest(
+                    bucket="bucket_value",
+                    source_object="source_object_value",
+                    destination_object="destination_object_value",
+                )
+
+                # Make the request
+                response = client.move_object(request=request)
+
+                # Handle the response
+                print(response)
+
+        Args:
+            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.MoveObjectRequest, dict]):
+                The request object. Request message for MoveObject.
+            bucket (str):
+                Required. Name of the bucket in which
+                the object resides.
+
+                This corresponds to the ``bucket`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            source_object (str):
+                Required. Name of the source object.
+                This corresponds to the ``source_object`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            destination_object (str):
+                Required. Name of the destination
+                object.
+
+                This corresponds to the ``destination_object`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Object:
+                An object.
+        """
+        # Create or coerce a protobuf request object.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
+        has_flattened_params = any([bucket, source_object, destination_object])
+        if request is not None and has_flattened_params:
+            raise ValueError('If the `request` argument is set, then none of '
+                             'the individual field arguments should be set.')
+
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, storage.MoveObjectRequest):
+            request = storage.MoveObjectRequest(request)
+            # If we have keyword arguments corresponding to fields on the
+            # request, apply these.
+            if bucket is not None:
+                request.bucket = bucket
+            if source_object is not None:
+                request.source_object = source_object
+            if destination_object is not None:
+                request.destination_object = destination_object
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._transport._wrapped_methods[self._transport.move_object]
+
+        header_params = {}
+
+        routing_param_regex = re.compile('^(?P<bucket>.*)$')
+        regex_match = routing_param_regex.match(request.bucket)
         if regex_match and regex_match.group("bucket"):
             header_params["bucket"] = regex_match.group("bucket")
 

@@ -614,7 +614,7 @@ def _GetCommonPrefix(longest_arr, arr):
   return new_arr
 
 
-def _GetSharedParent(api_fields):
+def GetSharedParent(api_fields):
   """Gets shared parent of api_fields.
 
   For a list of fields, find the common parent between them or None.
@@ -730,10 +730,8 @@ def ClearUnspecifiedMutexFields(message, namespace, arg_group):
   # Find api fields that are associated with the root of the oneof.
   # This ensures everything is cleared within the oneof and not just nested
   # fields associated with flags.
-  arg_api_fields = arg_group.api_fields
-  arg_group_api_field = _GetSharedParent(arg_api_fields)
   first_child_fields = _GetFirstChildFields(
-      arg_api_fields, shared_parent=arg_group_api_field)
+      arg_group.api_fields, shared_parent=arg_group.parent_api_field)
 
   specified_fields = _GetSpecifiedApiFieldsInGroup(
       arg_group.arguments, namespace)

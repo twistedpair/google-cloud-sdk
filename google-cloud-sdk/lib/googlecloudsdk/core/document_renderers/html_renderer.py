@@ -42,6 +42,7 @@ class HTMLRenderer(renderer.Renderer):
     _pop: A list of list element closing tag names indexed by _level.
     _section: Section heading but no section body yet.
   """
+
   _BULLET = ('disc', 'circle', 'square')
   _ESCAPE = {'&': '&amp;', '<': '&lt;', '>': '&gt;'}
   _FONT_TAG = (('code',), ('code', 'var'), ('code',))
@@ -150,12 +151,14 @@ class HTMLRenderer(renderer.Renderer):
 
       return re.sub(r'(COMMAND|GROUP)S$', r'\1', name)
 
-    m = re.match(r'(-- |\[)*'
-                 '(<[^>]*>)*'
-                 r'(?P<anchor>-[-_a-z0-9\[\]]+|[_A-Za-z.0-9 ][-_A-Za-z.0-9 ]*|'
-                 r'[-.0-9]+)'
-                 '.*',
-                 name)
+    m = re.match(
+        r'(-- |\[)*'
+        '(<[^>]*>)*'
+        r'(?P<anchor>-[-_a-z0-9\[\]]+|[_A-Za-z.0-9 ][-_A-Za-z.0-9 ]*|'
+        r'[-.0-9]+)'
+        '.*',
+        name,
+    )
     if m:
       name = m.group('anchor')
     name = name.strip(' ').replace(' ', '-')
@@ -294,8 +297,10 @@ class HTMLRenderer(renderer.Renderer):
     level += 2
     if level > 9:
       level = 9
-    self._out.write('\n<dt><h%d>%s</h%d></dt>\n<dd class="sectionbody">\n' % (
-        level, heading, level))
+    self._out.write(
+        '\n<dt><h%d>%s</h%d></dt>\n<dd class="sectionbody">\n'
+        % (level, heading, level)
+    )
 
   def Heading(self, level, heading):
     """Renders a heading.
@@ -335,15 +340,17 @@ class HTMLRenderer(renderer.Renderer):
     """
     if ':' in target or target.startswith('www.'):
       return '<a href="{target}" target=_top>{text}</a>'.format(
-          target=target, text=text or target)
+          target=target, text=text or target
+      )
     if '#' in target or target.endswith('..'):
       return '<a href="{target}">{text}</a>'.format(
-          target=target, text=text or target)
+          target=target, text=text or target
+      )
     if not text:
       text = target.replace('/', ' ')
     tail = '/help'
     if target.endswith(tail):
-      target = target[:-len(tail)]
+      target = target[: -len(tail)]
     target = target.replace('/', '_') + '.html'
     return '<a href="{target}">{text}</a>'.format(target=target, text=text)
 
@@ -356,10 +363,7 @@ class HTMLRenderer(renderer.Renderer):
     Returns:
       line with annoted global flag links.
     """
-    return re.sub(
-        r'(--[-a-z]+)',
-        r'<a href="/#\1">\1</a>',
-        line)
+    return re.sub(r'(--[-a-z]+)', r'<a href="/#\1">\1</a>', line)
 
   def List(self, level, definition=None, end=False):
     """Renders a bullet or definition list item.
@@ -396,10 +400,13 @@ class HTMLRenderer(renderer.Renderer):
       else:
         self._out.write('</dd>\n')
       if definition:
-        self._out.write('<dt id="{document_id}"><span class="normalfont">'
-                        '{definition}</span></dt>\n<dd>\n'.format(
-                            document_id=self.GetDocumentID(definition),
-                            definition=definition))
+        self._out.write(
+            '<dt id="{document_id}"><span class="normalfont">'
+            '{definition}</span></dt>\n<dd>\n'.format(
+                document_id=self.GetDocumentID(definition),
+                definition=definition,
+            )
+        )
       elif self._level > 1 and 'dt' in self._pop[self._level]:
         self._out.write('<dd>\n')
       else:
@@ -412,9 +419,11 @@ class HTMLRenderer(renderer.Renderer):
         if self._level >= len(self._pop):
           self._pop.append('')
         self._pop[self._level] = '</li>\n</ul>\n'
-        self._out.write('<ul style="list-style-type:' +
-                        self._BULLET[(level - 1) % len(self._BULLET)] +
-                        '">\n')
+        self._out.write(
+            '<ul style="list-style-type:'
+            + self._BULLET[(level - 1) % len(self._BULLET)]
+            + '">\n'
+        )
       else:
         self._out.write('</li>\n')
       self._out.write('<li>\n')
@@ -428,33 +437,36 @@ class HTMLRenderer(renderer.Renderer):
       line: The NAME or SYNOPSIS section text.
       is_synopsis: if it is the synopsis section
     """
-    self._out.write('<dl class="notopmargin"><dt class="hangingindent">'
-                    '<span class="normalfont">\n')
+    self._out.write(
+        '<dl class="notopmargin"><dt class="hangingindent">'
+        '<span class="normalfont">\n'
+    )
 
     # Add flag local links. NOTE: --no-foo defined under --foo.
 
-    line = re.sub(r'(<code>)([-a-z0-9\[\]]+)(</code>)',
-                  r'\1<a href="#\2">\2</a>\3',
-                  line)
+    line = re.sub(
+        r'(<code>)([-a-z0-9\[\]]+)(</code>)', r'\1<a href="#\2">\2</a>\3', line
+    )
     line = re.sub('href="#--no-', 'href="#--', line)
 
     # Add positional local links.
 
-    line = re.sub(r'([^[=]\[*<code><var>)([_A-Z0-9]+)(</var></code>)',
-                  r'\1<a href="#\2">\2</a>\3',
-                  line)
+    line = re.sub(
+        r'([^[=]\[*<code><var>)([_A-Z0-9]+)(</var></code>)',
+        r'\1<a href="#\2">\2</a>\3',
+        line,
+    )
 
-    line = re.sub(r'(<code><a href="#[-a-z0-9\[\]]+">[-a-z0-9\[\]]+'
-                  r'(<[^>]*>|\S)*)',
-                  r'<span class="flag">\1</span>',
-                  line)
+    line = re.sub(
+        r'(<code><a href="#[-a-z0-9\[\]]+">[-a-z0-9\[\]]+' r'(<[^>]*>|\S)*)',
+        r'<span class="flag">\1</span>',
+        line,
+    )
     # Because there are long argdicts, and this is only looking at the
     # synopsis section, lets end and start a new flag class at a comma so it
     # doesn't overflow the width
     if is_synopsis:
-      line = re.sub('(,)',
-                    r'\1</span><span class="flag">',
-                    line)
+      line = re.sub('(,)', r'\1</span><span class="flag">', line)
 
     # Add self.command[0].upper() WIDE FLAGS local link.
 
@@ -462,7 +474,8 @@ class HTMLRenderer(renderer.Renderer):
     line = re.sub(
         '>{root}_WIDE_FLAG '.format(root=root),
         '><a href="#{root}-WIDE-FLAGS">{root}_WIDE_FLAG</a> '.format(root=root),
-        line)
+        line,
+    )
 
     nest = 0
     chars = collections.deque(line)

@@ -1262,7 +1262,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Switchover(self, request, global_params=None):
-      r"""Switches over from the primary instance to the designated DR replica instance.
+      r"""Switches over from the primary instance to the DR replica instance.
 
       Args:
         request: (SqlInstancesSwitchoverRequest) input message

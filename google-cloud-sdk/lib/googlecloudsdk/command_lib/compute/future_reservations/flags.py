@@ -321,6 +321,31 @@ def GetSchedulingTypeFlag():
   )
 
 
+def GetReservationModeFlag():
+  """--reservation-mode flag."""
+  help_text = """\
+  The mode of the reservation.
+  """
+  return base.Argument(
+      '--reservation-mode',
+      choices={
+          'CALENDAR': (
+              'This indicates to create a future reservation in calendar mode,'
+              ' which is ideal for reserving GPU VMs. The auto-created'
+              ' reservations for the future reservation are automatically'
+              ' deleted at the end of the reservation period.'
+          ),
+          'DEFAULT': (
+              'This indicates to create a standard future reservation. If you'
+              ' want to automatically delete the auto-created reservations,'
+              ' then you must use the --auto-delete-auto-created-reservations'
+              ' flag.'
+          ),
+      },
+      help=help_text,
+  )
+
+
 def AddCreateFlags(
     parser,
     support_location_hint=False,
@@ -333,6 +358,7 @@ def AddCreateFlags(
     support_require_specific_reservation=False,
     support_gsc=False,
     support_cuds=False,
+    support_dws_gpu=False,
 ):
   """Adds all flags needed for the create command."""
   GetNamePrefixFlag().AddToParser(parser)
@@ -401,6 +427,9 @@ def AddCreateFlags(
 
   if support_cuds:
     AddCommitmentInfoFlags(parser)
+
+  if support_dws_gpu:
+    GetReservationModeFlag().AddToParser(parser)
 
 
 def AddUpdateFlags(

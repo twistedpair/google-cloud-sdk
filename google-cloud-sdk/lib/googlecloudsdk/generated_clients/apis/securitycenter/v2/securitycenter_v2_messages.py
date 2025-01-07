@@ -142,13 +142,19 @@ class Attack(_messages.Message):
   Fields:
     classification: Type of attack, for example, 'SYN-flood', 'NTP-udp', or
       'CHARGEN-udp'.
-    volumeBps: Total BPS (bytes per second) volume of attack.
-    volumePps: Total PPS (packets per second) volume of attack.
+    volumeBps: Total BPS (bytes per second) volume of attack. Deprecated -
+      refer to volume_bps_long instead.
+    volumeBpsLong: Total BPS (bytes per second) volume of attack.
+    volumePps: Total PPS (packets per second) volume of attack. Deprecated -
+      refer to volume_pps_long instead.
+    volumePpsLong: Total PPS (packets per second) volume of attack.
   """
 
   classification = _messages.StringField(1)
   volumeBps = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  volumePps = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  volumeBpsLong = _messages.IntegerField(3)
+  volumePps = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  volumePpsLong = _messages.IntegerField(5)
 
 
 class AttackExposure(_messages.Message):
@@ -1392,6 +1398,52 @@ class DataFlowEvent(_messages.Message):
   violatedLocation = _messages.StringField(5)
 
 
+class DataRetentionDeletionEvent(_messages.Message):
+  r"""Details about data retention deletion violations, in which the data is
+  non-compliant based on their retention or deletion time, as defined in the
+  applicable data security policy. The Data Retention Deletion (DRD) control
+  is a control of the DSPM (Data Security Posture Management) suite that
+  enables organizations to manage data retention and deletion policies in
+  compliance with regulations, such as GDPR and CRPA. DRD supports two primary
+  policy types: maximum storage length (max TTL) and minimum storage length
+  (min TTL). Both are aimed at helping organizations meet regulatory and data
+  management commitments.
+
+  Enums:
+    EventTypeValueValuesEnum: Type of the DRD event.
+
+  Fields:
+    dataObjectCount: Number of objects that violated the policy for this
+      resource. If the number is less than 1,000, then the value of this field
+      is the exact number. If the number of objects that violated the policy
+      is greater than or equal to 1,000, then the value of this field is 1000.
+    eventDetectionTime: Timestamp indicating when the event was detected.
+    eventType: Type of the DRD event.
+    maxRetentionAllowed: Maximum duration of retention allowed from the DRD
+      control. This comes from the DRD control where users set a max TTL for
+      their data. For example, suppose that a user set the max TTL for a Cloud
+      Storage bucket to 90 days. However, an object in that bucket is 100 days
+      old. In this case, a DataRetentionDeletionEvent will be generated for
+      that Cloud Storage bucket, and the max_retention_allowed is 90 days.
+  """
+
+  class EventTypeValueValuesEnum(_messages.Enum):
+    r"""Type of the DRD event.
+
+    Values:
+      EVENT_TYPE_UNSPECIFIED: Unspecified event type.
+      EVENT_TYPE_MAX_TTL_EXCEEDED: The maximum retention time has been
+        exceeded.
+    """
+    EVENT_TYPE_UNSPECIFIED = 0
+    EVENT_TYPE_MAX_TTL_EXCEEDED = 1
+
+  dataObjectCount = _messages.IntegerField(1)
+  eventDetectionTime = _messages.StringField(2)
+  eventType = _messages.EnumField('EventTypeValueValuesEnum', 3)
+  maxRetentionAllowed = _messages.StringField(4)
+
+
 class Database(_messages.Message):
   r"""Represents database access information, such as queries. A database may
   be a sub-resource of an instance (as in the case of Cloud SQL instances or
@@ -1441,6 +1493,18 @@ class Detection(_messages.Message):
 
   binary = _messages.StringField(1)
   percentPagesMatched = _messages.FloatField(2)
+
+
+class Disk(_messages.Message):
+  r"""Contains information about the disk associated with the finding.
+
+  Fields:
+    name: The name of the disk, for example,
+      "https://www.googleapis.com/compute/v1/projects/project-id/zones/zone-
+      id/disks/disk-id".
+  """
+
+  name = _messages.StringField(1)
 
 
 class DiskPath(_messages.Message):
@@ -1666,8 +1730,11 @@ class Finding(_messages.Message):
       Center.
     dataAccessEvents: Data access events associated with the finding.
     dataFlowEvents: Data flow events associated with the finding.
+    dataRetentionDeletionEvents: Data retention deletion events associated
+      with the finding.
     database: Database associated with the finding.
     description: Contains more details about the finding.
+    disk: Disk associated with the finding.
     eventTime: The time the finding was first detected. If an existing finding
       is updated, then this is the time the update occurred. For example, if
       the finding represents an open firewall, this property captures the time
@@ -1973,43 +2040,45 @@ class Finding(_messages.Message):
   createTime = _messages.StringField(14)
   dataAccessEvents = _messages.MessageField('DataAccessEvent', 15, repeated=True)
   dataFlowEvents = _messages.MessageField('DataFlowEvent', 16, repeated=True)
-  database = _messages.MessageField('Database', 17)
-  description = _messages.StringField(18)
-  eventTime = _messages.StringField(19)
-  exfiltration = _messages.MessageField('Exfiltration', 20)
-  externalSystems = _messages.MessageField('ExternalSystemsValue', 21)
-  externalUri = _messages.StringField(22)
-  files = _messages.MessageField('File', 23, repeated=True)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 24)
-  groupMemberships = _messages.MessageField('GroupMembership', 25, repeated=True)
-  iamBindings = _messages.MessageField('IamBinding', 26, repeated=True)
-  indicator = _messages.MessageField('Indicator', 27)
-  kernelRootkit = _messages.MessageField('KernelRootkit', 28)
-  kubernetes = _messages.MessageField('Kubernetes', 29)
-  loadBalancers = _messages.MessageField('LoadBalancer', 30, repeated=True)
-  logEntries = _messages.MessageField('LogEntry', 31, repeated=True)
-  mitreAttack = _messages.MessageField('MitreAttack', 32)
-  moduleName = _messages.StringField(33)
-  mute = _messages.EnumField('MuteValueValuesEnum', 34)
-  muteAnnotation = _messages.StringField(35)
-  muteInfo = _messages.MessageField('MuteInfo', 36)
-  muteInitiator = _messages.StringField(37)
-  muteUpdateTime = _messages.StringField(38)
-  name = _messages.StringField(39)
-  nextSteps = _messages.StringField(40)
-  notebook = _messages.MessageField('Notebook', 41)
-  orgPolicies = _messages.MessageField('OrgPolicy', 42, repeated=True)
-  parent = _messages.StringField(43)
-  parentDisplayName = _messages.StringField(44)
-  processes = _messages.MessageField('Process', 45, repeated=True)
-  resourceName = _messages.StringField(46)
-  securityMarks = _messages.MessageField('SecurityMarks', 47)
-  securityPosture = _messages.MessageField('SecurityPosture', 48)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 49)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 50)
-  state = _messages.EnumField('StateValueValuesEnum', 51)
-  toxicCombination = _messages.MessageField('ToxicCombination', 52)
-  vulnerability = _messages.MessageField('Vulnerability', 53)
+  dataRetentionDeletionEvents = _messages.MessageField('DataRetentionDeletionEvent', 17, repeated=True)
+  database = _messages.MessageField('Database', 18)
+  description = _messages.StringField(19)
+  disk = _messages.MessageField('Disk', 20)
+  eventTime = _messages.StringField(21)
+  exfiltration = _messages.MessageField('Exfiltration', 22)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 23)
+  externalUri = _messages.StringField(24)
+  files = _messages.MessageField('File', 25, repeated=True)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 26)
+  groupMemberships = _messages.MessageField('GroupMembership', 27, repeated=True)
+  iamBindings = _messages.MessageField('IamBinding', 28, repeated=True)
+  indicator = _messages.MessageField('Indicator', 29)
+  kernelRootkit = _messages.MessageField('KernelRootkit', 30)
+  kubernetes = _messages.MessageField('Kubernetes', 31)
+  loadBalancers = _messages.MessageField('LoadBalancer', 32, repeated=True)
+  logEntries = _messages.MessageField('LogEntry', 33, repeated=True)
+  mitreAttack = _messages.MessageField('MitreAttack', 34)
+  moduleName = _messages.StringField(35)
+  mute = _messages.EnumField('MuteValueValuesEnum', 36)
+  muteAnnotation = _messages.StringField(37)
+  muteInfo = _messages.MessageField('MuteInfo', 38)
+  muteInitiator = _messages.StringField(39)
+  muteUpdateTime = _messages.StringField(40)
+  name = _messages.StringField(41)
+  nextSteps = _messages.StringField(42)
+  notebook = _messages.MessageField('Notebook', 43)
+  orgPolicies = _messages.MessageField('OrgPolicy', 44, repeated=True)
+  parent = _messages.StringField(45)
+  parentDisplayName = _messages.StringField(46)
+  processes = _messages.MessageField('Process', 47, repeated=True)
+  resourceName = _messages.StringField(48)
+  securityMarks = _messages.MessageField('SecurityMarks', 49)
+  securityPosture = _messages.MessageField('SecurityPosture', 50)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 51)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 52)
+  state = _messages.EnumField('StateValueValuesEnum', 53)
+  toxicCombination = _messages.MessageField('ToxicCombination', 54)
+  vulnerability = _messages.MessageField('Vulnerability', 55)
 
 
 class Folder(_messages.Message):
@@ -2572,9 +2641,10 @@ class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
       Data Protection finding to resource values. This mapping can only be
       used in combination with a resource_type that is related to BigQuery,
       e.g. "bigquery.googleapis.com/Dataset".
-    tagValues: Required. Tag values combined with `AND` to check against.
-      Values in the form "tagValues/123" Example: `[ "tagValues/123",
-      "tagValues/456", "tagValues/789" ]` https://cloud.google.com/resource-
+    tagValues: Required. Tag values combined with `AND` to check against. For
+      Google Cloud resources, they are tag value IDs in the form of
+      "tagValues/123". Example: `[ "tagValues/123", "tagValues/456",
+      "tagValues/789" ]` https://cloud.google.com/resource-
       manager/docs/tags/tags-creating-and-managing
     updateTime: Output only. Timestamp this resource value configuration was
       last updated.
@@ -3270,13 +3340,19 @@ class GoogleCloudSecuritycenterV2Attack(_messages.Message):
   Fields:
     classification: Type of attack, for example, 'SYN-flood', 'NTP-udp', or
       'CHARGEN-udp'.
-    volumeBps: Total BPS (bytes per second) volume of attack.
-    volumePps: Total PPS (packets per second) volume of attack.
+    volumeBps: Total BPS (bytes per second) volume of attack. Deprecated -
+      refer to volume_bps_long instead.
+    volumeBpsLong: Total BPS (bytes per second) volume of attack.
+    volumePps: Total PPS (packets per second) volume of attack. Deprecated -
+      refer to volume_pps_long instead.
+    volumePpsLong: Total PPS (packets per second) volume of attack.
   """
 
   classification = _messages.StringField(1)
   volumeBps = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  volumePps = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  volumeBpsLong = _messages.IntegerField(3)
+  volumePps = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  volumePpsLong = _messages.IntegerField(5)
 
 
 class GoogleCloudSecuritycenterV2AttackExposure(_messages.Message):
@@ -4173,6 +4249,52 @@ class GoogleCloudSecuritycenterV2DataFlowEvent(_messages.Message):
   violatedLocation = _messages.StringField(5)
 
 
+class GoogleCloudSecuritycenterV2DataRetentionDeletionEvent(_messages.Message):
+  r"""Details about data retention deletion violations, in which the data is
+  non-compliant based on their retention or deletion time, as defined in the
+  applicable data security policy. The Data Retention Deletion (DRD) control
+  is a control of the DSPM (Data Security Posture Management) suite that
+  enables organizations to manage data retention and deletion policies in
+  compliance with regulations, such as GDPR and CRPA. DRD supports two primary
+  policy types: maximum storage length (max TTL) and minimum storage length
+  (min TTL). Both are aimed at helping organizations meet regulatory and data
+  management commitments.
+
+  Enums:
+    EventTypeValueValuesEnum: Type of the DRD event.
+
+  Fields:
+    dataObjectCount: Number of objects that violated the policy for this
+      resource. If the number is less than 1,000, then the value of this field
+      is the exact number. If the number of objects that violated the policy
+      is greater than or equal to 1,000, then the value of this field is 1000.
+    eventDetectionTime: Timestamp indicating when the event was detected.
+    eventType: Type of the DRD event.
+    maxRetentionAllowed: Maximum duration of retention allowed from the DRD
+      control. This comes from the DRD control where users set a max TTL for
+      their data. For example, suppose that a user set the max TTL for a Cloud
+      Storage bucket to 90 days. However, an object in that bucket is 100 days
+      old. In this case, a DataRetentionDeletionEvent will be generated for
+      that Cloud Storage bucket, and the max_retention_allowed is 90 days.
+  """
+
+  class EventTypeValueValuesEnum(_messages.Enum):
+    r"""Type of the DRD event.
+
+    Values:
+      EVENT_TYPE_UNSPECIFIED: Unspecified event type.
+      EVENT_TYPE_MAX_TTL_EXCEEDED: The maximum retention time has been
+        exceeded.
+    """
+    EVENT_TYPE_UNSPECIFIED = 0
+    EVENT_TYPE_MAX_TTL_EXCEEDED = 1
+
+  dataObjectCount = _messages.IntegerField(1)
+  eventDetectionTime = _messages.StringField(2)
+  eventType = _messages.EnumField('EventTypeValueValuesEnum', 3)
+  maxRetentionAllowed = _messages.StringField(4)
+
+
 class GoogleCloudSecuritycenterV2Database(_messages.Message):
   r"""Represents database access information, such as queries. A database may
   be a sub-resource of an instance (as in the case of Cloud SQL instances or
@@ -4222,6 +4344,18 @@ class GoogleCloudSecuritycenterV2Detection(_messages.Message):
 
   binary = _messages.StringField(1)
   percentPagesMatched = _messages.FloatField(2)
+
+
+class GoogleCloudSecuritycenterV2Disk(_messages.Message):
+  r"""Contains information about the disk associated with the finding.
+
+  Fields:
+    name: The name of the disk, for example,
+      "https://www.googleapis.com/compute/v1/projects/project-id/zones/zone-
+      id/disks/disk-id".
+  """
+
+  name = _messages.StringField(1)
 
 
 class GoogleCloudSecuritycenterV2DiskPath(_messages.Message):
@@ -4455,8 +4589,11 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
       Security Command Center.
     dataAccessEvents: Data access events associated with the finding.
     dataFlowEvents: Data flow events associated with the finding.
+    dataRetentionDeletionEvents: Data retention deletion events associated
+      with the finding.
     database: Database associated with the finding.
     description: Contains more details about the finding.
+    disk: Disk associated with the finding.
     eventTime: The time the finding was first detected. If an existing finding
       is updated, then this is the time the update occurred. For example, if
       the finding represents an open firewall, this property captures the time
@@ -4767,42 +4904,44 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
   createTime = _messages.StringField(14)
   dataAccessEvents = _messages.MessageField('GoogleCloudSecuritycenterV2DataAccessEvent', 15, repeated=True)
   dataFlowEvents = _messages.MessageField('GoogleCloudSecuritycenterV2DataFlowEvent', 16, repeated=True)
-  database = _messages.MessageField('GoogleCloudSecuritycenterV2Database', 17)
-  description = _messages.StringField(18)
-  eventTime = _messages.StringField(19)
-  exfiltration = _messages.MessageField('GoogleCloudSecuritycenterV2Exfiltration', 20)
-  externalSystems = _messages.MessageField('ExternalSystemsValue', 21)
-  externalUri = _messages.StringField(22)
-  files = _messages.MessageField('GoogleCloudSecuritycenterV2File', 23, repeated=True)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 24)
-  groupMemberships = _messages.MessageField('GoogleCloudSecuritycenterV2GroupMembership', 25, repeated=True)
-  iamBindings = _messages.MessageField('GoogleCloudSecuritycenterV2IamBinding', 26, repeated=True)
-  indicator = _messages.MessageField('GoogleCloudSecuritycenterV2Indicator', 27)
-  kernelRootkit = _messages.MessageField('GoogleCloudSecuritycenterV2KernelRootkit', 28)
-  kubernetes = _messages.MessageField('GoogleCloudSecuritycenterV2Kubernetes', 29)
-  loadBalancers = _messages.MessageField('GoogleCloudSecuritycenterV2LoadBalancer', 30, repeated=True)
-  logEntries = _messages.MessageField('GoogleCloudSecuritycenterV2LogEntry', 31, repeated=True)
-  mitreAttack = _messages.MessageField('GoogleCloudSecuritycenterV2MitreAttack', 32)
-  moduleName = _messages.StringField(33)
-  mute = _messages.EnumField('MuteValueValuesEnum', 34)
-  muteInfo = _messages.MessageField('GoogleCloudSecuritycenterV2MuteInfo', 35)
-  muteInitiator = _messages.StringField(36)
-  muteUpdateTime = _messages.StringField(37)
-  name = _messages.StringField(38)
-  nextSteps = _messages.StringField(39)
-  notebook = _messages.MessageField('GoogleCloudSecuritycenterV2Notebook', 40)
-  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 41, repeated=True)
-  parent = _messages.StringField(42)
-  parentDisplayName = _messages.StringField(43)
-  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 44, repeated=True)
-  resourceName = _messages.StringField(45)
-  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 46)
-  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 47)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 48)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 49)
-  state = _messages.EnumField('StateValueValuesEnum', 50)
-  toxicCombination = _messages.MessageField('GoogleCloudSecuritycenterV2ToxicCombination', 51)
-  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 52)
+  dataRetentionDeletionEvents = _messages.MessageField('GoogleCloudSecuritycenterV2DataRetentionDeletionEvent', 17, repeated=True)
+  database = _messages.MessageField('GoogleCloudSecuritycenterV2Database', 18)
+  description = _messages.StringField(19)
+  disk = _messages.MessageField('GoogleCloudSecuritycenterV2Disk', 20)
+  eventTime = _messages.StringField(21)
+  exfiltration = _messages.MessageField('GoogleCloudSecuritycenterV2Exfiltration', 22)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 23)
+  externalUri = _messages.StringField(24)
+  files = _messages.MessageField('GoogleCloudSecuritycenterV2File', 25, repeated=True)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 26)
+  groupMemberships = _messages.MessageField('GoogleCloudSecuritycenterV2GroupMembership', 27, repeated=True)
+  iamBindings = _messages.MessageField('GoogleCloudSecuritycenterV2IamBinding', 28, repeated=True)
+  indicator = _messages.MessageField('GoogleCloudSecuritycenterV2Indicator', 29)
+  kernelRootkit = _messages.MessageField('GoogleCloudSecuritycenterV2KernelRootkit', 30)
+  kubernetes = _messages.MessageField('GoogleCloudSecuritycenterV2Kubernetes', 31)
+  loadBalancers = _messages.MessageField('GoogleCloudSecuritycenterV2LoadBalancer', 32, repeated=True)
+  logEntries = _messages.MessageField('GoogleCloudSecuritycenterV2LogEntry', 33, repeated=True)
+  mitreAttack = _messages.MessageField('GoogleCloudSecuritycenterV2MitreAttack', 34)
+  moduleName = _messages.StringField(35)
+  mute = _messages.EnumField('MuteValueValuesEnum', 36)
+  muteInfo = _messages.MessageField('GoogleCloudSecuritycenterV2MuteInfo', 37)
+  muteInitiator = _messages.StringField(38)
+  muteUpdateTime = _messages.StringField(39)
+  name = _messages.StringField(40)
+  nextSteps = _messages.StringField(41)
+  notebook = _messages.MessageField('GoogleCloudSecuritycenterV2Notebook', 42)
+  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 43, repeated=True)
+  parent = _messages.StringField(44)
+  parentDisplayName = _messages.StringField(45)
+  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 46, repeated=True)
+  resourceName = _messages.StringField(47)
+  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 48)
+  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 49)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 50)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 51)
+  state = _messages.EnumField('StateValueValuesEnum', 52)
+  toxicCombination = _messages.MessageField('GoogleCloudSecuritycenterV2ToxicCombination', 53)
+  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 54)
 
 
 class GoogleCloudSecuritycenterV2Folder(_messages.Message):
@@ -4907,6 +5046,333 @@ class GoogleCloudSecuritycenterV2Indicator(_messages.Message):
   ipAddresses = _messages.StringField(2, repeated=True)
   signatures = _messages.MessageField('GoogleCloudSecuritycenterV2ProcessSignature', 3, repeated=True)
   uris = _messages.StringField(4, repeated=True)
+
+
+class GoogleCloudSecuritycenterV2Issue(_messages.Message):
+  r"""Security Command Center Issue.
+
+  Enums:
+    IssueTypeValueValuesEnum: The type of the issue.
+    SeverityValueValuesEnum: The severity of the issue.
+    StateValueValuesEnum: Output only. The state of the issue.
+
+  Fields:
+    createTime: Output only. The time the issue was created.
+    description: The description of the issue in Markdown format.
+    detection: The finding category or rule name that generated the issue.
+    domains: The domains of the issue.
+    exposureScore: The exposure score of the issue.
+    issueType: The type of the issue.
+    lastObservationTime: The time the issue was last observed.
+    mute: The mute information of the issue.
+    name: Identifier. The name of the issue. Format:
+      organizations/{organization}/locations/{location}/issues/{issue}
+    primaryResource: The primary resource associated with the issue.
+    relatedFindings: The findings related to the issue.
+    remediations: Approaches to remediate the issue in Markdown format.
+    secondaryResources: Additional resources associated with the issue.
+    securityContexts: The security context of the issue.
+    severity: The severity of the issue.
+    state: Output only. The state of the issue.
+    updateTime: Output only. The time the issue was last updated.
+  """
+
+  class IssueTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the issue.
+
+    Values:
+      ISSUE_TYPE_UNSPECIFIED: Unspecified issue type.
+      CHOKEPOINT: Chokepoint issue type.
+      TOXIC_COMBINATION: Toxic combination issue type.
+      INSIGHT: Insight issue type.
+    """
+    ISSUE_TYPE_UNSPECIFIED = 0
+    CHOKEPOINT = 1
+    TOXIC_COMBINATION = 2
+    INSIGHT = 3
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""The severity of the issue.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Unspecified severity.
+      CRITICAL: Critical severity.
+      HIGH: High severity.
+      MEDIUM: Medium severity.
+      LOW: Low severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    CRITICAL = 1
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the issue.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      ACTIVE: Active state.
+      INACTIVE: Inactive state.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    INACTIVE = 2
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  detection = _messages.StringField(3)
+  domains = _messages.MessageField('GoogleCloudSecuritycenterV2IssueDomain', 4, repeated=True)
+  exposureScore = _messages.FloatField(5)
+  issueType = _messages.EnumField('IssueTypeValueValuesEnum', 6)
+  lastObservationTime = _messages.StringField(7)
+  mute = _messages.MessageField('GoogleCloudSecuritycenterV2IssueMute', 8)
+  name = _messages.StringField(9)
+  primaryResource = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResource', 10)
+  relatedFindings = _messages.MessageField('GoogleCloudSecuritycenterV2IssueFinding', 11, repeated=True)
+  remediations = _messages.StringField(12, repeated=True)
+  secondaryResources = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResource', 13, repeated=True)
+  securityContexts = _messages.MessageField('GoogleCloudSecuritycenterV2IssueSecurityContext', 14, repeated=True)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  updateTime = _messages.StringField(17)
+
+
+class GoogleCloudSecuritycenterV2IssueDomain(_messages.Message):
+  r"""The domains of an issue.
+
+  Enums:
+    DomainCategoryValueValuesEnum: The domain category of the issue.
+
+  Fields:
+    domainCategory: The domain category of the issue.
+  """
+
+  class DomainCategoryValueValuesEnum(_messages.Enum):
+    r"""The domain category of the issue.
+
+    Values:
+      DOMAIN_CATEGORY_UNSPECIFIED: Unspecified domain category.
+      AI: Issues in the AI domain.
+      CODE: Issues in the code domain.
+      CONTAINER: Issues in the container domain.
+      DATA: Issues in the data domain.
+      IDENTITY_AND_ACCESS: Issues in the identity and access domain.
+      VULNERABILITY: Issues in the vulnerability domain.
+    """
+    DOMAIN_CATEGORY_UNSPECIFIED = 0
+    AI = 1
+    CODE = 2
+    CONTAINER = 3
+    DATA = 4
+    IDENTITY_AND_ACCESS = 5
+    VULNERABILITY = 6
+
+  domainCategory = _messages.EnumField('DomainCategoryValueValuesEnum', 1)
+
+
+class GoogleCloudSecuritycenterV2IssueFinding(_messages.Message):
+  r"""Finding related to an issue.
+
+  Fields:
+    cve: The CVE of the finding.
+    name: The name of the finding.
+    securityBulletin: The security bulletin of the finding.
+  """
+
+  cve = _messages.MessageField('GoogleCloudSecuritycenterV2IssueFindingCve', 1)
+  name = _messages.StringField(2)
+  securityBulletin = _messages.MessageField('GoogleCloudSecuritycenterV2IssueFindingSecurityBulletin', 3)
+
+
+class GoogleCloudSecuritycenterV2IssueFindingCve(_messages.Message):
+  r"""The CVE of the finding.
+
+  Fields:
+    name: The CVE name.
+  """
+
+  name = _messages.StringField(1)
+
+
+class GoogleCloudSecuritycenterV2IssueFindingSecurityBulletin(_messages.Message):
+  r"""The security bulletin of the finding.
+
+  Fields:
+    name: The security bulletin name.
+  """
+
+  name = _messages.StringField(1)
+
+
+class GoogleCloudSecuritycenterV2IssueMute(_messages.Message):
+  r"""The mute information of the issue.
+
+  Enums:
+    MuteStateValueValuesEnum: Output only. The mute state of the issue.
+
+  Fields:
+    muteInitiator: The email address of the user who last changed the mute
+      state of the issue.
+    muteReason: The user-provided reason for muting the issue.
+    muteState: Output only. The mute state of the issue.
+    muteUpdateTime: The time the issue was muted.
+  """
+
+  class MuteStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The mute state of the issue.
+
+    Values:
+      MUTE_STATE_UNSPECIFIED: Unspecified mute state.
+      NOT_MUTED: Not muted.
+      MUTED: Muted.
+    """
+    MUTE_STATE_UNSPECIFIED = 0
+    NOT_MUTED = 1
+    MUTED = 2
+
+  muteInitiator = _messages.StringField(1)
+  muteReason = _messages.StringField(2)
+  muteState = _messages.EnumField('MuteStateValueValuesEnum', 3)
+  muteUpdateTime = _messages.StringField(4)
+
+
+class GoogleCloudSecuritycenterV2IssueResource(_messages.Message):
+  r"""A resource associated with the an issue.
+
+  Enums:
+    CloudProviderValueValuesEnum: The cloud provider of the resource
+      associated with the issue.
+
+  Fields:
+    awsMetadata: The AWS metadata of the resource associated with the issue.
+      Only populated for AWS resources.
+    azureMetadata: The Azure metadata of the resource associated with the
+      issue. Only populated for Azure resources.
+    cloudProvider: The cloud provider of the resource associated with the
+      issue.
+    displayName: The resource-type specific display name of the resource
+      associated with the issue.
+    googleCloudMetadata: The Google Cloud metadata of the resource associated
+      with the issue. Only populated for Google Cloud resources.
+    name: The full resource name of the resource associated with the issue.
+    type: The type of the resource associated with the issue.
+  """
+
+  class CloudProviderValueValuesEnum(_messages.Enum):
+    r"""The cloud provider of the resource associated with the issue.
+
+    Values:
+      CLOUD_PROVIDER_UNSPECIFIED: Unspecified cloud provider.
+      GOOGLE_CLOUD: Google Cloud.
+      AMAZON_WEB_SERVICES: Amazon Web Services.
+      MICROSOFT_AZURE: Microsoft Azure.
+    """
+    CLOUD_PROVIDER_UNSPECIFIED = 0
+    GOOGLE_CLOUD = 1
+    AMAZON_WEB_SERVICES = 2
+    MICROSOFT_AZURE = 3
+
+  awsMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceAwsMetadata', 1)
+  azureMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceAzureMetadata', 2)
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 3)
+  displayName = _messages.StringField(4)
+  googleCloudMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceGoogleCloudMetadata', 5)
+  name = _messages.StringField(6)
+  type = _messages.StringField(7)
+
+
+class GoogleCloudSecuritycenterV2IssueResourceAwsMetadata(_messages.Message):
+  r"""The AWS metadata of a resource associated with an issue.
+
+  Fields:
+    account: The AWS account of the resource associated with the issue.
+  """
+
+  account = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceAwsMetadataAwsAccount', 1)
+
+
+class GoogleCloudSecuritycenterV2IssueResourceAwsMetadataAwsAccount(_messages.Message):
+  r"""The AWS account of the resource associated with the issue.
+
+  Fields:
+    id: The AWS account ID of the resource associated with the issue.
+    name: The AWS account name of the resource associated with the issue.
+  """
+
+  id = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
+class GoogleCloudSecuritycenterV2IssueResourceAzureMetadata(_messages.Message):
+  r"""The Azure metadata of a resource associated with an issue.
+
+  Fields:
+    subscription: The Azure subscription of the resource associated with the
+      issue.
+  """
+
+  subscription = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceAzureMetadataAzureSubscription', 1)
+
+
+class GoogleCloudSecuritycenterV2IssueResourceAzureMetadataAzureSubscription(_messages.Message):
+  r"""The Azure subscription of the resource associated with the issue.
+
+  Fields:
+    displayName: The Azure subscription display name of the resource
+      associated with the issue.
+    id: The Azure subscription ID of the resource associated with the issue.
+  """
+
+  displayName = _messages.StringField(1)
+  id = _messages.StringField(2)
+
+
+class GoogleCloudSecuritycenterV2IssueResourceGoogleCloudMetadata(_messages.Message):
+  r"""Google Cloud metadata of a resource associated with an issue.
+
+  Fields:
+    projectId: The project ID that the resource associated with the issue
+      belongs to.
+  """
+
+  projectId = _messages.StringField(1)
+
+
+class GoogleCloudSecuritycenterV2IssueSecurityContext(_messages.Message):
+  r"""Security context associated with an issue.
+
+  Fields:
+    aggregatedCount: The aggregated count of the security context.
+    context: The context of the security context.
+  """
+
+  aggregatedCount = _messages.MessageField('GoogleCloudSecuritycenterV2IssueSecurityContextAggregatedCount', 1)
+  context = _messages.MessageField('GoogleCloudSecuritycenterV2IssueSecurityContextContext', 2)
+
+
+class GoogleCloudSecuritycenterV2IssueSecurityContextAggregatedCount(_messages.Message):
+  r"""Aggregated count of a security context.
+
+  Fields:
+    key: Aggregation key.
+    value: Aggregation value.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudSecuritycenterV2IssueSecurityContextContext(_messages.Message):
+  r"""Context of a security context.
+
+  Fields:
+    type: Context type.
+    values: Context values.
+  """
+
+  type = _messages.StringField(1)
+  values = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudSecuritycenterV2KernelRootkit(_messages.Message):
@@ -5906,10 +6372,11 @@ class GoogleCloudSecuritycenterV2ResourceValueConfig(_messages.Message):
       Data Protection finding to resource values. This mapping can only be
       used in combination with a resource_type that is related to BigQuery,
       e.g. "bigquery.googleapis.com/Dataset".
-    tagValues: Tag values combined with `AND` to check against. Values in the
-      form "tagValues/123" Example: `[ "tagValues/123", "tagValues/456",
-      "tagValues/789" ]` https://cloud.google.com/resource-
-      manager/docs/tags/tags-creating-and-managing
+    tagValues: Tag values combined with `AND` to check against. For Google
+      Cloud resources, they are tag value IDs in the form of "tagValues/123".
+      Example: `[ "tagValues/123", "tagValues/456", "tagValues/789" ]`
+      https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-
+      managing
     updateTime: Output only. Timestamp this resource value configuration was
       last updated.
   """
@@ -8911,6 +9378,31 @@ class SecuritycenterOrganizationsAssetsUpdateSecurityMarksRequest(_messages.Mess
   googleCloudSecuritycenterV2SecurityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class SecuritycenterOrganizationsAttackPathsListRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsAttackPathsListRequest object.
+
+  Fields:
+    filter: The filter expression that filters the attack path in the
+      response. Supported fields: * `valued_resources` supports =
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last `ListAttackPathsResponse`;
+      indicates that this is a continuation of a prior `ListAttackPaths` call,
+      and that the system should return the next page of data.
+    parent: Required. Name of parent to list attack paths. Valid formats:
+      `organizations/{organization}`,
+      `organizations/{organization}/simulations/{simulation}` `organizations/{
+      organization}/simulations/{simulation}/attackExposureResults/{attack_exp
+      osure_result_v2}` `organizations/{organization}/simulations/{simulation}
+      /valuedResources/{valued_resource}`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class SecuritycenterOrganizationsFindingsBulkMuteRequest(_messages.Message):

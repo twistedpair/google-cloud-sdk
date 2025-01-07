@@ -51,6 +51,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
     self.projects_locations_entitlements = self.ProjectsLocationsEntitlementsService(self)
     self.projects_locations_giVersions = self.ProjectsLocationsGiVersionsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_systemVersions = self.ProjectsLocationsSystemVersionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -300,6 +301,33 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Restart(self, request, global_params=None):
+      r"""Restarts an Autonomous Database.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsAutonomousDatabasesRestartRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Restart')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Restart.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/autonomousDatabases/{autonomousDatabasesId}:restart',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.autonomousDatabases.restart',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:restart',
+        request_field='restartAutonomousDatabaseRequest',
+        request_type_name='OracledatabaseProjectsLocationsAutonomousDatabasesRestartRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Restore(self, request, global_params=None):
       r"""Restores a single Autonomous Database.
 
@@ -323,6 +351,87 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+name}:restore',
         request_field='restoreAutonomousDatabaseRequest',
         request_type_name='OracledatabaseProjectsLocationsAutonomousDatabasesRestoreRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Start(self, request, global_params=None):
+      r"""Starts an Autonomous Database.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsAutonomousDatabasesStartRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Start')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Start.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/autonomousDatabases/{autonomousDatabasesId}:start',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.autonomousDatabases.start',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:start',
+        request_field='startAutonomousDatabaseRequest',
+        request_type_name='OracledatabaseProjectsLocationsAutonomousDatabasesStartRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Stop(self, request, global_params=None):
+      r"""Stops an Autonomous Database.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsAutonomousDatabasesStopRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Stop')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Stop.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/autonomousDatabases/{autonomousDatabasesId}:stop',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.autonomousDatabases.stop',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:stop',
+        request_field='stopAutonomousDatabaseRequest',
+        request_type_name='OracledatabaseProjectsLocationsAutonomousDatabasesStopRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Switchover(self, request, global_params=None):
+      r"""Initiates a switchover of specified autonomous deatabase to the associated peer database.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsAutonomousDatabasesSwitchoverRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Switchover')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Switchover.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/autonomousDatabases/{autonomousDatabasesId}:switchover',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.autonomousDatabases.switchover',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:switchover',
+        request_field='switchoverAutonomousDatabaseRequest',
+        request_type_name='OracledatabaseProjectsLocationsAutonomousDatabasesSwitchoverRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -1012,7 +1121,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (OracledatabaseProjectsLocationsOperationsCancelRequest) input message
@@ -1116,6 +1225,70 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='OracledatabaseProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSystemVersionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_systemVersions resource."""
+
+    _NAME = 'projects_locations_systemVersions'
+
+    def __init__(self, client):
+      super(OracledatabaseV1alpha.ProjectsLocationsSystemVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a system version.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsSystemVersionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SystemVersion) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/systemVersions/{systemVersionsId}',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.systemVersions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsSystemVersionsGetRequest',
+        response_type_name='SystemVersion',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the system versions available for the project and location.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsSystemVersionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSystemVersionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/systemVersions',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.systemVersions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/systemVersions',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsSystemVersionsListRequest',
+        response_type_name='ListSystemVersionsResponse',
         supports_download=False,
     )
 

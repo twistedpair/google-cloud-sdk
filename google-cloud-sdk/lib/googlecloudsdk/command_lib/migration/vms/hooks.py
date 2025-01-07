@@ -99,6 +99,19 @@ def FixCreateMachineImageImportRequest(ref, args, req):
   ):
     req.imageImport.machineImageTargetDefaults.shieldedInstanceConfig = None
 
+  if args.kms_key:
+    req.imageImport.machineImageTargetDefaults.encryption = (
+        GetEncryptionTransform(
+            req.imageImport.machineImageTargetDefaults.encryption
+            )
+        )
+    req.imageImport.machineImageTargetDefaults.encryption.kmsKey = args.kms_key
+
+    req.imageImport.encryption = (
+        GetEncryptionTransform(req.imageImport.encryption)
+        )
+    req.imageImport.encryption.kmsKey = args.kms_key
+
   FixTargetDetailsCommonFields(
       ref, args, req.imageImport.machineImageTargetDefaults
   )

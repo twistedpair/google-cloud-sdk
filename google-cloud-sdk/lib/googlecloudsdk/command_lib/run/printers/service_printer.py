@@ -46,10 +46,18 @@ class ServicePrinter(cp.CustomPrinterBase):
 
   def _RevisionPrinters(self, record):
     """Adds printers for the revision."""
+    manual_scaling_enabled = False
+    if (
+        record.annotations.get(service.SERVICE_SCALING_MODE_ANNOTATION, '')
+        == 'manual'
+    ):
+      manual_scaling_enabled = True
     return cp.Lines([
         self._GetRevisionHeader(record),
         k8s_util.GetLabels(record.template.labels),
-        revision_printer.RevisionPrinter.TransformSpec(record.template),
+        revision_printer.RevisionPrinter.TransformSpec(
+            record.template, manual_scaling_enabled
+        ),
     ])
 
   def _GetServiceSettings(self, record):
@@ -57,7 +65,8 @@ class ServicePrinter(cp.CustomPrinterBase):
     labels = [
         cp.Labeled([
             ('Binary Authorization', k8s_util.GetBinAuthzPolicy(record)),
-            ('Service-level Min Instances', GetServiceMinInstances(record)),
+            ('Service-Level Min Instances', GetServiceMinInstances(record)),
+            ('Service-Level Max Instances', GetServiceMaxInstances(record)),
         ])
     ]
 
@@ -76,10 +85,33 @@ class ServicePrinter(cp.CustomPrinterBase):
           ('Description', description),
       ])
       labels.append(description_label)
+    scaling_mode = self._GetScalingMode(record)
+    if scaling_mode:
+      scaling_mode_label = cp.Labeled([
+          ('Scaling', scaling_mode),
+      ])
+      labels.append(scaling_mode_label)
     return cp.Section(labels)
 
   def BuildHeader(self, record):
     return k8s_util.BuildHeader(record)
+
+  def _GetScalingMode(self, record):
+    """Returns the scaling mode of the service."""
+    scaling_mode = record.annotations.get(
+        service.SERVICE_SCALING_MODE_ANNOTATION, ''
+    )
+
+    if scaling_mode == 'manual':
+      instance_count = record.annotations.get(
+          service.MANUAL_INSTANCE_COUNT_ANNOTATION, ''
+      )
+      return 'Manual (Instances: %s)' % instance_count
+    else:
+      instance_count = record.annotations.get(
+          service.SERVICE_MIN_SCALE_ANNOTATION, '0'
+      )
+      return 'Auto (Min: %s)' % instance_count
 
   def Transform(self, record):
     """Transform a service into the output structure of marker classes."""
@@ -105,3 +137,7 @@ class MultiRegionServicePrinter(ServicePrinter):
 
 def GetServiceMinInstances(record):
   return record.annotations.get(service.SERVICE_MIN_SCALE_ANNOTATION, '')
+
+
+def GetServiceMaxInstances(record):
+  return record.annotations.get(service.SERVICE_MAX_SCALE_ANNOTATION, '')

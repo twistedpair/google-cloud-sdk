@@ -65,6 +65,8 @@ class Cluster(_messages.Message):
   r"""A Google Distributed Cloud Edge Kubernetes cluster.
 
   Enums:
+    ClusterTypeValueValuesEnum: Optional. Cluster Type to specify if the
+      cluster is BAREMETAL or VIRTUAL
     ReleaseChannelValueValuesEnum: Optional. The release channel a cluster is
       subscribed to.
     StatusValueValuesEnum: Output only. The current status of the cluster.
@@ -77,6 +79,8 @@ class Cluster(_messages.Message):
       managed by GEC.
     clusterCaCertificate: Output only. The PEM-encoded public certificate of
       the cluster's CA.
+    clusterType: Optional. Cluster Type to specify if the cluster is BAREMETAL
+      or VIRTUAL
     connectionState: Output only. The current connection state of the cluster.
     controlPlane: Optional. The configuration of the cluster control plane.
     controlPlaneEncryption: Optional. Remote control plane disk encryption
@@ -118,6 +122,19 @@ class Cluster(_messages.Message):
     upgradeSettings: Optional. Upgrade settings for the cluster.
     zoneStorageEncryption: Optional. The zone storage encryption configuration
   """
+
+  class ClusterTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Cluster Type to specify if the cluster is BAREMETAL or
+    VIRTUAL
+
+    Values:
+      CLUSTER_TYPE_UNSPECIFIED: Unspecified cluster type
+      BAREMETAL: Cluster is a baremetal cluster
+      VIRTUAL: Cluster is a virtual cluster
+    """
+    CLUSTER_TYPE_UNSPECIFIED = 0
+    BAREMETAL = 1
+    VIRTUAL = 2
 
   class ReleaseChannelValueValuesEnum(_messages.Enum):
     r"""Optional. The release channel a cluster is subscribed to.
@@ -178,32 +195,33 @@ class Cluster(_messages.Message):
 
   authorization = _messages.MessageField('Authorization', 1)
   clusterCaCertificate = _messages.StringField(2)
-  connectionState = _messages.MessageField('ConnectionState', 3)
-  controlPlane = _messages.MessageField('ControlPlane', 4)
-  controlPlaneEncryption = _messages.MessageField('ControlPlaneEncryption', 5)
-  controlPlaneVersion = _messages.StringField(6)
-  createTime = _messages.StringField(7)
-  defaultMaxPodsPerNode = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  endpoint = _messages.StringField(9)
-  externalLoadBalancerAddressPools = _messages.MessageField('ExternalLoadBalancerPool', 10, repeated=True)
-  externalLoadBalancerIpv4AddressPools = _messages.StringField(11, repeated=True)
-  externalLoadBalancerIpv6AddressPools = _messages.StringField(12, repeated=True)
-  fleet = _messages.MessageField('Fleet', 13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 15, repeated=True)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 16)
-  name = _messages.StringField(17)
-  networking = _messages.MessageField('ClusterNetworking', 18)
-  nodeVersion = _messages.StringField(19)
-  port = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 21)
-  status = _messages.EnumField('StatusValueValuesEnum', 22)
-  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 23)
-  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 24)
-  targetVersion = _messages.StringField(25)
-  updateTime = _messages.StringField(26)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 27)
-  zoneStorageEncryption = _messages.MessageField('ZoneStorageEncryption', 28)
+  clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 3)
+  connectionState = _messages.MessageField('ConnectionState', 4)
+  controlPlane = _messages.MessageField('ControlPlane', 5)
+  controlPlaneEncryption = _messages.MessageField('ControlPlaneEncryption', 6)
+  controlPlaneVersion = _messages.StringField(7)
+  createTime = _messages.StringField(8)
+  defaultMaxPodsPerNode = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  endpoint = _messages.StringField(10)
+  externalLoadBalancerAddressPools = _messages.MessageField('ExternalLoadBalancerPool', 11, repeated=True)
+  externalLoadBalancerIpv4AddressPools = _messages.StringField(12, repeated=True)
+  externalLoadBalancerIpv6AddressPools = _messages.StringField(13, repeated=True)
+  fleet = _messages.MessageField('Fleet', 14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 16, repeated=True)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 17)
+  name = _messages.StringField(18)
+  networking = _messages.MessageField('ClusterNetworking', 19)
+  nodeVersion = _messages.StringField(20)
+  port = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 22)
+  status = _messages.EnumField('StatusValueValuesEnum', 23)
+  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 24)
+  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 25)
+  targetVersion = _messages.StringField(26)
+  updateTime = _messages.StringField(27)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 28)
+  zoneStorageEncryption = _messages.MessageField('ZoneStorageEncryption', 29)
 
 
 class ClusterNetworking(_messages.Message):
@@ -1232,6 +1250,10 @@ class Machine(_messages.Message):
   r"""A Google Distributed Cloud Edge machine capable of acting as a
   Kubernetes node.
 
+  Enums:
+    PurposeValueValuesEnum: The type of cluster the machine is used for.
+    StatusValueValuesEnum: Output only. The current status of the machine.
+
   Messages:
     LabelsValue: Labels associated with this resource.
 
@@ -1248,10 +1270,37 @@ class Machine(_messages.Message):
       /{node}".
     labels: Labels associated with this resource.
     name: Required. The resource name of the machine.
+    purpose: The type of cluster the machine is used for.
+    status: Output only. The current status of the machine.
     updateTime: Output only. The time when the node pool was last updated.
     version: Output only. The software version of the machine.
     zone: The Google Distributed Cloud Edge zone of this machine.
   """
+
+  class PurposeValueValuesEnum(_messages.Enum):
+    r"""The type of cluster the machine is used for.
+
+    Values:
+      PURPOSE_UNSPECIFIED: Unspecified purpose.
+      VIRTUALIZED_WORKLOAD: Machine is used for virtual workload.
+      BAREMETAL_CLUSTER: Machine is used for a baremetal user cluster.
+    """
+    PURPOSE_UNSPECIFIED = 0
+    VIRTUALIZED_WORKLOAD = 1
+    BAREMETAL_CLUSTER = 2
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Output only. The current status of the machine.
+
+    Values:
+      STATUS_UNSPECIFIED: Status unknown.
+      READY: The machine is ready to host a node. This is the default.
+      DISABLED_FOR_REPAIR: The machine has been disabled for repair by adding
+        1 or more disable claims.
+    """
+    STATUS_UNSPECIFIED = 0
+    READY = 1
+    DISABLED_FOR_REPAIR = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1282,9 +1331,11 @@ class Machine(_messages.Message):
   hostedNode = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
-  version = _messages.StringField(7)
-  zone = _messages.StringField(8)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 6)
+  status = _messages.EnumField('StatusValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
+  version = _messages.StringField(9)
+  zone = _messages.StringField(10)
 
 
 class MaintenanceEvent(_messages.Message):

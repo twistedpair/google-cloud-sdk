@@ -62,6 +62,8 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
     self.projects_locations_multicastGroupConsumerActivations = self.ProjectsLocationsMulticastGroupConsumerActivationsService(self)
     self.projects_locations_multicastGroupDefinitions = self.ProjectsLocationsMulticastGroupDefinitionsService(self)
     self.projects_locations_multicastGroupProducerActivations = self.ProjectsLocationsMulticastGroupProducerActivationsService(self)
+    self.projects_locations_multicastGroupRangeActivations = self.ProjectsLocationsMulticastGroupRangeActivationsService(self)
+    self.projects_locations_multicastGroupRanges = self.ProjectsLocationsMulticastGroupRangesService(self)
     self.projects_locations_multicastGroups = self.ProjectsLocationsMulticastGroupsService(self)
     self.projects_locations_multicastProducerAssociations = self.ProjectsLocationsMulticastProducerAssociationsService(self)
     self.projects_locations_observabilityPolicies = self.ProjectsLocationsObservabilityPoliciesService(self)
@@ -3438,6 +3440,296 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsMulticastGroupRangeActivationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_multicastGroupRangeActivations resource."""
+
+    _NAME = 'projects_locations_multicastGroupRangeActivations'
+
+    def __init__(self, client):
+      super(NetworkservicesV1alpha1.ProjectsLocationsMulticastGroupRangeActivationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new multicast group range activation in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMulticastGroupRangeActivationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/multicastGroupRangeActivations',
+        http_method='POST',
+        method_id='networkservices.projects.locations.multicastGroupRangeActivations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['multicastGroupRangeActivationId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/multicastGroupRangeActivations',
+        request_field='multicastGroupRangeActivation',
+        request_type_name='NetworkservicesProjectsLocationsMulticastGroupRangeActivationsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single multicast group range activation.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMulticastGroupRangeActivationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/multicastGroupRangeActivations/{multicastGroupRangeActivationsId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.multicastGroupRangeActivations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsMulticastGroupRangeActivationsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single multicast group range activation.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMulticastGroupRangeActivationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MulticastGroupRangeActivation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/multicastGroupRangeActivations/{multicastGroupRangeActivationsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.multicastGroupRangeActivations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsMulticastGroupRangeActivationsGetRequest',
+        response_type_name='MulticastGroupRangeActivation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists multicast group range activationsin a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMulticastGroupRangeActivationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMulticastGroupRangeActivationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/multicastGroupRangeActivations',
+        http_method='GET',
+        method_id='networkservices.projects.locations.multicastGroupRangeActivations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/multicastGroupRangeActivations',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsMulticastGroupRangeActivationsListRequest',
+        response_type_name='ListMulticastGroupRangeActivationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single multicast group range activation.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMulticastGroupRangeActivationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/multicastGroupRangeActivations/{multicastGroupRangeActivationsId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.multicastGroupRangeActivations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='multicastGroupRangeActivation',
+        request_type_name='NetworkservicesProjectsLocationsMulticastGroupRangeActivationsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsMulticastGroupRangesService(base_api.BaseApiService):
+    """Service class for the projects_locations_multicastGroupRanges resource."""
+
+    _NAME = 'projects_locations_multicastGroupRanges'
+
+    def __init__(self, client):
+      super(NetworkservicesV1alpha1.ProjectsLocationsMulticastGroupRangesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new multicast group range in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMulticastGroupRangesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/multicastGroupRanges',
+        http_method='POST',
+        method_id='networkservices.projects.locations.multicastGroupRanges.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['multicastGroupRangeId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/multicastGroupRanges',
+        request_field='multicastGroupRange',
+        request_type_name='NetworkservicesProjectsLocationsMulticastGroupRangesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single multicast group range.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMulticastGroupRangesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/multicastGroupRanges/{multicastGroupRangesId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.multicastGroupRanges.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsMulticastGroupRangesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single multicast group range.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMulticastGroupRangesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MulticastGroupRange) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/multicastGroupRanges/{multicastGroupRangesId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.multicastGroupRanges.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsMulticastGroupRangesGetRequest',
+        response_type_name='MulticastGroupRange',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists multicast group ranges in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMulticastGroupRangesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMulticastGroupRangesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/multicastGroupRanges',
+        http_method='GET',
+        method_id='networkservices.projects.locations.multicastGroupRanges.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/multicastGroupRanges',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsMulticastGroupRangesListRequest',
+        response_type_name='ListMulticastGroupRangesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single multicast group range.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMulticastGroupRangesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/multicastGroupRanges/{multicastGroupRangesId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.multicastGroupRanges.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='multicastGroupRange',
+        request_type_name='NetworkservicesProjectsLocationsMulticastGroupRangesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsMulticastGroupsService(base_api.BaseApiService):
     """Service class for the projects_locations_multicastGroups resource."""
 
@@ -3884,7 +4176,7 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (NetworkservicesProjectsLocationsOperationsCancelRequest) input message

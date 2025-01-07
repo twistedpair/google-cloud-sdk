@@ -19,10 +19,12 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import encoding
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.database_migration import api_util
 from googlecloudsdk.api_lib.database_migration import conversion_workspaces
 from googlecloudsdk.api_lib.database_migration import filter_rewrite
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -52,6 +54,12 @@ class MigrationJobsClient(object):
     self.client = api_util.GetClientInstance(release_track)
     self.messages = api_util.GetMessagesModule(release_track)
     self._service = self.client.projects_locations_migrationJobs
+    if release_track == base.ReleaseTrack.GA:
+      self._service_objects = (
+          self.client.projects_locations_migrationJobs_objects
+      )
+    else:
+      self._service_objects = None
     self.resource_parser = api_util.GetResourceParser(release_track)
     self.release_track = release_track
 
@@ -63,7 +71,8 @@ class MigrationJobsClient(object):
       return
     try:
       storage_util.ObjectReference.FromArgument(
-          args.dump_path, allow_empty_object=False)
+          args.dump_path, allow_empty_object=False
+      )
     except Exception as e:
       raise exceptions.InvalidArgumentException('dump-path', six.text_type(e))
 
@@ -139,10 +148,7 @@ class MigrationJobsClient(object):
 
   def _GetReverseSshConnectivity(self, args):
     return self.messages.ReverseSshConnectivity(
-        vm=args.vm,
-        vmIp=args.vm_ip,
-        vmPort=args.vm_port,
-        vpc=args.vpc
+        vm=args.vm, vmIp=args.vm_ip, vmPort=args.vm_port, vpc=args.vpc
     )
 
   def _GetStaticIpConnectivity(self):
@@ -156,7 +162,7 @@ class MigrationJobsClient(object):
     update_result = labels_util.Diff(
         additions=add_labels,
         subtractions=remove_labels,
-        clear=args.clear_labels
+        clear=args.clear_labels,
     ).Apply(value_type)
     if update_result.needs_update:
       migration_job.labels = update_result.labels
@@ -436,7 +442,8 @@ class MigrationJobsClient(object):
 
     if args.IsSpecified('peer_vpc'):
       migration_job.vpcPeeringConnectivity = self._GetVpcPeeringConnectivity(
-          args)
+          args
+      )
       migration_job.reverseSshConnectivity = None
       migration_job.staticIpConnectivity = None
       return
@@ -444,7 +451,8 @@ class MigrationJobsClient(object):
     for field in self._REVERSE_MAP:
       if args.IsSpecified(field):
         migration_job.reverseSshConnectivity = self._GetReverseSshConnectivity(
-            args)
+            args
+        )
         migration_job.vpcPeeringConnectivity = None
         migration_job.staticIpConnectivity = None
         return
@@ -496,13 +504,18 @@ class MigrationJobsClient(object):
 
   def _GetUpdateMask(self, args):
     """Returns update mask for specified fields."""
-    update_fields = [resource_property.ConvertToCamelCase(field)
-                     for field in sorted(self._FIELDS_MAP)
-                     if args.IsSpecified(field)]
-    update_fields.extend(
-        ['reverseSshConnectivity.{0}'.format(
-            resource_property.ConvertToCamelCase(field))
-         for field in sorted(self._REVERSE_MAP) if args.IsSpecified(field)])
+    update_fields = [
+        resource_property.ConvertToCamelCase(field)
+        for field in sorted(self._FIELDS_MAP)
+        if args.IsSpecified(field)
+    ]
+    update_fields.extend([
+        'reverseSshConnectivity.{0}'.format(
+            resource_property.ConvertToCamelCase(field)
+        )
+        for field in sorted(self._REVERSE_MAP)
+        if args.IsSpecified(field)
+    ])
     if args.IsSpecified('peer_vpc'):
       update_fields.append('vpcPeeringConnectivity.vpc')
     if args.IsKnownAndSpecified('dump_parallel_level'):
@@ -536,7 +549,7 @@ class MigrationJobsClient(object):
       )
     if args.IsKnownAndSpecified('databases_filter'):
       update_fields.append('objectsConfig.sourceObjectsConfig')
-    return  update_fields
+    return update_fields
 
   def _GetDumpFlags(self, dump_flags):
     """Returns the dump flags for the migration job."""
@@ -551,7 +564,8 @@ class MigrationJobsClient(object):
     return self.messages.DumpFlags(dumpFlags=dump_flags_list)
 
   def _GetUpdatedMigrationJob(
-      self, migration_job, source_ref, destination_ref, args):
+      self, migration_job, source_ref, destination_ref, args
+  ):
     """Returns updated migration job and list of updated fields."""
     update_fields = self._GetUpdateMask(args)
     if args.IsSpecified('display_name'):
@@ -651,7 +665,8 @@ class MigrationJobsClient(object):
         migrationJob=migration_job,
         migrationJobId=migration_job_id,
         parent=parent_ref,
-        requestId=request_id)
+        requestId=request_id,
+    )
 
     return self._service.Create(create_req)
 
@@ -659,14 +674,13 @@ class MigrationJobsClient(object):
     """Updates a migration job.
 
     Args:
-      name: str, the reference of the migration job to
-          update.
+      name: str, the reference of the migration job to update.
       source_ref: a Resource reference to a
         datamigration.projects.locations.connectionProfiles resource.
       destination_ref: a Resource reference to a
         datamigration.projects.locations.connectionProfiles resource.
-      args: argparse.Namespace, The arguments that this command was
-          invoked with.
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
 
     Returns:
       Operation: the operation for updating the migration job.678888888
@@ -689,7 +703,8 @@ class MigrationJobsClient(object):
       )
 
     migration_job, update_fields = self._GetUpdatedMigrationJob(
-        current_mj, source_ref, destination_ref, args)
+        current_mj, source_ref, destination_ref, args
+    )
 
     request_id = api_util.GenerateRequestId()
     update_req_type = (
@@ -699,7 +714,7 @@ class MigrationJobsClient(object):
         migrationJob=migration_job,
         name=name,
         requestId=request_id,
-        updateMask=','.join(update_fields)
+        updateMask=','.join(update_fields),
     )
 
     return self._service.Patch(update_req)
@@ -783,3 +798,26 @@ class MigrationJobsClient(object):
     )
 
     return self._service.FetchSourceObjects(fetch_source_objects_req)
+
+  def ListObjects(self, migration_job_ref):
+    """Get the list of objects in a migration job.
+
+    Args:
+      migration_job_ref: The migration job for which to list objects.
+
+    Returns:
+      An iterator over all the matching migration job objects.
+    """
+    list_req_type = (
+        self.messages.DatamigrationProjectsLocationsMigrationJobsObjectsListRequest
+    )
+    list_req = list_req_type(parent=migration_job_ref.RelativeName())
+
+    return list_pager.YieldFromList(
+        service=self._service_objects,
+        request=list_req,
+        limit=None,
+        batch_size=None,
+        field='migrationJobObjects',
+        batch_size_attribute=None,
+    )

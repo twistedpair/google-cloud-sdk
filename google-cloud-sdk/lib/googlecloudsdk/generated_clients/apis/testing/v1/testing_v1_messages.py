@@ -972,7 +972,8 @@ class IosRoboTest(_messages.Message):
       test.
     roboScript: An optional Roboscript to customize the crawl. See
       https://firebase.google.com/docs/test-lab/android/robo-scripts-reference
-      for more information about Roboscripts.
+      for more information about Roboscripts. The maximum allowed file size of
+      the roboscript is 10MiB.
   """
 
   appBundleId = _messages.StringField(1)

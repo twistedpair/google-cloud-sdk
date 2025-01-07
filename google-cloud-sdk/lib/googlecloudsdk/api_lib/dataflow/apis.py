@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import json
 import os
 import shutil
+import stat
 import textwrap
 
 from apitools.base.py import encoding
@@ -436,6 +437,16 @@ class Templates:
                                       'python3-template-launcher-base:latest')
   FLEX_TEMPLATE_GO_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
                                  'go-template-launcher-base:latest')
+  ALL_PERMISSIONS_MASK = (
+      stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO
+  )
+  FILE_PERMISSIONS_MASK = (
+      stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH
+  )
+  # Directories need +x for access.
+  DIR_PERMISSIONS_MASK = (
+      stat.S_IRWXU | stat.S_IXGRP | stat.S_IRGRP | stat.S_IXOTH | stat.S_IROTH
+  )
 
   @staticmethod
   def GetService():
@@ -977,6 +988,39 @@ class Templates:
       raise exceptions.HttpException(error)
 
   @staticmethod
+  def _AddPermissions(path, permissions):
+    """Adds the given permissions to a file or directory.
+
+    Args:
+      path: The path to the file or directory.
+      permissions: The permissions to add.
+
+    Raises:
+      OSError: If the chmod fails.
+    """
+    permissions = (
+        os.stat(path).st_mode & Templates.ALL_PERMISSIONS_MASK
+    ) | permissions
+    os.chmod(path, permissions)
+
+  @staticmethod
+  def _ChmodRWorldReadable(top_dir_path):
+    """Walks a dir to chmod itself and its contents with the configured access.
+
+    Args:
+      top_dir_path: The path to the top-level directory.
+
+    Raises:
+      OSError: If the chmod fails.
+    """
+    for dirpath, _, filenames in os.walk(top_dir_path):
+      Templates._AddPermissions(dirpath, Templates.DIR_PERMISSIONS_MASK)
+      for filename in filenames:
+        Templates._AddPermissions(
+            os.path.join(dirpath, filename), Templates.FILE_PERMISSIONS_MASK
+        )
+
+  @staticmethod
   def BuildAndStoreFlexTemplateImage(image_gcr_path, flex_template_base_image,
                                      jar_paths, py_paths, go_binary_path, env,
                                      sdk_language, gcs_log_dir):
@@ -1012,10 +1056,32 @@ class Templates:
       for path in paths:
         absl_path = os.path.abspath(path)
         if os.path.isfile(absl_path):
-          shutil.copy2(absl_path, temp_dir)
+          copy_file = shutil.copy2(absl_path, temp_dir)
+          # Add the configured access to support non-root container execution.
+          try:
+            Templates._AddPermissions(
+                copy_file, Templates.FILE_PERMISSIONS_MASK
+            )
+          except OSError:
+            log.warning(
+                'Could not adjust permissions for copied file {}'.format(
+                    copy_file
+                )
+            )
         else:
-          shutil.copytree(absl_path,
-                          '{}/{}'.format(temp_dir, os.path.basename(absl_path)))
+          copy_dir = shutil.copytree(
+              absl_path,
+              os.path.join(temp_dir, os.path.basename(absl_path)),
+          )
+          # Add the configured access to support non-root container execution.
+          try:
+            Templates._ChmodRWorldReadable(copy_dir)
+          except OSError:
+            log.warning(
+                'Could not adjust permissions for copied directory {}'.format(
+                    copy_dir
+                )
+            )
         pipeline_files.append(os.path.split(absl_path)[1])
 
       log.status.Print(

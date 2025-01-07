@@ -13,6 +13,18 @@ from apitools.base.py import extra_types
 package = 'blockchainvalidatormanager'
 
 
+class BlockchainNode(_messages.Message):
+  r"""Configuration for creating a new blockchain node to deploy the
+  blockchain validator(s) to.
+
+  Fields:
+    ethereumDetails: Additional configuration specific to Ethereum blockchain
+      nodes.
+  """
+
+  ethereumDetails = _messages.MessageField('EthereumNodeDetails', 1)
+
+
 class BlockchainValidatorConfig(_messages.Message):
   r"""Represents the configuration of a blockchain validator, as it would be
   configured on a validator client.
@@ -133,6 +145,148 @@ class BlockchainValidatorConfig(_messages.Message):
   updateTime = _messages.StringField(11)
   validationWorkEnabled = _messages.BooleanField(12)
   votingPublicKey = _messages.StringField(13)
+
+
+class BlockchainValidatorTemplate(_messages.Message):
+  r"""A templatised set of blockchain validator configs, from which multiple
+  configurations can be generated.
+
+  Enums:
+    BlockchainNodeSourceValueValuesEnum: Required. Immutable. The source of
+      the blockchain node for the validator configurations to be deployed to.
+    BlockchainTypeValueValuesEnum: Required. Immutable. The blockchain type of
+      the validator.
+    KeySourceValueValuesEnum: Required. Immutable. The source of the voting
+      key for the blockchain validator.
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pair
+
+  Fields:
+    blockchainNodeSource: Required. Immutable. The source of the blockchain
+      node for the validator configurations to be deployed to.
+    blockchainType: Required. Immutable. The blockchain type of the validator.
+    blockchainValidatorConfigIds: Output only. Fully qualified names of The
+      blockchain validator config resources generated using the template.
+      These are in the same project and location as the template. These are
+      added to the template resource when the validator configs are generated
+      from the template. Deletion of the template will not always delete the
+      validator configs generated from it.
+    createTime: Output only. [Output only] Create timestamp
+    ethereumProtocolDetails: Ethereum-specific configuration for a blockchain
+      validator.
+    existingBlockchainNodeSource: Configuration for deploying blockchain
+      validators to an existing blockchain node.
+    existingSeedPhraseReference: Optional. An existing seed phrase, read from
+      Secret Manager.
+    keySource: Required. Immutable. The source of the voting key for the
+      blockchain validator.
+    labels: Optional. Labels as key value pair
+    name: Identifier. The fully-qualified name of the validator template. It
+      must have the format `"projects/{project}/locations/{location}/blockchai
+      nValidatorTemplates/{template}"`. `{template}` must contain only letters
+      (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`), underscores (`_`),
+      periods (`.`), tildes (`~`), plus (`+`) or percent signs (`%`). It must
+      be between 3 and 255 characters in length, and it must not start with
+      `"goog"`.
+    newBlockchainNodeSource: Configuration for creating a new blockchain node
+      to deploy the blockchain validator(s) to.
+    remoteWeb3Signer: Optional. Connection details of a remote Web3Signer
+      service to use for signing attestations and blocks.
+    seedPhraseReference: Optional. A new seed phrase, optionally written to
+      Secret Manager.
+    updateTime: Output only. [Output only] Update timestamp
+    validationWorkEnabled: Required. True if the blockchain node requests and
+      signs attestations and blocks on behalf of this validator, false if not.
+      This does NOT define whether the blockchain expects work to occur, only
+      whether the blockchain node specified above is carrying out validation
+      tasks.
+  """
+
+  class BlockchainNodeSourceValueValuesEnum(_messages.Enum):
+    r"""Required. Immutable. The source of the blockchain node for the
+    validator configurations to be deployed to.
+
+    Values:
+      BLOCKCHAIN_NODE_SOURCE_UNSPECIFIED: Blockchain node source has not been
+        specified, but should be.
+      NEW_BLOCKCHAIN_NODE: Create a new blockchain node to deploy the
+        validators to.
+      EXISTING_BLOCKCHAIN_NODE: Deploying blockchain validators to an existing
+        blockchain node, or to no node.
+    """
+    BLOCKCHAIN_NODE_SOURCE_UNSPECIFIED = 0
+    NEW_BLOCKCHAIN_NODE = 1
+    EXISTING_BLOCKCHAIN_NODE = 2
+
+  class BlockchainTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Immutable. The blockchain type of the validator.
+
+    Values:
+      BLOCKCHAIN_TYPE_UNSPECIFIED: Blockchain type has not been specified, but
+        should be.
+      ETHEREUM: The blockchain type is Ethereum.
+    """
+    BLOCKCHAIN_TYPE_UNSPECIFIED = 0
+    ETHEREUM = 1
+
+  class KeySourceValueValuesEnum(_messages.Enum):
+    r"""Required. Immutable. The source of the voting key for the blockchain
+    validator.
+
+    Values:
+      KEY_SOURCE_UNSPECIFIED: Voting key source has not been specified, but
+        should be.
+      REMOTE_WEB3_SIGNER: The voting key is stored in a remote signing service
+        (Web3Signer) and signing requests are delegated.
+      SEED_PHRASE_REFERENCE: Derive voting keys from new seed material.
+      EXISTING_SEED_PHRASE_REFERENCE: Derive voting keys from existing seed
+        material.
+    """
+    KEY_SOURCE_UNSPECIFIED = 0
+    REMOTE_WEB3_SIGNER = 1
+    SEED_PHRASE_REFERENCE = 2
+    EXISTING_SEED_PHRASE_REFERENCE = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pair
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  blockchainNodeSource = _messages.EnumField('BlockchainNodeSourceValueValuesEnum', 1)
+  blockchainType = _messages.EnumField('BlockchainTypeValueValuesEnum', 2)
+  blockchainValidatorConfigIds = _messages.StringField(3, repeated=True)
+  createTime = _messages.StringField(4)
+  ethereumProtocolDetails = _messages.MessageField('EthereumDetailsTemplate', 5)
+  existingBlockchainNodeSource = _messages.MessageField('ExistingBlockchainNodeSource', 6)
+  existingSeedPhraseReference = _messages.MessageField('ExistingSeedPhraseReferenceTemplate', 7)
+  keySource = _messages.EnumField('KeySourceValueValuesEnum', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  newBlockchainNodeSource = _messages.MessageField('BlockchainNode', 11)
+  remoteWeb3Signer = _messages.MessageField('RemoteWeb3SignerTemplate', 12)
+  seedPhraseReference = _messages.MessageField('SeedPhraseReferenceTemplate', 13)
+  updateTime = _messages.StringField(14)
+  validationWorkEnabled = _messages.BooleanField(15)
 
 
 class BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorConfigsCreateRequest(_messages.Message):
@@ -258,6 +412,153 @@ class BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorConfigsPatch
   """
 
   blockchainValidatorConfig = _messages.MessageField('BlockchainValidatorConfig', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorTemplatesCreateRequest(_messages.Message):
+  r"""A BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorTemplate
+  sCreateRequest object.
+
+  Fields:
+    blockchainValidatorTemplate: A BlockchainValidatorTemplate resource to be
+      passed as the request body.
+    blockchainValidatorTemplateId: Required. Id of the requesting object.
+    parent: Required. The parent location. Format:
+      projects/{project_number}/locations/{location}.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  blockchainValidatorTemplate = _messages.MessageField('BlockchainValidatorTemplate', 1)
+  blockchainValidatorTemplateId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorTemplatesDeleteRequest(_messages.Message):
+  r"""A BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorTemplate
+  sDeleteRequest object.
+
+  Fields:
+    force: Optional. If set to true, any existing validators which have been
+      generated using this template will also be deleted. By default, deletion
+      of a validator template will not delete any validators which have been
+      generated using it.
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorTemplatesGenerateBlockchainValidatorConfigsRequest(_messages.Message):
+  r"""A BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorTemplate
+  sGenerateBlockchainValidatorConfigsRequest object.
+
+  Fields:
+    blockchainValidatorTemplateId: Required. Fully qualified name of the
+      blockchain validator template to use for generating the validator
+      configurations.
+    generateBlockchainValidatorConfigsRequest: A
+      GenerateBlockchainValidatorConfigsRequest resource to be passed as the
+      request body.
+  """
+
+  blockchainValidatorTemplateId = _messages.StringField(1, required=True)
+  generateBlockchainValidatorConfigsRequest = _messages.MessageField('GenerateBlockchainValidatorConfigsRequest', 2)
+
+
+class BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorTemplatesGetRequest(_messages.Message):
+  r"""A BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorTemplate
+  sGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the validator template. e.g.
+      `projects/my-project/locations/us-
+      central1/blockchainValidatorTemplates/my-template`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorTemplatesListRequest(_messages.Message):
+  r"""A BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorTemplate
+  sListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The location to list blockchain validator templates
+      within.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorTemplatesPatchRequest(_messages.Message):
+  r"""A BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorTemplate
+  sPatchRequest object.
+
+  Fields:
+    blockchainValidatorTemplate: A BlockchainValidatorTemplate resource to be
+      passed as the request body.
+    name: Identifier. The fully-qualified name of the validator template. It
+      must have the format `"projects/{project}/locations/{location}/blockchai
+      nValidatorTemplates/{template}"`. `{template}` must contain only letters
+      (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`), underscores (`_`),
+      periods (`.`), tildes (`~`), plus (`+`) or percent signs (`%`). It must
+      be between 3 and 255 characters in length, and it must not start with
+      `"goog"`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the blockchain validator template resource by the update.
+      The fields specified in the `update_mask` are relative to the resource,
+      not the full request. A field will be overwritten if it is in the mask.
+      If the user does not provide a mask then all fields will be overwritten.
+  """
+
+  blockchainValidatorTemplate = _messages.MessageField('BlockchainValidatorTemplate', 1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
@@ -451,6 +752,150 @@ class EthereumDetails(_messages.Message):
   useBlockBuilderProposals = _messages.BooleanField(5)
 
 
+class EthereumDetailsTemplate(_messages.Message):
+  r"""Blockchain validator configuration unique to Ethereum blockchains.
+
+  Enums:
+    NetworkValueValuesEnum: Optional. Output only. The Ethereum network the
+      validator is deployed on. This is set on initial deployment to a
+      blockchain node and cannot be changed.
+
+  Fields:
+    gasLimit: Optional. Immutable. Optionally requested (not enforced) maximum
+      gas per block. This is sent to the block builder service, however
+      whether it is followed depends on the service. This field is only read
+      if the field use_block_builder_proposals is set to true. If not
+      specified, the validator client will use a default value.
+    graffiti: Optional. Input only. Graffiti is a custom string published in
+      blocks proposed by the validator. This can only be written, as the
+      current value cannot be read back from the validator client API. See
+      https://lighthouse-book.sigmaprime.io/graffiti.html for an example of
+      how this is used. If not set, the validator client's default is used. If
+      no blockchain node is specified, this has no effect as no validator
+      client is run.
+    network: Optional. Output only. The Ethereum network the validator is
+      deployed on. This is set on initial deployment to a blockchain node and
+      cannot be changed.
+    suggestedFeeRecipient: Required. Immutable. The Ethereum address to which
+      fee rewards should be sent. This can only be set when creating the
+      validator. If no blockchain node is specified for the validator, this
+      has no effect as no validator client is run. See also
+      https://lighthouse-book.sigmaprime.io/suggested-fee-recipient.html for
+      more context.
+    useBlockBuilderProposals: Optional. Immutable. Enable use of the external
+      block building services (MEV).
+  """
+
+  class NetworkValueValuesEnum(_messages.Enum):
+    r"""Optional. Output only. The Ethereum network the validator is deployed
+    on. This is set on initial deployment to a blockchain node and cannot be
+    changed.
+
+    Values:
+      NETWORK_UNSPECIFIED: The network has not been specified, but should be.
+      MAINNET: The Ethereum Mainnet.
+      TESTNET_GOERLI_PRATER: Deprecated: The Ethereum Testnet based on Goerli
+        protocol. Holesky (TESTNET_HOLESKY) is the recommended testnet to
+        replace Goerli.
+      TESTNET_SEPOLIA: The Ethereum Testnet based on Sepolia/Bepolia protocol.
+        See https://github.com/eth-clients/sepolia.
+      TESTNET_HOLESKY: The Ethereum Testnet based on Holesky specification.
+        See https://github.com/eth-clients/holesky.
+    """
+    NETWORK_UNSPECIFIED = 0
+    MAINNET = 1
+    TESTNET_GOERLI_PRATER = 2
+    TESTNET_SEPOLIA = 3
+    TESTNET_HOLESKY = 4
+
+  gasLimit = _messages.IntegerField(1)
+  graffiti = _messages.StringField(2)
+  network = _messages.EnumField('NetworkValueValuesEnum', 3)
+  suggestedFeeRecipient = _messages.StringField(4)
+  useBlockBuilderProposals = _messages.BooleanField(5)
+
+
+class EthereumNodeDetails(_messages.Message):
+  r"""Ethereum-specific blockchain node details.
+
+  Enums:
+    ConsensusClientValueValuesEnum: Required. Immutable. The consensus client.
+    ExecutionClientValueValuesEnum: Required. Immutable. The execution client
+    NetworkValueValuesEnum: Required. Immutable. The Ethereum environment
+      being accessed.
+
+  Fields:
+    consensusClient: Required. Immutable. The consensus client.
+    executionClient: Required. Immutable. The execution client
+    mevRelayUrls: Optional. URLs for MEV-relay services to use for block
+      building. When set, a Google Cloud managed MEV-boost service is
+      configured on the beacon client.
+    network: Required. Immutable. The Ethereum environment being accessed.
+  """
+
+  class ConsensusClientValueValuesEnum(_messages.Enum):
+    r"""Required. Immutable. The consensus client.
+
+    Values:
+      CONSENSUS_CLIENT_UNSPECIFIED: Consensus client has not been specified,
+        but should be.
+      LIGHTHOUSE: Consensus client implementation written in Rust, maintained
+        by Sigma Prime. See [Lighthouse - Sigma
+        Prime](https://lighthouse.sigmaprime.io/) for details.
+    """
+    CONSENSUS_CLIENT_UNSPECIFIED = 0
+    LIGHTHOUSE = 1
+
+  class ExecutionClientValueValuesEnum(_messages.Enum):
+    r"""Required. Immutable. The execution client
+
+    Values:
+      EXECUTION_CLIENT_UNSPECIFIED: Execution client has not been specified,
+        but should be.
+      GETH: Official Go implementation of the Ethereum protocol. See [go-
+        ethereum](https://geth.ethereum.org/) for details.
+    """
+    EXECUTION_CLIENT_UNSPECIFIED = 0
+    GETH = 1
+
+  class NetworkValueValuesEnum(_messages.Enum):
+    r"""Required. Immutable. The Ethereum environment being accessed.
+
+    Values:
+      NETWORK_UNSPECIFIED: The network has not been specified, but should be.
+      MAINNET: The Ethereum Mainnet.
+      TESTNET_GOERLI_PRATER: Deprecated: The Ethereum Testnet based on Goerli
+        protocol. Holesky (TESTNET_HOLESKY) is the recommended testnet to
+        replace Goerli.
+      TESTNET_SEPOLIA: The Ethereum Testnet based on Sepolia/Bepolia protocol.
+        See https://github.com/eth-clients/sepolia.
+      TESTNET_HOLESKY: The Ethereum Testnet based on Holesky specification.
+        See https://github.com/eth-clients/holesky.
+    """
+    NETWORK_UNSPECIFIED = 0
+    MAINNET = 1
+    TESTNET_GOERLI_PRATER = 2
+    TESTNET_SEPOLIA = 3
+    TESTNET_HOLESKY = 4
+
+  consensusClient = _messages.EnumField('ConsensusClientValueValuesEnum', 1)
+  executionClient = _messages.EnumField('ExecutionClientValueValuesEnum', 2)
+  mevRelayUrls = _messages.StringField(3, repeated=True)
+  network = _messages.EnumField('NetworkValueValuesEnum', 4)
+
+
+class ExistingBlockchainNodeSource(_messages.Message):
+  r"""Configuration for deploying blockchain validators to an existing
+  blockchain node.
+
+  Fields:
+    blockchainNodeId: Optional. Name of the blockchain node to deploy the
+      validators to. If not set, the validators are not deployed.
+  """
+
+  blockchainNodeId = _messages.StringField(1)
+
+
 class ExistingSeedPhraseReference(_messages.Message):
   r"""Location of existing seed material, and derivation path used to generate
   the voting key.
@@ -473,6 +918,35 @@ class ExistingSeedPhraseReference(_messages.Message):
   seedPhraseSecret = _messages.StringField(3)
 
 
+class ExistingSeedPhraseReferenceTemplate(_messages.Message):
+  r"""Location of the seed material, and derivation path used to generate the
+  voting key.
+
+  Fields:
+    derivationBase: Optional. The first derivation index to use when deriving
+      keys. Must be 0 or greater.
+    seedPhraseSecret: Required. Immutable. Reference into Secret Manager for
+      where the seed phrase is stored.
+  """
+
+  derivationBase = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  seedPhraseSecret = _messages.StringField(2)
+
+
+class GenerateBlockchainValidatorConfigsRequest(_messages.Message):
+  r"""Generate a number of validator configurations from a common template.
+
+  Fields:
+    seedPhraseValidatorGenerationDetails: Configuration for generating
+      validator keys using a seed-phrase based blockchain validator template.
+    web3signerValidatorGenerationDetails: Configuration for adding validator
+      keys to a remote Web3Signer based blockchain validator template.
+  """
+
+  seedPhraseValidatorGenerationDetails = _messages.MessageField('SeedPhraseValidatorGenerationDetails', 1)
+  web3signerValidatorGenerationDetails = _messages.MessageField('Web3SignerValidatorGenerationDetails', 2)
+
+
 class ListBlockchainValidatorConfigsResponse(_messages.Message):
   r"""A message representing all blockchain validator configs in the project.
 
@@ -485,6 +959,22 @@ class ListBlockchainValidatorConfigsResponse(_messages.Message):
   """
 
   blockchainValidatorConfigs = _messages.MessageField('BlockchainValidatorConfig', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListBlockchainValidatorTemplatesResponse(_messages.Message):
+  r"""Response to list blockchain validator templates.
+
+  Fields:
+    blockchainValidatorTemplates: The validator templates defined within the
+      project and location.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  blockchainValidatorTemplates = _messages.MessageField('BlockchainValidatorTemplate', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -750,6 +1240,7 @@ class RemoteWeb3Signer(_messages.Message):
       certificates signed by well known certificate authorities (as in, the
       set configured by default in the OS Docker image).
     timeoutDuration: Optional. Timeout for requests to the Web3Signer service.
+      If not set, a default timeout of 12 seconds is used.
     votingPublicKey: Required. Immutable. The public key of the validator, as
       a hexadecimal string prefixed with "0x". This is used as the identifier
       for the key when sending requests to the Web3Signer service.
@@ -762,6 +1253,32 @@ class RemoteWeb3Signer(_messages.Message):
   timeoutDuration = _messages.StringField(3)
   votingPublicKey = _messages.StringField(4)
   web3signerUri = _messages.StringField(5)
+
+
+class RemoteWeb3SignerTemplate(_messages.Message):
+  r"""Configuration to use an external key signing service, such as the
+  service endpoint. The external key signer is expected to be managed entirely
+  by the customer. For reference see https://docs.web3signer.consensys.net/
+  for details on Web3Signer and
+  https://docs.web3signer.consensys.net/reference/api/json-rpc for the API
+  exposed by the external service.
+
+  Fields:
+    rootCertificate: Optional. Immutable. PEM-format X.509 certificate
+      corresponding to the URI of the Web3Signer. An example of this can be
+      found on https://www.ssl.com/guide/pem-der-crt-and-cer-x-509-encodings-
+      and-conversions/ When not set, the validator client will only accept TLS
+      certificates signed by well known certificate authorities (as in, the
+      set configured by default in the OS Docker image).
+    timeoutDuration: Optional. Timeout for requests to the Web3Signer service.
+      If not set, a default timeout of 12 seconds is used.
+    web3signerUri: Required. URI of the Web3Signer service the validator
+      client connects to, to request signing of attestations, blocks, etc.
+  """
+
+  rootCertificate = _messages.StringField(1)
+  timeoutDuration = _messages.StringField(2)
+  web3signerUri = _messages.StringField(3)
 
 
 class SeedPhraseReference(_messages.Message):
@@ -787,6 +1304,33 @@ class SeedPhraseReference(_messages.Message):
   derivationIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   exportSeedPhrase = _messages.BooleanField(3)
   seedPhraseSecret = _messages.StringField(4)
+
+
+class SeedPhraseReferenceTemplate(_messages.Message):
+  r"""Configuration for creating voting keys from a new seed phrase, and
+  optionally location to back it up to, in Secret Manager.
+
+  Fields:
+    exportSeedPhrase: Optional. Immutable. True to export the seed phrase to
+      Secret Manager.
+    seedPhraseSecret: Required. Immutable. Reference into Secret Manager for
+      where the seed phrase is stored.
+  """
+
+  exportSeedPhrase = _messages.BooleanField(1)
+  seedPhraseSecret = _messages.StringField(2)
+
+
+class SeedPhraseValidatorGenerationDetails(_messages.Message):
+  r"""Configuration for generating validator keys using a seed-phrase based
+  blockchain validator template.
+
+  Fields:
+    seedPhraseKeyCount: Required. The number of blockchain validator
+      configurations to generate.
+  """
+
+  seedPhraseKeyCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -901,6 +1445,18 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class Web3SignerValidatorGenerationDetails(_messages.Message):
+  r"""Configuration for adding validator keys to a remote Web3Signer based
+  blockchain validator template.
+
+  Fields:
+    web3signerVotingPublicKeys: Required. Voting public keys of the validator
+      keys being managed by the Web3Signer.
+  """
+
+  web3signerVotingPublicKeys = _messages.StringField(1, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

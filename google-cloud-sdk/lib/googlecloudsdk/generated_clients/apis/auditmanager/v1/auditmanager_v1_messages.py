@@ -656,6 +656,8 @@ class ControlDetails(_messages.Message):
     complianceState: Output only. Overall status of the findings for the
       control.
     control: The control for which the findings are being reported.
+    controlReportSummary: Report summary with compliance, violation counts
+      etc.
   """
 
   class ComplianceStateValueValuesEnum(_messages.Enum):
@@ -676,6 +678,7 @@ class ControlDetails(_messages.Message):
 
   complianceState = _messages.EnumField('ComplianceStateValueValuesEnum', 1)
   control = _messages.MessageField('Control', 2)
+  controlReportSummary = _messages.MessageField('ReportSummary', 3)
 
 
 class DestinationDetails(_messages.Message):

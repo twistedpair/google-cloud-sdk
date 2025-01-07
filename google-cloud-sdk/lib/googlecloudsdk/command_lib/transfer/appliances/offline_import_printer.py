@@ -79,7 +79,7 @@ class OfflineImportPrinter(custom_printer_base.CustomPrinterBase):
         state_enum.STATE_UNSPECIFIED: "State unspecified",
         state_enum.DRAFT: "Draft",
         state_enum.ACTIVE: "Not Yet Started",
-        state_enum.INGESTING: "Preparing data for transfer",
+        state_enum.PREPARING: "Preparing data for transfer",
         state_enum.TRANSFERRING: "Transferring data to customer bucket",
         state_enum.VERIFYING: "Verifying Transferred data",
         state_enum.COMPLETED: "Successfully Completed",

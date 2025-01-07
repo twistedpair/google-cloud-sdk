@@ -62,9 +62,8 @@ class AutomatedBackupConfig(_messages.Message):
   """
 
   class AutomatedBackupModeValueValuesEnum(_messages.Enum):
-    r"""Optional. The automated backup mode.
-
-    If the mode is disabled, the other fields will be ignored.
+    r"""Optional. The automated backup mode. If the mode is disabled, the
+    other fields will be ignored.
 
     Values:
       AUTOMATED_BACKUP_MODE_UNSPECIFIED: Default value. Automated backup
@@ -72,14 +71,11 @@ class AutomatedBackupConfig(_messages.Message):
       DISABLED: Automated backup config disabled.
       ENABLED: Automated backup config enabled.
     """
-
     AUTOMATED_BACKUP_MODE_UNSPECIFIED = 0
     DISABLED = 1
     ENABLED = 2
 
-  automatedBackupMode = _messages.EnumField(
-      'AutomatedBackupModeValueValuesEnum', 1
-  )
+  automatedBackupMode = _messages.EnumField('AutomatedBackupModeValueValuesEnum', 1)
   fixedFrequencySchedule = _messages.MessageField('FixedFrequencySchedule', 2)
   retention = _messages.StringField(3)
 
@@ -160,6 +156,7 @@ class Backup(_messages.Message):
     shardCount: Output only. Number of shards for the cluster.
     state: Output only. State of the backup.
     totalSizeBytes: Output only. Total size of the backup in bytes.
+    uid: Output only. System assigned unique identifier of the backup.
   """
 
   class BackupTypeValueValuesEnum(_messages.Enum):
@@ -198,11 +195,14 @@ class Backup(_messages.Message):
       CREATING: The backup is being created.
       ACTIVE: The backup is active to be used.
       DELETING: The backup is being deleted.
+      SUSPENDED: The backup is currently suspended due to reasons like project
+        deletion, billing account closure, etc.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
+    SUSPENDED = 4
 
   backupFiles = _messages.MessageField('BackupFile', 1, repeated=True)
   backupType = _messages.EnumField('BackupTypeValueValuesEnum', 2)
@@ -218,6 +218,7 @@ class Backup(_messages.Message):
   shardCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
   state = _messages.EnumField('StateValueValuesEnum', 13)
   totalSizeBytes = _messages.IntegerField(14)
+  uid = _messages.StringField(15)
 
 
 class BackupClusterRequest(_messages.Message):
@@ -245,12 +246,15 @@ class BackupCollection(_messages.Message):
     kmsKey: Output only. The KMS key used to encrypt the backups under this
       backup collection.
     name: Identifier. Full resource path of the backup collection.
+    uid: Output only. System assigned unique identifier of the backup
+      collection.
   """
 
   cluster = _messages.StringField(1)
   clusterUid = _messages.StringField(2)
   kmsKey = _messages.StringField(3)
   name = _messages.StringField(4)
+  uid = _messages.StringField(5)
 
 
 class BackupConfiguration(_messages.Message):
@@ -526,13 +530,9 @@ class Cluster(_messages.Message):
   backupCollection = _messages.StringField(3)
   clusterEndpoints = _messages.MessageField('ClusterEndpoint', 4, repeated=True)
   createTime = _messages.StringField(5)
-  crossClusterReplicationConfig = _messages.MessageField(
-      'CrossClusterReplicationConfig', 6
-  )
+  crossClusterReplicationConfig = _messages.MessageField('CrossClusterReplicationConfig', 6)
   deletionProtectionEnabled = _messages.BooleanField(7)
-  discoveryEndpoints = _messages.MessageField(
-      'DiscoveryEndpoint', 8, repeated=True
-  )
+  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 8, repeated=True)
   encryptionInfo = _messages.MessageField('EncryptionInfo', 9)
   gcsSource = _messages.MessageField('GcsBackupSource', 10)
   kmsKey = _messages.StringField(11)
@@ -546,9 +546,7 @@ class Cluster(_messages.Message):
   preciseSizeGb = _messages.FloatField(19)
   pscConfigs = _messages.MessageField('PscConfig', 20, repeated=True)
   pscConnections = _messages.MessageField('PscConnection', 21, repeated=True)
-  pscServiceAttachments = _messages.MessageField(
-      'PscServiceAttachment', 22, repeated=True
-  )
+  pscServiceAttachments = _messages.MessageField('PscServiceAttachment', 22, repeated=True)
   redisConfigs = _messages.MessageField('RedisConfigsValue', 23)
   replicaCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
   satisfiesPzi = _messages.BooleanField(25)
@@ -558,9 +556,7 @@ class Cluster(_messages.Message):
   sizeGb = _messages.IntegerField(29, variant=_messages.Variant.INT32)
   state = _messages.EnumField('StateValueValuesEnum', 30)
   stateInfo = _messages.MessageField('StateInfo', 31)
-  transitEncryptionMode = _messages.EnumField(
-      'TransitEncryptionModeValueValuesEnum', 32
-  )
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 32)
   uid = _messages.StringField(33)
   zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 34)
 
@@ -1155,6 +1151,10 @@ class DatabaseResourceHealthSignalData(_messages.Message):
       SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET: Detects if
         database instance data exported to a Cloud Storage bucket that is
         owned by the organization and is publicly accessible.
+      SIGNAL_TYPE_WEAK_PASSWORD_HASH_ALGORITHM: Detects if a database instance
+        is using a weak password hash algorithm.
+      SIGNAL_TYPE_NO_USER_PASSWORD_POLICY: Detects if a database instance has
+        no user password policy set.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -1235,6 +1235,8 @@ class DatabaseResourceHealthSignalData(_messages.Message):
     SIGNAL_TYPE_USER_GRANTED_ALL_PERMISSIONS = 76
     SIGNAL_TYPE_DATA_EXPORT_TO_EXTERNAL_CLOUD_STORAGE_BUCKET = 77
     SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET = 78
+    SIGNAL_TYPE_WEAK_PASSWORD_HASH_ALGORITHM = 79
+    SIGNAL_TYPE_NO_USER_PASSWORD_POLICY = 80
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -1760,6 +1762,10 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
       SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET: Detects if
         database instance data exported to a Cloud Storage bucket that is
         owned by the organization and is publicly accessible.
+      SIGNAL_TYPE_WEAK_PASSWORD_HASH_ALGORITHM: Detects if a database instance
+        is using a weak password hash algorithm.
+      SIGNAL_TYPE_NO_USER_PASSWORD_POLICY: Detects if a database instance has
+        no user password policy set.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -1840,6 +1846,8 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
     SIGNAL_TYPE_USER_GRANTED_ALL_PERMISSIONS = 76
     SIGNAL_TYPE_DATA_EXPORT_TO_EXTERNAL_CLOUD_STORAGE_BUCKET = 77
     SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET = 78
+    SIGNAL_TYPE_WEAK_PASSWORD_HASH_ALGORITHM = 79
+    SIGNAL_TYPE_NO_USER_PASSWORD_POLICY = 80
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
@@ -1927,9 +1935,9 @@ class Empty(_messages.Message):
   """
 
 
+
 class EncryptionInfo(_messages.Message):
   r"""EncryptionInfo describes the encryption information of a cluster or a
-
   backup.
 
   Enums:
@@ -1960,16 +1968,13 @@ class EncryptionInfo(_messages.Message):
       CUSTOMER_MANAGED_ENCRYPTION: The data is encrypted at rest with a key
         that is managed by the customer. KMS key versions will be populated.
     """
-
     TYPE_UNSPECIFIED = 0
     GOOGLE_DEFAULT_ENCRYPTION = 1
     CUSTOMER_MANAGED_ENCRYPTION = 2
 
   class KmsKeyPrimaryStateValueValuesEnum(_messages.Enum):
-    r"""Output only.
-
-    The state of the primary version of the KMS key perceived by the system.
-    This field is not populated in backups.
+    r"""Output only. The state of the primary version of the KMS key perceived
+    by the system. This field is not populated in backups.
 
     Values:
       KMS_KEY_STATE_UNSPECIFIED: The default value. This value is unused.
@@ -1978,16 +1983,13 @@ class EncryptionInfo(_messages.Message):
       DISABLED: The KMS key is disabled, destroyed, or scheduled to be
         destroyed.
     """
-
     KMS_KEY_STATE_UNSPECIFIED = 0
     ENABLED = 1
     PERMISSION_DENIED = 2
     DISABLED = 3
 
   encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 1)
-  kmsKeyPrimaryState = _messages.EnumField(
-      'KmsKeyPrimaryStateValueValuesEnum', 2
-  )
+  kmsKeyPrimaryState = _messages.EnumField('KmsKeyPrimaryStateValueValuesEnum', 2)
   kmsKeyVersions = _messages.StringField(3, repeated=True)
   lastUpdateTime = _messages.StringField(4)
 
@@ -2094,7 +2096,6 @@ class FailoverInstanceRequest(_messages.Message):
 
 class FixedFrequencySchedule(_messages.Message):
   r"""This schedule allows the backup to be triggered at a fixed frequency
-
   (currently only daily is supported).
 
   Fields:
@@ -2218,6 +2219,7 @@ class GoogleCloudRedisV1beta1ZoneMetadata(_messages.Message):
   r"""Defines specific information for a particular zone. Currently empty and
   reserved for future use only.
   """
+
 
 
 class ImportInstanceRequest(_messages.Message):
@@ -2827,12 +2829,12 @@ class Location(_messages.Message):
 
 class MachineConfiguration(_messages.Message):
   r"""MachineConfiguration describes the configuration of a machine specific
-
   to Database Resource.
 
   Fields:
-    cpuCount: The number of CPUs. TODO(b/342344482, b/342346271) add proto
-      validations again after bug fix.
+    cpuCount: The number of CPUs. Deprecated. Use vcpu_count instead.
+      TODO(b/342344482, b/342346271) add proto validations again after bug
+      fix.
     memorySizeInBytes: Memory size in bytes. TODO(b/342344482, b/342346271)
       add proto validations again after bug fix.
     shardCount: Optional. Number of shards (if applicable).
@@ -3400,7 +3402,6 @@ class Product(_messages.Message):
 
 class PscAutoConnection(_messages.Message):
   r"""Details of consumer resources in a PSC connection that is created
-
   through Service Connectivity Automation.
 
   Enums:
@@ -3442,17 +3443,15 @@ class PscAutoConnection(_messages.Message):
       CONNECTION_TYPE_READER: Cluster endpoint that will be used as reader
         endpoint to access replicas.
     """
-
     CONNECTION_TYPE_UNSPECIFIED = 0
     CONNECTION_TYPE_DISCOVERY = 1
     CONNECTION_TYPE_PRIMARY = 2
     CONNECTION_TYPE_READER = 3
 
   class PscConnectionStatusValueValuesEnum(_messages.Enum):
-    r"""Output only. The status of the PSC connection.
-
-    Please note that this value is updated periodically. Please use Private
-    Service Connect APIs for the latest status.
+    r"""Output only. The status of the PSC connection. Please note that this
+    value is updated periodically. Please use Private Service Connect APIs for
+    the latest status.
 
     Values:
       PSC_CONNECTION_STATUS_UNSPECIFIED: PSC connection status is not
@@ -3460,7 +3459,6 @@ class PscAutoConnection(_messages.Message):
       PSC_CONNECTION_STATUS_ACTIVE: The connection is active
       PSC_CONNECTION_STATUS_NOT_FOUND: Connection not found
     """
-
     PSC_CONNECTION_STATUS_UNSPECIFIED = 0
     PSC_CONNECTION_STATUS_ACTIVE = 1
     PSC_CONNECTION_STATUS_NOT_FOUND = 2
@@ -3471,9 +3469,7 @@ class PscAutoConnection(_messages.Message):
   network = _messages.StringField(4)
   projectId = _messages.StringField(5)
   pscConnectionId = _messages.StringField(6)
-  pscConnectionStatus = _messages.EnumField(
-      'PscConnectionStatusValueValuesEnum', 7
-  )
+  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 7)
   serviceAttachment = _messages.StringField(8)
 
 

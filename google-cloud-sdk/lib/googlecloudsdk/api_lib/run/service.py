@@ -97,6 +97,7 @@ class Service(k8s_object.KubernetesObject):
         self.annotations.get(RUN_FUNCTIONS_BUILD_SERVICE_ACCOUNT_ANNOTATION),
         self.annotations.get(RUN_FUNCTIONS_BUILD_WORKER_POOL_ANNOTATION),
         self.annotations.get(RUN_FUNCTIONS_BUILD_ENV_VARS_ANNOTATION),
+        self.annotations.get(RUN_FUNCTIONS_BUILD_IMAGE_URI_ANNOTATION),
     )
 
   @property

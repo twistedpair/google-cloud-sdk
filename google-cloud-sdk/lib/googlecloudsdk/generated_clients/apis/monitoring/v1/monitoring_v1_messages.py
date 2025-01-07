@@ -556,6 +556,41 @@ class ColumnSettings(_messages.Message):
   visible = _messages.BooleanField(5)
 
 
+class ColumnSortingOptions(_messages.Message):
+  r"""Data structure to storing column's sort strategy
+
+  Enums:
+    DirectionValueValuesEnum: Optional. A sorting direction that determines
+      ascending or descending order. This is a legacy field kept for backwards
+      compatibility with table.
+
+  Fields:
+    column: Optional. Column name to sort data by
+    direction: Optional. A sorting direction that determines ascending or
+      descending order. This is a legacy field kept for backwards
+      compatibility with table.
+  """
+
+  class DirectionValueValuesEnum(_messages.Enum):
+    r"""Optional. A sorting direction that determines ascending or descending
+    order. This is a legacy field kept for backwards compatibility with table.
+
+    Values:
+      SORT_ORDER_UNSPECIFIED: An unspecified sort order. This option is
+        invalid when sorting is required.
+      SORT_ORDER_NONE: No sorting is applied.
+      SORT_ORDER_ASCENDING: The lowest-valued entries are selected first.
+      SORT_ORDER_DESCENDING: The highest-valued entries are selected first.
+    """
+    SORT_ORDER_UNSPECIFIED = 0
+    SORT_ORDER_NONE = 1
+    SORT_ORDER_ASCENDING = 2
+    SORT_ORDER_DESCENDING = 3
+
+  column = _messages.StringField(1)
+  direction = _messages.EnumField('DirectionValueValuesEnum', 2)
+
+
 class Dashboard(_messages.Message):
   r"""A Google Stackdriver dashboard. Dashboards define the content and layout
   of pages in the Stackdriver web application.
@@ -738,6 +773,8 @@ class DataSet(_messages.Message):
       minutes. It would not make sense to fetch and align data at one minute
       intervals.
     plotType: How this data should be plotted on the chart.
+    sort: Optional. A collection of sort options, affects the order of the
+      data and legend.
     targetAxis: Optional. The target axis to use for plotting the metric.
     timeSeriesQuery: Required. Fields for querying time series data from the
       Stackdriver metrics API.
@@ -790,8 +827,9 @@ class DataSet(_messages.Message):
   measures = _messages.MessageField('Measure', 4, repeated=True)
   minAlignmentPeriod = _messages.StringField(5)
   plotType = _messages.EnumField('PlotTypeValueValuesEnum', 6)
-  targetAxis = _messages.EnumField('TargetAxisValueValuesEnum', 7)
-  timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 8)
+  sort = _messages.MessageField('ColumnSortingOptions', 7, repeated=True)
+  targetAxis = _messages.EnumField('TargetAxisValueValuesEnum', 8)
+  timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 9)
 
 
 class Dimension(_messages.Message):

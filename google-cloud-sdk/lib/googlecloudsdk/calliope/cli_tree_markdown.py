@@ -50,7 +50,6 @@ from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.calliope import markdown
 from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core import properties
-
 import six
 
 
@@ -78,8 +77,9 @@ def Flag(d):
   flag.is_hidden = d.get(cli_tree.LOOKUP_IS_HIDDEN, d.get('hidden', False))
   flag.hidden = flag.is_hidden
   flag.is_positional = False
-  flag.is_required = d.get(cli_tree.LOOKUP_IS_REQUIRED,
-                           d.get(cli_tree.LOOKUP_REQUIRED, False))
+  flag.is_required = d.get(
+      cli_tree.LOOKUP_IS_REQUIRED, d.get(cli_tree.LOOKUP_REQUIRED, False)
+  )
   flag.required = flag.is_required
   flag.help = flag.description
   flag.dest = flag.name.lower().replace('-', '_')
@@ -109,8 +109,11 @@ def Flag(d):
     else:
       value = None
       kind = 'bool' if flag.type == 'bool' else None
-    flag.store_property = (properties.FromString(
-        prop[cli_tree.LOOKUP_NAME]), kind, value)
+    flag.store_property = (
+        properties.FromString(prop[cli_tree.LOOKUP_NAME]),
+        kind,
+        value,
+    )
 
   return flag
 
@@ -176,8 +179,10 @@ class CliTreeMarkdownGenerator(markdown.MarkdownGenerator):
     super(CliTreeMarkdownGenerator, self).__init__(
         self._command_path,
         _GetReleaseTrackFromId(self._command[cli_tree.LOOKUP_RELEASE]),
-        self._command.get(cli_tree.LOOKUP_IS_HIDDEN,
-                          self._command.get('hidden', False)))
+        self._command.get(
+            cli_tree.LOOKUP_IS_HIDDEN, self._command.get('hidden', False)
+        ),
+    )
     self._capsule = self._command[cli_tree.LOOKUP_CAPSULE]
     self._sections = self._command[cli_tree.LOOKUP_SECTIONS]
     self._subcommands = self.GetSubCommandHelp()
@@ -202,15 +207,21 @@ class CliTreeMarkdownGenerator(markdown.MarkdownGenerator):
 
   def IsValidSubPath(self, command_path):
     """Returns True if the given command path after the top is valid."""
-    return self._GetCommandFromPath([cli_tree.DEFAULT_CLI_NAME] +
-                                    command_path) is not None
+    return (
+        self._GetCommandFromPath([cli_tree.DEFAULT_CLI_NAME] + command_path)
+        is not None
+    )
 
   def GetArguments(self):
     """Returns the command arguments."""
     command = self._GetCommandFromPath(self._command_path)
     try:
-      return [Argument(a) for a in
-              command[cli_tree.LOOKUP_CONSTRAINTS][cli_tree.LOOKUP_ARGUMENTS]]
+      return [
+          Argument(a)
+          for a in command[cli_tree.LOOKUP_CONSTRAINTS][
+              cli_tree.LOOKUP_ARGUMENTS
+          ]
+      ]
     except (KeyError, TypeError):
       return []
 
@@ -221,8 +232,8 @@ class CliTreeMarkdownGenerator(markdown.MarkdownGenerator):
 
     Args:
       arg: The arg to auto-generate help text for.
-      depth: The indentation depth at which the details should be printed.
-        Added here only to maintain consistency with superclass during testing.
+      depth: The indentation depth at which the details should be printed. Added
+        here only to maintain consistency with superclass during testing.
 
     Returns:
       The help text with auto-generated details for arg.
@@ -231,15 +242,21 @@ class CliTreeMarkdownGenerator(markdown.MarkdownGenerator):
 
   def _GetSubHelp(self, is_group=False):
     """Returns the help dict indexed by command for sub commands or groups."""
-    return {name: usage_text.HelpInfo(
-        help_text=subcommand[cli_tree.LOOKUP_CAPSULE],
-        is_hidden=subcommand.get(cli_tree.LOOKUP_IS_HIDDEN,
-                                 subcommand.get('hidden', False)),
-        release_track=_GetReleaseTrackFromId(
-            subcommand[cli_tree.LOOKUP_RELEASE]))
-            for name, subcommand in six.iteritems(self._command[
-                cli_tree.LOOKUP_COMMANDS])
-            if subcommand[cli_tree.LOOKUP_IS_GROUP] == is_group}
+    return {
+        name: usage_text.HelpInfo(
+            help_text=subcommand[cli_tree.LOOKUP_CAPSULE],
+            is_hidden=subcommand.get(
+                cli_tree.LOOKUP_IS_HIDDEN, subcommand.get('hidden', False)
+            ),
+            release_track=_GetReleaseTrackFromId(
+                subcommand[cli_tree.LOOKUP_RELEASE]
+            ),
+        )
+        for name, subcommand in six.iteritems(
+            self._command[cli_tree.LOOKUP_COMMANDS]
+        )
+        if subcommand[cli_tree.LOOKUP_IS_GROUP] == is_group
+    }
 
   def GetSubCommandHelp(self):
     """Returns the subcommand help dict indexed by subcommand."""
@@ -254,7 +271,8 @@ class CliTreeMarkdownGenerator(markdown.MarkdownGenerator):
     if isinstance(flag, dict):
       flag = Flag(flag)
     super(CliTreeMarkdownGenerator, self).PrintFlagDefinition(
-        flag, disable_header=disable_header)
+        flag, disable_header=disable_header
+    )
 
   def _ExpandHelpText(self, doc):
     """{...} references were done when the tree was generated."""

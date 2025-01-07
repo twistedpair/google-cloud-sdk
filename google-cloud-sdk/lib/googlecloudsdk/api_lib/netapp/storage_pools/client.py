@@ -231,6 +231,29 @@ class StoragePoolsClient(object):
     )
     return self.WaitForOperation(operation_ref)
 
+  def ValidateDirectoryService(self, storagepool_ref, directory_service_type,
+                               async_):
+    """Validates the directory service attached to the storage pool.
+
+    Args:
+      storagepool_ref: the reference to the storage pool.
+      directory_service_type: the type of directory service to validate.
+      async_: bool, if False, wait for the operation to complete.
+
+    Returns:
+      an Operation if async_ is set to true, or a validate message if the
+      validation is successful.
+    """
+    validate_op = self._adapter.ValidateDirectoryService(
+        storagepool_ref, directory_service_type
+    )
+    if async_:
+      return validate_op
+    operation_ref = resources.REGISTRY.ParseRelativeName(
+        validate_op.name, collection=constants.OPERATIONS_COLLECTION
+    )
+    return self.WaitForOperation(operation_ref)
+
 
 class StoragePoolsAdapter(object):
   """Adapter for the Cloud NetApp Files API for Storage Pools."""
@@ -349,6 +372,19 @@ class StoragePoolsAdapter(object):
         )
     )
     return self.client.projects_locations_storagePools.Switch(switch_request)
+
+  def ValidateDirectoryService(self, storagepool_ref, directory_service_type):
+    """Send a validate directory service request for the Cloud NetApp storage pool."""
+    request = self.messages.ValidateDirectoryServiceRequest(
+        directoryServiceType=directory_service_type,
+    )
+    validate_request = self.messages.NetappProjectsLocationsStoragePoolsValidateDirectoryServiceRequest(
+        name=storagepool_ref.RelativeName(),
+        validateDirectoryServiceRequest=request,
+    )
+    return self.client.projects_locations_storagePools.ValidateDirectoryService(
+        validate_request
+    )
 
 
 class BetaStoragePoolsAdapter(StoragePoolsAdapter):

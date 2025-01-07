@@ -539,13 +539,28 @@ class StorageGrpcAsyncIOTransport(StorageTransport):
             Awaitable[empty_pb2.Empty]]:
         r"""Return a callable for the delete object method over gRPC.
 
-        Deletes an object and its metadata.
+        Deletes an object and its metadata. Deletions are permanent if
+        versioning is not enabled for the bucket, or if the generation
+        parameter is used, or if `soft
+        delete <https://cloud.google.com/storage/docs/soft-delete>`__ is
+        not enabled for the bucket. When this API is used to delete an
+        object from a bucket that has soft delete policy enabled, the
+        object becomes soft deleted, and the ``softDeleteTime`` and
+        ``hardDeleteTime`` properties are set on the object. This API
+        cannot be used to permanently delete soft-deleted objects.
+        Soft-deleted objects are permanently deleted according to their
+        ``hardDeleteTime``.
 
-        Deletions are normally permanent when versioning is
-        disabled or whenever the generation parameter is used.
-        However, if soft delete is enabled for the bucket,
-        deleted objects can be restored using RestoreObject
-        until the soft delete retention period has passed.
+        You can use the
+        [``RestoreObject``][google.storage.v2.Storage.RestoreObject] API
+        to restore soft-deleted objects until the soft delete retention
+        period has passed.
+
+        **IAM Permissions**:
+
+        Requires ``storage.objects.delete`` `IAM
+        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
+        on the bucket.
 
         Returns:
             Callable[[~.DeleteObjectRequest],
@@ -631,7 +646,14 @@ class StorageGrpcAsyncIOTransport(StorageTransport):
             Awaitable[storage.Object]]:
         r"""Return a callable for the get object method over gRPC.
 
-        Retrieves an object's metadata.
+        Retrieves object metadata.
+
+        **IAM Permissions**:
+
+        Requires ``storage.objects.get`` `IAM
+        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
+        on the bucket. To return object ACLs, the authenticated user
+        must also have the ``storage.objects.getIamPolicy`` permission.
 
         Returns:
             Callable[[~.GetObjectRequest],
@@ -657,7 +679,13 @@ class StorageGrpcAsyncIOTransport(StorageTransport):
             Awaitable[storage.ReadObjectResponse]]:
         r"""Return a callable for the read object method over gRPC.
 
-        Reads an object's data.
+        Retrieves object data.
+
+        **IAM Permissions**:
+
+        Requires ``storage.objects.get`` `IAM
+        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
+        on the bucket.
 
         Returns:
             Callable[[~.ReadObjectRequest],
@@ -772,12 +800,18 @@ class StorageGrpcAsyncIOTransport(StorageTransport):
         whether the service views the object as complete.
 
         Attempting to resume an already finalized object will result in
-        an OK status, with a WriteObjectResponse containing the
+        an OK status, with a ``WriteObjectResponse`` containing the
         finalized object's metadata.
 
         Alternatively, the BidiWriteObject operation may be used to
         write an object with controls over flushing and the ability to
         fetch the ability to determine the current persisted size.
+
+        **IAM Permissions**:
+
+        Requires ``storage.objects.create`` `IAM
+        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
+        on the bucket.
 
         Returns:
             Callable[[~.WriteObjectRequest],
@@ -847,6 +881,14 @@ class StorageGrpcAsyncIOTransport(StorageTransport):
 
         Retrieves a list of objects matching the criteria.
 
+        **IAM Permissions**:
+
+        The authenticated user requires ``storage.objects.list`` `IAM
+        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
+        to use this method. To return object ACLs, the authenticated
+        user must also have the ``storage.objects.getIamPolicy``
+        permission.
+
         Returns:
             Callable[[~.ListObjectsRequest],
                     Awaitable[~.ListObjectsResponse]]:
@@ -898,9 +940,19 @@ class StorageGrpcAsyncIOTransport(StorageTransport):
             Awaitable[storage.StartResumableWriteResponse]]:
         r"""Return a callable for the start resumable write method over gRPC.
 
-        Starts a resumable write. How long the write
-        operation remains valid, and what happens when the write
-        operation becomes invalid, are service-dependent.
+        Starts a resumable write operation. This method is part of the
+        `Resumable
+        upload <https://cloud.google.com/storage/docs/resumable-uploads>`__
+        feature. This allows you to upload large objects in multiple
+        chunks, which is more resilient to network interruptions than a
+        single upload. The validity duration of the write operation, and
+        the consequences of it becoming invalid, are service-dependent.
+
+        **IAM Permissions**:
+
+        Requires ``storage.objects.create`` `IAM
+        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
+        on the bucket.
 
         Returns:
             Callable[[~.StartResumableWriteRequest],
@@ -926,20 +978,23 @@ class StorageGrpcAsyncIOTransport(StorageTransport):
             Awaitable[storage.QueryWriteStatusResponse]]:
         r"""Return a callable for the query write status method over gRPC.
 
-        Determines the ``persisted_size`` for an object that is being
-        written, which can then be used as the ``write_offset`` for the
-        next ``Write()`` call.
+        Determines the ``persisted_size`` of an object that is being
+        written. This method is part of the `resumable
+        upload <https://cloud.google.com/storage/docs/resumable-uploads>`__
+        feature. The returned value is the size of the object that has
+        been persisted so far. The value can be used as the
+        ``write_offset`` for the next ``Write()`` call.
 
-        If the object does not exist (i.e., the object has been deleted,
-        or the first ``Write()`` has not yet reached the service), this
-        method returns the error ``NOT_FOUND``.
+        If the object does not exist, meaning if it was deleted, or the
+        first ``Write()`` has not yet reached the service, this method
+        returns the error ``NOT_FOUND``.
 
-        The client **may** call ``QueryWriteStatus()`` at any time to
-        determine how much data has been processed for this object. This
-        is useful if the client is buffering data and needs to know
-        which data can be safely evicted. For any sequence of
+        This method is useful for clients that buffer data and need to
+        know which data can be safely evicted. The client can call
+        ``QueryWriteStatus()`` at any time to determine how much data
+        has been logged for this object. For any sequence of
         ``QueryWriteStatus()`` calls for a given object name, the
-        sequence of returned ``persisted_size`` values will be
+        sequence of returned ``persisted_size`` values are
         non-decreasing.
 
         Returns:
@@ -959,6 +1014,33 @@ class StorageGrpcAsyncIOTransport(StorageTransport):
                 response_deserializer=storage.QueryWriteStatusResponse.deserialize,
             )
         return self._stubs['query_write_status']
+
+    @property
+    def move_object(self) -> Callable[
+            [storage.MoveObjectRequest],
+            Awaitable[storage.Object]]:
+        r"""Return a callable for the move object method over gRPC.
+
+        Moves the source object to the destination object in
+        the same bucket.
+
+        Returns:
+            Callable[[~.MoveObjectRequest],
+                    Awaitable[~.Object]]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'move_object' not in self._stubs:
+            self._stubs['move_object'] = self.grpc_channel.unary_unary(
+                '/google.storage.v2.Storage/MoveObject',
+                request_serializer=storage.MoveObjectRequest.serialize,
+                response_deserializer=storage.Object.deserialize,
+            )
+        return self._stubs['move_object']
 
     def _prep_wrapped_messages(self, client_info):
         """ Precompute the wrapped methods, overriding the base class method to use async wrappers."""
@@ -1070,6 +1152,11 @@ class StorageGrpcAsyncIOTransport(StorageTransport):
             ),
             self.query_write_status: gapic_v1.method_async.wrap_method(
                 self.query_write_status,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.move_object: gapic_v1.method_async.wrap_method(
+                self.move_object,
                 default_timeout=None,
                 client_info=client_info,
             ),

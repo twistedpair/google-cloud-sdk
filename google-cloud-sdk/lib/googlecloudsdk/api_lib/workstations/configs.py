@@ -138,13 +138,13 @@ class Configs:
           )
       ]
       config.host.gceInstance.accelerators = accelerators
-    if (
-        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
-        and args.allow_unauthenticated_cors_preflight_requests
-    ):
-      config.httpOptions = self.messages.HttpOptions(
-          allowedUnauthenticatedCorsPreflightRequests=True
-      )
+
+    if self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA):
+      config.httpOptions = self.messages.HttpOptions()
+      if args.allow_unauthenticated_cors_preflight_requests:
+        config.httpOptions.allowedUnauthenticatedCorsPreflightRequests = True
+      if args.disable_localhost_replacement:
+        config.httpOptions.disableLocalhostReplacement = True
 
     if (
         self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
@@ -329,26 +329,29 @@ class Configs:
       config.maxUsableWorkstations = args.max_usable_workstations_count
       update_mask.append('max_usable_workstations')
 
-    if (
-        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
-        and args.allow_unauthenticated_cors_preflight_requests
-    ):
-      config.httpOptions = self.messages.HttpOptions(
-          allowedUnauthenticatedCorsPreflightRequests=True
-      )
-      update_mask.append(
-          'http_options.allowed_unauthenticated_cors_preflight_requests'
-      )
-    if (
-        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
-        and args.disallow_unauthenticated_cors_preflight_requests
-    ):
-      config.httpOptions = self.messages.HttpOptions(
-          allowedUnauthenticatedCorsPreflightRequests=False
-      )
-      update_mask.append(
-          'http_options.allowed_unauthenticated_cors_preflight_requests'
-      )
+    if self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA):
+      config.httpOptions = self.messages.HttpOptions()
+      if args.allow_unauthenticated_cors_preflight_requests:
+        config.httpOptions.allowedUnauthenticatedCorsPreflightRequests = True
+        update_mask.append(
+            'http_options.allowed_unauthenticated_cors_preflight_requests'
+        )
+      if args.disallow_unauthenticated_cors_preflight_requests:
+        config.httpOptions.allowedUnauthenticatedCorsPreflightRequests = False
+        update_mask.append(
+            'http_options.allowed_unauthenticated_cors_preflight_requests'
+        )
+
+      if args.enable_localhost_replacement:
+        config.httpOptions.disableLocalhostReplacement = False
+        update_mask.append(
+            'http_options.disable_localhost_replacement'
+        )
+      if args.disable_localhost_replacement:
+        config.httpOptions.disableLocalhostReplacement = True
+        update_mask.append(
+            'http_options.disable_localhost_replacement'
+        )
 
     # GCE Instance Config
     config.host = self.messages.Host()

@@ -258,8 +258,8 @@ class CaPool(_messages.Message):
     issuancePolicy: Optional. The IssuancePolicy to control how Certificates
       will be issued from this CaPool.
     labels: Optional. Labels with user-defined metadata.
-    name: Output only. Identifier. The resource name for this CaPool in the
-      format `projects/*/locations/*/caPools/*`.
+    name: Identifier. The resource name for this CaPool in the format
+      `projects/*/locations/*/caPools/*`.
     publishingOptions: Optional. The PublishingOptions to follow when issuing
       Certificates from any CertificateAuthority in this CaPool.
     tier: Required. Immutable. The Tier of this CaPool.
@@ -355,7 +355,7 @@ class Certificate(_messages.Message):
       to create the "not_before_time" and "not_after_time" fields inside an
       X.509 certificate. Note that the lifetime may be truncated if it would
       extend past the life of any certificate authority in the issuing chain.
-    name: Output only. The resource name for this Certificate in the format
+    name: Identifier. The resource name for this Certificate in the format
       `projects/*/locations/*/caPools/*/certificates/*`.
     pemCertificate: Output only. The pem-encoded, signed X.509 certificate.
     pemCertificateChain: Output only. The chain that may be used to verify the
@@ -475,9 +475,8 @@ class CertificateAuthority(_messages.Message):
     lifetime: Required. Immutable. The desired lifetime of the CA certificate.
       Used to create the "not_before_time" and "not_after_time" fields inside
       an X.509 certificate.
-    name: Output only. Identifier. The resource name for this
-      CertificateAuthority in the format
-      `projects/*/locations/*/caPools/*/certificateAuthorities/*`.
+    name: Identifier. The resource name for this CertificateAuthority in the
+      format `projects/*/locations/*/caPools/*/certificateAuthorities/*`.
     pemCaCertificates: Output only. This CertificateAuthority's certificate
       chain, including the current CertificateAuthority's certificate. Ordered
       such that the root issuer is the final element (consistent with RFC
@@ -782,7 +781,7 @@ class CertificateRevocationList(_messages.Message):
     createTime: Output only. The time at which this CertificateRevocationList
       was created.
     labels: Optional. Labels with user-defined metadata.
-    name: Output only. The resource name for this CertificateRevocationList in
+    name: Identifier. The resource name for this CertificateRevocationList in
       the format `projects/*/locations/*/caPools/*certificateAuthorities/*/
       certificateRevocationLists/*`.
     pemCrl: Output only. The PEM-encoded X.509 CRL.
@@ -870,7 +869,7 @@ class CertificateTemplate(_messages.Message):
       that if the issuing CertificateAuthority expires before a Certificate's
       requested maximum_lifetime, the effective lifetime will be explicitly
       truncated to match it.
-    name: Output only. The resource name for this CertificateTemplate in the
+    name: Identifier. The resource name for this CertificateTemplate in the
       format `projects/*/locations/*/certificateTemplates/*`.
     passthroughExtensions: Optional. Describes the set of X.509 extensions
       that may appear in a Certificate issued using this CertificateTemplate.
@@ -1852,7 +1851,7 @@ class PrivatecaProjectsLocationsCaPoolsCertificateAuthoritiesCertificateRevocati
   Fields:
     certificateRevocationList: A CertificateRevocationList resource to be
       passed as the request body.
-    name: Output only. The resource name for this CertificateRevocationList in
+    name: Identifier. The resource name for this CertificateRevocationList in
       the format `projects/*/locations/*/caPools/*certificateAuthorities/*/
       certificateRevocationLists/*`.
     requestId: Optional. An ID to identify requests. Specify a unique request
@@ -2066,9 +2065,8 @@ class PrivatecaProjectsLocationsCaPoolsCertificateAuthoritiesPatchRequest(_messa
   Fields:
     certificateAuthority: A CertificateAuthority resource to be passed as the
       request body.
-    name: Output only. Identifier. The resource name for this
-      CertificateAuthority in the format
-      `projects/*/locations/*/caPools/*/certificateAuthorities/*`.
+    name: Identifier. The resource name for this CertificateAuthority in the
+      format `projects/*/locations/*/caPools/*/certificateAuthorities/*`.
     requestId: Optional. An ID to identify requests. Specify a unique request
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
@@ -2195,7 +2193,7 @@ class PrivatecaProjectsLocationsCaPoolsCertificatesPatchRequest(_messages.Messag
 
   Fields:
     certificate: A Certificate resource to be passed as the request body.
-    name: Output only. The resource name for this Certificate in the format
+    name: Identifier. The resource name for this Certificate in the format
       `projects/*/locations/*/caPools/*/certificates/*`.
     requestId: Optional. An ID to identify requests. Specify a unique request
       ID so that if you must retry your request, the server will know to
@@ -2367,8 +2365,8 @@ class PrivatecaProjectsLocationsCaPoolsPatchRequest(_messages.Message):
 
   Fields:
     caPool: A CaPool resource to be passed as the request body.
-    name: Output only. Identifier. The resource name for this CaPool in the
-      format `projects/*/locations/*/caPools/*`.
+    name: Identifier. The resource name for this CaPool in the format
+      `projects/*/locations/*/caPools/*`.
     requestId: Optional. An ID to identify requests. Specify a unique request
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
@@ -2541,7 +2539,7 @@ class PrivatecaProjectsLocationsCertificateTemplatesPatchRequest(_messages.Messa
   Fields:
     certificateTemplate: A CertificateTemplate resource to be passed as the
       request body.
-    name: Output only. The resource name for this CertificateTemplate in the
+    name: Identifier. The resource name for this CertificateTemplate in the
       format `projects/*/locations/*/certificateTemplates/*`.
     requestId: Optional. An ID to identify requests. Specify a unique request
       ID so that if you must retry your request, the server will know to

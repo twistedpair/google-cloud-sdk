@@ -34,12 +34,15 @@ from .types.content import GroundingMetadata
 from .types.content import GroundingSupport
 from .types.content import LogprobsResult
 from .types.content import Part
+from .types.content import PrebuiltVoiceConfig
 from .types.content import RetrievalMetadata
 from .types.content import SafetyRating
 from .types.content import SafetySetting
 from .types.content import SearchEntryPoint
 from .types.content import Segment
+from .types.content import SpeechConfig
 from .types.content import VideoMetadata
+from .types.content import VoiceConfig
 from .types.content import HarmCategory
 from .types.explanation import Attribution
 from .types.explanation import BlurBaselineConfig
@@ -114,6 +117,7 @@ from .types.tool import FunctionResponse
 from .types.tool import GoogleSearchRetrieval
 from .types.tool import RagRetrievalConfig
 from .types.tool import Retrieval
+from .types.tool import RetrievalConfig
 from .types.tool import Tool
 from .types.tool import ToolConfig
 from .types.tool import ToolUseExample
@@ -191,6 +195,7 @@ __all__ = (
 'ModelExplanation',
 'Neighbor',
 'Part',
+'PrebuiltVoiceConfig',
 'PredictLongRunningMetadata',
 'PredictLongRunningRequest',
 'PredictLongRunningResponse',
@@ -201,6 +206,7 @@ __all__ = (
 'RagRetrievalConfig',
 'RawPredictRequest',
 'Retrieval',
+'RetrievalConfig',
 'RetrievalMetadata',
 'SafetyRating',
 'SafetySetting',
@@ -211,6 +217,7 @@ __all__ = (
 'SharePointSources',
 'SlackSource',
 'SmoothGradConfig',
+'SpeechConfig',
 'StreamDirectPredictRequest',
 'StreamDirectPredictResponse',
 'StreamDirectRawPredictRequest',
@@ -230,5 +237,6 @@ __all__ = (
 'VertexAISearch',
 'VertexRagStore',
 'VideoMetadata',
+'VoiceConfig',
 'XraiAttribution',
 )

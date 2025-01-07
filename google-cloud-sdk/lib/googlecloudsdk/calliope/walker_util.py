@@ -49,10 +49,9 @@ class DevSiteGenerator(walker.Walker):
   This implements gcloud meta generate-help-docs --manpage-dir=DIRECTORY.
 
   Attributes:
-    _directory: The DevSite reference output directory.
-    _need_section_tag[]: _need_section_tag[i] is True if there are section
-      subitems at depth i. This prevents the creation of empty 'section:' tags
-      in the '_toc' files.
+    _directory: The DevSite reference output directory. _need_section_tag[]:
+      _need_section_tag[i] is True if there are section subitems at depth i.
+      This prevents the creation of empty 'section:' tags in the '_toc' files.
     _toc_root: The root TOC output stream.
     _toc_main: The current main (just under root) TOC output stream.
   """
@@ -60,8 +59,9 @@ class DevSiteGenerator(walker.Walker):
   _REFERENCE = '/sdk/gcloud/reference'  # TOC reference directory offset.
   _TOC = '_toc.yaml'
 
-  def __init__(self, cli, directory, hidden=False, progress_callback=None,
-               restrict=None):
+  def __init__(
+      self, cli, directory, hidden=False, progress_callback=None, restrict=None
+  ):
     """Constructor.
 
     Args:
@@ -74,9 +74,8 @@ class DevSiteGenerator(walker.Walker):
         list. For example, restrict=['gcloud.alpha.test', 'gcloud.topic']
         restricts the walk to the 'gcloud topic' and 'gcloud alpha test'
         commands/groups.
-
     """
-    super(DevSiteGenerator, self).__init__(cli)
+    super(DevSiteGenerator, self).__init__(cli, restrict=restrict)
     self._directory = directory
     files.MakeDir(self._directory)
     self._need_section_tag = []
@@ -99,6 +98,7 @@ class DevSiteGenerator(walker.Walker):
     Returns:
       The parent value, ignored here.
     """
+
     def _UpdateTOC():
       """Updates the DevSIte TOC."""
       depth = len(command) - 1
@@ -124,8 +124,13 @@ class DevSiteGenerator(walker.Walker):
         toc = self._toc_root
         indent = '  '
         if is_group:
-          toc.write('%s- include: %s\n' % (
-              indent, '/'.join([self._REFERENCE] + command[1:] + [self._TOC])))
+          toc.write(
+              '%s- include: %s\n'
+              % (
+                  indent,
+                  '/'.join([self._REFERENCE] + command[1:] + [self._TOC]),
+              )
+          )
           return
       else:
         toc = self._toc_main
@@ -135,8 +140,9 @@ class DevSiteGenerator(walker.Walker):
           toc.write('%ssection:\n' % indent)
         title = command[-1]
       toc.write('%s- title: "%s"\n' % (indent, title))
-      toc.write('%s  path: %s\n' % (indent,
-                                    '/'.join([self._REFERENCE] + command[1:])))
+      toc.write(
+          '%s  path: %s\n' % (indent, '/'.join([self._REFERENCE] + command[1:]))
+      )
       self._need_section_tag[depth] = is_group
 
     # Set up the destination dir for this level.
@@ -148,8 +154,9 @@ class DevSiteGenerator(walker.Walker):
       directory = os.path.join(self._directory, *command[1:-1])
 
     # Render the DevSite document.
-    path = os.path.join(
-        directory, 'index' if is_group else command[-1]) + '.html'
+    path = (
+        os.path.join(directory, 'index' if is_group else command[-1]) + '.html'
+    )
 
     # Currently, devsite pages from GDU are automatically mirrored to all other
     # universes. To display Universe Disclaimer Information section correctly on
@@ -162,10 +169,13 @@ class DevSiteGenerator(walker.Walker):
 
     with files.FileWriter(path) as f:
       md = markdown.Markdown(node)
-      render_document.RenderDocument(style='devsite',
-                                     title=' '.join(command),
-                                     fin=io.StringIO(md),
-                                     out=f, command_node=node)
+      render_document.RenderDocument(
+          style='devsite',
+          title=' '.join(command),
+          fin=io.StringIO(md),
+          out=f,
+          command_node=node,
+      )
 
     # reset universe_domain
     properties.VALUES.core.universe_domain.Set(universe_domain)
@@ -186,8 +196,9 @@ class HelpTextGenerator(walker.Walker):
     _directory: The help text output directory.
   """
 
-  def __init__(self, cli, directory, hidden=False, progress_callback=None,
-               restrict=None):
+  def __init__(
+      self, cli, directory, hidden=False, progress_callback=None, restrict=None
+  ):
     """Constructor.
 
     Args:
@@ -200,10 +211,10 @@ class HelpTextGenerator(walker.Walker):
         list. For example, restrict=['gcloud.alpha.test', 'gcloud.topic']
         restricts the walk to the 'gcloud topic' and 'gcloud alpha test'
         commands/groups.
-
     """
     super(HelpTextGenerator, self).__init__(
-        cli, progress_callback=progress_callback, restrict=restrict)
+        cli, progress_callback=progress_callback, restrict=restrict
+    )
     self._directory = directory
     files.MakeDir(self._directory)
 
@@ -231,8 +242,7 @@ class HelpTextGenerator(walker.Walker):
     path = os.path.join(directory, 'GROUP' if is_group else command[-1])
     with files.FileWriter(path) as f:
       md = markdown.Markdown(node)
-      render_document.RenderDocument(style='text', fin=io.StringIO(md),
-                                     out=f)
+      render_document.RenderDocument(style='text', fin=io.StringIO(md), out=f)
     return parent
 
 
@@ -247,7 +257,7 @@ class DocumentGenerator(walker.Walker):
     _suffix: The output file suffix.
   """
 
-  def __init__(self, cli, directory, style, suffix):
+  def __init__(self, cli, directory, style, suffix, restrict=None):
     """Constructor.
 
     Args:
@@ -255,8 +265,12 @@ class DocumentGenerator(walker.Walker):
       directory: The manpage output directory path name.
       style: The document style.
       suffix: The generate document file suffix. None for .<SECTION>.
+      restrict: Restricts the walk to the command/group dotted paths in this
+        list. For example, restrict=['gcloud.alpha.test', 'gcloud.topic']
+        restricts the walk to the 'gcloud topic' and 'gcloud alpha test'
+        commands/groups.
     """
-    super(DocumentGenerator, self).__init__(cli)
+    super(DocumentGenerator, self).__init__(cli, restrict=restrict)
     self._directory = directory
     self._style = style
     self._suffix = suffix
@@ -282,11 +296,13 @@ class DocumentGenerator(walker.Walker):
     path = os.path.join(self._directory, '_'.join(command)) + self._suffix
     with files.FileWriter(path) as f:
       md = markdown.Markdown(node)
-      render_document.RenderDocument(style=self._style,
-                                     title=' '.join(command),
-                                     fin=io.StringIO(md),
-                                     out=f,
-                                     command_metadata=meta_data)
+      render_document.RenderDocument(
+          style=self._style,
+          title=' '.join(command),
+          fin=io.StringIO(md),
+          out=f,
+          command_metadata=meta_data,
+      )
     return parent
 
 
@@ -320,10 +336,15 @@ class HtmlGenerator(DocumentGenerator):
       indent = level * 2 + 2
       name = command.get('_name_')
       args = prefix + [name]
-      out.write('{indent}<li class="{visibility}" id="{item}" '
-                'onclick="select(event, this.id)">{name}'.format(
-                    indent=' ' * indent, visibility=visibility, name=name,
-                    item=ConvertPathToIdentifier(args)))
+      out.write(
+          '{indent}<li class="{visibility}" id="{item}" '
+          'onclick="select(event, this.id)">{name}'.format(
+              indent=' ' * indent,
+              visibility=visibility,
+              name=name,
+              item=ConvertPathToIdentifier(args),
+          )
+      )
       commands = command.get('commands', []) + command.get('groups', [])
       if commands:
         out.write('<ul>\n')
@@ -332,7 +353,7 @@ class HtmlGenerator(DocumentGenerator):
         out.write('{indent}</ul>\n'.format(indent=' ' * (indent + 1)))
         out.write('{indent}</li>\n'.format(indent=' ' * indent))
       else:
-        out.write('</li>\n'.format(indent=' ' * (indent + 1)))
+        out.write('</li>\n')
 
     out.write("""\
 <html>
@@ -365,12 +386,15 @@ class HtmlGenerator(DocumentGenerator):
       self.WriteHtmlMenu(tree, out)
     for file_name in _HELP_HTML_DATA_FILES:
       file_contents = pkg_resources.GetResource(
-          'googlecloudsdk.api_lib.meta.help_html_data.', file_name)
-      files.WriteBinaryFileContents(os.path.join(directory, file_name),
-                                    file_contents)
+          'googlecloudsdk.api_lib.meta.help_html_data.', file_name
+      )
+      files.WriteBinaryFileContents(
+          os.path.join(directory, file_name), file_contents
+      )
 
-  def __init__(self, cli, directory, hidden=False, progress_callback=None,
-               restrict=None):
+  def __init__(
+      self, cli, directory, hidden=False, progress_callback=None, restrict=None
+  ):
     """Constructor.
 
     Args:
@@ -383,10 +407,14 @@ class HtmlGenerator(DocumentGenerator):
         list. For example, restrict=['gcloud.alpha.test', 'gcloud.topic']
         restricts the walk to the 'gcloud topic' and 'gcloud alpha test'
         commands/groups.
-
     """
     super(HtmlGenerator, self).__init__(
-        cli, directory=directory, style='html', suffix='.html')
+        cli,
+        directory=directory,
+        style='html',
+        suffix='.html',
+        restrict=restrict,
+    )
     self._GenerateHtmlNav(directory, cli, hidden, restrict)
 
 
@@ -399,8 +427,9 @@ class ManPageGenerator(DocumentGenerator):
 
   _SECTION_FORMAT = 'man{section}'
 
-  def __init__(self, cli, directory, hidden=False, progress_callback=None,
-               restrict=None):
+  def __init__(
+      self, cli, directory, hidden=False, progress_callback=None, restrict=None
+  ):
     """Constructor.
 
     Args:
@@ -413,21 +442,22 @@ class ManPageGenerator(DocumentGenerator):
         list. For example, restrict=['gcloud.alpha.test', 'gcloud.topic']
         restricts the walk to the 'gcloud topic' and 'gcloud alpha test'
         commands/groups.
-
     """
 
     # Currently all gcloud manpages are in section 1.
     section_subdir = self._SECTION_FORMAT.format(section=1)
     section_dir = os.path.join(directory, section_subdir)
     super(ManPageGenerator, self).__init__(
-        cli, directory=section_dir, style='man', suffix='.1')
+        cli, directory=section_dir, style='man', suffix='.1', restrict=restrict
+    )
 
 
 class LinterGenerator(DocumentGenerator):
   """Generates linter files with suffix .json in an output directory."""
 
-  def __init__(self, cli, directory, hidden=False, progress_callback=None,
-               restrict=None):
+  def __init__(
+      self, cli, directory, hidden=False, progress_callback=None, restrict=None
+  ):
     """Constructor.
 
     Args:
@@ -440,11 +470,15 @@ class LinterGenerator(DocumentGenerator):
         list. For example, restrict=['gcloud.alpha.test', 'gcloud.topic']
         restricts the walk to the 'gcloud topic' and 'gcloud alpha test'
         commands/groups.
-
     """
 
     super(LinterGenerator, self).__init__(
-        cli, directory=directory, style='linter', suffix='.json')
+        cli,
+        directory=directory,
+        style='linter',
+        suffix='.json',
+        restrict=restrict,
+    )
 
 
 class CommandTreeGenerator(walker.Walker):
@@ -515,7 +549,7 @@ class CommandTreeGenerator(walker.Walker):
         if flag in self._global_flags:
           continue
         if flag.startswith(no_prefix):
-          positive = '--' + flag[len(no_prefix):]
+          positive = '--' + flag[len(no_prefix) :]
           if positive in all_flags:
             continue
         flags.append(flag)

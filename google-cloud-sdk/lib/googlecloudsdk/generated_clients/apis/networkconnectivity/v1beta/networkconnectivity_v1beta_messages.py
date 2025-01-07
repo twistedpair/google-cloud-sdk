@@ -179,9 +179,9 @@ class GoogleCloudNetworkconnectivityV1betaAutoAccept(_messages.Message):
   hub administrator.
 
   Fields:
-    autoAcceptProjects: A list of project ids or project numbers for which you
-      want to enable auto-accept. The auto-accept setting is applied to spokes
-      being created or updated in these projects.
+    autoAcceptProjects: Optional. A list of project ids or project numbers for
+      which you want to enable auto-accept. The auto-accept setting is applied
+      to spokes being created or updated in these projects.
   """
 
   autoAcceptProjects = _messages.StringField(1, repeated=True)
@@ -659,7 +659,7 @@ class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
 
   Fields:
     createTime: Output only. The time the hub was created.
-    description: An optional description of the hub.
+    description: Optional. An optional description of the hub.
     exchangePupi: Optional. Whether Privately Used Public IP (PUPI) exchange
       is enabled for the hub. If true, PUPI exchange will be allowed in VPC
       spokes attached to the hub. The default value is false.
@@ -1897,7 +1897,7 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
 
   Fields:
     createTime: Output only. The time the spoke was created.
-    description: An optional description of the spoke.
+    description: Optional. An optional description of the spoke.
     gateway: Optional. This is a gateway that can apply specialized processing
       to traffic going through it.
     group: Optional. The name of the group that this spoke is associated with.
@@ -1906,14 +1906,15 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
       about labels, see [Requirements for
       labels](https://cloud.google.com/resource-manager/docs/creating-
       managing-labels#requirements).
-    linkedInterconnectAttachments: VLAN attachments that are associated with
-      the spoke.
+    linkedInterconnectAttachments: Optional. VLAN attachments that are
+      associated with the spoke.
     linkedProducerVpcNetwork: Optional. The linked producer VPC that is
       associated with the spoke.
-    linkedRouterApplianceInstances: Router appliance instances that are
-      associated with the spoke.
+    linkedRouterApplianceInstances: Optional. Router appliance instances that
+      are associated with the spoke.
     linkedVpcNetwork: Optional. VPC network that is associated with the spoke.
-    linkedVpnTunnels: VPN tunnels that are associated with the spoke.
+    linkedVpnTunnels: Optional. VPN tunnels that are associated with the
+      spoke.
     name: Immutable. The name of the spoke. Spoke names must be unique. They
       use the following form:
       `projects/{project_number}/locations/{region}/spokes/{spoke_id}`

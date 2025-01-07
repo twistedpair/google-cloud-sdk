@@ -19,30 +19,35 @@ class ConnectgatewayProjectsLocationsMembershipsGenerateCredentialsRequest(_mess
   object.
 
   Enums:
-    OperatingSystemValueValuesEnum: Optional. The operating system where the
-      kubeconfig will be used.
+    OperatingSystemValueValuesEnum: Optional. The operating system on which
+      the generated kubeconfig will be used.
 
   Fields:
     forceUseAgent: Optional. Whether to force the use of Connect Agent-based
-      transport. This will return a configuration that uses Connect Agent as
-      the underlying transport mechanism for cluster types that would
-      otherwise have used a different transport. Requires that Connect Agent
-      be installed on the cluster. Setting this field to false is equivalent
-      to not setting it.
-    kubernetesNamespace: Optional. The namespace to use in the kubeconfig
-      context. If this field is specified, the server will set the `namespace`
-      field in kubeconfig context. If not specified, the `namespace` field is
-      omitted.
+      transport in the generated kubeconfig. This will return a configuration
+      that uses Connect Agent as the underlying transport mechanism for
+      cluster types that would otherwise have used a different transport.
+      Requires that Connect Agent be installed on the cluster. Setting this
+      field to false is equivalent to not setting it.
+    impersonatedServiceAccount: Optional. Service account to impersonate when
+      using the generated kubeconfig. This should only be specified if all
+      calls using this kubeconfig should be made using impersonation of the
+      same service account.
+    kubernetesNamespace: Optional. The namespace to use in the generated
+      kubeconfig context. If this field is specified, the server will set the
+      `namespace` field in kubeconfig context. If not specified, the
+      `namespace` field is omitted.
     name: Required. The Fleet membership resource.
-    operatingSystem: Optional. The operating system where the kubeconfig will
-      be used.
-    version: Optional. The Connect Gateway version to be used in the resulting
-      configuration. Leave this field blank to let the server choose the
-      version (recommended).
+    operatingSystem: Optional. The operating system on which the generated
+      kubeconfig will be used.
+    version: Optional. The Connect Gateway version to be used in the generated
+      kubeconfig. Leave this field blank to let the server choose the version
+      (recommended).
   """
 
   class OperatingSystemValueValuesEnum(_messages.Enum):
-    r"""Optional. The operating system where the kubeconfig will be used.
+    r"""Optional. The operating system on which the generated kubeconfig will
+    be used.
 
     Values:
       OPERATING_SYSTEM_UNSPECIFIED: Generates a kubeconfig that works for all
@@ -54,10 +59,11 @@ class ConnectgatewayProjectsLocationsMembershipsGenerateCredentialsRequest(_mess
     OPERATING_SYSTEM_WINDOWS = 1
 
   forceUseAgent = _messages.BooleanField(1)
-  kubernetesNamespace = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  operatingSystem = _messages.EnumField('OperatingSystemValueValuesEnum', 4)
-  version = _messages.StringField(5)
+  impersonatedServiceAccount = _messages.StringField(2)
+  kubernetesNamespace = _messages.StringField(3)
+  name = _messages.StringField(4, required=True)
+  operatingSystem = _messages.EnumField('OperatingSystemValueValuesEnum', 5)
+  version = _messages.StringField(6)
 
 
 class GenerateCredentialsResponse(_messages.Message):

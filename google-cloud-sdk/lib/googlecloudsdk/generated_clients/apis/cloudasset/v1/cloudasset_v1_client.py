@@ -440,7 +440,7 @@ class CloudassetV1(base_api.BaseApiClient):
         method_id='cloudasset.otherCloudConnections.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['updateMask'],
+        query_params=['optInFeatures_allEligibleFeatures', 'updateMask'],
         relative_path='v1/{+name}',
         request_field='otherCloudConnection',
         request_type_name='CloudassetOtherCloudConnectionsPatchRequest',

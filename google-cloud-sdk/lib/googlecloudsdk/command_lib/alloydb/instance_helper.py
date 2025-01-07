@@ -219,6 +219,20 @@ def _ConstructInstanceFromArgsAlpha(client, alloydb_messages, args):
       client, alloydb_messages, args
   )
 
+  if args.enable_connection_pooling:
+    instance_resource.connectionPoolConfig = _ConnectionPoolConfig(
+        alloydb_messages=alloydb_messages,
+        enable_connection_pooling=args.enable_connection_pooling,
+        connection_pooling_pool_mode=args.connection_pooling_pool_mode,
+        connection_pooling_min_pool_size=args.connection_pooling_min_pool_size,
+        connection_pooling_max_pool_size=args.connection_pooling_max_pool_size,
+        connection_pooling_max_client_conn=args.connection_pooling_max_client_connections,
+        connection_pooling_server_idle_timeout=args.connection_pooling_server_idle_timeout,
+        connection_pooling_query_wait_timeout=args.connection_pooling_query_wait_timeout,
+        connection_pooling_stats_users=args.connection_pooling_stats_users,
+        connection_pooling_ignore_startup_parameters=args.connection_pooling_ignore_startup_parameters,
+    )
+
   if args.allowed_psc_projects or args.psc_network_attachment_url is not None:
     instance_resource.pscInstanceConfig = PscInstanceConfig(
         alloydb_messages=alloydb_messages,
@@ -642,6 +656,18 @@ def _ParseSSLMode(alloydb_messages, ssl_mode):
   return None
 
 
+def _ParsePoolMode(alloydb_messages, pool_mode):
+  if pool_mode == 'TRANSACTION':
+    return (
+        alloydb_messages.ConnectionPoolConfig.PoolModeValueValuesEnum.POOL_MODE_TRANSACTION
+    )
+  elif pool_mode == 'SESSION':
+    return (
+        alloydb_messages.ConnectionPoolConfig.PoolModeValueValuesEnum.POOL_MODE_SESSION
+    )
+  return None
+
+
 def NetworkConfig(**kwargs):
   """Generates the network config for the instance."""
   assign_inbound_public_ip = kwargs.get('assign_inbound_public_ip')
@@ -686,6 +712,45 @@ def NetworkConfig(**kwargs):
         )
     )
   return instance_network_config
+
+
+def _ConnectionPoolConfig(**kwargs):
+  """Generates the connection pooling config for the instance."""
+  enable_connection_pooling = kwargs.get('enable_connection_pooling')
+  if not enable_connection_pooling:
+    return None
+
+  pool_mode = kwargs.get('connection_pooling_pool_mode')
+  min_pool_size = kwargs.get('connection_pooling_min_pool_size')
+  default_pool_size = kwargs.get('connection_pooling_max_pool_size')
+  max_client_conn = kwargs.get('connection_pooling_max_client_conn')
+  server_idle_timeout = kwargs.get('connection_pooling_server_idle_timeout')
+  query_wait_timeout = kwargs.get('connection_pooling_query_wait_timeout')
+  stats_users = kwargs.get('connection_pooling_stats_users')
+  ignore_startup_parameters = kwargs.get(
+      'connection_pooling_ignore_startup_parameters'
+  )
+
+  alloydb_messages = kwargs.get('alloydb_messages')
+  config = alloydb_messages.ConnectionPoolConfig()
+  config.enable = enable_connection_pooling
+  if pool_mode is not None:
+    config.poolMode = _ParsePoolMode(alloydb_messages, pool_mode)
+  if min_pool_size is not None:
+    config.minPoolSize = min_pool_size
+  if default_pool_size is not None:
+    config.defaultPoolSize = default_pool_size
+  if max_client_conn is not None:
+    config.maxClientConn = max_client_conn
+  if server_idle_timeout is not None:
+    config.serverIdleTimeout = server_idle_timeout
+  if query_wait_timeout is not None:
+    config.queryWaitTimeout = query_wait_timeout
+  if stats_users is not None:
+    config.statsUsers = stats_users
+  if ignore_startup_parameters is not None:
+    config.ignoreStartupParameters = ignore_startup_parameters
+  return config
 
 
 def PscInstanceConfig(**kwargs):
@@ -897,6 +962,38 @@ def ConstructInstanceAndUpdatePathsFromArgsAlpha(
       or args.clear_psc_network_attachment_url
   ):
     paths.append('pscInstanceConfig.pscInterfaceConfigs')
+
+  if args.enable_connection_pooling is not None:
+    paths.append('connectionPoolConfig.enable')
+  if args.connection_pooling_pool_mode is not None:
+    paths.append('connectionPoolConfig.poolMode')
+  if args.connection_pooling_min_pool_size is not None:
+    paths.append('connectionPoolConfig.minPoolSize')
+  if args.connection_pooling_max_pool_size is not None:
+    paths.append('connectionPoolConfig.defaultPoolSize')
+  if args.connection_pooling_max_client_connections is not None:
+    paths.append('connectionPoolConfig.maxClientConn')
+  if args.connection_pooling_server_idle_timeout is not None:
+    paths.append('connectionPoolConfig.serverIdleTimeout')
+  if args.connection_pooling_query_wait_timeout is not None:
+    paths.append('connectionPoolConfig.queryWaitTimeout')
+  if args.connection_pooling_stats_users is not None:
+    paths.append('connectionPoolConfig.statsUsers')
+  if args.connection_pooling_ignore_startup_parameters is not None:
+    paths.append('connectionPoolConfig.ignoreStartupParameters')
+
+  instance_resource.connectionPoolConfig = _ConnectionPoolConfig(
+      alloydb_messages=alloydb_messages,
+      enable_connection_pooling=args.enable_connection_pooling,
+      connection_pooling_pool_mode=args.connection_pooling_pool_mode,
+      connection_pooling_min_pool_size=args.connection_pooling_min_pool_size,
+      connection_pooling_max_pool_size=args.connection_pooling_max_pool_size,
+      connection_pooling_max_client_conn=args.connection_pooling_max_client_connections,
+      connection_pooling_server_idle_timeout=args.connection_pooling_server_idle_timeout,
+      connection_pooling_query_wait_timeout=args.connection_pooling_query_wait_timeout,
+      connection_pooling_stats_users=args.connection_pooling_stats_users,
+      connection_pooling_ignore_startup_parameters=args.connection_pooling_ignore_startup_parameters,
+  )
   return instance_resource, paths
 
 

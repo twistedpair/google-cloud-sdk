@@ -13,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""argparse Actions for use with calliope.
-"""
+"""argparse Actions for use with calliope."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -65,10 +64,12 @@ def GetArgparseBuiltInAction(action):
   """
   # pylint:disable=protected-access
   # Disabling lint check to access argparse._ActionsContainer
-  fake_actions_container = argparse._ActionsContainer(description=None,
-                                                      prefix_chars=None,
-                                                      argument_default=None,
-                                                      conflict_handler='error')
+  fake_actions_container = argparse._ActionsContainer(
+      description=None,
+      prefix_chars=None,
+      argument_default=None,
+      conflict_handler='error',
+  )
 
   action_cls = fake_actions_container._registry_get('action', action)
 
@@ -76,7 +77,9 @@ def GetArgparseBuiltInAction(action):
     raise ValueError('unknown action "{0}"'.format(action))
 
   return action_cls
- # pylint:disable=protected-access
+
+
+# pylint:disable=protected-access
 
 
 def FunctionExitAction(func):
@@ -113,7 +116,7 @@ def StoreProperty(prop):
 
   Args:
     prop: properties._Property, The property that should get the invocation
-        value.
+      value.
 
   Returns:
     argparse.Action, An argparse action that routes the value correctly.
@@ -154,7 +157,7 @@ def StoreBooleanProperty(prop):
 
   Args:
     prop: properties._Property, The property that should get the invocation
-        value.
+      value.
 
   Returns:
     argparse.Action, An argparse action that routes the value correctly.
@@ -214,7 +217,7 @@ def StoreConstProperty(prop, const):
 
   Args:
     prop: properties._Property, The property that should get the invocation
-        value.
+      value.
     const: str, The constant that should be stored in the property.
 
   Returns:
@@ -386,9 +389,11 @@ def ShortHelpAction(command):
   Returns:
     argparse.Action, the action to use.
   """
+
   def Func():
     metrics.Help(command.dotted_name, '-h')
     log.out.write(command.GetUsage())
+
   return FunctionExitAction(Func)
 
 
@@ -412,6 +417,7 @@ def RenderDocumentAction(command, default_style=None):
       super(Action, self).__init__(**kwargs)
 
     def __call__(self, parser, namespace, values, option_string=None):
+      # pyformat: disable
       """Render a help document according to the style in values.
 
       Args:
@@ -429,6 +435,7 @@ def RenderDocumentAction(command, default_style=None):
       Raises:
         parser_errors.ArgumentError: For unknown flag value attribute name.
       """
+      # pyformat: enable
       # pylint: disable=g-import-not-at-top
       from googlecloudsdk.calliope import markdown
       from googlecloudsdk.core.document_renderers import render_document
@@ -451,7 +458,8 @@ def RenderDocumentAction(command, default_style=None):
             title = value
           else:
             raise parser_errors.ArgumentError(
-                'Unknown document attribute [{0}]'.format(name))
+                'Unknown document attribute [{0}]'.format(name)
+            )
 
       if title is None:
         title = command.dotted_name
@@ -461,8 +469,7 @@ def RenderDocumentAction(command, default_style=None):
       if style in ('--help', 'help', 'topic'):
         style = 'text'
       md = io.StringIO(markdown.Markdown(command))
-      out = (io.StringIO() if console_io.IsInteractive(output=True)
-             else None)
+      out = io.StringIO() if console_io.IsInteractive(output=True) else None
 
       if style == 'linter':
         meta_data = GetCommandMetaData(command)
@@ -473,9 +480,15 @@ def RenderDocumentAction(command, default_style=None):
         command_node = command
       else:
         command_node = None
-      render_document.RenderDocument(style, md, out=out or log.out, notes=notes,
-                                     title=title, command_metadata=meta_data,
-                                     command_node=command_node)
+      render_document.RenderDocument(
+          style,
+          md,
+          out=out or log.out,
+          notes=notes,
+          title=title,
+          command_metadata=meta_data,
+          command_node=command_node,
+      )
       metrics.Ran()
       if out:
         console_io.More(out.getvalue())
@@ -511,13 +524,13 @@ def _PreActionHook(action, func, additional_help=None):
   underlying intended behavior of the flag itself
 
   Args:
-    action: action class to be wrapped. Either a subclass of argparse.Action
-        or a string representing one of the built in arg_parse action types.
-        If None, argparse._StoreAction type is used as default.
+    action: action class to be wrapped. Either a subclass of argparse.Action or
+      a string representing one of the built in arg_parse action types. If None,
+      argparse._StoreAction type is used as default.
     func: callable, function to be executed before invoking the __call__ method
-        of the wrapped action. Takes value from command line.
+      of the wrapped action. Takes value from command line.
     additional_help: _AdditionalHelp, Additional help (label, message) to be
-        added to action help
+      added to action help
 
   Returns:
     argparse.Action, wrapper action to use.
@@ -529,13 +542,17 @@ def _PreActionHook(action, func, additional_help=None):
     raise TypeError('func should be a callable of the form func(value)')
 
   if not isinstance(action, six.string_types) and not issubclass(
-      action, argparse.Action):
-    raise TypeError(('action should be either a subclass of argparse.Action '
-                     'or a string representing one of the default argparse '
-                     'Action Types'))
+      action, argparse.Action
+  ):
+    raise TypeError((
+        'action should be either a subclass of argparse.Action '
+        'or a string representing one of the default argparse '
+        'Action Types'
+    ))
 
   class Action(argparse.Action):
     """Action Wrapper Class."""
+
     wrapped_action = action
 
     @classmethod
@@ -555,9 +572,8 @@ def _PreActionHook(action, func, additional_help=None):
       if additional_help:
         original_help = kwargs.get('help', '').rstrip()
         kwargs['help'] = '{0} {1}\n+\n{2}'.format(
-            additional_help.label,
-            original_help,
-            additional_help.message)
+            additional_help.label, original_help, additional_help.message
+        )
 
       self._wrapped_action = self._GetActionClass()(*args, **kwargs)
       self.func = func
@@ -589,13 +605,15 @@ def _PreActionHook(action, func, additional_help=None):
   return Action
 
 
-def DeprecationAction(flag_name,
-                      show_message=lambda _: True,
-                      show_add_help=lambda _: True,
-                      warn='Flag {flag_name} is deprecated.',
-                      error='Flag {flag_name} has been removed.',
-                      removed=False,
-                      action=None):
+def DeprecationAction(
+    flag_name,
+    show_message=lambda _: True,
+    show_add_help=lambda _: True,
+    warn='Flag {flag_name} is deprecated.',
+    error='Flag {flag_name} has been removed.',
+    removed=False,
+    action=None,
+):
   """Prints a warning or error message for a flag that is being deprecated.
 
   Uses a _PreActionHook to wrap any existing Action on the flag and
@@ -603,17 +621,17 @@ def DeprecationAction(flag_name,
 
   Args:
     flag_name: string, name of flag to be deprecated
-    show_message: callable, boolean function that takes the argument value
-        as input, validates it against some criteria and returns a boolean.
-        If true deprecation message is shown at runtime. Deprecation message
-        will always be appended to flag help.
+    show_message: callable, boolean function that takes the argument value as
+      input, validates it against some criteria and returns a boolean. If true
+      deprecation message is shown at runtime. Deprecation message will always
+      be appended to flag help.
     show_add_help: boolean, whether to show additional help in help text.
     warn: string, warning message, 'flag_name' template will be replaced with
-        value of flag_name parameter
+      value of flag_name parameter
     error: string, error message, 'flag_name' template will be replaced with
-        value of flag_name parameter
+      value of flag_name parameter
     removed: boolean, if True warning message will be printed when show_message
-        fails, if False error message will be printed
+      fails, if False error message will be printed
     action: argparse.Action, action to be wrapped by this action
 
   Returns:

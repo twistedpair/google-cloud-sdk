@@ -228,6 +228,149 @@ def AddOperation(parser):
   parser.add_argument('operation', type=str, help='AlloyDB operation ID')
 
 
+def AddEnableConnectionPooling(parser):
+  """Adds --enable-connection-pooling flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--enable-connection-pooling',
+      required=False,
+      help='Enable connection pooling for the instance.',
+      action=arg_parsers.StoreTrueFalseAction,
+  )
+
+
+def AddConnectionPoolingPoolMode(parser):
+  """Adds --connection-pooling-pool-mode flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--connection-pooling-pool-mode',
+      choices={
+          'SESSION': 'Session mode for managed connection pooling.',
+          'TRANSACTION': 'Transaction mode for managed connection pooling.',
+      },
+      required=False,
+      default=None,
+      help='The pool mode for managed connection pooling.',
+  )
+
+
+def AddConnectionPoolingMinPoolSize(parser):
+  """Adds --connection-pooling-min-pool-size flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--connection-pooling-min-pool-size',
+      type=str,
+      required=False,
+      default=None,
+      help='The min pool size for managed connection pooling.',
+  )
+
+
+def AddConnectionPoolingMaxPoolSize(parser):
+  """Adds --connection-pooling-max-pool-size flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--connection-pooling-max-pool-size',
+      type=str,
+      required=False,
+      default=None,
+      help='The max pool size for managed connection pooling.',
+  )
+
+
+def AddConnectionPoolingMaxClientConnections(parser):
+  """Adds --connection-pooling-max-client-connections flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--connection-pooling-max-client-connections',
+      type=str,
+      required=False,
+      default=None,
+      help='The max client connections for managed connection pooling.',
+  )
+
+
+def AddConnectionPoolingServerIdleTimeout(parser):
+  """Adds --connection-pooling-server-idle-timeout flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--connection-pooling-server-idle-timeout',
+      type=str,
+      required=False,
+      default=None,
+      help='The server idle timeout for managed connection pooling.',
+  )
+
+
+def AddConnectionPoolingQueryWaitTimeout(parser):
+  """Adds --connection-pooling-query-wait-timeout flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--connection-pooling-query-wait-timeout',
+      type=str,
+      required=False,
+      default=None,
+      help='The query wait timeout for managed connection pooling.',
+  )
+
+
+def AddConnectionPoolingStatsUsers(parser):
+  """Adds --connection-pooling-stats-users flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--connection-pooling-stats-users',
+      required=False,
+      type=arg_parsers.ArgList(),
+      metavar='STATS_USERS',
+      help=(
+          'Comma-separated list of database users to access connection pooling'
+          ' stats.'
+      ),
+  )
+
+
+def AddConnectionPoolingIgnoreStartupParameters(parser):
+  """Adds --connection-pooling-ignore-startup-parameters flag.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--connection-pooling-ignore-startup-parameters',
+      required=False,
+      type=arg_parsers.ArgList(),
+      metavar='STARTUP_PARAMETERS',
+      help=(
+          'Comma-separated list of startup parameters that should be ignored by'
+          ' the connection pool.'
+      ),
+  )
+
+
 def AddEnablePrivateServiceConnect(parser):
   """Adds the `--enable-private-service-connect` flag to the parser."""
   parser.add_argument(

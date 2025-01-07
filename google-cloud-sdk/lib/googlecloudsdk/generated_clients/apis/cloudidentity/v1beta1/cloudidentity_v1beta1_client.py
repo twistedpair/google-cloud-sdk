@@ -15,7 +15,7 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
   MTLS_BASE_URL = 'https://cloudidentity.mtls.googleapis.com/'
 
   _PACKAGE = 'cloudidentity'
-  _SCOPES = ['https://www.googleapis.com/auth/cloud-identity.devices', 'https://www.googleapis.com/auth/cloud-identity.devices.lookup', 'https://www.googleapis.com/auth/cloud-identity.devices.readonly', 'https://www.googleapis.com/auth/cloud-identity.groups', 'https://www.googleapis.com/auth/cloud-identity.groups.readonly', 'https://www.googleapis.com/auth/cloud-platform']
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-identity.devices', 'https://www.googleapis.com/auth/cloud-identity.devices.lookup', 'https://www.googleapis.com/auth/cloud-identity.devices.readonly', 'https://www.googleapis.com/auth/cloud-identity.groups', 'https://www.googleapis.com/auth/cloud-identity.groups.readonly', 'https://www.googleapis.com/auth/cloud-identity.inboundsso', 'https://www.googleapis.com/auth/cloud-identity.inboundsso.readonly', 'https://www.googleapis.com/auth/cloud-identity.policies', 'https://www.googleapis.com/auth/cloud-identity.policies.readonly', 'https://www.googleapis.com/auth/cloud-platform']
   _VERSION = 'v1beta1'
   _CLIENT_ID = 'CLIENT_ID'
   _CLIENT_SECRET = 'CLIENT_SECRET'

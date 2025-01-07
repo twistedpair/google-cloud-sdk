@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from .api_auth import (
+    ApiAuth,
+)
 from .content import (
     Blob,
     Candidate,
@@ -26,12 +29,15 @@ from .content import (
     GroundingSupport,
     LogprobsResult,
     Part,
+    PrebuiltVoiceConfig,
     RetrievalMetadata,
     SafetyRating,
     SafetySetting,
     SearchEntryPoint,
     Segment,
+    SpeechConfig,
     VideoMetadata,
+    VoiceConfig,
     HarmCategory,
 )
 from .explanation import (
@@ -64,8 +70,13 @@ from .io import (
     ContainerRegistryDestination,
     CsvDestination,
     CsvSource,
+    DirectUploadSource,
     GcsDestination,
     GcsSource,
+    GoogleDriveSource,
+    JiraSource,
+    SharePointSources,
+    SlackSource,
     TFRecordDestination,
 )
 from .openapi import (
@@ -106,6 +117,7 @@ from .tool import (
     FunctionDeclaration,
     FunctionResponse,
     GoogleSearchRetrieval,
+    RagRetrievalConfig,
     Retrieval,
     Tool,
     ToolConfig,
@@ -121,6 +133,7 @@ from .types import (
 )
 
 __all__ = (
+    'ApiAuth',
     'Blob',
     'Candidate',
     'Citation',
@@ -133,12 +146,15 @@ __all__ = (
     'GroundingSupport',
     'LogprobsResult',
     'Part',
+    'PrebuiltVoiceConfig',
     'RetrievalMetadata',
     'SafetyRating',
     'SafetySetting',
     'SearchEntryPoint',
     'Segment',
+    'SpeechConfig',
     'VideoMetadata',
+    'VoiceConfig',
     'HarmCategory',
     'Attribution',
     'BlurBaselineConfig',
@@ -165,8 +181,13 @@ __all__ = (
     'ContainerRegistryDestination',
     'CsvDestination',
     'CsvSource',
+    'DirectUploadSource',
     'GcsDestination',
     'GcsSource',
+    'GoogleDriveSource',
+    'JiraSource',
+    'SharePointSources',
+    'SlackSource',
     'TFRecordDestination',
     'Schema',
     'Type',
@@ -201,6 +222,7 @@ __all__ = (
     'FunctionDeclaration',
     'FunctionResponse',
     'GoogleSearchRetrieval',
+    'RagRetrievalConfig',
     'Retrieval',
     'Tool',
     'ToolConfig',

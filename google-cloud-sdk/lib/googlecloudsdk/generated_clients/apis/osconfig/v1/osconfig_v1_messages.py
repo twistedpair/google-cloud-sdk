@@ -3201,8 +3201,9 @@ class TimeZone(_messages.Message):
   Database](https://www.iana.org/time-zones).
 
   Fields:
-    id: IANA Time Zone Database time zone, e.g. "America/New_York".
-    version: Optional. IANA Time Zone Database version number, e.g. "2019a".
+    id: IANA Time Zone Database time zone. For example "America/New_York".
+    version: Optional. IANA Time Zone Database version number. For example
+      "2019a".
   """
 
   id = _messages.StringField(1)

@@ -556,7 +556,8 @@ class AuthenticationConfig(_messages.Message):
 
     Values:
       AUTHENTICATION_TYPE_UNSPECIFIED: If AuthenticationType is unspecified
-        then SERVICE_ACCOUNT is used
+        then END_USER_CREDENTIALS is used for 3.0 and newer runtimes, and
+        SYSTEM_SERVICE_ACCOUNT is used for older runtimes.
       SYSTEM_SERVICE_ACCOUNT: Use the system service account credentials for
         authenticating to other services.
       END_USER_CREDENTIALS: Use OAuth credentials associated with the workload
@@ -1218,6 +1219,8 @@ class ClusterConfig(_messages.Message):
     masterConfig: Optional. The Compute Engine config settings for the
       cluster's master instance.
     metastoreConfig: Optional. Metastore configuration.
+    schedulingConfig: Optional. Config for scheduling the resources to be
+      allocated when available.
     secondaryWorkerConfig: Optional. The Compute Engine config settings for a
       cluster's secondary worker instances
     securityConfig: Optional. Security settings for the cluster.
@@ -1249,11 +1252,12 @@ class ClusterConfig(_messages.Message):
   lifecycleConfig = _messages.MessageField('LifecycleConfig', 10)
   masterConfig = _messages.MessageField('InstanceGroupConfig', 11)
   metastoreConfig = _messages.MessageField('MetastoreConfig', 12)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 13)
-  securityConfig = _messages.MessageField('SecurityConfig', 14)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 15)
-  tempBucket = _messages.StringField(16)
-  workerConfig = _messages.MessageField('InstanceGroupConfig', 17)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 13)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 14)
+  securityConfig = _messages.MessageField('SecurityConfig', 15)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 16)
+  tempBucket = _messages.StringField(17)
+  workerConfig = _messages.MessageField('InstanceGroupConfig', 18)
 
 
 class ClusterMetrics(_messages.Message):
@@ -1538,6 +1542,9 @@ class ClusterStatus(_messages.Message):
       STOPPED: The cluster is currently stopped. It is not ready for use.
       STARTING: The cluster is being started. It is not ready for use.
       REPAIRING: The cluster is being repaired. It is not ready for use.
+      SCHEDULED: Cluster creation is currently waiting for resources to be
+        available. Once all resources are available, it will transition to
+        CREATING and then RUNNING.
     """
     UNKNOWN = 0
     CREATING = 1
@@ -1550,6 +1557,7 @@ class ClusterStatus(_messages.Message):
     STOPPED = 8
     STARTING = 9
     REPAIRING = 10
+    SCHEDULED = 11
 
   class SubstateValueValuesEnum(_messages.Enum):
     r"""Output only. Additional state information that includes status
@@ -4521,13 +4529,12 @@ class DiskConfig(_messages.Message):
   Fields:
     bootDiskProvisionedIops: Optional. Indicates how many IOPS to provision
       for the disk. This sets the number of I/O operations per second that the
-      disk can handle. Note: This field is only supported if boot_disk_type is
+      disk can handle. This field is supported only if boot_disk_type is
       hyperdisk-balanced.
     bootDiskProvisionedThroughput: Optional. Indicates how much throughput to
       provision for the disk. This sets the number of throughput mb per second
       that the disk can handle. Values must be greater than or equal to 1.
-      Note: This field is only supported if boot_disk_type is hyperdisk-
-      balanced.
+      This field is supported only if boot_disk_type is hyperdisk-balanced.
     bootDiskSizeGb: Optional. Size in GB of the boot disk (default is 500GB).
     bootDiskType: Optional. Type of the boot disk (default is "pd-standard").
       Valid values: "pd-balanced" (Persistent Disk Balanced Solid State
@@ -8751,6 +8758,25 @@ class RuntimeInfo(_messages.Message):
   propertiesInfo = _messages.MessageField('PropertiesInfo', 6)
 
 
+class SchedulingConfig(_messages.Message):
+  r"""Config for scheduling the request to create Compute Engine resources for
+  the cluster, when available.
+
+  Fields:
+    requestedRunDuration: Optional. Required lifetime of the resources, once
+      provisioned. Min 10 mins, Max/Default 7 days . Note that the cluster can
+      still be deleted before reaching this time. This time is a maximum
+      amount of time before the cluster is forcibly deleted. Lower times are
+      more likely to start running sooner.
+    schedulingTimeout: Optional. How long to wait for worker resources to be
+      allocated before failing the cluster creation request. Max/Default
+      value: 13 days
+  """
+
+  requestedRunDuration = _messages.StringField(1)
+  schedulingTimeout = _messages.StringField(2)
+
+
 class SearchSessionSparkApplicationExecutorStageSummaryResponse(_messages.Message):
   r"""List of Executors associated with a Spark Application Stage.
 
@@ -9556,6 +9582,7 @@ class SoftwareConfig(_messages.Message):
         version-clusters#supported-dataproc-image-versions). It cannot be
         activated on clusters created with supported Dataproc on Compute
         Engine image versions.
+      DELTA_LAKE: Delta Lake.
       DOCKER: Docker
       DRUID: The Druid query engine. (alpha)
       FLINK: Flink
@@ -9577,23 +9604,24 @@ class SoftwareConfig(_messages.Message):
     """
     COMPONENT_UNSPECIFIED = 0
     ANACONDA = 1
-    DOCKER = 2
-    DRUID = 3
-    FLINK = 4
-    HBASE = 5
-    HIVE_WEBHCAT = 6
-    HUDI = 7
-    ICEBERG = 8
-    JUPYTER = 9
-    KERBEROS = 10
-    PRESTO = 11
-    TRINO = 12
-    RANGER = 13
-    SOLR = 14
-    ZEPPELIN = 15
-    ZOOKEEPER = 16
-    DASK = 17
-    GPU_DRIVER = 18
+    DELTA_LAKE = 2
+    DOCKER = 3
+    DRUID = 4
+    FLINK = 5
+    HBASE = 6
+    HIVE_WEBHCAT = 7
+    HUDI = 8
+    ICEBERG = 9
+    JUPYTER = 10
+    KERBEROS = 11
+    PRESTO = 12
+    TRINO = 13
+    RANGER = 14
+    SOLR = 15
+    ZEPPELIN = 16
+    ZOOKEEPER = 17
+    DASK = 18
+    GPU_DRIVER = 19
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):

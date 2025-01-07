@@ -153,6 +153,52 @@ class ConnectionProfilesClient(object):
   def _GetSslServerOnlyConfig(self, args):
     return self.messages.SslConfig(caCertificate=args.ca_certificate)
 
+  def _GetSslServerOnlyConfigWithType(self, args):
+    if args.IsSpecified('ca_certificate'):
+      return self.messages.SslConfig(
+          type=self.messages.SslConfig.TypeValueValuesEnum.SERVER_ONLY,
+          caCertificate=args.ca_certificate,
+      )
+    else:
+      raise calliope_exceptions.InvalidArgumentException(
+          'ca_certificate',
+          'ca_certificate is required for SERVER_ONLY SSL type.',
+      )
+
+  def _GetSslRequiredConfig(self):
+    return self.messages.SslConfig(
+        type=self.messages.SslConfig.TypeValueValuesEnum.REQUIRED
+    )
+
+  def _GetSslNoneConfig(self):
+    return self.messages.SslConfig(
+        type=self.messages.SslConfig.TypeValueValuesEnum.NONE
+    )
+
+  def _GetSslServerOnlyOrRequiredConfig(self, args):
+    """Gets the SSL config based on the specified SSL type.
+
+    Args:
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+
+    Returns:
+      SslConfig, to use when creating the connection profile.
+
+    Raises:
+      calliope_exceptions.InvalidArgumentException: If the specified SSL type is
+        unsupported.
+    """
+    if args.IsSpecified('ssl_type'):
+      if args.ssl_type == 'SERVER_ONLY':
+        return self._GetSslServerOnlyConfigWithType(args)
+      elif args.ssl_type == 'REQUIRED':
+        return self._GetSslRequiredConfig()
+      elif args.ssl_type == 'NONE':
+        return self._GetSslNoneConfig()
+    elif args.IsSpecified('ca_certificate'):
+      return self._GetSslServerOnlyConfig(args)
+
   def _GetSslConfig(self, args):
     return self.messages.SslConfig(
         clientKey=args.private_key,
@@ -283,7 +329,7 @@ class ConnectionProfilesClient(object):
     """Fills connection_profile and update_fields with Oracle SSL data from args."""
     if args.IsSpecified('ca_certificate'):
       connection_profile.oracle.ssl.caCertificate = args.ca_certificate
-      update_fields.append('postgresql.ssl.caCertificate')
+      update_fields.append('oracle.ssl.caCertificate')
 
   def _UpdateOracleConnectionProfile(
       self, connection_profile, args, update_fields
@@ -301,10 +347,54 @@ class ConnectionProfilesClient(object):
     if args.IsSpecified('password'):
       connection_profile.oracle.password = args.password
       update_fields.append('oracle.password')
-    if args.IsSpecified('database-service'):
-      connection_profile.oracle.databaseService = args.databaseService
+    if args.IsSpecified('database_service'):
+      connection_profile.oracle.databaseService = args.database_service
       update_fields.append('oracle.databaseService')
     self._UpdateOracleSslConfig(connection_profile, args, update_fields)
+
+  def _UpdateSqlServerSslConfigServerOnly(
+      self, connection_profile, args, update_fields
+  ):
+    connection_profile.sqlserver.ssl.caCertificate = args.ca_certificate
+    connection_profile.sqlserver.ssl.type = (
+        self.messages.SslConfig.TypeValueValuesEnum.SERVER_ONLY
+    )
+    update_fields.append('sqlserver.ssl.caCertificate')
+    update_fields.append('sqlserver.ssl.type')
+
+  def _UpdateSqlServerSslConfig(self, connection_profile, args, update_fields):
+    """Fills connection_profile and update_fields with SqlServer SSL data from args."""
+    if args.IsSpecified('ssl_type'):
+      if args.ssl_type == 'SERVER_ONLY':
+        if args.IsSpecified('ca_certificate'):
+          self._UpdateSqlServerSslConfigServerOnly(
+              connection_profile, args, update_fields
+          )
+        else:
+          raise calliope_exceptions.InvalidArgumentException(
+              'ca_certificate',
+              'ca_certificate is required for SERVER_ONLY SSL type.',
+          )
+      elif args.ssl_type == 'REQUIRED' or args.ssl_type == 'NONE':
+        if args.IsSpecified('ca_certificate') and args.ca_certificate:
+          raise calliope_exceptions.InvalidArgumentException(
+              'ca_certificate',
+              'Cannot set CA certificate for SSL type {0}.'.format(
+                  args.ssl_type
+              ),
+          )
+        connection_profile.sqlserver.ssl.caCertificate = None
+        connection_profile.sqlserver.ssl.type = (
+            self.messages.SslConfig.TypeValueValuesEnum.lookup_by_name(
+                args.ssl_type
+            )
+        )
+        update_fields.append('sqlserver.ssl.caCertificate')
+        update_fields.append('sqlserver.ssl.type')
+    elif args.IsSpecified('ca_certificate'):
+      self._UpdateSqlServerSslConfigServerOnly(
+          connection_profile, args, update_fields
+      )
 
   def _UpdateSqlServerConnectionProfile(
       self, connection_profile, args, update_fields
@@ -327,6 +417,9 @@ class ConnectionProfilesClient(object):
     if args.IsSpecified('password'):
       connection_profile.sqlserver.password = args.password
       update_fields.append('sqlserver.password')
+    if args.IsSpecified('database'):
+      connection_profile.sqlserver.database = args.database
+      update_fields.append('sqlserver.database')
     if args.IsSpecified('gcs_bucket'):
       if connection_profile.sqlserver.backups is None:
         raise calliope_exceptions.InvalidArgumentException(
@@ -336,11 +429,15 @@ class ConnectionProfilesClient(object):
         )
       connection_profile.sqlserver.backups = self._GetSqlServerBackups(args)
       update_fields.append('sqlserver.backups')
+    self._UpdateSqlServerSslConfig(connection_profile, args, update_fields)
 
   def _GetProvider(self, cp_type, provider):
     if provider is None:
       return cp_type.ProviderValueValuesEnum.DATABASE_PROVIDER_UNSPECIFIED
     return cp_type.ProviderValueValuesEnum.lookup_by_name(provider)
+
+  def _GetRole(self, cp_type, role):
+    return cp_type.RoleValueValuesEnum.lookup_by_name(role)
 
   def _GetActivationPolicy(self, cp_type, policy):
     if policy is None:
@@ -541,7 +638,7 @@ class ConnectionProfilesClient(object):
   def _GetForwardSshTunnelConnectivity(self, args):
     return self.messages.ForwardSshTunnelConnectivity(
         hostname=args.forward_ssh_hostname,
-        port=args.forward_ssh_port,
+        port=int(args.forward_ssh_port),
         username=args.forward_ssh_username,
         privateKey=args.forward_ssh_private_key,
         password=args.forward_ssh_password)
@@ -597,41 +694,67 @@ class ConnectionProfilesClient(object):
     Returns:
       SqlServerConnectionProfile, to use when creating the connection profile.
     """
-    connection_profile_obj = self.messages.SqlServerConnectionProfile()
-    if args.IsKnownAndSpecified('cloudsql_instance'):
-      connection_profile_obj.cloudSqlId = args.GetValue(self._InstanceArgName())
+    ssl_config = self._GetSslServerOnlyOrRequiredConfig(args)
+    connection_profile_obj = self.messages.SqlServerConnectionProfile(
+        ssl=ssl_config
+    )
+    if args.IsKnownAndSpecified('username'):
       connection_profile_obj.username = args.username
       connection_profile_obj.password = args.password
+      if args.IsKnownAndSpecified('cloudsql_instance'):
+        connection_profile_obj.cloudSqlId = args.GetValue(
+            self._InstanceArgName()
+        )
+      else:
+        connection_profile_obj.host = args.host
+        connection_profile_obj.port = args.port
     else:
       connection_profile_obj.backups = self._GetSqlServerBackups(args)
 
     if args.IsKnownAndSpecified('database'):
       connection_profile_obj.database = args.database
 
+    if args.IsKnownAndSpecified('private_connection'):
+      private_connectivity = args.CONCEPTS.private_connection.Parse()
+      connection_profile_obj.privateConnectivity = (
+          self.messages.PrivateConnectivity(
+              privateConnection=private_connectivity.RelativeName()
+          )
+      )
+    elif args.IsKnownAndSpecified('forward_ssh_hostname'):
+      connection_profile_obj.forwardSshConnectivity = (
+          self._GetForwardSshTunnelConnectivity(args)
+      )
+    elif args.IsKnownAndSpecified('static_ip_connectivity'):
+      connection_profile_obj.staticIpConnectivity = {}
     return connection_profile_obj
 
   def _GetConnectionProfile(self, cp_type, args, connection_profile_id):
     """Returns a connection profile according to type."""
     connection_profile_type = self.messages.ConnectionProfile
     labels = labels_util.ParseCreateArgs(
-        args, connection_profile_type.LabelsValue)
+        args, connection_profile_type.LabelsValue
+    )
     params = {}
     if cp_type == 'MYSQL':
       mysql_connection_profile = self._GetMySqlConnectionProfile(args)
       params['mysql'] = mysql_connection_profile
-      params['provider'] = self._GetProvider(connection_profile_type,
-                                             args.provider)
+      params['provider'] = self._GetProvider(
+          connection_profile_type, args.provider
+      )
     elif cp_type == 'CLOUDSQL':
       cloudsql_connection_profile = self._GetCloudSqlConnectionProfile(args)
       params['cloudsql'] = cloudsql_connection_profile
-      params['provider'] = self._GetProvider(connection_profile_type,
-                                             args.provider)
+      params['provider'] = self._GetProvider(
+          connection_profile_type, args.provider
+      )
     elif cp_type == 'POSTGRESQL':
       postgresql_connection_profile = self._GetPostgreSqlConnectionProfile(args)
       params['postgresql'] = postgresql_connection_profile
     elif cp_type == 'ALLOYDB':
       alloydb_connection_profile = self._GetAlloyDBConnectionProfile(
-          args, connection_profile_id)
+          args, connection_profile_id
+      )
       params['alloydb'] = alloydb_connection_profile
     elif cp_type == 'ORACLE':
       oracle_connection_profile = self._GetOracleConnectionProfile(args)
@@ -642,6 +765,8 @@ class ConnectionProfilesClient(object):
       params['provider'] = self._GetProvider(
           connection_profile_type, args.provider
       )
+    if args.IsKnownAndSpecified('role'):
+      params['role'] = self._GetRole(connection_profile_type, args.role)
     return connection_profile_type(
         labels=labels,
         state=connection_profile_type.StateValueValuesEnum.CREATING,

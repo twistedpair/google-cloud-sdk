@@ -334,8 +334,8 @@ class AuthzPolicyAuthzRule(_messages.Message):
   r"""Conditions to match against the incoming request.
 
   Fields:
-    from_: Optional. Describes properties of one or more sources of a request.
-    to: Optional. Describes properties of one or more targets of a request.
+    from_: Optional. Describes properties of a source of a request.
+    to: Optional. Describes properties of a target of a request.
     when: Optional. CEL expression that describes the conditions to be
       satisfied for the action. The result of the CEL expression is ANDed with
       the from and to. Refer to the CEL language reference for a list of
@@ -355,8 +355,8 @@ class AuthzPolicyAuthzRuleFrom(_messages.Message):
       Matches requests from sources that do not match the criteria specified
       in this field. At least one of sources or notSources must be specified.
     sources: Optional. Describes the properties of a request's sources. At
-      least one of sources or notSources must be specified. Limited to 5
-      sources. A match occurs when ANY source (in sources or notSources)
+      least one of sources or notSources must be specified. Limited to 1
+      source. A match occurs when ANY source (in sources or notSources)
       matches the request. Within a single source, the match follows AND
       semantics across fields and OR semantics within a single field, i.e. a
       match occurs when ANY principal matches AND ANY ipBlocks match.
@@ -464,11 +464,11 @@ class AuthzPolicyAuthzRuleTo(_messages.Message):
       notOperations must be specified.
     operations: Optional. Describes properties of one or more targets of a
       request. At least one of operations or notOperations must be specified.
-      Limited to 5 operations. A match occurs when ANY operation (in
-      operations or notOperations) matches. Within an operation, the match
-      follows AND semantics across fields and OR semantics within a field,
-      i.e. a match occurs when ANY path matches AND ANY header matches and ANY
-      method matches.
+      Limited to 1 operation. A match occurs when ANY operation (in operations
+      or notOperations) matches. Within an operation, the match follows AND
+      semantics across fields and OR semantics within a field, i.e. a match
+      occurs when ANY path matches AND ANY header matches and ANY method
+      matches.
   """
 
   notOperations = _messages.MessageField('AuthzPolicyAuthzRuleToRequestOperation', 1, repeated=True)
@@ -1377,7 +1377,7 @@ class HttpHeaderMatch(_messages.Message):
 
 
 class InterceptDeployment(_messages.Message):
-  r"""Message describing InterceptDeployment object
+  r"""Message describing InterceptDeployment object NEXT ID: 10
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the deployment.
@@ -1387,6 +1387,8 @@ class InterceptDeployment(_messages.Message):
 
   Fields:
     createTime: Output only. [Output only] Create time stamp
+    description: Optional. User-provided description of the deployment. Used
+      as additional context for the deployment.
     forwardingRule: Required. Immutable. The regional load balancer which the
       intercepted traffic should be forwarded to. Format is:
       projects/{project}/regions/{region}/forwardingRules/{forwardingRule}
@@ -1449,17 +1451,18 @@ class InterceptDeployment(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  forwardingRule = _messages.StringField(2)
-  interceptDeploymentGroup = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  reconciling = _messages.BooleanField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  description = _messages.StringField(2)
+  forwardingRule = _messages.StringField(3)
+  interceptDeploymentGroup = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class InterceptDeploymentGroup(_messages.Message):
-  r"""Message describing InterceptDeploymentGroup object
+  r"""Message describing InterceptDeploymentGroup object NEXT ID: 10
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the deployment group.
@@ -1471,6 +1474,8 @@ class InterceptDeploymentGroup(_messages.Message):
     connectedEndpointGroups: Output only. The list of Intercept Endpoint
       Groups that are connected to this resource.
     createTime: Output only. [Output only] Create time stamp
+    description: Optional. User-provided description of the deployment group.
+      Used as additional context for the deployment group.
     labels: Optional. Labels as key value pairs
     name: Immutable. Identifier. Then name of the InterceptDeploymentGroup.
     network: Required. Immutable. The network that is being used for the
@@ -1521,12 +1526,13 @@ class InterceptDeploymentGroup(_messages.Message):
 
   connectedEndpointGroups = _messages.MessageField('InterceptDeploymentGroupConnectedEndpointGroup', 1, repeated=True)
   createTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  network = _messages.StringField(5)
-  reconciling = _messages.BooleanField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class InterceptDeploymentGroupConnectedEndpointGroup(_messages.Message):
@@ -2297,7 +2303,7 @@ class MTLSPolicy(_messages.Message):
 
 
 class MirroringDeployment(_messages.Message):
-  r"""Message describing MirroringDeployment object
+  r"""Message describing MirroringDeployment object NEXT ID: 10
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the deployment.
@@ -2379,7 +2385,7 @@ class MirroringDeployment(_messages.Message):
 
 
 class MirroringDeploymentGroup(_messages.Message):
-  r"""Message describing MirroringDeploymentGroup object
+  r"""Message describing MirroringDeploymentGroup object NEXT ID: 10
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the deployment group.

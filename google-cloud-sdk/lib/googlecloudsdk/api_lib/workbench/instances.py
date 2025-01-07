@@ -295,6 +295,32 @@ def GetShieldedInstanceConfigFromArgs(args, messages):
   )
 
 
+def GetConfidentialInstanceConfigFromArgs(args, messages):
+  """Creates the Confidential Instance Config message for the create request.
+
+  Args:
+    args: Argparse object from Command.Run
+    messages: Module containing messages definition for the specified API.
+
+  Returns:
+    Confidential Instance Config of the Instance message.
+  """
+  if not args.IsSpecified('confidential_compute_type'):
+    return None
+
+  confidential_instance_type = arg_utils.ChoiceEnumMapper(
+      arg_name='confidential-compute-type',
+      message_enum=messages.ConfidentialInstanceConfig.ConfidentialInstanceTypeValueValuesEnum,
+      include_filter=lambda x: 'UNSPECIFIED' not in x,
+  ).GetEnumForChoice(
+      arg_utils.EnumNameToChoice(args.confidential_compute_type)
+  )
+
+  return messages.ConfidentialInstanceConfig(
+      confidentialInstanceType=confidential_instance_type,
+  )
+
+
 def CreateInstance(args, messages):
   """Creates the Instance message for the create request.
 
@@ -321,6 +347,9 @@ def CreateInstance(args, messages):
       reservationAffinity=CreateReservationConfigMessage(args, messages),
       serviceAccounts=[CreateServiceAccountConfigMessage(args, messages)],
       shieldedInstanceConfig=GetShieldedInstanceConfigFromArgs(args, messages),
+      confidentialInstanceConfig=GetConfidentialInstanceConfigFromArgs(
+          args, messages
+      ),
       tags=GetTagsFromArgs(args),
       vmImage=CreateVmImageFromArgs(args, messages),
     )
@@ -330,6 +359,7 @@ def CreateInstance(args, messages):
       gceSetup=gce_setup,
       instanceOwners=GetInstanceOwnersFromArgs(args),
       labels=GetLabelsFromArgs(args, messages),
+      enableThirdPartyIdentity=args.enable_third_party_identity,
     )
   return instance
 
@@ -368,6 +398,7 @@ def CreateUpdateMask(args):
       'labels': 'labels',
       'metadata': 'gce_setup.metadata',
       'machine_type': 'gce_setup.machine_type',
+      'tags': 'gce_setup.tags',
   }
   for key, value in sorted(field_mask_dict.items()):
     if args.IsSpecified(key):
@@ -456,6 +487,7 @@ def UpdateInstance(args, messages):
       machineType=args.machine_type,
       metadata=GetMetadataFromArgs(args, messages),
       shieldedInstanceConfig=GetShieldedInstanceConfigFromArgs(args, messages),
+      tags=GetTagsFromArgs(args),
   )
   if args.IsSpecified('accelerator_type') or args.IsSpecified(
       'accelerator_core_count'

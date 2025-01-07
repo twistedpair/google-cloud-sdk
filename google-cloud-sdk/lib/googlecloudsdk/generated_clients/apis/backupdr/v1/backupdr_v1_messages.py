@@ -868,6 +868,9 @@ class BackupVault(_messages.Message):
       prevent simultaneous updates from overwiting each other.
     labels: Optional. Resource labels to represent user provided metadata. No
       labels currently defined:
+    logMinimumEnforcedRetentionDuration: Optional. The default and minimum
+      enforced retention for Database logs within the backup vault. The
+      enforced retention for logs can be extended.
     name: Output only. Identifier. Name of the backup vault to create. It must
       have the format`"projects/{project}/locations/{location}/backupVaults/{b
       ackupvault}"`. `{backupvault}` cannot be changed after creation. It must
@@ -986,12 +989,13 @@ class BackupVault(_messages.Message):
   effectiveTime = _messages.StringField(8)
   etag = _messages.StringField(9)
   labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  serviceAccount = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  totalStoredBytes = _messages.IntegerField(14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  logMinimumEnforcedRetentionDuration = _messages.StringField(11)
+  name = _messages.StringField(12)
+  serviceAccount = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  totalStoredBytes = _messages.IntegerField(15)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class BackupWindow(_messages.Message):

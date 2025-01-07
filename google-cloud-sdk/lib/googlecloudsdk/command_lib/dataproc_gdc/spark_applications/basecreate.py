@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import uuid
 
+from googlecloudsdk.api_lib.dataproc_gdc import util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import arg_parsers
@@ -120,6 +121,18 @@ class BaseGDCSparkApplicationCommand(base.CreateCommand):
     base.ASYNC_FLAG.AddToParser(parser)
 
   def Submit(self, args, application_ref, create_req):
+    """Submits spark application on the GDC Kubernetes cluster.
+
+    Args:
+      args: arguments required for the command.
+      application_ref: application reference which contains relative name.
+      create_req: create spark application request object.
+
+    Returns:
+      Job: The final value of spark job.
+    """
+    api_version = VERSION_MAP.get(self.ReleaseTrack())
+    messages = apis.GetMessagesModule(DATAPROCGDC_API_NAME, api_version)
     request_id = args.request_id or uuid.uuid4().hex
     # If the application id was not set, generate a random id.
     application_id = (
@@ -151,24 +164,32 @@ class BaseGDCSparkApplicationCommand(base.CreateCommand):
       waiter.WaitFor(
           poller,
           operation_ref,
-          'Waiting for spark application create operation [{0}]'.format(
+          'Waiting for Spark application create operation [{0}]'.format(
               operation_ref.RelativeName()
           ),
+      )
+      log.status.Print(
+          'Create request issued for: [{0}]\nCheck operation [{1}] for status.'
+          .format(application_id, create_op.name)
       )
       log.CreatedResource(
           application_id,
           details=(
-              '- spark application in service instance [{0}]'.format(
+              '- Spark application in service instance [{0}]'.format(
                   create_req.parent
               )
           ),
       )
+      job = util.WaitForSparkAppTermination(
+          self,
+          dataprocgdc_client,
+          create_req.parent + '/sparkApplications/' + application_id,
+          application_id,
+          messages.SparkApplication.StateValueValuesEnum.SUCCEEDED,
+          spark_app=create_op,
+      )
+      log.status.Print('Spark Application status: %s' % job.state)
       return
-
-    log.status.Print(
-        'Create request issued for: [{0}]\nCheck operation [{1}] for status.'
-        .format(application_id, create_op.name)
-    )
 
 
 def GetSparkApplicationResourcePresentationSpec():

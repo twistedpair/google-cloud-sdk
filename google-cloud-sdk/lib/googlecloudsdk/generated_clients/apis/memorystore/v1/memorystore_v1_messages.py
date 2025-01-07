@@ -1137,12 +1137,17 @@ class Instance(_messages.Message):
 
     Values:
       MODE_UNSPECIFIED: Mode is not specified.
-      STANDALONE: Instance is in standalone mode.
-      CLUSTER: Instance is in cluster mode.
+      STANDALONE: Deprecated: Use CLUSTER_MODE_DISABLED instead.
+      CLUSTER: Instance is in cluster mode. Deprecated: Use
+        CLUSTER_MODE_ENABLED instead.
+      CLUSTER_MODE_ENABLED: Cluster mode is enabled for the instance.
+      CLUSTER_MODE_DISABLED: Cluster mode is disabled for the instance.
     """
     MODE_UNSPECIFIED = 0
     STANDALONE = 1
     CLUSTER = 2
+    CLUSTER_MODE_ENABLED = 3
+    CLUSTER_MODE_DISABLED = 4
 
   class NodeTypeValueValuesEnum(_messages.Enum):
     r"""Optional. Immutable. Machine type for individual nodes of the
@@ -1834,7 +1839,7 @@ class PscAutoConnection(_messages.Message):
     port: Optional. Output only. port will only be set for Primary/Reader or
       Discovery endpoint.
     projectId: Required. The consumer project_id where PSC connections are
-      established. This should be the same project_id that the cluster is
+      established. This should be the same project_id that the instance is
       being created in.
     pscConnectionId: Output only. The PSC connection id of the forwarding rule
       connected to the service attachment.

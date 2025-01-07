@@ -165,6 +165,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DNSTHREATDETECTORS = (
+      'projects.locations.dnsThreatDetectors',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'dnsThreatDetectors/{dnsThreatDetectorsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_FIREWALLATTACHMENTS = (
       'projects.locations.firewallAttachments',
       '{+name}',
@@ -439,6 +450,26 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/'
               'ullMirroringEngines/{ullMirroringEnginesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_ULLMIRRORINGINFRAS = (
+      'projects.locations.ullMirroringInfras',
+      'projects/{projectsId}/locations/{locationsId}/ullMirroringInfras/'
+      '{ullMirroringInfrasId}',
+      {},
+      ['projectsId', 'locationsId', 'ullMirroringInfrasId'],
+      True
+  )
+  PROJECTS_LOCATIONS_ULLMIRRORINGINFRAS_ULLMIRROREDNETWORKS = (
+      'projects.locations.ullMirroringInfras.ullMirroredNetworks',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'ullMirroringInfras/{ullMirroringInfrasId}/ullMirroredNetworks/'
+              '{ullMirroredNetworksId}',
       },
       ['name'],
       True

@@ -57,7 +57,7 @@ def _ConstructAirflowDatabaseRetentionDaysPatch(airflow_database_retention_days,
         )
     )
   return (
-      'config.data_retention_configuration.airflow_metadata_retention_config',
+      'config.data_retention_config.airflow_metadata_retention_config',
       messages.Environment(config=config),
   )
 

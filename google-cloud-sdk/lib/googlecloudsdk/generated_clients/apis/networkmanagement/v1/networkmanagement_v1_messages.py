@@ -454,6 +454,12 @@ class ConnectivityTest(_messages.Message):
     relatedProjects: Other projects that may be relevant for reachability
       analysis. This is applicable to scenarios where a test can cross project
       boundaries.
+    returnReachabilityDetails: Output only. The reachability details of this
+      test from the latest run for the return path. The details are updated
+      when creating a new test, updating an existing test, or triggering a
+      one-time rerun of an existing test.
+    roundTrip: Whether run analysis for the return path from destination to
+      source. Default value is false.
     source: Required. Source specification of the Connectivity Test. You can
       use a combination of source IP address, virtual machine (VM) instance,
       or Compute Engine network to uniquely identify the source location.
@@ -506,8 +512,10 @@ class ConnectivityTest(_messages.Message):
   protocol = _messages.StringField(9)
   reachabilityDetails = _messages.MessageField('ReachabilityDetails', 10)
   relatedProjects = _messages.StringField(11, repeated=True)
-  source = _messages.MessageField('Endpoint', 12)
-  updateTime = _messages.StringField(13)
+  returnReachabilityDetails = _messages.MessageField('ReachabilityDetails', 12)
+  roundTrip = _messages.BooleanField(13)
+  source = _messages.MessageField('Endpoint', 14)
+  updateTime = _messages.StringField(15)
 
 
 class DeliverInfo(_messages.Message):
@@ -1212,6 +1220,8 @@ class FirewallInfo(_messages.Message):
         traffic goes through allow firewall rule. For details, see [firewall
         rules specifications](https://cloud.google.com/firewall/docs/firewalls
         #specifications)
+      ANALYSIS_SKIPPED: Firewall analysis was skipped due to executing
+        Connectivity Test in the BypassFirewallChecks mode
     """
     FIREWALL_RULE_TYPE_UNSPECIFIED = 0
     HIERARCHICAL_FIREWALL_POLICY_RULE = 1
@@ -1222,6 +1232,7 @@ class FirewallInfo(_messages.Message):
     NETWORK_REGIONAL_FIREWALL_POLICY_RULE = 6
     UNSUPPORTED_FIREWALL_POLICY_RULE = 7
     TRACKING_STATE = 8
+    ANALYSIS_SKIPPED = 9
 
   action = _messages.StringField(1)
   direction = _messages.StringField(2)
@@ -1477,6 +1488,21 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListVpcFlowLogsConfigsResponse(_messages.Message):
+  r"""Response for the `ListVpcFlowLogsConfigs` method.
+
+  Fields:
+    nextPageToken: Page token to fetch the next set of configurations.
+    unreachable: Locations that could not be reached (when querying all
+      locations with `-`).
+    vpcFlowLogsConfigs: List of VPC Flow Log configurations.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  unreachable = _messages.StringField(2, repeated=True)
+  vpcFlowLogsConfigs = _messages.MessageField('VpcFlowLogsConfig', 3, repeated=True)
 
 
 class LoadBalancerBackend(_messages.Message):
@@ -2079,6 +2105,91 @@ class NetworkmanagementProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsCreateRequest(_messages.Message):
+  r"""A NetworkmanagementProjectsLocationsVpcFlowLogsConfigsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent resource of the VPC Flow Logs configuration
+      to create: `projects/{project_id}/locations/global`
+    vpcFlowLogsConfig: A VpcFlowLogsConfig resource to be passed as the
+      request body.
+    vpcFlowLogsConfigId: Required. ID of the `VpcFlowLogsConfig`.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  vpcFlowLogsConfig = _messages.MessageField('VpcFlowLogsConfig', 2)
+  vpcFlowLogsConfigId = _messages.StringField(3)
+
+
+class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsDeleteRequest(_messages.Message):
+  r"""A NetworkmanagementProjectsLocationsVpcFlowLogsConfigsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. `VpcFlowLogsConfig` resource name using the form: `project
+      s/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config
+      }`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsGetRequest(_messages.Message):
+  r"""A NetworkmanagementProjectsLocationsVpcFlowLogsConfigsGetRequest object.
+
+  Fields:
+    name: Required. `VpcFlowLogsConfig` resource name using the form: `project
+      s/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_config
+      }`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsListRequest(_messages.Message):
+  r"""A NetworkmanagementProjectsLocationsVpcFlowLogsConfigsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Lists the `VpcFlowLogsConfigs` that match the filter
+      expression. A filter expression must use the supported [CEL logic
+      operators] (https://cloud.google.com/vpc/docs/about-flow-logs-
+      records#supported_cel_logic_operators).
+    orderBy: Optional. Field to use to sort the list.
+    pageSize: Optional. Number of `VpcFlowLogsConfigs` to return.
+    pageToken: Optional. Page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource of the VpcFlowLogsConfig:
+      `projects/{project_id}/locations/global`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkmanagementProjectsLocationsVpcFlowLogsConfigsPatchRequest(_messages.Message):
+  r"""A NetworkmanagementProjectsLocationsVpcFlowLogsConfigsPatchRequest
+  object.
+
+  Fields:
+    name: Identifier. Unique name of the configuration using the form: `projec
+      ts/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_confi
+      g_id}`
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field.
+    vpcFlowLogsConfig: A VpcFlowLogsConfig resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  vpcFlowLogsConfig = _messages.MessageField('VpcFlowLogsConfig', 3)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -2506,34 +2617,56 @@ class RouteInfo(_messages.Message):
   Enums:
     NextHopTypeValueValuesEnum: Type of next hop.
     RouteScopeValueValuesEnum: Indicates where route is applicable.
+      Deprecated, routes with NCC_HUB scope are not included in the trace in
+      new tests.
     RouteTypeValueValuesEnum: Type of route.
 
   Fields:
-    advertisedRouteNextHopUri: For advertised routes, the URI of their next
+    advertisedRouteNextHopUri: For ADVERTISED routes, the URI of their next
       hop, i.e. the URI of the hybrid endpoint (VPN tunnel, Interconnect
       attachment, NCC router appliance) the advertised prefix is advertised
-      through, or URI of the source peered network.
-    advertisedRouteSourceRouterUri: For advertised dynamic routes, the URI of
+      through, or URI of the source peered network. Deprecated in favor of the
+      next_hop_uri field, not used in new tests.
+    advertisedRouteSourceRouterUri: For ADVERTISED dynamic routes, the URI of
       the Cloud Router that advertised the corresponding IP prefix.
     destIpRange: Destination IP range of the route.
-    destPortRanges: Destination port ranges of the route. Policy based routes
+    destPortRanges: Destination port ranges of the route. POLICY_BASED routes
       only.
     displayName: Name of a route.
     instanceTags: Instance tags of the route.
-    nccHubUri: URI of a NCC Hub. NCC_HUB routes only.
-    nccSpokeUri: URI of a NCC Spoke. NCC_HUB routes only.
-    networkUri: URI of a Compute Engine network. NETWORK routes only.
-    nextHop: Next hop of the route.
+    nccHubRouteUri: For PEERING_SUBNET and PEERING_DYNAMIC routes that are
+      advertised by NCC Hub, the URI of the corresponding route in NCC Hub's
+      routing table.
+    nccHubUri: URI of the NCC Hub the route is advertised by. PEERING_SUBNET
+      and PEERING_DYNAMIC routes that are advertised by NCC Hub only.
+    nccSpokeUri: URI of the destination NCC Spoke. PEERING_SUBNET and
+      PEERING_DYNAMIC routes that are advertised by NCC Hub only.
+    networkUri: URI of a VPC network where route is located.
+    nextHop: String type of the next hop of the route (for example, "VPN
+      tunnel"). Deprecated in favor of the next_hop_type and next_hop_uri
+      fields, not used in new tests.
+    nextHopNetworkUri: URI of a VPC network where the next hop resource is
+      located.
     nextHopType: Type of next hop.
+    nextHopUri: URI of the next hop resource.
+    originatingRouteDisplayName: For PEERING_SUBNET, PEERING_STATIC and
+      PEERING_DYNAMIC routes, the name of the originating
+      SUBNET/STATIC/DYNAMIC route.
+    originatingRouteUri: For PEERING_SUBNET and PEERING_STATIC routes, the URI
+      of the originating SUBNET/STATIC route.
     priority: Priority of the route.
-    protocols: Protocols of the route. Policy based routes only.
-    region: Region of the route (if applicable).
-    routeScope: Indicates where route is applicable.
+    protocols: Protocols of the route. POLICY_BASED routes only.
+    region: Region of the route. DYNAMIC, PEERING_DYNAMIC, POLICY_BASED and
+      ADVERTISED routes only. If set for POLICY_BASED route, this is a region
+      of VLAN attachments for Cloud Interconnect the route applies to.
+    routeScope: Indicates where route is applicable. Deprecated, routes with
+      NCC_HUB scope are not included in the trace in new tests.
     routeType: Type of route.
-    srcIpRange: Source IP address range of the route. Policy based routes
+    srcIpRange: Source IP address range of the route. POLICY_BASED routes
       only.
-    srcPortRanges: Source port ranges of the route. Policy based routes only.
-    uri: URI of a route (if applicable).
+    srcPortRanges: Source port ranges of the route. POLICY_BASED routes only.
+    uri: URI of a route. SUBNET, STATIC, PEERING_SUBNET (only for peering
+      network) and POLICY_BASED routes only.
   """
 
   class NextHopTypeValueValuesEnum(_messages.Enum):
@@ -2544,7 +2677,9 @@ class RouteInfo(_messages.Message):
       NEXT_HOP_IP: Next hop is an IP address.
       NEXT_HOP_INSTANCE: Next hop is a Compute Engine instance.
       NEXT_HOP_NETWORK: Next hop is a VPC network gateway.
-      NEXT_HOP_PEERING: Next hop is a peering VPC.
+      NEXT_HOP_PEERING: Next hop is a peering VPC. This scenario only happens
+        when the user doesn't have permissions to the project where the next
+        hop resource is located.
       NEXT_HOP_INTERCONNECT: Next hop is an interconnect.
       NEXT_HOP_VPN_TUNNEL: Next hop is a VPN tunnel.
       NEXT_HOP_VPN_GATEWAY: Next hop is a VPN gateway. This scenario only
@@ -2554,13 +2689,15 @@ class RouteInfo(_messages.Message):
         Cloud VPN gateway.
       NEXT_HOP_INTERNET_GATEWAY: Next hop is an internet gateway.
       NEXT_HOP_BLACKHOLE: Next hop is blackhole; that is, the next hop either
-        does not exist or is not running.
+        does not exist or is unusable.
       NEXT_HOP_ILB: Next hop is the forwarding rule of an Internal Load
         Balancer.
       NEXT_HOP_ROUTER_APPLIANCE: Next hop is a [router appliance
         instance](https://cloud.google.com/network-connectivity/docs/network-
         connectivity-center/concepts/ra-overview).
-      NEXT_HOP_NCC_HUB: Next hop is an NCC hub.
+      NEXT_HOP_NCC_HUB: Next hop is an NCC hub. This scenario only happens
+        when the user doesn't have permissions to the project where the next
+        hop resource is located.
     """
     NEXT_HOP_TYPE_UNSPECIFIED = 0
     NEXT_HOP_IP = 1
@@ -2577,7 +2714,8 @@ class RouteInfo(_messages.Message):
     NEXT_HOP_NCC_HUB = 12
 
   class RouteScopeValueValuesEnum(_messages.Enum):
-    r"""Indicates where route is applicable.
+    r"""Indicates where route is applicable. Deprecated, routes with NCC_HUB
+    scope are not included in the trace in new tests.
 
     Values:
       ROUTE_SCOPE_UNSPECIFIED: Unspecified scope. Default value.
@@ -2597,9 +2735,10 @@ class RouteInfo(_messages.Message):
       STATIC: Static route created by the user, including the default route to
         the internet.
       DYNAMIC: Dynamic route exchanged between BGP peers.
-      PEERING_SUBNET: A subnet route received from peering network.
+      PEERING_SUBNET: A subnet route received from peering network or NCC Hub.
       PEERING_STATIC: A static route received from peering network.
-      PEERING_DYNAMIC: A dynamic route received from peering network.
+      PEERING_DYNAMIC: A dynamic route received from peering network or NCC
+        Hub.
       POLICY_BASED: Policy based route.
       ADVERTISED: Advertised route. Synthetic route which is used to
         transition from the StartFromPrivateNetwork state in Connectivity
@@ -2621,19 +2760,24 @@ class RouteInfo(_messages.Message):
   destPortRanges = _messages.StringField(4, repeated=True)
   displayName = _messages.StringField(5)
   instanceTags = _messages.StringField(6, repeated=True)
-  nccHubUri = _messages.StringField(7)
-  nccSpokeUri = _messages.StringField(8)
-  networkUri = _messages.StringField(9)
-  nextHop = _messages.StringField(10)
-  nextHopType = _messages.EnumField('NextHopTypeValueValuesEnum', 11)
-  priority = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  protocols = _messages.StringField(13, repeated=True)
-  region = _messages.StringField(14)
-  routeScope = _messages.EnumField('RouteScopeValueValuesEnum', 15)
-  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 16)
-  srcIpRange = _messages.StringField(17)
-  srcPortRanges = _messages.StringField(18, repeated=True)
-  uri = _messages.StringField(19)
+  nccHubRouteUri = _messages.StringField(7)
+  nccHubUri = _messages.StringField(8)
+  nccSpokeUri = _messages.StringField(9)
+  networkUri = _messages.StringField(10)
+  nextHop = _messages.StringField(11)
+  nextHopNetworkUri = _messages.StringField(12)
+  nextHopType = _messages.EnumField('NextHopTypeValueValuesEnum', 13)
+  nextHopUri = _messages.StringField(14)
+  originatingRouteDisplayName = _messages.StringField(15)
+  originatingRouteUri = _messages.StringField(16)
+  priority = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  protocols = _messages.StringField(18, repeated=True)
+  region = _messages.StringField(19)
+  routeScope = _messages.EnumField('RouteScopeValueValuesEnum', 20)
+  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 21)
+  srcIpRange = _messages.StringField(22)
+  srcPortRanges = _messages.StringField(23, repeated=True)
+  uri = _messages.StringField(24)
 
 
 class ServerlessNegInfo(_messages.Message):
@@ -3050,6 +3194,168 @@ class VpcConnectorInfo(_messages.Message):
   displayName = _messages.StringField(1)
   location = _messages.StringField(2)
   uri = _messages.StringField(3)
+
+
+class VpcFlowLogsConfig(_messages.Message):
+  r"""A configuration to generate VPC Flow Logs.
+
+  Enums:
+    AggregationIntervalValueValuesEnum: Optional. The aggregation interval for
+      the logs. Default value is INTERVAL_5_SEC.
+    MetadataValueValuesEnum: Optional. Configures whether all, none or a
+      subset of metadata fields should be added to the reported VPC flow logs.
+      Default value is INCLUDE_ALL_METADATA.
+    StateValueValuesEnum: Optional. The state of the VPC Flow Log
+      configuration. Default value is ENABLED. When creating a new
+      configuration, it must be enabled.
+    TargetResourceStateValueValuesEnum: Output only. A diagnostic bit -
+      describes the state of the configured target resource for diagnostic
+      purposes.
+
+  Messages:
+    LabelsValue: Optional. Resource labels to represent user-provided
+      metadata.
+
+  Fields:
+    aggregationInterval: Optional. The aggregation interval for the logs.
+      Default value is INTERVAL_5_SEC.
+    createTime: Output only. The time the config was created.
+    description: Optional. The user-supplied description of the VPC Flow Logs
+      configuration. Maximum of 512 characters.
+    filterExpr: Optional. Export filter used to define which VPC Flow Logs
+      should be logged.
+    flowSampling: Optional. The value of the field must be in (0, 1]. The
+      sampling rate of VPC Flow Logs where 1.0 means all collected logs are
+      reported. Setting the sampling rate to 0.0 is not allowed. If you want
+      to disable VPC Flow Logs, use the state field instead. Default value is
+      1.0.
+    interconnectAttachment: Traffic will be logged from the Interconnect
+      Attachment. Format:
+      projects/{project_id}/regions/{region}/interconnectAttachments/{name}
+    labels: Optional. Resource labels to represent user-provided metadata.
+    metadata: Optional. Configures whether all, none or a subset of metadata
+      fields should be added to the reported VPC flow logs. Default value is
+      INCLUDE_ALL_METADATA.
+    metadataFields: Optional. Custom metadata fields to include in the
+      reported VPC flow logs. Can only be specified if "metadata" was set to
+      CUSTOM_METADATA.
+    name: Identifier. Unique name of the configuration using the form: `projec
+      ts/{project_id}/locations/global/vpcFlowLogsConfigs/{vpc_flow_logs_confi
+      g_id}`
+    state: Optional. The state of the VPC Flow Log configuration. Default
+      value is ENABLED. When creating a new configuration, it must be enabled.
+    targetResourceState: Output only. A diagnostic bit - describes the state
+      of the configured target resource for diagnostic purposes.
+    updateTime: Output only. The time the config was updated.
+    vpnTunnel: Traffic will be logged from the VPN Tunnel. Format:
+      projects/{project_id}/regions/{region}/vpnTunnels/{name}
+  """
+
+  class AggregationIntervalValueValuesEnum(_messages.Enum):
+    r"""Optional. The aggregation interval for the logs. Default value is
+    INTERVAL_5_SEC.
+
+    Values:
+      AGGREGATION_INTERVAL_UNSPECIFIED: If not specified, will default to
+        INTERVAL_5_SEC.
+      INTERVAL_5_SEC: Aggregate logs in 5s intervals.
+      INTERVAL_30_SEC: Aggregate logs in 30s intervals.
+      INTERVAL_1_MIN: Aggregate logs in 1m intervals.
+      INTERVAL_5_MIN: Aggregate logs in 5m intervals.
+      INTERVAL_10_MIN: Aggregate logs in 10m intervals.
+      INTERVAL_15_MIN: Aggregate logs in 15m intervals.
+    """
+    AGGREGATION_INTERVAL_UNSPECIFIED = 0
+    INTERVAL_5_SEC = 1
+    INTERVAL_30_SEC = 2
+    INTERVAL_1_MIN = 3
+    INTERVAL_5_MIN = 4
+    INTERVAL_10_MIN = 5
+    INTERVAL_15_MIN = 6
+
+  class MetadataValueValuesEnum(_messages.Enum):
+    r"""Optional. Configures whether all, none or a subset of metadata fields
+    should be added to the reported VPC flow logs. Default value is
+    INCLUDE_ALL_METADATA.
+
+    Values:
+      METADATA_UNSPECIFIED: If not specified, will default to
+        INCLUDE_ALL_METADATA.
+      INCLUDE_ALL_METADATA: Include all metadata fields.
+      EXCLUDE_ALL_METADATA: Exclude all metadata fields.
+      CUSTOM_METADATA: Include only custom fields (specified in
+        metadata_fields).
+    """
+    METADATA_UNSPECIFIED = 0
+    INCLUDE_ALL_METADATA = 1
+    EXCLUDE_ALL_METADATA = 2
+    CUSTOM_METADATA = 3
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Optional. The state of the VPC Flow Log configuration. Default value
+    is ENABLED. When creating a new configuration, it must be enabled.
+
+    Values:
+      STATE_UNSPECIFIED: If not specified, will default to ENABLED.
+      ENABLED: When ENABLED, this configuration will generate logs.
+      DISABLED: When DISABLED, this configuration will not generate logs.
+    """
+    STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  class TargetResourceStateValueValuesEnum(_messages.Enum):
+    r"""Output only. A diagnostic bit - describes the state of the configured
+    target resource for diagnostic purposes.
+
+    Values:
+      TARGET_RESOURCE_STATE_UNSPECIFIED: Unspecified target resource state.
+      TARGET_RESOURCE_EXISTS: Indicates that the target resource exists.
+      TARGET_RESOURCE_DOES_NOT_EXIST: Indicates that the target resource does
+        not exist.
+    """
+    TARGET_RESOURCE_STATE_UNSPECIFIED = 0
+    TARGET_RESOURCE_EXISTS = 1
+    TARGET_RESOURCE_DOES_NOT_EXIST = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Resource labels to represent user-provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  aggregationInterval = _messages.EnumField('AggregationIntervalValueValuesEnum', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  filterExpr = _messages.StringField(4)
+  flowSampling = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  interconnectAttachment = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  metadata = _messages.EnumField('MetadataValueValuesEnum', 8)
+  metadataFields = _messages.StringField(9, repeated=True)
+  name = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  targetResourceState = _messages.EnumField('TargetResourceStateValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
+  vpnTunnel = _messages.StringField(14)
 
 
 class VpnGatewayInfo(_messages.Message):

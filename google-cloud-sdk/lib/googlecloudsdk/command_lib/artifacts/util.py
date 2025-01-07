@@ -970,8 +970,45 @@ def DenyVPCSCConfig(unused_ref, args):
   return ar_requests.DenyVPCSCConfig(project, location)
 
 
+def LogUserPermissionDeniedError(project):
+  """Logs a message about how to grant the user permission to perform migration steps.
+
+  Args:
+    project: The project missing permission
+  """
+  user = properties.VALUES.core.account.Get()
+  if user.endswith("gserviceaccount.com"):
+    prefix = "serviceAccount"
+  else:
+    prefix = "user"
+  con = console_attr.GetConsoleAttr()
+  log.status.Print(
+      con.Emphasize(
+          "\nYou can get permission to perform all migration steps if a project"
+          " owner grants you"
+          " roles/artifactregistry.containerRegistryMigrationAdmin:",
+          bold=True,
+      ),
+  )
+  log.status.Print(
+      f"  gcloud projects add-iam-policy-binding {project} "
+      f"--member={prefix}:{user} --role='roles/artifactregistry.containerRegistryMigrationAdmin'\n"
+      .format(prefix=prefix, user=user),
+  )
+
+
 def GetRedirectionStates(projects):
-  """Gets the redirection states for the given projects."""
+  """Gets the redirection states for the given projects.
+
+  Args:
+    projects: The projects to get the redirection states for
+
+  Returns:
+    A dictionary of project to redirection state.
+  raises:
+    apitools_exceptions.HttpForbiddenError: If the user does not have permission
+    to get the redirection state for a project.
+  """
   env = "prod"
   endpoint_property = getattr(
       properties.VALUES.api_endpoint_overrides, "artifactregistry"
@@ -985,9 +1022,13 @@ def GetRedirectionStates(projects):
   redirection_states = {}
   try:
     for project in projects:
-      redirection_states[project] = ar_requests.GetProjectSettings(
-          project
-      ).legacyRedirectionState
+      try:
+        redirection_states[project] = ar_requests.GetProjectSettings(
+            project
+        ).legacyRedirectionState
+      except apitools_exceptions.HttpForbiddenError as e:
+        LogUserPermissionDeniedError(project)
+        raise e
   finally:
     if env == "staging":
       endpoint_property.Set(old_endpoint)
@@ -1012,6 +1053,7 @@ def SetRedirectionStatus(project, status, pull_percent=None):
     con = console_attr.GetConsoleAttr()
     match = re.search("requires (.*) to have storage.objects.", str(e))
     if not match:
+      LogUserPermissionDeniedError(project)
       raise
     log.status.Print(
         con.Colorize("\nERROR:", "red")
@@ -2236,6 +2278,12 @@ def CreateRepositories(project, repos):
               collection="artifactregistry.projects.locations.operations",
           )
       )
+    except apitools_exceptions.HttpForbiddenError as e:
+      log.status.Print(
+          f"Failed to create repository {repo['location']}:"
+          f" {json.loads(e.content)['error']['message']}\n"
+      )
+      LogUserPermissionDeniedError(project)
     except apitools_exceptions.HttpError as e:
       log.status.Print(
           f"Failed to create repository {repo['location']}:"

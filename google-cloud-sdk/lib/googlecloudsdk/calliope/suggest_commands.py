@@ -80,8 +80,9 @@ def _GetSurfaceHistoryFrequencies(logs_dir):
           total += 1
           surfaces_count[surface] += 1
   # normalize surface frequencies
-  return {surface: count / total
-          for surface, count in six.iteritems(surfaces_count)}
+  return {
+      surface: count / total for surface, count in six.iteritems(surfaces_count)
+  }
 
 
 def _GetCanonicalCommandsHelper(tree, results, prefix):
@@ -90,9 +91,9 @@ def _GetCanonicalCommandsHelper(tree, results, prefix):
   Args:
     tree: The root of the tree that will be traversed to find commands.
     results: The results list to append to.
-    prefix: [str], the canonical command line words so far. Once we reach
-      a leaf node, prefix contains a canonical command and a copy is
-      appended to results.
+    prefix: [str], the canonical command line words so far. Once we reach a leaf
+      node, prefix contains a canonical command and a copy is appended to
+      results.
 
   Returns:
     None
@@ -121,8 +122,12 @@ def _GetCanonicalCommands(tree):
   return results
 
 
-def _WordScore(index, normalized_command_word,
-               canonical_command_word, canonical_command_length):
+def _WordScore(
+    index,
+    normalized_command_word,
+    canonical_command_word,
+    canonical_command_length,
+):
   """Returns the integer word match score for a command word.
 
   Args:
@@ -148,7 +153,7 @@ def _WordScore(index, normalized_command_word,
 
   # Inner match must be a word boundary.
   hit = longer_word.find(shorter_word)
-  if hit > 0 and longer_word[hit-1] != '-':
+  if hit > 0 and longer_word[hit - 1] != '-':
     return score
 
   # Partial hit.
@@ -203,8 +208,9 @@ def _GetScoredCommandsContaining(command_words):
   """
   root = lookup.LoadCompletionCliTree()
   surface_history = _GetSurfaceHistoryFrequencies(log.GetLogDir())
-  normalized_command_words = [command_word.lower().replace('_', '-')
-                              for command_word in command_words]
+  normalized_command_words = [
+      command_word.lower().replace('_', '-') for command_word in command_words
+  ]
   scored_commands = []
   all_canonical_commands = _GetCanonicalCommands(root)
   canonical_command_set = set(map(tuple, all_canonical_commands))
@@ -215,16 +221,20 @@ def _GetScoredCommandsContaining(command_words):
     for index, canonical_command_word in enumerate(canonical_command_words):
       for normalized_command_word in normalized_command_words:
         # Prefer the higher score of the normalized word or its synonym if any.
-        increment = _WordScore(index,
-                               normalized_command_word,
-                               canonical_command_word,
-                               canonical_command_length)
+        increment = _WordScore(
+            index,
+            normalized_command_word,
+            canonical_command_word,
+            canonical_command_length,
+        )
         alternate_command_word = SYNONYMS.get(normalized_command_word)
         if alternate_command_word:
-          alternate_increment = _WordScore(index,
-                                           alternate_command_word,
-                                           canonical_command_word,
-                                           canonical_command_length)
+          alternate_increment = _WordScore(
+              index,
+              alternate_command_word,
+              canonical_command_word,
+              canonical_command_length,
+          )
           if increment < alternate_increment:
             increment = alternate_increment
         if increment:
@@ -247,8 +257,10 @@ def _GetScoredCommandsContaining(command_words):
         score -= 5
         if tuple(canonical_command_words[1:]) in canonical_command_set:
           better_track_exists = True
-        if tuple(['beta'] +
-                 canonical_command_words[1:]) in canonical_command_set:
+        if (
+            tuple(['beta'] + canonical_command_words[1:])
+            in canonical_command_set
+        ):
           better_track_exists = True
       if 'beta' == canonical_command_words[0]:
         score -= 5

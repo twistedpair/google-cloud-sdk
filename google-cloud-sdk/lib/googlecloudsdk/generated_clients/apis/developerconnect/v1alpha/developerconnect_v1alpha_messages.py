@@ -47,8 +47,7 @@ class Connection(_messages.Message):
       `projects/{project}/locations/{location}/connections/{connection_id}`.
     reconciling: Output only. Set to true when the connection is being set up
       or updated in the background.
-    uid: Output only. A system-assigned unique identifier for a the
-      GitRepositoryLink.
+    uid: Output only. A system-assigned unique identifier for the Connection.
     updateTime: Output only. [Output only] Update timestamp
   """
 
@@ -753,7 +752,7 @@ class GitRepositoryLink(_messages.Message):
       `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
     reconciling: Output only. Set to true when the connection is being set up
       or updated in the background.
-    uid: Output only. A system-assigned unique identifier for a the
+    uid: Output only. A system-assigned unique identifier for the
       GitRepositoryLink.
     updateTime: Output only. [Output only] Update timestamp
     webhookId: Output only. External ID of the webhook created for the

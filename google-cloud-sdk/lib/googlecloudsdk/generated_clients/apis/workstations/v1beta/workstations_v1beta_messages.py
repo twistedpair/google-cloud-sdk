@@ -179,11 +179,12 @@ class Binding(_messages.Message):
 
 class BoostConfig(_messages.Message):
   r"""A boost configuration is a set of resources that a workstation can use
-  to increase its performance. If a boost configuration is specified, when
-  starting a workstation, users can choose to use a VM provisioned under the
-  boost config by passing the boost config id in the start request. If no
-  boost config id is provided in the start request, the system will choose a
-  VM from the pool provisioned under the default config.
+  to increase its performance. If you specify a boost configuration, upon
+  startup, workstation users can choose to use a VM provisioned under the
+  boost config by passing the boost config ID in the start request. If the
+  workstation user does not provide a boost config ID in the start request,
+  the system will choose a VM from the pool provisioned under the default
+  config.
 
   Fields:
     accelerators: Optional. A list of the type and count of accelerator cards
@@ -213,7 +214,7 @@ class BoostConfig(_messages.Message):
       **Machine Type**: nested virtualization can only be enabled on boost
       configurations that specify a machine_type in the N1 or N2 machine
       series.
-    id: Required. The id to be used for the boost configuration.
+    id: Required. The ID to be used for the boost configuration.
     machineType: Optional. The type of machine that boosted VM instances will
       use-for example, `e2-standard-4`. For more information about machine
       types that Cloud Workstations supports, see the list of [available
@@ -533,6 +534,20 @@ class GceInstance(_messages.Message):
   vmTags = _messages.MessageField('VmTagsValue', 15)
 
 
+class GceInstanceHost(_messages.Message):
+  r"""The Compute Engine instance host.
+
+  Fields:
+    id: Optional. Output only. The ID of the Compute Engine instance.
+    name: Optional. Output only. The name of the Compute Engine instance.
+    zone: Optional. Output only. The zone of the Compute Engine instance.
+  """
+
+  id = _messages.StringField(1)
+  name = _messages.StringField(2)
+  zone = _messages.StringField(3)
+
+
 class GcePersistentDisk(_messages.Message):
   r"""An EphemeralDirectory is backed by a Compute Engine persistent disk.
 
@@ -695,9 +710,16 @@ class HttpOptions(_messages.Message):
       CORS preflight requests through to the workstation, where it becomes the
       responsibility of the destination server in the workstation to validate
       the request.
+    disableLocalhostReplacement: Optional. By default, the workstations
+      service replaces references to localhost, 127.0.0.1, and 0.0.0.0 with
+      the workstation's hostname in http responses from the workstation so
+      that applications under development run properly on the workstation.
+      This may intefere with some applications, and so this option allows that
+      behavior to be disabled.
   """
 
   allowedUnauthenticatedCorsPreflightRequests = _messages.BooleanField(1)
+  disableLocalhostReplacement = _messages.BooleanField(2)
 
 
 class ListOperationsResponse(_messages.Message):
@@ -922,7 +944,9 @@ class OperationMetadata(_messages.Message):
 
 
 class PersistentDirectory(_messages.Message):
-  r"""A directory to persist across workstation sessions.
+  r"""A directory to persist across workstation sessions. Updates to this
+  field will not update existing workstations and will only take effect on new
+  workstations.
 
   Fields:
     gcePd: A PersistentDirectory backed by a Compute Engine persistent disk.
@@ -1066,6 +1090,16 @@ class ReadinessCheck(_messages.Message):
 
   path = _messages.StringField(1)
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class RuntimeHost(_messages.Message):
+  r"""Runtime host for the workstation.
+
+  Fields:
+    gceInstanceHost: Specifies a Compute Engine instance as the host.
+  """
+
+  gceInstanceHost = _messages.MessageField('GceInstanceHost', 1)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -1298,6 +1332,8 @@ class Workstation(_messages.Message):
     name: Identifier. Full name of this workstation.
     reconciling: Output only. Indicates whether this workstation is currently
       being updated to match its intended state.
+    runtimeHost: Optional. Output only. Runtime host for the workstation when
+      in STATE_RUNNING.
     satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     sourceWorkstation: Optional. The source workstation from which this
@@ -1417,13 +1453,14 @@ class Workstation(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 10)
   name = _messages.StringField(11)
   reconciling = _messages.BooleanField(12)
-  satisfiesPzi = _messages.BooleanField(13)
-  satisfiesPzs = _messages.BooleanField(14)
-  sourceWorkstation = _messages.StringField(15)
-  startTime = _messages.StringField(16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
+  runtimeHost = _messages.MessageField('RuntimeHost', 13)
+  satisfiesPzi = _messages.BooleanField(14)
+  satisfiesPzs = _messages.BooleanField(15)
+  sourceWorkstation = _messages.StringField(16)
+  startTime = _messages.StringField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  uid = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
 
 
 class WorkstationBoostConfig(_messages.Message):

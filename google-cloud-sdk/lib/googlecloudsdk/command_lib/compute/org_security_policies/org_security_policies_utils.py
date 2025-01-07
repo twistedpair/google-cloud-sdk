@@ -49,7 +49,7 @@ def ResolveOrganizationSecurityPolicyId(
       break
   if sp_id is None:
     log.error(
-        'Invalid display name: {0}. No Security Policy with this short name'
+        'Invalid short name: {0}. No Security Policy with this short name'
         ' exists.'.format(short_name)
     )
     sys.exit()

@@ -169,7 +169,7 @@ class AutomatedBackupPolicy(_messages.Message):
       supported value at this time is 24 hours. An undefined frequency is
       treated as 24 hours.
     retentionPeriod: Required. How long the automated backups should be
-      retained. The only supported value at this time is 3 days.
+      retained. Values must be at least 3 days and at most 90 days.
   """
 
   frequency = _messages.StringField(1)

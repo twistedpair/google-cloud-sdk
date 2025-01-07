@@ -42,6 +42,7 @@ from .types.storage import ListBucketsResponse
 from .types.storage import ListObjectsRequest
 from .types.storage import ListObjectsResponse
 from .types.storage import LockBucketRetentionPolicyRequest
+from .types.storage import MoveObjectRequest
 from .types.storage import Object
 from .types.storage import ObjectAccessControl
 from .types.storage import ObjectChecksums
@@ -86,6 +87,7 @@ __all__ = (
 'ListObjectsRequest',
 'ListObjectsResponse',
 'LockBucketRetentionPolicyRequest',
+'MoveObjectRequest',
 'Object',
 'ObjectAccessControl',
 'ObjectChecksums',

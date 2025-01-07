@@ -1128,6 +1128,64 @@ class EventarcProjectsLocationsGoogleApiSourcesTestIamPermissionsRequest(_messag
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class EventarcProjectsLocationsKafkaSourcesGetIamPolicyRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsKafkaSourcesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class EventarcProjectsLocationsKafkaSourcesSetIamPolicyRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsKafkaSourcesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class EventarcProjectsLocationsKafkaSourcesTestIamPermissionsRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsKafkaSourcesTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class EventarcProjectsLocationsListRequest(_messages.Message):
   r"""A EventarcProjectsLocationsListRequest object.
 
@@ -1256,7 +1314,7 @@ class EventarcProjectsLocationsMessageBusesListRequest(_messages.Message):
       `next_page_token` field in a previous call to retrieve the subsequent
       page. When paginating, all other parameters provided must match the
       previous call that provided the page token.
-    parent: Required. The parent collection to list triggers on.
+    parent: Required. The parent collection to list message buses on.
   """
 
   filter = _messages.StringField(1)
@@ -2049,38 +2107,40 @@ class GoogleCloudEventarcV1PipelineDestinationHttpEndpoint(_messages.Message):
       the destination-bound HTTP request is constructed. If a binding
       expression is not specified here, the message is treated as a CloudEvent
       and is mapped to the HTTP request according to the CloudEvent HTTP
-      Protocol Binding Binary Content Mode. In this representation, all fields
-      except the `data` and `datacontenttype` field on the message are mapped
-      to HTTP request headers with a prefix of `ce-`. To construct the HTTP
-      request payload and the value of the content-type HTTP header, the
-      payload format is defined as follows: 1) Use the
-      output_payload_format_type on the Pipeline.Destination if it is set,
-      else: 2) Use the input_payload_format_type on the Pipeline if it is set,
-      else: 3) Treat the payload as opaque binary data. The `data` field of
-      the message is converted to the payload format or left as-is for case 3)
-      and then attached as the payload of the HTTP request. The `content-type`
-      header on the HTTP request is set to the payload format type or left
-      empty for case 3). However, if a mediation has updated the
-      `datacontenttype` field on the message so that it is not the same as the
-      payload format type but it is still a prefix of the payload format type,
-      then the `content-type` header on the HTTP request is set to this
-      `datacontenttype` value. For example, if the `datacontenttype` is
-      "application/json" and the payload format type is "application/json;
-      charset=utf-8", then the `content-type` header on the HTTP request is
-      set to "application/json; charset=utf-8". If a non-empty binding
-      expression is specified then this expression is used to modify the
-      default CloudEvent HTTP Protocol Binding Binary Content representation.
-      The result of the CEL expression must be a map of key/value pairs which
-      is used as follows: - If a map named `headers` exists on the result of
-      the expression, then its key/value pairs are directly mapped to the HTTP
-      request headers. The headers values are constructed from the
-      corresponding value type's canonical representation. If the `headers`
-      field doesn't exist then the resulting HTTP request will be the headers
-      of the CloudEvent HTTP Binding Binary Content Mode representation of the
-      final message. Note: If the specified binding expression, has updated
-      the `datacontenttype` field on the message so that it is not the same as
-      the payload format type but it is still a prefix of the payload format
-      type, then the `content-type` header in the `headers` map is set to this
+      Protocol Binding Binary Content Mode (https://github.com/cloudevents/spe
+      c/blob/main/cloudevents/bindings/http-protocol-binding.md#31-binary-
+      content-mode). In this representation, all fields except the `data` and
+      `datacontenttype` field on the message are mapped to HTTP request
+      headers with a prefix of `ce-`. To construct the HTTP request payload
+      and the value of the content-type HTTP header, the payload format is
+      defined as follows: 1) Use the output_payload_format_type on the
+      Pipeline.Destination if it is set, else: 2) Use the
+      input_payload_format_type on the Pipeline if it is set, else: 3) Treat
+      the payload as opaque binary data. The `data` field of the message is
+      converted to the payload format or left as-is for case 3) and then
+      attached as the payload of the HTTP request. The `content-type` header
+      on the HTTP request is set to the payload format type or left empty for
+      case 3). However, if a mediation has updated the `datacontenttype` field
+      on the message so that it is not the same as the payload format type but
+      it is still a prefix of the payload format type, then the `content-type`
+      header on the HTTP request is set to this `datacontenttype` value. For
+      example, if the `datacontenttype` is "application/json" and the payload
+      format type is "application/json; charset=utf-8", then the `content-
+      type` header on the HTTP request is set to "application/json;
+      charset=utf-8". If a non-empty binding expression is specified then this
+      expression is used to modify the default CloudEvent HTTP Protocol
+      Binding Binary Content representation. The result of the CEL expression
+      must be a map of key/value pairs which is used as follows: - If a map
+      named `headers` exists on the result of the expression, then its
+      key/value pairs are directly mapped to the HTTP request headers. The
+      headers values are constructed from the corresponding value type's
+      canonical representation. If the `headers` field doesn't exist then the
+      resulting HTTP request will be the headers of the CloudEvent HTTP
+      Binding Binary Content Mode representation of the final message. Note:
+      If the specified binding expression, has updated the `datacontenttype`
+      field on the message so that it is not the same as the payload format
+      type but it is still a prefix of the payload format type, then the
+      `content-type` header in the `headers` map is set to this
       `datacontenttype` value. - If a field named `body` exists on the result
       of the expression then its value is directly mapped to the body of the
       request. If the value of the `body` field is of type bytes or string
@@ -3517,6 +3577,8 @@ encoding.AddCustomJsonFieldMapping(
     EventarcProjectsLocationsEnrollmentsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     EventarcProjectsLocationsGoogleApiSourcesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    EventarcProjectsLocationsKafkaSourcesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     EventarcProjectsLocationsMessageBusesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(

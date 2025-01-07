@@ -142,8 +142,8 @@ def ValidateModelGardenModelArgs(args):
     if len(args.hugging_face_model.split('/')) != 2:
       raise exceptions.InvalidArgumentException(
           '--hugging-face-model',
-          'Hugging Face model should be in the format of Hugging Face URL path,'
-          ' e.g. `meta-llama/Meta-Llama-3-8B`.',
+          'Hugging Face model should be in the format of Hugging Face'
+          ' convention, e.g. `meta-llama/Meta-Llama-3-8B`.',
       )
   elif args.model is not None:
     if len(args.model.split('/')) != 3:

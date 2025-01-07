@@ -1321,7 +1321,7 @@ class ListPreviewsResponse(_messages.Message):
   Fields:
     nextPageToken: Token to be supplied to the next ListPreviews request via
       `page_token` to obtain the next set of results.
-    previews: List of Previewss.
+    previews: List of Previews.
     unreachable: Locations that could not be reached.
   """
 
@@ -1337,7 +1337,7 @@ class ListResourcesResponse(_messages.Message):
     nextPageToken: A token to request the next page of resources from the
       'ListResources' method. The value of an empty string means that there
       are no more resources to return.
-    resources: List of Resourcess.
+    resources: List of Resources.
     unreachable: Locations that could not be reached.
   """
 
@@ -1602,8 +1602,9 @@ class OperationMetadata(_messages.Message):
     previewMetadata: Output only. Metadata about the preview operation state.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      successfully been cancelled have google.longrunning.Operation.error
+      value with a google.rpc.Status.code of `1`, corresponding to
+      `Code.CANCELLED`.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
     target: Output only. Server-defined resource path for the target of the
@@ -2411,19 +2412,20 @@ class TerraformBlueprint(_messages.Message):
   describes the resources and configs to be deployed.
 
   Messages:
-    InputValuesValue: Input variable values for the Terraform blueprint.
+    InputValuesValue: Optional. Input variable values for the Terraform
+      blueprint.
 
   Fields:
     gcsSource: URI of an object in Google Cloud Storage. Format:
       `gs://{bucket}/{object}` URI may also specify an object version for
       zipped objects. Format: `gs://{bucket}/{object}#{version}`
     gitSource: URI of a public Git repo.
-    inputValues: Input variable values for the Terraform blueprint.
+    inputValues: Optional. Input variable values for the Terraform blueprint.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class InputValuesValue(_messages.Message):
-    r"""Input variable values for the Terraform blueprint.
+    r"""Optional. Input variable values for the Terraform blueprint.
 
     Messages:
       AdditionalProperty: An additional property for a InputValuesValue
@@ -2455,7 +2457,8 @@ class TerraformError(_messages.Message):
   r"""Errors encountered during actuation using Terraform
 
   Fields:
-    error: Original error response from underlying Google API, if available.
+    error: Output only. Original error response from underlying Google API, if
+      available.
     errorDescription: A human-readable error description.
     httpResponseCode: HTTP response code returned from Google Cloud Platform
       APIs when Terraform fails to provision the resource. If unset or 0, no
@@ -2487,7 +2490,7 @@ class TerraformVariable(_messages.Message):
   r"""A Terraform input variable.
 
   Fields:
-    inputValue: Input variable value.
+    inputValue: Optional. Input variable value.
   """
 
   inputValue = _messages.MessageField('extra_types.JsonValue', 1)

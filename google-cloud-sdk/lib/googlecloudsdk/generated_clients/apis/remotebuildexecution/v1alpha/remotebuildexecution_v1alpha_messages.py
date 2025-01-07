@@ -1443,6 +1443,32 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaBackendProperties(_messages.
   bindings = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaBackendIAMBinding', 2, repeated=True)
 
 
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateAndroidCIInstanceRequest(_messages.Message):
+  r"""The request used for `CreateAndroidCIInstance`.
+
+  Fields:
+    billingProjectManagerGroup: Optional. Billing Project Manager Group used
+      for changing the billing account of the backend project as we will be
+      bypassing the BE chargeback.
+    instance: Required. Specifies the instance to create. The name in the
+      instance, if specified in the instance, is ignored.
+    instanceId: Required. ID of the created instance. A valid `instance_id`
+      must: be 6-50 characters long, contain only lowercase letters, digits,
+      hyphens and underscores, start with a lowercase letter, and end with a
+      lowercase letter or a digit.
+    parent: Required. Resource name of the project containing the instance.
+      Format: `projects/[PROJECT_ID]`.
+    vmServiceAccount: Optional. Service Account is the service account that
+      will be used to run the VMs.
+  """
+
+  billingProjectManagerGroup = _messages.StringField(1)
+  instance = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance', 2)
+  instanceId = _messages.StringField(3)
+  parent = _messages.StringField(4)
+  vmServiceAccount = _messages.StringField(5)
+
+
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateBackendIAMBindingRequest(_messages.Message):
   r"""The request used for `CreateBackendIAMBinding`.
 
@@ -1465,6 +1491,25 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateBackendIAMBindingRespo
   backendProperties = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaBackendProperties', 1)
 
 
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateGuitarInstanceRequest(_messages.Message):
+  r"""The request used for `CreateGuitarInstance`.
+
+  Fields:
+    instance: Required. Specifies the instance to create. The name in the
+      instance, if specified in the instance, is ignored.
+    instanceId: Required. ID of the created instance. A valid `instance_id`
+      must: be 6-50 characters long, contain only lowercase letters, digits,
+      hyphens and underscores, start with a lowercase letter, and end with a
+      lowercase letter or a digit.
+    parent: Required. Resource name of the project containing the instance.
+      Format: `projects/[PROJECT_ID]`.
+  """
+
+  instance = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance', 1)
+  instanceId = _messages.StringField(2)
+  parent = _messages.StringField(3)
+
+
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest(_messages.Message):
   r"""The request used for `CreateInstance`.
 
@@ -1482,6 +1527,88 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest(_messa
   instance = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance', 1)
   instanceId = _messages.StringField(2)
   parent = _messages.StringField(3)
+
+
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateKokoroInstanceRequest(_messages.Message):
+  r"""The request used for `CreateKokoroInstance`.
+
+  Enums:
+    AdminOpsRestrictionsValueValuesEnum: Optional. If AdminOpsRestrictions is
+      ADMIN_OPS_RESTRICTIONS_RESTRICTED then only predefined safe fields are
+      allowed to set through internal APIs through toolproxy.
+      AdminOpsRestrictions can be set to ADMIN_OPS_RESTRICTIONS_RESTRICTED
+      only if ACTION_ISOLATION is enforced.
+    TcaRestrictionsValueValuesEnum: Optional. If tca_restrictions is ENABLED
+      then the instance will have restrictions needed for building Trusted
+      Core Access (TCA) compliant builds. DO NOT USE: In-Development feature.
+
+  Fields:
+    adminOpsRestrictions: Optional. If AdminOpsRestrictions is
+      ADMIN_OPS_RESTRICTIONS_RESTRICTED then only predefined safe fields are
+      allowed to set through internal APIs through toolproxy.
+      AdminOpsRestrictions can be set to ADMIN_OPS_RESTRICTIONS_RESTRICTED
+      only if ACTION_ISOLATION is enforced.
+    immutableMetapolicy: Enforces meta policy immutability if set to true.
+      This field is required. We use 'optional' here to catch (and error on)
+      the case where this field is unset.
+    instance: Required. Specifies the instance to create. The name in the
+      instance, if specified in the instance, is ignored.
+    instanceId: Required. ID of the created instance. A valid `instance_id`
+      must: be 6-50 characters long, contain only lowercase letters, digits,
+      hyphens and underscores, start with a lowercase letter, and end with a
+      lowercase letter or a digit.
+    parent: Required. Resource name of the project containing the instance.
+      Format: `projects/[PROJECT_ID]`.
+    tcaRestrictions: Optional. If tca_restrictions is ENABLED then the
+      instance will have restrictions needed for building Trusted Core Access
+      (TCA) compliant builds. DO NOT USE: In-Development feature.
+  """
+
+  class AdminOpsRestrictionsValueValuesEnum(_messages.Enum):
+    r"""Optional. If AdminOpsRestrictions is ADMIN_OPS_RESTRICTIONS_RESTRICTED
+    then only predefined safe fields are allowed to set through internal APIs
+    through toolproxy. AdminOpsRestrictions can be set to
+    ADMIN_OPS_RESTRICTIONS_RESTRICTED only if ACTION_ISOLATION is enforced.
+
+    Values:
+      RESTRICTIONS_UNSPECIFIED: Default value; interpreted as
+        RESTRICTIONS_ALLOWED.
+      RESTRICTIONS_ALLOWED: Admin operations are allowed normally.
+      RESTRICTIONS_RESTRICTED: Admin operations are restricted to known safe
+        operations that do not affect build integrity.
+    """
+    RESTRICTIONS_UNSPECIFIED = 0
+    RESTRICTIONS_ALLOWED = 1
+    RESTRICTIONS_RESTRICTED = 2
+
+  class TcaRestrictionsValueValuesEnum(_messages.Enum):
+    r"""Optional. If tca_restrictions is ENABLED then the instance will have
+    restrictions needed for building Trusted Core Access (TCA) compliant
+    builds. DO NOT USE: In-Development feature.
+
+    Values:
+      RESTRICTIONS_UNSPECIFIED: TCA restrictions are not specified, defaulting
+        to RESTRICTIONS_DISABLED.
+      RESTRICTIONS_DISABLED: TCA restrictions are disabled for the instance.
+      RESTRICTIONS_ENABLED_V1: V1 version of TCA restrictions are enabled for
+        the instance. These include: 1. ActionHermeticity to be BEST_EFFORT or
+        ENFORCED and ActionIsolation to be ENFORCED. 2. ImmutableMetaPolicy to
+        be true. 3. AdminOpsRestrictions to be RESTRICTED. 4. Using Shielded,
+        Confidential and Software Trusted VMs as RBE workers, which use custom
+        RBE TCA COS VM images and go through TPM attestation verification for
+        various boot parameters. 5. Inputs and outputs of the actions on these
+        VMs requires TPM attestation verification.
+    """
+    RESTRICTIONS_UNSPECIFIED = 0
+    RESTRICTIONS_DISABLED = 1
+    RESTRICTIONS_ENABLED_V1 = 2
+
+  adminOpsRestrictions = _messages.EnumField('AdminOpsRestrictionsValueValuesEnum', 1)
+  immutableMetapolicy = _messages.BooleanField(2)
+  instance = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance', 3)
+  instanceId = _messages.StringField(4)
+  parent = _messages.StringField(5)
+  tcaRestrictions = _messages.EnumField('TcaRestrictionsValueValuesEnum', 6)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateWorkerPoolRequest(_messages.Message):
@@ -1736,10 +1863,13 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Mess
         Equivalent to FORBIDDEN.
       MAC_EXECUTION_FORBIDDEN: Mac actions and worker pools are forbidden.
       MAC_EXECUTION_UNRESTRICTED: No restrictions on execution of Mac actions.
+      MAC_EXECUTION_TERMINAL: Mac actions will always result in the worker VM
+        being terminated after the action completes.
     """
     MAC_EXECUTION_UNSPECIFIED = 0
     MAC_EXECUTION_FORBIDDEN = 1
     MAC_EXECUTION_UNRESTRICTED = 2
+    MAC_EXECUTION_TERMINAL = 3
 
   class NetworkAccessValueValuesEnum(_messages.Enum):
     r"""Optional. Defines the network access policy for actions on this
@@ -1747,7 +1877,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Mess
 
     Values:
       NETWORK_ACCESS_UNSPECIFIED: Default value, if not explicitly set.
-        Equivalent to OFF.
+        Equivalent to ALLOWED.
       NETWORK_ACCESS_ALLOWED: Disables enforcing feature policies related to
         network access.
       NETWORK_ACCESS_ENFORCED: Requires feature policies to be set that
@@ -1890,9 +2020,6 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
   Enums:
     StateValueValuesEnum: Output only. State of the instance.
 
-  Messages:
-    CasRelationResultValue: A CasRelationResultValue object.
-
   Fields:
     backendProperties: Output only. Describes the instance's backend project
       configuration. Currently, this includes the list of user-managed IAM
@@ -1900,13 +2027,13 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
       instances not in one of the ENABLE_BE_IAM_BINDING_* feature allowlists.
     bindings: Optional. The list of IAM bindings that should be applied to
       this instance.
-    casRelationResult: A CasRelationResultValue attribute.
     casRelations: Specify parent or child instances of `this` instance.
       Configurations will be rejected if: -- If `this` instance is not
       allowlisted for `ENABLE_DATA_READS_FROM_PARENT` and this list specifies
       parent instances. -- If `this` instance is not allowlisted for
       `ENABLE_DATA_READS_BY_CHILDREN` and this list specifies child instances.
-      -- If both parent and child instances are specified.
+      -- If both parent and child instances are specified. -- If instance has
+      more than allowed number of parent or child instances.
     featurePolicy: The policy to define whether or not RBE features can be
       used or how they can be used.
     location: The location is a GCP region. Currently only `us-central1` is
@@ -1944,44 +2071,17 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
     RUNNING = 2
     INACTIVE = 3
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class CasRelationResultValue(_messages.Message):
-    r"""A CasRelationResultValue object.
-
-    Messages:
-      AdditionalProperty: An additional property for a CasRelationResultValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        CasRelationResultValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a CasRelationResultValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A GoogleRpcStatus attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('GoogleRpcStatus', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   backendProperties = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaBackendProperties', 1)
   bindings = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaIAMBinding', 2, repeated=True)
-  casRelationResult = _messages.MessageField('CasRelationResultValue', 3)
-  casRelations = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaRelationship', 4, repeated=True)
-  featurePolicy = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy', 5)
-  location = _messages.StringField(6)
-  loggingEnabled = _messages.BooleanField(7)
-  name = _messages.StringField(8)
-  schedulerNotificationConfig = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaSchedulerNotificationConfig', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  storageSettings = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaStorageSettings', 11)
-  zoneDrains = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaZoneDrain', 12, repeated=True)
+  casRelations = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaRelationship', 3, repeated=True)
+  featurePolicy = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy', 4)
+  location = _messages.StringField(5)
+  loggingEnabled = _messages.BooleanField(6)
+  name = _messages.StringField(7)
+  schedulerNotificationConfig = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaSchedulerNotificationConfig', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  storageSettings = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaStorageSettings', 10)
+  zoneDrains = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaZoneDrain', 11, repeated=True)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesRequest(_messages.Message):

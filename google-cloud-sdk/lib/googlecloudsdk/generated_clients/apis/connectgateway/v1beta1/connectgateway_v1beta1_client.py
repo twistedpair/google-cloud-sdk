@@ -72,7 +72,7 @@ class ConnectgatewayV1beta1(base_api.BaseApiClient):
         method_id='connectgateway.projects.locations.memberships.generateCredentials',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['forceUseAgent', 'kubernetesNamespace', 'operatingSystem', 'version'],
+        query_params=['forceUseAgent', 'impersonatedServiceAccount', 'kubernetesNamespace', 'operatingSystem', 'version'],
         relative_path='v1beta1/{+name}:generateCredentials',
         request_field='',
         request_type_name='ConnectgatewayProjectsLocationsMembershipsGenerateCredentialsRequest',

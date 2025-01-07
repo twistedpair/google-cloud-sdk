@@ -376,6 +376,10 @@ class ExecutionConditionPoller(ConditionPoller):
 class WaitOperationPoller(waiter.CloudOperationPoller):
   """Poll for a long running operation using Wait instead of Get."""
 
+  def __init__(self, messages_module, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self._messages_module = messages_module
+
   def Poll(self, operation_ref):
     """Overrides.
 
@@ -386,6 +390,12 @@ class WaitOperationPoller(waiter.CloudOperationPoller):
       fetched operation message.
     """
     request_type = self.operation_service.GetRequestType('Wait')
+    wait_req = self._messages_module.GoogleLongrunningWaitOperationRequest(
+        timeout='30s'
+    )
     return self.operation_service.Wait(
-        request_type(name=operation_ref.RelativeName())
+        request_type(
+            name=operation_ref.RelativeName(),
+            googleLongrunningWaitOperationRequest=wait_req,
+        )
     )

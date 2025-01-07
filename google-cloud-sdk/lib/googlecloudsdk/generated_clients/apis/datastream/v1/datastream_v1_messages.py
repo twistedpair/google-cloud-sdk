@@ -189,7 +189,7 @@ class ConnectionProfile(_messages.Message):
     gcsProfile: Cloud Storage ConnectionProfile configuration.
     labels: Labels.
     mysqlProfile: MySQL ConnectionProfile configuration.
-    name: Output only. The resource's name.
+    name: Output only. Identifier. The resource's name.
     oracleProfile: Oracle ConnectionProfile configuration.
     postgresqlProfile: PostgreSQL Connection Profile configuration.
     privateConnectivity: Private connectivity.
@@ -371,7 +371,7 @@ class DatastreamProjectsLocationsConnectionProfilesPatchRequest(_messages.Messag
     connectionProfile: A ConnectionProfile resource to be passed as the
       request body.
     force: Optional. Update the connection profile without validating it.
-    name: Output only. The resource's name.
+    name: Output only. Identifier. The resource's name.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -831,7 +831,7 @@ class DatastreamProjectsLocationsStreamsPatchRequest(_messages.Message):
 
   Fields:
     force: Optional. Update the stream without validating it.
-    name: Output only. The stream's name.
+    name: Output only. Identifier. The stream's name.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -1631,6 +1631,7 @@ class OperationMetadata(_messages.Message):
 
 class OracleAsmConfig(_messages.Message):
   r"""Configuration for Oracle Automatic Storage Management (ASM) connection.
+  .
 
   Messages:
     ConnectionAttributesValue: Optional. Connection string attributes
@@ -1640,7 +1641,7 @@ class OracleAsmConfig(_messages.Message):
     connectionAttributes: Optional. Connection string attributes
     hostname: Required. Hostname for the Oracle ASM connection.
     oracleSslConfig: Optional. SSL configuration for the Oracle connection.
-    password: Required. Password for the Oracle ASM connection.
+    password: Optional. Password for the Oracle ASM connection.
     port: Required. Port for the Oracle ASM connection.
     username: Required. Username for the Oracle ASM connection.
   """
@@ -1995,7 +1996,7 @@ class PrivateConnection(_messages.Message):
     error: Output only. In case of error, the details of the error in a user-
       friendly format.
     labels: Labels.
-    name: Output only. The resource's name.
+    name: Output only. Identifier. The resource's name.
     state: Output only. The state of the Private Connection.
     updateTime: Output only. The update time of the resource.
     vpcPeeringConfig: VPC Peering Config.
@@ -2081,7 +2082,7 @@ class Route(_messages.Message):
     destinationPort: Destination port for connection
     displayName: Required. Display name.
     labels: Labels.
-    name: Output only. The resource's name.
+    name: Output only. Identifier. The resource's name.
     updateTime: Output only. The update time of the resource.
   """
 
@@ -2197,10 +2198,12 @@ class SpecificStartPosition(_messages.Message):
   Fields:
     mysqlLogPosition: MySQL specific log position to start replicating from.
     oracleScnPosition: Oracle SCN to start replicating from.
+    sqlServerLsnPosition: SqlServer LSN to start replicating from.
   """
 
   mysqlLogPosition = _messages.MessageField('MysqlLogPosition', 1)
   oracleScnPosition = _messages.MessageField('OracleScnPosition', 2)
+  sqlServerLsnPosition = _messages.MessageField('SqlServerLsnPosition', 3)
 
 
 class SqlServerChangeTables(_messages.Message):
@@ -2229,6 +2232,16 @@ class SqlServerColumn(_messages.Message):
   precision = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   primaryKey = _messages.BooleanField(7)
   scale = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+
+
+class SqlServerLsnPosition(_messages.Message):
+  r"""SQL Server LSN position
+
+  Fields:
+    lsn: Required. Log sequence number (LSN) from where Logs will be read
+  """
+
+  lsn = _messages.StringField(1)
 
 
 class SqlServerObjectIdentifier(_messages.Message):
@@ -2502,7 +2515,7 @@ class Stream(_messages.Message):
     labels: Labels.
     lastRecoveryTime: Output only. If the stream was recovered, the time of
       the last recovery. Note: This field is currently experimental.
-    name: Output only. The stream's name.
+    name: Output only. Identifier. The stream's name.
     sourceConfig: Required. Source connection profile configuration.
     state: The state of the stream.
     updateTime: Output only. The last update time of the stream.
@@ -2588,7 +2601,7 @@ class StreamObject(_messages.Message):
     createTime: Output only. The creation time of the object.
     displayName: Required. Display name.
     errors: Output only. Active errors on the object.
-    name: Output only. The object resource's name.
+    name: Output only. Identifier. The object resource's name.
     sourceObject: The object identifier in the data source.
     updateTime: Output only. The last update time of the object.
   """

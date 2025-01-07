@@ -992,6 +992,70 @@ class Destination(_messages.Message):
   ports = _messages.IntegerField(4, repeated=True, variant=_messages.Variant.UINT32)
 
 
+class DnsThreatDetector(_messages.Message):
+  r"""Message describing DnsThreatDetector object
+
+  Enums:
+    ProviderValueValuesEnum: Required. The provider used for DNS threat
+      analysis.
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    excludedNetworks: Optional. A list of Network resource URIs which are
+      exempt from the configuration in this DnsThreatDetector. Example: `https
+      ://www.googleapis.com/compute/v1/projects/PROJECT_ID/global/networks/NET
+      WORK_NAME`.
+    labels: Optional. Labels as key value pairs
+    name: Immutable. Identifier. Name of the DnsThreatDetector resource.
+    provider: Required. The provider used for DNS threat analysis.
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  class ProviderValueValuesEnum(_messages.Enum):
+    r"""Required. The provider used for DNS threat analysis.
+
+    Values:
+      PROVIDER_UNSPECIFIED: An unspecified provider.
+      INFOBLOX: The Infoblox DNS threat detecter.
+    """
+    PROVIDER_UNSPECIFIED = 0
+    INFOBLOX = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  excludedNetworks = _messages.StringField(2, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  provider = _messages.EnumField('ProviderValueValuesEnum', 5)
+  updateTime = _messages.StringField(6)
+
+
 class DomainFilter(_messages.Message):
   r"""A domain filter defines an action to take for some domain name match.
 
@@ -1754,7 +1818,7 @@ class HttpHeaderMatch(_messages.Message):
 
 
 class InterceptDeployment(_messages.Message):
-  r"""Message describing InterceptDeployment object
+  r"""Message describing InterceptDeployment object NEXT ID: 10
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the deployment.
@@ -1764,6 +1828,8 @@ class InterceptDeployment(_messages.Message):
 
   Fields:
     createTime: Output only. [Output only] Create time stamp
+    description: Optional. User-provided description of the deployment. Used
+      as additional context for the deployment.
     forwardingRule: Required. Immutable. The regional load balancer which the
       intercepted traffic should be forwarded to. Format is:
       projects/{project}/regions/{region}/forwardingRules/{forwardingRule}
@@ -1826,17 +1892,18 @@ class InterceptDeployment(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  forwardingRule = _messages.StringField(2)
-  interceptDeploymentGroup = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  reconciling = _messages.BooleanField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  description = _messages.StringField(2)
+  forwardingRule = _messages.StringField(3)
+  interceptDeploymentGroup = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class InterceptDeploymentGroup(_messages.Message):
-  r"""Message describing InterceptDeploymentGroup object
+  r"""Message describing InterceptDeploymentGroup object NEXT ID: 10
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the deployment group.
@@ -1848,6 +1915,8 @@ class InterceptDeploymentGroup(_messages.Message):
     connectedEndpointGroups: Output only. The list of Intercept Endpoint
       Groups that are connected to this resource.
     createTime: Output only. [Output only] Create time stamp
+    description: Optional. User-provided description of the deployment group.
+      Used as additional context for the deployment group.
     labels: Optional. Labels as key value pairs
     name: Immutable. Identifier. Then name of the InterceptDeploymentGroup.
     network: Required. Immutable. The network that is being used for the
@@ -1898,12 +1967,13 @@ class InterceptDeploymentGroup(_messages.Message):
 
   connectedEndpointGroups = _messages.MessageField('InterceptDeploymentGroupConnectedEndpointGroup', 1, repeated=True)
   createTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  network = _messages.StringField(5)
-  reconciling = _messages.BooleanField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class InterceptDeploymentGroupConnectedEndpointGroup(_messages.Message):
@@ -2253,10 +2323,12 @@ class ListBackendAuthenticationConfigsResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Locations that could not be reached.
   """
 
   backendAuthenticationConfigs = _messages.MessageField('BackendAuthenticationConfig', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListClientTlsPoliciesResponse(_messages.Message):
@@ -2272,6 +2344,21 @@ class ListClientTlsPoliciesResponse(_messages.Message):
 
   clientTlsPolicies = _messages.MessageField('ClientTlsPolicy', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListDnsThreatDetectorsResponse(_messages.Message):
+  r"""Message for response to listing DnsThreatDetectors
+
+  Fields:
+    dnsThreatDetectors: The list of DnsThreatDetector resources.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page.
+    unreachable: Unordered list. Unreachable `DnsThreatDetector` resources.
+  """
+
+  dnsThreatDetectors = _messages.MessageField('DnsThreatDetector', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListFirewallAttachmentsResponse(_messages.Message):
@@ -2638,6 +2725,21 @@ class ListTlsInspectionPoliciesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   tlsInspectionPolicies = _messages.MessageField('TlsInspectionPolicy', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListUllMirroredNetworksResponse(_messages.Message):
+  r"""Message for response to listing UllMirroredNetworks
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    ullMirroredNetworks: The list of UllMirroredNetwork
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  ullMirroredNetworks = _messages.MessageField('UllMirroredNetwork', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -4588,6 +4690,82 @@ class NetworksecurityProjectsLocationsClientTlsPoliciesTestIamPermissionsRequest
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
   resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsDnsThreatDetectorsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsDnsThreatDetectorsCreateRequest
+  object.
+
+  Fields:
+    dnsThreatDetector: A DnsThreatDetector resource to be passed as the
+      request body.
+    dnsThreatDetectorId: Optional. Id of the requesting DnsThreatDetector
+      object. If this field is not supplied, the service will generate an
+      identifier.
+    parent: Required. Value for parent of the DnsThreatDetector resource.
+  """
+
+  dnsThreatDetector = _messages.MessageField('DnsThreatDetector', 1)
+  dnsThreatDetectorId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsDnsThreatDetectorsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsDnsThreatDetectorsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the DnsThreatDetector resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsDnsThreatDetectorsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsDnsThreatDetectorsGetRequest object.
+
+  Fields:
+    name: Required. Name of the DnsThreatDetector resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsDnsThreatDetectorsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsDnsThreatDetectorsListRequest object.
+
+  Fields:
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A page token, received from a previous
+      `ListDnsThreatDetectorsRequest` call. Provide this to retrieve the
+      subsequent page.
+    parent: Required. Parent value for ListDnsThreatDetectorsRequest
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsDnsThreatDetectorsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsDnsThreatDetectorsPatchRequest object.
+
+  Fields:
+    dnsThreatDetector: A DnsThreatDetector resource to be passed as the
+      request body.
+    name: Immutable. Identifier. Name of the DnsThreatDetector resource.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the DnsThreatDetector resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the mask
+      is not provided then all fields present in the request will be
+      overwritten.
+  """
+
+  dnsThreatDetector = _messages.MessageField('DnsThreatDetector', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class NetworksecurityProjectsLocationsFirewallAttachmentsCreateRequest(_messages.Message):
@@ -7151,6 +7329,91 @@ class NetworksecurityProjectsLocationsUllMirroringEnginesPatchRequest(_messages.
   updateMask = _messages.StringField(3)
 
 
+class NetworksecurityProjectsLocationsUllMirroringInfrasUllMirroredNetworksCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUllMirroringInfrasUllMirroredNetworksC
+  reateRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    ullMirroredNetwork: A UllMirroredNetwork resource to be passed as the
+      request body.
+    ullMirroredNetworkId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and ull_mirrored_network_id
+      from the method_signature of Create RPC
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  ullMirroredNetwork = _messages.MessageField('UllMirroredNetwork', 3)
+  ullMirroredNetworkId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsUllMirroringInfrasUllMirroredNetworksDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUllMirroringInfrasUllMirroredNetworksD
+  eleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsUllMirroringInfrasUllMirroredNetworksGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUllMirroringInfrasUllMirroredNetworksG
+  etRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsUllMirroringInfrasUllMirroredNetworksListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUllMirroringInfrasUllMirroredNetworksL
+  istRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListUllMirroredNetworksRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class NetworksecurityProjectsLocationsUrlListsCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsUrlListsCreateRequest object.
 
@@ -7813,7 +8076,10 @@ class SACAttachment(_messages.Message):
       `.
     nccGateway: Required. ID of the NCC Gateway which connects to the
       attachment.
-    sacRealm: Required. ID of the SAC Realm which owns the attachment.
+    sacRealm: Required. Name of the SAC Realm which owns the attachment. The
+      input can be either an ID for a full name. The output will always be the
+      full name using project number instead of project ID. The format is
+      `projects/{project_number}/locations/{location}/sacRealms/{sac_realm}`.
     state: Output only. [Output only] State of the attachment.
     symantecOptions: Optional. Required iff the associated realm is of type
       SYMANTEC_CLOUD_SWG.
@@ -8761,6 +9027,74 @@ class TlsInspectionPolicy(_messages.Message):
   tlsFeatureProfile = _messages.EnumField('TlsFeatureProfileValueValuesEnum', 8)
   trustConfig = _messages.StringField(9)
   updateTime = _messages.StringField(10)
+
+
+class UllMirroredNetwork(_messages.Message):
+  r"""Message describing UllMirroredNetwork object
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the mirrored network.
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Optional. Labels as key value pairs
+    name: Immutable. Identifier. The name of the UllMirroredNetwork.
+    network: Required. Immutable. The mirrored network name. e.g.
+      "projects/my-project/global/networks/my-network".
+    reconciling: Output only. Whether reconciling is in progress, recommended
+      per https://google.aip.dev/128.
+    state: Output only. Current state of the mirrored network.
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the mirrored network.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: Ready.
+      CREATING: Being created.
+      DELETING: Being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  network = _messages.StringField(4)
+  reconciling = _messages.BooleanField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
 
 
 class UllMirroringCollector(_messages.Message):

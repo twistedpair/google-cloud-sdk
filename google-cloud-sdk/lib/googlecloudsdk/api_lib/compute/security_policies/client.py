@@ -372,32 +372,25 @@ class SecurityPolicyRule(object):
       security_policy_rule.preconfiguredWafConfig = preconfig_waf_config
 
     if getattr(self.ref, 'region', None) is not None:
-      if update_mask:
-        return (
-            self._client.regionSecurityPolicies,
-            'PatchRule',
-            self._messages.ComputeRegionSecurityPoliciesPatchRuleRequest(
-                project=self.ref.project,
-                priority=self._ConvertPriorityToInt(self.ref.Name()),
-                securityPolicyRule=security_policy_rule,
-                region=self.ref.region,
-                securityPolicy=self.ref.securityPolicy,
-                updateMask=update_mask,
-            ),
-        )
-      return (self._client.regionSecurityPolicies, 'PatchRule',
-              self._messages.ComputeRegionSecurityPoliciesPatchRuleRequest(
-                  project=self.ref.project,
-                  priority=self._ConvertPriorityToInt(self.ref.Name()),
-                  securityPolicyRule=security_policy_rule,
-                  region=self.ref.region,
-                  securityPolicy=self.ref.securityPolicy))
+      return (
+          self._client.regionSecurityPolicies,
+          'PatchRule',
+          self._messages.ComputeRegionSecurityPoliciesPatchRuleRequest(
+              project=self.ref.project,
+              priority=self._ConvertPriorityToInt(self.ref.Name()),
+              securityPolicyRule=security_policy_rule,
+              region=self.ref.region,
+              securityPolicy=self.ref.securityPolicy,
+              updateMask=update_mask,
+          ),
+      )
     return (self._client.securityPolicies, 'PatchRule',
             self._messages.ComputeSecurityPoliciesPatchRuleRequest(
                 project=self.ref.project,
                 priority=self._ConvertPriorityToInt(self.ref.Name()),
                 securityPolicyRule=security_policy_rule,
-                securityPolicy=self.ref.securityPolicy))
+                securityPolicy=self.ref.securityPolicy,
+                updateMask=update_mask))
 
   def _ConvertRequestHeadersToAdd(self, request_headers_to_add):
     """Converts a request-headers-to-add string list into an HttpHeaderAction.

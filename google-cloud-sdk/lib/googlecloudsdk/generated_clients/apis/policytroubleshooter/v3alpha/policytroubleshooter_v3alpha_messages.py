@@ -2131,22 +2131,150 @@ class GoogleCloudPolicytroubleshooterIamV3alphaTroubleshootIamPolicyResponse(_me
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaAccessPolicyExplanation(_messages.Message):
-  r"""Explanation of an access policy NextTAG: 5
+  r"""Explanation of an access policy NextTAG: 6
+
+  Enums:
+    DeviceEnforcementStateValueValuesEnum: Output only. The device enforcement
+      state of the access policy. It indicates whether the device is used for
+      access level evaluation.
 
   Fields:
     accessLevelDetailedExplanations: Detailed explanations of access levels
       from the Access Level Troubleshooter Frontend Service
     accessPolicy: The full resource name of an access policy Format:
       `accessPolicies/{access_policy}`
+    deviceEnforcementState: Output only. The device enforcement state of the
+      access policy. It indicates whether the device is used for access level
+      evaluation.
     servicePerimeterExplanations: The explanations for the service perimeters
       in order
     servicePerimeters: The service perimeter definitions
   """
 
+  class DeviceEnforcementStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The device enforcement state of the access policy. It
+    indicates whether the device is used for access level evaluation.
+
+    Values:
+      CONTEXT_ENFORCEMENT_STATE_UNSPECIFIED: Not used
+      NOT_ENFORCED: Current context is not used for access level evaluation.
+      ENFORCED: Current context is used for access level evaluation. Device is
+        valid and not stale.
+    """
+    CONTEXT_ENFORCEMENT_STATE_UNSPECIFIED = 0
+    NOT_ENFORCED = 1
+    ENFORCED = 2
+
   accessLevelDetailedExplanations = _messages.MessageField('IdentityCaaIntelFrontendAccessLevelExplanation', 1, repeated=True)
   accessPolicy = _messages.StringField(2)
-  servicePerimeterExplanations = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaServicePerimeterExplanation', 3, repeated=True)
-  servicePerimeters = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeter', 4, repeated=True)
+  deviceEnforcementState = _messages.EnumField('DeviceEnforcementStateValueValuesEnum', 3)
+  servicePerimeterExplanations = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaServicePerimeterExplanation', 4, repeated=True)
+  servicePerimeters = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeter', 5, repeated=True)
+
+
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaDeviceContext(_messages.Message):
+  r"""Detailed device context. NextTAG: 8
+
+  Enums:
+    EncryptionStateValueValuesEnum: Output only. Status of disk encryption on
+      device.
+    OsTypeValueValuesEnum: The Operating System type of the device.
+
+  Fields:
+    encryptionState: Output only. Status of disk encryption on device.
+    isAdminApprovedDevice: Whether the device has been approved by the domain
+      admin.
+    isCorpOwnedDevice: Whether the device is company (corp) owned.
+    isScreenlockEnabled: If the device has enabled screen lock.
+    osType: The Operating System type of the device.
+    osVersion: Ex: "3.0"
+    verifiedChromeOs: Whether the request comes from a device with a verified
+      Chrome OS.
+  """
+
+  class EncryptionStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Status of disk encryption on device.
+
+    Values:
+      DEVICE_ENCRYPTION_STATE_UNSPECIFIED: The encryption state of the device
+        is not specified or not known.
+      UNSUPPORTED: The device does not support encryption.
+      UNENCRYPTED: The device supports encryption, but is currently
+        unencrypted.
+      ENCRYPTED: The device is encrypted.
+    """
+    DEVICE_ENCRYPTION_STATE_UNSPECIFIED = 0
+    UNSUPPORTED = 1
+    UNENCRYPTED = 2
+    ENCRYPTED = 3
+
+  class OsTypeValueValuesEnum(_messages.Enum):
+    r"""The Operating System type of the device.
+
+    Values:
+      OS_TYPE_UNSPECIFIED: The operating system of the device is not specified
+        or not known.
+      DESKTOP_MAC: A desktop Mac operating system.
+      DESKTOP_WINDOWS: A desktop Windows operating system.
+      DESKTOP_LINUX: A desktop Linux operating system.
+      ANDROID: An Android operating system.
+      IOS: An iOS operating system.
+      DESKTOP_CHROME_OS: A desktop ChromeOS operating system.
+    """
+    OS_TYPE_UNSPECIFIED = 0
+    DESKTOP_MAC = 1
+    DESKTOP_WINDOWS = 2
+    DESKTOP_LINUX = 3
+    ANDROID = 4
+    IOS = 5
+    DESKTOP_CHROME_OS = 6
+
+  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 1)
+  isAdminApprovedDevice = _messages.BooleanField(2)
+  isCorpOwnedDevice = _messages.BooleanField(3)
+  isScreenlockEnabled = _messages.BooleanField(4)
+  osType = _messages.EnumField('OsTypeValueValuesEnum', 5)
+  osVersion = _messages.StringField(6)
+  verifiedChromeOs = _messages.BooleanField(7)
+
+
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaDeviceInfo(_messages.Message):
+  r"""Detailed Device Information. NextTAG: 5
+
+  Enums:
+    DeviceStateValueValuesEnum: Output only. The device condition.
+
+  Fields:
+    deviceContext: Device details.
+    deviceId: DDS Device id. It is visible publicly in MDM
+    deviceLastSyncTime: The last sync time of the device
+    deviceState: Output only. The device condition.
+  """
+
+  class DeviceStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The device condition.
+
+    Values:
+      DEVICE_STATE_UNSPECIFIED: Reserved
+      INFO_NOT_AUTHORIZED: Client doesn't have permission to fetch device
+        details
+      DEVICE_NOT_FOUND: Unable to find the device.
+      NORMAL: Device state is valid
+      STALE: Device expires
+      INTERNAL_ERROR: Internal error to be used for cases where a specific
+        device state doesn't exist
+    """
+    DEVICE_STATE_UNSPECIFIED = 0
+    INFO_NOT_AUTHORIZED = 1
+    DEVICE_NOT_FOUND = 2
+    NORMAL = 3
+    STALE = 4
+    INTERNAL_ERROR = 5
+
+  deviceContext = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaDeviceContext', 1)
+  deviceId = _messages.StringField(2)
+  deviceLastSyncTime = _messages.StringField(3)
+  deviceState = _messages.EnumField('DeviceStateValueValuesEnum', 4)
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaEgressPoliciesExplanation(_messages.Message):
@@ -2311,14 +2439,10 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIdentityExplanation(
   Enums:
     IdentityEvalStateValueValuesEnum: Output only. Details about the
       evaluation state of the identity set in policy.
-    IdentityStateValueValuesEnum: Output only. The current state of an
-      identity set in policy.
 
   Fields:
     identityEvalState: Output only. Details about the evaluation state of the
       identity set in policy.
-    identityState: Output only. The current state of an identity set in
-      policy.
   """
 
   class IdentityEvalStateValueValuesEnum(_messages.Enum):
@@ -2339,20 +2463,7 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIdentityExplanation(
     NOT_SUPPORTED = 3
     INFO_DENIED = 4
 
-  class IdentityStateValueValuesEnum(_messages.Enum):
-    r"""Output only. The current state of an identity set in policy.
-
-    Values:
-      IDENTITY_STATE_UNSPECIFIED: Not used
-      ACTIVE: Identity is active.
-      DELETED: Identity is deleted.
-    """
-    IDENTITY_STATE_UNSPECIFIED = 0
-    ACTIVE = 1
-    DELETED = 2
-
   identityEvalState = _messages.EnumField('IdentityEvalStateValueValuesEnum', 1)
-  identityState = _messages.EnumField('IdentityStateValueValuesEnum', 2)
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIngressPoliciesExplanation(_messages.Message):
@@ -2758,7 +2869,7 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServiceP
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServicePerimeterResponse(_messages.Message):
-  r"""Response to troubleshoot service perimeters NextTAG: 12
+  r"""Response to troubleshoot service perimeters NextTAG: 13
 
   Enums:
     AccessStateValueValuesEnum: The access state of the active service
@@ -2769,6 +2880,7 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServiceP
   Fields:
     accessPolicyExplanations: Explanation of access policies
     accessState: The access state of the active service perimeters.
+    deviceInfo: Device information of the device from troubleshoot token.
     dryrunAccessState: The access state of the dry run service perimeters
     operation: Fully qualified name of the operation.
     principal: The principal email address of the violation principal from
@@ -2818,14 +2930,15 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServiceP
 
   accessPolicyExplanations = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaAccessPolicyExplanation', 1, repeated=True)
   accessState = _messages.EnumField('AccessStateValueValuesEnum', 2)
-  dryrunAccessState = _messages.EnumField('DryrunAccessStateValueValuesEnum', 3)
-  operation = _messages.StringField(4)
-  principal = _messages.StringField(5)
-  principalIp = _messages.StringField(6)
-  principalIpRegion = _messages.StringField(7)
-  requestTime = _messages.StringField(8)
-  resolvedResources = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResource', 9, repeated=True)
-  service = _messages.StringField(10)
+  deviceInfo = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaDeviceInfo', 3)
+  dryrunAccessState = _messages.EnumField('DryrunAccessStateValueValuesEnum', 4)
+  operation = _messages.StringField(5)
+  principal = _messages.StringField(6)
+  principalIp = _messages.StringField(7)
+  principalIpRegion = _messages.StringField(8)
+  requestTime = _messages.StringField(9)
+  resolvedResources = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResource', 10, repeated=True)
+  service = _messages.StringField(11)
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaVpcAccessibleServicesExplanation(_messages.Message):
@@ -3087,8 +3200,10 @@ class GoogleIamV1Condition(_messages.Message):
         CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
         based on the *absence* of a credentials type, so the conditions can
         only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
-      CREDS_ASSERTION: EXPERIMENTAL -- DO NOT USE. The conditions can only be
-        used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+      CREDS_ASSERTION: Properties of the credentials supplied with this
+        request. See http://go/rpcsp-credential-assertions?polyglot=rpcsp-v1-0
+        The conditions can only be used in a "positive" context (e.g.,
+        ALLOW/IN or DENY/NOT_IN).
     """
     NO_ATTR = 0
     AUTHORITY = 1
@@ -3950,8 +4065,8 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
     description: Description of the `ServicePerimeter` and its use. Does not
       affect behavior.
     etag: Optional. An opaque identifier for the current version of the
-      `ServicePerimeter`. Clients should not expect this to be in any specific
-      format. If etag is not provided, the operation will be performed as if a
+      `ServicePerimeter`. This identifier does not follow any specific format.
+      If an etag is not provided, the operation will be performed as if a
       valid etag is provided.
     name: Identifier. Resource name for the `ServicePerimeter`. Format:
       `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`.
@@ -4170,7 +4285,10 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressPolicy(_me
       EgressPolicy to apply.
     egressTo: Defines the conditions on the ApiOperation and destination
       resources that cause this EgressPolicy to apply.
-    title: Human readable title. Must be unique within the Policy.
+    title: Optional. Human-readable title for the egress rule. The title must
+      be unique within the perimeter and can not exceed 100 characters. Within
+      the access policy, the combined length of all rule titles must not
+      exceed 240,000 characters.
   """
 
   egressFrom = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressFrom', 1)
@@ -4192,13 +4310,12 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressSource(_me
       origins within the perimeter. Example:
       `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If a single `*` is
       specified for `access_level`, then all EgressSources will be allowed.
-    resource: A Google Cloud resource that is allowed to egress the perimeter.
-      Requests from these resources are allowed to access data outside the
-      perimeter. Currently only projects are allowed. Project format:
-      `projects/{project_number}`. The resource may be in any Google Cloud
-      organization, not just the organization that the perimeter is defined
-      in. `*` is not allowed, the case of allowing all Google Cloud resources
-      only is not supported.
+    resource: A Google Cloud resource that you want to allow to egress the
+      perimeter. These resources can access data outside the perimeter. This
+      field only supports projects. The project format is
+      `projects/{project_number}`. The resource can be in any Google Cloud
+      organization, not just the organization where the perimeter is defined.
+      You can't use `*` in this field to allow all Google Cloud resources.
   """
 
   accessLevel = _messages.StringField(1)
@@ -4304,7 +4421,10 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressPolicy(_m
       this IngressPolicy to apply.
     ingressTo: Defines the conditions on the ApiOperation and request
       destination that cause this IngressPolicy to apply.
-    title: Human readable title. Must be unique within the Policy.
+    title: Optional. Human-readable title for the ingress rule. The title must
+      be unique within the perimeter and can not exceed 100 characters. Within
+      the access policy, the combined length of all rule titles must not
+      exceed 240,000 characters.
   """
 
   ingressFrom = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressFrom', 1)
@@ -4775,6 +4895,7 @@ class IdentityCaaIntelFrontendNodeValue(_messages.Message):
       NODE_ERROR_AUTH_SESSION_INFO_NOT_AUTHORIZED: Caller doesn't have
         permission to auth session info
       NODE_ERROR_NO_BCE_LICENSE: User is not assigned a BCE license.
+        TODO(b/382592764) Add support for NODE_ERROR_UNKNOWN_REGION
     """
     NODE_ERROR_UNSPECIFIED = 0
     NODE_ERROR_INTERNAL_ERROR = 1
@@ -4829,6 +4950,7 @@ class IdentityCaaIntelFrontendNodeValue(_messages.Message):
       NODE_ERROR_AUTH_SESSION_INFO_NOT_AUTHORIZED: Caller doesn't have
         permission to auth session info
       NODE_ERROR_NO_BCE_LICENSE: User is not assigned a BCE license.
+        TODO(b/382592764) Add support for NODE_ERROR_UNKNOWN_REGION
     """
     NODE_ERROR_UNSPECIFIED = 0
     NODE_ERROR_INTERNAL_ERROR = 1
