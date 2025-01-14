@@ -36,7 +36,12 @@ _SECTION_INDENT = 8  # Section or list within section indent.
 _FIRST_INDENT = 2  # First line indent.
 _SUBSEQUENT_INDENT = 6  # Subsequent line indent.
 _SECOND_LINE_OFFSET = 2  # Used to create 2nd line indentation using markdown.
-_GCLOUD_ROOT_SURFACES = frozenset(['gcloud', 'gcloud alpha', 'gcloud beta'])
+_GCLOUD_ROOT_SURFACES = frozenset([
+    'gcloud',
+    'gcloud alpha',
+    'gcloud beta',
+    'gcloud preview',
+])
 
 
 def _GetIndexFromCapsule(capsule):

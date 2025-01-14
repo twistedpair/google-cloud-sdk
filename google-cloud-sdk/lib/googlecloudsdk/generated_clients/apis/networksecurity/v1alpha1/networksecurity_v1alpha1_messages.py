@@ -2563,6 +2563,19 @@ class ListMirroringEndpointGroupsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListMirroringEndpointsResponse(_messages.Message):
+  r"""Message for response to listing mirroring endpoints.
+
+  Fields:
+    mirroringEndpoints: The list of mirroring endpoints.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  mirroringEndpoints = _messages.MessageField('MirroringEndpoint', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -3093,6 +3106,79 @@ class MirroringDeploymentGroupConnectedEndpointGroup(_messages.Message):
   """
 
   name = _messages.StringField(1)
+
+
+class MirroringEndpoint(_messages.Message):
+  r"""The details of a mirroring endpoint.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the endpoint.
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs.
+
+  Fields:
+    createTime: Output only. [Output only] Create timestamp.
+    description: Optional. User-provided description of the endpoint. Used as
+      additional context for the endpoint.
+    labels: Optional. Labels as key value pairs.
+    name: Immutable. Identifier. The name of the endpoint.
+    reconciling: Output only. Whether reconciling is in progress, recommended
+      per https://google.aip.dev/128.
+    state: Output only. The current state of the endpoint.
+    updateTime: Output only. [Output only] Update timestamp.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the endpoint.
+
+    Values:
+      STATE_UNSPECIFIED: Not state is set.
+      CREATING: The endpoint is being created.
+      ACTIVE: The endpoint is processing configuration updates.
+      DELETING: The endpoint is being deleted.
+      DELETE_FAILED: An attempt to delete the endpoint has failed. This is a
+        terminal state and the endpoint is not expected to be usable as some
+        of its resources have been deleted. The only permitted operation is to
+        retry deleting the endpoint.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
+    DELETE_FAILED = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  reconciling = _messages.BooleanField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
 
 
 class MirroringEndpointGroup(_messages.Message):
@@ -6155,6 +6241,124 @@ class NetworksecurityProjectsLocationsMirroringEndpointGroupsPatchRequest(_messa
   """
 
   mirroringEndpointGroup = _messages.MessageField('MirroringEndpointGroup', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsMirroringEndpointsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMirroringEndpointsCreateRequest
+  object.
+
+  Fields:
+    mirroringEndpoint: A MirroringEndpoint resource to be passed as the
+      request body.
+    mirroringEndpointId: Required. ID for the new endpoint.
+    parent: Required. The parent resource name, in the format
+      `/projects/{project}/locations/{location}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  mirroringEndpoint = _messages.MessageField('MirroringEndpoint', 1)
+  mirroringEndpointId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsMirroringEndpointsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMirroringEndpointsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the endpoint.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsMirroringEndpointsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMirroringEndpointsGetRequest object.
+
+  Fields:
+    name: Required. The name of the endpoint.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsMirroringEndpointsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMirroringEndpointsListRequest object.
+
+  Fields:
+    filter: Optional. A filter to apply to the results in the format defined
+      in [AIP-160: Filtering](https://google.aip.dev/160).
+    orderBy: Optional. A hint specifying how the results should be sorted. If
+      not specified, the results will be sorted in the default order.
+    pageSize: Optional. The maximum number of results to return. If not
+      specified, a default number will be used. Note that a fewer results may
+      be returned.
+    pageToken: Optional. A pagination token returned from a previous request
+      to list endpoints. Provide this token to retrieve the next page of
+      results.
+    parent: Required. The parent resource name, in the format
+      `/projects/{project}/locations/{location}`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsMirroringEndpointsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMirroringEndpointsPatchRequest object.
+
+  Fields:
+    mirroringEndpoint: A MirroringEndpoint resource to be passed as the
+      request body.
+    name: Immutable. Identifier. The name of the endpoint.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the MirroringEndpoint resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  mirroringEndpoint = _messages.MessageField('MirroringEndpoint', 1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)

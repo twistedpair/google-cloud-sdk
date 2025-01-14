@@ -136,7 +136,7 @@ class FilterResult(_messages.Message):
     csamFilterFilterResult: CSAM filter results.
     maliciousUriFilterResult: Malicious URI filter results.
     piAndJailbreakFilterResult: Prompt injection and Jailbreak filter results.
-    raiFilterResult: Responsible AI related results.
+    raiFilterResult: Responsible AI filter results.
     sdpFilterResult: Sensitive Data Protection results.
     virusScanFilterResult: Virus scan results.
   """
@@ -826,40 +826,16 @@ class RaiFilter(_messages.Message):
 
     Values:
       RAI_FILTER_TYPE_UNSPECIFIED: Unspecified filter type.
-      TOXIC: Toxic.
       SEXUALLY_EXPLICIT: Sexually Explicit.
       HATE_SPEECH: Hate Speech.
-      VIOLENT: Violtent.
-      PROFANITY: Profanity.
       HARASSMENT: Harassment.
-      DEATH_HARM_TRAGEDY: Death Harm Tragedy.
-      FIREARMS_WEAPONS: Firearms and Weapons.
-      PUBLIC_SAFETY: Public Safety.
-      HEALTH: Health.
-      RELIGIOUS_BELIEF: Religious Belief.
-      ILLICIT_DRUGS: Illicit Drugs.
-      WAR_CONFLICT: War Conflict.
-      POLITICS: Politics.
-      FINANCE: Finance.
-      LEGAL: Legal.
+      DANGEROUS: Danger
     """
     RAI_FILTER_TYPE_UNSPECIFIED = 0
-    TOXIC = 1
-    SEXUALLY_EXPLICIT = 2
-    HATE_SPEECH = 3
-    VIOLENT = 4
-    PROFANITY = 5
-    HARASSMENT = 6
-    DEATH_HARM_TRAGEDY = 7
-    FIREARMS_WEAPONS = 8
-    PUBLIC_SAFETY = 9
-    HEALTH = 10
-    RELIGIOUS_BELIEF = 11
-    ILLICIT_DRUGS = 12
-    WAR_CONFLICT = 13
-    POLITICS = 14
-    FINANCE = 15
-    LEGAL = 16
+    SEXUALLY_EXPLICIT = 1
+    HATE_SPEECH = 2
+    HARASSMENT = 3
+    DANGEROUS = 4
 
   confidenceLevel = _messages.EnumField('ConfidenceLevelValueValuesEnum', 1)
   filterType = _messages.EnumField('FilterTypeValueValuesEnum', 2)
@@ -875,6 +851,11 @@ class RaiFilterResult(_messages.Message):
       RAI. Value is MATCH_FOUND if at least one RAI filter confidence level is
       equal to or higher than the confidence level defined in configuration.
 
+  Messages:
+    RaiFilterTypeResultsValue: The map of RAI filter results where key is RAI
+      filter type - either of "sexually_explicit", "hate_speech",
+      "harassment", "dangerous".
+
   Fields:
     executionState: Output only. Reports whether the RAI filter was
       successfully executed or not.
@@ -884,7 +865,9 @@ class RaiFilterResult(_messages.Message):
     messageItems: Optional messages corresponding to the result. A message can
       provide warnings or error details. For example, if execution state is
       skipped then this field provides related reason/explanation.
-    raiFilterTypeResults: List of RAI filter results.
+    raiFilterTypeResults: The map of RAI filter results where key is RAI
+      filter type - either of "sexually_explicit", "hate_speech",
+      "harassment", "dangerous".
   """
 
   class ExecutionStateValueValuesEnum(_messages.Enum):
@@ -915,10 +898,37 @@ class RaiFilterResult(_messages.Message):
     NO_MATCH_FOUND = 1
     MATCH_FOUND = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RaiFilterTypeResultsValue(_messages.Message):
+    r"""The map of RAI filter results where key is RAI filter type - either of
+    "sexually_explicit", "hate_speech", "harassment", "dangerous".
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        RaiFilterTypeResultsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        RaiFilterTypeResultsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RaiFilterTypeResultsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A RaiFilterTypeResult attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('RaiFilterTypeResult', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   executionState = _messages.EnumField('ExecutionStateValueValuesEnum', 1)
   matchState = _messages.EnumField('MatchStateValueValuesEnum', 2)
   messageItems = _messages.MessageField('MessageItem', 3, repeated=True)
-  raiFilterTypeResults = _messages.MessageField('RaiFilterTypeResult', 4, repeated=True)
+  raiFilterTypeResults = _messages.MessageField('RaiFilterTypeResultsValue', 4)
 
 
 class RaiFilterSettings(_messages.Message):
@@ -937,12 +947,10 @@ class RaiFilterTypeResult(_messages.Message):
   Enums:
     ConfidenceLevelValueValuesEnum: Confidence level identified for this RAI
       filter.
-    FilterTypeValueValuesEnum: Type of Responsible AI filter.
     MatchStateValueValuesEnum: Output only. Match state for this RAI filter.
 
   Fields:
     confidenceLevel: Confidence level identified for this RAI filter.
-    filterType: Type of Responsible AI filter.
     matchState: Output only. Match state for this RAI filter.
   """
 
@@ -960,46 +968,6 @@ class RaiFilterTypeResult(_messages.Message):
     MEDIUM_AND_ABOVE = 2
     HIGH = 3
 
-  class FilterTypeValueValuesEnum(_messages.Enum):
-    r"""Type of Responsible AI filter.
-
-    Values:
-      RAI_FILTER_TYPE_UNSPECIFIED: Unspecified filter type.
-      TOXIC: Toxic.
-      SEXUALLY_EXPLICIT: Sexually Explicit.
-      HATE_SPEECH: Hate Speech.
-      VIOLENT: Violtent.
-      PROFANITY: Profanity.
-      HARASSMENT: Harassment.
-      DEATH_HARM_TRAGEDY: Death Harm Tragedy.
-      FIREARMS_WEAPONS: Firearms and Weapons.
-      PUBLIC_SAFETY: Public Safety.
-      HEALTH: Health.
-      RELIGIOUS_BELIEF: Religious Belief.
-      ILLICIT_DRUGS: Illicit Drugs.
-      WAR_CONFLICT: War Conflict.
-      POLITICS: Politics.
-      FINANCE: Finance.
-      LEGAL: Legal.
-    """
-    RAI_FILTER_TYPE_UNSPECIFIED = 0
-    TOXIC = 1
-    SEXUALLY_EXPLICIT = 2
-    HATE_SPEECH = 3
-    VIOLENT = 4
-    PROFANITY = 5
-    HARASSMENT = 6
-    DEATH_HARM_TRAGEDY = 7
-    FIREARMS_WEAPONS = 8
-    PUBLIC_SAFETY = 9
-    HEALTH = 10
-    RELIGIOUS_BELIEF = 11
-    ILLICIT_DRUGS = 12
-    WAR_CONFLICT = 13
-    POLITICS = 14
-    FINANCE = 15
-    LEGAL = 16
-
   class MatchStateValueValuesEnum(_messages.Enum):
     r"""Output only. Match state for this RAI filter.
 
@@ -1013,8 +981,7 @@ class RaiFilterTypeResult(_messages.Message):
     MATCH_FOUND = 2
 
   confidenceLevel = _messages.EnumField('ConfidenceLevelValueValuesEnum', 1)
-  filterType = _messages.EnumField('FilterTypeValueValuesEnum', 2)
-  matchState = _messages.EnumField('MatchStateValueValuesEnum', 3)
+  matchState = _messages.EnumField('MatchStateValueValuesEnum', 2)
 
 
 class RangeInfo(_messages.Message):
@@ -1053,6 +1020,16 @@ class SanitizationResult(_messages.Message):
       In other words, input passed all filters. 2) MATCH_FOUND: At least one
       filter in configuration satisfies matching. In other words, input did
       not pass one or more filters.
+    InvocationResultValueValuesEnum: Output only. A field indicating the
+      outcome of the invocation, irrespective of match status. It can have the
+      following three values: SUCCESS: All filters were executed successfully.
+      PARTIAL: Some filters were skipped or failed execution. FAILURE: All
+      filters were skipped or failed execution.
+
+  Messages:
+    FilterResultsValue: Output only. Results for all filters where the key is
+      the filter name - either of "csam", "malicious_uris", "rai",
+      "pi_and_jailbreak" ,"sdp".
 
   Fields:
     filterMatchState: Output only. Overall filter match state for
@@ -1061,7 +1038,14 @@ class SanitizationResult(_messages.Message):
       input passed all filters. 2) MATCH_FOUND: At least one filter in
       configuration satisfies matching. In other words, input did not pass one
       or more filters.
-    filterResults: Output only. Results for all filters.
+    filterResults: Output only. Results for all filters where the key is the
+      filter name - either of "csam", "malicious_uris", "rai",
+      "pi_and_jailbreak" ,"sdp".
+    invocationResult: Output only. A field indicating the outcome of the
+      invocation, irrespective of match status. It can have the following
+      three values: SUCCESS: All filters were executed successfully. PARTIAL:
+      Some filters were skipped or failed execution. FAILURE: All filters were
+      skipped or failed execution.
     sanitizationMetadata: Output only. Metadata related to Sanitization.
   """
 
@@ -1081,9 +1065,54 @@ class SanitizationResult(_messages.Message):
     NO_MATCH_FOUND = 1
     MATCH_FOUND = 2
 
+  class InvocationResultValueValuesEnum(_messages.Enum):
+    r"""Output only. A field indicating the outcome of the invocation,
+    irrespective of match status. It can have the following three values:
+    SUCCESS: All filters were executed successfully. PARTIAL: Some filters
+    were skipped or failed execution. FAILURE: All filters were skipped or
+    failed execution.
+
+    Values:
+      INVOCATION_RESULT_UNSPECIFIED: Unused. Default value.
+      SUCCESS: All filters were invoked successfully.
+      PARTIAL: Some filters were skipped or failed.
+      FAILURE: All filters were skipped or failed.
+    """
+    INVOCATION_RESULT_UNSPECIFIED = 0
+    SUCCESS = 1
+    PARTIAL = 2
+    FAILURE = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FilterResultsValue(_messages.Message):
+    r"""Output only. Results for all filters where the key is the filter name
+    - either of "csam", "malicious_uris", "rai", "pi_and_jailbreak" ,"sdp".
+
+    Messages:
+      AdditionalProperty: An additional property for a FilterResultsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type FilterResultsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FilterResultsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A FilterResult attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('FilterResult', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   filterMatchState = _messages.EnumField('FilterMatchStateValueValuesEnum', 1)
-  filterResults = _messages.MessageField('FilterResult', 2, repeated=True)
-  sanitizationMetadata = _messages.MessageField('SanitizationMetadata', 3)
+  filterResults = _messages.MessageField('FilterResultsValue', 2)
+  invocationResult = _messages.EnumField('InvocationResultValueValuesEnum', 3)
+  sanitizationMetadata = _messages.MessageField('SanitizationMetadata', 4)
 
 
 class SanitizeModelResponseRequest(_messages.Message):

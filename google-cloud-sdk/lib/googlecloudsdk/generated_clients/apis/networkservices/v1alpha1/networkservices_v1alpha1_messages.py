@@ -4801,8 +4801,9 @@ class MulticastGroupDefinition(_messages.Message):
       to subscribe to the multicast IP addresses within the range defined by
       this MulticastGroupDefinition. The project can be specified using its
       project ID or project number. If left empty, then all consumer projects
-      are allowed once they have VPC networks associated to the multicast
-      domain. The current max length of the accept list is 100.
+      are allowed (unless require_explicit_accept is set to true) once they
+      have VPC networks associated to the multicast domain. The current max
+      length of the accept list is 100.
     createTime: Output only. [Output only] The timestamp when the multicast
       group definition was created.
     description: Optional. An optional text description of the multicast group
@@ -4816,6 +4817,8 @@ class MulticastGroupDefinition(_messages.Message):
     name: Identifier. The resource name of the multicast group definition. Use
       the following format:
       `projects/*/locations/global/multicastGroupDefinitions/*`.
+    requireExplicitAccept: Optional. Whether an empty consumer_accept_list
+      will deny all consumer projects.
     reservedInternalRange: Required. The resource name of the internal range
       reserved for this multicast group definition. The internal range must be
       a Class D address (224.0.0.0 to 239.255.255.255) and have a prefix
@@ -4861,9 +4864,10 @@ class MulticastGroupDefinition(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   multicastDomain = _messages.StringField(6)
   name = _messages.StringField(7)
-  reservedInternalRange = _messages.StringField(8)
-  uniqueId = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  requireExplicitAccept = _messages.BooleanField(8)
+  reservedInternalRange = _messages.StringField(9)
+  uniqueId = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class MulticastGroupProducerActivation(_messages.Message):
@@ -4948,8 +4952,9 @@ class MulticastGroupRange(_messages.Message):
       to subscribe to the multicast IP addresses within the range defined by
       this MulticastGroupRange. The project can be specified using its project
       ID or project number. If left empty, then all consumer projects are
-      allowed once they have VPC networks associated to the multicast domain.
-      The current max length of the accept list is 100.
+      allowed (unless require_explicit_accept is set to true) once they have
+      VPC networks associated to the multicast domain. The current max length
+      of the accept list is 100.
     createTime: Output only. [Output only] The timestamp when the multicast
       group range was created.
     description: Optional. An optional text description of the multicast group
@@ -4962,6 +4967,8 @@ class MulticastGroupRange(_messages.Message):
       `projects/*/locations/global/multicastDomains/*`.
     name: Identifier. The resource name of the multicast group range. Use the
       following format: `projects/*/locations/global/multicastGroupRanges/*`.
+    requireExplicitAccept: Optional. Whether an empty consumer_accept_list
+      will deny all consumer projects.
     reservedInternalRange: Required. The resource name of the internal range
       reserved for this multicast group range. The internal range must be a
       Class D address (224.0.0.0 to 239.255.255.255) and have a prefix length
@@ -5006,9 +5013,10 @@ class MulticastGroupRange(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   multicastDomain = _messages.StringField(6)
   name = _messages.StringField(7)
-  reservedInternalRange = _messages.StringField(8)
-  uniqueId = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  requireExplicitAccept = _messages.BooleanField(8)
+  reservedInternalRange = _messages.StringField(9)
+  uniqueId = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class MulticastGroupRangeActivation(_messages.Message):

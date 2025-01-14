@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2020 Google LLC. All Rights Reserved.
+# Copyright 2025 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +14,6 @@
 # limitations under the License.
 """Cloud Database Migration API utilities."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 import pprint
 import uuid
 
@@ -27,33 +23,42 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
-import six
+
+_API_NAME = 'datamigration'
 
 
-def GetApiVersion(release_track):
+def GetApiVersion(release_track: base.ReleaseTrack) -> str:
   """Returns the API version based on the release track."""
   if release_track == base.ReleaseTrack.ALPHA:
     return 'v1alpha2'
   return 'v1'
 
 
-def GetClientInstance(release_track, no_http=False):
-  return apis.GetClientInstance('datamigration', GetApiVersion(release_track),
-                                no_http=no_http)
+def GetClientInstance(release_track: base.ReleaseTrack, no_http: bool = False):
+  return apis.GetClientInstance(
+      api_name=_API_NAME,
+      api_version=GetApiVersion(release_track),
+      no_http=no_http,
+  )
 
 
-def GetMessagesModule(release_track):
-  return apis.GetMessagesModule('datamigration', GetApiVersion(release_track))
+def GetMessagesModule(release_track: base.ReleaseTrack):
+  return apis.GetMessagesModule(
+      api_name=_API_NAME,
+      api_version=GetApiVersion(release_track),
+  )
 
 
-def GetResourceParser(release_track):
+def GetResourceParser(release_track: base.ReleaseTrack) -> resources.Registry:
   resource_parser = resources.Registry()
-  resource_parser.RegisterApiByName('datamigration',
-                                    GetApiVersion(release_track))
+  resource_parser.RegisterApiByName(
+      api_name=_API_NAME,
+      api_version=GetApiVersion(release_track),
+  )
   return resource_parser
 
 
-def ParentRef(project, location):
+def ParentRef(project: str, location: str) -> str:
   """Get the resource name of the parent collection.
 
   Args:
@@ -64,45 +69,50 @@ def ParentRef(project, location):
     the resource name of the parent collection in the format of
     `projects/{project}/locations/{location}`.
   """
+  return f'projects/{project}/locations/{location}'
 
-  return 'projects/{}/locations/{}'.format(project, location)
 
-
-def GenerateRequestId():
+def GenerateRequestId() -> str:
   """Generates a UUID to use as the request ID.
 
   Returns:
     string, the 40-character UUID for the request ID.
   """
-  return six.text_type(uuid.uuid4())
+  return str(uuid.uuid4())
 
 
-def HandleLRO(client, result_operation, service, no_resource=False):
+def HandleLRO(
+    client,
+    result_operation,
+    service,
+    no_resource: bool = False,
+) -> None:
   """Uses the waiter library to handle LRO synchronous execution."""
-  op_resource = resources.REGISTRY.ParseRelativeName(
-      result_operation.name,
-      collection='datamigration.projects.locations.operations')
   if no_resource:
     poller = waiter.CloudOperationPollerNoResources(
-        client.projects_locations_operations)
+        operation_service=client.projects_locations_operations,
+    )
   else:
     poller = CloudDmsOperationPoller(
-        service, client.projects_locations_operations
+        result_service=service,
+        operation_service=client.projects_locations_operations,
     )
 
   try:
     waiter.WaitFor(
         poller,
-        op_resource,
-        'Waiting for operation [{}] to complete'.format(result_operation.name),
+        resources.REGISTRY.ParseRelativeName(
+            relative_name=result_operation.name,
+            collection='datamigration.projects.locations.operations',
+        ),
+        f'Waiting for operation [{result_operation.name}] to complete',
     )
   except waiter.TimeoutError:
     log.status.Print(
         'The operations may still be underway remotely and may still succeed.'
-        ' You may check the operation status for the following operation  [{}]'
-        .format(result_operation.name)
+        ' You may check the operation status for the following operation'
+        f' [{result_operation.name}]',
     )
-    return
 
 
 class CloudDmsOperationPoller(waiter.CloudOperationPoller):
@@ -114,11 +124,9 @@ class CloudDmsOperationPoller(waiter.CloudOperationPoller):
   See https://cloud.google.com/speech/reference/rpc/google.longrunning
   """
 
-  def IsDone(self, operation):
+  def IsDone(self, operation) -> bool:
     """Overrides."""
-    if operation.done:
-      if operation.error:
-        op_error = encoding.MessageToDict(operation.error)
-        raise waiter.OperationError('\n' + pprint.pformat(op_error))
-      return True
-    return False
+    if operation.done and operation.error:
+      op_error = encoding.MessageToDict(operation.error)
+      raise waiter.OperationError('\n' + pprint.pformat(op_error))
+    return operation.done

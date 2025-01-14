@@ -667,6 +667,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'bigquerymigration': {
+        'v2':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.bigquerymigration.v2',
+                    client_classpath='bigquerymigration_v2_client.BigquerymigrationV2',
+                    base_url='https://bigquerymigration.googleapis.com/',
+                    messages_modulepath='bigquerymigration_v2_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'bigtableadmin': {
         'v2':
             APIDef(

@@ -372,10 +372,9 @@ class CompilationResult(_messages.Message):
       repository should be compiled. Must exist in the remote repository.
       Examples: - a commit SHA: `12ade345` - a tag: `tag1` - a branch name:
       `branch1`
-    metadata: Output only. This field is a container for all the service data
-      fields that are used internally with no real business value, however for
-      compliance reasons (CIA-C9-V2208) we have to expose them for public. The
-      format of this field is a JSON string.
+    internalMetadata: Output only. All the metadata information that is used
+      internally to serve the resource. For example: timestamps, flags, status
+      fields, etc. The format of this field is a JSON string.
     name: Output only. The compilation result's name.
     releaseConfig: Immutable. The name of the release config to compile. Must
       be in the format
@@ -393,7 +392,7 @@ class CompilationResult(_messages.Message):
   dataEncryptionState = _messages.MessageField('DataEncryptionState', 4)
   dataformCoreVersion = _messages.StringField(5)
   gitCommitish = _messages.StringField(6)
-  metadata = _messages.StringField(7)
+  internalMetadata = _messages.StringField(7)
   name = _messages.StringField(8)
   releaseConfig = _messages.StringField(9)
   resolvedGitCommitSha = _messages.StringField(10)
@@ -410,10 +409,9 @@ class CompilationResultAction(_messages.Message):
     declaration: The declaration declared by this action.
     filePath: The full path including filename in which this action is
       located, relative to the workspace root.
-    metadata: Output only. This field is a container for all the service data
-      fields that are used internally with no real business value, however for
-      compliance reasons (CIA-C9-V2208) we have to expose them for public. The
-      format of this field is a JSON string.
+    internalMetadata: Output only. All the metadata information that is used
+      internally to serve the resource. For example: timestamps, flags, status
+      fields, etc. The format of this field is a JSON string.
     notebook: The notebook executed by this action.
     operations: The database operations executed by this action.
     relation: The database relation created/updated by this action.
@@ -424,7 +422,7 @@ class CompilationResultAction(_messages.Message):
   canonicalTarget = _messages.MessageField('Target', 2)
   declaration = _messages.MessageField('Declaration', 3)
   filePath = _messages.StringField(4)
-  metadata = _messages.StringField(5)
+  internalMetadata = _messages.StringField(5)
   notebook = _messages.MessageField('Notebook', 6)
   operations = _messages.MessageField('Operations', 7)
   relation = _messages.MessageField('Relation', 8)
@@ -2043,8 +2041,8 @@ class NotebookAction(_messages.Message):
   Fields:
     contents: Output only. The code contents of a Notebook to be run.
     jobId: Output only. The ID of the Vertex job that executed the notebook in
-      contents and also the ID used for the outputs created in GCS buckets.
-      Only set once the job has started to run.
+      contents and also the ID used for the outputs created in Google Cloud
+      Storage buckets. Only set once the job has started to run.
   """
 
   contents = _messages.StringField(1)
@@ -2055,8 +2053,8 @@ class NotebookRuntimeOptions(_messages.Message):
   r"""A NotebookRuntimeOptions object.
 
   Fields:
-    gcsOutputBucket: Optional. The GCS location to upload the result to.
-      Format: `gs://bucket-name`.
+    gcsOutputBucket: Optional. The Google Cloud Storage location to upload the
+      result to. Format: `gs://bucket-name`.
   """
 
   gcsOutputBucket = _messages.StringField(1)
@@ -2440,10 +2438,9 @@ class ReleaseConfig(_messages.Message):
     gitCommitish: Required. Git commit/tag/branch name at which the repository
       should be compiled. Must exist in the remote repository. Examples: - a
       commit SHA: `12ade345` - a tag: `tag1` - a branch name: `branch1`
-    metadata: Output only. This field is a container for all the service data
-      fields that are used internally with no real business value, however for
-      compliance reasons (CIA-C9-V2208) we have to expose them for public. The
-      format of this field is a JSON string.
+    internalMetadata: Output only. All the metadata information that is used
+      internally to serve the resource. For example: timestamps, flags, status
+      fields, etc. The format of this field is a JSON string.
     name: Identifier. The release config's name.
     recentScheduledReleaseRecords: Output only. Records of the 10 most recent
       scheduled release attempts, ordered in descending order of
@@ -2466,7 +2463,7 @@ class ReleaseConfig(_messages.Message):
   cronSchedule = _messages.StringField(2)
   disabled = _messages.BooleanField(3)
   gitCommitish = _messages.StringField(4)
-  metadata = _messages.StringField(5)
+  internalMetadata = _messages.StringField(5)
   name = _messages.StringField(6)
   recentScheduledReleaseRecords = _messages.MessageField('ScheduledReleaseRecord', 7, repeated=True)
   releaseCompilationResult = _messages.StringField(8)
@@ -2508,16 +2505,15 @@ class Repository(_messages.Message):
     displayName: Optional. The repository's user-friendly name.
     gitRemoteSettings: Optional. If set, configures this repository to be
       linked to a Git remote.
+    internalMetadata: Output only. All the metadata information that is used
+      internally to serve the resource. For example: timestamps, flags, status
+      fields, etc. The format of this field is a JSON string.
     kmsKeyName: Optional. The reference to a KMS encryption key. If provided,
       it will be used to encrypt user data in the repository and all child
       resources. It is not possible to add or update the encryption key after
       the repository is created. Example: `projects/{kms_project}/locations/{l
       ocation}/keyRings/{key_location}/cryptoKeys/{key}`
     labels: Optional. Repository user labels.
-    metadata: Output only. This field is a container for all the service data
-      fields that are used internally with no real business value, however for
-      compliance reasons (CIA-C9-V2208) we have to expose them for public. The
-      format of this field is a JSON string.
     name: Identifier. The repository's name.
     npmrcEnvironmentVariablesSecretVersion: Optional. The name of the Secret
       Manager secret version to be used to interpolate variables into the
@@ -2567,9 +2563,9 @@ class Repository(_messages.Message):
   dataEncryptionState = _messages.MessageField('DataEncryptionState', 2)
   displayName = _messages.StringField(3)
   gitRemoteSettings = _messages.MessageField('GitRemoteSettings', 4)
-  kmsKeyName = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  metadata = _messages.StringField(7)
+  internalMetadata = _messages.StringField(5)
+  kmsKeyName = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
   name = _messages.StringField(8)
   npmrcEnvironmentVariablesSecretVersion = _messages.StringField(9)
   serviceAccount = _messages.StringField(10)
@@ -2874,12 +2870,11 @@ class WorkflowConfig(_messages.Message):
       created.
     cronSchedule: Optional. Optional schedule (in cron format) for automatic
       execution of this workflow config.
+    internalMetadata: Output only. All the metadata information that is used
+      internally to serve the resource. For example: timestamps, flags, status
+      fields, etc. The format of this field is a JSON string.
     invocationConfig: Optional. If left unset, a default InvocationConfig will
       be used.
-    metadata: Output only. This field is a container for all the service data
-      fields that are used internally with no real business value, however for
-      compliance reasons (CIA-C9-V2208) we have to expose them for public. The
-      format of this field is a JSON string.
     name: Identifier. The workflow config's name.
     recentScheduledExecutionRecords: Output only. Records of the 10 most
       recent scheduled execution attempts, ordered in descending order of
@@ -2898,8 +2893,8 @@ class WorkflowConfig(_messages.Message):
 
   createTime = _messages.StringField(1)
   cronSchedule = _messages.StringField(2)
-  invocationConfig = _messages.MessageField('InvocationConfig', 3)
-  metadata = _messages.StringField(4)
+  internalMetadata = _messages.StringField(3)
+  invocationConfig = _messages.MessageField('InvocationConfig', 4)
   name = _messages.StringField(5)
   recentScheduledExecutionRecords = _messages.MessageField('ScheduledExecutionRecord', 6, repeated=True)
   releaseConfig = _messages.StringField(7)
@@ -2920,13 +2915,12 @@ class WorkflowInvocation(_messages.Message):
       `projects/*/locations/*/repositories/*/compilationResults/*`.
     dataEncryptionState: Output only. Only set if the repository has a KMS
       Key.
+    internalMetadata: Output only. All the metadata information that is used
+      internally to serve the resource. For example: timestamps, flags, status
+      fields, etc. The format of this field is a JSON string.
     invocationConfig: Immutable. If left unset, a default InvocationConfig
       will be used.
     invocationTiming: Output only. This workflow invocation's timing details.
-    metadata: Output only. This field is a container for all the service data
-      fields that are used internally with no real business value, however for
-      compliance reasons (CIA-C9-V2208) we have to expose them for public. The
-      format of this field is a JSON string.
     name: Output only. The workflow invocation's name.
     resolvedCompilationResult: Output only. The resolved compilation result
       that was used to create this invocation. Will be in the format
@@ -2958,9 +2952,9 @@ class WorkflowInvocation(_messages.Message):
 
   compilationResult = _messages.StringField(1)
   dataEncryptionState = _messages.MessageField('DataEncryptionState', 2)
-  invocationConfig = _messages.MessageField('InvocationConfig', 3)
-  invocationTiming = _messages.MessageField('Interval', 4)
-  metadata = _messages.StringField(5)
+  internalMetadata = _messages.StringField(3)
+  invocationConfig = _messages.MessageField('InvocationConfig', 4)
+  invocationTiming = _messages.MessageField('Interval', 5)
   name = _messages.StringField(6)
   resolvedCompilationResult = _messages.StringField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
@@ -2981,14 +2975,13 @@ class WorkflowInvocationAction(_messages.Message):
       compilation result.
     failureReason: Output only. If and only if action's state is FAILED a
       failure reason is set.
+    internalMetadata: Output only. All the metadata information that is used
+      internally to serve the resource. For example: timestamps, flags, status
+      fields, etc. The format of this field is a JSON string.
     invocationTiming: Output only. This action's timing details. `start_time`
       will be set if the action is in [RUNNING, SUCCEEDED, CANCELLED, FAILED]
       state. `end_time` will be set if the action is in [SUCCEEDED, CANCELLED,
       FAILED] state.
-    metadata: Output only. This field is a container for all the service data
-      fields that are used internally with no real business value, however for
-      compliance reasons (CIA-C9-V2208) we have to expose them for public. The
-      format of this field is a JSON string.
     notebookAction: Output only. The workflow action's notebook action
       details.
     state: Output only. This action's current state.
@@ -3021,8 +3014,8 @@ class WorkflowInvocationAction(_messages.Message):
   bigqueryAction = _messages.MessageField('BigQueryAction', 1)
   canonicalTarget = _messages.MessageField('Target', 2)
   failureReason = _messages.StringField(3)
-  invocationTiming = _messages.MessageField('Interval', 4)
-  metadata = _messages.StringField(5)
+  internalMetadata = _messages.StringField(4)
+  invocationTiming = _messages.MessageField('Interval', 5)
   notebookAction = _messages.MessageField('NotebookAction', 6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
   target = _messages.MessageField('Target', 8)
@@ -3035,16 +3028,15 @@ class Workspace(_messages.Message):
     createTime: Output only. The timestamp of when the workspace was created.
     dataEncryptionState: Output only. A data encryption state of a Git
       repository if this Workspace is protected by a KMS key.
-    metadata: Output only. This field is a container for all the service data
-      fields that are used internally with no real business value, however for
-      compliance reasons (CIA-C9-V2208) we have to expose them for public. The
-      format of this field is a JSON string.
+    internalMetadata: Output only. All the metadata information that is used
+      internally to serve the resource. For example: timestamps, flags, status
+      fields, etc. The format of this field is a JSON string.
     name: Identifier. The workspace's name.
   """
 
   createTime = _messages.StringField(1)
   dataEncryptionState = _messages.MessageField('DataEncryptionState', 2)
-  metadata = _messages.StringField(3)
+  internalMetadata = _messages.StringField(3)
   name = _messages.StringField(4)
 
 

@@ -581,15 +581,24 @@ def AddPdDiskType(parser):
   )
 
 
-def AddPdDiskSize(parser):
-  """Adds a --pd-disk-size flag to the given parser."""
+def AddPdDiskSizeOrSnapshot(parser):
+  """Adds a --pd-disk-size and --pd-source-snapshot flag to the given parser."""
   help_text = """\
   Size of the persistent directory in GB."""
-  parser.add_argument(
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument(
       '--pd-disk-size',
       choices=[10, 50, 100, 200, 500, 1000],
       default=200,
       type=int,
+      help=help_text,
+  )
+
+  help_text = """\
+  Name of the snapshot to use as the source for the home disk."""
+  group.add_argument(
+      '--pd-source-snapshot',
+      default='',
       help=help_text,
   )
 
@@ -608,6 +617,17 @@ def AddPdReclaimPolicy(parser):
           ),
       },
       default='delete',
+      help=help_text,
+  )
+
+
+def AddPdSourceSnapshot(parser):
+  """Adds a --pd-source-snapshot flag to the given parser."""
+  help_text = """\
+  Name of the snapshot to use as the source for the home disk."""
+  parser.add_argument(
+      '--pd-source-snapshot',
+      default='',
       help=help_text,
   )
 

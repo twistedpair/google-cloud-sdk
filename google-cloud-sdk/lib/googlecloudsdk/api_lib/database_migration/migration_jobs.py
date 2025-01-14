@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2020 Google LLC. All Rights Reserved.
+# Copyright 2025 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -189,10 +189,10 @@ class MigrationJobsClient(object):
       else:
         # Get conversion workspace's latest commit id.
         cw_client = conversion_workspaces.ConversionWorkspacesClient(
-            self.release_track
+            release_track=self.release_track,
         )
-        conversion_workspace = cw_client.Describe(
-            conversion_workspace_ref.RelativeName(),
+        conversion_workspace = cw_client.crud.Read(
+            name=conversion_workspace_ref.RelativeName(),
         )
         if conversion_workspace.latestCommitId is None:
           raise exceptions.BadArgumentException(
@@ -233,10 +233,10 @@ class MigrationJobsClient(object):
       return conversion_workspace
     # Get conversion workspace's latest commit id.
     cw_client = conversion_workspaces.ConversionWorkspacesClient(
-        self.release_track
+        release_track=self.release_track,
     )
-    cst_conversion_workspace = cw_client.Describe(
-        conversion_workspace.name,
+    cst_conversion_workspace = cw_client.crud.Read(
+        name=conversion_workspace.name,
     )
     if cst_conversion_workspace.latestCommitId is None:
       raise exceptions.BadArgumentException(
@@ -771,6 +771,8 @@ class MigrationJobsClient(object):
       )
     if args.IsKnownAndSpecified('skip_validation'):
       restart_mj_req.skipValidation = True
+    if args.IsKnownAndSpecified('restart_failed_objects'):
+      restart_mj_req.restartFailedObjects = True
 
     restart_req = (
         self.messages.DatamigrationProjectsLocationsMigrationJobsRestartRequest(

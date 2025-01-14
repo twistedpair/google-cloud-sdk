@@ -5,6 +5,86 @@ Copyright 2014-2025 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 506.0.0 (2025-01-14)
+
+### Artifact Registry
+
+* Updated `gcloud artifacts files describe` to display file hashes as hex strings.
+
+### Cloud Bigtable
+
+* Update golang.org/x/net version for CVE-2024-45338.
+* Add update value type support.
+
+### Cloud Logging
+
+*   Updated `gcloud logging buckets update` to accept `--folder`, `--organization` and `--billing-account` flags in addition to `--project`.
+
+### Cloud NetApp
+
+* Added `tiering_policy` parameter to --destination-volume-parameters flag in `gcloud netapp volumes replications create` command.
+
+### Cloud Run
+
+* Removed `--base-image` and `--clear-base-image` flags for
+  `gcloud beta run services update` command.
+
+### Cloud Spanner
+
+* Promote `autoscaling` flag options for `gcloud spanner instances create` and `gcloud spanner instances update` commands for GA.
+
+### Cloud Workstations
+
+* Adding support for disabling local host replacement in the `beta workstations configs create` and `beta workstations configs update` commands.
+* Adding support for specifying source_snapshot when creating or updating
+configs.
+
+### Compute Firewall Policy Rules
+
+* Added `--src-secure-tags` and `--target-secure-tags` to
+`gcloud compute firewall-policies rules create/update` commands.
+
+### Database Migration
+
+* Added `--page-size` with a default page size of 100, and other list-related
+  flags to `gcloud database-migration conversion-workspaces describe-entities|describe-ddls|describe-issues`
+  commands.
+* Added `--cloudsql-project-id` flag to `gcloud database-migration connection-profiles update` command.
+* Added `--databases-filter` flag to `gcloud database-migration migration-jobs create`
+  command to filter the databases to be migrated.
+* Added `--databases-filter` flag to `gcloud database-migration migration-jobs update`
+  command to filter the databases to be migrated.
+* Added `--databases-filter` flag to `gcloud database-migration migration-jobs promote`
+  command to filter the databases to be promoted.
+* Added `--databases-filter` flag to `gcloud database-migration migration-jobs restart`
+  command to filter the databases to be restarted.
+* Added `gcloud database-migration migration-jobs fetch-source-objects`
+  command to fetch the objects present in the source for a migration job.
+* Added `--restart-failed-objects` flag to `gcloud database-migration migration-jobs restart`
+  command to restart the failed objects in a migration job.
+* Added `gcloud database-migration objects list`
+  command to list the objects being migrated in a migration job.
+* Added `gcloud database-migration objects lookup`
+  command to describe a specific object in a migration job.
+
+### Network Management
+
+* Added `--bypass-firewall-checks` flag to
+  `gcloud network-management connectivity-tests` to allow executing
+  Connectivity Tests in a mode that skips firewall checking.
+
+### Secure Source Manager
+
+* Added `gcloud source-manager repos` command group to beta.
+
+### Workbench
+
+* Added `--tags` flag to `gcloud workbench instances update` command.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 505.0.0 (2025-01-07)
 
 ### AlloyDB

@@ -786,6 +786,30 @@ class IngestionDataSourceSettings(_messages.Message):
   platformLogsSettings = _messages.MessageField('PlatformLogsSettings', 6)
 
 
+class JavaScriptUDF(_messages.Message):
+  r"""User-defined JavaScript function that can transform or filter a Pub/Sub
+  message.
+
+  Fields:
+    code: Required. JavaScript code that contains a function `function_name`
+      with the below signature: /** * Transforms a Pub/Sub message. * @return
+      {(Object)>|null)} - To * filter a message, return `null`. To transform a
+      message return a map * with the following keys: * - (required) 'data' :
+      {string} * - (optional) 'attributes' : {Object} * Returning empty
+      `attributes` will remove all attributes from the * message. * * @param
+      {(Object)>} Pub/Sub * message. Keys: * - (required) 'data' : {string} *
+      - (required) 'attributes' : {Object} * * @param {Object} metadata -
+      Pub/Sub message metadata. * Keys: * - (required) 'message_id' : {string}
+      * - (optional) 'publish_time': {string} YYYY-MM-DDTHH:MM:SSZ format * -
+      (optional) 'ordering_key': {string} */ function (message, metadata) { }
+    functionName: Required. Name of the JavasScript function that should
+      applied to Pub/Sub messages.
+  """
+
+  code = _messages.StringField(1)
+  functionName = _messages.StringField(2)
+
+
 class ListSchemaRevisionsResponse(_messages.Message):
   r"""Response for the `ListSchemaRevisions` method.
 
@@ -903,6 +927,22 @@ class MessageStoragePolicy(_messages.Message):
 
   allowedPersistenceRegions = _messages.StringField(1, repeated=True)
   enforceInTransit = _messages.BooleanField(2)
+
+
+class MessageTransform(_messages.Message):
+  r"""All supported message transforms types.
+
+  Fields:
+    enabled: Optional. If set to true, the transform is enabled. If false, the
+      transform is disabled and will not be applied to messages. Defaults to
+      `true`.
+    javascriptUdf: Optional. JavaScript User Defined Function. If multiple
+      JavaScriptUDF's are specified on a resource, each must have a unique
+      `function_name`.
+  """
+
+  enabled = _messages.BooleanField(1)
+  javascriptUdf = _messages.MessageField('JavaScriptUDF', 2)
 
 
 class ModifyAckDeadlineRequest(_messages.Message):
@@ -2567,6 +2607,9 @@ class Subscription(_messages.Message):
       the retention of acknowledged messages, and thus configures how far back
       in time a `Seek` can be done. Defaults to 7 days. Cannot be more than 31
       days or less than 10 minutes.
+    messageTransforms: Optional. Transforms to be applied to messages before
+      they are delivered to subscribers. Transforms are applied in the order
+      specified.
     name: Required. The name of the subscription. It must have the format
       `"projects/{project}/subscriptions/{subscription}"`. `{subscription}`
       must start with a letter, and contain only letters (`[A-Za-z]`), numbers
@@ -2658,15 +2701,16 @@ class Subscription(_messages.Message):
   filter = _messages.StringField(10)
   labels = _messages.MessageField('LabelsValue', 11)
   messageRetentionDuration = _messages.StringField(12)
-  name = _messages.StringField(13)
-  pubsubExportConfig = _messages.MessageField('PubSubExportConfig', 14)
-  pubsubliteExportConfig = _messages.MessageField('PubSubLiteExportConfig', 15)
-  pushConfig = _messages.MessageField('PushConfig', 16)
-  retainAckedMessages = _messages.BooleanField(17)
-  retryPolicy = _messages.MessageField('RetryPolicy', 18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  topic = _messages.StringField(20)
-  topicMessageRetentionDuration = _messages.StringField(21)
+  messageTransforms = _messages.MessageField('MessageTransform', 13, repeated=True)
+  name = _messages.StringField(14)
+  pubsubExportConfig = _messages.MessageField('PubSubExportConfig', 15)
+  pubsubliteExportConfig = _messages.MessageField('PubSubLiteExportConfig', 16)
+  pushConfig = _messages.MessageField('PushConfig', 17)
+  retainAckedMessages = _messages.BooleanField(18)
+  retryPolicy = _messages.MessageField('RetryPolicy', 19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  topic = _messages.StringField(21)
+  topicMessageRetentionDuration = _messages.StringField(22)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -2744,6 +2788,8 @@ class Topic(_messages.Message):
     messageStoragePolicy: Optional. Policy constraining the set of Google
       Cloud Platform regions where messages published to the topic may be
       stored. If not present, then no constraints are in effect.
+    messageTransforms: Optional. Transforms to be applied to messages
+      published to the topic. Transforms are applied in the order specified.
     name: Required. The name of the topic. It must have the format
       `"projects/{project}/topics/{topic}"`. `{topic}` must start with a
       letter, and contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes
@@ -2802,10 +2848,11 @@ class Topic(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 3)
   messageRetentionDuration = _messages.StringField(4)
   messageStoragePolicy = _messages.MessageField('MessageStoragePolicy', 5)
-  name = _messages.StringField(6)
-  satisfiesPzs = _messages.BooleanField(7)
-  schemaSettings = _messages.MessageField('SchemaSettings', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
+  messageTransforms = _messages.MessageField('MessageTransform', 6, repeated=True)
+  name = _messages.StringField(7)
+  satisfiesPzs = _messages.BooleanField(8)
+  schemaSettings = _messages.MessageField('SchemaSettings', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
 class UpdateSnapshotRequest(_messages.Message):

@@ -662,8 +662,8 @@ class AccessConfig(_messages.Message):
       accessConfig. If this field is unspecified in ipv6AccessConfig, a
       default PTR record will be created for first IP in associated external
       IPv6 range.
-    securityPolicy: [Output Only] The resource URL for the security policy
-      associated with this access config.
+    securityPolicy: The resource URL for the security policy associated with
+      this access config.
     setPublicPtr: Specifies whether a public DNS 'PTR' record should be
       created to map the external IP address of the instance to a DNS domain
       name. This field is not used in ipv6AccessConfig. A default PTR record
@@ -42088,12 +42088,12 @@ class InstanceGroup(_messages.Message):
       compute#instanceGroup for instance groups.
     name: The name of the instance group. The name must be 1-63 characters
       long, and comply with RFC1035.
-    namedPorts:  Assigns a name to a port number. For example: {name: "http",
-      port: 80} This allows the system to reference ports by the assigned name
-      instead of a port number. Named ports can also contain multiple ports.
-      For example: [{name: "app1", port: 8080}, {name: "app1", port: 8081},
-      {name: "app2", port: 8082}] Named ports apply to all instances in this
-      instance group.
+    namedPorts:  Optional. Assigns a name to a port number. For example:
+      {name: "http", port: 80} This allows the system to reference ports by
+      the assigned name instead of a port number. Named ports can also contain
+      multiple ports. For example: [{name: "app1", port: 8080}, {name: "app1",
+      port: 8081}, {name: "app2", port: 8082}] Named ports apply to all
+      instances in this instance group.
     network: [Output Only] The URL of the network to which all instances in
       the instance group belong. If your instance has multiple network
       interfaces, then the network and subnetwork fields only refer to the
@@ -53333,17 +53333,20 @@ class NetworkEndpoint(_messages.Message):
   r"""The network endpoint.
 
   Messages:
-    AnnotationsValue: Metadata defined as annotations on the network endpoint.
+    AnnotationsValue: Optional metadata defined as annotations on the network
+      endpoint.
 
   Fields:
-    annotations: Metadata defined as annotations on the network endpoint.
+    annotations: Optional metadata defined as annotations on the network
+      endpoint.
     clientDestinationPort: Represents the port number to which PSC consumer
-      sends packets. Only valid for network endpoint groups created with
-      GCE_VM_IP_PORTMAP endpoint type.
+      sends packets. Optional. Only valid for network endpoint groups created
+      with GCE_VM_IP_PORTMAP endpoint type.
     fqdn: Optional fully qualified domain name of network endpoint. This can
       only be specified when NetworkEndpointGroup.network_endpoint_type is
       NON_GCP_FQDN_PORT.
-    instance: The name or a URL of VM instance of this network endpoint. This
+    instance: The name or a URL of VM instance of this network endpoint.
+      Optional, the field presence depends on the network endpoint type. The
       field is required for network endpoints of type GCE_VM_IP and
       GCE_VM_IP_PORT. The instance must be in the same zone of network
       endpoint group (for zonal NEGs) or in the zone within the region of the
@@ -53368,7 +53371,7 @@ class NetworkEndpoint(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""Metadata defined as annotations on the network endpoint.
+    r"""Optional metadata defined as annotations on the network endpoint.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -53413,23 +53416,24 @@ class NetworkEndpointGroup(_messages.Message):
       SERVERLESS, PRIVATE_SERVICE_CONNECT, GCE_VM_IP_PORTMAP.
 
   Messages:
-    AnnotationsValue: Metadata defined as annotations on the network endpoint
-      group.
+    AnnotationsValue: Optional. Metadata defined as annotations on the network
+      endpoint group.
 
   Fields:
-    annotations: Metadata defined as annotations on the network endpoint
-      group.
-    appEngine: Only valid when networkEndpointType is SERVERLESS. Only one of
-      cloudRun, appEngine or cloudFunction may be set.
-    cloudFunction: Only valid when networkEndpointType is SERVERLESS. Only one
-      of cloudRun, appEngine or cloudFunction may be set.
-    cloudRun: Only valid when networkEndpointType is SERVERLESS. Only one of
-      cloudRun, appEngine or cloudFunction may be set.
+    annotations: Optional. Metadata defined as annotations on the network
+      endpoint group.
+    appEngine: Optional. Only valid when networkEndpointType is SERVERLESS.
+      Only one of cloudRun, appEngine or cloudFunction may be set.
+    cloudFunction: Optional. Only valid when networkEndpointType is
+      SERVERLESS. Only one of cloudRun, appEngine or cloudFunction may be set.
+    cloudRun: Optional. Only valid when networkEndpointType is SERVERLESS.
+      Only one of cloudRun, appEngine or cloudFunction may be set.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     defaultPort: The default port used if the port number is not specified in
-      the network endpoint. If the network endpoint type is either GCE_VM_IP,
-      SERVERLESS or PRIVATE_SERVICE_CONNECT, this field must not be specified.
+      the network endpoint. Optional. If the network endpoint type is either
+      GCE_VM_IP, SERVERLESS or PRIVATE_SERVICE_CONNECT, this field must not be
+      specified.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -53449,10 +53453,12 @@ class NetworkEndpointGroup(_messages.Message):
       group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT,
       INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS,
       PRIVATE_SERVICE_CONNECT, GCE_VM_IP_PORTMAP.
-    pscData: A NetworkEndpointGroupPscData attribute.
+    pscData: Optional. Only valid when networkEndpointType is
+      PRIVATE_SERVICE_CONNECT.
     pscTargetService: The target service url used to set up private service
       connection to a Google API or a PSC Producer Service Attachment. An
-      example value is: asia-northeast3-cloudkms.googleapis.com
+      example value is: asia-northeast3-cloudkms.googleapis.com. Optional.
+      Only valid when networkEndpointType is PRIVATE_SERVICE_CONNECT.
     region: [Output Only] The URL of the region where the network endpoint
       group is located.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -53499,7 +53505,8 @@ class NetworkEndpointGroup(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""Metadata defined as annotations on the network endpoint group.
+    r"""Optional. Metadata defined as annotations on the network endpoint
+    group.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -54410,8 +54417,10 @@ class NetworkEndpointWithHealthStatus(_messages.Message):
   r"""A NetworkEndpointWithHealthStatus object.
 
   Fields:
-    healths: [Output only] The health status of network endpoint;
-    networkEndpoint: [Output only] The network endpoint;
+    healths: [Output only] The health status of network endpoint. Optional.
+      Displayed only if the network endpoint has centralized health checking
+      configured.
+    networkEndpoint: [Output only] The network endpoint.
   """
 
   healths = _messages.MessageField('HealthStatusForNetworkEndpoint', 1, repeated=True)

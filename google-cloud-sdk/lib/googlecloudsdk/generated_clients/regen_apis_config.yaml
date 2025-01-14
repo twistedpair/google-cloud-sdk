@@ -1664,6 +1664,9 @@ apis:
   bigquerydatatransfer:
     v1:
       discovery_doc: bigquerydatatransfer_v1.json
+  bigquerymigration:
+    v2:
+      discovery_doc: bigquerymigration_v2.json
   websecurityscanner:
     v1beta:
       discovery_doc: websecurityscanner_v1beta.json
@@ -1920,6 +1923,9 @@ canonical_surfaces:
     hidden: true
   bigquery:
     name: bigquery
+    hidden: true
+  bigquerymigration:
+    name: bigquerymigration
     hidden: true
   bigtableadmin:
     name: bigtableadmin

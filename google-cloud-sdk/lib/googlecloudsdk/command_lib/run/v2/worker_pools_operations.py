@@ -21,7 +21,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from google.api_core import exceptions
+from googlecloudsdk.api_lib.run import metric_names
 from googlecloudsdk.command_lib.run.v2 import config_changes as config_changes_mod
+from googlecloudsdk.core import metrics
 from googlecloudsdk.generated_clients.gapic_clients.run_v2.types import worker_pool as worker_pool_objects
 
 
@@ -45,8 +47,8 @@ class WorkerPoolsOperations(object):
         name=worker_pool_ref.RelativeName()
     )
     try:
-      # TODO(b/368113428): Record durations metrics
-      return worker_pools.get_worker_pool(get_request)
+      with metrics.RecordDuration(metric_names.GET_WORKER_POOL):
+        return worker_pools.get_worker_pool(get_request)
     except exceptions.NotFound:
       return None
 
@@ -64,8 +66,8 @@ class WorkerPoolsOperations(object):
         name=worker_pool_ref.RelativeName()
     )
     try:
-      # TODO(b/368113428): Record durations metrics
-      return worker_pools.delete_worker_pool(delete_request)
+      with metrics.RecordDuration(metric_names.DELETE_WORKER_POOL):
+        return worker_pools.delete_worker_pool(delete_request)
     except exceptions.NotFound:
       return None
 
@@ -82,9 +84,9 @@ class WorkerPoolsOperations(object):
     list_request = self._client.types.ListWorkerPoolsRequest(
         parent=region_ref.RelativeName()
     )
-    # TODO(b/357135595): Add and record durations metrics
     # TODO(b/366501494): Support `next_page_token`
-    return worker_pools.list_worker_pools(list_request)
+    with metrics.RecordDuration(metric_names.LIST_WORKER_POOLS):
+      return worker_pools.list_worker_pools(list_request)
 
   def ReleaseWorkerPool(self, worker_pool_ref, worker_pool, config_changes):
     """Stubbed method for worker pool deploy surface.
@@ -101,11 +103,13 @@ class WorkerPoolsOperations(object):
       A WorkerPool object.
     """
     # TODO(b/376904673): Add progress tracker.
+    metric_name = metric_names.UPDATE_WORKER_POOL
     if worker_pool is None:
       # WorkerPool does not exist, create it.
       worker_pool = worker_pool_objects.WorkerPool(
           name=worker_pool_ref.RelativeName(),
       )
+      metric_name = metric_names.CREATE_WORKER_POOL
     # Apply config changes to the WorkerPool.
     worker_pool = config_changes_mod.WithChanges(worker_pool, config_changes)
     worker_pools = self._client.worker
@@ -113,6 +117,29 @@ class WorkerPoolsOperations(object):
         worker_pool=worker_pool,
         allow_missing=True,
     )
-    # TODO(b/357135595): Add and record durations metrics
     # TODO(b/366576967): Support wait operation in sync mode.
-    return worker_pools.update_worker_pool(upsert_request)
+    with metrics.RecordDuration(metric_name):
+      return worker_pools.update_worker_pool(upsert_request)
+
+  def UpdateInstanceSplit(
+      self,
+      worker_pool_ref,
+      config_changes,
+  ):
+    """Update the instance split of a WorkerPool."""
+    # TODO: b/376904673 - Add progress tracker.
+    worker_pool = self.GetWorkerPool(worker_pool_ref)
+    if worker_pool is None:
+      raise exceptions.NotFound(
+          'WorkerPool [{}] could not be found.'.format(
+              worker_pool_ref.workerPoolsId
+          )
+      )
+    worker_pool = config_changes_mod.WithChanges(worker_pool, config_changes)
+    worker_pools = self._client.worker
+    update_request = self._client.types.UpdateWorkerPoolRequest(
+        worker_pool=worker_pool,
+    )
+    with metrics.RecordDuration(metric_names.UPDATE_WORKER_POOL):
+      # TODO(b/366576967): Support wait operation in sync mode.
+      return worker_pools.update_worker_pool(update_request)

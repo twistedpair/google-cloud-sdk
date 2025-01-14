@@ -1227,10 +1227,10 @@ class ConsentConfig(_messages.Message):
       supported consent headers.
     consentHeaderHandling: Optional. Different options to configure the
       behaviour of the server when handling the `X-Consent-Scope` header.
-    enforcedAdminConsents: The versioned names of the enforced admin Consent
-      resource(s), in the format `projects/{project_id}/locations/{location}/d
-      atasets/{dataset_id}/fhirStores/{fhir_store_id}/fhir/Consent/{resource_i
-      d}/_history/{version_id}`. For FHIR stores with
+    enforcedAdminConsents: Output only. The versioned names of the enforced
+      admin Consent resource(s), in the format `projects/{project_id}/location
+      s/{location}/datasets/{dataset_id}/fhirStores/{fhir_store_id}/fhir/Conse
+      nt/{resource_id}/_history/{version_id}`. For FHIR stores with
       `disable_resource_versioning=true`, the format is `projects/{project_id}
       /locations/{location}/datasets/{dataset_id}/fhirStores/{fhir_store_id}/f
       hir/Consent/{resource_id}`. This field can only be updated using

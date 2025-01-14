@@ -432,34 +432,35 @@ class ConfigManagementConfigSync(_messages.Message):
   r"""Configuration for Config Sync
 
   Fields:
-    allowVerticalScale: Set to true to allow the vertical scaling. Defaults to
-      false which disallows vertical scaling. This field is deprecated.
+    allowVerticalScale: Optional. Set to true to allow the vertical scaling.
+      Defaults to false which disallows vertical scaling. This field is
+      deprecated.
     deploymentOverrides: Optional. Configuration for deployment overrides.
-    enabled: Enables the installation of ConfigSync. If set to true,
+    enabled: Optional. Enables the installation of ConfigSync. If set to true,
       ConfigSync resources will be created and the other ConfigSync fields
       will be applied if exist. If set to false, all other ConfigSync fields
       will be ignored, ConfigSync resources will be deleted. If omitted,
       ConfigSync resources will be managed depends on the presence of the git
       or oci field.
-    git: Git repo configuration for the cluster.
-    metricsGcpServiceAccountEmail: The Email of the Google Cloud Service
-      Account (GSA) used for exporting Config Sync metrics to Cloud Monitoring
-      and Cloud Monarch when Workload Identity is enabled. The GSA should have
-      the Monitoring Metric Writer (roles/monitoring.metricWriter) IAM role.
-      The Kubernetes ServiceAccount `default` in the namespace `config-
-      management-monitoring` should be bound to the GSA. Deprecated: If
-      Workload Identity Federation for GKE is enabled, Google Cloud Service
+    git: Optional. Git repo configuration for the cluster.
+    metricsGcpServiceAccountEmail: Optional. The Email of the Google Cloud
+      Service Account (GSA) used for exporting Config Sync metrics to Cloud
+      Monitoring and Cloud Monarch when Workload Identity is enabled. The GSA
+      should have the Monitoring Metric Writer (roles/monitoring.metricWriter)
+      IAM role. The Kubernetes ServiceAccount `default` in the namespace
+      `config-management-monitoring` should be bound to the GSA. Deprecated:
+      If Workload Identity Federation for GKE is enabled, Google Cloud Service
       Account is no longer needed for exporting Config Sync metrics:
       https://cloud.google.com/kubernetes-engine/enterprise/config-
       sync/docs/how-to/monitor-config-sync-cloud-monitoring#custom-monitoring.
-    oci: OCI repo configuration for the cluster.
-    preventDrift: Set to true to enable the Config Sync admission webhook to
-      prevent drifts. If set to `false`, disables the Config Sync admission
-      webhook and does not prevent drifts.
-    sourceFormat: Specifies whether the Config Sync Repo is in "hierarchical"
-      or "unstructured" mode.
-    stopSyncing: Set to true to stop syncing configs for a single cluster.
-      Default to false.
+    oci: Optional. OCI repo configuration for the cluster.
+    preventDrift: Optional. Set to true to enable the Config Sync admission
+      webhook to prevent drifts. If set to `false`, disables the Config Sync
+      admission webhook and does not prevent drifts.
+    sourceFormat: Optional. Specifies whether the Config Sync Repo is in
+      "hierarchical" or "unstructured" mode.
+    stopSyncing: Optional. Set to true to stop syncing configs for a single
+      cluster. Default to false.
   """
 
   allowVerticalScale = _messages.BooleanField(1)
@@ -671,32 +672,33 @@ class ConfigManagementConfigSyncState(_messages.Message):
   r"""State information for ConfigSync.
 
   Enums:
-    ClusterLevelStopSyncingStateValueValuesEnum: Whether syncing resources to
-      the cluster is stopped at the cluster level.
-    ReposyncCrdValueValuesEnum: The state of the Reposync CRD
-    RootsyncCrdValueValuesEnum: The state of the RootSync CRD
-    StateValueValuesEnum: The state of CS This field summarizes the other
-      fields in this message.
+    ClusterLevelStopSyncingStateValueValuesEnum: Output only. Whether syncing
+      resources to the cluster is stopped at the cluster level.
+    ReposyncCrdValueValuesEnum: Output only. The state of the Reposync CRD
+    RootsyncCrdValueValuesEnum: Output only. The state of the RootSync CRD
+    StateValueValuesEnum: Output only. The state of CS This field summarizes
+      the other fields in this message.
 
   Fields:
-    clusterLevelStopSyncingState: Whether syncing resources to the cluster is
-      stopped at the cluster level.
+    clusterLevelStopSyncingState: Output only. Whether syncing resources to
+      the cluster is stopped at the cluster level.
     crCount: Output only. The number of RootSync and RepoSync CRs in the
       cluster.
-    deploymentState: Information about the deployment of ConfigSync, including
-      the version. of the various Pods deployed
-    errors: Errors pertaining to the installation of Config Sync.
-    reposyncCrd: The state of the Reposync CRD
-    rootsyncCrd: The state of the RootSync CRD
-    state: The state of CS This field summarizes the other fields in this
-      message.
-    syncState: The state of ConfigSync's process to sync configs to a cluster.
-    version: The version of ConfigSync deployed.
+    deploymentState: Output only. Information about the deployment of
+      ConfigSync, including the version. of the various Pods deployed
+    errors: Output only. Errors pertaining to the installation of Config Sync.
+    reposyncCrd: Output only. The state of the Reposync CRD
+    rootsyncCrd: Output only. The state of the RootSync CRD
+    state: Output only. The state of CS This field summarizes the other fields
+      in this message.
+    syncState: Output only. The state of ConfigSync's process to sync configs
+      to a cluster.
+    version: Output only. The version of ConfigSync deployed.
   """
 
   class ClusterLevelStopSyncingStateValueValuesEnum(_messages.Enum):
-    r"""Whether syncing resources to the cluster is stopped at the cluster
-    level.
+    r"""Output only. Whether syncing resources to the cluster is stopped at
+    the cluster level.
 
     Values:
       STOP_SYNCING_STATE_UNSPECIFIED: State cannot be determined
@@ -713,7 +715,7 @@ class ConfigManagementConfigSyncState(_messages.Message):
     STOPPED = 3
 
   class ReposyncCrdValueValuesEnum(_messages.Enum):
-    r"""The state of the Reposync CRD
+    r"""Output only. The state of the Reposync CRD
 
     Values:
       CRD_STATE_UNSPECIFIED: CRD's state cannot be determined
@@ -730,7 +732,7 @@ class ConfigManagementConfigSyncState(_messages.Message):
     INSTALLING = 4
 
   class RootsyncCrdValueValuesEnum(_messages.Enum):
-    r"""The state of the RootSync CRD
+    r"""Output only. The state of the RootSync CRD
 
     Values:
       CRD_STATE_UNSPECIFIED: CRD's state cannot be determined
@@ -747,8 +749,8 @@ class ConfigManagementConfigSyncState(_messages.Message):
     INSTALLING = 4
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The state of CS This field summarizes the other fields in this
-    message.
+    r"""Output only. The state of CS This field summarizes the other fields in
+    this message.
 
     Values:
       STATE_UNSPECIFIED: CS's state cannot be determined.
@@ -808,10 +810,10 @@ class ConfigManagementContainerOverride(_messages.Message):
 
   Fields:
     containerName: Required. The name of the container.
-    cpuLimit: The cpu limit of the container.
-    cpuRequest: The cpu request of the container.
-    memoryLimit: The memory limit of the container.
-    memoryRequest: The memory request of the container.
+    cpuLimit: Optional. The cpu limit of the container.
+    cpuRequest: Optional. The cpu request of the container.
+    memoryLimit: Optional. The memory limit of the container.
+    memoryRequest: Optional. The memory request of the container.
   """
 
   containerName = _messages.StringField(1)
@@ -928,20 +930,23 @@ class ConfigManagementGitConfig(_messages.Message):
   r"""Git repo configuration for a single cluster.
 
   Fields:
-    gcpServiceAccountEmail: The Google Cloud Service Account Email used for
-      auth when secret_type is gcpServiceAccount.
-    httpsProxy: URL for the HTTPS proxy to be used when communicating with the
-      Git repo.
-    policyDir: The path within the Git repository that represents the top
-      level of the repo to sync. Default: the root directory of the
+    gcpServiceAccountEmail: Optional. The Google Cloud Service Account Email
+      used for auth when secret_type is gcpServiceAccount.
+    httpsProxy: Optional. URL for the HTTPS proxy to be used when
+      communicating with the Git repo.
+    policyDir: Optional. The path within the Git repository that represents
+      the top level of the repo to sync. Default: the root directory of the
       repository.
     secretType: Required. Type of secret configured for access to the Git
-      repo. Must be one of ssh, cookiefile, gcenode, token, gcpserviceaccount
-      or none. The validation of this is case-sensitive. Required.
-    syncBranch: The branch of the repository to sync from. Default: master.
-    syncRepo: The URL of the Git repository to use as the source of truth.
-    syncRev: Git revision (tag or hash) to check out. Default HEAD.
-    syncWaitSecs: Period in seconds between consecutive syncs. Default: 15.
+      repo. Must be one of ssh, cookiefile, gcenode, token, gcpserviceaccount,
+      githubapp or none. The validation of this is case-sensitive.
+    syncBranch: Optional. The branch of the repository to sync from. Default:
+      master.
+    syncRepo: Required. The URL of the Git repository to use as the source of
+      truth.
+    syncRev: Optional. Git revision (tag or hash) to check out. Default HEAD.
+    syncWaitSecs: Optional. Period in seconds between consecutive syncs.
+      Default: 15.
   """
 
   gcpServiceAccountEmail = _messages.StringField(1)
@@ -1073,14 +1078,18 @@ class ConfigManagementOciConfig(_messages.Message):
   r"""OCI repo configuration for a single cluster.
 
   Fields:
-    gcpServiceAccountEmail: The Google Cloud Service Account Email used for
-      auth when secret_type is gcpServiceAccount.
-    policyDir: The absolute path of the directory that contains the local
-      resources. Default: the root directory of the image.
-    secretType: Type of secret configured for access to the Git repo.
-    syncRepo: The OCI image repository URL for the package to sync from. e.g.
-      `LOCATION-docker.pkg.dev/PROJECT_ID/REPOSITORY_NAME/PACKAGE_NAME`.
-    syncWaitSecs: Period in seconds between consecutive syncs. Default: 15.
+    gcpServiceAccountEmail: Optional. The Google Cloud Service Account Email
+      used for auth when secret_type is gcpServiceAccount.
+    policyDir: Optional. The absolute path of the directory that contains the
+      local resources. Default: the root directory of the image.
+    secretType: Required. Type of secret configured for access to the OCI
+      repo. Must be one of gcenode, gcpserviceaccount, k8sserviceaccount or
+      none. The validation of this is case-sensitive.
+    syncRepo: Required. The OCI image repository URL for the package to sync
+      from. e.g. `LOCATION-
+      docker.pkg.dev/PROJECT_ID/REPOSITORY_NAME/PACKAGE_NAME`.
+    syncWaitSecs: Optional. Period in seconds between consecutive syncs.
+      Default: 15.
   """
 
   gcpServiceAccountEmail = _messages.StringField(1)
@@ -1247,33 +1256,33 @@ class ConfigManagementSpec(_messages.Message):
   Intended to parallel the ConfigManagement CR.
 
   Enums:
-    ManagementValueValuesEnum: Enables automatic Feature management.
+    ManagementValueValuesEnum: Optional. Enables automatic Feature management.
 
   Fields:
-    binauthz: Binauthz conifguration for the cluster. Deprecated: This field
-      will be ignored and should not be set.
-    cluster: The user-specified cluster name used by Config Sync cluster-name-
-      selector annotation or ClusterSelector, for applying configs to only a
-      subset of clusters. Omit this field if the cluster's fleet membership
-      name is used by Config Sync cluster-name-selector annotation or
-      ClusterSelector. Set this field if a name different from the cluster's
+    binauthz: Optional. Binauthz conifguration for the cluster. Deprecated:
+      This field will be ignored and should not be set.
+    cluster: Optional. The user-specified cluster name used by Config Sync
+      cluster-name-selector annotation or ClusterSelector, for applying
+      configs to only a subset of clusters. Omit this field if the cluster's
       fleet membership name is used by Config Sync cluster-name-selector
-      annotation or ClusterSelector.
-    configSync: Config Sync configuration for the cluster.
-    hierarchyController: Hierarchy Controller configuration for the cluster.
-      Deprecated: Configuring Hierarchy Controller through the
+      annotation or ClusterSelector. Set this field if a name different from
+      the cluster's fleet membership name is used by Config Sync cluster-name-
+      selector annotation or ClusterSelector.
+    configSync: Optional. Config Sync configuration for the cluster.
+    hierarchyController: Optional. Hierarchy Controller configuration for the
+      cluster. Deprecated: Configuring Hierarchy Controller through the
       configmanagement feature is no longer recommended. Use
       https://github.com/kubernetes-sigs/hierarchical-namespaces instead.
-    management: Enables automatic Feature management.
-    policyController: Policy Controller configuration for the cluster.
-      Deprecated: Configuring Policy Controller through the configmanagement
-      feature is no longer recommended. Use the policycontroller feature
-      instead.
-    version: Version of ACM installed.
+    management: Optional. Enables automatic Feature management.
+    policyController: Optional. Policy Controller configuration for the
+      cluster. Deprecated: Configuring Policy Controller through the
+      configmanagement feature is no longer recommended. Use the
+      policycontroller feature instead.
+    version: Optional. Version of ACM installed.
   """
 
   class ManagementValueValuesEnum(_messages.Enum):
-    r"""Enables automatic Feature management.
+    r"""Optional. Enables automatic Feature management.
 
     Values:
       MANAGEMENT_UNSPECIFIED: Unspecified
@@ -1298,17 +1307,17 @@ class ConfigManagementState(_messages.Message):
   r"""**Anthos Config Management**: State for a single cluster.
 
   Fields:
-    binauthzState: Binauthz status.
-    clusterName: This field is set to the `cluster_name` field of the
-      Membership Spec if it is not empty. Otherwise, it is set to the
+    binauthzState: Output only. Binauthz status.
+    clusterName: Output only. This field is set to the `cluster_name` field of
+      the Membership Spec if it is not empty. Otherwise, it is set to the
       cluster's fleet membership name.
-    configSyncState: Current sync status.
-    hierarchyControllerState: Hierarchy Controller status.
-    membershipSpec: Membership configuration in the cluster. This represents
-      the actual state in the cluster, while the MembershipSpec in the
-      FeatureSpec represents the intended state.
-    operatorState: Current install status of ACM's Operator.
-    policyControllerState: PolicyController status.
+    configSyncState: Output only. Current sync status.
+    hierarchyControllerState: Output only. Hierarchy Controller status.
+    membershipSpec: Output only. Membership configuration in the cluster. This
+      represents the actual state in the cluster, while the MembershipSpec in
+      the FeatureSpec represents the intended state.
+    operatorState: Output only. Current install status of ACM's Operator.
+    policyControllerState: Output only. PolicyController status.
   """
 
   binauthzState = _messages.MessageField('ConfigManagementBinauthzState', 1)

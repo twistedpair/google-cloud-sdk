@@ -2638,10 +2638,11 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIngressPolicyExplana
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResource(_messages.Message):
-  r"""The details of a resolved resource NextTAG: 8
+  r"""The details of a resolved resource. NextTAG: 13
 
   Enums:
     ResolvedStateValueValuesEnum: The resolved resource's state
+    ResourceTypeValueValuesEnum: The resource type of the resource.
 
   Fields:
     bridgeServicePerimeters: Full resource names of the bridge service
@@ -2653,13 +2654,22 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResource(_me
     dryrunRegularServicePerimeters: Full resource name of the dry run regular
       service perimeters that restricts the resource Format:
       `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`
+    permissions: The iam permission names attached to this resource. This only
+      applies to resources generated from resource containers.
+    projectId: Project string identifier, in the format of
+      "projects/{project_id}". e.g. "projects/my-project-123".
     projectInfo: Details of the project associated with this resolved
       resource.
+    projectNumber: The project number of the project associated with this
+      resolved resource. In the format of "projects/{project_number}".
     regularServicePerimeters: Full resource name of the regular service
       perimeters that restricts the resource Format:
       `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`
     resolvedState: The resolved resource's state
     resource: Details of the resource
+    resourceNames: The resource names belonging to this resource. For network
+      resource, this is its network full name or redacted name.
+    resourceType: The resource type of the resource.
   """
 
   class ResolvedStateValueValuesEnum(_messages.Enum):
@@ -2678,13 +2688,28 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResource(_me
     NOT_APPLICABLE = 3
     ERROR = 4
 
+  class ResourceTypeValueValuesEnum(_messages.Enum):
+    r"""The resource type of the resource.
+
+    Values:
+      RESOURCE_TYPE_UNSPECIFIED: Not used
+      NETWORK: Network resource type.
+    """
+    RESOURCE_TYPE_UNSPECIFIED = 0
+    NETWORK = 1
+
   bridgeServicePerimeters = _messages.StringField(1, repeated=True)
   dryrunBridgeServicePerimeters = _messages.StringField(2, repeated=True)
   dryrunRegularServicePerimeters = _messages.StringField(3, repeated=True)
-  projectInfo = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResourceProjectInfo', 4)
-  regularServicePerimeters = _messages.StringField(5, repeated=True)
-  resolvedState = _messages.EnumField('ResolvedStateValueValuesEnum', 6)
-  resource = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResource', 7)
+  permissions = _messages.StringField(4, repeated=True)
+  projectId = _messages.StringField(5)
+  projectInfo = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResourceProjectInfo', 6)
+  projectNumber = _messages.StringField(7)
+  regularServicePerimeters = _messages.StringField(8, repeated=True)
+  resolvedState = _messages.EnumField('ResolvedStateValueValuesEnum', 9)
+  resource = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResource', 10)
+  resourceNames = _messages.StringField(11, repeated=True)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 12)
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResourceProjectInfo(_messages.Message):

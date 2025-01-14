@@ -204,9 +204,13 @@ class CloudFunction(_messages.Message):
 
   Enums:
     DockerRegistryValueValuesEnum: Docker Registry to use for this deployment.
-      If unspecified, it defaults to `ARTIFACT_REGISTRY`. If
-      `docker_repository` field is specified, this field should either be left
-      unspecified or set to `ARTIFACT_REGISTRY`.
+      Deprecated: Container Registry option will no longer be available after
+      March 2025: https://cloud.google.com/artifact-
+      registry/docs/transition/transition-from-gcr Please use Artifact
+      Registry instead, which is the default choice. If unspecified, it
+      defaults to `ARTIFACT_REGISTRY`. If `docker_repository` field is
+      specified, this field should either be left unspecified or set to
+      `ARTIFACT_REGISTRY`.
     IngressSettingsValueValuesEnum: The ingress settings for the function,
       controlling what traffic can reach it.
     StatusValueValuesEnum: Output only. Status of the function deployment.
@@ -246,14 +250,19 @@ class CloudFunction(_messages.Message):
       Custom Workers Builder (`roles/cloudbuild.customworkers.builder`) in the
       project.
     buildpackStack: Specifies one of the Google provided buildpack stacks.
+      Deprecated: this API was suspended after private preview and was never
+      revealed publicly.
     customStackUri: Deprecated: customization experience was significantly
       revised, making this field obsolete. It was never revealed to public.
       The URL of a customer provided buildpack stack.
     description: User-provided description of a function.
-    dockerRegistry: Docker Registry to use for this deployment. If
-      unspecified, it defaults to `ARTIFACT_REGISTRY`. If `docker_repository`
-      field is specified, this field should either be left unspecified or set
-      to `ARTIFACT_REGISTRY`.
+    dockerRegistry: Docker Registry to use for this deployment. Deprecated:
+      Container Registry option will no longer be available after March 2025:
+      https://cloud.google.com/artifact-registry/docs/transition/transition-
+      from-gcr Please use Artifact Registry instead, which is the default
+      choice. If unspecified, it defaults to `ARTIFACT_REGISTRY`. If
+      `docker_repository` field is specified, this field should either be left
+      unspecified or set to `ARTIFACT_REGISTRY`.
     dockerRepository: User-managed repository created in Artifact Registry to
       which the function's Docker image will be pushed after it is built by
       Cloud Build. May optionally be encrypted with a customer-managed
@@ -355,10 +364,13 @@ class CloudFunction(_messages.Message):
   """
 
   class DockerRegistryValueValuesEnum(_messages.Enum):
-    r"""Docker Registry to use for this deployment. If unspecified, it
-    defaults to `ARTIFACT_REGISTRY`. If `docker_repository` field is
-    specified, this field should either be left unspecified or set to
-    `ARTIFACT_REGISTRY`.
+    r"""Docker Registry to use for this deployment. Deprecated: Container
+    Registry option will no longer be available after March 2025:
+    https://cloud.google.com/artifact-registry/docs/transition/transition-
+    from-gcr Please use Artifact Registry instead, which is the default
+    choice. If unspecified, it defaults to `ARTIFACT_REGISTRY`. If
+    `docker_repository` field is specified, this field should either be left
+    unspecified or set to `ARTIFACT_REGISTRY`.
 
     Values:
       DOCKER_REGISTRY_UNSPECIFIED: Unspecified.

@@ -459,7 +459,7 @@ def _GetExceptionName(cls):
   return cls.__module__ + '.' + cls.__name__
 
 
-_SOCKET_ERRNO_NAMES = {
+_SOCKET_ERRNO_NAMES = frozenset({
     'EADDRINUSE',
     'EADDRNOTAVAIL',
     'EAFNOSUPPORT',
@@ -493,7 +493,7 @@ _SOCKET_ERRNO_NAMES = {
     'ESOCKTNOSUPPORT',
     'ETIMEDOUT',
     'ETOOMANYREFS',
-}
+})
 
 
 def _IsSocketError(exc):

@@ -702,6 +702,52 @@ class StorageGrpcTransport(StorageTransport):
         return self._stubs['read_object']
 
     @property
+    def bidi_read_object(self) -> Callable[
+            [storage.BidiReadObjectRequest],
+            storage.BidiReadObjectResponse]:
+        r"""Return a callable for the bidi read object method over gRPC.
+
+        Reads an object's data.
+
+        This is a bi-directional API with the added support for reading
+        multiple ranges within one stream both within and across
+        multiple messages. If the server encountered an error for any of
+        the inputs, the stream will be closed with the relevant error
+        code. Because the API allows for multiple outstanding requests,
+        when the stream is closed the error response will contain a
+        BidiReadObjectRangesError proto in the error extension
+        describing the error for each outstanding read_id.
+
+        **IAM Permissions**:
+
+        Requires ``storage.objects.get``
+
+        `IAM
+        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
+        on the bucket.
+
+        This API is currently in preview and is not yet available for
+        general use.
+
+        Returns:
+            Callable[[~.BidiReadObjectRequest],
+                    ~.BidiReadObjectResponse]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'bidi_read_object' not in self._stubs:
+            self._stubs['bidi_read_object'] = self.grpc_channel.stream_stream(
+                '/google.storage.v2.Storage/BidiReadObject',
+                request_serializer=storage.BidiReadObjectRequest.serialize,
+                response_deserializer=storage.BidiReadObjectResponse.deserialize,
+            )
+        return self._stubs['bidi_read_object']
+
+    @property
     def update_object(self) -> Callable[
             [storage.UpdateObjectRequest],
             storage.Object]:

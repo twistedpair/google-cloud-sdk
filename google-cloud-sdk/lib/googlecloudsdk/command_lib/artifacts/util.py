@@ -88,7 +88,7 @@ _REPO_REGEX = "^[a-z]([a-z0-9-]*[a-z0-9])?$"
 # https://google.aip.dev/122
 _RESOURCE_ID_REGEX = "^[a-z]([a-z0-9._-]*[a-z0-9])?$"
 
-_AR_SERVICE_ACCOUNT = "service-{project_num}@gcp-sa-artifactregistry.iam.gserviceaccount.com"
+_AR_SERVICE_ACCOUNT = "service-{project_num}@gcp-sa-artifactregistry.{project_prefix}iam.gserviceaccount.com"
 
 _GCR_BUCKETS = {
     "us": {
@@ -354,6 +354,17 @@ def AddTargetForAttachments(unused_repo_ref, repo_args, request):
   return request
 
 
+def _GetServiceAgent(project_id):
+  """Returns the service agent for the given project."""
+  project_num = project_util.GetProjectNumber(project_id)
+  project_prefix = properties.GetUniverseDomainDescriptor().project_prefix
+  if project_prefix:
+    project_prefix = project_prefix + "."
+  return _AR_SERVICE_ACCOUNT.format(
+      project_num=project_num, project_prefix=project_prefix
+  )
+
+
 def CheckServiceAccountPermission(unused_repo_ref, repo_args, request):
   """Checks and grants key encrypt/decrypt permission for service account.
 
@@ -375,9 +386,8 @@ def CheckServiceAccountPermission(unused_repo_ref, repo_args, request):
   # Best effort to check if AR's service account has permission to use the key;
   # ignore if the caller identity does not have enough permission to check.
   try:
-    project_num = project_util.GetProjectNumber(GetProject(repo_args))
+    service_account = _GetServiceAgent(GetProject(repo_args))
     policy = ar_requests.GetCryptoKeyPolicy(repo_args.kms_key)
-    service_account = _AR_SERVICE_ACCOUNT.format(project_num=project_num)
     for binding in policy.bindings:
       if "serviceAccount:" + service_account in binding.members and (
           binding.role == "roles/cloudkms.cryptoKeyEncrypterDecrypter" or
@@ -385,9 +395,11 @@ def CheckServiceAccountPermission(unused_repo_ref, repo_args, request):
         return request
     grant_permission = console_io.PromptContinue(
         prompt_string=(
-            "\nGrant the Artifact Registry Service Account "
+            "\nGrant the Artifact Registry Service Account {service_account} "
             "permission to encrypt/decrypt with the selected key [{key_name}]"
-            .format(key_name=repo_args.kms_key)))
+            .format(service_account=service_account, key_name=repo_args.kms_key)
+        )
+    )
     if not grant_permission:
       return request
     try:
@@ -1777,13 +1789,21 @@ def MigrateToArtifactRegistry(unused_ref, args):
     diffs_found = False
     needs_removal = []
     for project in projects_to_redirect:
-      project_diffs, continue_checking_auth = SetupAuthForProject(
-          project,
-          existing_repos[project],
-          repo_bucket_map[project],
-          output_iam_policy_dir=output_iam_policy_dir,
-          input_iam_policy_dir=input_iam_policy_dir,
-      )
+      try:
+        project_diffs, continue_checking_auth = SetupAuthForProject(
+            project,
+            existing_repos[project],
+            repo_bucket_map[project],
+            output_iam_policy_dir=output_iam_policy_dir,
+            input_iam_policy_dir=input_iam_policy_dir,
+        )
+      except apitools_exceptions.HttpError as e:
+        needs_removal.append(project)
+        log.status.Print(
+            f"Skipping {project} due to error setting policy:"
+            f" {json.loads(e.content)['error']['message']}"
+        )
+        continue
       if project_diffs:
         diffs_found = True
       elif input_iam_policy_dir:

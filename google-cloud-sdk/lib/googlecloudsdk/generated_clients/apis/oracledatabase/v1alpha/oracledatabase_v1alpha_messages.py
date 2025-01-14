@@ -37,6 +37,10 @@ class AutonomousDatabase(_messages.Message):
   r"""Details of the Autonomous Database resource. https://docs.oracle.com/en-
   us/iaas/api/#/en/database/20160918/AutonomousDatabase/
 
+  Enums:
+    NetworkAccessTypeValueValuesEnum: Required. The network access type of the
+      Autonomous Database.
+
   Messages:
     LabelsValue: Optional. The labels or tags associated with the Autonomous
       Database.
@@ -49,6 +53,9 @@ class AutonomousDatabase(_messages.Message):
     database: Optional. The name of the Autonomous Database. The database name
       must be unique in the project. The name must begin with a letter and can
       contain a maximum of 30 alphanumeric characters.
+    disasterRecoverySupportedLocations: Output only. List of supported GCP
+      region to clone the Autonomous Database for disaster recovery. Format:
+      `project/{project}/locations/{location}`.
     displayName: Optional. The display name for the Autonomous Database. The
       name does not have to be unique within your project.
     entitlementId: Output only. The ID of the subscription entitlement
@@ -61,6 +68,8 @@ class AutonomousDatabase(_messages.Message):
     network: Required. The name of the VPC network used by the Autonomous
       Database in the following format:
       projects/{project}/global/networks/{network}
+    networkAccessType: Required. The network access type of the Autonomous
+      Database.
     peerAutonomousDatabases: Output only. The peer Autonomous Database names
       of the given Autonomous Database.
     properties: Optional. The properties of the Autonomous Database.
@@ -69,6 +78,20 @@ class AutonomousDatabase(_messages.Message):
       configured while creating the Peer Autonomous Database and can't be
       updated after creation.
   """
+
+  class NetworkAccessTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The network access type of the Autonomous Database.
+
+    Values:
+      NETWORK_ACCESS_TYPE_UNSPECIFIED: Default unspecified value.
+      EVERYWHERE: Public network access.
+      ALLOWED_IPS: Access from allowed IP addresses.
+      PRIVATE: Private network access.
+    """
+    NETWORK_ACCESS_TYPE_UNSPECIFIED = 0
+    EVERYWHERE = 1
+    ALLOWED_IPS = 2
+    PRIVATE = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -98,14 +121,16 @@ class AutonomousDatabase(_messages.Message):
   cidr = _messages.StringField(2)
   createTime = _messages.StringField(3)
   database = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  entitlementId = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  peerAutonomousDatabases = _messages.StringField(10, repeated=True)
-  properties = _messages.MessageField('AutonomousDatabaseProperties', 11)
-  sourceConfig = _messages.MessageField('SourceConfig', 12)
+  disasterRecoverySupportedLocations = _messages.StringField(5, repeated=True)
+  displayName = _messages.StringField(6)
+  entitlementId = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  networkAccessType = _messages.EnumField('NetworkAccessTypeValueValuesEnum', 11)
+  peerAutonomousDatabases = _messages.StringField(12, repeated=True)
+  properties = _messages.MessageField('AutonomousDatabaseProperties', 13)
+  sourceConfig = _messages.MessageField('SourceConfig', 14)
 
 
 class AutonomousDatabaseApex(_messages.Message):
@@ -416,6 +441,8 @@ class AutonomousDatabaseProperties(_messages.Message):
     allocatedStorageSizeTb: Output only. The amount of storage currently
       allocated for the database tables and billed for, rounded up in
       terabytes.
+    allowlistedIps: Optional. The list of allowlisted IP addresses for the
+      Autonomous Database.
     apexDetails: Output only. The details for the Oracle APEX Application
       Development.
     arePrimaryAllowlistedIpsUsed: Output only. This field indicates the status
@@ -799,63 +826,64 @@ class AutonomousDatabaseProperties(_messages.Message):
 
   actualUsedDataStorageSizeTb = _messages.FloatField(1)
   allocatedStorageSizeTb = _messages.FloatField(2)
-  apexDetails = _messages.MessageField('AutonomousDatabaseApex', 3)
-  arePrimaryAllowlistedIpsUsed = _messages.BooleanField(4)
-  autonomousContainerDatabaseId = _messages.StringField(5)
-  availableUpgradeVersions = _messages.StringField(6, repeated=True)
-  backupRetentionPeriodDays = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  characterSet = _messages.StringField(8)
-  computeCount = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
-  connectionStrings = _messages.MessageField('AutonomousDatabaseConnectionStrings', 10)
-  connectionUrls = _messages.MessageField('AutonomousDatabaseConnectionUrls', 11)
-  cpuCoreCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  customerContacts = _messages.MessageField('CustomerContact', 13, repeated=True)
-  dataGuardRoleChangedTime = _messages.StringField(14)
-  dataSafeState = _messages.EnumField('DataSafeStateValueValuesEnum', 15)
-  dataStorageSizeGb = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  dataStorageSizeTb = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  databaseManagementState = _messages.EnumField('DatabaseManagementStateValueValuesEnum', 18)
-  dbEdition = _messages.EnumField('DbEditionValueValuesEnum', 19)
-  dbVersion = _messages.StringField(20)
-  dbWorkload = _messages.EnumField('DbWorkloadValueValuesEnum', 21)
-  disasterRecoveryRoleChangedTime = _messages.StringField(22)
-  failedDataRecoveryDuration = _messages.StringField(23)
-  isAutoScalingEnabled = _messages.BooleanField(24)
-  isLocalDataGuardEnabled = _messages.BooleanField(25)
-  isStorageAutoScalingEnabled = _messages.BooleanField(26)
-  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 27)
-  lifecycleDetails = _messages.StringField(28)
-  localAdgAutoFailoverMaxDataLossLimit = _messages.IntegerField(29, variant=_messages.Variant.INT32)
-  localDisasterRecoveryType = _messages.EnumField('LocalDisasterRecoveryTypeValueValuesEnum', 30)
-  localStandbyDb = _messages.MessageField('AutonomousDatabaseStandbySummary', 31)
-  maintenanceBeginTime = _messages.StringField(32)
-  maintenanceEndTime = _messages.StringField(33)
-  maintenanceScheduleType = _messages.EnumField('MaintenanceScheduleTypeValueValuesEnum', 34)
-  memoryPerOracleComputeUnitGbs = _messages.IntegerField(35, variant=_messages.Variant.INT32)
-  memoryTableGbs = _messages.IntegerField(36, variant=_messages.Variant.INT32)
-  mtlsConnectionRequired = _messages.BooleanField(37)
-  nCharacterSet = _messages.StringField(38)
-  nextLongTermBackupTime = _messages.StringField(39)
-  ociUrl = _messages.StringField(40)
-  ocid = _messages.StringField(41)
-  openMode = _messages.EnumField('OpenModeValueValuesEnum', 42)
-  operationsInsightsState = _messages.EnumField('OperationsInsightsStateValueValuesEnum', 43)
-  peerDbIds = _messages.StringField(44, repeated=True)
-  permissionLevel = _messages.EnumField('PermissionLevelValueValuesEnum', 45)
-  privateEndpoint = _messages.StringField(46)
-  privateEndpointIp = _messages.StringField(47)
-  privateEndpointLabel = _messages.StringField(48)
-  refreshableMode = _messages.EnumField('RefreshableModeValueValuesEnum', 49)
-  refreshableState = _messages.EnumField('RefreshableStateValueValuesEnum', 50)
-  role = _messages.EnumField('RoleValueValuesEnum', 51)
-  scheduledOperationDetails = _messages.MessageField('ScheduledOperationDetails', 52, repeated=True)
-  secretId = _messages.StringField(53)
-  sqlWebDeveloperUrl = _messages.StringField(54)
-  state = _messages.EnumField('StateValueValuesEnum', 55)
-  supportedCloneRegions = _messages.StringField(56, repeated=True)
-  totalAutoBackupStorageSizeGbs = _messages.FloatField(57, variant=_messages.Variant.FLOAT)
-  usedDataStorageSizeTbs = _messages.IntegerField(58, variant=_messages.Variant.INT32)
-  vaultId = _messages.StringField(59)
+  allowlistedIps = _messages.StringField(3)
+  apexDetails = _messages.MessageField('AutonomousDatabaseApex', 4)
+  arePrimaryAllowlistedIpsUsed = _messages.BooleanField(5)
+  autonomousContainerDatabaseId = _messages.StringField(6)
+  availableUpgradeVersions = _messages.StringField(7, repeated=True)
+  backupRetentionPeriodDays = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  characterSet = _messages.StringField(9)
+  computeCount = _messages.FloatField(10, variant=_messages.Variant.FLOAT)
+  connectionStrings = _messages.MessageField('AutonomousDatabaseConnectionStrings', 11)
+  connectionUrls = _messages.MessageField('AutonomousDatabaseConnectionUrls', 12)
+  cpuCoreCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  customerContacts = _messages.MessageField('CustomerContact', 14, repeated=True)
+  dataGuardRoleChangedTime = _messages.StringField(15)
+  dataSafeState = _messages.EnumField('DataSafeStateValueValuesEnum', 16)
+  dataStorageSizeGb = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  dataStorageSizeTb = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  databaseManagementState = _messages.EnumField('DatabaseManagementStateValueValuesEnum', 19)
+  dbEdition = _messages.EnumField('DbEditionValueValuesEnum', 20)
+  dbVersion = _messages.StringField(21)
+  dbWorkload = _messages.EnumField('DbWorkloadValueValuesEnum', 22)
+  disasterRecoveryRoleChangedTime = _messages.StringField(23)
+  failedDataRecoveryDuration = _messages.StringField(24)
+  isAutoScalingEnabled = _messages.BooleanField(25)
+  isLocalDataGuardEnabled = _messages.BooleanField(26)
+  isStorageAutoScalingEnabled = _messages.BooleanField(27)
+  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 28)
+  lifecycleDetails = _messages.StringField(29)
+  localAdgAutoFailoverMaxDataLossLimit = _messages.IntegerField(30, variant=_messages.Variant.INT32)
+  localDisasterRecoveryType = _messages.EnumField('LocalDisasterRecoveryTypeValueValuesEnum', 31)
+  localStandbyDb = _messages.MessageField('AutonomousDatabaseStandbySummary', 32)
+  maintenanceBeginTime = _messages.StringField(33)
+  maintenanceEndTime = _messages.StringField(34)
+  maintenanceScheduleType = _messages.EnumField('MaintenanceScheduleTypeValueValuesEnum', 35)
+  memoryPerOracleComputeUnitGbs = _messages.IntegerField(36, variant=_messages.Variant.INT32)
+  memoryTableGbs = _messages.IntegerField(37, variant=_messages.Variant.INT32)
+  mtlsConnectionRequired = _messages.BooleanField(38)
+  nCharacterSet = _messages.StringField(39)
+  nextLongTermBackupTime = _messages.StringField(40)
+  ociUrl = _messages.StringField(41)
+  ocid = _messages.StringField(42)
+  openMode = _messages.EnumField('OpenModeValueValuesEnum', 43)
+  operationsInsightsState = _messages.EnumField('OperationsInsightsStateValueValuesEnum', 44)
+  peerDbIds = _messages.StringField(45, repeated=True)
+  permissionLevel = _messages.EnumField('PermissionLevelValueValuesEnum', 46)
+  privateEndpoint = _messages.StringField(47)
+  privateEndpointIp = _messages.StringField(48)
+  privateEndpointLabel = _messages.StringField(49)
+  refreshableMode = _messages.EnumField('RefreshableModeValueValuesEnum', 50)
+  refreshableState = _messages.EnumField('RefreshableStateValueValuesEnum', 51)
+  role = _messages.EnumField('RoleValueValuesEnum', 52)
+  scheduledOperationDetails = _messages.MessageField('ScheduledOperationDetails', 53, repeated=True)
+  secretId = _messages.StringField(54)
+  sqlWebDeveloperUrl = _messages.StringField(55)
+  state = _messages.EnumField('StateValueValuesEnum', 56)
+  supportedCloneRegions = _messages.StringField(57, repeated=True)
+  totalAutoBackupStorageSizeGbs = _messages.FloatField(58, variant=_messages.Variant.FLOAT)
+  usedDataStorageSizeTbs = _messages.IntegerField(59, variant=_messages.Variant.INT32)
+  vaultId = _messages.StringField(60)
 
 
 class AutonomousDatabaseStandbySummary(_messages.Message):

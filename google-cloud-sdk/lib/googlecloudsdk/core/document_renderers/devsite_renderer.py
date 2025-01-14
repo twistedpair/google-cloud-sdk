@@ -127,19 +127,15 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
       # Set self._fill to indicate that we need to close a section in
       # _Flush()
       self._fill = 2
-      if not self._lang:
-        self._out.write('<pre class="prettyprint lang-sh wrap-code">\n')
-      elif self._lang == 'pretty':
-        self._out.write('<pre class="prettyprint lang-sh wrap-code">\n')
-      else:
-        self._out.write(
-            '<pre class="prettyprint lang-{lang} wrap-code">\n'.format(
-                lang=self._lang
-            )
-        )
-    indent = len(line)
+
+      lang = self._lang or 'sh'  # Default to 'sh' if no language is specified
+      self._out.write(
+          '<pre class="prettyprint lang-{lang} wrap-code">\n'.format(lang=lang)
+      )
+
+    indent = len(line) - len(line.lstrip())
     line = line.lstrip()
-    indent -= len(line)
+
     command_pattern = re.compile(r'\A\$\s+')
     if command_pattern.match(line):
       self._in_command_block = True
@@ -151,7 +147,6 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
       else:
         self._whole_example += line
         self.FlushExample()
-
         self._in_command_block = False
     else:
       self._out.write(' ' * indent + line + '\n')

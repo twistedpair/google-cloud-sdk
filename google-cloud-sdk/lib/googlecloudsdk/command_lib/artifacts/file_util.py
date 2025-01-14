@@ -18,8 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
 import re
 
+from apitools.base.protorpclite import protojson
 from googlecloudsdk.api_lib.artifacts import exceptions
 from googlecloudsdk.api_lib.artifacts import filter_rewriter
 from googlecloudsdk.api_lib.util import common_args
@@ -66,6 +68,40 @@ def EscapeFileNameFromIDs(project_id, location_id, repo_id, file_id):
       filesId=
       file_id.replace("/", "%2F").replace("+", "%2B").replace("^", "%5E"),
   )
+
+
+def ConvertFileHashes(response, unused_args):
+  """Convert file hashes to hex strings."""
+
+  # File hashes are "bytes", and if it's returned directly, it will be
+  # automatically encoded with base64.
+  # We want to display them as hex strings instead.
+
+  # The returned file obj restricts the field type, so we can't simply update
+  # the "bytes" field to a "string" field.
+  # Convert it to a json object and then update the field as a workaround.
+  json_obj = json.loads(protojson.encode_message(response))
+
+  hashes = []
+  for h in response.hashes:
+    hashes.append({
+        "type": h.type,
+        "value": h.value.hex(),
+    })
+  if hashes:
+    json_obj["hashes"] = hashes
+
+  # Proto map fields are converted into type "AnnotationsValue" in the response,
+  # which contains a list of key-value pairs as "additionalProperties".
+  # We want to convert this back to a dict.
+  annotations = {}
+  if response.annotations:
+    for p in response.annotations.additionalProperties:
+      annotations[p.key] = p.value
+  if annotations:
+    json_obj["annotations"] = annotations
+
+  return json_obj
 
 
 def ListGenericFiles(args):

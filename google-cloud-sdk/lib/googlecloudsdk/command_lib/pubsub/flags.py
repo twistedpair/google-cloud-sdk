@@ -1408,6 +1408,32 @@ def AddTopicMessageStoragePolicyFlags(parser, is_update):
   )
 
 
+def AddMessageTransformsFlags(parser, is_update=False):
+  """Add flags for the Message Transforms.
+
+  Args:
+    parser: The argparse parser.
+    is_update: Whether the operation is for updating message transforms.
+  """
+  current_group = parser
+  if is_update:
+    mutex_group = parser.add_mutually_exclusive_group(hidden=True)
+    AddBooleanFlag(
+        parser=mutex_group,
+        flag_name='clear-message-transforms',
+        action='store_true',
+        help_text='If set, clears the message transforms field.',
+        hidden=True,
+    )
+    current_group = mutex_group
+  current_group.add_argument(
+      '--message-transforms-file',
+      type=str,
+      help='Path to YAML or JSON file containing message transforms.',
+      hidden=True,
+  )
+
+
 def ParseMessageBody(args):
   """Gets the message body from args.
 

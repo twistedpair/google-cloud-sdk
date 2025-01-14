@@ -698,3 +698,43 @@ def AddDestNetworkScope(parser, required=False):
           ' empty string to clear the field.'
       ),
   )
+
+
+def AddSrcSecureTags(parser, required=False, support_network_scopes=False):
+  """Adds a  source secure tag to this rule."""
+  help_text = (
+      'A list of instance secure tags indicating the set of instances on the'
+      ' network to which the rule applies if all other fields match. Either'
+      ' --src-ip-ranges or --src-secure-tags must be specified for ingress'
+      ' traffic. If both --src-ip-ranges and --src-secure-tags are specified,'
+      ' an inbound connection is allowed if either the range of the source'
+      ' matches --src-ip-ranges or the tag of the source matches'
+      ' --src-secure-tags. Secure Tags can be assigned to instances during'
+      ' instance creation.'
+  )
+  if support_network_scopes:
+    help_text += (
+        ' Secure tags cannot be specified if source network scope is INTERNET.'
+    )
+
+  parser.add_argument(
+      '--src-secure-tags',
+      type=arg_parsers.ArgList(),
+      metavar='SOURCE_SECURE_TAGS',
+      required=required,
+      help=help_text,
+  )
+
+
+def AddTargetSecureTags(parser, required=False):
+  """Adds a target secure tag to this rule."""
+  parser.add_argument(
+      '--target-secure-tags',
+      type=arg_parsers.ArgList(),
+      metavar='TARGET_SECURE_TAGS',
+      required=required,
+      help=(
+          'An optional, list of target secure tags with a name of the '
+          'format tagValues/ or full namespaced name'
+      ),
+  )

@@ -86,6 +86,20 @@ class CrossSiteNetwork(object):
         ),
     )
 
+  def _MakeDescribeRequestTuple(self):
+    """Make a tuple for cross site network describe request.
+
+    Returns:
+    Describe cross site network tuple that can be used in a request.
+    """
+    return (
+        self._client.crossSiteNetworks,
+        'Get',
+        self._messages.ComputeCrossSiteNetworksGetRequest(
+            project=self.ref.project, crossSiteNetwork=self.ref.Name()
+        ),
+    )
+
   def Create(
       self,
       description=None,
@@ -116,3 +130,17 @@ class CrossSiteNetwork(object):
       return self._compute_client.MakeRequests(requests)
     return requests
 
+  def Describe(self, only_generate_request=False):
+    """Describe a cross site network.
+
+    Args:
+      only_generate_request: only generate request, do not execute it.
+
+    Returns:
+    Describe cross site network tuple that can be used in a request.
+    """
+    requests = [self._MakeDescribeRequestTuple()]
+    if not only_generate_request:
+      resources = self._compute_client.MakeRequests(requests)
+      return resources[0]
+    return requests

@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "StorageClient",
           "rpcs": {
+            "BidiReadObject": {
+              "methods": [
+                "bidi_read_object"
+              ]
+            },
             "BidiWriteObject": {
               "methods": [
                 "bidi_write_object"
@@ -130,6 +135,11 @@
         "grpc-async": {
           "libraryClient": "StorageAsyncClient",
           "rpcs": {
+            "BidiReadObject": {
+              "methods": [
+                "bidi_read_object"
+              ]
+            },
             "BidiWriteObject": {
               "methods": [
                 "bidi_write_object"
@@ -250,6 +260,11 @@
         "rest": {
           "libraryClient": "StorageClient",
           "rpcs": {
+            "BidiReadObject": {
+              "methods": [
+                "bidi_read_object"
+              ]
+            },
             "BidiWriteObject": {
               "methods": [
                 "bidi_write_object"

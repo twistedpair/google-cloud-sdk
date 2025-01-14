@@ -118,10 +118,7 @@ class BillingView(_messages.Message):
 
   Fields:
     reportRequests: Billing requests to be reported for
-      cloud.eventstream.v2.ResourceEvent Each request contains billing
-      operations to be reported under a service name. See go/billing-view-
-      construction for documentation on constructing billing view report
-      requests.
+      cloud.eventstream.v2.ResourceEvent
   """
 
   reportRequests = _messages.MessageField('GoogleApiServicecontrolV1ReportRequest', 1, repeated=True)
@@ -709,14 +706,14 @@ class GoogleApiServicecontrolV1Attributes(_messages.Message):
       to 128 bytes long. The value can be a string up to 256 bytes, a signed
       64-bit integer, or the Boolean values `true` and `false`. For example:
       "/instance_id": "my-instance" "/http/user_agent": ""
-      "/http/request_bytes": 300 "abc.com/myattribute": true
+      "/http/request_bytes": 300 "example.com/myattribute": true
 
   Fields:
     attributeMap: The set of attributes. Each attribute's key can be up to 128
       bytes long. The value can be a string up to 256 bytes, a signed 64-bit
       integer, or the Boolean values `true` and `false`. For example:
       "/instance_id": "my-instance" "/http/user_agent": ""
-      "/http/request_bytes": 300 "abc.com/myattribute": true
+      "/http/request_bytes": 300 "example.com/myattribute": true
     droppedAttributesCount: The number of attributes that were discarded.
       Attributes can be discarded because their keys are too long or because
       there are too many attributes. If this value is 0 then all attributes
@@ -729,7 +726,7 @@ class GoogleApiServicecontrolV1Attributes(_messages.Message):
     long. The value can be a string up to 256 bytes, a signed 64-bit integer,
     or the Boolean values `true` and `false`. For example: "/instance_id":
     "my-instance" "/http/user_agent": "" "/http/request_bytes": 300
-    "abc.com/myattribute": true
+    "example.com/myattribute": true
 
     Messages:
       AdditionalProperty: An additional property for a AttributeMapValue
@@ -862,7 +859,7 @@ class GoogleApiServicecontrolV1HttpRequest(_messages.Message):
       "websocket"
     referer: The referer URL of the request, as defined in [HTTP/1.1 Header
       Field
-      Definitions](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
+      Definitions](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
     remoteIp: The IP address (IPv4 or IPv6) of the client that issued the HTTP
       request. Examples: `"192.168.1.1"`, `"FE80::0202:B3FF:FE1E:8329"`.
     requestMethod: The request method. Examples: `"GET"`, `"HEAD"`, `"PUT"`,

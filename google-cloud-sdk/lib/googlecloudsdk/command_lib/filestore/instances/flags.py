@@ -377,7 +377,8 @@ def AddNetworkArg(parser):
         overlap with either existing subnets or assigned IP address ranges for
         other Cloud Filestore instances in the selected VPC network.
         *connect-mode*::: Network connection mode used by instances.
-        CONNECT_MODE must be one of: DIRECT_PEERING or PRIVATE_SERVICE_ACCESS.
+        CONNECT_MODE must be one of: DIRECT_PEERING, PRIVATE_SERVICE_ACCESS or
+        PRIVATE_SERVICE_CONNECT.
   """
 
   parser.add_argument(

@@ -1297,10 +1297,10 @@ class Instance(_messages.Message):
       and-managing#retrieving_tag_value
 
   Fields:
-    configurablePerformanceEnabled: Output only. Indicates whether this
-      instance's performance is configurable. If enabled, adjust it using the
-      'performance_config' field.
     createTime: Output only. The time when the instance was created.
+    customPerformanceSupported: Output only. Indicates whether this instance
+      supports configuring its performance. If true, the user can configure
+      the instance's performance by using the 'performance_config' field.
     deletionProtectionEnabled: Optional. Indicates whether the instance is
       protected against deletion.
     deletionProtectionReason: Optional. The reason for enabling deletion
@@ -1488,8 +1488,8 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  configurablePerformanceEnabled = _messages.BooleanField(1)
-  createTime = _messages.StringField(2)
+  createTime = _messages.StringField(1)
+  customPerformanceSupported = _messages.BooleanField(2)
   deletionProtectionEnabled = _messages.BooleanField(3)
   deletionProtectionReason = _messages.StringField(4)
   description = _messages.StringField(5)
@@ -2074,6 +2074,7 @@ class PerformanceLimits(_messages.Message):
   performance configuration.
 
   Fields:
+    maxIops: Output only. The max IOPS.
     maxReadIops: Output only. The max read IOPS.
     maxReadThroughputBps: Output only. The max read throughput in bytes per
       second.
@@ -2082,10 +2083,11 @@ class PerformanceLimits(_messages.Message):
       second.
   """
 
-  maxReadIops = _messages.IntegerField(1)
-  maxReadThroughputBps = _messages.IntegerField(2)
-  maxWriteIops = _messages.IntegerField(3)
-  maxWriteThroughputBps = _messages.IntegerField(4)
+  maxIops = _messages.IntegerField(1)
+  maxReadIops = _messages.IntegerField(2)
+  maxReadThroughputBps = _messages.IntegerField(3)
+  maxWriteIops = _messages.IntegerField(4)
+  maxWriteThroughputBps = _messages.IntegerField(5)
 
 
 class PromoteReplicaRequest(_messages.Message):

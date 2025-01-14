@@ -2705,6 +2705,39 @@ class CustomImageConfig(_messages.Message):
   imageProject = _messages.StringField(3)
 
 
+class DNSAlias(_messages.Message):
+  r"""DNSAlias describes an alternate hostname for a cluster.
+
+  Enums:
+    TypeValueValuesEnum: The type of the alias.
+
+  Fields:
+    hostname: The hostname for the alias.
+    permissionResource: If set, overrides the resource to check for IAM
+      permissions against. Intended only for use by Multi-Tenant clusters.
+      permission_resource should be the name of a cluster resource:
+      projects/my-project/locations/un-moon1/clusters/tenant-123abc.
+    type: The type of the alias.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of the alias.
+
+    Values:
+      DNS_ALIAS_TYPE_UNSPECIFIED: Default value.
+      STANDARD: No changes from the default behavior.
+      TENANT: The view of the cluster should be restricted to a tenant, with
+        the tenant derived from the hostname.
+    """
+    DNS_ALIAS_TYPE_UNSPECIFIED = 0
+    STANDARD = 1
+    TENANT = 2
+
+  hostname = _messages.StringField(1)
+  permissionResource = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
 class DNSConfig(_messages.Message):
   r"""DNSConfig contains the desired set of options for configuring
   clusterDNS.
@@ -2772,6 +2805,8 @@ class DNSEndpointConfig(_messages.Message):
     allowExternalTraffic: Controls whether user traffic is allowed over this
       endpoint. Note that GCP-managed services may still use the endpoint even
       if this is false.
+    dnsAliases: Alternate hostnames for the cluster. The default hostname is
+      not included in this list.
     endpoint: Output only. The cluster's DNS endpoint configuration. A DNS
       format address. This is accessible from the public internet. Ex: uid.us-
       central1.gke.goog. Always present, but the behavior may change according
@@ -2779,7 +2814,8 @@ class DNSEndpointConfig(_messages.Message):
   """
 
   allowExternalTraffic = _messages.BooleanField(1)
-  endpoint = _messages.StringField(2)
+  dnsAliases = _messages.MessageField('DNSAlias', 2, repeated=True)
+  endpoint = _messages.StringField(3)
 
 
 class DailyMaintenanceWindow(_messages.Message):

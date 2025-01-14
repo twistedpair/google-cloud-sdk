@@ -166,10 +166,10 @@ class Configs:
 
     if args.allowed_ports:
       for port_range in args.allowed_ports:
-        desired_allowed_ports = self.messages.PortRange()
+        desired_port_range = self.messages.PortRange()
         for key, value in port_range.items():
-          setattr(desired_allowed_ports, key, value)
-        config.allowedPorts.append(desired_allowed_ports)
+          setattr(desired_port_range, key, value)
+        config.allowedPorts.append(desired_port_range)
 
     # Persistent directory
     pd = self.messages.PersistentDirectory()
@@ -184,10 +184,11 @@ class Configs:
       )
 
     pd.gcePd = self.messages.GceRegionalPersistentDisk(
-        sizeGb=args.pd_disk_size,
-        fsType='ext4',
+        sizeGb=0 if args.pd_source_snapshot else args.pd_disk_size,
+        fsType='' if args.pd_source_snapshot else 'ext4',
         diskType=args.pd_disk_type,
         reclaimPolicy=reclaim_policy,
+        sourceSnapshot=args.pd_source_snapshot,
     )
     config.persistentDirectories.append(pd)
 
@@ -304,6 +305,10 @@ class Configs:
 
     config = self.messages.WorkstationConfig()
     config.name = config_name
+    get_req = self.messages.WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsGetRequest(
+        name=config_name
+    )
+    old_config = self._service.Get(get_req)
     update_mask = []
 
     if args.IsSpecified('idle_timeout'):
@@ -484,11 +489,13 @@ class Configs:
         config.host.gceInstance.boostConfigs.append(desired_boost_config)
       update_mask.append('host.gce_instance.boost_configs')
 
-    if args.allowed_ports:
+    if args.IsSpecified('allowed_ports'):
+      config.allowedPorts = []
       for port_range in args.allowed_ports:
-        desired_allowed_ports = self.messages.PortRange()
+        desired_port_range = self.messages.PortRange()
         for key, value in port_range.items():
-          setattr(desired_allowed_ports, key, value)
+          setattr(desired_port_range, key, value)
+        config.allowedPorts.append(desired_port_range)
       update_mask.append('allowed_ports')
 
     # Container
@@ -528,6 +535,18 @@ class Configs:
     if args.IsSpecified('container_run_as_user'):
       config.container.runAsUser = args.container_run_as_user
       update_mask.append('container.run_as_user')
+
+    if args.IsSpecified('pd_source_snapshot'):
+      if not old_config.persistentDirectories:
+        log.error('Cannot add persistent directories in update.')
+        return
+      config.persistentDirectories = old_config.persistentDirectories
+      config.persistentDirectories[0].gcePd.sourceSnapshot = (
+          args.pd_source_snapshot
+      )
+      config.persistentDirectories[0].gcePd.sizeGb = 0
+      config.persistentDirectories[0].gcePd.fsType = ''
+      update_mask.append('persistent_directories')
 
     if args.IsSpecified('vm_tags'):
       tags_val = self.messages.GceInstance.VmTagsValue()

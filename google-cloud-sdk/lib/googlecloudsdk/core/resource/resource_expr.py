@@ -124,6 +124,14 @@ def _MatchOneWordInText(backend, key, op, warned_attribute, value, pattern):
     if operand == '*' and op == ':':
       return False
     text = 'null'
+  elif operand and isinstance(value, times.datetime.datetime):
+    try:
+      tzinfo = times.LOCAL if value.tzinfo else None
+      if value == times.ParseDateTime(operand, tzinfo=tzinfo):
+        return True
+    except (ValueError, times.DateTimeSyntaxError, times.DateTimeValueError):
+      pass
+    text = NormalizeForSearch(value, html=True)
   else:
     text = NormalizeForSearch(value, html=True)
 

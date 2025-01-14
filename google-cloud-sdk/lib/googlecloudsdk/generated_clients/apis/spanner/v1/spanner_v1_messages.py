@@ -1256,6 +1256,30 @@ class Database(_messages.Message):
   versionRetentionPeriod = _messages.StringField(13)
 
 
+class DatabaseMoveConfig(_messages.Message):
+  r"""The configuration for each database in the target instance
+  configuration.
+
+  Fields:
+    databaseId: Required. The unique identifier of the database resource in
+      the Instance. For example if the database uri is
+      projects/foo/instances/bar/databases/baz, the id to supply here is baz.
+    encryptionConfig: Optional. Encryption configuration to be used for the
+      database in target configuration. Should be specified for every database
+      which currently uses CMEK encryption. If a database currently uses
+      GOOGLE_MANAGED encryption and a target encryption config is not
+      specified, it defaults to GOOGLE_MANAGED. If a database currently uses
+      Google-managed encryption and a target encryption config is specified,
+      it is migrated to CMEK encryption. If a database currently uses CMEK
+      encryption, a target encryption config must be specified. You cannot
+      move a CMEK database to a Google-managed encryption database by
+      MoveInstance.
+  """
+
+  databaseId = _messages.StringField(1)
+  encryptionConfig = _messages.MessageField('InstanceEncryptionConfig', 2)
+
+
 class DatabaseRole(_messages.Message):
   r"""A Cloud Spanner database role.
 
@@ -2562,6 +2586,37 @@ class InstanceConfig(_messages.Message):
   storageLimitPerProcessingUnit = _messages.IntegerField(15)
 
 
+class InstanceEncryptionConfig(_messages.Message):
+  r"""Encryption configuration for a Cloud Spanner database.
+
+  Fields:
+    kmsKeyName: Optional. This field is maintained for backwards
+      compatibility. For new callers, we recommend using `kms_key_names` to
+      specify the KMS key. `kms_key_name` should only be used if the location
+      of the KMS key matches the database instance's configuration (location)
+      exactly. E.g. The KMS location is in us-central1 or nam3 and the
+      database instance is also in us-central1 or nam3. The Cloud KMS key to
+      be used for encrypting and decrypting the database. Values are of the
+      form `projects//locations//keyRings//cryptoKeys/`.
+    kmsKeyNames: Optional. Specifies the KMS configuration for one or more
+      keys used to encrypt the database. Values are of the form
+      `projects//locations//keyRings//cryptoKeys/`. The keys referenced by
+      `kms_key_names` must fully cover all regions of the database's instance
+      configuration. Some examples: * For regional (single-region) instance
+      configurations, specify a regional location KMS key. * For multi-region
+      instance configurations of type `GOOGLE_MANAGED`, either specify a
+      multi-region location KMS key or multiple regional location KMS keys
+      that cover all regions in the instance configuration. * For an instance
+      configuration of type `USER_MANAGED`, specify only regional location KMS
+      keys to cover each region in the instance configuration. Multi-region
+      location KMS keys aren't supported for `USER_MANAGED` type instance
+      configurations.
+  """
+
+  kmsKeyName = _messages.StringField(1)
+  kmsKeyNames = _messages.StringField(2, repeated=True)
+
+
 class InstanceOperationProgress(_messages.Message):
   r"""Encapsulates progress related information for a Cloud Spanner long
   running instance operations.
@@ -3239,9 +3294,12 @@ class MoveInstanceRequest(_messages.Message):
   Fields:
     targetConfig: Required. The target instance configuration where to move
       the instance. Values are of the form `projects//instanceConfigs/`.
+    targetDatabaseMoveConfigs: Optional. The configuration for each database
+      in the target instance configuration.
   """
 
   targetConfig = _messages.StringField(1)
+  targetDatabaseMoveConfigs = _messages.MessageField('DatabaseMoveConfig', 2, repeated=True)
 
 
 class MultiplexedSessionPrecommitToken(_messages.Message):

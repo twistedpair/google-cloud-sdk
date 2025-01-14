@@ -232,6 +232,61 @@ class BigTableIODetails(_messages.Message):
   tableId = _messages.StringField(3)
 
 
+class BoundedTrie(_messages.Message):
+  r"""The message type used for encoding metrics of type bounded trie.
+
+  Fields:
+    bound: The maximum number of elements to store before truncation.
+    root: A compact representation of all the elements in this trie.
+    singleton: A more efficient representation for metrics consisting of a
+      single value.
+  """
+
+  bound = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  root = _messages.MessageField('BoundedTrieNode', 2)
+  singleton = _messages.StringField(3, repeated=True)
+
+
+class BoundedTrieNode(_messages.Message):
+  r"""A single node in a BoundedTrie.
+
+  Messages:
+    ChildrenValue: Children of this node. Must be empty if truncated is true.
+
+  Fields:
+    children: Children of this node. Must be empty if truncated is true.
+    truncated: Whether this node has been truncated. A truncated leaf
+      represents possibly many children with the same prefix.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ChildrenValue(_messages.Message):
+    r"""Children of this node. Must be empty if truncated is true.
+
+    Messages:
+      AdditionalProperty: An additional property for a ChildrenValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ChildrenValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ChildrenValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A BoundedTrieNode attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('BoundedTrieNode', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  children = _messages.MessageField('ChildrenValue', 1)
+  truncated = _messages.BooleanField(2)
+
+
 class BucketOptions(_messages.Message):
   r"""`BucketOptions` describes the bucket boundaries used in the histogram.
 
@@ -514,10 +569,11 @@ class CounterStructuredNameAndMetadata(_messages.Message):
 
 
 class CounterUpdate(_messages.Message):
-  r"""An update to a Counter sent from a worker.
+  r"""An update to a Counter sent from a worker. Next ID: 17
 
   Fields:
     boolean: Boolean value for And, Or.
+    boundedTrie: Bounded trie data
     cumulative: True if this counter is reported as the total cumulative
       aggregate value accumulated since the worker started working on this
       WorkItem. By default this is false, indicating that this counter is
@@ -541,20 +597,21 @@ class CounterUpdate(_messages.Message):
   """
 
   boolean = _messages.BooleanField(1)
-  cumulative = _messages.BooleanField(2)
-  distribution = _messages.MessageField('DistributionUpdate', 3)
-  floatingPoint = _messages.FloatField(4)
-  floatingPointList = _messages.MessageField('FloatingPointList', 5)
-  floatingPointMean = _messages.MessageField('FloatingPointMean', 6)
-  integer = _messages.MessageField('SplitInt64', 7)
-  integerGauge = _messages.MessageField('IntegerGauge', 8)
-  integerList = _messages.MessageField('IntegerList', 9)
-  integerMean = _messages.MessageField('IntegerMean', 10)
-  internal = _messages.MessageField('extra_types.JsonValue', 11)
-  nameAndKind = _messages.MessageField('NameAndKind', 12)
-  shortId = _messages.IntegerField(13)
-  stringList = _messages.MessageField('StringList', 14)
-  structuredNameAndMetadata = _messages.MessageField('CounterStructuredNameAndMetadata', 15)
+  boundedTrie = _messages.MessageField('BoundedTrie', 2)
+  cumulative = _messages.BooleanField(3)
+  distribution = _messages.MessageField('DistributionUpdate', 4)
+  floatingPoint = _messages.FloatField(5)
+  floatingPointList = _messages.MessageField('FloatingPointList', 6)
+  floatingPointMean = _messages.MessageField('FloatingPointMean', 7)
+  integer = _messages.MessageField('SplitInt64', 8)
+  integerGauge = _messages.MessageField('IntegerGauge', 9)
+  integerList = _messages.MessageField('IntegerList', 10)
+  integerMean = _messages.MessageField('IntegerMean', 11)
+  internal = _messages.MessageField('extra_types.JsonValue', 12)
+  nameAndKind = _messages.MessageField('NameAndKind', 13)
+  shortId = _messages.IntegerField(14)
+  stringList = _messages.MessageField('StringList', 15)
+  structuredNameAndMetadata = _messages.MessageField('CounterStructuredNameAndMetadata', 16)
 
 
 class CreateJobFromTemplateRequest(_messages.Message):
@@ -4849,7 +4906,7 @@ class MetricStructuredName(_messages.Message):
 
 
 class MetricUpdate(_messages.Message):
-  r"""Describes the state of a metric.
+  r"""Describes the state of a metric. Next ID: 14
 
   Fields:
     cumulative: True if this metric is reported as the total cumulative
@@ -4881,8 +4938,10 @@ class MetricUpdate(_messages.Message):
       Double, and Boolean.
     set: Worker-computed aggregate value for the "Set" aggregation kind. The
       only possible value type is a list of Values whose type can be Long,
-      Double, or String, according to the metric's type. All Values in the
-      list must be of the same type.
+      Double, String, or BoundedTrie according to the metric's type. All
+      Values in the list must be of the same type.
+    trie: Worker-computed aggregate value for the "Trie" aggregation kind. The
+      only possible value type is a BoundedTrieNode.
     updateTime: Timestamp associated with the metric value. Optional when
       workers are reporting work progress; it will be filled in responses from
       the metrics API.
@@ -4898,7 +4957,8 @@ class MetricUpdate(_messages.Message):
   name = _messages.MessageField('MetricStructuredName', 8)
   scalar = _messages.MessageField('extra_types.JsonValue', 9)
   set = _messages.MessageField('extra_types.JsonValue', 10)
-  updateTime = _messages.StringField(11)
+  trie = _messages.MessageField('extra_types.JsonValue', 11)
+  updateTime = _messages.StringField(12)
 
 
 class MetricValue(_messages.Message):

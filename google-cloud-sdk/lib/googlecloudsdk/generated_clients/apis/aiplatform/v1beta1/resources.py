@@ -1169,6 +1169,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SERVERLESSRAYJOBS = (
+      'projects.locations.serverlessRayJobs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'serverlessRayJobs/{serverlessRayJobsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SOLVERS = (
       'projects.locations.solvers',
       'projects/{projectsId}/locations/{locationsId}/solvers/{solversId}',

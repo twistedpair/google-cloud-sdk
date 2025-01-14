@@ -994,6 +994,9 @@ class GoogleDevtoolsCloudbuildV1Artifacts(_messages.Message):
   completion of all build steps.
 
   Fields:
+    goModules: Optional. A list of Go modules to be uploaded to Artifact
+      Registry upon successful completion of all build steps. If any objects
+      fail to be pushed, the build is marked FAILURE.
     images: A list of images to be pushed upon the successful completion of
       all build steps. The images will be pushed using the builder service
       account's credentials. The digests of the pushed images will be stored
@@ -1023,11 +1026,12 @@ class GoogleDevtoolsCloudbuildV1Artifacts(_messages.Message):
       objects fail to be pushed, the build is marked FAILURE.
   """
 
-  images = _messages.StringField(1, repeated=True)
-  mavenArtifacts = _messages.MessageField('GoogleDevtoolsCloudbuildV1MavenArtifact', 2, repeated=True)
-  npmPackages = _messages.MessageField('GoogleDevtoolsCloudbuildV1NpmPackage', 3, repeated=True)
-  objects = _messages.MessageField('GoogleDevtoolsCloudbuildV1ArtifactObjects', 4)
-  pythonPackages = _messages.MessageField('GoogleDevtoolsCloudbuildV1PythonPackage', 5, repeated=True)
+  goModules = _messages.MessageField('GoogleDevtoolsCloudbuildV1GoModule', 1, repeated=True)
+  images = _messages.StringField(2, repeated=True)
+  mavenArtifacts = _messages.MessageField('GoogleDevtoolsCloudbuildV1MavenArtifact', 3, repeated=True)
+  npmPackages = _messages.MessageField('GoogleDevtoolsCloudbuildV1NpmPackage', 4, repeated=True)
+  objects = _messages.MessageField('GoogleDevtoolsCloudbuildV1ArtifactObjects', 5)
+  pythonPackages = _messages.MessageField('GoogleDevtoolsCloudbuildV1PythonPackage', 6, repeated=True)
 
 
 class GoogleDevtoolsCloudbuildV1Build(_messages.Message):
@@ -1438,12 +1442,15 @@ class GoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message):
       NONE: No hash requested.
       SHA256: Use a sha256 hash.
       MD5: Use a md5 hash.
+      GO_MODULE_H1: Dirhash of a Go module's source code which is then hex-
+        encoded.
       SHA512: Use a sha512 hash.
     """
     NONE = 0
     SHA256 = 1
     MD5 = 2
-    SHA512 = 3
+    GO_MODULE_H1 = 3
+    SHA512 = 4
 
   class SubstitutionOptionValueValuesEnum(_messages.Enum):
     r"""Option to specify behavior when there is an error in the substitution
@@ -1735,6 +1742,37 @@ class GoogleDevtoolsCloudbuildV1GitSource(_messages.Message):
   url = _messages.StringField(3)
 
 
+class GoogleDevtoolsCloudbuildV1GoModule(_messages.Message):
+  r"""Go module to upload to Artifact Registry upon successful completion of
+  all build steps. A module refers to all dependencies in a go.mod file.
+
+  Fields:
+    modulePath: Optional. The Go module's "module path". e.g.
+      example.com/foo/v2
+    moduleVersion: Optional. The Go module's semantic version in the form
+      vX.Y.Z. e.g. v0.1.1 Pre-release identifiers can also be added by
+      appending a dash and dot separated ASCII alphanumeric characters and
+      hyphens. e.g. v0.2.3-alpha.x.12m.5
+    repositoryLocation: Optional. Location of the Artifact Registry
+      repository. i.e. us-east1 Defaults to the build's location.
+    repositoryName: Optional. Artifact Registry repository name. Specified Go
+      modules will be zipped and uploaded to Artifact Registry with this
+      location as a prefix. e.g. my-go-repo
+    repositoryProjectId: Optional. Project ID of the Artifact Registry
+      repository. Defaults to the build project.
+    sourcePath: Optional. Source path of the go.mod file in the build's
+      workspace. If not specified, this will default to the current directory.
+      e.g. ~/code/go/mypackage
+  """
+
+  modulePath = _messages.StringField(1)
+  moduleVersion = _messages.StringField(2)
+  repositoryLocation = _messages.StringField(3)
+  repositoryName = _messages.StringField(4)
+  repositoryProjectId = _messages.StringField(5)
+  sourcePath = _messages.StringField(6)
+
+
 class GoogleDevtoolsCloudbuildV1Hash(_messages.Message):
   r"""Container message for hash values.
 
@@ -1753,12 +1791,15 @@ class GoogleDevtoolsCloudbuildV1Hash(_messages.Message):
       NONE: No hash requested.
       SHA256: Use a sha256 hash.
       MD5: Use a md5 hash.
+      GO_MODULE_H1: Dirhash of a Go module's source code which is then hex-
+        encoded.
       SHA512: Use a sha512 hash.
     """
     NONE = 0
     SHA256 = 1
     MD5 = 2
-    SHA512 = 3
+    GO_MODULE_H1 = 3
+    SHA512 = 4
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
   value = _messages.BytesField(2)
@@ -1989,6 +2030,8 @@ class GoogleDevtoolsCloudbuildV1Results(_messages.Message):
       produce this output by writing to `$BUILDER_OUTPUT/output`. Only the
       first 50KB of data is stored. Note that the `$BUILDER_OUTPUT` variable
       is read-only and can't be substituted.
+    goModules: Optional. Go module artifacts uploaded to Artifact Registry at
+      the end of the build.
     images: Container images that were built as a part of the build.
     mavenArtifacts: Maven artifacts uploaded to Artifact Registry at the end
       of the build.
@@ -2004,11 +2047,12 @@ class GoogleDevtoolsCloudbuildV1Results(_messages.Message):
   artifactTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 2)
   buildStepImages = _messages.StringField(3, repeated=True)
   buildStepOutputs = _messages.BytesField(4, repeated=True)
-  images = _messages.MessageField('GoogleDevtoolsCloudbuildV1BuiltImage', 5, repeated=True)
-  mavenArtifacts = _messages.MessageField('GoogleDevtoolsCloudbuildV1UploadedMavenArtifact', 6, repeated=True)
-  npmPackages = _messages.MessageField('GoogleDevtoolsCloudbuildV1UploadedNpmPackage', 7, repeated=True)
-  numArtifacts = _messages.IntegerField(8)
-  pythonPackages = _messages.MessageField('GoogleDevtoolsCloudbuildV1UploadedPythonPackage', 9, repeated=True)
+  goModules = _messages.MessageField('GoogleDevtoolsCloudbuildV1UploadedGoModule', 5, repeated=True)
+  images = _messages.MessageField('GoogleDevtoolsCloudbuildV1BuiltImage', 6, repeated=True)
+  mavenArtifacts = _messages.MessageField('GoogleDevtoolsCloudbuildV1UploadedMavenArtifact', 7, repeated=True)
+  npmPackages = _messages.MessageField('GoogleDevtoolsCloudbuildV1UploadedNpmPackage', 8, repeated=True)
+  numArtifacts = _messages.IntegerField(9)
+  pythonPackages = _messages.MessageField('GoogleDevtoolsCloudbuildV1UploadedPythonPackage', 10, repeated=True)
 
 
 class GoogleDevtoolsCloudbuildV1Secret(_messages.Message):
@@ -2268,6 +2312,22 @@ class GoogleDevtoolsCloudbuildV1TimeSpan(_messages.Message):
 
   endTime = _messages.StringField(1)
   startTime = _messages.StringField(2)
+
+
+class GoogleDevtoolsCloudbuildV1UploadedGoModule(_messages.Message):
+  r"""A Go module artifact uploaded to Artifact Registry using the GoModule
+  directive.
+
+  Fields:
+    fileHashes: Hash types and values of the Go Module Artifact.
+    pushTiming: Output only. Stores timing information for pushing the
+      specified artifact.
+    uri: URI of the uploaded artifact.
+  """
+
+  fileHashes = _messages.MessageField('GoogleDevtoolsCloudbuildV1FileHashes', 1)
+  pushTiming = _messages.MessageField('GoogleDevtoolsCloudbuildV1TimeSpan', 2)
+  uri = _messages.StringField(3)
 
 
 class GoogleDevtoolsCloudbuildV1UploadedMavenArtifact(_messages.Message):

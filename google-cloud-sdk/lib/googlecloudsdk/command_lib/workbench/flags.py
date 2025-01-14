@@ -705,7 +705,6 @@ def AddUpdateInstanceFlags(parser):
       help='Tags to apply to this instance.',
       type=arg_parsers.ArgList(),
       metavar='TAGS',
-      hidden=True,
   )
 
 

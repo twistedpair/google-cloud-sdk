@@ -1394,10 +1394,10 @@ class Instance(_messages.Message):
       bytes). This capacity can be increased up to `max_capacity_gb` GB in
       multipliers of `capacity_step_size_gb` GB.
     capacityStepSizeGb: Output only. The increase/decrease capacity step size.
-    configurablePerformanceEnabled: Output only. Indicates whether this
-      instance's performance is configurable. If enabled, adjust it using the
-      'performance_config' field.
     createTime: Output only. The time when the instance was created.
+    customPerformanceSupported: Output only. Indicates whether this instance
+      supports configuring its performance. If true, the user can configure
+      the instance's performance by using the 'performance_config' field.
     deletionProtectionEnabled: Optional. Indicates whether the instance is
       protected against deletion.
     deletionProtectionReason: Optional. The reason for enabling deletion
@@ -1596,8 +1596,8 @@ class Instance(_messages.Message):
 
   capacityGb = _messages.IntegerField(1)
   capacityStepSizeGb = _messages.IntegerField(2)
-  configurablePerformanceEnabled = _messages.BooleanField(3)
-  createTime = _messages.StringField(4)
+  createTime = _messages.StringField(3)
+  customPerformanceSupported = _messages.BooleanField(4)
   deletionProtectionEnabled = _messages.BooleanField(5)
   deletionProtectionReason = _messages.StringField(6)
   description = _messages.StringField(7)
@@ -1954,10 +1954,14 @@ class NetworkConfig(_messages.Message):
       PRIVATE_SERVICE_ACCESS: Connect to your Filestore instance using Private
         Service Access. Private services access provides an IP address range
         for multiple Google Cloud services, including Filestore.
+      PRIVATE_SERVICE_CONNECT: Connect to your Filestore instance using
+        Private Service Connect. A connection policy must exist in the region
+        for the VPC network and the google-cloud-filestore service class.
     """
     CONNECT_MODE_UNSPECIFIED = 0
     DIRECT_PEERING = 1
     PRIVATE_SERVICE_ACCESS = 2
+    PRIVATE_SERVICE_CONNECT = 3
 
   class ModesValueListEntryValuesEnum(_messages.Enum):
     r"""ModesValueListEntryValuesEnum enum type.
@@ -2241,6 +2245,7 @@ class PerformanceLimits(_messages.Message):
   performance configuration.
 
   Fields:
+    maxIops: Output only. The max IOPS.
     maxReadIops: Output only. The max read IOPS.
     maxReadThroughputBps: Output only. The max read throughput in bytes per
       second.
@@ -2249,10 +2254,11 @@ class PerformanceLimits(_messages.Message):
       second.
   """
 
-  maxReadIops = _messages.IntegerField(1)
-  maxReadThroughputBps = _messages.IntegerField(2)
-  maxWriteIops = _messages.IntegerField(3)
-  maxWriteThroughputBps = _messages.IntegerField(4)
+  maxIops = _messages.IntegerField(1)
+  maxReadIops = _messages.IntegerField(2)
+  maxReadThroughputBps = _messages.IntegerField(3)
+  maxWriteIops = _messages.IntegerField(4)
+  maxWriteThroughputBps = _messages.IntegerField(5)
 
 
 class PromoteReplicaRequest(_messages.Message):

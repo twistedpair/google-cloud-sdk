@@ -1913,6 +1913,11 @@ class PostgresqlProfile(_messages.Message):
     password: Optional. Password for the PostgreSQL connection. Mutually
       exclusive with the `secret_manager_stored_password` field.
     port: Port for the PostgreSQL connection, default value is 5432.
+    sslConfig: Optional. SSL configuration for the PostgreSQL connection. In
+      case PostgresqlSslConfig is not set, the connection will use the default
+      SSL mode, which is `prefer` (i.e. this mode will only use encryption if
+      enabled from database side, otherwise will use unencrypted
+      communication)
     username: Required. Username for the PostgreSQL connection.
   """
 
@@ -1920,7 +1925,8 @@ class PostgresqlProfile(_messages.Message):
   hostname = _messages.StringField(2)
   password = _messages.StringField(3)
   port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  username = _messages.StringField(5)
+  sslConfig = _messages.MessageField('PostgresqlSslConfig', 5)
+  username = _messages.StringField(6)
 
 
 class PostgresqlRdbms(_messages.Message):
@@ -1965,6 +1971,22 @@ class PostgresqlSourceConfig(_messages.Message):
   maxConcurrentBackfillTasks = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   publication = _messages.StringField(4)
   replicationSlot = _messages.StringField(5)
+
+
+class PostgresqlSslConfig(_messages.Message):
+  r"""PostgreSQL SSL configuration information.
+
+  Fields:
+    serverAndClientVerification: If this field is set, the communication will
+      be encrypted with TLS encryption and both the server identity and the
+      client identity will be authenticated.
+    serverVerification:  If this field is set, the communication will be
+      encrypted with TLS encryption and the server identity will be
+      authenticated.
+  """
+
+  serverAndClientVerification = _messages.MessageField('ServerAndClientVerification', 1)
+  serverVerification = _messages.MessageField('ServerVerification', 2)
 
 
 class PostgresqlTable(_messages.Message):
@@ -2130,6 +2152,46 @@ class RunStreamRequest(_messages.Message):
 
   cdcStrategy = _messages.MessageField('CdcStrategy', 1)
   force = _messages.BooleanField(2)
+
+
+class ServerAndClientVerification(_messages.Message):
+  r"""Message represents the option where Datastream will enforce the
+  encryption and authenticate the server identity as well as the client
+  identity. ca_certificate, client_certificate and client_key must be set if
+  user selects this option.
+
+  Fields:
+    caCertificate: Required. Input only. PEM-encoded server root CA
+      certificate.
+    clientCertificate: Required. Input only. PEM-encoded certificate used by
+      the source database to authenticate the client identity (i.e., the
+      Datastream's identity). This certificate is signed by either a root
+      certificate trusted by the server or one or more intermediate
+      certificates (which is stored with the leaf certificate) to link the
+      this certificate to the trusted root certificate.
+    clientKey: Optional. Input only. PEM-encoded private key associated with
+      the client certificate. This value will be used during the SSL/TLS
+      handshake, allowing the PostgreSQL server to authenticate the client's
+      identity, i.e. identity of the Datastream. Mutually exclusive with the
+      `secret_manager_stored_client_key` field.
+  """
+
+  caCertificate = _messages.StringField(1)
+  clientCertificate = _messages.StringField(2)
+  clientKey = _messages.StringField(3)
+
+
+class ServerVerification(_messages.Message):
+  r"""Message represents the option where Datastream will enforce the
+  encryption and authenticate the server identity. ca_certificate must be set
+  if user selects this option.
+
+  Fields:
+    caCertificate: Required. Input only. PEM-encoded server root CA
+      certificate.
+  """
+
+  caCertificate = _messages.StringField(1)
 
 
 class SingleTargetDataset(_messages.Message):

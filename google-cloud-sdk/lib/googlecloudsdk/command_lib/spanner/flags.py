@@ -482,7 +482,6 @@ def Initiator(help_text):
 
 def AddCapacityArgsForInstance(
     require_all_autoscaling_args,
-    hide_autoscaling_args,
     parser,
     add_asymmetric_option_flag=False,
     asymmetric_options_group=False,
@@ -492,8 +491,11 @@ def AddCapacityArgsForInstance(
   Args:
     require_all_autoscaling_args: bool. If True, a complete autoscaling config
       is required.
-    hide_autoscaling_args: bool. If True, the autoscaling args will be hidden.
     parser: the argparse parser for the command.
+    add_asymmetric_option_flag: bool. If True, add the asymmetric autoscaling
+      option flag.
+    asymmetric_options_group: bool. If True, add the asymmetric autoscaling
+      options group.
   """
   capacity_parser = parser.add_argument_group(mutex=True, required=False)
 
@@ -503,7 +505,7 @@ def AddCapacityArgsForInstance(
 
   # Autoscaling.
   autoscaling_config_group_parser = capacity_parser.add_argument_group(
-      help='Autoscaling (Preview)', hidden=hide_autoscaling_args
+      help='Autoscaling'
   )
   AutoscalingHighPriorityCpuTarget(
       required=require_all_autoscaling_args
@@ -511,14 +513,17 @@ def AddCapacityArgsForInstance(
   AutoscalingStorageTarget(required=require_all_autoscaling_args).AddToParser(
       autoscaling_config_group_parser
   )
-  autoscaling_limits_group_parser = (
-      autoscaling_config_group_parser.add_argument_group(
-          mutex=True, required=require_all_autoscaling_args
-      )
+  autoscaling_limits_group_parser = autoscaling_config_group_parser.add_argument_group(
+      mutex=True,
+      required=require_all_autoscaling_args,
+      help=(
+          'Autoscaling limits can be defined in either nodes or processing'
+          ' units.'
+      ),
   )
   autoscaling_node_limits_group_parser = (
       autoscaling_limits_group_parser.add_argument_group(
-          help='Autoscaling limits in nodes'
+          help='Autoscaling limits in nodes:'
       )
   )
   AutoscalingMinNodes(required=require_all_autoscaling_args).AddToParser(
@@ -529,7 +534,7 @@ def AddCapacityArgsForInstance(
   )
   autoscaling_pu_limits_group_parser = (
       autoscaling_limits_group_parser.add_argument_group(
-          help='Autoscaling limits in processing units'
+          help='Autoscaling limits in processing units:'
       )
   )
   AutoscalingMinProcessingUnits(

@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.pubsub import utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import exceptions
@@ -35,7 +36,7 @@ CLEAR_BIGQUERY_CONFIG_VALUE = 'clear'
 CLEAR_CLOUD_STORAGE_CONFIG_VALUE = 'clear'
 CLEAR_PUSH_NO_WRAPPER_CONFIG_VALUE = 'clear'
 CLEAR_PUBSUB_EXPORT_CONFIG_VALUE = 'clear'
-
+CLEAR_MESSAGE_TRANSFORMATIONS_VALUE = []
 
 class NoFieldsSpecifiedError(exceptions.Error):
   """Error when no fields were specified for a Patch operation."""
@@ -136,6 +137,7 @@ class SubscriptionsClient(object):
       cloud_storage_service_account_email=None,
       pubsub_export_topic=None,
       pubsub_export_topic_region=None,
+      message_transforms_file=None,
   ):
     """Creates a Subscription.
 
@@ -198,6 +200,8 @@ class SubscriptionsClient(object):
       pubsub_export_topic (str): The Pubsub topic to which to publish messages.
       pubsub_export_topic_region (str): The Cloud region to which to publish
         messages.
+      message_transforms_file (str): The file path to the JSON or YAML file
+        containing the message transforms.
 
     Returns:
       Subscription: the created subscription
@@ -245,6 +249,19 @@ class SubscriptionsClient(object):
             pubsub_export_topic, pubsub_export_topic_region
         ),
     )
+    if message_transforms_file:
+      try:
+        subscription.messageTransforms = utils.GetMessageTransformsFromFile(
+            self.messages.MessageTransform, message_transforms_file
+        )
+      except (
+          utils.MessageTransformsInvalidFormatError,
+          utils.MessageTransformsEmptyFileError,
+          utils.MessageTransformsMissingFileError,
+      ) as e:
+        e.args = (utils.GetErrorMessage(e),)
+        raise
+
     return self._service.Create(subscription)
 
   def Delete(self, subscription_ref):
@@ -601,6 +618,8 @@ class SubscriptionsClient(object):
       pubsub_export_topic=None,
       pubsub_export_topic_region=None,
       clear_pubsub_export_config=False,
+      message_transforms_file=None,
+      clear_message_transforms=False,
   ):
     """Updates a Subscription.
 
@@ -670,6 +689,10 @@ class SubscriptionsClient(object):
         messages.
       clear_pubsub_export_config (bool): If set, clear the Pubsub export config
         from the subscription.
+      message_transforms_file (str): The file path to the JSON or YAML file
+        containing the message transforms.
+      clear_message_transforms (bool): If set, clears all message transforms
+        from the subscription.
 
     Returns:
       Subscription: The updated subscription.
@@ -729,6 +752,26 @@ class SubscriptionsClient(object):
     else:
       push_config_no_wrapper = None
 
+    if message_transforms_file:
+      try:
+        message_transforms = utils.GetMessageTransformsFromFile(
+            self.messages.MessageTransform, message_transforms_file
+        )
+      except (
+          utils.MessageTransformsInvalidFormatError,
+          utils.MessageTransformsEmptyFileError,
+          utils.MessageTransformsMissingFileError,
+      ) as e:
+        e.args = (utils.GetErrorMessage(e),)
+        raise
+    else:
+      message_transforms = None
+
+    if clear_message_transforms:
+      clear_messages = CLEAR_MESSAGE_TRANSFORMATIONS_VALUE
+    else:
+      clear_messages = None
+
     update_settings = [
         _SubscriptionUpdateSetting('ackDeadlineSeconds', ack_deadline),
         _SubscriptionUpdateSetting('pushConfig', push_config),
@@ -756,6 +799,8 @@ class SubscriptionsClient(object):
             'pushConfig.noWrapper', push_config_no_wrapper
         ),
         _SubscriptionUpdateSetting('pubsubExportConfig', pubsub_export_config),
+        _SubscriptionUpdateSetting('messageTransforms', message_transforms),
+        _SubscriptionUpdateSetting('messageTransforms', clear_messages),
     ]
     subscription = self.messages.Subscription(
         name=subscription_ref.RelativeName()

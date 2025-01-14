@@ -147,6 +147,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     self.projects_locations_reasoningEngines = self.ProjectsLocationsReasoningEnginesService(self)
     self.projects_locations_schedules_operations = self.ProjectsLocationsSchedulesOperationsService(self)
     self.projects_locations_schedules = self.ProjectsLocationsSchedulesService(self)
+    self.projects_locations_serverlessRayJobs = self.ProjectsLocationsServerlessRayJobsService(self)
     self.projects_locations_solvers_operations = self.ProjectsLocationsSolversOperationsService(self)
     self.projects_locations_solvers = self.ProjectsLocationsSolversService(self)
     self.projects_locations_specialistPools_operations = self.ProjectsLocationsSpecialistPoolsOperationsService(self)
@@ -16460,6 +16461,151 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1beta1ResumeScheduleRequest',
         request_type_name='AiplatformProjectsLocationsSchedulesResumeRequest',
         response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsServerlessRayJobsService(base_api.BaseApiService):
+    """Service class for the projects_locations_serverlessRayJobs resource."""
+
+    _NAME = 'projects_locations_serverlessRayJobs'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectsLocationsServerlessRayJobsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Cancels a ServerlessRayJob. Starts asynchronous cancellation on the ServerlessRayJob. Clients can use JobService.GetServerlessRayJob or other methods to check job cancellation status.
+
+      Args:
+        request: (AiplatformProjectsLocationsServerlessRayJobsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1CancelServerlessRayJobResponse) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/serverlessRayJobs/{serverlessRayJobsId}:cancel',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.serverlessRayJobs.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:cancel',
+        request_field='googleCloudAiplatformV1beta1CancelServerlessRayJobRequest',
+        request_type_name='AiplatformProjectsLocationsServerlessRayJobsCancelRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1CancelServerlessRayJobResponse',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a ServerlessRayJob.
+
+      Args:
+        request: (AiplatformProjectsLocationsServerlessRayJobsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ServerlessRayJob) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/serverlessRayJobs',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.serverlessRayJobs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/serverlessRayJobs',
+        request_field='googleCloudAiplatformV1beta1ServerlessRayJob',
+        request_type_name='AiplatformProjectsLocationsServerlessRayJobsCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ServerlessRayJob',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a ServerlessRayJob.
+
+      Args:
+        request: (AiplatformProjectsLocationsServerlessRayJobsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/serverlessRayJobs/{serverlessRayJobsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.serverlessRayJobs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsServerlessRayJobsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a ServerlessRayJob.
+
+      Args:
+        request: (AiplatformProjectsLocationsServerlessRayJobsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ServerlessRayJob) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/serverlessRayJobs/{serverlessRayJobsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.serverlessRayJobs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsServerlessRayJobsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ServerlessRayJob',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists ServerlessRayJobs in a Location.
+
+      Args:
+        request: (AiplatformProjectsLocationsServerlessRayJobsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListServerlessRayJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/serverlessRayJobs',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.serverlessRayJobs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/serverlessRayJobs',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsServerlessRayJobsListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListServerlessRayJobsResponse',
         supports_download=False,
     )
 

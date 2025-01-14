@@ -314,21 +314,41 @@ def AddSkipValidationFlag(parser):
   )
 
 
-def AddMigrationJobObjectsConfigFlag(parser):
+def AddMigrationJobObjectsConfigFlag(parser, is_sqlserver=False):
   """Adds migration job objects config flag group to the given parser."""
   sqlserver_homogeneous_migration_config = parser.add_group(
       'The migration job objects config.',
-      hidden=True,
       mutex=True,
   )
-  AddDatabasesFilterFlag(sqlserver_homogeneous_migration_config)
+  if is_sqlserver:
+    AddDatabasesFilterFlagForSqlServer(sqlserver_homogeneous_migration_config)
+  else:
+    AddDatabasesFilterFlag(sqlserver_homogeneous_migration_config)
 
 
 def AddDatabasesFilterFlag(parser):
   """Adds a --databases-filter flag to the given parser."""
+  # TODO(b/365922318) : Add Postgres to Cloud SQL Postgres when it is supported.
   help_text = """\
     A list of databases to be migrated to the destination instance.
-    Provide databases as a comma separated list.
+    Provide databases as a comma separated list. This flag is used only for
+    Postgres to AlloyDB and SQL Server to Cloud
+    SQL SQL Server migrations.
+    """
+  parser.add_argument(
+      '--databases-filter',
+      metavar='databaseName',
+      type=arg_parsers.ArgList(min_length=1),
+      help=help_text,
+  )
+
+
+def AddDatabasesFilterFlagForSqlServer(parser):
+  """Adds a --databases-filter flag to the given parser."""
+  help_text = """\
+    A list of databases to be migrated to the destination instance.
+    Provide databases as a comma separated list. This flag is used only for
+    SQL Server to Cloud SQL SQL Server migrations.
     """
   parser.add_argument(
       '--databases-filter',
@@ -348,6 +368,20 @@ def AddSqlServerPromoteWhenReadyFlag(parser):
     """
   parser.add_argument(
       '--sqlserver-promote-when-ready',
+      action='store_true',
+      help=help_text,
+  )
+
+
+def AddRestartFailedObjectsFlag(parser):
+  """Adds a --restart-failed-objects flag to the given parser."""
+  # TODO(b/365922318) : Add Postgres to Cloud SQL Postgres when it is supported.
+  help_text = """\
+    Restart the failed objects in the migration job. This flag is used only for
+    Postgres to AlloyDB migrations.
+    """
+  parser.add_argument(
+      '--restart-failed-objects',
       action='store_true',
       help=help_text,
   )

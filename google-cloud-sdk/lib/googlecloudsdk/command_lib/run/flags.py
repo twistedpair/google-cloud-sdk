@@ -120,11 +120,11 @@ _SCALING_MODE_AUTOMATIC = 'automatic'
 _SCALING_MODE_MANUAL = 'manual'
 
 
-def _StripKeys(d):
+def StripKeys(d):
   return {k.strip(): v for k, v in d.items()}
 
 
-def _MapLStrip(seq):
+def MapLStrip(seq):
   return [elem.lstrip() for elem in seq]
 
 
@@ -2140,7 +2140,7 @@ def HasChanges(args, flags):
   return any(FlagIsExplicitlySet(args, flag) for flag in flags)
 
 
-def _HasEnvChanges(args):
+def HasEnvChanges(args):
   """True iff any of the env var flags are set."""
   env_flags = [
       'update_env_vars',
@@ -2172,7 +2172,7 @@ def _EnabledCloudSqlApiRequired(args):
   return HasChanges(args, instances_flags)
 
 
-def _HasLabelChanges(args):
+def HasLabelChanges(args):
   """True iff any of the label flags are set."""
   label_flags = ['labels', 'update_labels', 'clear_labels', 'remove_labels']
   return HasChanges(args, label_flags)
@@ -2212,7 +2212,7 @@ def _HasTrafficChanges(args):
   return HasChanges(args, traffic_flags) or _HasTrafficTagsChanges(args)
 
 
-def _HasInstanceSplitChanges(args):
+def HasInstanceSplitChanges(args):
   """True iff any of the instance split flags are set."""
   traffic_flags = ['to_revisions', 'to_latest']
   return HasChanges(args, traffic_flags)
@@ -2258,13 +2258,13 @@ def HasTopLevelContainerOverride(args):
 def _GetEnvChanges(args, **kwargs):
   """Return config_changes.EnvVarLiteralChanges for given args."""
   return config_changes.EnvVarLiteralChanges(
-      updates=_StripKeys(
+      updates=StripKeys(
           getattr(args, 'update_env_vars', None)
           or args.set_env_vars
           or args.env_vars_file
           or {}
       ),
-      removes=_MapLStrip(getattr(args, 'remove_env_vars', None) or []),
+      removes=MapLStrip(getattr(args, 'remove_env_vars', None) or []),
       clear_others=bool(
           args.set_env_vars or args.env_vars_file or args.clear_env_vars
       ),
@@ -2547,7 +2547,7 @@ def _GetSecretsChanges(args, container_name=None):
   volume_kwargs = {}
   env_kwargs = {}
 
-  updates = _StripKeys(
+  updates = StripKeys(
       getattr(args, 'update_secrets', None) or args.set_secrets or {}
   )
   volume_kwargs['updates'] = {
@@ -2561,7 +2561,7 @@ def _GetSecretsChanges(args, container_name=None):
       if not _IsVolumeMountKey(k)
   }
 
-  removes = _MapLStrip(getattr(args, 'remove_secrets', None) or [])
+  removes = MapLStrip(getattr(args, 'remove_secrets', None) or [])
   volume_kwargs['removes'] = [k for k in removes if _IsVolumeMountKey(k)]
   env_kwargs['removes'] = [k for k in removes if not _IsVolumeMountKey(k)]
 
@@ -2590,7 +2590,7 @@ def _GetConfigMapsChanges(args):
   volume_kwargs = {}
   env_kwargs = {}
 
-  updates = _StripKeys(
+  updates = StripKeys(
       getattr(args, 'update_config_maps', None) or args.set_config_maps or {}
   )
   volume_kwargs['updates'] = {
@@ -2600,7 +2600,7 @@ def _GetConfigMapsChanges(args):
       k: v for k, v in updates.items() if not _IsVolumeMountKey(k)
   }
 
-  removes = _MapLStrip(getattr(args, 'remove_config_maps', None) or [])
+  removes = MapLStrip(getattr(args, 'remove_config_maps', None) or [])
   volume_kwargs['removes'] = [k for k in removes if _IsVolumeMountKey(k)]
   env_kwargs['removes'] = [k for k in removes if not _IsVolumeMountKey(k)]
 
@@ -2805,7 +2805,7 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
   if hasattr(args, 'image') and args.image is not None:
     changes.append(config_changes.ImageChange(args.image))
 
-  if _HasEnvChanges(args):
+  if HasEnvChanges(args):
     changes.append(_GetEnvChanges(args))
 
   if _HasCloudSQLChanges(args):
@@ -2886,7 +2886,7 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
             service_account=args.service_account
         )
     )
-  if _HasLabelChanges(args):
+  if HasLabelChanges(args):
     additions = (
         args.labels
         if FlagIsExplicitlySet(args, 'labels')
@@ -3093,7 +3093,7 @@ def _GetContainerConfigurationChanges(container_args, container_name=None):
             container_args.image, container_name=container_name
         )
     )
-  if _HasEnvChanges(container_args):
+  if HasEnvChanges(container_args):
     changes.append(
         _GetEnvChanges(container_args, container_name=container_name)
     )
@@ -3374,15 +3374,15 @@ def GetExecutionOverridesChangesForValidation(args):
   if FlagIsExplicitlySet(args, 'update_env_vars'):
     changes.append(
         config_changes.EnvVarLiteralChanges(
-            updates=_StripKeys(getattr(args, 'update_env_vars', None) or {}),
+            updates=StripKeys(getattr(args, 'update_env_vars', None) or {}),
         )
     )
   if FlagIsExplicitlySet(args, 'containers'):
     for container_name, container_args in args.containers.items():
-      if _HasEnvChanges(container_args):
+      if HasEnvChanges(container_args):
         changes.append(
             config_changes.EnvVarLiteralChanges(
-                updates=_StripKeys(
+                updates=StripKeys(
                     getattr(container_args, 'update_env_vars', None) or {}
                 ),
                 container_name=container_name,
@@ -3425,7 +3425,7 @@ def GetWorkerConfigurationChanges(
 
   changes.extend(_GetConfigurationChanges(args, release_track=release_track))
   changes.extend(_GetWorkerScalingChanges(args))
-  if _HasInstanceSplitChanges(args):
+  if HasInstanceSplitChanges(args):
     changes.append(_GetInstanceSplitChanges(args))
   if 'no_promote' in args and args.no_promote:
     changes.append(config_changes.NoPromoteChange())

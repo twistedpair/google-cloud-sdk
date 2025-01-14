@@ -200,7 +200,7 @@ class ReplicationsClient(object):
     return self._adapter.ParseUpdatedReplicationConfig(
         replication_config, description=description, labels=labels,
         replication_schedule=replication_schedule,
-        cluster_location=cluster_location
+        cluster_location=cluster_location,
     )
 
   def UpdateReplication(
@@ -391,6 +391,11 @@ class ReplicationsAdapter(object):
         parameters.shareName = val
       elif key == 'description':
         parameters.description = val
+      elif key == 'tiering_policy':
+        parameters.tieringPolicy = self.messages.TieringPolicy(
+            tierAction=val['tier-action'],
+            coolingThresholdDays=val['cooling-threshold-days'],
+        )
       else:
         log.warning('The attribute {} is not recognized.'.format(key))
     replication.destinationVolumeParameters = parameters

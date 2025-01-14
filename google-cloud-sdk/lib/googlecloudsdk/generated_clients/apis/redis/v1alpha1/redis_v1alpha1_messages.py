@@ -2013,13 +2013,22 @@ class EncryptionInfo(_messages.Message):
       KMS_KEY_STATE_UNSPECIFIED: The default value. This value is unused.
       ENABLED: The KMS key is enabled and correctly configured.
       PERMISSION_DENIED: Permission denied on the KMS key.
-      DISABLED: The KMS key is disabled, destroyed, or scheduled to be
-        destroyed.
+      DISABLED: The KMS key is disabled.
+      DESTROYED: The KMS key is destroyed.
+      DESTROY_SCHEDULED: The KMS key is scheduled to be destroyed.
+      EKM_KEY_UNREACHABLE_DETECTED: The EKM key is unreachable.
+      BILLING_DISABLED: Billing is disabled for the project.
+      UNKNOWN_FAILURE: All other unknown failures.
     """
     KMS_KEY_STATE_UNSPECIFIED = 0
     ENABLED = 1
     PERMISSION_DENIED = 2
     DISABLED = 3
+    DESTROYED = 4
+    DESTROY_SCHEDULED = 5
+    EKM_KEY_UNREACHABLE_DETECTED = 6
+    BILLING_DISABLED = 7
+    UNKNOWN_FAILURE = 8
 
   encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 1)
   kmsKeyPrimaryState = _messages.EnumField('KmsKeyPrimaryStateValueValuesEnum', 2)

@@ -5623,7 +5623,7 @@ class SourceObjectConfig(_messages.Message):
   r"""Config for a single migration job object.
 
   Fields:
-    objectIdentifier: The object identifier.
+    objectIdentifier: Optional. The object identifier.
   """
 
   objectIdentifier = _messages.MessageField('SourceObjectIdentifier', 1)
@@ -5636,8 +5636,8 @@ class SourceObjectIdentifier(_messages.Message):
     TypeValueValuesEnum: Required. The type of the migration job object.
 
   Fields:
-    database: The database name. This will be required only if the object uses
-      a database name as part of its unique identifier.
+    database: Optional. The database name. This will be required only if the
+      object uses a database name as part of its unique identifier.
     type: Required. The type of the migration job object.
   """
 
@@ -5664,7 +5664,7 @@ class SourceObjectsConfig(_messages.Message):
       of the migration job.
 
   Fields:
-    objectConfigs: The list of the objects to be migrated.
+    objectConfigs: Optional. The list of the objects to be migrated.
     objectsSelectionType: Optional. The objects selection type of the
       migration job.
   """

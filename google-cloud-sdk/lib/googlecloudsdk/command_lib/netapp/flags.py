@@ -142,6 +142,12 @@ def GetCryptoKeyAttributeConfig():
   )
 
 
+def GetQuotaRuleAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      'quota_rule', 'The instance of the {resource}.'
+  )
+
+
 ## Resource Specs ##
 
 
@@ -308,6 +314,18 @@ def GetCryptoKeyResourceSpec():
       cryptoKeysId=GetCryptoKeyAttributeConfig()
   )
 
+
+def GetQuotaRuleResourceSpec():
+  return concepts.ResourceSpec(
+      constants.QUOTA_RULES_COLLECTION,
+      resource_name='quota_rule',
+      api_version=constants.BETA_API_VERSION,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=GetLocationAttributeConfig(),
+      volumesId=GetVolumeAttributeConfig(positional=False),
+      quotaRulesId=GetQuotaRuleAttributeConfig(),
+  )
+
 ## Presentation Specs ##
 
 
@@ -387,6 +405,15 @@ def GetBackupPresentationSpec(group_help):
       group_help,
       required=True,
       flag_name_overrides={'backup_vault': ''})
+
+
+def GetQuotaRulePresentationSpec(group_help):
+  return presentation_specs.ResourcePresentationSpec(
+      'quota_rule',
+      GetQuotaRuleResourceSpec(),
+      group_help,
+      required=True,
+      flag_name_overrides={'volume': ''})
 
 
 # TODO(b/290375665): Add more unit tests to test Backup Poicy

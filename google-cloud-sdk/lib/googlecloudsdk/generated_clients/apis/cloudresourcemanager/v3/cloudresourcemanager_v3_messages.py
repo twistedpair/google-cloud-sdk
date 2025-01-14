@@ -165,6 +165,16 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class BooleanValue(_messages.Message):
+  r"""A boolean value that is used to set a single boolean setting.
+
+  Fields:
+    value: Required. The boolean value.
+  """
+
+  value = _messages.BooleanField(1)
+
+
 class ClearSettingRequest(_messages.Message):
   r"""The request for ClearSetting.
 
@@ -1749,6 +1759,16 @@ class GetPolicyOptions(_messages.Message):
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class Int64Value(_messages.Message):
+  r"""An int64 value that is used to set a single int64 setting.
+
+  Fields:
+    value: Required. The int64 value.
+  """
+
+  value = _messages.IntegerField(1)
+
+
 class Lien(_messages.Message):
   r"""A Lien represents an encumbrance on the actions that can be performed on
   a resource.
@@ -2937,14 +2957,18 @@ class Value(_messages.Message):
   r"""The data in a setting value.
 
   Fields:
+    booleanValue: Defines this value as being a BooleanValue.
+    int64Value: Defines this value as being a Int64Value.
     stringMapValue: Defines this value as being a StringMap.
     stringSetValue: Defines this value as being a StringSet.
     stringValue: Defines this value as being a StringValue.
   """
 
-  stringMapValue = _messages.MessageField('StringMap', 1)
-  stringSetValue = _messages.MessageField('StringSet', 2)
-  stringValue = _messages.MessageField('StringValue', 3)
+  booleanValue = _messages.MessageField('BooleanValue', 1)
+  int64Value = _messages.MessageField('Int64Value', 2)
+  stringMapValue = _messages.MessageField('StringMap', 3)
+  stringSetValue = _messages.MessageField('StringSet', 4)
+  stringValue = _messages.MessageField('StringValue', 5)
 
 
 encoding.AddCustomJsonFieldMapping(

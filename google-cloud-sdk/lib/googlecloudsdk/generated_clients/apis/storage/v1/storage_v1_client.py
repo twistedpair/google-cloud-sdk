@@ -663,7 +663,7 @@ class StorageV1(base_api.BaseApiClient):
         request: (StorageBucketsRestoreRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (StorageBucketsRestoreResponse) The response message.
+        (Bucket) The response message.
       """
       config = self.GetMethodConfig('Restore')
       return self._RunMethod(
@@ -674,11 +674,11 @@ class StorageV1(base_api.BaseApiClient):
         method_id='storage.buckets.restore',
         ordered_params=['bucket', 'generation'],
         path_params=['bucket'],
-        query_params=['generation', 'userProject'],
+        query_params=['generation', 'projection', 'userProject'],
         relative_path='b/{bucket}/restore',
         request_field='',
         request_type_name='StorageBucketsRestoreRequest',
-        response_type_name='StorageBucketsRestoreResponse',
+        response_type_name='Bucket',
         supports_download=False,
     )
 
@@ -1804,6 +1804,32 @@ class StorageV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='StorageObjectsListRequest',
         response_type_name='Objects',
+        supports_download=False,
+    )
+
+    def Move(self, request, global_params=None):
+      r"""Moves the source object to the destination object in the same bucket.
+
+      Args:
+        request: (StorageObjectsMoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Object) The response message.
+      """
+      config = self.GetMethodConfig('Move')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Move.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='storage.objects.move',
+        ordered_params=['bucket', 'sourceObject', 'destinationObject'],
+        path_params=['bucket', 'destinationObject', 'sourceObject'],
+        query_params=['ifGenerationMatch', 'ifGenerationNotMatch', 'ifMetagenerationMatch', 'ifMetagenerationNotMatch', 'ifSourceGenerationMatch', 'ifSourceGenerationNotMatch', 'ifSourceMetagenerationMatch', 'ifSourceMetagenerationNotMatch', 'userProject'],
+        relative_path='b/{bucket}/o/{sourceObject}/moveTo/o/{destinationObject}',
+        request_field='',
+        request_type_name='StorageObjectsMoveRequest',
+        response_type_name='Object',
         supports_download=False,
     )
 

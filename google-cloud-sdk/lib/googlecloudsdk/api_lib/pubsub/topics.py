@@ -19,10 +19,12 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.pubsub import utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import exceptions
 
+CLEAR_MESSAGE_TRANSFORMS_VALUE = []
 
 class PublishOperationException(exceptions.Error):
   """Error when something went wrong with publish."""
@@ -288,6 +290,7 @@ class TopicsClient(object):
       confluent_cloud_ingestion_identity_pool_id=None,
       confluent_cloud_ingestion_service_account=None,
       ingestion_log_severity=None,
+      message_transforms_file=None,
   ):
     """Creates a Topic.
 
@@ -364,6 +367,8 @@ class TopicsClient(object):
         to be used for Federated Identity authentication with Confluent Cloud.
       ingestion_log_severity (optional[str]): The log severity to use for
         ingestion.
+      message_transforms_file (str): The file path to the JSON or YAML file
+        containing the message transforms.
 
     Returns:
       Topic: The created topic.
@@ -426,6 +431,19 @@ class TopicsClient(object):
         confluent_cloud_ingestion_service_account=confluent_cloud_ingestion_service_account,
         ingestion_log_severity=ingestion_log_severity,
     )
+    if message_transforms_file:
+      try:
+        topic.messageTransforms = utils.GetMessageTransformsFromFile(
+            self.messages.MessageTransform, message_transforms_file
+        )
+      except (
+          utils.MessageTransformsInvalidFormatError,
+          utils.MessageTransformsEmptyFileError,
+          utils.MessageTransformsMissingFileError,
+      ) as e:
+        e.args = (utils.GetErrorMessage(e),)
+        raise
+
     return self._service.Create(topic)
 
   def Get(self, topic_ref):
@@ -693,6 +711,8 @@ class TopicsClient(object):
       confluent_cloud_ingestion_identity_pool_id=None,
       confluent_cloud_ingestion_service_account=None,
       ingestion_log_severity=None,
+      message_transforms_file=None,
+      clear_message_transforms=False,
   ):
     """Updates a Topic.
 
@@ -777,6 +797,10 @@ class TopicsClient(object):
         to be used for Federated Identity authentication with Confluent Cloud.
       ingestion_log_severity (optional[str]): The log severity to use for
         ingestion.
+      message_transforms_file (str): The file path to the JSON or YAML file
+        containing the message transforms.
+      clear_message_transforms (bool): If set, clears all message
+        transforms from the topic.
 
     Returns:
       Topic: The updated topic.
@@ -873,6 +897,32 @@ class TopicsClient(object):
         update_settings.append(
             _TopicUpdateSetting('ingestionDataSourceSettings', new_settings)
         )
+
+    if message_transforms_file:
+      try:
+        update_settings.append(
+            _TopicUpdateSetting(
+                'messageTransforms',
+                utils.GetMessageTransformsFromFile(
+                    self.messages.MessageTransform,
+                    message_transforms_file,
+                ),
+            )
+        )
+      except (
+          utils.MessageTransformsInvalidFormatError,
+          utils.MessageTransformsEmptyFileError,
+          utils.MessageTransformsMissingFileError,
+      ) as e:
+        e.args = (utils.GetErrorMessage(e),)
+        raise
+
+    if clear_message_transforms:
+      update_settings.append(
+          _TopicUpdateSetting(
+              'messageTransforms', CLEAR_MESSAGE_TRANSFORMS_VALUE
+          )
+      )
 
     topic = self.messages.Topic(name=topic_ref.RelativeName())
 

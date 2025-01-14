@@ -50,6 +50,7 @@ def AddSecurityProfileResource(
     release_track,
     arg_name: str,
     help_text="Path to Security Profile resource.",
+    group=None,
     required=False,
     arg_aliases: List[str] = None,
 ):
@@ -61,6 +62,7 @@ def AddSecurityProfileResource(
     arg_name: The name used for the arg, e.g. "--threat-prevention-profile" or
       "--custom-mirroring-profile".
     help_text: The help text for the resource.
+    group: The group that the resource is an argument of.
     required: Whether the resource is required.
     arg_aliases: The list of aliases for the arg, for backwards compatibility.
       Sub-flags named {alias}-organization and {alias}-location will be added to
@@ -160,6 +162,7 @@ def AddSecurityProfileResource(
       concept_spec=resource_spec,
       required=required,
       group_help=help_text,
+      group=group,
   )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 

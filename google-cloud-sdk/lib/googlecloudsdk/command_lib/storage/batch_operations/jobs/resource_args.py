@@ -19,7 +19,10 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps as deps_lib
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+
+_SBO_CLH_LOCATION_GLOBAL = 'global'
 
 
 def location_attribute_config():
@@ -28,6 +31,10 @@ def location_attribute_config():
       help_text=(
           'Batch-operations supported Google Cloud location for the {resource}.'
       ),
+      fallthroughs=[
+          # All batch operations jobs are sent to the global-clh.
+          deps_lib.ValueFallthrough(_SBO_CLH_LOCATION_GLOBAL)
+      ],
   )
 
 
@@ -59,4 +66,7 @@ def add_batch_job_resource_arg(parser, verb):
       get_batch_job_resource_spec(),
       'The batch job {}.'.format(verb),
       required=True,
+      # Hide the location flag since all batch operations jobs are sent to the
+      # global-clh and we don't want to expose this to the user.
+      flag_name_overrides={'location': ''},
   ).AddToParser(parser)

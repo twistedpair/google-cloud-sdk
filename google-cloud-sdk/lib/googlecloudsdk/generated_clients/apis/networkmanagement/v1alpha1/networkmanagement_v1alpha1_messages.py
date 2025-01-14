@@ -1334,6 +1334,8 @@ class Endpoint(_messages.Message):
       can be inferred from the source.
 
   Fields:
+    alloyDbInstance: An [AlloyDB Instance](https://cloud.google.com/alloydb)
+      URI.
     appEngineVersion: An [App Engine](https://cloud.google.com/appengine)
       [service version](https://cloud.google.com/appengine/docs/admin-
       api/reference/rest/v1/apps.services.versions).
@@ -1451,24 +1453,25 @@ class Endpoint(_messages.Message):
     GCP_NETWORK = 1
     NON_GCP_NETWORK = 2
 
-  appEngineVersion = _messages.MessageField('AppEngineVersionEndpoint', 1)
-  cloudFunction = _messages.MessageField('CloudFunctionEndpoint', 2)
-  cloudRunRevision = _messages.MessageField('CloudRunRevisionEndpoint', 3)
-  cloudSqlInstance = _messages.StringField(4)
-  forwardingRule = _messages.StringField(5)
-  forwardingRuleTarget = _messages.EnumField('ForwardingRuleTargetValueValuesEnum', 6)
-  fqdn = _messages.StringField(7)
-  gkeMasterCluster = _messages.StringField(8)
-  instance = _messages.StringField(9)
-  ipAddress = _messages.StringField(10)
-  loadBalancerId = _messages.StringField(11)
-  loadBalancerType = _messages.EnumField('LoadBalancerTypeValueValuesEnum', 12)
-  network = _messages.StringField(13)
-  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 14)
-  port = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  projectId = _messages.StringField(16)
-  redisCluster = _messages.StringField(17)
-  redisInstance = _messages.StringField(18)
+  alloyDbInstance = _messages.StringField(1)
+  appEngineVersion = _messages.MessageField('AppEngineVersionEndpoint', 2)
+  cloudFunction = _messages.MessageField('CloudFunctionEndpoint', 3)
+  cloudRunRevision = _messages.MessageField('CloudRunRevisionEndpoint', 4)
+  cloudSqlInstance = _messages.StringField(5)
+  forwardingRule = _messages.StringField(6)
+  forwardingRuleTarget = _messages.EnumField('ForwardingRuleTargetValueValuesEnum', 7)
+  fqdn = _messages.StringField(8)
+  gkeMasterCluster = _messages.StringField(9)
+  instance = _messages.StringField(10)
+  ipAddress = _messages.StringField(11)
+  loadBalancerId = _messages.StringField(12)
+  loadBalancerType = _messages.EnumField('LoadBalancerTypeValueValuesEnum', 13)
+  network = _messages.StringField(14)
+  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 15)
+  port = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  projectId = _messages.StringField(17)
+  redisCluster = _messages.StringField(18)
+  redisInstance = _messages.StringField(19)
 
 
 class EndpointInfo(_messages.Message):

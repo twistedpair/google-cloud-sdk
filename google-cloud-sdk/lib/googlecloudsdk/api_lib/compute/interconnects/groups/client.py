@@ -140,6 +140,15 @@ class InterconnectGroup(object):
         ),
     )
 
+  def _MakeGetOperationalStatusRequestTuple(self):
+    return (
+        self._client.interconnectGroups,
+        'GetOperationalStatus',
+        self._messages.ComputeInterconnectGroupsGetOperationalStatusRequest(
+            project=self.ref.project, interconnectGroup=self.ref.Name()
+        ),
+    )
+
   def Create(
       self,
       description=None,
@@ -186,6 +195,13 @@ class InterconnectGroup(object):
             topology_capability, interconnects, **kwargs
         )
     ]
+    if not only_generate_request:
+      resources = self._compute_client.MakeRequests(requests)
+      return resources[0]
+    return requests
+
+  def GetOperationalStatus(self, only_generate_request=False):
+    requests = [self._MakeGetOperationalStatusRequestTuple()]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)
       return resources[0]

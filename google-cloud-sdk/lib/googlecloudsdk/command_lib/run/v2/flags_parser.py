@@ -62,10 +62,104 @@ def _GetResourceLimitsChanges(args, non_ingress_type=False):
   return changes
 
 
+def _GetLabelChanges(args):
+  """Returns the label changes for the given args."""
+  additions = (
+      args.labels
+      if flags.FlagIsExplicitlySet(args, 'labels')
+      else args.update_labels
+  )
+  subtractions = (
+      args.remove_labels
+      if flags.FlagIsExplicitlySet(args, 'remove_labels')
+      else []
+  )
+  return config_changes.LabelChange(
+      additions,
+      subtractions,
+      clear_labels=args.clear_labels if 'clear_labels' in args else False,
+  )
+
+
+def _HasNetworkChanges(args):
+  """Returns true iff any network changes are specified."""
+  network_flags = [
+      'vpc_egress',
+      'network',
+      'subnet',
+      'network_tags',
+      'clear_network',
+      'clear_network_tags',
+  ]
+  return flags.HasChanges(args, network_flags)
+
+
+def _GetNetworkChange(args):
+  return config_changes.VpcAccessChanges(
+      vpc_egress=args.vpc_egress,
+      network=args.network,
+      subnet=args.subnet,
+      network_tags=args.network_tags
+      if flags.FlagIsExplicitlySet(args, 'network_tags')
+      else [],
+      clear_network=args.clear_network if 'clear_network' in args else False,
+      clear_network_tags=args.clear_network_tags
+      if 'clear_network_tags' in args
+      else False,
+  )
+
+
+def _HasCmekKeyChanges(args):
+  """Returns true iff any CMEK key changes are specified."""
+  cmek_key_flags = [
+      'key',
+      'post_key_revocation_action_type',
+      'encryption_key_shutdown_hours',
+      'clear_key',
+      'clear_post_key_revocation_action_type',
+      'clear_encryption_key_shutdown_hours',
+  ]
+  return flags.HasChanges(args, cmek_key_flags)
+
+
+def _GetCmekKeyChange(args):
+  return config_changes.CmekKeyChanges(
+      key=args.key if flags.FlagIsExplicitlySet(args, 'key') else None,
+      post_key_revocation_action_type=args.post_key_revocation_action_type
+      if flags.FlagIsExplicitlySet(args, 'post_key_revocation_action_type')
+      else None,
+      encryption_key_shutdown_hours=int(args.encryption_key_shutdown_hours)
+      if flags.FlagIsExplicitlySet(args, 'encryption_key_shutdown_hours')
+      else None,
+      clear_key=flags.FlagIsExplicitlySet(args, 'clear_key'),
+      clear_post_key_revocation_action_type=flags.FlagIsExplicitlySet(
+          args, 'clear_post_key_revocation_action_type'
+      ),
+      clear_encryption_key_shutdown_hours=flags.FlagIsExplicitlySet(
+          args, 'clear_encryption_key_shutdown_hours'
+      ),
+  )
+
+
 def _GetTemplateConfigurationChanges(args, non_ingress_type=False):
   """Returns a list of changes shared by multiple resources, based on the flags set."""
   changes = []
-
+  # Revision name suffix
+  if flags.FlagIsExplicitlySet(args, 'revision_suffix'):
+    changes.append(config_changes.RevisionNameChange(args.revision_suffix))
+  if flags.FlagIsExplicitlySet(args, 'mesh'):
+    changes.append(config_changes.MeshChange(mesh=args.mesh))
+  if _HasNetworkChanges(args):
+    changes.append(_GetNetworkChange(args))
+  if _HasCmekKeyChanges(args):
+    changes.append(_GetCmekKeyChange(args))
+  # Service account
+  if 'service_account' in args and args.service_account:
+    changes.append(
+        config_changes.ServiceAccountChange(
+            service_account=args.service_account
+        )
+    )
   # FlagIsExplicitlySet can't be used here because args.image is also set from
   # code in deploy.py once deploy from source is supported.
   if hasattr(args, 'image') and args.image is not None:
@@ -86,12 +180,34 @@ def _GetTemplateConfigurationChanges(args, non_ingress_type=False):
             args.args, non_ingress_type=non_ingress_type
         )
     )
+  if flags.HasEnvChanges(args):
+    changes.append(_GetEnvChanges(args, non_ingress_type=non_ingress_type))
+  # Add cpu, memory and gpu limits changes.
   changes.extend(
       _GetResourceLimitsChanges(args, non_ingress_type=non_ingress_type)
   )
   if 'gpu_type' in args and args.gpu_type:
     changes.append(config_changes.GpuTypeChange(gpu_type=args.gpu_type))
   return changes
+
+
+def _GetEnvChanges(args, **kwargs):
+  """Returns the env var literal changes for the given args."""
+  return config_changes.EnvVarLiteralChanges(
+      updates=flags.StripKeys(
+          getattr(args, 'update_env_vars', None)
+          or args.set_env_vars
+          or args.env_vars_file
+          or {}
+      ),
+      removes=flags.MapLStrip(
+          getattr(args, 'remove_env_vars', None) or []
+      ),
+      clear_others=bool(
+          args.set_env_vars or args.env_vars_file or args.clear_env_vars
+      ),
+      **kwargs,
+  )
 
 
 def _HasWorkerPoolScalingChanges(args):
@@ -123,22 +239,73 @@ def _GetWorkerPoolScalingChange(args):
       max_unavailable=args.max_unavailable.unavailable_percent
       if 'max_unavailable' in args and args.max_unavailable is not None
       else None,
-      scaling=args.scaling if 'scaling' in args and args.scaling is not None
+      scaling=args.scaling
+      if 'scaling' in args and args.scaling is not None
       else None,
   )
+
+
+def _HasBinaryAuthorizationChanges(args):
+  """Returns true iff any binary authorization changes are specified."""
+  bin_auth_flags = [
+      'binary_authorization',
+      'clear_binary_authorization',
+      'breakglass',
+  ]
+  return flags.HasChanges(args, bin_auth_flags)
+
+
+def _GetBinaryAuthorizationChanges(args):
+  """Returns the binary authorization changes for the given args."""
+  changes = []
+  if flags.FlagIsExplicitlySet(args, 'binary_authorization'):
+    changes.append(
+        config_changes.BinaryAuthorizationChange(
+            policy=args.binary_authorization
+        )
+    )
+  if flags.FlagIsExplicitlySet(args, 'clear_binary_authorization'):
+    changes.append(
+        config_changes.BinaryAuthorizationChange(
+            clear_binary_authorization=True
+        )
+    )
+  if flags.FlagIsExplicitlySet(args, 'breakglass'):
+    changes.append(
+        config_changes.BinaryAuthorizationChange(
+            breakglass_justification=args.breakglass
+        )
+    )
+  return changes
+
+
+def _GetInstanceSplitChanges(args):
+  """Returns the instance split changes for the given args."""
+  if args.to_latest:
+    # Mutually exclusive flag with to-revisions
+    return config_changes.InstanceSplitChange(to_latest=True)
+  elif args.to_revisions:
+    return config_changes.InstanceSplitChange(to_revisions=args.to_revisions)
 
 
 def GetWorkerPoolConfigurationChanges(args):
   """Returns a list of changes to the worker pool config, based on the flags set."""
   changes = []
+  # Description
+  if flags.FlagIsExplicitlySet(args, 'description'):
+    changes.append(config_changes.DescriptionChange(args.description))
+  # Labels
+  if flags.HasLabelChanges(args):
+    changes.append(_GetLabelChanges(args))
+  # Binary authorization
+  if _HasBinaryAuthorizationChanges(args):
+    changes.extend(_GetBinaryAuthorizationChanges(args))
+  # Template changes
   changes.extend(_GetTemplateConfigurationChanges(args, non_ingress_type=True))
+  # Worker pool scaling
   if _HasWorkerPoolScalingChanges(args):
     changes.append(_GetWorkerPoolScalingChange(args))
-  if 'service_account' in args and args.service_account:
-    changes.append(
-        config_changes.ServiceAccountChange(
-            service_account=args.service_account
-        )
-    )
+  if flags.HasInstanceSplitChanges(args):
+    changes.append(_GetInstanceSplitChanges(args))
   _PrependClientNameAndVersionChange(args, changes)
   return changes

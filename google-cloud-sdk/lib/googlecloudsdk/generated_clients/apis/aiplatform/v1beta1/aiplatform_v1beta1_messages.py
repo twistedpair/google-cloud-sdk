@@ -9531,6 +9531,85 @@ class AiplatformProjectsLocationsSchedulesResumeRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class AiplatformProjectsLocationsServerlessRayJobsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsServerlessRayJobsCancelRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1CancelServerlessRayJobRequest: A
+      GoogleCloudAiplatformV1beta1CancelServerlessRayJobRequest resource to be
+      passed as the request body.
+    name: Required. The name of the ServerlessRayJob to cancel. Format: `proje
+      cts/{project}/locations/{location}/ServerlessRayJobs/{serverless_ray_job
+      }`
+  """
+
+  googleCloudAiplatformV1beta1CancelServerlessRayJobRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1CancelServerlessRayJobRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsServerlessRayJobsCreateRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsServerlessRayJobsCreateRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1ServerlessRayJob: A
+      GoogleCloudAiplatformV1beta1ServerlessRayJob resource to be passed as
+      the request body.
+    parent: Required. The resource name of the Location to create the
+      ServerlessRayJob in. Format: `projects/{project}/locations/{location}`
+  """
+
+  googleCloudAiplatformV1beta1ServerlessRayJob = _messages.MessageField('GoogleCloudAiplatformV1beta1ServerlessRayJob', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsServerlessRayJobsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsServerlessRayJobsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the ServerlessRayJob resource to be deleted.
+      Format: `projects/{project}/locations/{location}/ServerlessRayJobs/{serv
+      erless_ray_job}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsServerlessRayJobsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsServerlessRayJobsGetRequest object.
+
+  Fields:
+    name: Required. The name of the ServerlessRayJob resource. Format: `projec
+      ts/{project}/locations/{location}/serverlessRayJobs/{serverless_ray_job}
+      `
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsServerlessRayJobsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsServerlessRayJobsListRequest object.
+
+  Fields:
+    filter: Optional. The standard list filter. Supported fields: *
+      `serverless_ray_job_id` supports `=`, `!=` comparisons, and `:`
+      wildcard. * `state` supports `=`, `!=` comparisons. * `labels` supports
+      general map functions that is: `labels.key=value` - key:value equality
+      `labels.key:* - key existence
+    pageSize: Optional. The standard list page size.
+    pageToken: Optional. The standard list page token. Typically obtained via
+      ListServerlessRayJobsResponse.next_page_token of the previous
+      JobService.ListServerlessRayJobs call.
+    parent: Required. The resource name of the Location to list the
+      ServerlessRayJobs from. Format:
+      `projects/{project}/locations/{location}`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class AiplatformProjectsLocationsSolversOperationsDeleteRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsSolversOperationsDeleteRequest object.
 
@@ -13267,6 +13346,14 @@ class GoogleCloudAiplatformV1beta1CancelNasJobRequest(_messages.Message):
 
 class GoogleCloudAiplatformV1beta1CancelPipelineJobRequest(_messages.Message):
   r"""Request message for PipelineService.CancelPipelineJob."""
+
+
+class GoogleCloudAiplatformV1beta1CancelServerlessRayJobRequest(_messages.Message):
+  r"""Request message for JobService.CancelServerlessRayJob."""
+
+
+class GoogleCloudAiplatformV1beta1CancelServerlessRayJobResponse(_messages.Message):
+  r"""Message for JobService.CancelServerlessRayJob response."""
 
 
 class GoogleCloudAiplatformV1beta1CancelTrainingPipelineRequest(_messages.Message):
@@ -22988,6 +23075,19 @@ class GoogleCloudAiplatformV1beta1ListSchedulesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   schedules = _messages.MessageField('GoogleCloudAiplatformV1beta1Schedule', 2, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1ListServerlessRayJobsResponse(_messages.Message):
+  r"""Response message for JobService.ListServerlessRayJobs
+
+  Fields:
+    nextPageToken: A token to retrieve the next page of results. Pass to
+      ListCustomJobsRequest.page_token to obtain that page.
+    serverlessRayJobs: List of ServerlessRayJobs in the requested page.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  serverlessRayJobs = _messages.MessageField('GoogleCloudAiplatformV1beta1ServerlessRayJob', 2, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1ListSpecialistPoolsResponse(_messages.Message):
@@ -36543,6 +36643,211 @@ class GoogleCloudAiplatformV1beta1Segment(_messages.Message):
   partIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   startIndex = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   text = _messages.StringField(4)
+
+
+class GoogleCloudAiplatformV1beta1ServerlessRayJob(_messages.Message):
+  r"""Represents a serverless Ray job resources.
+
+  Messages:
+    LabelsValue: Optional. The labels with user-defined metadata to organize
+      ServerlessRayJobs. Label keys and values can be no longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels.
+
+  Fields:
+    description: Optional. The description of the ServerlessRayJob.
+    displayName: Required. The display name of the ServerlessRayJob. The name
+      can be up to 128 characters long and can be consist of any UTF-8
+      characters.
+    error: Output only. Only populated when the serverless Ray job state is
+      `FAILED`.
+    jobSpec: Required. The spec of the ServerlessRayJob.
+    labels: Optional. The labels with user-defined metadata to organize
+      ServerlessRayJobs. Label keys and values can be no longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels.
+    name: Output only. Identifier. Resource name of a ServerlessRayJob.
+      Format: `projects/{project}/locations/{location}/serverlessRayJobs/{serv
+      erless_ray_job_id}`
+    stateInfo: Output only. The current state of the ServerlessRayJob.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels with user-defined metadata to organize
+    ServerlessRayJobs. Label keys and values can be no longer than 64
+    characters (Unicode codepoints), can only contain lowercase letters,
+    numeric characters, underscores and dashes. International characters are
+    allowed. See https://goo.gl/xmQnxf for more information and examples of
+    labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  error = _messages.MessageField('GoogleRpcStatus', 3)
+  jobSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ServerlessRayJobSpec', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  stateInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ServerlessRayJobStateInfo', 7)
+
+
+class GoogleCloudAiplatformV1beta1ServerlessRayJobSpec(_messages.Message):
+  r"""Represents the spec of a ServerlessRayJob.
+
+  Fields:
+    archiveUris: Optional. The URIs of archives to be extracted into the
+      working directory of each Ray node. Supported file types: `.tar`,
+      `.tar.gz`, `.tgz`, and `.zip`. We only support Cloud Storage paths for
+      this field.
+    args: Optional. The arguments to pass to the Ray job script.
+    mainPythonFileUri: Required. The URI of the main Python file to use as the
+      Ray job. Must be a .py file.
+    pscInterfaceConfig: Optional. The PSC interface config for the
+      ServerlessRayJob. If unspecified, the ServerlessRayJob will not use PSC
+      interface.
+    resourceSpecs: Optional. The resource specs of the ServerlessRayJob. If
+      unspecified, the default resource will be used.
+    runtimeEnv: Optional. The runtime environment of the ServerlessRayJob.
+    serviceAccount: Optional. Specifies the service account for workload run-
+      as account. Users submitting jobs must have act-as permission on this
+      run-as account. If unspecified, the [Vertex AI Custom Code Service
+      Agent](https://cloud.google.com/vertex-ai/docs/general/access-
+      control#service-agents) for the ServerelessRayJob's project is used.
+  """
+
+  archiveUris = _messages.StringField(1, repeated=True)
+  args = _messages.StringField(2, repeated=True)
+  mainPythonFileUri = _messages.StringField(3)
+  pscInterfaceConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1PscInterfaceConfig', 4)
+  resourceSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1ServerlessRayJobSpecResourceSpec', 5, repeated=True)
+  runtimeEnv = _messages.MessageField('GoogleCloudAiplatformV1beta1ServerlessRayJobSpecRuntimeEnv', 6)
+  serviceAccount = _messages.StringField(7)
+
+
+class GoogleCloudAiplatformV1beta1ServerlessRayJobSpecResourceSpec(_messages.Message):
+  r"""Represents the resource spec of a worker node.
+
+  Fields:
+    disk: Optional. The disk spec for the node. By default, we use pd-standard
+      disk with 100GB.
+    maxNodeCount: Optional. The maximum number of nodes this job can occupy
+      while running. Default is 2000.
+    resourceUnit: Optional. Define the number of CPUs on one node. E.g. 1
+      resource_unit = 4 vCPUs. By default machine e2-standard series,
+      resource_unit value can only be 1, 2, 4, 8. Default value is 1.
+  """
+
+  disk = _messages.MessageField('GoogleCloudAiplatformV1beta1ServerlessRayJobSpecResourceSpecDisk', 1)
+  maxNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  resourceUnit = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1ServerlessRayJobSpecResourceSpecDisk(_messages.Message):
+  r"""Represents the disk spec.
+
+  Fields:
+    diskSizeGb: Optional. The size of the disk in GB.
+  """
+
+  diskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1ServerlessRayJobSpecRuntimeEnv(_messages.Message):
+  r"""Represents the runtime environment of a ServerlessRayJob.
+
+  Fields:
+    container: Optional. Docker container to run the Ray job in.
+  """
+
+  container = _messages.MessageField('GoogleCloudAiplatformV1beta1ServerlessRayJobSpecRuntimeEnvContainer', 1)
+
+
+class GoogleCloudAiplatformV1beta1ServerlessRayJobSpecRuntimeEnvContainer(_messages.Message):
+  r"""Require a given (Docker) image, and the worker process will run in a
+  container with this image.
+
+  Fields:
+    imageUri: Optional. The URI of the Docker image.
+  """
+
+  imageUri = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1ServerlessRayJobStateInfo(_messages.Message):
+  r"""The state information of the ServerlessRayJob.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the ServerlessRayJob.
+
+  Fields:
+    state: Output only. The state of the ServerlessRayJob.
+    stateMessage: Output only. A message containing details about the current
+      state of the ServerlessRayJob.
+    stateTime: Output only. The time when the current state was entered.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the ServerlessRayJob.
+
+    Values:
+      JOB_STATE_UNSPECIFIED: The job state is unspecified.
+      JOB_STATE_QUEUED: The job has been just created or resumed and
+        processing has not yet begun.
+      JOB_STATE_PENDING: The service is preparing to run the job.
+      JOB_STATE_RUNNING: The job is in progress.
+      JOB_STATE_SUCCEEDED: The job completed successfully.
+      JOB_STATE_FAILED: The job failed.
+      JOB_STATE_CANCELLING: The job is being cancelled. From this state the
+        job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or
+        `JOB_STATE_CANCELLED`.
+      JOB_STATE_CANCELLED: The job has been cancelled.
+      JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
+      JOB_STATE_EXPIRED: The job has expired.
+      JOB_STATE_UPDATING: The job is being updated. Only jobs in the `RUNNING`
+        state can be updated. After updating, the job goes back to the
+        `RUNNING` state.
+      JOB_STATE_PARTIALLY_SUCCEEDED: The job is partially succeeded, some
+        results may be missing due to errors.
+    """
+    JOB_STATE_UNSPECIFIED = 0
+    JOB_STATE_QUEUED = 1
+    JOB_STATE_PENDING = 2
+    JOB_STATE_RUNNING = 3
+    JOB_STATE_SUCCEEDED = 4
+    JOB_STATE_FAILED = 5
+    JOB_STATE_CANCELLING = 6
+    JOB_STATE_CANCELLED = 7
+    JOB_STATE_PAUSED = 8
+    JOB_STATE_EXPIRED = 9
+    JOB_STATE_UPDATING = 10
+    JOB_STATE_PARTIALLY_SUCCEEDED = 11
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
+  stateMessage = _messages.StringField(2)
+  stateTime = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1ServiceAccountSpec(_messages.Message):

@@ -59,7 +59,7 @@ class ComposerV1beta1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a user workloads ConfigMap. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+      r"""Creates a user workloads ConfigMap. This method is supported for Cloud Composer environments in versions composer-3-airflow-*.*.*-build.* and newer.
 
       Args:
         request: (ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsCreateRequest) input message
@@ -86,7 +86,7 @@ class ComposerV1beta1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a user workloads ConfigMap. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+      r"""Deletes a user workloads ConfigMap. This method is supported for Cloud Composer environments in versions composer-3-airflow-*.*.*-build.* and newer.
 
       Args:
         request: (ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsDeleteRequest) input message
@@ -113,7 +113,7 @@ class ComposerV1beta1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets an existing user workloads ConfigMap. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+      r"""Gets an existing user workloads ConfigMap. This method is supported for Cloud Composer environments in versions composer-3-airflow-*.*.*-build.* and newer.
 
       Args:
         request: (ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsGetRequest) input message
@@ -140,7 +140,7 @@ class ComposerV1beta1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists user workloads ConfigMaps. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+      r"""Lists user workloads ConfigMaps. This method is supported for Cloud Composer environments in versions composer-3-airflow-*.*.*-build.* and newer.
 
       Args:
         request: (ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsListRequest) input message
@@ -167,7 +167,7 @@ class ComposerV1beta1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a user workloads ConfigMap. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+      r"""Updates a user workloads ConfigMap. This method is supported for Cloud Composer environments in versions composer-3-airflow-*.*.*-build.* and newer.
 
       Args:
         request: (UserWorkloadsConfigMap) input message
@@ -204,7 +204,7 @@ class ComposerV1beta1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a user workloads Secret. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+      r"""Creates a user workloads Secret. This method is supported for Cloud Composer environments in versions composer-3-airflow-*.*.*-build.* and newer.
 
       Args:
         request: (ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsCreateRequest) input message
@@ -231,7 +231,7 @@ class ComposerV1beta1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a user workloads Secret. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+      r"""Deletes a user workloads Secret. This method is supported for Cloud Composer environments in versions composer-3-airflow-*.*.*-build.* and newer.
 
       Args:
         request: (ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsDeleteRequest) input message
@@ -258,7 +258,7 @@ class ComposerV1beta1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets an existing user workloads Secret. Values of the "data" field in the response are cleared. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+      r"""Gets an existing user workloads Secret. Values of the "data" field in the response are cleared. This method is supported for Cloud Composer environments in versions composer-3-airflow-*.*.*-build.* and newer.
 
       Args:
         request: (ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsGetRequest) input message
@@ -285,7 +285,7 @@ class ComposerV1beta1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists user workloads Secrets. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+      r"""Lists user workloads Secrets. This method is supported for Cloud Composer environments in versions composer-3-airflow-*.*.*-build.* and newer.
 
       Args:
         request: (ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsListRequest) input message
@@ -312,7 +312,7 @@ class ComposerV1beta1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a user workloads Secret. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+      r"""Updates a user workloads Secret. This method is supported for Cloud Composer environments in versions composer-3-airflow-*.*.*-build.* and newer.
 
       Args:
         request: (UserWorkloadsSecret) input message

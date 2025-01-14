@@ -358,6 +358,37 @@ class BackupPolicy(_messages.Message):
   weeklyBackupLimit = _messages.IntegerField(10, variant=_messages.Variant.INT32)
 
 
+class BackupRetentionPolicy(_messages.Message):
+  r"""Retention policy for backups in the backup vault
+
+  Fields:
+    backupMinimumEnforcedRetentionDays: Required. Minimum retention duration
+      in days for backups in the backup vault.
+    dailyBackupImmutable: Optional. Indicates if the daily backups are
+      immutable. Atleast one of daily_backup_immutable,
+      weekly_backup_immutable, monthly_backup_immutable and
+      manual_backup_immutable must be true.
+    manualBackupImmutable: Optional. Indicates if the manual backups are
+      immutable. Atleast one of daily_backup_immutable,
+      weekly_backup_immutable, monthly_backup_immutable and
+      manual_backup_immutable must be true.
+    monthlyBackupImmutable: Optional. Indicates if the monthly backups are
+      immutable. Atleast one of daily_backup_immutable,
+      weekly_backup_immutable, monthly_backup_immutable and
+      manual_backup_immutable must be true.
+    weeklyBackupImmutable: Optional. Indicates if the weekly backups are
+      immutable. Atleast one of daily_backup_immutable,
+      weekly_backup_immutable, monthly_backup_immutable and
+      manual_backup_immutable must be true.
+  """
+
+  backupMinimumEnforcedRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  dailyBackupImmutable = _messages.BooleanField(2)
+  manualBackupImmutable = _messages.BooleanField(3)
+  monthlyBackupImmutable = _messages.BooleanField(4)
+  weeklyBackupImmutable = _messages.BooleanField(5)
+
+
 class BackupVault(_messages.Message):
   r"""A NetApp BackupVault.
 
@@ -372,6 +403,8 @@ class BackupVault(_messages.Message):
   Fields:
     backupRegion: Optional. Region where the backups are stored. Format:
       `projects/{project_id}/locations/{location}`
+    backupRetentionPolicy: Optional. Backup retention policy defining the
+      retenton of backups.
     backupVaultType: Optional. Type of backup vault to be created. Default is
       IN_REGION.
     createTime: Output only. Create time of the backup vault.
@@ -445,15 +478,16 @@ class BackupVault(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   backupRegion = _messages.StringField(1)
-  backupVaultType = _messages.EnumField('BackupVaultTypeValueValuesEnum', 2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  destinationBackupVault = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  sourceBackupVault = _messages.StringField(8)
-  sourceRegion = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  backupRetentionPolicy = _messages.MessageField('BackupRetentionPolicy', 2)
+  backupVaultType = _messages.EnumField('BackupVaultTypeValueValuesEnum', 3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  destinationBackupVault = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  sourceBackupVault = _messages.StringField(9)
+  sourceRegion = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -1824,9 +1858,9 @@ class NetappProjectsLocationsVolumesQuotaRulesPatchRequest(_messages.Message):
   r"""A NetappProjectsLocationsVolumesQuotaRulesPatchRequest object.
 
   Fields:
-    name: Identifier. The resource name of the active directory. Format: `proj
-      ects/{project_number}/locations/{location_id}/quotaRules/{quota_rule_id}
-      `.
+    name: Identifier. The resource name of the quota rule. Format: `projects/{
+      project_number}/locations/{location_id}/volumes/volumes/{volume_id}/quot
+      aRules/{quota_rule_id}`.
     quotaRule: A QuotaRule resource to be passed as the request body.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Quota Rule resource by the update. The fields
@@ -2242,9 +2276,9 @@ class QuotaRule(_messages.Message):
     description: Optional. Description of the quota rule
     diskLimitMib: Required. The maximum allowed disk space in MiB.
     labels: Optional. Labels of the quota rule
-    name: Identifier. The resource name of the active directory. Format: `proj
-      ects/{project_number}/locations/{location_id}/quotaRules/{quota_rule_id}
-      `.
+    name: Identifier. The resource name of the quota rule. Format: `projects/{
+      project_number}/locations/{location_id}/volumes/volumes/{volume_id}/quot
+      aRules/{quota_rule_id}`.
     state: Output only. State of the quota rule
     stateDetails: Output only. State details of the quota rule
     target: Optional. The quota rule applies to the specified user or group,
@@ -2839,6 +2873,8 @@ class StoragePool(_messages.Message):
       storage pool creation but it can't be disabled once enabled.
     capacityGib: Required. Capacity in GIB of the pool
     createTime: Output only. Create time of the storage pool
+    customPerformanceEnabled: Optional. True if using Independent Scaling of
+      capacity and performance (Hyperdisk) By default set to false
     description: Optional. Description of the storage pool
     encryptionType: Output only. Specifies the current pool encryption key
       source.
@@ -2861,6 +2897,10 @@ class StoragePool(_messages.Message):
     serviceLevel: Required. Service level of the storage pool
     state: Output only. State of the storage pool
     stateDetails: Output only. State details of the storage pool
+    totalIops: Optional. Custom Performance Total IOPS of the pool If not
+      provided, it will be calculated based on the total_throughput_mibps
+    totalThroughputMibps: Optional. Custom Performance Total Throughput of the
+      pool (in MiB/s)
     volumeCapacityGib: Output only. Allocated size of all volumes in GIB in
       the storage pool
     volumeCount: Output only. Volume count of the storage pool
@@ -2946,24 +2986,27 @@ class StoragePool(_messages.Message):
   allowAutoTiering = _messages.BooleanField(2)
   capacityGib = _messages.IntegerField(3)
   createTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 6)
-  globalAccessAllowed = _messages.BooleanField(7)
-  kmsConfig = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  ldapEnabled = _messages.BooleanField(10)
-  name = _messages.StringField(11)
-  network = _messages.StringField(12)
-  psaRange = _messages.StringField(13)
-  replicaZone = _messages.StringField(14)
-  satisfiesPzi = _messages.BooleanField(15)
-  satisfiesPzs = _messages.BooleanField(16)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  stateDetails = _messages.StringField(19)
-  volumeCapacityGib = _messages.IntegerField(20)
-  volumeCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(22)
+  customPerformanceEnabled = _messages.BooleanField(5)
+  description = _messages.StringField(6)
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 7)
+  globalAccessAllowed = _messages.BooleanField(8)
+  kmsConfig = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  ldapEnabled = _messages.BooleanField(11)
+  name = _messages.StringField(12)
+  network = _messages.StringField(13)
+  psaRange = _messages.StringField(14)
+  replicaZone = _messages.StringField(15)
+  satisfiesPzi = _messages.BooleanField(16)
+  satisfiesPzs = _messages.BooleanField(17)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  stateDetails = _messages.StringField(20)
+  totalIops = _messages.IntegerField(21)
+  totalThroughputMibps = _messages.IntegerField(22)
+  volumeCapacityGib = _messages.IntegerField(23)
+  volumeCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(25)
 
 
 class SwitchActiveReplicaZoneRequest(_messages.Message):

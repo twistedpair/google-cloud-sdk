@@ -144,6 +144,7 @@ class Backup(_messages.Message):
     cluster: Output only. Cluster resource path of this backup.
     clusterUid: Output only. Cluster uid of this backup.
     createTime: Output only. The time when the backup was created.
+    encryptionInfo: Output only. Encryption information of the backup.
     engineVersion: Output only. redis-7.2, valkey-7.5
     expireTime: Output only. The time when the backup will expire.
     name: Identifier. Full resource path of the backup. the last part of the
@@ -208,15 +209,16 @@ class Backup(_messages.Message):
   cluster = _messages.StringField(3)
   clusterUid = _messages.StringField(4)
   createTime = _messages.StringField(5)
-  engineVersion = _messages.StringField(6)
-  expireTime = _messages.StringField(7)
-  name = _messages.StringField(8)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 9)
-  replicaCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  totalSizeBytes = _messages.IntegerField(13)
-  uid = _messages.StringField(14)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 6)
+  engineVersion = _messages.StringField(7)
+  expireTime = _messages.StringField(8)
+  name = _messages.StringField(9)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 10)
+  replicaCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  totalSizeBytes = _messages.IntegerField(14)
+  uid = _messages.StringField(15)
 
 
 class BackupClusterRequest(_messages.Message):
@@ -241,6 +243,8 @@ class BackupCollection(_messages.Message):
       collection belongs to. Example:
       projects/{project}/locations/{location}/clusters/{cluster}
     clusterUid: Output only. The cluster uid of the backup collection.
+    kmsKey: Output only. The KMS key used to encrypt the backups under this
+      backup collection.
     name: Identifier. Full resource path of the backup collection.
     uid: Output only. System assigned unique identifier of the backup
       collection.
@@ -248,8 +252,9 @@ class BackupCollection(_messages.Message):
 
   cluster = _messages.StringField(1)
   clusterUid = _messages.StringField(2)
-  name = _messages.StringField(3)
-  uid = _messages.StringField(4)
+  kmsKey = _messages.StringField(3)
+  name = _messages.StringField(4)
+  uid = _messages.StringField(5)
 
 
 class BackupConfiguration(_messages.Message):
@@ -378,10 +383,14 @@ class Cluster(_messages.Message):
     discoveryEndpoints: Output only. Endpoints created on each given network,
       for Redis clients to connect to the cluster. Currently only one
       discovery endpoint is supported.
+    encryptionInfo: Output only. Encryption information of the data at rest of
+      the cluster.
     gcsSource: Optional. Backups stored in Cloud Storage buckets. The Cloud
       Storage buckets need to be the same region as the clusters. Read
       permission is required to import from the provided Cloud Storage
       objects.
+    kmsKey: Optional. The KMS key used to encrypt the at-rest data of the
+      cluster.
     maintenancePolicy: Optional. ClusterMaintenancePolicy determines when to
       allow or deny updates.
     maintenanceSchedule: Output only. ClusterMaintenanceSchedule Output only
@@ -517,26 +526,28 @@ class Cluster(_messages.Message):
   crossClusterReplicationConfig = _messages.MessageField('CrossClusterReplicationConfig', 6)
   deletionProtectionEnabled = _messages.BooleanField(7)
   discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 8, repeated=True)
-  gcsSource = _messages.MessageField('GcsBackupSource', 9)
-  maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 10)
-  maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 11)
-  managedBackupSource = _messages.MessageField('ManagedBackupSource', 12)
-  name = _messages.StringField(13)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 14)
-  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 15)
-  preciseSizeGb = _messages.FloatField(16)
-  pscConfigs = _messages.MessageField('PscConfig', 17, repeated=True)
-  pscConnections = _messages.MessageField('PscConnection', 18, repeated=True)
-  pscServiceAttachments = _messages.MessageField('PscServiceAttachment', 19, repeated=True)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 20)
-  replicaCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  sizeGb = _messages.IntegerField(23, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  stateInfo = _messages.MessageField('StateInfo', 25)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 26)
-  uid = _messages.StringField(27)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 28)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 9)
+  gcsSource = _messages.MessageField('GcsBackupSource', 10)
+  kmsKey = _messages.StringField(11)
+  maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 12)
+  maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 13)
+  managedBackupSource = _messages.MessageField('ManagedBackupSource', 14)
+  name = _messages.StringField(15)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 16)
+  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 17)
+  preciseSizeGb = _messages.FloatField(18)
+  pscConfigs = _messages.MessageField('PscConfig', 19, repeated=True)
+  pscConnections = _messages.MessageField('PscConnection', 20, repeated=True)
+  pscServiceAttachments = _messages.MessageField('PscServiceAttachment', 21, repeated=True)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 22)
+  replicaCount = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  stateInfo = _messages.MessageField('StateInfo', 27)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 28)
+  uid = _messages.StringField(29)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 30)
 
 
 class ClusterEndpoint(_messages.Message):
@@ -1862,6 +1873,73 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class EncryptionInfo(_messages.Message):
+  r"""EncryptionInfo describes the encryption information of a cluster or a
+  backup.
+
+  Enums:
+    EncryptionTypeValueValuesEnum: Output only. Type of encryption.
+    KmsKeyPrimaryStateValueValuesEnum: Output only. The state of the primary
+      version of the KMS key perceived by the system. This field is not
+      populated in backups.
+
+  Fields:
+    encryptionType: Output only. Type of encryption.
+    kmsKeyPrimaryState: Output only. The state of the primary version of the
+      KMS key perceived by the system. This field is not populated in backups.
+    kmsKeyVersions: Output only. KMS key versions that are being used to
+      protect the data at-rest.
+    lastUpdateTime: Output only. The most recent time when the encryption info
+      was updated.
+  """
+
+  class EncryptionTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of encryption.
+
+    Values:
+      TYPE_UNSPECIFIED: Encryption type not specified. Defaults to
+        GOOGLE_DEFAULT_ENCRYPTION.
+      GOOGLE_DEFAULT_ENCRYPTION: The data is encrypted at rest with a key that
+        is fully managed by Google. No key version will be populated. This is
+        the default state.
+      CUSTOMER_MANAGED_ENCRYPTION: The data is encrypted at rest with a key
+        that is managed by the customer. KMS key versions will be populated.
+    """
+    TYPE_UNSPECIFIED = 0
+    GOOGLE_DEFAULT_ENCRYPTION = 1
+    CUSTOMER_MANAGED_ENCRYPTION = 2
+
+  class KmsKeyPrimaryStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the primary version of the KMS key perceived
+    by the system. This field is not populated in backups.
+
+    Values:
+      KMS_KEY_STATE_UNSPECIFIED: The default value. This value is unused.
+      ENABLED: The KMS key is enabled and correctly configured.
+      PERMISSION_DENIED: Permission denied on the KMS key.
+      DISABLED: The KMS key is disabled.
+      DESTROYED: The KMS key is destroyed.
+      DESTROY_SCHEDULED: The KMS key is scheduled to be destroyed.
+      EKM_KEY_UNREACHABLE_DETECTED: The EKM key is unreachable.
+      BILLING_DISABLED: Billing is disabled for the project.
+      UNKNOWN_FAILURE: All other unknown failures.
+    """
+    KMS_KEY_STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    PERMISSION_DENIED = 2
+    DISABLED = 3
+    DESTROYED = 4
+    DESTROY_SCHEDULED = 5
+    EKM_KEY_UNREACHABLE_DETECTED = 6
+    BILLING_DISABLED = 7
+    UNKNOWN_FAILURE = 8
+
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 1)
+  kmsKeyPrimaryState = _messages.EnumField('KmsKeyPrimaryStateValueValuesEnum', 2)
+  kmsKeyVersions = _messages.StringField(3, repeated=True)
+  lastUpdateTime = _messages.StringField(4)
 
 
 class Entitlement(_messages.Message):

@@ -97,6 +97,8 @@ def AddPortFlag(parser, required=False):
 def AddSslConfigGroup(parser, release_track):
   """Adds ssl server only & server client config group to the given parser."""
   ssl_config = parser.add_group()
+  if release_track == release_track.GA:
+    AddSslTypeFlag(ssl_config, hidden=True, choices=None)
   AddCaCertificateFlag(ssl_config, True)
   client_cert = ssl_config.add_group()
   AddPrivateKeyFlag(client_cert, required=True)
@@ -115,21 +117,23 @@ def AddSslServerOnlyConfigGroup(parser):
 def AddSslServerOnlyOrRequiredConfigGroup(parser, hidden=False):
   """Adds ssl server only & required config group to the given parser."""
   ssl_config = parser.add_group(hidden=hidden)
-  AddSslTypeFlag(ssl_config)
+  AddSslTypeFlag(
+      ssl_config, hidden=False, choices=['SERVER_ONLY', 'REQUIRED', 'NONE']
+  )
   AddCaCertificateFlag(ssl_config)
 
 
-def AddSslTypeFlag(parser, hidden=False):
+def AddSslTypeFlag(parser, hidden=False, choices=None):
   """Adds --ssl-type flag to the given parser."""
   help_text = """\
     The type of SSL configuration.
   """
-  choices = ['SERVER_ONLY', 'REQUIRED', 'NONE']
+  if not choices:
+    choices = ['SERVER_ONLY', 'SERVER_CLIENT', 'REQUIRED', 'NONE']
   parser.add_argument(
       '--ssl-type',
       help=help_text,
       choices=choices,
-      default='NONE',
       hidden=hidden,
   )
 

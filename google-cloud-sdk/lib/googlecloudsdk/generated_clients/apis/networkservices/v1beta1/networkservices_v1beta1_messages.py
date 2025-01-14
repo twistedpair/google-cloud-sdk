@@ -115,7 +115,11 @@ class AuthzExtension(_messages.Message):
 
     Values:
       WIRE_FORMAT_UNSPECIFIED: Not specified.
-      EXT_PROC_GRPC: The extension service uses ExtProc GRPC API.
+      EXT_PROC_GRPC: The extension service uses ExtProc GRPC API over a gRPC
+        stream. This is the default value if the wire format is not specified.
+        The backend service for the extension must use HTTP2 or H2C as the
+        protocol. All `supported_events` for a client request will be sent as
+        part of the same gRPC stream.
     """
     WIRE_FORMAT_UNSPECIFIED = 0
     EXT_PROC_GRPC = 1
@@ -193,6 +197,37 @@ class AuthzExtension(_messages.Message):
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class Connection(_messages.Message):
+  r"""VPC connectivity information.
+
+  Enums:
+    ConnectionTypeValueValuesEnum: Required. The VPC connection type.
+
+  Fields:
+    connectionType: Required. The VPC connection type.
+    nccHub: Optional. The resource name of the
+      [NCC](https://cloud.google.com/network-connectivity-center) hub. Use the
+      following format: `projects/{project}/locations/global/hubs/{hub}`.
+  """
+
+  class ConnectionTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The VPC connection type.
+
+    Values:
+      CONNECTION_TYPE_UNSPECIFIED: Unspecified connection type.
+      NCC: Connected by [NCC](https://cloud.google.com/network-connectivity-
+        center). Producers and consumers can be in separated VPCs connected by
+        NCC, or the same VPC.
+      SAME_VPC: Producer and consumers must be in the same VPC network.
+    """
+    CONNECTION_TYPE_UNSPECIFIED = 0
+    NCC = 1
+    SAME_VPC = 2
+
+  connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 1)
+  nccHub = _messages.StringField(2)
 
 
 class Empty(_messages.Message):
@@ -349,9 +384,22 @@ class ExtensionChainExtension(_messages.Message):
   Enums:
     SupportedEventsValueListEntryValuesEnum:
 
+  Messages:
+    MetadataValue: Optional. The metadata provided here is included as part of
+      the `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      is available under the namespace `com.google....`. For example:
+      `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
+      following variables are supported in the metadata:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name. This field is not supported for plugin
+      extensions. Setting it results in a validation error.
+
   Fields:
     authority: Optional. The `:authority` header in the gRPC request sent from
-      Envoy to the extension service. Required for Callout extensions.
+      Envoy to the extension service. Required for Callout extensions. This
+      field is not supported for plugin extensions. Setting it results in a
+      validation error.
     failOpen: Optional. Determines how the proxy behaves if the call to the
       extension fails or times out. When set to `TRUE`, request or response
       processing continues without error. Any subsequent extensions in the
@@ -365,26 +413,43 @@ class ExtensionChainExtension(_messages.Message):
     forwardHeaders: Optional. List of the HTTP headers to forward to the
       extension (from the client or backend). If omitted, all headers are
       sent. Each element is a string indicating the header name.
+    metadata: Optional. The metadata provided here is included as part of the
+      `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      is available under the namespace `com.google....`. For example:
+      `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
+      following variables are supported in the metadata:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name. This field is not supported for plugin
+      extensions. Setting it results in a validation error.
     name: Required. The name for this extension. The name is logged as part of
       the HTTP request logs. The name must conform with RFC-1034, is
       restricted to lower-cased letters, numbers and hyphens, and can have a
       maximum length of 63 characters. Additionally, the first character must
       be a letter and the last a letter or a number.
     service: Required. The reference to the service that runs the extension.
-      Currently only callout extensions are supported here. To configure a
-      callout extension, `service` must be a fully-qualified reference to a
-      [backend service](https://cloud.google.com/compute/docs/reference/rest/v
-      1/backendServices) in the format: `https://www.googleapis.com/compute/v1
-      /projects/{project}/regions/{region}/backendServices/{backendService}`
-      or `https://www.googleapis.com/compute/v1/projects/{project}/global/back
-      endServices/{backendService}`.
+      To configure a callout extension, `service` must be a fully-qualified
+      reference to a [backend service](https://cloud.google.com/compute/docs/r
+      eference/rest/v1/backendServices) in the format: `https://www.googleapis
+      .com/compute/v1/projects/{project}/regions/{region}/backendServices/{bac
+      kendService}` or `https://www.googleapis.com/compute/v1/projects/{projec
+      t}/global/backendServices/{backendService}`. To configure a plugin
+      extension, `service` must be a reference to a [`WasmPlugin`
+      resource](https://cloud.google.com/service-
+      extensions/docs/reference/rest/v1beta1/projects.locations.wasmPlugins)
+      in the format:
+      `projects/{project}/locations/{location}/wasmPlugins/{plugin}` or `//net
+      workservices.googleapis.com/projects/{project}/locations/{location}/wasm
+      Plugins/{wasmPlugin}`. Plugin extensions are currently supported for the
+      `LbTrafficExtension` and the `LbRouteExtension` resources.
     supportedEvents: Optional. A set of events during request or response
       processing for which this extension is called. This field is required
       for the `LbTrafficExtension` resource. It must not be set for the
-      `LbRouteExtension` resource.
+      `LbRouteExtension` resource, otherwise a validation error is returned.
     timeout: Optional. Specifies the timeout for each individual message on
-      the stream. The timeout must be between 10-1000 milliseconds. Required
-      for Callout extensions.
+      the stream. The timeout must be between `10`-`1000` milliseconds.
+      Required for callout extensions. This field is not supported for plugin
+      extensions. Setting it results in a validation error.
   """
 
   class SupportedEventsValueListEntryValuesEnum(_messages.Enum):
@@ -413,13 +478,46 @@ class ExtensionChainExtension(_messages.Message):
     REQUEST_TRAILERS = 5
     RESPONSE_TRAILERS = 6
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Optional. The metadata provided here is included as part of the
+    `metadata_context` (of type `google.protobuf.Struct`) in the
+    `ProcessingRequest` message sent to the extension server. The metadata is
+    available under the namespace `com.google....`. For example:
+    `com.google.lb_traffic_extension.lbtrafficextension1.chain1.ext1`. The
+    following variables are supported in the metadata: `{forwarding_rule_id}`
+    - substituted with the forwarding rule's fully qualified resource name.
+    This field is not supported for plugin extensions. Setting it results in a
+    validation error.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   authority = _messages.StringField(1)
   failOpen = _messages.BooleanField(2)
   forwardHeaders = _messages.StringField(3, repeated=True)
-  name = _messages.StringField(4)
-  service = _messages.StringField(5)
-  supportedEvents = _messages.EnumField('SupportedEventsValueListEntryValuesEnum', 6, repeated=True)
-  timeout = _messages.StringField(7)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
+  service = _messages.StringField(6)
+  supportedEvents = _messages.EnumField('SupportedEventsValueListEntryValuesEnum', 7, repeated=True)
+  timeout = _messages.StringField(8)
 
 
 class ExtensionChainMatchCondition(_messages.Message):
@@ -621,6 +719,27 @@ class Gateway(_messages.Message):
   subnetwork = _messages.StringField(16)
   type = _messages.EnumField('TypeValueValuesEnum', 17)
   updateTime = _messages.StringField(18)
+
+
+class GatewayRouteView(_messages.Message):
+  r"""GatewayRouteView defines view-only resource for Routes to a Gateway
+
+  Fields:
+    name: Output only. Identifier. Full path name of the GatewayRouteView
+      resource. Format: projects/{project_number}/locations/{location}/gateway
+      s/{gateway_name}/routeViews/{route_view_name}
+    routeId: Output only. The resource id for the route.
+    routeLocation: Output only. Location where the route exists.
+    routeProjectNumber: Output only. Project number where the route exists.
+    routeType: Output only. Type of the route: HttpRoute,GrpcRoute,TcpRoute,
+      or TlsRoute
+  """
+
+  name = _messages.StringField(1)
+  routeId = _messages.StringField(2)
+  routeLocation = _messages.StringField(3)
+  routeProjectNumber = _messages.IntegerField(4)
+  routeType = _messages.StringField(5)
 
 
 class GrpcRoute(_messages.Message):
@@ -1600,7 +1719,8 @@ class LbRouteExtension(_messages.Message):
       is available under the namespace `com.google.lb_route_extension.`. The
       following variables are supported in the metadata Struct:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name.
+      qualified resource name. This field is not supported for plugin
+      extensions. Setting it results in a validation error.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -1612,8 +1732,8 @@ class LbRouteExtension(_messages.Message):
       executed. Any subsequent extension chains do not execute. Limited to 5
       extension chains per resource.
     forwardingRules: Required. A list of references to the forwarding rules to
-      which this service extension is attached to. At least one forwarding
-      rule is required. There can be only one `LbRouteExtension` resource per
+      which this service extension is attached. At least one forwarding rule
+      is required. There can be only one `LbRouteExtension` resource per
       forwarding rule.
     labels: Optional. Set of labels associated with the `LbRouteExtension`
       resource. The format must comply with [the requirements for
@@ -1630,7 +1750,8 @@ class LbRouteExtension(_messages.Message):
       is available under the namespace `com.google.lb_route_extension.`. The
       following variables are supported in the metadata Struct:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name.
+      qualified resource name. This field is not supported for plugin
+      extensions. Setting it results in a validation error.
     name: Required. Identifier. Name of the `LbRouteExtension` resource in the
       following format: `projects/{project}/locations/{location}/lbRouteExtens
       ions/{lb_route_extension}`.
@@ -1690,7 +1811,8 @@ class LbRouteExtension(_messages.Message):
     available under the namespace `com.google.lb_route_extension.`. The
     following variables are supported in the metadata Struct:
     `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-    qualified resource name.
+    qualified resource name. This field is not supported for plugin
+    extensions. Setting it results in a validation error.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -1746,7 +1868,8 @@ class LbTrafficExtension(_messages.Message):
       metadata is available under the key `com.google.lb_traffic_extension.`.
       The following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name.
+      qualified resource name. This field is not supported for plugin
+      extensions. Setting it results in a validation error.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -1757,10 +1880,10 @@ class LbTrafficExtension(_messages.Message):
       first extension chain that has a condition that matches the request is
       executed. Any subsequent extension chains do not execute. Limited to 5
       extension chains per resource.
-    forwardingRules: Required. A list of references to the forwarding rules to
-      which this service extension is attached to. At least one forwarding
-      rule is required. There can be only one `LBTrafficExtension` resource
-      per forwarding rule.
+    forwardingRules: Optional. A list of references to the forwarding rules to
+      which this service extension is attached. At least one forwarding rule
+      is required. There can be only one `LBTrafficExtension` resource per
+      forwarding rule.
     labels: Optional. Set of labels associated with the `LbTrafficExtension`
       resource. The format must comply with [the requirements for
       labels](https://cloud.google.com/compute/docs/labeling-
@@ -1775,7 +1898,8 @@ class LbTrafficExtension(_messages.Message):
       metadata is available under the key `com.google.lb_traffic_extension.`.
       The following variables are supported in the metadata:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-      qualified resource name.
+      qualified resource name. This field is not supported for plugin
+      extensions. Setting it results in a validation error.
     name: Required. Identifier. Name of the `LbTrafficExtension` resource in
       the following format: `projects/{project}/locations/{location}/lbTraffic
       Extensions/{lb_traffic_extension}`.
@@ -1834,7 +1958,8 @@ class LbTrafficExtension(_messages.Message):
     metadata is available under the key `com.google.lb_traffic_extension.`.
     The following variables are supported in the metadata:
     `{forwarding_rule_id}` - substituted with the forwarding rule's fully
-    qualified resource name.
+    qualified resource name. This field is not supported for plugin
+    extensions. Setting it results in a validation error.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -1894,6 +2019,19 @@ class ListEndpointPoliciesResponse(_messages.Message):
   """
 
   endpointPolicies = _messages.MessageField('EndpointPolicy', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListGatewayRouteViewsResponse(_messages.Message):
+  r"""Response returned by the ListGatewayRouteViews method.
+
+  Fields:
+    gatewayRouteViews: List of GatewayRouteView resources.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  gatewayRouteViews = _messages.MessageField('GatewayRouteView', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -1987,6 +2125,19 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListMeshRouteViewsResponse(_messages.Message):
+  r"""Response returned by the ListMeshRouteViews method.
+
+  Fields:
+    meshRouteViews: List of MeshRouteView resources.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  meshRouteViews = _messages.MessageField('MeshRouteView', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListMeshesResponse(_messages.Message):
   r"""Response returned by the ListMeshes method.
 
@@ -2000,6 +2151,146 @@ class ListMeshesResponse(_messages.Message):
 
   meshes = _messages.MessageField('Mesh', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListMulticastConsumerAssociationsResponse(_messages.Message):
+  r"""Response message for ListMulticastConsumerAssociations.
+
+  Fields:
+    multicastConsumerAssociations: The list of multicast consumer
+      associations.
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastConsumerAssociations = _messages.MessageField('MulticastConsumerAssociation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMulticastDomainActivationsResponse(_messages.Message):
+  r"""Response message for ListMulticastDomainActivations.
+
+  Fields:
+    multicastDomainActivations: The list of multicast domain activations.
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastDomainActivations = _messages.MessageField('MulticastDomainActivation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMulticastDomainGroupsResponse(_messages.Message):
+  r"""Response message for ListMulticastDomainGroups.
+
+  Fields:
+    multicastDomainGroups: The list of multicast domain groups.
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastDomainGroups = _messages.MessageField('MulticastDomainGroup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMulticastDomainsResponse(_messages.Message):
+  r"""Response message for ListMulticastDomains.
+
+  Fields:
+    multicastDomains: The list of multicast domains.
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastDomains = _messages.MessageField('MulticastDomain', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMulticastGroupConsumerActivationsResponse(_messages.Message):
+  r"""Response message for ListMulticastGroupConsumerActivations.
+
+  Fields:
+    multicastGroupConsumerActivations: The list of multicast group consumer
+      activations.
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastGroupConsumerActivations = _messages.MessageField('MulticastGroupConsumerActivation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMulticastGroupProducerActivationsResponse(_messages.Message):
+  r"""Response message for ListMulticastGroupProducerActivations.
+
+  Fields:
+    multicastGroupProducerActivations: The list of multicast group producer
+      activations.
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastGroupProducerActivations = _messages.MessageField('MulticastGroupProducerActivation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMulticastGroupRangeActivationsResponse(_messages.Message):
+  r"""Response message for ListMulticastGroupRangeActivations.
+
+  Fields:
+    multicastGroupRangeActivations: The list of multicast group range
+      activations.
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastGroupRangeActivations = _messages.MessageField('MulticastGroupRangeActivation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMulticastGroupRangesResponse(_messages.Message):
+  r"""Response message for ListMulticastGroupRanges.
+
+  Fields:
+    multicastGroupRanges: The list of multicast group ranges.
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastGroupRanges = _messages.MessageField('MulticastGroupRange', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMulticastProducerAssociationsResponse(_messages.Message):
+  r"""Response message for ListMulticastProducerAssociations.
+
+  Fields:
+    multicastProducerAssociations: The list of multicast producer
+      associations.
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastProducerAssociations = _messages.MessageField('MulticastProducerAssociation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListOperationsResponse(_messages.Message):
@@ -2186,7 +2477,7 @@ class Location(_messages.Message):
 
 
 class LoggingConfig(_messages.Message):
-  r"""The configuration for Platform Telemetry logging for Eventarc Avdvanced
+  r"""The configuration for Platform Telemetry logging for Eventarc Advanced
   resources.
 
   Enums:
@@ -2320,6 +2611,27 @@ class Mesh(_messages.Message):
   updateTime = _messages.StringField(8)
 
 
+class MeshRouteView(_messages.Message):
+  r"""MeshRouteView defines view-only resource for Routes to a Mesh
+
+  Fields:
+    name: Output only. Identifier. Full path name of the MeshRouteView
+      resource. Format: projects/{project_number}/locations/{location}/meshes/
+      {mesh_name}/routeViews/{route_view_name}
+    routeId: Output only. The resource id for the route.
+    routeLocation: Output only. Location where the route exists.
+    routeProjectNumber: Output only. Project number where the route exists.
+    routeType: Output only. Type of the route: HttpRoute,GrpcRoute,TcpRoute,
+      or TlsRoute
+  """
+
+  name = _messages.StringField(1)
+  routeId = _messages.StringField(2)
+  routeLocation = _messages.StringField(3)
+  routeProjectNumber = _messages.IntegerField(4)
+  routeType = _messages.StringField(5)
+
+
 class MetadataLabelMatcher(_messages.Message):
   r"""The matcher that is based on node metadata presented by xDS clients.
 
@@ -2401,6 +2713,657 @@ class MetadataLabels(_messages.Message):
 
   labelName = _messages.StringField(1)
   labelValue = _messages.StringField(2)
+
+
+class MulticastConsumerAssociation(_messages.Message):
+  r"""Multicast consumer association resource.
+
+  Enums:
+    ResourceStateValueValuesEnum: Output only. The resource state of the
+      multicast consumer association.
+
+  Messages:
+    LabelsValue: Optional. Labels as key-value pairs
+
+  Fields:
+    createTime: Output only. [Output only] The timestamp when the multicast
+      consumer association was created.
+    description: Optional. An optional text description of the multicast
+      consumer association.
+    labels: Optional. Labels as key-value pairs
+    multicastDomainActivation: A string attribute.
+    name: Identifier. The resource name of the multicast consumer association.
+      Use the following format:
+      `projects/*/locations/*/multicastConsumerAssociations/*`.
+    network: Required. The resource name of the multicast consumer VPC
+      network. Use following format:
+      `projects/{project}/locations/global/networks/{network}`.
+    resourceState: Output only. The resource state of the multicast consumer
+      association.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all multicast consumer association
+      resources. If a consumer association is deleted and another with the
+      same name is created, the new consumer association is assigned a
+      different unique_id.
+    updateTime: Output only. [Output only] The timestamp when the Multicast
+      Consumer Association was most recently updated.
+  """
+
+  class ResourceStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The resource state of the multicast consumer association.
+
+    Values:
+      CONSUMER_RESOURCE_STATE_UNSPECIFIED: The consumer resource state is not
+        specified.
+      ACTIVE: The consumer resource state is active.
+      OBSOLETE: The associated admin resource has been deleted. The consumer
+        resource state becomes obsolete.
+    """
+    CONSUMER_RESOURCE_STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    OBSOLETE = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key-value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  multicastDomainActivation = _messages.StringField(4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 7)
+  uniqueId = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+
+
+class MulticastDomain(_messages.Message):
+  r"""Multicast domain resource.
+
+  Messages:
+    LabelsValue: Optional. Labels as key-value pairs.
+
+  Fields:
+    adminNetwork: Required. The resource name of the multicast admin VPC
+      network. Use the following format:
+      `projects/{project}/locations/global/networks/{network}`.
+    connection: Required. The VPC connection type for this multicast domain.
+    createTime: Output only. [Output only] The timestamp when the multicast
+      domain was created.
+    description: Optional. An optional text description of the multicast
+      domain.
+    labels: Optional. Labels as key-value pairs.
+    multicastDomainGroup: Optional. The multicast domain group this domain
+      should be associated with. Use the following format: `projects/{project}
+      /locations/global/multicastDomainGroups/{multicast_domain_group}`.
+    name: Identifier. The resource name of the multicast domain. Use the
+      following format: `projects/*/locations/global/multicastDomains/*`
+    ullMulticastDomain: Optional. Information for an Ultra-Low-Latency
+      multicast domain.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all multicast domain resources. If
+      a domain is deleted and another with the same name is created, the new
+      domain is assigned a different unique_id.
+    updateTime: Output only. [Output only] The timestamp when the multicast
+      domain was most recently updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key-value pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  adminNetwork = _messages.StringField(1)
+  connection = _messages.MessageField('Connection', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  multicastDomainGroup = _messages.StringField(6)
+  name = _messages.StringField(7)
+  ullMulticastDomain = _messages.MessageField('UllMulticastDomain', 8)
+  uniqueId = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class MulticastDomainActivation(_messages.Message):
+  r"""Multicast domain activation resource.
+
+  Messages:
+    LabelsValue: Optional. Labels as key-value pairs
+
+  Fields:
+    adminNetwork: Output only. [Output only] The URL of the admin network.
+    createTime: Output only. [Output only] The timestamp when the multicast
+      domain activation was created.
+    description: Optional. An optional text description of the multicast
+      domain activation.
+    labels: Optional. Labels as key-value pairs
+    multicastConsumerAssociations: Output only. The resource names of
+      associated multicast consumer associations. Use the following format:
+      `projects/*/locations/*/multicastConsumerAssociations/*`.
+    multicastDomain: Optional. The resource name of the multicast domain to
+      activate. Use the following format:
+      `projects/*/locations/global/multicastDomains/*`.
+    name: Identifier. The resource name of the multicast domain activation.
+      Use the following format:
+      `projects/*/locations/*/multicastDomainActivations/*`.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all multicast domain activation
+      resources. If a domain activation is deleted and another with the same
+      name is created, the new domain activation is assigned a different
+      unique_id.
+    updateTime: Output only. [Output only] The timestamp when the multicast
+      domain activation was most recently updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key-value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  adminNetwork = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  multicastConsumerAssociations = _messages.StringField(5, repeated=True)
+  multicastDomain = _messages.StringField(6)
+  name = _messages.StringField(7)
+  uniqueId = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+
+
+class MulticastDomainGroup(_messages.Message):
+  r"""Multicast domain group resource.
+
+  Messages:
+    LabelsValue: Optional. Labels as key-value pairs.
+
+  Fields:
+    createTime: Output only. [Output only] The timestamp when the multicast
+      domain group was created.
+    description: Optional. An optional text description of the multicast
+      domain group.
+    labels: Optional. Labels as key-value pairs.
+    multicastDomains: Output only. [Output only] Multicast domains associated
+      with the group. There can be at most 2 multicast domains in a group.
+    name: Identifier. The resource name of the multicast domain group. Use the
+      following format: `projects/*/locations/global/multicastDomainGroups/*`
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all multicast domain group
+      resources. If a domain is deleted and another with the same name is
+      created, the new domain is assigned a different unique_id.
+    updateTime: Output only. [Output only] The timestamp when the multicast
+      domain group was most recently updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key-value pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  multicastDomains = _messages.StringField(4, repeated=True)
+  name = _messages.StringField(5)
+  uniqueId = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+
+
+class MulticastGroupConsumerActivation(_messages.Message):
+  r"""Multicast group consumer activation resource.
+
+  Enums:
+    ResourceStateValueValuesEnum: Output only. The resource state of the
+      multicast group consumer activation.
+
+  Messages:
+    LabelsValue: Optional. Labels as key-value pairs
+
+  Fields:
+    createTime: Output only. [Output only] The timestamp when the multicast
+      group consumer activation was created.
+    description: Optional. An optional text description of the multicast group
+      consumer activation.
+    labels: Optional. Labels as key-value pairs
+    multicastConsumerAssociation: Required. The resource name of the multicast
+      consumer association that is in the same zone as this multicast group
+      consumer activation. Use the following format:
+      `projects/*/locations/*/multicastConsumerAssociations/*`.
+    multicastGroup: Required. The resource name of the multicast group created
+      by the admin in the same zone as this multicast group consumer
+      activation. Use the following format: //
+      `projects/*/locations/*/multicastGroups/*`.
+    multicastGroupRangeActivation: Required. The resource name of the
+      multicast group range activation created by the admin in the same zone
+      as this multicast group consumer activation. Use the following format:
+      // `projects/*/locations/*/multicastGroupRangeActivations/*`.
+    name: Identifier. The resource name of the multicast group consumer
+      activation. Use the following format:
+      `projects/*/locations/*/multicastGroupConsumerActivations/*`.
+    resourceState: Output only. The resource state of the multicast group
+      consumer activation.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all multicast group consumer
+      activation resources. If a group consumer activation is deleted and
+      another with the same name is created, the new group consumer activation
+      is assigned a different unique_id.
+    updateTime: Output only. [Output only] The timestamp when the multicast
+      group consumer activation was most recently updated.
+  """
+
+  class ResourceStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The resource state of the multicast group consumer
+    activation.
+
+    Values:
+      CONSUMER_RESOURCE_STATE_UNSPECIFIED: The consumer resource state is not
+        specified.
+      ACTIVE: The consumer resource state is active.
+      OBSOLETE: The associated admin resource has been deleted. The consumer
+        resource state becomes obsolete.
+    """
+    CONSUMER_RESOURCE_STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    OBSOLETE = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key-value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  multicastConsumerAssociation = _messages.StringField(4)
+  multicastGroup = _messages.StringField(5)
+  multicastGroupRangeActivation = _messages.StringField(6)
+  name = _messages.StringField(7)
+  resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 8)
+  uniqueId = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class MulticastGroupProducerActivation(_messages.Message):
+  r"""Multicast group producer activation resource.
+
+  Messages:
+    LabelsValue: Optional. Labels as key-value pairs
+
+  Fields:
+    createTime: Output only. [Output only] The timestamp when the multicast
+      group producer activation was created.
+    description: Optional. An optional text description of the multicast group
+      producer activation.
+    labels: Optional. Labels as key-value pairs
+    multicastGroup: Required. The resource name of the multicast group created
+      by the admin in the same zone as this multicast group producer
+      activation. Use the following format: //
+      `projects/*/locations/*/multicastGroups/*`.
+    multicastGroupRangeActivation: Required. The resource name of the
+      multicast group range activationcreated by the admin in the same zone as
+      this multicast group producer activation. Use the following format: //
+      `projects/*/locations/*/multicastGroupRangeActivations/*`.
+    multicastProducerAssociation: Required. The resource name of the multicast
+      producer association that is in the same zone as this multicast group
+      producer activation. Use the following format:
+      `projects/*/locations/*/multicastProducerAssociations/*`.
+    name: Identifier. The resource name of the multicast group producer
+      activation. Use the following format:
+      `projects/*/locations/*/multicastGroupProducerActivations/*`.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all multicast group producer
+      activation resources. If a group producer activation is deleted and
+      another with the same name is created, the new group producer activation
+      is assigned a different unique_id.
+    updateTime: Output only. [Output only] The timestamp when the multicast
+      group producer activation was most recently updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key-value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  multicastGroup = _messages.StringField(4)
+  multicastGroupRangeActivation = _messages.StringField(5)
+  multicastProducerAssociation = _messages.StringField(6)
+  name = _messages.StringField(7)
+  uniqueId = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+
+
+class MulticastGroupRange(_messages.Message):
+  r"""Multicast group range resource.
+
+  Messages:
+    LabelsValue: Optional. Labels as key-value pairs.
+
+  Fields:
+    consumerAcceptList: Optional. A list of consumer projects that are allowed
+      to subscribe to the multicast IP addresses within the range defined by
+      this MulticastGroupRange. The project can be specified using its project
+      ID or project number. If left empty, then all consumer projects are
+      allowed (unless require_explicit_accept is set to true) once they have
+      VPC networks associated to the multicast domain. The current max length
+      of the accept list is 100.
+    createTime: Output only. [Output only] The timestamp when the multicast
+      group range was created.
+    description: Optional. An optional text description of the multicast group
+      range.
+    ipCidrRange: Output only. [Output only] The multicast group IP address
+      range.
+    labels: Optional. Labels as key-value pairs.
+    multicastDomain: Required. The resource name of the multicast domain in
+      which to create this multicast group range. Use the following format:
+      `projects/*/locations/global/multicastDomains/*`.
+    name: Identifier. The resource name of the multicast group range. Use the
+      following format: `projects/*/locations/global/multicastGroupRanges/*`.
+    requireExplicitAccept: Optional. Whether an empty consumer_accept_list
+      will deny all consumer projects.
+    reservedInternalRange: Required. The resource name of the internal range
+      reserved for this multicast group range. The internal range must be a
+      Class D address (224.0.0.0 to 239.255.255.255) and have a prefix length
+      >= 23. Use the following format:
+      `projects/*/locations/global/internalRanges/*`.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all multicast group range
+      resources. If a group range is deleted and another with the same name is
+      created, the new group range is assigned a different unique_id.
+    updateTime: Output only. [Output only] The timestamp when the multicast
+      group range was most recently updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key-value pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  consumerAcceptList = _messages.StringField(1, repeated=True)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  ipCidrRange = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  multicastDomain = _messages.StringField(6)
+  name = _messages.StringField(7)
+  requireExplicitAccept = _messages.BooleanField(8)
+  reservedInternalRange = _messages.StringField(9)
+  uniqueId = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+
+
+class MulticastGroupRangeActivation(_messages.Message):
+  r"""Multicast group range activation resource.
+
+  Messages:
+    LabelsValue: Optional. Labels as key-value pairs.
+
+  Fields:
+    createTime: Output only. [Output only] The timestamp when the multicast
+      group range activation was created.
+    description: Optional. An optional text description of the multicast group
+      range activation.
+    ipCidrRange: Output only. [Output only] The multicast group IP address
+      range.
+    labels: Optional. Labels as key-value pairs.
+    multicastDomainActivation: Optional. The resource name of a multicast
+      domain activation that is in the same zone as this multicast group. Use
+      the following format:
+      `projects/*/locations/*/multicastDomainActivations/*`
+    multicastGroupConsumerActivations: Output only. The resource names of
+      associated multicast group consumer activations. Use the following
+      format: `projects/*/locations/*/multicastGroupConsumerActivations/*`.
+    multicastGroupRange: Optional. The resource name of the global multicast
+      group range for the group. Use the following format:
+      `projects/*/locations/global/multicastGroupRanges/*`
+    name: Identifier. The resource name of the multicast group range
+      activation. Use the following format:
+      `projects/*/locations/*/multicastGroupRangeActivations/*`.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all multicast group resources. If
+      a group is deleted and another with the same name is created, the new
+      group is assigned a different unique_id.
+    updateTime: Output only. [Output only] The timestamp when the multicast
+      group range activation was most recently updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key-value pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  ipCidrRange = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  multicastDomainActivation = _messages.StringField(5)
+  multicastGroupConsumerActivations = _messages.StringField(6, repeated=True)
+  multicastGroupRange = _messages.StringField(7)
+  name = _messages.StringField(8)
+  uniqueId = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class MulticastProducerAssociation(_messages.Message):
+  r"""Multicast producer association resource.
+
+  Messages:
+    LabelsValue: Optional. Labels as key-value pairs
+
+  Fields:
+    createTime: Output only. [Output only] The timestamp when the multicast
+      producer association was created.
+    description: Optional. An optional text description of the multicast
+      producer association.
+    labels: Optional. Labels as key-value pairs
+    multicastDomainActivation: Optional. The resource name of the multicast
+      domain activation that is in the same zone as this multicast producer
+      association. Use the following format: //
+      `projects/*/locations/*/multicastProducerAssociations/*`.
+    name: Identifier. The resource name of the multicast producer association.
+      Use the following format:
+      `projects/*/locations/*/multicastProducerAssociations/*`.
+    network: Required. The resource name of the multicast producer VPC
+      network. Use following format:
+      `projects/{project}/locations/global/networks/{network}`.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all multicast producer association
+      resources. If a producer association is deleted and another with the
+      same name is created, the new producer association is assigned a
+      different unique_id.
+    updateTime: Output only. [Output only] The timestamp when the Multicast
+      Producer Association was most recently updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key-value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  multicastDomainActivation = _messages.StringField(4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  uniqueId = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class NetworkservicesProjectsLocationsAuthzExtensionsCreateRequest(_messages.Message):
@@ -2672,6 +3635,35 @@ class NetworkservicesProjectsLocationsGatewaysPatchRequest(_messages.Message):
   gateway = _messages.MessageField('Gateway', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsGatewaysRouteViewsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGatewaysRouteViewsGetRequest object.
+
+  Fields:
+    name: Required. Name of the GatewayRouteView resource. Formats: projects/{
+      project_number}/locations/{location}/gateways/{gateway_name}/routeViews/
+      {route_view_name}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsGatewaysRouteViewsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGatewaysRouteViewsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of GatewayRouteViews to return per call.
+    pageToken: The value returned by the last `ListGatewayRouteViewsResponse`
+      Indicates that this is a continuation of a prior `ListGatewayRouteViews`
+      call, and that the system should return the next page of data.
+    parent: Required. The Gateway to which a Route is associated. Formats:
+      projects/{project_number}/locations/{location}/gateways/{gateway_name}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class NetworkservicesProjectsLocationsGetRequest(_messages.Message):
@@ -3169,6 +4161,1251 @@ class NetworkservicesProjectsLocationsMeshesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class NetworkservicesProjectsLocationsMeshesRouteViewsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesRouteViewsGetRequest object.
+
+  Fields:
+    name: Required. Name of the MeshRouteView resource. Format: projects/{proj
+      ect_number}/locations/{location}/meshes/{mesh_name}/routeViews/{route_vi
+      ew_name}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMeshesRouteViewsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesRouteViewsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of MeshRouteViews to return per call.
+    pageToken: The value returned by the last `ListMeshRouteViewsResponse`
+      Indicates that this is a continuation of a prior `ListMeshRouteViews`
+      call, and that the system should return the next page of data.
+    parent: Required. The Mesh to which a Route is associated. Format:
+      projects/{project_number}/locations/{location}/meshes/{mesh_name}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsCreateRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastConsumerAssociationsCreateRequest
+  object.
+
+  Fields:
+    multicastConsumerAssociation: A MulticastConsumerAssociation resource to
+      be passed as the request body.
+    multicastConsumerAssociationId: Required. A unique name for the multicast
+      consumer association. The name is restricted to letters, numbers, and
+      hyphen, with the first character a letter, and the last a letter or a
+      number. The name must not exceed 48 characters.
+    parent: Required. The parent resource of the multicast consumer
+      association. Use the following format: `projects/*/locations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastConsumerAssociation = _messages.MessageField('MulticastConsumerAssociation', 1)
+  multicastConsumerAssociationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsDeleteRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastConsumerAssociationsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the multicast consumer association to
+      delete. Use the following format:
+      `projects/*/locations/*/multicastConsumerAssociations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the multicast consumer association to
+      get. Use the following format:
+      `projects/*/locations/*/multicastConsumerAssociations/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsListRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastConsumerAssociationsListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of multicast consumer associations
+      to return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast consumer
+      associations. Use the following format: `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsPatchRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastConsumerAssociationsPatchRequest
+  object.
+
+  Fields:
+    multicastConsumerAssociation: A MulticastConsumerAssociation resource to
+      be passed as the request body.
+    name: Identifier. The resource name of the multicast consumer association.
+      Use the following format:
+      `projects/*/locations/*/multicastConsumerAssociations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. The field mask specifies the fields to overwrite in
+      the MulticastConsumerAssociation resource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. If a field is in the mask, then it is overwritten. If the
+      you do not provide a mask, then all fields are overwritten
+  """
+
+  multicastConsumerAssociation = _messages.MessageField('MulticastConsumerAssociation', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainActivationsCreateRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastDomainActivationsCreateRequest
+  object.
+
+  Fields:
+    multicastDomainActivation: A MulticastDomainActivation resource to be
+      passed as the request body.
+    multicastDomainActivationId: Required. A unique name for the multicast
+      domain activation. The name is restricted to letters, numbers, and
+      hyphen, with the first character a letter, and the last a letter or a
+      number. The name must not exceed 48 characters.
+    parent: Required. The parent resource of the multicast domain activation.
+      Use the following format: `projects/*/locations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastDomainActivation = _messages.MessageField('MulticastDomainActivation', 1)
+  multicastDomainActivationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainActivationsDeleteRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastDomainActivationsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the multicast domain activation to
+      delete. Use the following format:
+      `projects/*/locations/*/multicastDomainActivations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainActivationsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainActivationsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the multicast domain activation to
+      get. Use the following format:
+      `projects/*/locations/*/multicastDomainActivations/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainActivationsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainActivationsListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of multicast domain activations to
+      return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast domain
+      activations. Use the following format: `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest
+  object.
+
+  Fields:
+    multicastDomainActivation: A MulticastDomainActivation resource to be
+      passed as the request body.
+    name: Identifier. The resource name of the multicast domain activation.
+      Use the following format:
+      `projects/*/locations/*/multicastDomainActivations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. The field mask specifies the fields to overwrite in
+      the MulticastDomainActivation resource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. If a field is in the mask, then it is overwritten. If the
+      you do not provide a mask, then all fields are overwritten
+  """
+
+  multicastDomainActivation = _messages.MessageField('MulticastDomainActivation', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainGroupsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainGroupsCreateRequest
+  object.
+
+  Fields:
+    multicastDomainGroup: A MulticastDomainGroup resource to be passed as the
+      request body.
+    multicastDomainGroupId: Required. A unique name for the multicast domain
+      group. The name is restricted to letters, numbers, and hyphen, with the
+      first character a letter, and the last a letter or a number. The name
+      must not exceed 48 characters.
+    parent: Required. The parent resource of the multicast domain group. Use
+      the following format: `projects/*/locations/global`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastDomainGroup = _messages.MessageField('MulticastDomainGroup', 1)
+  multicastDomainGroupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainGroupsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainGroupsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the multicast domain to delete. Use
+      the following format: `projects/*/locations/global/multicastDomains/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainGroupsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainGroupsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the multicast domain group to get.
+      Use the following format:
+      `projects/*/locations/global/multicastDomainGroups/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainGroupsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainGroupsListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of multicast domain groups to
+      return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast domain
+      groups. Use the following format: `projects/*/locations/global`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainGroupsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainGroupsPatchRequest
+  object.
+
+  Fields:
+    multicastDomainGroup: A MulticastDomainGroup resource to be passed as the
+      request body.
+    name: Identifier. The resource name of the multicast domain group. Use the
+      following format: `projects/*/locations/global/multicastDomainGroups/*`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. The field mask specifies the fields to overwrite in
+      the multicast domain resource by the update. The fields specified in the
+      `update_mask` are relative to the resource, not the full request. If a
+      field is in the mask, then it is overwritten. If the you do not provide
+      a mask, then all fields are overwritten.
+  """
+
+  multicastDomainGroup = _messages.MessageField('MulticastDomainGroup', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainsCreateRequest object.
+
+  Fields:
+    multicastDomain: A MulticastDomain resource to be passed as the request
+      body.
+    multicastDomainId: Required. A unique name for the multicast domain. The
+      name is restricted to letters, numbers, and hyphen, with the first
+      character a letter, and the last a letter or a number. The name must not
+      exceed 48 characters.
+    parent: Required. The parent resource of the multicast domain. Use the
+      following format: `projects/*/locations/global`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastDomain = _messages.MessageField('MulticastDomain', 1)
+  multicastDomainId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainsDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the multicast domain to delete. Use
+      the following format: `projects/*/locations/global/multicastDomains/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the multicast domain to get. Use the
+      following format: `projects/*/locations/global/multicastDomains/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainsListRequest object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of multicast domains to return per
+      call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast domains.
+      Use the following format: `projects/*/locations/global`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainsPatchRequest object.
+
+  Fields:
+    multicastDomain: A MulticastDomain resource to be passed as the request
+      body.
+    name: Identifier. The resource name of the multicast domain. Use the
+      following format: `projects/*/locations/global/multicastDomains/*`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. The field mask specifies the fields to overwrite in
+      the multicast domain resource by the update. The fields specified in the
+      `update_mask` are relative to the resource, not the full request. If a
+      field is in the mask, then it is overwritten. If the you do not provide
+      a mask, then all fields are overwritten.
+  """
+
+  multicastDomain = _messages.MessageField('MulticastDomain', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsCreat
+  eRequest object.
+
+  Fields:
+    multicastGroupConsumerActivation: A MulticastGroupConsumerActivation
+      resource to be passed as the request body.
+    multicastGroupConsumerActivationId: Required. A unique name for the
+      multicast group consumer activation. The name is restricted to letters,
+      numbers, and hyphen, with the first character a letter, and the last a
+      letter or a number. The name must not exceed 48 characters.
+    parent: Required. The parent resource of the multicast group consumer
+      activation. Use the following format: `projects/*/locations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastGroupConsumerActivation = _messages.MessageField('MulticastGroupConsumerActivation', 1)
+  multicastGroupConsumerActivationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsDelet
+  eRequest object.
+
+  Fields:
+    name: Required. The resource name of the multicast group consumer
+      activation to delete. Use the following format:
+      `projects/*/locations/*/multicastGroupConsumerActivations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsGetRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the multicast group consumer
+      activation to get. Use the following format:
+      `projects/*/locations/*/multicastGroupConsumerActivations/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsListRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of multicast group consumer
+      activations to return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast group
+      consumer activations. Use the following format:
+      `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsPatch
+  Request object.
+
+  Fields:
+    multicastGroupConsumerActivation: A MulticastGroupConsumerActivation
+      resource to be passed as the request body.
+    name: Identifier. The resource name of the multicast group consumer
+      activation. Use the following format:
+      `projects/*/locations/*/multicastGroupConsumerActivations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. The field mask specifies the fields to overwrite in
+      the MulticastGroupConsumerActivationresource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. If a field is in the mask, then it is overwritten. If the
+      you do not provide a mask, then all fields are overwritten
+  """
+
+  multicastGroupConsumerActivation = _messages.MessageField('MulticastGroupConsumerActivation', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupProducerActivationsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupProducerActivationsCreat
+  eRequest object.
+
+  Fields:
+    multicastGroupProducerActivation: A MulticastGroupProducerActivation
+      resource to be passed as the request body.
+    multicastGroupProducerActivationId: Required. A unique name for the
+      multicast group producer activation. The name is restricted to letters,
+      numbers, and hyphen, with the first character a letter, and the last a
+      letter or a number. The name must not exceed 48 characters.
+    parent: Required. The parent resource of the multicast group producer
+      activation. Use the following format: `projects/*/locations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastGroupProducerActivation = _messages.MessageField('MulticastGroupProducerActivation', 1)
+  multicastGroupProducerActivationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupProducerActivationsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupProducerActivationsDelet
+  eRequest object.
+
+  Fields:
+    name: Required. The resource name of the multicast group producer
+      activation to delete. Use the following format:
+      `projects/*/locations/*/multicastGroupProducerActivations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupProducerActivationsGetRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastGroupProducerActivationsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the multicast group producer
+      activation to get. Use the following format:
+      `projects/*/locations/*/multicastGroupProducerActivations/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupProducerActivationsListRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastGroupProducerActivationsListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of multicast group producer
+      activations to return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast group
+      producer activations. Use the following format:
+      `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupProducerActivationsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupProducerActivationsPatch
+  Request object.
+
+  Fields:
+    multicastGroupProducerActivation: A MulticastGroupProducerActivation
+      resource to be passed as the request body.
+    name: Identifier. The resource name of the multicast group producer
+      activation. Use the following format:
+      `projects/*/locations/*/multicastGroupProducerActivations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. The field mask specifies the fields to overwrite in
+      the MulticastGroupProducerActivationresource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. If a field is in the mask, then it is overwritten. If the
+      you do not provide a mask, then all fields are overwritten
+  """
+
+  multicastGroupProducerActivation = _messages.MessageField('MulticastGroupProducerActivation', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupRangeActivationsCreateRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastGroupRangeActivationsCreateRequest
+  object.
+
+  Fields:
+    multicastGroupRangeActivation: A MulticastGroupRangeActivation resource to
+      be passed as the request body.
+    multicastGroupRangeActivationId: Required. A unique name for the multicast
+      group range activation. The name is restricted to letters, numbers, and
+      hyphen, with the first character a letter, and the last a letter or a
+      number. The name must not exceed 48 characters.
+    parent: Required. The parent resource of the multicast group range
+      activation. Use the following format: `projects/*/locations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastGroupRangeActivation = _messages.MessageField('MulticastGroupRangeActivation', 1)
+  multicastGroupRangeActivationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupRangeActivationsDeleteRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastGroupRangeActivationsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the multicast group range activation
+      to delete. Use the following format:
+      `projects/*/locations/*/multicastGroupRangeActivations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupRangeActivationsGetRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastGroupRangeActivationsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the multicast group range activation
+      to get. Use the following format:
+      `projects/*/locations/*/multicastGroupRangeActivations/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupRangeActivationsListRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastGroupRangeActivationsListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of multicast group range
+      activations to return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast group
+      range activations. Use the following format: `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupRangeActivationsPatchRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastGroupRangeActivationsPatchRequest
+  object.
+
+  Fields:
+    multicastGroupRangeActivation: A MulticastGroupRangeActivation resource to
+      be passed as the request body.
+    name: Identifier. The resource name of the multicast group range
+      activation. Use the following format:
+      `projects/*/locations/*/multicastGroupRangeActivations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. The field mask specifies the fields to overwrite in
+      the multicast group range activation resource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. If a field is in the mask, then it is overwritten. If the
+      you do not provide a mask, then all fields are overwritten.
+  """
+
+  multicastGroupRangeActivation = _messages.MessageField('MulticastGroupRangeActivation', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupRangesCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupRangesCreateRequest
+  object.
+
+  Fields:
+    multicastGroupRange: A MulticastGroupRange resource to be passed as the
+      request body.
+    multicastGroupRangeId: Required. A unique name for the multicast group
+      range. The name is restricted to letters, numbers, and hyphen, with the
+      first character a letter, and the last a letter or a number. The name
+      must not exceed 48 characters.
+    parent: Required. The parent resource of the multicast group range. Use
+      the following format: `projects/*/locations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastGroupRange = _messages.MessageField('MulticastGroupRange', 1)
+  multicastGroupRangeId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupRangesDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupRangesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the multicast group range to delete.
+      Use the following format:
+      `projects/*/locations/global/multicastGroupRanges/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupRangesGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupRangesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the multicast group range to get. Use
+      the following format: `projects/*/locations/*/multicastGroupRanges/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupRangesListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupRangesListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of multicast group ranges to return
+      per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast group
+      ranges. Use the following format: `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupRangesPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupRangesPatchRequest
+  object.
+
+  Fields:
+    multicastGroupRange: A MulticastGroupRange resource to be passed as the
+      request body.
+    name: Identifier. The resource name of the multicast group range. Use the
+      following format: `projects/*/locations/global/multicastGroupRanges/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. The field mask specifies the fields to overwrite in
+      the multicast group range resource by the update. The fields specified
+      in the `update_mask` are relative to the resource, not the full request.
+      If a field is in the mask, then it is overwritten. If the you do not
+      provide a mask, then all fields are overwritten.
+  """
+
+  multicastGroupRange = _messages.MessageField('MulticastGroupRange', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastProducerAssociationsCreateRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastProducerAssociationsCreateRequest
+  object.
+
+  Fields:
+    multicastProducerAssociation: A MulticastProducerAssociation resource to
+      be passed as the request body.
+    multicastProducerAssociationId: Required. A unique name for the multicast
+      producer association. The name is restricted to letters, numbers, and
+      hyphen, with the first character a letter, and the last a letter or a
+      number. The name must not exceed 48 characters.
+    parent: Required. The parent resource of the multicast producer
+      association. Use the following format: `projects/*/locations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastProducerAssociation = _messages.MessageField('MulticastProducerAssociation', 1)
+  multicastProducerAssociationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastProducerAssociationsDeleteRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastProducerAssociationsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the multicast producer association to
+      delete. Use the following format:
+      `projects/*/locations/*/multicastProducerAssociations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastProducerAssociationsGetRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastProducerAssociationsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the multicast producer association to
+      get. Use the following format:
+      `projects/*/locations/*/multicastProducerAssociations/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastProducerAssociationsListRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastProducerAssociationsListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of multicast producer associations
+      to return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast producer
+      associations. Use the following format: `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastProducerAssociationsPatchRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastProducerAssociationsPatchRequest
+  object.
+
+  Fields:
+    multicastProducerAssociation: A MulticastProducerAssociation resource to
+      be passed as the request body.
+    name: Identifier. The resource name of the multicast producer association.
+      Use the following format:
+      `projects/*/locations/*/multicastProducerAssociations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. The field mask specifies the fields to overwrite in
+      the MulticastProducerAssociation resource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. If a field is in the mask, then it is overwritten. If the
+      you do not provide a mask, then all fields are overwritten
+  """
+
+  multicastProducerAssociation = _messages.MessageField('MulticastProducerAssociation', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class NetworkservicesProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsOperationsCancelRequest object.
 
@@ -3337,9 +5574,9 @@ class NetworkservicesProjectsLocationsServiceLbPoliciesPatchRequest(_messages.Me
   r"""A NetworkservicesProjectsLocationsServiceLbPoliciesPatchRequest object.
 
   Fields:
-    name: Required. Name of the ServiceLbPolicy resource. It matches pattern `
-      projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_po
-      licy_name}`.
+    name: Identifier. Name of the ServiceLbPolicy resource. It matches pattern
+      `projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_p
+      olicy_name}`.
     serviceLbPolicy: A ServiceLbPolicy resource to be passed as the request
       body.
     updateMask: Optional. Field mask is used to specify the fields to be
@@ -3532,26 +5769,28 @@ class NetworkservicesProjectsLocationsWasmPluginsGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsWasmPluginsGetRequest object.
 
   Enums:
-    ViewValueValuesEnum: Determine how much data should be returned by the
-      API. See [AIP-157](https://google.aip.dev/157).
+    ViewValueValuesEnum: Determines how much data must be returned in the
+      response. See [AIP-157](https://google.aip.dev/157).
 
   Fields:
     name: Required. A name of the `WasmPlugin` resource to get. Must be in the
       format `projects/{project}/locations/global/wasmPlugins/{wasm_plugin}`.
-    view: Determine how much data should be returned by the API. See
+    view: Determines how much data must be returned in the response. See
       [AIP-157](https://google.aip.dev/157).
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Determine how much data should be returned by the API. See
+    r"""Determines how much data must be returned in the response. See
     [AIP-157](https://google.aip.dev/157).
 
     Values:
-      WASM_PLUGIN_VIEW_UNSPECIFIED: The default / unset value. The API will
-        default to the BASIC view.
-      WASM_PLUGIN_VIEW_BASIC: Include just WasmPlugin record.
-      WASM_PLUGIN_VIEW_FULL: Include WasmPlugin record and all its
-        WasmPluginVersions.
+      WASM_PLUGIN_VIEW_UNSPECIFIED: Unspecified value. Do not use.
+      WASM_PLUGIN_VIEW_BASIC: If specified in the `GET` request for a
+        `WasmPlugin` resource, the server's response includes just the
+        `WasmPlugin` resource.
+      WASM_PLUGIN_VIEW_FULL: If specified in the `GET` request for a
+        `WasmPlugin` resource, the server's response includes the `WasmPlugin`
+        resource with all its versions.
     """
     WASM_PLUGIN_VIEW_UNSPECIFIED = 0
     WASM_PLUGIN_VIEW_BASIC = 1
@@ -3566,8 +5805,8 @@ class NetworkservicesProjectsLocationsWasmPluginsListRequest(_messages.Message):
 
   Fields:
     pageSize: Maximum number of `WasmPlugin` resources to return per call. If
-      not specified, at most 50 `WasmPlugin`s are returned. The maximum value
-      is 1000; values above 1000 are coerced to 1000.
+      not specified, at most 50 `WasmPlugin` resources are returned. The
+      maximum value is 1000; values above 1000 are coerced to 1000.
     pageToken: The value returned by the last `ListWasmPluginsResponse` call.
       Indicates that this is a continuation of a prior `ListWasmPlugins` call,
       and that the next page of data is to be returned.
@@ -3653,8 +5892,9 @@ class NetworkservicesProjectsLocationsWasmPluginsVersionsListRequest(_messages.M
 
   Fields:
     pageSize: Maximum number of `WasmPluginVersion` resources to return per
-      call. If not specified, at most 50 `WasmPluginVersion`s are returned.
-      The maximum value is 1000; values above 1000 are coerced to 1000.
+      call. If not specified, at most 50 `WasmPluginVersion` resources are
+      returned. The maximum value is 1000; values above 1000 are coerced to
+      1000.
     pageToken: The value returned by the last `ListWasmPluginVersionsResponse`
       call. Indicates that this is a continuation of a prior
       `ListWasmPluginVersions` call, and that the next page of data is to be
@@ -3898,9 +6138,9 @@ class ServiceLbPolicy(_messages.Message):
       resource.
     loadBalancingAlgorithm: Optional. The type of load balancing algorithm to
       be used. The default behavior is WATERFALL_BY_REGION.
-    name: Required. Name of the ServiceLbPolicy resource. It matches pattern `
-      projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_po
-      licy_name}`.
+    name: Identifier. Name of the ServiceLbPolicy resource. It matches pattern
+      `projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_p
+      olicy_name}`.
     updateTime: Output only. The timestamp when this resource was last
       updated.
   """
@@ -4403,6 +6643,18 @@ class TrafficPortSelector(_messages.Message):
   ports = _messages.StringField(1, repeated=True)
 
 
+class UllMulticastDomain(_messages.Message):
+  r"""Information for an Ultra-Low-Latency multicast domain. This is only
+  available in specific locations and allowlisted projects.
+
+  Fields:
+    preconfiguredUllDomain: Optional. The preconfigured Ultra-Low-Latency
+      domain name.
+  """
+
+  preconfiguredUllDomain = _messages.StringField(1)
+
+
 class WasmPlugin(_messages.Message):
   r"""`WasmPlugin` is a resource representing a service executing a customer-
   provided Wasm module.
@@ -4411,17 +6663,18 @@ class WasmPlugin(_messages.Message):
     LabelsValue: Optional. Set of labels associated with the `WasmPlugin`
       resource. The format must comply with [the following
       requirements](/compute/docs/labeling-resources#requirements).
-    VersionsValue: Optional. All versions of this `WasmPlugin` in the key-
-      value format. The key is the resource ID, the value is the
-      `VersionDetails`. Allows to create or update `WasmPlugin` and its
-      WasmPluginVersions in a single request. When the `main_version_id` field
-      is not empty it must point to one of the VersionDetails in the map. If
-      provided in the update request, the new versions replace the previous
-      set. Any version omitted from the `versions` will be removed. Since the
-      `WasmPluginVersion` resource is immutable, if the WasmPluginVersion with
-      the same name already exists and differs the Update request will fail.
-      Note: In the GET request, this field is populated only if the
-      GetWasmPluginRequest.view is set to WASM_PLUGIN_VIEW_FULL.
+    VersionsValue: Optional. All versions of this `WasmPlugin` resource in the
+      key-value format. The key is the resource ID, and the value is the
+      `VersionDetails` object. Lets you create or update a `WasmPlugin`
+      resource and its versions in a single request. When the
+      `main_version_id` field is not empty, it must point to one of the
+      `VersionDetails` objects in the map. If provided in a `PATCH` request,
+      the new versions replace the previous set. Any version omitted from the
+      `versions` field is removed. Because the `WasmPluginVersion` resource is
+      immutable, if a `WasmPluginVersion` resource with the same name already
+      exists and differs, the request fails. Note: In a `GET` request, this
+      field is populated only if the field `GetWasmPluginRequest.view` is set
+      to `WASM_PLUGIN_VIEW_FULL`.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -4430,11 +6683,9 @@ class WasmPlugin(_messages.Message):
       The format must comply with [the following
       requirements](/compute/docs/labeling-resources#requirements).
     logConfig: Optional. Specifies the logging options for the activity
-      performed by this `WasmPlugin`. If logging is enabled, plugin logs are
+      performed by this plugin. If logging is enabled, plugin logs are
       exported to Cloud Logging. Note that the settings relate to the logs
-      generated by using logging statements in your Wasm code. The HTTP
-      request logs are additionally configured in the Media CDN service that
-      uses this `WasmPlugin` on the request path.
+      generated by using logging statements in your Wasm code.
     mainVersionId: Optional. The ID of the `WasmPluginVersion` resource that
       is the currently serving one. The version referred to must be a child of
       this `WasmPlugin` resource.
@@ -4442,20 +6693,21 @@ class WasmPlugin(_messages.Message):
       format:
       `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}`.
     updateTime: Output only. The timestamp when the resource was updated.
-    usedBy: Output only. List of all [Service
-      Extensions](https://cloud.google.com/service-extensions/docs/overview)
-      that use this `WasmPlugin`.
-    versions: Optional. All versions of this `WasmPlugin` in the key-value
-      format. The key is the resource ID, the value is the `VersionDetails`.
-      Allows to create or update `WasmPlugin` and its WasmPluginVersions in a
-      single request. When the `main_version_id` field is not empty it must
-      point to one of the VersionDetails in the map. If provided in the update
-      request, the new versions replace the previous set. Any version omitted
-      from the `versions` will be removed. Since the `WasmPluginVersion`
-      resource is immutable, if the WasmPluginVersion with the same name
-      already exists and differs the Update request will fail. Note: In the
-      GET request, this field is populated only if the
-      GetWasmPluginRequest.view is set to WASM_PLUGIN_VIEW_FULL.
+    usedBy: Output only. List of all
+      [extensions](https://cloud.google.com/service-extensions/docs/overview)
+      that use this `WasmPlugin` resource.
+    versions: Optional. All versions of this `WasmPlugin` resource in the key-
+      value format. The key is the resource ID, and the value is the
+      `VersionDetails` object. Lets you create or update a `WasmPlugin`
+      resource and its versions in a single request. When the
+      `main_version_id` field is not empty, it must point to one of the
+      `VersionDetails` objects in the map. If provided in a `PATCH` request,
+      the new versions replace the previous set. Any version omitted from the
+      `versions` field is removed. Because the `WasmPluginVersion` resource is
+      immutable, if a `WasmPluginVersion` resource with the same name already
+      exists and differs, the request fails. Note: In a `GET` request, this
+      field is populated only if the field `GetWasmPluginRequest.view` is set
+      to `WASM_PLUGIN_VIEW_FULL`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -4486,17 +6738,17 @@ class WasmPlugin(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class VersionsValue(_messages.Message):
-    r"""Optional. All versions of this `WasmPlugin` in the key-value format.
-    The key is the resource ID, the value is the `VersionDetails`. Allows to
-    create or update `WasmPlugin` and its WasmPluginVersions in a single
-    request. When the `main_version_id` field is not empty it must point to
-    one of the VersionDetails in the map. If provided in the update request,
-    the new versions replace the previous set. Any version omitted from the
-    `versions` will be removed. Since the `WasmPluginVersion` resource is
-    immutable, if the WasmPluginVersion with the same name already exists and
-    differs the Update request will fail. Note: In the GET request, this field
-    is populated only if the GetWasmPluginRequest.view is set to
-    WASM_PLUGIN_VIEW_FULL.
+    r"""Optional. All versions of this `WasmPlugin` resource in the key-value
+    format. The key is the resource ID, and the value is the `VersionDetails`
+    object. Lets you create or update a `WasmPlugin` resource and its versions
+    in a single request. When the `main_version_id` field is not empty, it
+    must point to one of the `VersionDetails` objects in the map. If provided
+    in a `PATCH` request, the new versions replace the previous set. Any
+    version omitted from the `versions` field is removed. Because the
+    `WasmPluginVersion` resource is immutable, if a `WasmPluginVersion`
+    resource with the same name already exists and differs, the request fails.
+    Note: In a `GET` request, this field is populated only if the field
+    `GetWasmPluginRequest.view` is set to `WASM_PLUGIN_VIEW_FULL`.
 
     Messages:
       AdditionalProperty: An additional property for a VersionsValue object.
@@ -4530,52 +6782,43 @@ class WasmPlugin(_messages.Message):
 
 
 class WasmPluginLogConfig(_messages.Message):
-  r"""Specifies the logging options for the activity performed by this
-  `WasmPlugin`. If logging is enabled, plugin logs are exported to Cloud
-  Logging.
+  r"""Specifies the logging options for the activity performed by this plugin.
+  If logging is enabled, plugin logs are exported to Cloud Logging.
 
   Enums:
     MinLogLevelValueValuesEnum: Non-empty default. Specificies the lowest
       level of the plugin logs that are exported to Cloud Logging. This
       setting relates to the logs generated by using logging statements in
       your Wasm code. This field is can be set only if logging is enabled for
-      the `WasmPlugin` resource. If the field is not provided when logging is
-      enabled, it is set to `INFO` by default.
+      the plugin. If the field is not provided when logging is enabled, it is
+      set to `INFO` by default.
 
   Fields:
     enable: Optional. Specifies whether to enable logging for activity by this
-      `WasmPlugin`. Defaults to `false`.
+      plugin. Defaults to `false`.
     minLogLevel: Non-empty default. Specificies the lowest level of the plugin
       logs that are exported to Cloud Logging. This setting relates to the
       logs generated by using logging statements in your Wasm code. This field
-      is can be set only if logging is enabled for the `WasmPlugin` resource.
-      If the field is not provided when logging is enabled, it is set to
-      `INFO` by default.
+      is can be set only if logging is enabled for the plugin. If the field is
+      not provided when logging is enabled, it is set to `INFO` by default.
     sampleRate: Non-empty default. Configures the sampling rate of activity
       logs, where `1.0` means all logged activity is reported and `0.0` means
-      no activity is reported. The default value is `1.0`, and the value of
-      the field must be between `0` and `1` (inclusive). The setting relates
-      to logs generated in your Wasm code. Note that for the logs generated on
-      the HTTP processing path, the sample rate is multiplied by the sample
-      rate configured in the Media CDN service using this Wasm plugin. For
-      example: - 0.5 of HTTP requests are logged because of the setting on the
-      Media CDN service - Among those requests, 0.5 of logs are exported due
-      to the setting on the Wasm plugin - In effect, 0.25 of logs on HTTP
-      processing path are exported This field can only be specified if logging
-      is enabled for this `WasmPlugin`. If the field is not provided when
-      logging is enabled it is set to `1` by default.
+      no activity is reported. A floating point value between `0.0` and `1.0`
+      indicates that a percentage of log messages is stored. The default value
+      when logging is enabled is `1.0`. The value of the field must be between
+      `0` and `1` (inclusive). This field can be specified only if logging is
+      enabled for this plugin.
   """
 
   class MinLogLevelValueValuesEnum(_messages.Enum):
     r"""Non-empty default. Specificies the lowest level of the plugin logs
     that are exported to Cloud Logging. This setting relates to the logs
     generated by using logging statements in your Wasm code. This field is can
-    be set only if logging is enabled for the `WasmPlugin` resource. If the
-    field is not provided when logging is enabled, it is set to `INFO` by
-    default.
+    be set only if logging is enabled for the plugin. If the field is not
+    provided when logging is enabled, it is set to `INFO` by default.
 
     Values:
-      LOG_LEVEL_UNSPECIFIED: Unspecified value.
+      LOG_LEVEL_UNSPECIFIED: Unspecified value. Defaults to `LogLevel.INFO`.
       TRACE: Report logs with TRACE level and above.
       DEBUG: Report logs with DEBUG level and above.
       INFO: Report logs with INFO level and above.
@@ -4597,21 +6840,21 @@ class WasmPluginLogConfig(_messages.Message):
 
 
 class WasmPluginUsedBy(_messages.Message):
-  r"""Defines a resource that uses the `WasmPlugin`.
+  r"""Defines a resource that uses the `WasmPlugin` resource.
 
   Fields:
     name: Output only. Full name of the resource
-      https://google.aip.dev/122#full-resource-names, e.g. `//networkservices.
-      googleapis.com/projects/{project}/locations/{location}/lbRouteExtensions
-      /{extension}`
+      https://google.aip.dev/122#full-resource-names, for example `//networkse
+      rvices.googleapis.com/projects/{project}/locations/{location}/lbRouteExt
+      ensions/{extension}`
   """
 
   name = _messages.StringField(1)
 
 
 class WasmPluginVersion(_messages.Message):
-  r"""A single immutable version of a `WasmPlugin`. Defines the Wasm module
-  used and optionally its runtime config.
+  r"""A single immutable version of a `WasmPlugin` resource. Defines the Wasm
+  module used and optionally its runtime config.
 
   Messages:
     LabelsValue: Optional. Set of labels associated with the
@@ -4621,11 +6864,11 @@ class WasmPluginVersion(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
     imageDigest: Output only. The resolved digest for the image specified in
-      `image`. The digest is resolved during the creation of
-      `WasmPluginVersion` resource. This field holds the digest value
+      the `image` field. The digest is resolved during the creation of
+      `WasmPluginVersion` resource. This field holds the digest value,
       regardless of whether a tag or digest was originally specified in the
       `image` field.
-    imageUri: Optional. URI of the container image containing the Wasm plugin,
+    imageUri: Optional. URI of the container image containing the plugin,
       stored in the Artifact Registry. When a new `WasmPluginVersion` resource
       is created, the digest of the container image is saved in the
       `image_digest` field. When downloading an image, the digest value is
@@ -4636,18 +6879,18 @@ class WasmPluginVersion(_messages.Message):
       following format:
       `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}/
       versions/{wasm_plugin_version}`.
-    pluginConfigData: Configuration for the Wasm plugin. The configuration is
-      provided to the Wasm plugin at runtime through the `ON_CONFIGURE`
-      callback. When a new `WasmPluginVersion` resource is created, the digest
-      of the contents is saved in the `plugin_config_digest` field.
+    pluginConfigData: Configuration for the plugin. The configuration is
+      provided to the plugin at runtime through the `ON_CONFIGURE` callback.
+      When a new `WasmPluginVersion` resource is created, the digest of the
+      contents is saved in the `plugin_config_digest` field.
     pluginConfigDigest: Output only. This field holds the digest (usually
       checksum) value for the plugin configuration. The value is calculated
-      based on the contents of the `plugin_config_data` or the container image
+      based on the contents of `plugin_config_data` or the container image
       defined by the `plugin_config_uri` field.
-    pluginConfigUri: URI of the Wasm plugin configuration stored in the
-      Artifact Registry. The configuration is provided to the plugin at
-      runtime through the `ON_CONFIGURE` callback. The container image must
-      contain only a single file with the name `plugin.config`. When a new
+    pluginConfigUri: URI of the plugin configuration stored in the Artifact
+      Registry. The configuration is provided to the plugin at runtime through
+      the `ON_CONFIGURE` callback. The container image must contain only a
+      single file with the name `plugin.config`. When a new
       `WasmPluginVersion` resource is created, the digest of the container
       image is saved in the `plugin_config_digest` field.
     updateTime: Output only. The timestamp when the resource was updated.
@@ -4713,18 +6956,18 @@ class WasmPluginVersionDetails(_messages.Message):
       in the `image_digest` field.
     labels: Optional. Set of labels associated with the `WasmPluginVersion`
       resource.
-    pluginConfigData: Configuration for the Wasm plugin. The configuration is
-      provided to the Wasm plugin at runtime through the `ON_CONFIGURE`
-      callback. When a new `WasmPluginVersion` version is created, the digest
-      of the contents is saved in the `plugin_config_digest` field.
+    pluginConfigData: Configuration for the plugin. The configuration is
+      provided to the plugin at runtime through the `ON_CONFIGURE` callback.
+      When a new `WasmPluginVersion` version is created, the digest of the
+      contents is saved in the `plugin_config_digest` field.
     pluginConfigDigest: Output only. This field holds the digest (usually
       checksum) value for the plugin configuration. The value is calculated
-      based on the contents of the `plugin_config_data` or the container image
-      defined by the `plugin_config_uri` field.
-    pluginConfigUri: URI of the WasmPlugin configuration stored in the
-      Artifact Registry. The configuration is provided to the Wasm plugin at
-      runtime through the `ON_CONFIGURE` callback. The container image must
-      contain only a single file with the name `plugin.config`. When a new
+      based on the contents of the `plugin_config_data` field or the container
+      image defined by the `plugin_config_uri` field.
+    pluginConfigUri: URI of the plugin configuration stored in the Artifact
+      Registry. The configuration is provided to the plugin at runtime through
+      the `ON_CONFIGURE` callback. The container image must contain only a
+      single file with the name `plugin.config`. When a new
       `WasmPluginVersion` resource is created, the digest of the container
       image is saved in the `plugin_config_digest` field.
     updateTime: Output only. The timestamp when the resource was updated.

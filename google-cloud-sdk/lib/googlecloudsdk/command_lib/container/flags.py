@@ -5201,6 +5201,7 @@ Examples:
       hugepageConfig:
         hugepage_size2m: '1024'
         hugepage_size1g: '2'
+      cgroupMode: 'CGROUP_MODE_V2'
 
 List of supported kubelet configs in 'kubeletConfig'.
 
@@ -5215,18 +5216,26 @@ List of supported sysctls in 'linuxConfig'.
 
 KEY                                        | VALUE
 ------------------------------------------ | ------------------------------------------
-net.core.netdev_max_backlog                | Any positive integer, less than 2147483647
-net.core.rmem_max                          | Any positive integer, less than 2147483647
-net.core.wmem_default                      | Any positive integer, less than 2147483647
-net.core.wmem_max                          | Any positive integer, less than 2147483647
-net.core.optmem_max                        | Any positive integer, less than 2147483647
-net.core.somaxconn                         | Must be [128, 2147483647]
-net.ipv4.tcp_rmem                          | Any positive integer tuple
-net.ipv4.tcp_wmem                          | Any positive integer tuple
-net.ipv4.tcp_tw_reuse                      | Must be {0, 1}
-kernel.shmmni                              | Must be [4096, 32768]
-kernel.shmmax                              | Must be [0, 18446744073692774399]
-kernel.shmall                              | Must be [0, 18446744073692774399]
+net.core.netdev_max_backlog                        | Any positive integer, less than 2147483647
+net.core.rmem_default                              | Any positive integer, less than 2147483647
+net.core.rmem_max                                  | Any positive integer, less than 2147483647
+net.core.wmem_default                              | Any positive integer, less than 2147483647
+net.core.wmem_max                                  | Any positive integer, less than 2147483647
+net.core.optmem_max                                | Any positive integer, less than 2147483647
+net.core.somaxconn                                 | Must be between [128, 2147483647]
+net.ipv4.tcp_rmem                                  | Any positive integer tuple
+net.ipv4.tcp_wmem                                  | Any positive integer tuple
+net.ipv4.tcp_tw_reuse                              | Must be {0, 1}
+net.netfilter.nf_conntrack_max                     | Must be between [65536, 4194304]
+net.netfilter.nf_conntrack_buckets                 | Must be between [65536, 524288]. Recommend setting: nf_conntrack_max = nf_conntrack_buckets * 4
+net.netfilter.nf_conntrack_tcp_timeout_close_wait  | Must be between [60, 3600]
+net.netfilter.nf_conntrack_tcp_timeout_time_wait   | Must be between [1, 600]
+net.netfilter.nf_conntrack_tcp_timeout_established | Must be between [600, 86400]
+net.netfilter.nf_conntrack_acct                    | Must be {0, 1}
+kernel.shmmni                                      | Must be between [4096, 32768]
+kernel.shmmax                                      | Must be between [0, 18446744073692774399]
+kernel.shmall                                      | Must be between [0, 18446744073692774399]
+vm.max_map_count                                   | Must be between [65536, 2147483647]
 
 List of supported hugepage size in 'hugepageConfig'.
 
@@ -5240,6 +5249,12 @@ allocated hugepage of 2m and 1g should not exceed 8GB * 0.6 = 4.8GB.
 
 1G hugepages are only available in following machine familes:
 c3, m2, c2d, c3d, h3, m3, a2, a3, g2.
+
+Supported values for 'cgroupMode' under 'linuxConfig'.
+
+* `CGROUP_MODE_V1`: Use cgroupv1 on the node pool.
+* `CGROUP_MODE_V2`: Use cgroupv2 on the node pool.
+* `CGROUP_MODE_UNSPECIFIED`: Use the default GKE cgroup configuration.
 
 Note, updating the system configuration of an existing node pool requires recreation of the nodes which which might cause a disruption.
 """,

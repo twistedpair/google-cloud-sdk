@@ -2474,6 +2474,110 @@ class StorageClient(metaclass=StorageClientMeta):
         # Done; return the response.
         return response
 
+    def bidi_read_object(self,
+            requests: Optional[Iterator[storage.BidiReadObjectRequest]] = None,
+            *,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> Iterable[storage.BidiReadObjectResponse]:
+        r"""Reads an object's data.
+
+        This is a bi-directional API with the added support for reading
+        multiple ranges within one stream both within and across
+        multiple messages. If the server encountered an error for any of
+        the inputs, the stream will be closed with the relevant error
+        code. Because the API allows for multiple outstanding requests,
+        when the stream is closed the error response will contain a
+        BidiReadObjectRangesError proto in the error extension
+        describing the error for each outstanding read_id.
+
+        **IAM Permissions**:
+
+        Requires ``storage.objects.get``
+
+        `IAM
+        permission <https://cloud.google.com/iam/docs/overview#permissions>`__
+        on the bucket.
+
+        This API is currently in preview and is not yet available for
+        general use.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import storage_v2
+
+            def sample_bidi_read_object():
+                # Create a client
+                client = storage_v2.StorageClient()
+
+                # Initialize request argument(s)
+                request = storage_v2.BidiReadObjectRequest(
+                )
+
+                # This method expects an iterator which contains
+                # 'storage_v2.BidiReadObjectRequest' objects
+                # Here we create a generator that yields a single `request` for
+                # demonstrative purposes.
+                requests = [request]
+
+                def request_generator():
+                    for request in requests:
+                        yield request
+
+                # Make the request
+                stream = client.bidi_read_object(requests=request_generator())
+
+                # Handle the response
+                for response in stream:
+                    print(response)
+
+        Args:
+            requests (Iterator[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BidiReadObjectRequest]):
+                The request object iterator. Request message for BidiReadObject.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            Iterable[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BidiReadObjectResponse]:
+                Response message for BidiReadObject.
+        """
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._transport._wrapped_methods[self._transport.bidi_read_object]
+
+        header_params = {}
+
+        if header_params:
+            metadata = tuple(metadata) + (
+                gapic_v1.routing_header.to_grpc_metadata(header_params),
+            )
+
+        # Validate the universe domain.
+        self._validate_universe_domain()
+
+        # Send the request.
+        response = rpc(
+            requests,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
     def update_object(self,
             request: Optional[Union[storage.UpdateObjectRequest, dict]] = None,
             *,

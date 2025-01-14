@@ -732,7 +732,7 @@ class ComposerWorkloadStatus(_messages.Message):
 class DagProcessorResource(_messages.Message):
   r"""Configuration for resources used by Airflow DAG processors. This field
   is supported for Cloud Composer environments in versions
-  composer-3.*.*-airflow-*.*.* and newer.
+  composer-3-airflow-*.*.*-build.* and newer.
 
   Fields:
     count: Optional. The number of DAG processors. If not provided or set to
@@ -1418,7 +1418,7 @@ class NodeConfig(_messages.Message):
       case of overlap, IPs from this range will not be accessible in the
       user's VPC network. Cannot be updated. If not specified, the default
       value of '100.64.128.0/20' is used. This field is supported for Cloud
-      Composer environments in versions composer-3.*.*-airflow-*.*.* and
+      Composer environments in versions composer-3-airflow-*.*.*-build.* and
       newer.
     composerNetworkAttachment: Optional. Network Attachment that Cloud
       Composer environment is connected to, which provides connectivity with a
@@ -1429,7 +1429,7 @@ class NodeConfig(_messages.Message):
       disabled. Network attachment must be provided in format projects/{projec
       t}/regions/{region}/networkAttachments/{networkAttachment}. This field
       is supported for Cloud Composer environments in versions
-      composer-3.*.*-airflow-*.*.* and newer.
+      composer-3-airflow-*.*.*-build.* and newer.
     diskSizeGb: Optional. The disk size in GB used for node VMs. Minimum size
       is 30GB. If unspecified, defaults to 100GB. Cannot be updated. This
       field is supported for Cloud Composer environments in versions
@@ -1776,7 +1776,7 @@ class PrivateEnvironmentConfig(_messages.Message):
       `NodeConfig.composer_network_attachment` field are specified). If
       `false`, the builds also have access to the internet. This field is
       supported for Cloud Composer environments in versions
-      composer-3.*.*-airflow-*.*.* and newer.
+      composer-3-airflow-*.*.*-build.* and newer.
     enablePrivateEnvironment: Optional. If `true`, a Private IP Cloud Composer
       environment is created. If this field is set to true,
       `IPAllocationPolicy.use_ip_aliases` must be set to true for Cloud
@@ -1894,7 +1894,7 @@ class SoftwareConfig(_messages.Message):
     WebServerPluginsModeValueValuesEnum: Optional. Whether or not the web
       server uses custom plugins. If unspecified, the field defaults to
       `PLUGINS_ENABLED`. This field is supported for Cloud Composer
-      environments in versions composer-3.*.*-airflow-*.*.* and newer.
+      environments in versions composer-3-airflow-*.*.*-build.* and newer.
 
   Messages:
     AirflowConfigOverridesValue: Optional. Apache Airflow configuration
@@ -1991,14 +1991,14 @@ class SoftwareConfig(_messages.Message):
     webServerPluginsMode: Optional. Whether or not the web server uses custom
       plugins. If unspecified, the field defaults to `PLUGINS_ENABLED`. This
       field is supported for Cloud Composer environments in versions
-      composer-3.*.*-airflow-*.*.* and newer.
+      composer-3-airflow-*.*.*-build.* and newer.
   """
 
   class WebServerPluginsModeValueValuesEnum(_messages.Enum):
     r"""Optional. Whether or not the web server uses custom plugins. If
     unspecified, the field defaults to `PLUGINS_ENABLED`. This field is
     supported for Cloud Composer environments in versions
-    composer-3.*.*-airflow-*.*.* and newer.
+    composer-3-airflow-*.*.*-build.* and newer.
 
     Values:
       WEB_SERVER_PLUGINS_MODE_UNSPECIFIED: Default mode.
@@ -2499,7 +2499,7 @@ class WorkloadsConfig(_messages.Message):
   Fields:
     dagProcessor: Optional. Resources used by Airflow DAG processors. This
       field is supported for Cloud Composer environments in versions
-      composer-3.*.*-airflow-*.*.* and newer.
+      composer-3-airflow-*.*.*-build.* and newer.
     scheduler: Optional. Resources used by Airflow schedulers.
     triggerer: Optional. Resources used by Airflow triggerers.
     webServer: Optional. Resources used by Airflow web server.

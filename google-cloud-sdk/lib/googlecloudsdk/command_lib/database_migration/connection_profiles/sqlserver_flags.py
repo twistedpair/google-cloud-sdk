@@ -21,6 +21,18 @@ from __future__ import unicode_literals
 from googlecloudsdk.command_lib.database_migration.connection_profiles import flags as cp_flags
 
 
+def AddCloudSqlProjectIdFlag(parser):
+  """Add the Cloud SQL project ID for the Cloud SQL instance to the parser."""
+  parser.add_argument(
+      '--cloudsql-project-id',
+      required=False,
+      help=(
+          'The project id of the Cloud SQL instance. Only needed if the Cloud'
+          ' SQL instance is in a different project than the connection profile.'
+      ),
+  )
+
+
 def AddCpDetailsFlag(parser):
   """Adds the source and destination parameters to the given parser."""
 
@@ -96,7 +108,7 @@ def AddProviderFlag(parser):
   parser.add_argument(
       '--provider',
       help='Database provider, for managed databases.',
-      choices=['RDS'],
+      choices=['CLOUDSQL', 'RDS'],
   )
 
 

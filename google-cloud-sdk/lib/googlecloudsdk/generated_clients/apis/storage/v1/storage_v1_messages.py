@@ -1506,6 +1506,7 @@ class Object(_messages.Message):
     timeDeleted: The time at which the object became noncurrent in RFC 3339
       format. Will be returned if and only if this version of the object has
       been deleted.
+    timeFinalized: The time when the object was finalized.
     timeStorageClassUpdated: The time at which the object's storage class was
       last changed. When the object is initially created, it will be set to
       timeCreated.
@@ -1612,8 +1613,9 @@ class Object(_messages.Message):
   temporaryHold = _messages.BooleanField(32)
   timeCreated = _message_types.DateTimeField(33)
   timeDeleted = _message_types.DateTimeField(34)
-  timeStorageClassUpdated = _message_types.DateTimeField(35)
-  updated = _message_types.DateTimeField(36)
+  timeFinalized = _message_types.DateTimeField(35)
+  timeStorageClassUpdated = _message_types.DateTimeField(36)
+  updated = _message_types.DateTimeField(37)
 
 
 class ObjectAccessControl(_messages.Message):
@@ -2490,20 +2492,31 @@ class StorageBucketsRelocateRequest(_messages.Message):
 class StorageBucketsRestoreRequest(_messages.Message):
   r"""A StorageBucketsRestoreRequest object.
 
+  Enums:
+    ProjectionValueValuesEnum: Set of properties to return. Defaults to full.
+
   Fields:
     bucket: Name of a bucket.
     generation: Generation of a bucket.
+    projection: Set of properties to return. Defaults to full.
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
   """
 
+  class ProjectionValueValuesEnum(_messages.Enum):
+    r"""Set of properties to return. Defaults to full.
+
+    Values:
+      full: Include all properties.
+      noAcl: Omit owner, acl and defaultObjectAcl properties.
+    """
+    full = 0
+    noAcl = 1
+
   bucket = _messages.StringField(1, required=True)
   generation = _messages.IntegerField(2, required=True)
-  userProject = _messages.StringField(3)
-
-
-class StorageBucketsRestoreResponse(_messages.Message):
-  r"""An empty StorageBucketsRestore response."""
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 3)
+  userProject = _messages.StringField(4)
 
 
 class StorageBucketsSetIamPolicyRequest(_messages.Message):
@@ -3666,6 +3679,80 @@ class StorageObjectsListRequest(_messages.Message):
   startOffset = _messages.StringField(12)
   userProject = _messages.StringField(13)
   versions = _messages.BooleanField(14)
+
+
+class StorageObjectsMoveRequest(_messages.Message):
+  r"""A StorageObjectsMoveRequest object.
+
+  Fields:
+    bucket: Name of the bucket in which the object resides.
+    destinationObject: Name of the destination object. For information about
+      how to URL encode object names to be path safe, see [Encoding URI Path
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
+    ifGenerationMatch: Makes the operation conditional on whether the
+      destination object's current generation matches the given value. Setting
+      to 0 makes the operation succeed only if there are no live versions of
+      the object. `ifGenerationMatch` and `ifGenerationNotMatch` conditions
+      are mutually exclusive: it's an error for both of them to be set in the
+      request.
+    ifGenerationNotMatch: Makes the operation conditional on whether the
+      destination object's current generation does not match the given value.
+      If no live object exists, the precondition fails. Setting to 0 makes the
+      operation succeed only if there is a live version of the
+      object.`ifGenerationMatch` and `ifGenerationNotMatch` conditions are
+      mutually exclusive: it's an error for both of them to be set in the
+      request.
+    ifMetagenerationMatch: Makes the operation conditional on whether the
+      destination object's current metageneration matches the given value.
+      `ifMetagenerationMatch` and `ifMetagenerationNotMatch` conditions are
+      mutually exclusive: it's an error for both of them to be set in the
+      request.
+    ifMetagenerationNotMatch: Makes the operation conditional on whether the
+      destination object's current metageneration does not match the given
+      value. `ifMetagenerationMatch` and `ifMetagenerationNotMatch` conditions
+      are mutually exclusive: it's an error for both of them to be set in the
+      request.
+    ifSourceGenerationMatch: Makes the operation conditional on whether the
+      source object's current generation matches the given value.
+      `ifSourceGenerationMatch` and `ifSourceGenerationNotMatch` conditions
+      are mutually exclusive: it's an error for both of them to be set in the
+      request.
+    ifSourceGenerationNotMatch: Makes the operation conditional on whether the
+      source object's current generation does not match the given value.
+      `ifSourceGenerationMatch` and `ifSourceGenerationNotMatch` conditions
+      are mutually exclusive: it's an error for both of them to be set in the
+      request.
+    ifSourceMetagenerationMatch: Makes the operation conditional on whether
+      the source object's current metageneration matches the given value.
+      `ifSourceMetagenerationMatch` and `ifSourceMetagenerationNotMatch`
+      conditions are mutually exclusive: it's an error for both of them to be
+      set in the request.
+    ifSourceMetagenerationNotMatch: Makes the operation conditional on whether
+      the source object's current metageneration does not match the given
+      value. `ifSourceMetagenerationMatch` and
+      `ifSourceMetagenerationNotMatch` conditions are mutually exclusive: it's
+      an error for both of them to be set in the request.
+    sourceObject: Name of the source object. For information about how to URL
+      encode object names to be path safe, see [Encoding URI Path
+      Parts](https://cloud.google.com/storage/docs/request-
+      endpoints#encoding).
+    userProject: The project to be billed for this request. Required for
+      Requester Pays buckets.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  destinationObject = _messages.StringField(2, required=True)
+  ifGenerationMatch = _messages.IntegerField(3)
+  ifGenerationNotMatch = _messages.IntegerField(4)
+  ifMetagenerationMatch = _messages.IntegerField(5)
+  ifMetagenerationNotMatch = _messages.IntegerField(6)
+  ifSourceGenerationMatch = _messages.IntegerField(7)
+  ifSourceGenerationNotMatch = _messages.IntegerField(8)
+  ifSourceMetagenerationMatch = _messages.IntegerField(9)
+  ifSourceMetagenerationNotMatch = _messages.IntegerField(10)
+  sourceObject = _messages.StringField(11, required=True)
+  userProject = _messages.StringField(12)
 
 
 class StorageObjectsPatchRequest(_messages.Message):

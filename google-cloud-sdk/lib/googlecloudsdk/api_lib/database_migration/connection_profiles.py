@@ -117,9 +117,12 @@ class ConnectionProfilesClient(object):
   def _SupportsSqlServer(self):
     return self._release_track == base.ReleaseTrack.GA
 
-  def _ValidateArgs(self, args):
+  def _SupportsSslType(self):
+    return self._release_track == base.ReleaseTrack.GA
+
+  def _ValidateArgs(self, args, cp_type=None):
     self._ValidateHostArgs(args)
-    self._ValidateSslConfigArgs(args)
+    self._ValidateSslConfigArgs(args, cp_type)
 
   def _ValidateHostArgs(self, args):
     if not args.IsKnownAndSpecified('host'):
@@ -132,7 +135,13 @@ class ConnectionProfilesClient(object):
           ' valid IP ranges.',
       )
 
-  def _ValidateSslConfigArgs(self, args):
+  def _ValidateSslConfigArgs(self, args, cp_type):
+    if cp_type == 'MYSQL' or cp_type == 'POSTGRES':
+      # This is reachable only for create command, since the connection profile
+      # type is known at this point. For update command, the connection profile
+      # type is not known at this point, and the validation is done in the
+      # update method.
+      self._ValidateSslConfigCombinationForPostgresAndMySql(args)
     self._ValidateCertificateFormat(args, 'ca_certificate')
     self._ValidateCertificateFormat(args, self._ClientCertificateArgName())
     self._ValidateCertificateFormat(args, 'private_key')
@@ -149,6 +158,64 @@ class ConnectionProfilesClient(object):
           field,
           'The certificate does not appear to be in PEM format:\n{0}'
           .format(cert))
+
+  def _ValidateSslConfigCombinationForPostgresAndMySql(self, args):
+    """Validates the SSL config combination for PostgreSQL and MySQL when the ssl_type flag is specified.
+
+    Args:
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+
+    Raises:
+      calliope_exceptions.InvalidArgumentException: If the specified
+      certificates and keys combination is invalid.
+    """
+    if not self._SupportsSslType() or not args.IsSpecified('ssl_type'):
+      return
+
+    if args.ssl_type == 'SERVER_ONLY':
+      if (
+          args.IsSpecified('ca_certificate')
+          and not args.IsSpecified('private_key')
+          and not args.IsSpecified('client_certificate')
+      ):
+        return
+      else:
+        raise calliope_exceptions.InvalidArgumentException(
+            'ssl',
+            'Only ca_certificate must be provided for SSL type SERVER_ONLY.',
+        )
+    if args.ssl_type == 'SERVER_CLIENT':
+      if (
+          args.IsSpecified('ca_certificate')
+          and args.IsSpecified('private_key')
+          and args.IsSpecified('client_certificate')
+      ):
+        return
+      else:
+        raise calliope_exceptions.InvalidArgumentException(
+            'ssl',
+            'ca_certificate, client_certificate and private_key must be'
+            ' provided for SSL type SERVER_CLIENT.',
+        )
+    elif args.ssl_type == 'REQUIRED' or args.ssl_type == 'NONE':
+      if (
+          not args.IsSpecified('ca_certificate')
+          and not args.IsSpecified('private_key')
+          and not args.IsSpecified('client_certificate')
+      ):
+        return
+      else:
+        raise calliope_exceptions.InvalidArgumentException(
+            'ssl',
+            'Cannot set ca_certificate, client_certificate and private_key'
+            ' for SSL type {0}.'.format(args.ssl_type),
+        )
+    else:
+      raise calliope_exceptions.InvalidArgumentException(
+          'ssl',
+          'Unsupported SSL type {0}.'.format(args.ssl_type),
+      )
 
   def _GetSslServerOnlyConfig(self, args):
     return self.messages.SslConfig(caCertificate=args.ca_certificate)
@@ -203,20 +270,62 @@ class ConnectionProfilesClient(object):
     return self.messages.SslConfig(
         clientKey=args.private_key,
         clientCertificate=args.GetValue(self._ClientCertificateArgName()),
-        caCertificate=args.ca_certificate)
+        caCertificate=args.ca_certificate,
+        type=self.messages.SslConfig.TypeValueValuesEnum.lookup_by_name(
+            args.ssl_type
+        )
+        if self._SupportsSslType() and args.IsSpecified('ssl_type')
+        else None,
+    )
 
   def _UpdateMySqlSslConfig(self, connection_profile, args, update_fields):
     """Fills connection_profile and update_fields with MySQL SSL data from args."""
-    if args.IsSpecified('ca_certificate'):
-      connection_profile.mysql.ssl.caCertificate = args.ca_certificate
+    if not self._SupportsSslType() or not args.IsSpecified('ssl_type'):
+      # Legacy behavior. If ssl_type is not specified (or not supported), the
+      # type is inferred from the provided combination of the other SSL fields.
+      if args.IsSpecified('ca_certificate'):
+        connection_profile.mysql.ssl.caCertificate = args.ca_certificate
+        update_fields.append('mysql.ssl.caCertificate')
+      if args.IsSpecified('private_key'):
+        connection_profile.mysql.ssl.clientKey = args.private_key
+        update_fields.append('mysql.ssl.clientKey')
+      if args.IsSpecified(self._ClientCertificateArgName()):
+        connection_profile.mysql.ssl.clientCertificate = args.GetValue(
+            self._ClientCertificateArgName()
+        )
+        update_fields.append('mysql.ssl.clientCertificate')
+    else:
+      # ssl_type is specified. Validate the combination according to the type.
+      self._ValidateSslConfigCombinationForPostgresAndMySql(args)
       update_fields.append('mysql.ssl.caCertificate')
-    if args.IsSpecified('private_key'):
-      connection_profile.mysql.ssl.clientKey = args.private_key
-      update_fields.append('mysql.ssl.clientKey')
-    if args.IsSpecified(self._ClientCertificateArgName()):
-      connection_profile.mysql.ssl.clientCertificate = args.GetValue(
-          self._ClientCertificateArgName())
       update_fields.append('mysql.ssl.clientCertificate')
+      update_fields.append('mysql.ssl.clientKey')
+      update_fields.append('mysql.ssl.type')
+      if args.ssl_type == 'SERVER_ONLY':
+        connection_profile.mysql.ssl.caCertificate = args.ca_certificate
+        connection_profile.mysql.ssl.clientKey = None
+        connection_profile.mysql.ssl.clientCertificate = None
+        connection_profile.mysql.ssl.type = (
+            self.messages.SslConfig.TypeValueValuesEnum.SERVER_ONLY
+        )
+      if args.ssl_type == 'SERVER_CLIENT':
+        connection_profile.mysql.ssl.caCertificate = args.ca_certificate
+        connection_profile.mysql.ssl.clientKey = args.private_key
+        connection_profile.mysql.ssl.clientCertificate = args.GetValue(
+            self._ClientCertificateArgName()
+        )
+        connection_profile.mysql.ssl.type = (
+            self.messages.SslConfig.TypeValueValuesEnum.SERVER_CLIENT
+        )
+      elif args.ssl_type == 'REQUIRED' or args.ssl_type == 'NONE':
+        connection_profile.mysql.ssl.caCertificate = None
+        connection_profile.mysql.ssl.clientKey = None
+        connection_profile.mysql.ssl.clientCertificate = None
+        connection_profile.mysql.ssl.type = (
+            self.messages.SslConfig.TypeValueValuesEnum.lookup_by_name(
+                args.ssl_type
+            )
+        )
 
   def _GetMySqlConnectionProfile(self, args):
     ssl_config = self._GetSslConfig(args)
@@ -251,16 +360,52 @@ class ConnectionProfilesClient(object):
 
   def _UpdatePostgreSqlSslConfig(self, connection_profile, args, update_fields):
     """Fills connection_profile and update_fields with PostgreSQL SSL data from args."""
-    if args.IsSpecified('ca_certificate'):
-      connection_profile.postgresql.ssl.caCertificate = args.ca_certificate
+    if not self._SupportsSslType() or not args.IsSpecified('ssl_type'):
+      # Legacy behavior. If ssl_type is not specified (or not supported), the
+      # type is inferred from the provided combination of the other SSL fields.
+      if args.IsSpecified('ca_certificate'):
+        connection_profile.postgresql.ssl.caCertificate = args.ca_certificate
+        update_fields.append('postgresql.ssl.caCertificate')
+      if args.IsSpecified('private_key'):
+        connection_profile.postgresql.ssl.clientKey = args.private_key
+        update_fields.append('postgresql.ssl.clientKey')
+      if args.IsSpecified(self._ClientCertificateArgName()):
+        connection_profile.postgresql.ssl.clientCertificate = args.GetValue(
+            self._ClientCertificateArgName()
+        )
+        update_fields.append('postgresql.ssl.clientCertificate')
+    else:
+      # ssl_type is specified. Validate the combination according to the type.
+      self._ValidateSslConfigCombinationForPostgresAndMySql(args)
       update_fields.append('postgresql.ssl.caCertificate')
-    if args.IsSpecified('private_key'):
-      connection_profile.postgresql.ssl.clientKey = args.private_key
-      update_fields.append('postgresql.ssl.clientKey')
-    if args.IsSpecified(self._ClientCertificateArgName()):
-      connection_profile.postgresql.ssl.clientCertificate = args.GetValue(
-          self._ClientCertificateArgName())
       update_fields.append('postgresql.ssl.clientCertificate')
+      update_fields.append('postgresql.ssl.clientKey')
+      update_fields.append('postgresql.ssl.type')
+      if args.ssl_type == 'SERVER_ONLY':
+        connection_profile.postgresql.ssl.caCertificate = args.ca_certificate
+        connection_profile.postgresql.ssl.clientKey = None
+        connection_profile.postgresql.ssl.clientCertificate = None
+        connection_profile.postgresql.ssl.type = (
+            self.messages.SslConfig.TypeValueValuesEnum.SERVER_ONLY
+        )
+      if args.ssl_type == 'SERVER_CLIENT':
+        connection_profile.postgresql.ssl.caCertificate = args.ca_certificate
+        connection_profile.postgresql.ssl.clientKey = args.private_key
+        connection_profile.postgresql.ssl.clientCertificate = args.GetValue(
+            self._ClientCertificateArgName()
+        )
+        connection_profile.postgresql.ssl.type = (
+            self.messages.SslConfig.TypeValueValuesEnum.SERVER_CLIENT
+        )
+      elif args.ssl_type == 'REQUIRED' or args.ssl_type == 'NONE':
+        connection_profile.postgresql.ssl.caCertificate = None
+        connection_profile.postgresql.ssl.clientKey = None
+        connection_profile.postgresql.ssl.clientCertificate = None
+        connection_profile.postgresql.ssl.type = (
+            self.messages.SslConfig.TypeValueValuesEnum.lookup_by_name(
+                args.ssl_type
+            )
+        )
 
   def _GetPostgreSqlConnectionProfile(self, args):
     """Creates a Postgresql connection profile according to the given args.
@@ -401,16 +546,13 @@ class ConnectionProfilesClient(object):
   ):
     """Updates SqlServer connection profile."""
     if args.IsSpecified('cloudsql_instance'):
-      if connection_profile.sqlserver.cloudSqlId is None:
-        raise calliope_exceptions.InvalidArgumentException(
-            'cloudsql_instance',
-            'Cannot update Cloud SQL instance for a source SQL Server'
-            ' connection profile.',
-        )
       connection_profile.sqlserver.cloudSqlId = args.GetValue(
           self._InstanceArgName()
       )
       update_fields.append('sqlserver.cloudSqlId')
+    if args.IsSpecified('cloudsql_project_id'):
+      connection_profile.sqlserver.cloudSqlProjectId = args.cloudsql_project_id
+      update_fields.append('sqlserver.cloudSqlProjectId')
     if args.IsSpecified('username'):
       connection_profile.sqlserver.username = args.username
       update_fields.append('sqlserver.username')
@@ -839,7 +981,7 @@ class ConnectionProfilesClient(object):
     Returns:
       Operation: the operation for creating the connection profile.
     """
-    self._ValidateArgs(args)
+    self._ValidateArgs(args, cp_type)
 
     connection_profile = self._GetConnectionProfile(cp_type, args,
                                                     connection_profile_id)

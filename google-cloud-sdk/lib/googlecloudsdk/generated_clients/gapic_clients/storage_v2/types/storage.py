@@ -22,6 +22,7 @@ import proto  # type: ignore
 from cloudsdk.google.protobuf import duration_pb2  # type: ignore
 from cloudsdk.google.protobuf import field_mask_pb2  # type: ignore
 from cloudsdk.google.protobuf import timestamp_pb2  # type: ignore
+from google.rpc import status_pb2  # type: ignore
 from google.type import date_pb2  # type: ignore
 
 
@@ -43,9 +44,21 @@ __protobuf__ = proto.module(
         'ReadObjectRequest',
         'GetObjectRequest',
         'ReadObjectResponse',
+        'BidiReadObjectSpec',
+        'BidiReadObjectRequest',
+        'BidiReadObjectResponse',
+        'BidiReadObjectRedirectedError',
+        'BidiWriteObjectRedirectedError',
+        'BidiReadObjectError',
+        'ReadRangeError',
+        'ReadRange',
+        'ObjectRangeData',
+        'BidiReadHandle',
+        'BidiWriteHandle',
         'WriteObjectSpec',
         'WriteObjectRequest',
         'WriteObjectResponse',
+        'AppendObjectSpec',
         'BidiWriteObjectRequest',
         'BidiWriteObjectResponse',
         'ListObjectsRequest',
@@ -1064,6 +1077,446 @@ class ReadObjectResponse(proto.Message):
     )
 
 
+class BidiReadObjectSpec(proto.Message):
+    r"""Describes the object to read in a BidiReadObject request.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        bucket (str):
+            Required. The name of the bucket containing
+            the object to read.
+        object_ (str):
+            Required. The name of the object to read.
+        generation (int):
+            If present, selects a specific revision of
+            this object (as opposed to the latest version,
+            the default).
+        if_generation_match (int):
+            Makes the operation conditional on whether
+            the object's current generation matches the
+            given value. Setting to 0 makes the operation
+            succeed only if there are no live versions of
+            the object.
+
+            This field is a member of `oneof`_ ``_if_generation_match``.
+        if_generation_not_match (int):
+            Makes the operation conditional on whether
+            the object's live generation does not match the
+            given value. If no live object exists, the
+            precondition fails. Setting to 0 makes the
+            operation succeed only if there is a live
+            version of the object.
+
+            This field is a member of `oneof`_ ``_if_generation_not_match``.
+        if_metageneration_match (int):
+            Makes the operation conditional on whether
+            the object's current metageneration matches the
+            given value.
+
+            This field is a member of `oneof`_ ``_if_metageneration_match``.
+        if_metageneration_not_match (int):
+            Makes the operation conditional on whether
+            the object's current metageneration does not
+            match the given value.
+
+            This field is a member of `oneof`_ ``_if_metageneration_not_match``.
+        common_object_request_params (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CommonObjectRequestParams):
+            A set of parameters common to Storage API
+            requests concerning an object.
+        read_mask (google.protobuf.field_mask_pb2.FieldMask):
+            Mask specifying which fields to read. The checksummed_data
+            field and its children will always be present. If no mask is
+            specified, will default to all fields except metadata.owner
+            and metadata.acl.
+
+            -  may be used to mean "all fields". As per
+               https://google.aip.dev/161, this field is deprecated. As
+               an alternative, grpc metadata can be used:
+               https://cloud.google.com/apis/docs/system-parameters#definitions
+
+            This field is a member of `oneof`_ ``_read_mask``.
+        read_handle (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BidiReadHandle):
+            The client can optionally set this field. The
+            read handle is an optimized way of creating new
+            streams. Read handles are generated and
+            periodically refreshed from prior reads.
+
+            This field is a member of `oneof`_ ``_read_handle``.
+        routing_token (str):
+            The routing token that influences request
+            routing for the stream. Must be provided if a
+            BidiReadObjectRedirectedError is returned.
+
+            This field is a member of `oneof`_ ``_routing_token``.
+    """
+
+    bucket: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    object_: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    generation: int = proto.Field(
+        proto.INT64,
+        number=3,
+    )
+    if_generation_match: int = proto.Field(
+        proto.INT64,
+        number=4,
+        optional=True,
+    )
+    if_generation_not_match: int = proto.Field(
+        proto.INT64,
+        number=5,
+        optional=True,
+    )
+    if_metageneration_match: int = proto.Field(
+        proto.INT64,
+        number=6,
+        optional=True,
+    )
+    if_metageneration_not_match: int = proto.Field(
+        proto.INT64,
+        number=7,
+        optional=True,
+    )
+    common_object_request_params: 'CommonObjectRequestParams' = proto.Field(
+        proto.MESSAGE,
+        number=8,
+        message='CommonObjectRequestParams',
+    )
+    read_mask: field_mask_pb2.FieldMask = proto.Field(
+        proto.MESSAGE,
+        number=12,
+        optional=True,
+        message=field_mask_pb2.FieldMask,
+    )
+    read_handle: 'BidiReadHandle' = proto.Field(
+        proto.MESSAGE,
+        number=13,
+        optional=True,
+        message='BidiReadHandle',
+    )
+    routing_token: str = proto.Field(
+        proto.STRING,
+        number=14,
+        optional=True,
+    )
+
+
+class BidiReadObjectRequest(proto.Message):
+    r"""Request message for BidiReadObject.
+
+    Attributes:
+        read_object_spec (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BidiReadObjectSpec):
+            The first message of each stream should set
+            this field. If this is not the first message, an
+            error will be returned. Describes the object to
+            read.
+        read_ranges (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ReadRange]):
+            Provides a list of 0 or more (up to 100)
+            ranges to read. If a single range is large
+            enough to require multiple responses, they are
+            guaranteed to be delivered in increasing offset
+            order. There are no ordering guarantees across
+            ranges. When no ranges are provided, the
+            response message will not include
+            ObjectRangeData. For full object downloads, the
+            offset and size can be set to 0.
+    """
+
+    read_object_spec: 'BidiReadObjectSpec' = proto.Field(
+        proto.MESSAGE,
+        number=1,
+        message='BidiReadObjectSpec',
+    )
+    read_ranges: MutableSequence['ReadRange'] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=8,
+        message='ReadRange',
+    )
+
+
+class BidiReadObjectResponse(proto.Message):
+    r"""Response message for BidiReadObject.
+
+    Attributes:
+        object_data_ranges (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ObjectRangeData]):
+            A portion of the object's data. The service **may** leave
+            data empty for any given ReadResponse. This enables the
+            service to inform the client that the request is still live
+            while it is running an operation to generate more data. The
+            service **may** pipeline multiple responses belonging to
+            different read requests. Each ObjectRangeData entry will
+            have a read_id set to the same value as the corresponding
+            source read request.
+        metadata (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Object):
+            Metadata of the object whose media is being
+            returned. Only populated in the first response
+            in the stream and not populated when the stream
+            is opened with a read handle.
+        read_handle (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BidiReadHandle):
+            This field will be periodically refreshed,
+            however it may not be set in every response. It
+            allows the client to more efficiently open
+            subsequent bidirectional streams to the same
+            object.
+    """
+
+    object_data_ranges: MutableSequence['ObjectRangeData'] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=6,
+        message='ObjectRangeData',
+    )
+    metadata: 'Object' = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        message='Object',
+    )
+    read_handle: 'BidiReadHandle' = proto.Field(
+        proto.MESSAGE,
+        number=7,
+        message='BidiReadHandle',
+    )
+
+
+class BidiReadObjectRedirectedError(proto.Message):
+    r"""Error proto containing details for a redirected read. This
+    error is only returned on initial open in case of a redirect.
+
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        read_handle (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BidiReadHandle):
+            The read handle for the redirected read. The
+            client can use this for the subsequent open.
+        routing_token (str):
+            The routing token that should be used when
+            reopening the read stream.
+
+            This field is a member of `oneof`_ ``_routing_token``.
+    """
+
+    read_handle: 'BidiReadHandle' = proto.Field(
+        proto.MESSAGE,
+        number=1,
+        message='BidiReadHandle',
+    )
+    routing_token: str = proto.Field(
+        proto.STRING,
+        number=2,
+        optional=True,
+    )
+
+
+class BidiWriteObjectRedirectedError(proto.Message):
+    r"""Error proto containing details for a redirected write. This
+    error is only returned on initial open in case of a redirect.
+
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        routing_token (str):
+            The routing token that should be used when
+            reopening the write stream.
+
+            This field is a member of `oneof`_ ``_routing_token``.
+        write_handle (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BidiWriteHandle):
+            Opaque value describing a previous write.
+
+            This field is a member of `oneof`_ ``_write_handle``.
+        generation (int):
+            The generation of the object that triggered the redirect.
+            Note that if this error was returned as part of an
+            appendable object create, this object generation is now
+            successfully created and append_object_spec should be used
+            when reconnecting.
+
+            This field is a member of `oneof`_ ``_generation``.
+    """
+
+    routing_token: str = proto.Field(
+        proto.STRING,
+        number=1,
+        optional=True,
+    )
+    write_handle: 'BidiWriteHandle' = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        optional=True,
+        message='BidiWriteHandle',
+    )
+    generation: int = proto.Field(
+        proto.INT64,
+        number=3,
+        optional=True,
+    )
+
+
+class BidiReadObjectError(proto.Message):
+    r"""Error extension proto containing details for all outstanding
+    reads on the failed stream
+
+    Attributes:
+        read_range_errors (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ReadRangeError]):
+            The error code for each outstanding read_range
+    """
+
+    read_range_errors: MutableSequence['ReadRangeError'] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=1,
+        message='ReadRangeError',
+    )
+
+
+class ReadRangeError(proto.Message):
+    r"""Error extension proto containing details for a single range
+    read
+
+    Attributes:
+        read_id (int):
+            The id of the corresponding read_range
+        status (google.rpc.status_pb2.Status):
+            The status which should be an enum value of
+            [google.rpc.Code].
+    """
+
+    read_id: int = proto.Field(
+        proto.INT64,
+        number=1,
+    )
+    status: status_pb2.Status = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message=status_pb2.Status,
+    )
+
+
+class ReadRange(proto.Message):
+    r"""Describes a range of bytes to read in a BidiReadObjectRanges
+    request.
+
+    Attributes:
+        read_offset (int):
+            Required. The offset for the first byte to return in the
+            read, relative to the start of the object.
+
+            A negative read_offset value will be interpreted as the
+            number of bytes back from the end of the object to be
+            returned. For example, if an object's length is 15 bytes, a
+            ReadObjectRequest with read_offset = -5 and read_length = 3
+            would return bytes 10 through 12 of the object. Requesting a
+            negative offset with magnitude larger than the size of the
+            object will return the entire object. A read_offset larger
+            than the size of the object will result in an OutOfRange
+            error.
+        read_length (int):
+            Optional. The maximum number of data bytes the server is
+            allowed to return across all response messages with the same
+            read_id. A read_length of zero indicates to read until the
+            resource end, and a negative read_length will cause an
+            error. If the stream returns fewer bytes than allowed by the
+            read_length and no error occurred, the stream includes all
+            data from the read_offset to the resource end.
+        read_id (int):
+            Required. Read identifier provided by the client. When the
+            client issues more than one outstanding ReadRange on the
+            same stream, responses can be mapped back to their
+            corresponding requests using this value. Clients must ensure
+            that all outstanding requests have different read_id values.
+            The server may close the stream with an error if this
+            condition is not met.
+    """
+
+    read_offset: int = proto.Field(
+        proto.INT64,
+        number=1,
+    )
+    read_length: int = proto.Field(
+        proto.INT64,
+        number=2,
+    )
+    read_id: int = proto.Field(
+        proto.INT64,
+        number=3,
+    )
+
+
+class ObjectRangeData(proto.Message):
+    r"""Contains data and metadata for a range of an object.
+
+    Attributes:
+        checksummed_data (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ChecksummedData):
+            A portion of the data for the object.
+        read_range (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ReadRange):
+            The ReadRange describes the content being returned with
+            read_id set to the corresponding ReadObjectRequest in the
+            stream. Multiple ObjectRangeData messages may have the same
+            read_id but increasing offsets. ReadObjectResponse messages
+            with the same read_id are guaranteed to be delivered in
+            increasing offset order.
+        range_end (bool):
+            If set, indicates there are no more bytes to
+            read for the given ReadRange.
+    """
+
+    checksummed_data: 'ChecksummedData' = proto.Field(
+        proto.MESSAGE,
+        number=1,
+        message='ChecksummedData',
+    )
+    read_range: 'ReadRange' = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message='ReadRange',
+    )
+    range_end: bool = proto.Field(
+        proto.BOOL,
+        number=3,
+    )
+
+
+class BidiReadHandle(proto.Message):
+    r"""BidiReadHandle contains a handle from a previous
+    BiDiReadObject invocation. The client can use this instead of
+    BidiReadObjectSpec as an optimized way of opening subsequent
+    bidirectional streams to the same object.
+
+    Attributes:
+        handle (bytes):
+            Required. Opaque value describing a previous
+            read.
+    """
+
+    handle: bytes = proto.Field(
+        proto.BYTES,
+        number=1,
+    )
+
+
+class BidiWriteHandle(proto.Message):
+    r"""BidiWriteHandle contains a handle from a previous
+    BidiWriteObject invocation. The client can use this as an
+    optimized way of opening subsequent bidirectional streams to the
+    same object.
+
+    Attributes:
+        handle (bytes):
+            Required. Opaque value describing a previous
+            write.
+    """
+
+    handle: bytes = proto.Field(
+        proto.BYTES,
+        number=1,
+    )
+
+
 class WriteObjectSpec(proto.Message):
     r"""Describes an attempt to insert an object, possibly over
     multiple requests.
@@ -1120,6 +1573,12 @@ class WriteObjectSpec(proto.Message):
             this time sending the correct number of bytes.
 
             This field is a member of `oneof`_ ``_object_size``.
+        appendable (bool):
+            If true, the object will be created in
+            appendable mode. This field may only be set when
+            using BidiWriteObject.
+
+            This field is a member of `oneof`_ ``_appendable``.
     """
 
     resource: 'Object' = proto.Field(
@@ -1154,6 +1613,11 @@ class WriteObjectSpec(proto.Message):
     object_size: int = proto.Field(
         proto.INT64,
         number=8,
+        optional=True,
+    )
+    appendable: bool = proto.Field(
+        proto.BOOL,
+        number=9,
         optional=True,
     )
 
@@ -1293,6 +1757,84 @@ class WriteObjectResponse(proto.Message):
     )
 
 
+class AppendObjectSpec(proto.Message):
+    r"""Describes an attempt to append to an object, possibly over
+    multiple requests.
+
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        bucket (str):
+            Required. The name of the bucket containing
+            the object to write.
+        object_ (str):
+            Required. The name of the object to open for
+            writing.
+        generation (int):
+            Required. The generation number of the object
+            to open for writing.
+        if_metageneration_match (int):
+            Makes the operation conditional on whether
+            the object's current metageneration matches the
+            given value.
+
+            This field is a member of `oneof`_ ``_if_metageneration_match``.
+        if_metageneration_not_match (int):
+            Makes the operation conditional on whether
+            the object's current metageneration does not
+            match the given value.
+
+            This field is a member of `oneof`_ ``_if_metageneration_not_match``.
+        routing_token (str):
+            An optional routing token that influences
+            request routing for the stream. Must be provided
+            if a BidiWriteObjectRedirectedError is returned.
+
+            This field is a member of `oneof`_ ``_routing_token``.
+        write_handle (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BidiWriteHandle):
+            An optional write handle returned from a
+            previous BidiWriteObjectResponse message or a
+            BidiWriteObjectRedirectedError error.
+
+            This field is a member of `oneof`_ ``_write_handle``.
+    """
+
+    bucket: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    object_: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    generation: int = proto.Field(
+        proto.INT64,
+        number=3,
+    )
+    if_metageneration_match: int = proto.Field(
+        proto.INT64,
+        number=4,
+        optional=True,
+    )
+    if_metageneration_not_match: int = proto.Field(
+        proto.INT64,
+        number=5,
+        optional=True,
+    )
+    routing_token: str = proto.Field(
+        proto.STRING,
+        number=6,
+        optional=True,
+    )
+    write_handle: 'BidiWriteHandle' = proto.Field(
+        proto.MESSAGE,
+        number=7,
+        optional=True,
+        message='BidiWriteHandle',
+    )
+
+
 class BidiWriteObjectRequest(proto.Message):
     r"""Request message for BidiWriteObject.
 
@@ -1313,6 +1855,11 @@ class BidiWriteObjectRequest(proto.Message):
             For non-resumable uploads. Describes the
             overall upload, including the destination bucket
             and object name, preconditions, etc.
+
+            This field is a member of `oneof`_ ``first_message``.
+        append_object_spec (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.AppendObjectSpec):
+            For appendable uploads. Describes the object
+            to append to.
 
             This field is a member of `oneof`_ ``first_message``.
         write_offset (int):
@@ -1383,6 +1930,12 @@ class BidiWriteObjectRequest(proto.Message):
         oneof='first_message',
         message='WriteObjectSpec',
     )
+    append_object_spec: 'AppendObjectSpec' = proto.Field(
+        proto.MESSAGE,
+        number=11,
+        oneof='first_message',
+        message='AppendObjectSpec',
+    )
     write_offset: int = proto.Field(
         proto.INT64,
         number=3,
@@ -1440,6 +1993,14 @@ class BidiWriteObjectResponse(proto.Message):
             finalized.
 
             This field is a member of `oneof`_ ``write_status``.
+        write_handle (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.BidiWriteHandle):
+            An optional write handle that will
+            periodically be present in response messages.
+            Clients should save it for later use in
+            establishing a new stream if a connection is
+            interrupted.
+
+            This field is a member of `oneof`_ ``_write_handle``.
     """
 
     persisted_size: int = proto.Field(
@@ -1452,6 +2013,12 @@ class BidiWriteObjectResponse(proto.Message):
         number=2,
         oneof='write_status',
         message='Object',
+    )
+    write_handle: 'BidiWriteHandle' = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        optional=True,
+        message='BidiWriteHandle',
     )
 
 

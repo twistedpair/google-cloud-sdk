@@ -53,7 +53,7 @@ _RELEASE_TRACK_TO_VERSION = {
 MISSING_BINARY = (
     'Could not locate managed flink client executable [{binary}]'
     ' on the system PATH. '
-    'Please ensure gcloud managed-flink component is properly '
+    'Please ensure gcloud managed-flink-client component is properly '
     'installed. '
     'See https://cloud.google.com/sdk/docs/components for '
     'more details.'
